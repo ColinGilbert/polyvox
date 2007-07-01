@@ -1,0 +1,61 @@
+PROJECT(PolyVoxSceneManager)
+
+#Projects source files
+SET(SRC_FILES
+	source/Block.cpp
+	source/MarchingCubesTables.cpp
+	source/MaterialMap.cpp
+	source/MaterialMapManager.cpp
+	source/MaterialMapSerializer.cpp
+	source/PolyVoxSceneManager.cpp
+	source/Volume.cpp
+	source/VolumeIterator.cpp
+	source/VolumeManager.cpp
+	source/VolumeSerializer.cpp
+)
+
+#Projects headers files
+SET(INC_FILES
+	include/Block.h
+	include/Constants.h
+	include/IntegralVector3.h
+	include/MarchingCubesTables.h
+	include/MaterialMap.h
+	include/MaterialMapManager.h
+	include/MaterialMapSerializer.h
+        include/PolyVoxSceneManager.h
+        include/Triangle.h
+	include/TypeDef.h
+	include/Vertex.h
+	include/Volume.h
+	include/VolumeIterator.h
+	include/VolumeManager.h
+	include/VolumeSerializer.h	
+)
+
+ADD_DEFINITIONS(-DVOXEL_SCENE_MANAGER_EXPORT) #Export symbols in the .dll
+
+#Appends "_d" to the generated library when in debug mode
+SET(CMAKE_DEBUG_POSTFIX "_d")
+
+#"Sources" and "Headers" are the group names in Visual Studio.
+#They may have other uses too...
+SOURCE_GROUP("Sources" FILES ${SRC_FILES})
+SOURCE_GROUP("Headers" FILES ${INC_FILES})
+
+#Tell CMake the paths
+LINK_DIRECTORIES(${OGRE_LIB_DIR})
+INCLUDE_DIRECTORIES(${OGRE_INCLUDE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#Build
+ADD_LIBRARY(PolyVoxSceneManager SHARED ${SRC_FILES} ${INC_FILES})
+TARGET_LINK_LIBRARIES(PolyVoxSceneManager ${OGRE_LIBRARIES})
+
+#Install
+INSTALL(TARGETS PolyVoxSceneManager
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+)
+
+INSTALL(DIRECTORY materials/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/materials PATTERN "*.svn*" EXCLUDE)
