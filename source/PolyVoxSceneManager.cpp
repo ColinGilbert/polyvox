@@ -140,26 +140,20 @@ namespace Ogre
 			for(uint blockY = 0; blockY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
 			{
 				for(uint blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
-				{
-					m_mapManualObjects[blockX][blockY][blockZ].clear();
+				{					
+					surfaceUpToDate[blockX][blockY][blockZ] = false;
 
-					/*if(sceneNodes[blockX][blockY][blockZ] != 0)
+					for(std::map<uchar,Surface*>::iterator iterSurfaces = m_mapSurfaces[blockX][blockY][blockZ].begin(); iterSurfaces != m_mapSurfaces[blockX][blockY][blockZ].end(); ++iterSurfaces)
 					{
-						destroySceneNode(sceneNodes[blockX][blockY][blockZ]->getName()); //FIXME - when it's available in CVS, use destroyAllSceneNodes commented out below.
+						delete iterSurfaces->second;
 					}
-					sceneNodes[blockX][blockY][blockZ] = getRootSceneNode()->createChildSceneNode(Vector3(blockX*OGRE_REGION_SIDE_LENGTH,blockY*OGRE_REGION_SIDE_LENGTH,blockZ*OGRE_REGION_SIDE_LENGTH)); */
-					manualObjectUpToDate[blockX][blockY][blockZ] = false;
+					m_mapSurfaces[blockX][blockY][blockZ].clear();
 				}
 			}
 		}
 
-		for(std::map<UIntVector3, SceneNode*>::iterator iterSceneNodes = sceneNodes.begin(); iterSceneNodes != sceneNodes.end(); ++iterSceneNodes)
-		{
-			destroySceneNode(iterSceneNodes->second->getName()); //FIXME - when it's available in CVS, use destroyAllSceneNodes commented out below.
-		}
-
-		destroyAllManualObjects();
-		//destroyAllSceneNodes();
+		getRootSceneNode()->removeAndDestroyAllChildren();
+		
 
 		//Create surrounding box
 		//FIXME - should do this using indices
@@ -335,7 +329,7 @@ namespace Ogre
 					for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 					{
 						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
-						if(manualObjectUpToDate[regionX][regionY][regionZ] == false)
+						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 						{
 							std::vector<Vertex> vertexData;
 							std::vector< std::vector< Triangle> > indexData;
@@ -393,134 +387,8 @@ namespace Ogre
 									surface->setGeometry(vertexData,indexData[meshCt]);*/
 								}
 							}
-							manualObjectUpToDate[regionX][regionY][regionZ] = true;
+							surfaceUpToDate[regionX][regionY][regionZ] = true;
 						}
-						
-						//m_bHaveGeneratedMeshes = true;
-
-#ifdef USE_MAN_OBJS
-
-						if(manualObjectUpToDate[regionX][regionY][regionZ] == false)
-						{		
-							/*for(uint materialCt2 = 0; materialCt2 < MAX_NO_OF_MATERIAL_BOUNDARIES_PER_REGION; ++materialCt2)
-							{
-							manualObjects[regionX][regionY][regionZ][materialCt2]->clear();
-							}*/
-
-							std::vector<Vertex> vertexData;
-							std::vector< std::vector< Triangle> > indexData;
-							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
-
-							std::map<uchar,ManualObject*>::iterator mapIter = m_mapManualObjects[regionX][regionY][regionZ].begin();
-							while(mapIter != m_mapManualObjects[regionX][regionY][regionZ].end())
-							{
-								mapIter->second->beginUpdate(0);
-								mapIter->second->end();
-								++mapIter;
-							}
-
-							//uint materialCt = 0;
-							for(uint meshCt = 1; meshCt < 256; ++meshCt)
-							{
-								if(indexData[meshCt].size() == 0)
-								{
-									continue;
-								}
-
-								/*if(materialCt == MAX_NO_OF_MATERIAL_BOUNDARIES_PER_REGION)
-								{
-								//We've run out of materials for this region.
-								LogManager::getSingleton().logMessage("Out of Materials!!");
-								break;
-								}*/
-
-								if(m_mapManualObjects[regionX][regionY][regionZ].find(meshCt) == m_mapManualObjects[regionX][regionY][regionZ].end())
-								{
-									//We have to create the manual object
-									ManualObject* manualObject = createManualObject
-										(
-										"ManualObject(" + 
-										StringConverter::toString(regionX) + "," + 
-										StringConverter::toString(regionY) + "," + 
-										StringConverter::toString(regionZ) + ")" +
-										", Material = " + StringConverter::toString(meshCt)
-										);
-									manualObject->setDynamic(true);
-
-									sceneNodes[regionX][regionY][regionZ] = getRootSceneNode()->createChildSceneNode(Vector3(regionX*OGRE_REGION_SIDE_LENGTH,regionY*OGRE_REGION_SIDE_LENGTH,regionZ*OGRE_REGION_SIDE_LENGTH));
-									sceneNodes[regionX][regionY][regionZ]->attachObject(manualObject);
-
-									m_mapManualObjects[regionX][regionY][regionZ].insert(std::make_pair(meshCt,manualObject));
-
-									manualObject->begin(materialMap->getMaterialAtIndex(meshCt), RenderOperation::OT_TRIANGLE_LIST);
-
-									//for(ulong i = 0; i < vertexData[meshCt].size(); i += 2)
-									for(ulong i = 0; i < vertexData/*[meshCt]*/.size(); i++)
-									{
-										manualObject->position(vertexData/*[meshCt]*/[i].position);
-										manualObject->normal(vertexData/*[meshCt]*/[i].normal);
-										//manualObjects[blockX][blockY][blockZ][materialCt]->textureCoord(vertexData[meshCt][i].position);
-									}
-
-									for(ulong i = 0; i < indexData[meshCt].size(); ++i)
-									{
-										manualObject->index(indexData[meshCt][i].v0);
-										manualObject->index(indexData[meshCt][i].v1);
-										manualObject->index(indexData[meshCt][i].v2);
-									}
-									manualObject->end();
-								}
-								else
-								{
-									//We update the manual object
-									ManualObject* manualObject = m_mapManualObjects[regionX][regionY][regionZ].find(meshCt)->second;
-									//manualObject->clear();
-									//manualObject->estimateVertexCount(vertexData[meshCt].size());
-									//manualObject->estimateIndexCount(indexData[meshCt].size());
-
-									manualObject->beginUpdate(0);
-
-									//manualObject->begin(m_aMaterialNames[meshCt], RenderOperation::OT_TRIANGLE_LIST);
-
-									for(ulong i = 0; i < vertexData/*[meshCt]*/.size(); i++)
-									{
-										manualObject->position(vertexData/*[meshCt]*/[i].position);
-										manualObject->normal(vertexData/*[meshCt]*/[i].normal);
-										//manualObjects[blockX][blockY][blockZ][materialCt]->textureCoord(vertexData[meshCt][i].position);
-									}
-
-									for(ulong i = 0; i < indexData[meshCt].size(); ++i)
-									{
-										manualObject->index(indexData[meshCt][i].v0);
-										manualObject->index(indexData[meshCt][i].v1);
-										manualObject->index(indexData[meshCt][i].v2);
-									}
-									manualObject->end();
-								}
-
-
-
-								//for(uint meshCt = 1; meshCt < 256; ++meshCt)
-								//{
-									/*if(vertexData.size() == 0)
-									{
-										continue;
-									}
-									manualObjects[regionX][regionY][regionZ][materialCt]->begin("RedMaterial", RenderOperation::OT_LINE_LIST);
-									for(ulong i = 0; i < vertexData.size(); i++)
-									{
-										manualObjects[regionX][regionY][regionZ][materialCt]->position(vertexData[i].position);
-										manualObjects[regionX][regionY][regionZ][materialCt]->position(vertexData[i].position + vertexData[i].normal*2);
-									}
-									manualObjects[regionX][regionY][regionZ][materialCt]->end();*/
-								//}
-
-								//++materialCt;
-							}						
-						}
-#endif
-
-						//manualObjectUpToDate[regionX][regionY][regionZ] = true;
 					}
 				}
 			}
@@ -537,7 +405,7 @@ namespace Ogre
 			{
 				for(uint blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
-					manualObjectUpToDate[blockX][blockY][blockZ] = false;
+					surfaceUpToDate[blockX][blockY][blockZ] = false;
 				}
 			}
 		}
@@ -1245,7 +1113,7 @@ namespace Ogre
 			(z % OGRE_REGION_SIDE_LENGTH != 0) &&
 			(z % OGRE_REGION_SIDE_LENGTH != OGRE_REGION_SIDE_LENGTH-1))
 		{
-			manualObjectUpToDate[x >> OGRE_REGION_SIDE_LENGTH_POWER][y >> OGRE_REGION_SIDE_LENGTH_POWER][z >> OGRE_REGION_SIDE_LENGTH_POWER] = false;
+			surfaceUpToDate[x >> OGRE_REGION_SIDE_LENGTH_POWER][y >> OGRE_REGION_SIDE_LENGTH_POWER][z >> OGRE_REGION_SIDE_LENGTH_POWER] = false;
 		}
 		else //Mark surrounding block as well
 		{
@@ -1267,7 +1135,7 @@ namespace Ogre
 				{
 					for(uint xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
-						manualObjectUpToDate[xCt][yCt][zCt] = false;
+						surfaceUpToDate[xCt][yCt][zCt] = false;
 					}
 				}
 			}
@@ -1290,7 +1158,7 @@ namespace Ogre
 			{
 				for(uint xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
-					manualObjectUpToDate[xCt][yCt][zCt] = false;
+					surfaceUpToDate[xCt][yCt][zCt] = false;
 				}
 			}
 		}
