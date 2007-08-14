@@ -70,7 +70,7 @@ namespace Ogre
 		,m_normalGenerationMethod(SOBEL)
 		,m_bHaveGeneratedMeshes(false)
 	{	
-		for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
+		/*for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 		{		
 			for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 			{
@@ -79,7 +79,8 @@ namespace Ogre
 					sceneNodes[regionX][regionY][regionZ] = 0; 
 				}
 			}
-		}
+		}*/
+		sceneNodes.clear();
 	}
 
 	PolyVoxSceneManager::~PolyVoxSceneManager()
@@ -142,14 +143,19 @@ namespace Ogre
 				{
 					m_mapManualObjects[blockX][blockY][blockZ].clear();
 
-					if(sceneNodes[blockX][blockY][blockZ] != 0)
+					/*if(sceneNodes[blockX][blockY][blockZ] != 0)
 					{
 						destroySceneNode(sceneNodes[blockX][blockY][blockZ]->getName()); //FIXME - when it's available in CVS, use destroyAllSceneNodes commented out below.
 					}
-					sceneNodes[blockX][blockY][blockZ] = getRootSceneNode()->createChildSceneNode(Vector3(blockX*OGRE_REGION_SIDE_LENGTH,blockY*OGRE_REGION_SIDE_LENGTH,blockZ*OGRE_REGION_SIDE_LENGTH));; 
+					sceneNodes[blockX][blockY][blockZ] = getRootSceneNode()->createChildSceneNode(Vector3(blockX*OGRE_REGION_SIDE_LENGTH,blockY*OGRE_REGION_SIDE_LENGTH,blockZ*OGRE_REGION_SIDE_LENGTH)); */
 					manualObjectUpToDate[blockX][blockY][blockZ] = false;
 				}
 			}
+		}
+
+		for(std::map<UIntVector3, SceneNode*>::iterator iterSceneNodes = sceneNodes.begin(); iterSceneNodes != sceneNodes.end(); ++iterSceneNodes)
+		{
+			destroySceneNode(iterSceneNodes->second->getName()); //FIXME - when it's available in CVS, use destroyAllSceneNodes commented out below.
 		}
 
 		destroyAllManualObjects();
@@ -335,7 +341,18 @@ namespace Ogre
 							std::vector< std::vector< Triangle> > indexData;
 							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
 
-							sceneNodes[regionX][regionY][regionZ]->detachAllObjects();
+							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
+							SceneNode* sceneNode;
+							if(iterSceneNode == sceneNodes.end())
+							{
+								sceneNode = getRootSceneNode()->createChildSceneNode(Vector3(regionX*OGRE_REGION_SIDE_LENGTH,regionY*OGRE_REGION_SIDE_LENGTH,regionZ*OGRE_REGION_SIDE_LENGTH));
+								sceneNodes.insert(std::make_pair(UIntVector3(regionX,regionY,regionZ),sceneNode));
+							}
+							else
+							{
+								sceneNode = iterSceneNode->second;
+								sceneNode->detachAllObjects();
+							}
 
 							for(uint meshCt = 1; meshCt < 256; ++meshCt)
 							{
@@ -349,7 +366,7 @@ namespace Ogre
 									//We have to create the surface
 									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
 
-									sceneNodes[regionX][regionY][regionZ]->attachObject(surface);
+									sceneNode->attachObject(surface);
 
 									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
 
@@ -359,7 +376,7 @@ namespace Ogre
 								{
 									//We just update the existing surface
 									iterSurface->second->setGeometry(vertexData,indexData[meshCt]);
-									sceneNodes[regionX][regionY][regionZ]->attachObject(iterSurface->second);
+									sceneNode->attachObject(iterSurface->second);
 
 									//sceneNodes[regionX][regionY][regionZ]->detachObject(iterSurface->second);
 									/*delete iterSurface->second;
