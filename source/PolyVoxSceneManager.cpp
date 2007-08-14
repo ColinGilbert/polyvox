@@ -68,6 +68,7 @@ namespace Ogre
 		,useNormalSmoothing(false)
 		,normalSmoothingFilterSize(1)
 		,m_normalGenerationMethod(SOBEL)
+		,m_bHaveGeneratedMeshes(false)
 	{	
 		for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 		{		
@@ -145,7 +146,7 @@ namespace Ogre
 					{
 						destroySceneNode(sceneNodes[blockX][blockY][blockZ]->getName()); //FIXME - when it's available in CVS, use destroyAllSceneNodes commented out below.
 					}
-					sceneNodes[blockX][blockY][blockZ] = 0; 
+					sceneNodes[blockX][blockY][blockZ] = getRootSceneNode()->createChildSceneNode(Vector3(blockX*OGRE_REGION_SIDE_LENGTH,blockY*OGRE_REGION_SIDE_LENGTH,blockZ*OGRE_REGION_SIDE_LENGTH));; 
 					manualObjectUpToDate[blockX][blockY][blockZ] = false;
 				}
 			}
@@ -324,8 +325,64 @@ namespace Ogre
 				LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
 				for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 				{
+					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
 					for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 					{
+						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
+						if(manualObjectUpToDate[regionX][regionY][regionZ] == false)
+						{
+							std::vector<Vertex> vertexData;
+							std::vector< std::vector< Triangle> > indexData;
+							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
+
+							sceneNodes[regionX][regionY][regionZ]->detachAllObjects();
+
+							for(uint meshCt = 1; meshCt < 256; ++meshCt)
+							{
+								if(indexData[meshCt].size() == 0)
+								{
+									continue;
+								}
+								std::map<uchar,Surface*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(meshCt);
+								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
+								{
+									//We have to create the surface
+									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
+
+									sceneNodes[regionX][regionY][regionZ]->attachObject(surface);
+
+									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
+
+									surface->setGeometry(vertexData,indexData[meshCt]);
+								}
+								else
+								{
+									//We just update the existing surface
+									iterSurface->second->setGeometry(vertexData,indexData[meshCt]);
+									sceneNodes[regionX][regionY][regionZ]->attachObject(iterSurface->second);
+
+									//sceneNodes[regionX][regionY][regionZ]->detachObject(iterSurface->second);
+									/*delete iterSurface->second;
+									m_mapSurfaces[regionX][regionY][regionZ].erase(iterSurface);
+
+									//We have to create the surface
+									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
+
+									//sceneNodes[regionX][regionY][regionZ] = getRootSceneNode()->createChildSceneNode(Vector3(regionX*OGRE_REGION_SIDE_LENGTH,regionY*OGRE_REGION_SIDE_LENGTH,regionZ*OGRE_REGION_SIDE_LENGTH));
+									sceneNodes[regionX][regionY][regionZ]->attachObject(surface);
+
+									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
+
+									surface->setGeometry(vertexData,indexData[meshCt]);*/
+								}
+							}
+							manualObjectUpToDate[regionX][regionY][regionZ] = true;
+						}
+						
+						//m_bHaveGeneratedMeshes = true;
+
+#ifdef USE_MAN_OBJS
+
 						if(manualObjectUpToDate[regionX][regionY][regionZ] == false)
 						{		
 							/*for(uint materialCt2 = 0; materialCt2 < MAX_NO_OF_MATERIAL_BOUNDARIES_PER_REGION; ++materialCt2)
@@ -444,8 +501,9 @@ namespace Ogre
 								//++materialCt;
 							}						
 						}
+#endif
 
-						manualObjectUpToDate[regionX][regionY][regionZ] = true;
+						//manualObjectUpToDate[regionX][regionY][regionZ] = true;
 					}
 				}
 			}
@@ -792,6 +850,7 @@ namespace Ogre
 				material = std::max(material,v111);				
 
 				//vertexScaled values are always integers and so can be used as indices.
+				//FIXME - these integer values can just be obtained by using floor()?
 				long int index;
 				unsigned int vertexScaledX;
 				unsigned int vertexScaledY;

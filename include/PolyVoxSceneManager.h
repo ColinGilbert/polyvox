@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Constants.h"
 #include "MaterialMap.h"
+#include "Surface.h"
 #include "Triangle.h"
 #include "TypeDef.h"
 #include "Volume.h"
@@ -95,6 +96,8 @@ namespace Ogre
 		bool manualObjectUpToDate[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool regionIsHomogenous[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
+		std::map<uchar,Surface*> m_mapSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
+
 		void igniteVoxel(UIntVector3 voxelToIgnite);
 
 	private:
@@ -114,6 +117,8 @@ namespace Ogre
 		MaterialMapPtr materialMap;
 
 		std::queue<UIntVector3> m_queueVoxelsToBurn;
+
+		bool m_bHaveGeneratedMeshes;
 
 		//std::string m_aMaterialNames[256];		
 	};
