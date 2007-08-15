@@ -588,6 +588,7 @@ namespace Ogre
 		const Vector3 offset(firstX,firstY,firstZ);
 
 		Vector3 vertlist[12];
+		uchar vertMaterials[12];
 		VolumeIterator volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
 
@@ -639,72 +640,84 @@ namespace Ogre
 				vertlist[0].x = (static_cast<double>(x) + 0.5);
 				vertlist[0].y = (static_cast<double>(y));
 				vertlist[0].z = (static_cast<double>(z));
+				vertMaterials[0] = (std::max)(v000,v100); //FIXME - faster way?
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
 				vertlist[1].x = (static_cast<double>(x + 1));
 				vertlist[1].y = (static_cast<double>(y) + 0.5);
 				vertlist[1].z = (static_cast<double>(z));
+				vertMaterials[1] = (std::max)(v100,v110);
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
 				vertlist[2].x = (static_cast<double>(x) + 0.5);
 				vertlist[2].y = (static_cast<double>(y + 1));
 				vertlist[2].z = (static_cast<double>(z));
+				vertMaterials[2] = (std::max)(v010,v110);
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
 				vertlist[3].x = (static_cast<double>(x));
 				vertlist[3].y = (static_cast<double>(y) + 0.5);
 				vertlist[3].z = (static_cast<double>(z));
+				vertMaterials[3] = (std::max)(v000,v010);
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
 				vertlist[4].x = (static_cast<double>(x) + 0.5);
 				vertlist[4].y = (static_cast<double>(y));
 				vertlist[4].z = (static_cast<double>(z + 1));
+				vertMaterials[4] = (std::max)(v001,v101);
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
 				vertlist[5].x = (static_cast<double>(x + 1));
 				vertlist[5].y = (static_cast<double>(y) + 0.5);
 				vertlist[5].z = (static_cast<double>(z + 1));
+				vertMaterials[5] = (std::max)(v101,v111);
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
 				vertlist[6].x = (static_cast<double>(x) + 0.5);
 				vertlist[6].y = (static_cast<double>(y + 1));
 				vertlist[6].z = (static_cast<double>(z + 1));
+				vertMaterials[6] = (std::max)(v011,v111);
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
 				vertlist[7].x = (static_cast<double>(x));
 				vertlist[7].y = (static_cast<double>(y) + 0.5);
 				vertlist[7].z = (static_cast<double>(z + 1));
+				vertMaterials[7] = (std::max)(v001,v011);
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
 				vertlist[8].x = (static_cast<double>(x));
 				vertlist[8].y = (static_cast<double>(y));
 				vertlist[8].z = (static_cast<double>(z) + 0.5);
+				vertMaterials[8] = (std::max)(v000,v001);
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
 				vertlist[9].x = (static_cast<double>(x + 1));
 				vertlist[9].y = (static_cast<double>(y));
 				vertlist[9].z = (static_cast<double>(z) + 0.5);
+				vertMaterials[9] = (std::max)(v100,v101);
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
 				vertlist[10].x = (static_cast<double>(x + 1));
 				vertlist[10].y = (static_cast<double>(y + 1));
 				vertlist[10].z = (static_cast<double>(z) + 0.5);
+				vertMaterials[10] = (std::max)(v110,v111);
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
 				vertlist[11].x = (static_cast<double>(x));
 				vertlist[11].y = (static_cast<double>(y + 1));
 				vertlist[11].z = (static_cast<double>(z) + 0.5);
+				vertMaterials[11] = (std::max)(v010,v011);
 			}
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
@@ -714,15 +727,24 @@ namespace Ogre
 				const Vector3 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
 				const Vector3 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
 
+				const uchar material0 = vertMaterials[triTable[iCubeIndex][i  ]];
+				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
+				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
+
 				//FIXME - for the time being the material is the highest vertex
 				//Need to think about this...
-				uchar material = std::max(v000,v001);
+				/*uchar material = std::max(v000,v001);
 				material = std::max(material,v010);
 				material = std::max(material,v011);
 				material = std::max(material,v100);
 				material = std::max(material,v101);
 				material = std::max(material,v110);
-				material = std::max(material,v111);				
+				material = std::max(material,v111);	*/
+
+				std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
+				materials.insert(material0);
+				materials.insert(material1);
+				materials.insert(material2);
 
 				//vertexScaled values are always integers and so can be used as indices.
 				//FIXME - these integer values can just be obtained by using floor()?
@@ -733,74 +755,94 @@ namespace Ogre
 
 				Triangle triangle; //Triangle to be created...
 
-				//Get scaled values for vertex 0
-				vertexScaledX = static_cast<unsigned int>((vertex0.x * 2.0) + 0.5);
-				vertexScaledY = static_cast<unsigned int>((vertex0.y * 2.0) + 0.5);
-				vertexScaledZ = static_cast<unsigned int>((vertex0.z * 2.0) + 0.5);
-				vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-				vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-				vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
-				//If a vertex has not yet been added, it's index is -1
-				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
-				if((index == -1))
+				for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
 				{
-					//Add the vertex
-					vertexData[material].push_back(Vertex(vertex0));
-					triangle.v0 = vertexData[material].size()-1;
-					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
-				}
-				else
-				{
-					//Just reuse the existing vertex
-					triangle.v0 = index;
-				}
+					uchar material = *materialsIter;
 
-				//Get scaled values for vertex 1
-				vertexScaledX = static_cast<unsigned int>((vertex1.x * 2.0) + 0.5);
-				vertexScaledY = static_cast<unsigned int>((vertex1.y * 2.0) + 0.5);
-				vertexScaledZ = static_cast<unsigned int>((vertex1.z * 2.0) + 0.5);
-				vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-				vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-				vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
-				//If a vertex has not yet been added, it's index is -1
-				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
-				if((index == -1))
-				{
-					//Add the vertex
-					vertexData[material].push_back(Vertex(vertex1));
-					triangle.v1 = vertexData[material].size()-1;
-					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
-				}
-				else
-				{
-					//Just reuse the existing vertex
-					triangle.v1 = index;
-				}
+					//Get scaled values for vertex 0
+					vertexScaledX = static_cast<unsigned int>((vertex0.x * 2.0) + 0.5);
+					vertexScaledY = static_cast<unsigned int>((vertex0.y * 2.0) + 0.5);
+					vertexScaledZ = static_cast<unsigned int>((vertex0.z * 2.0) + 0.5);
+					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
+					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
+					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
+					//If a vertex has not yet been added, it's index is -1
+					index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
+					if((index == -1))
+					{
+						//Add the vertex
+						Vertex vertex(vertex0);
+						if(material0 == material)
+							vertex.colour = Vector4(1.0,1.0,1.0,1.0);
+						else
+							vertex.colour = Vector4(0.0,0.0,0.0,0.0);
+						vertexData[material].push_back(Vertex(vertex));
+						triangle.v0 = vertexData[material].size()-1;
+						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
+					}
+					else
+					{
+						//Just reuse the existing vertex
+						triangle.v0 = index;
+					}
 
-				//Get scaled values for vertex 2
-				vertexScaledX = static_cast<unsigned int>((vertex2.x * 2.0) + 0.5);
-				vertexScaledY = static_cast<unsigned int>((vertex2.y * 2.0) + 0.5);
-				vertexScaledZ = static_cast<unsigned int>((vertex2.z * 2.0) + 0.5);
-				vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-				vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-				vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
-				//If a vertex has not yet been added, it's index is -1
-				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
-				if((index == -1))
-				{
-					//Add the vertex
-					vertexData[material].push_back(Vertex(vertex2));
-					triangle.v2 = vertexData[material].size()-1;
-					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
-				}
-				else
-				{
-					//Just reuse the existing vertex
-					triangle.v2 = index;
-				}
+					//Get scaled values for vertex 1
+					vertexScaledX = static_cast<unsigned int>((vertex1.x * 2.0) + 0.5);
+					vertexScaledY = static_cast<unsigned int>((vertex1.y * 2.0) + 0.5);
+					vertexScaledZ = static_cast<unsigned int>((vertex1.z * 2.0) + 0.5);
+					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
+					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
+					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
+					//If a vertex has not yet been added, it's index is -1
+					index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
+					if((index == -1))
+					{
+						//Add the vertex
+						Vertex vertex(vertex1);
+						if(material1 == material)
+							vertex.colour = Vector4(1.0,1.0,1.0,1.0);
+						else
+							vertex.colour = Vector4(0.0,0.0,0.0,0.0);
+						vertexData[material].push_back(Vertex(vertex));
+						triangle.v1 = vertexData[material].size()-1;
+						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
+					}
+					else
+					{
+						//Just reuse the existing vertex
+						triangle.v1 = index;
+					}
 
-				//Add the triangle
-				indexData[material].push_back(triangle);
+					//Get scaled values for vertex 2
+					vertexScaledX = static_cast<unsigned int>((vertex2.x * 2.0) + 0.5);
+					vertexScaledY = static_cast<unsigned int>((vertex2.y * 2.0) + 0.5);
+					vertexScaledZ = static_cast<unsigned int>((vertex2.z * 2.0) + 0.5);
+					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
+					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
+					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
+					//If a vertex has not yet been added, it's index is -1
+					index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
+					if((index == -1))
+					{
+						//Add the vertex
+						Vertex vertex(vertex2);
+						if(material2 == material)
+							vertex.colour = Vector4(1.0,1.0,1.0,1.0);
+						else
+							vertex.colour = Vector4(0.0,0.0,0.0,0.0);
+						vertexData[material].push_back(Vertex(vertex));
+						triangle.v2 = vertexData[material].size()-1;
+						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
+					}
+					else
+					{
+						//Just reuse the existing vertex
+						triangle.v2 = index;
+					}
+
+					//Add the triangle
+					indexData[material].push_back(triangle);
+				}
 			}
 		}	
 

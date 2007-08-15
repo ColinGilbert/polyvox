@@ -1,0 +1,145 @@
+//NOTE - The code in this file might seem slightly strange. Intuitivy it would
+//seem better to get Ogre to pass in an array of lights, rather than passing
+//them individually and then building arrays. However, I have had problms with
+//this approach (possibly a bug?)
+
+//See http://www.ogre3d.org/phpBB2/viewtopic.php?t=32391
+
+struct a2v
+{
+    float4 Position : POSITION; //in object space
+    float3 Normal : NORMAL;
+    float4 Color : COLOR;
+};
+
+struct v2f
+{
+    float4 Position : POSITION; //in projection space
+    float4 Color : COLOR;
+    float4 TexCoordsXY : TEXCOORD0;
+    float4 TexCoordsYZ : TEXCOORD1;
+    float4 TexCoordsXZ : TEXCOORD2;
+    float4 Normal : TEXCOORD3;
+};
+
+struct light
+{
+    float4 position;
+    float4 diffuseColour;
+    float4 attenuation;
+};
+
+v2f doWork(a2v IN, float4x4 world, float4x4 viewProj, float textureScale, float4 ambient, int iNoOfLights, light lights[4])
+{
+    v2f OUT;
+
+    OUT.Position = mul(world, IN.Position);
+    
+    float3 uVec;
+    float3 vVec;
+    
+    IN.Normal = normalize(IN.Normal);
+
+    /*float absX = abs(IN.Normal.x);
+    float absY = abs(IN.Normal.y);
+    float absZ = abs(IN.Normal.z);
+    if((absZ <= absX) && (absZ <= absY))
+    {
+        //OUT.TexCoords.xy = OUT.Position.xy /textureScale;
+        uVec = float3(-IN.Normal.y, IN.Normal.x,0);
+    }
+    else if((absY <= absX) && (absY <= absZ))
+    {
+        //OUT.TexCoords.xy = OUT.Position.xz /textureScale;
+        uVec = float3(-IN.Normal.z, 0, IN.Normal.x);
+    }
+    else if((absX <= absZ) && (absX <= absY))
+    {
+        // OUT.TexCoords.xy = OUT.Position.yz /textureScale;
+        uVec = float3(0, -IN.Normal.z, IN.Normal.y);
+    }
+    vVec = cross(IN.Normal, uVec);
+    OUT.TexCoords.x = dot(OUT.Position.xyz, uVec);
+    OUT.TexCoords.y = dot(OUT.Position.xyz, vVec);  */
+    
+    //OUT.TexCoords.xy = OUT.Position.xy * IN.Normal.z * IN.Normal.z + OUT.Position.xz * IN.Normal.y * IN.Normal.y + OUT.Position.yz * IN.Normal.x * IN.Normal.x;
+    
+    //OUT.TexCoords.xy /= textureScale;
+    
+    OUT.TexCoordsXY.xy = OUT.Position.xy;
+    OUT.TexCoordsYZ.xy = OUT.Position.yz;
+    OUT.TexCoordsXZ.xy = OUT.Position.xz;
+    
+    OUT.TexCoordsXY.xy /= textureScale;
+    OUT.TexCoordsYZ.xy /= textureScale;
+    OUT.TexCoordsXZ.xy /= textureScale;
+
+    OUT.Normal = float4(IN.Normal,0.0);
+
+
+    //OUT.TexCoords.xy = OUT.Position.yz /textureScale;
+    OUT.TexCoordsXY.w = 1;
+    OUT.TexCoordsYZ.w = 1;
+    OUT.TexCoordsXZ.w = 1;
+    
+    OUT.Color.rgba = float4(0.0,0.0,0.0,1.0);
+
+    for(int lightCt = 0; lightCt < iNoOfLights; lightCt++)
+    {
+      float3 L = normalize(lights[lightCt].position.xyz - OUT.Position.xyz);
+      //Calculate attenuation factor.
+      float d = distance(lights[lightCt].position.xyz, OUT.Position.xyz);
+      float attenuationFactor = 1.0 / (lights[lightCt].attenuation.y + lights[lightCt].attenuation.z * d + lights[lightCt].attenuation.w * d * d);
+      // Calculate diffuse component
+      float LdotN = max(dot(L, IN.Normal) , 0);
+      OUT.Color.rgb += lights[lightCt].diffuseColour.rgb * LdotN * attenuationFactor;
+    }
+    
+    OUT.Color.rgb += ambient.rgb;
+    
+    //Temporary
+    OUT.Color = IN.Color;
+
+    OUT.Position = mul(viewProj, OUT.Position);
+
+    return OUT;
+}
+
+v2f OneLight(a2v IN,uniform float4x4 world, uniform float4x4 viewProj, uniform float textureScale, uniform float4 ambient, uniform light light0)
+{   
+    light lights[4];
+    lights[0] = light0;
+    
+    return doWork(IN, world, viewProj, textureScale, ambient, 1, lights);
+}
+
+v2f TwoLights(a2v IN,uniform float4x4 world, uniform float4x4 viewProj, uniform float textureScale, uniform float4 ambient, uniform light light0, uniform light light1)
+{   
+    light lights[4];
+    lights[0] = light0;
+    lights[1] = light1;
+    
+    return doWork(IN, world, viewProj, textureScale, ambient, 2, lights);
+}
+
+v2f ThreeLights(a2v IN,uniform float4x4 world, uniform float4x4 viewProj, uniform float textureScale, uniform float4 ambient, uniform light light0, uniform light light1, uniform light light2)
+{   
+    light lights[4];
+    lights[0] = light0;
+    lights[1] = light1;
+    lights[2] = light2;
+    
+    return doWork(IN, world, viewProj, textureScale, ambient, 3, lights);
+}
+
+v2f FourLights(a2v IN,uniform float4x4 world, uniform float4x4 viewProj, uniform float textureScale, uniform float4 ambient, uniform light light0, uniform light light1, uniform light light2, uniform light light3)
+{   
+    light lights[4];
+    lights[0] = light0;
+    lights[1] = light1;
+    lights[2] = light2;
+    lights[3] = light3;
+    
+    return doWork(IN, world, viewProj, textureScale, ambient, 4, lights);
+}
+
