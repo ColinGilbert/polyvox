@@ -332,7 +332,7 @@ namespace Ogre
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 						{
 							//Generate the surface
-							std::vector<Vertex> vertexData;
+							std::vector< std::vector<Vertex> > vertexData;
 							std::vector< std::vector< Triangle> > indexData;
 							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
 
@@ -362,7 +362,7 @@ namespace Ogre
 								{
 									//We have to create the surface
 									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
-									surface->setGeometry(vertexData,indexData[meshCt]);
+									surface->setGeometry(vertexData[meshCt],indexData[meshCt]);
 
 									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
 
@@ -371,11 +371,11 @@ namespace Ogre
 								else
 								{
 									//We just update the existing surface
-									iterSurface->second->setGeometry(vertexData,indexData[meshCt]);
+									iterSurface->second->setGeometry(vertexData[meshCt],indexData[meshCt]);
 									sceneNode->attachObject(iterSurface->second);
 								}
 							}
-							sceneNode->showBoundingBox(true);
+							//sceneNode->showBoundingBox(true);
 							surfaceUpToDate[regionX][regionY][regionZ] = true;
 						}
 					}
@@ -532,7 +532,7 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::vector<Vertex>& vertexData, std::vector< std::vector<Triangle> >& indexData) const
+	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const
 	{	
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		/*LogManager::getSingleton().logMessage("HERE");
@@ -551,11 +551,11 @@ namespace Ogre
 		}
 		LogManager::getSingleton().logMessage("DONE");*/
 		//The vertex and index data
-		//vertexData.resize(256);
+		vertexData.resize(256);
 		indexData.resize(256);
 
 		//Used later to check if vertex has already been added
-		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
+		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][10];
 		//uchar materialAtPosition[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1]; //FIXME - do we really need this? Can't we just get it from the volume...
 		//bool isVertexSharedBetweenMaterials[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
 		memset(vertexIndices,0xFF,sizeof(vertexIndices)); //0xFF is -1 as two's complement - this may not be portable...
@@ -741,13 +741,13 @@ namespace Ogre
 				vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
 				vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
 				//If a vertex has not yet been added, it's index is -1
-				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ];
+				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
 				if((index == -1))
 				{
 					//Add the vertex
-					vertexData.push_back(Vertex(vertex0));
-					triangle.v0 = vertexData.size()-1;
-					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ] = vertexData.size()-1;
+					vertexData[material].push_back(Vertex(vertex0));
+					triangle.v0 = vertexData[material].size()-1;
+					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
 				}
 				else
 				{
@@ -763,13 +763,13 @@ namespace Ogre
 				vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
 				vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
 				//If a vertex has not yet been added, it's index is -1
-				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ];
+				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
 				if((index == -1))
 				{
 					//Add the vertex
-					vertexData.push_back(Vertex(vertex1));
-					triangle.v1 = vertexData.size()-1;
-					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ] = vertexData.size()-1;
+					vertexData[material].push_back(Vertex(vertex1));
+					triangle.v1 = vertexData[material].size()-1;
+					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
 				}
 				else
 				{
@@ -785,13 +785,13 @@ namespace Ogre
 				vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
 				vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
 				//If a vertex has not yet been added, it's index is -1
-				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ];
+				index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
 				if((index == -1))
 				{
 					//Add the vertex
-					vertexData.push_back(Vertex(vertex2));
-					triangle.v2 = vertexData.size()-1;
-					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ] = vertexData.size()-1;
+					vertexData[material].push_back(Vertex(vertex2));
+					triangle.v2 = vertexData[material].size()-1;
+					vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
 				}
 				else
 				{
@@ -811,11 +811,11 @@ namespace Ogre
 		//Compute normals
 		//////////////////////////////////////////////////////////////////////////
 
-		//for(uint materialCt = 0; materialCt < 256; materialCt++)
+		for(uint materialCt = 0; materialCt < 256; materialCt++)
 		{
-			for(uint vertexCt = 0; vertexCt < vertexData/*[materialCt]*/.size(); ++vertexCt)
+			for(uint vertexCt = 0; vertexCt < vertexData[materialCt].size(); ++vertexCt)
 			{
-				const Vector3 vertexPosition = vertexData/*[materialCt]*/[vertexCt].position;
+				const Vector3 vertexPosition = vertexData[materialCt][vertexCt].position;
 
 				const float posX = vertexPosition.x + static_cast<float>(regionX * OGRE_REGION_SIDE_LENGTH);
 				const float posY = vertexPosition.y + static_cast<float>(regionY * OGRE_REGION_SIDE_LENGTH);
@@ -834,19 +834,19 @@ namespace Ogre
 						if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 						{					
 							uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-							vertexData/*[materialCt]*/[vertexCt].normal = Vector3(uFloor - uCeil,0.0,0.0);
+							vertexData[materialCt][vertexCt].normal = Vector3(uFloor - uCeil,0.0,0.0);
 						}
 						else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
 						{
 							uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-							vertexData/*[materialCt]*/[vertexCt].normal = Vector3(0.0,uFloor - uCeil,0.0);
+							vertexData[materialCt][vertexCt].normal = Vector3(0.0,uFloor - uCeil,0.0);
 						}
 						else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
 						{
 							uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-							vertexData/*[materialCt]*/[vertexCt].normal = Vector3(0.0, 0.0,uFloor - uCeil);					
+							vertexData[materialCt][vertexCt].normal = Vector3(0.0, 0.0,uFloor - uCeil);					
 						}
-						vertexData/*[materialCt]*/[vertexCt].normal.normalise();
+						vertexData[materialCt][vertexCt].normal.normalise();
 						break;
 					}
 				case CENTRAL_DIFFERENCE:
@@ -866,9 +866,9 @@ namespace Ogre
 							volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
 						}
 						const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
-						vertexData[vertexCt].normal = gradFloor + gradCeil;
-						vertexData[vertexCt].normal *= -1;
-						vertexData[vertexCt].normal.normalise();
+						vertexData[materialCt][vertexCt].normal = gradFloor + gradCeil;
+						vertexData[materialCt][vertexCt].normal *= -1;
+						vertexData[materialCt][vertexCt].normal.normalise();
 						break;
 					}
 				case SOBEL:
@@ -888,9 +888,9 @@ namespace Ogre
 							volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
 						}
 						const Vector3 gradCeil = volIter.getSobelGradient();
-						vertexData[vertexCt].normal = gradFloor + gradCeil;
-						vertexData[vertexCt].normal *= -1;
-						vertexData[vertexCt].normal.normalise();
+						vertexData[materialCt][vertexCt].normal = gradFloor + gradCeil;
+						vertexData[materialCt][vertexCt].normal *= -1;
+						vertexData[materialCt][vertexCt].normal.normalise();
 						break;
 					}
 				}
