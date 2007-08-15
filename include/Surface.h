@@ -12,8 +12,7 @@ namespace Ogre
 	class Surface : public SimpleRenderable
 	{
 	public:
-	   Surface();
-	   Surface(const String& material);
+	   Surface(const String& material = "BaseWhiteNoLighting");
 	   ~Surface(void);
 
 	   void setGeometry(std::vector<Vertex> verticesToSet, std::vector<Triangle> indicesToSet);

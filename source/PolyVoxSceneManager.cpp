@@ -331,10 +331,12 @@ namespace Ogre
 						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 						{
+							//Generate the surface
 							std::vector<Vertex> vertexData;
 							std::vector< std::vector< Triangle> > indexData;
 							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
 
+							//If a SceneNode doesn't exist in this position then create one.
 							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
 							SceneNode* sceneNode;
 							if(iterSceneNode == sceneNodes.end())
@@ -348,6 +350,7 @@ namespace Ogre
 								sceneNode->detachAllObjects();
 							}
 
+							//For each surface attach it to the scene node.
 							for(uint meshCt = 1; meshCt < 256; ++meshCt)
 							{
 								if(indexData[meshCt].size() == 0)
@@ -359,40 +362,27 @@ namespace Ogre
 								{
 									//We have to create the surface
 									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
-
-									sceneNode->attachObject(surface);
+									surface->setGeometry(vertexData,indexData[meshCt]);
 
 									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
 
-									surface->setGeometry(vertexData,indexData[meshCt]);
+									sceneNode->attachObject(surface);
 								}
 								else
 								{
 									//We just update the existing surface
 									iterSurface->second->setGeometry(vertexData,indexData[meshCt]);
 									sceneNode->attachObject(iterSurface->second);
-
-									//sceneNodes[regionX][regionY][regionZ]->detachObject(iterSurface->second);
-									/*delete iterSurface->second;
-									m_mapSurfaces[regionX][regionY][regionZ].erase(iterSurface);
-
-									//We have to create the surface
-									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
-
-									//sceneNodes[regionX][regionY][regionZ] = getRootSceneNode()->createChildSceneNode(Vector3(regionX*OGRE_REGION_SIDE_LENGTH,regionY*OGRE_REGION_SIDE_LENGTH,regionZ*OGRE_REGION_SIDE_LENGTH));
-									sceneNodes[regionX][regionY][regionZ]->attachObject(surface);
-
-									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
-
-									surface->setGeometry(vertexData,indexData[meshCt]);*/
 								}
 							}
+							sceneNode->showBoundingBox(true);
 							surfaceUpToDate[regionX][regionY][regionZ] = true;
 						}
 					}
 				}
 			}
 		}
+		//showBoundingBoxes(true);
 		//Now call the base class to do the actual visibility determination...
 		SceneManager::_findVisibleObjects(cam, visibleBounds, onlyShadowCasters);
 	}

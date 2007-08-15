@@ -4,19 +4,10 @@
 
 namespace Ogre
 {
-
-	Surface::Surface()
-	{
-	   mRenderOp.vertexData = NULL;
-	   mRenderOp.indexData = NULL;
-
-	   this->setMaterial("BaseWhiteNoLighting");
-	}
-
 	Surface::Surface(const String& material)
 	{
-	   mRenderOp.vertexData = NULL;
-	   mRenderOp.indexData = NULL;
+	   mRenderOp.vertexData = new VertexData();
+	   mRenderOp.indexData = new IndexData();
 
 	   this->setMaterial(material);
 	}
@@ -29,20 +20,7 @@ namespace Ogre
 
 	void Surface::setGeometry(std::vector<Vertex> verticesToSet, std::vector<Triangle> indicesToSet)
 	{
-		if(mRenderOp.vertexData)
-		{
-			delete mRenderOp.vertexData;
-			mRenderOp.vertexData = NULL;
-		}
-
-		if(mRenderOp.indexData)
-		{
-			delete mRenderOp.indexData;
-			mRenderOp.indexData = NULL;
-		}
-
-		mRenderOp.vertexData = new VertexData();
-	    mRenderOp.indexData = new IndexData();
+				
 		//LogManager::getSingleton().logMessage("In setGeometry()");
 	   // Initialization stuff
 	   mRenderOp.vertexData->vertexCount = verticesToSet.size();
@@ -121,8 +99,6 @@ namespace Ogre
 
 	   mBox.setExtents(vaabMin, vaabMax);
 
-	   //LogManager::getSingleton().logMessage("Setting Index Data of size " + StringConverter::toString(indicesToSet.size()));
-
 	   unsigned short* pIdx = static_cast<unsigned short*>(ibuf->lock(HardwareBuffer::HBL_DISCARD));
 	   for(int i = 0; i < indicesToSet.size(); i++)
 	   {
@@ -134,8 +110,6 @@ namespace Ogre
 		   pIdx++;
 	   }
 	   ibuf->unlock();
-
-
 	}
 
 	Real Surface::getSquaredViewDepth(const Camera *cam) const
