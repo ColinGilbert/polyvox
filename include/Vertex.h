@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgrePrerequisites.h"
 
 #include "OgreVector3.h"
-#include "OgreVector4.h"
 
 namespace Ogre
 {
@@ -32,7 +31,7 @@ namespace Ogre
 	public:
 		Vector3 position;
 		Vector3 normal;
-		Vector4 colour;
+		float alpha;
 
 		Vertex(Vector3 positionToSet)
 			:position(positionToSet)

@@ -9,7 +9,7 @@ struct a2v
 {
     float4 Position : POSITION; //in object space
     float3 Normal : NORMAL;
-    float4 Color : COLOR;
+    float Alpha : TEXCOORD0;
 };
 
 struct v2f
@@ -20,6 +20,7 @@ struct v2f
     float4 TexCoordsYZ : TEXCOORD1;
     float4 TexCoordsXZ : TEXCOORD2;
     float4 Normal : TEXCOORD3;
+    float Alpha : TEXCOORD4;
 };
 
 struct light
@@ -96,11 +97,10 @@ v2f doWork(a2v IN, float4x4 world, float4x4 viewProj, float textureScale, float4
     }
     
     OUT.Color.rgb += ambient.rgb;
-    
-    //Temporary
-    OUT.Color = IN.Color;
 
     OUT.Position = mul(viewProj, OUT.Position);
+    
+    OUT.Alpha = IN.Alpha;
 
     return OUT;
 }

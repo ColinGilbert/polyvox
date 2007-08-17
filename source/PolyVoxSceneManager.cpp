@@ -773,9 +773,9 @@ namespace Ogre
 						//Add the vertex
 						Vertex vertex(vertex0);
 						if(material0 == material)
-							vertex.colour = Vector4(1.0,1.0,1.0,1.0);
+							vertex.alpha = 1.0;
 						else
-							vertex.colour = Vector4(0.0,0.0,0.0,0.0);
+							vertex.alpha = 0.0;
 						vertexData[material].push_back(Vertex(vertex));
 						triangle.v0 = vertexData[material].size()-1;
 						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
@@ -800,9 +800,9 @@ namespace Ogre
 						//Add the vertex
 						Vertex vertex(vertex1);
 						if(material1 == material)
-							vertex.colour = Vector4(1.0,1.0,1.0,1.0);
+							vertex.alpha = 1.0;
 						else
-							vertex.colour = Vector4(0.0,0.0,0.0,0.0);
+							vertex.alpha = 0.0;
 						vertexData[material].push_back(Vertex(vertex));
 						triangle.v1 = vertexData[material].size()-1;
 						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
@@ -827,9 +827,9 @@ namespace Ogre
 						//Add the vertex
 						Vertex vertex(vertex2);
 						if(material2 == material)
-							vertex.colour = Vector4(1.0,1.0,1.0,1.0);
+							vertex.alpha = 1.0;
 						else
-							vertex.colour = Vector4(0.0,0.0,0.0,0.0);
+							vertex.alpha = 0.0;
 						vertexData[material].push_back(Vertex(vertex));
 						triangle.v2 = vertexData[material].size()-1;
 						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;

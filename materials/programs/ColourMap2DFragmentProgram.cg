@@ -6,6 +6,7 @@ struct v2f
     float4 TexCoordsYZ : TEXCOORD1;
     float4 TexCoordsXZ : TEXCOORD2;
     float4 Normal : TEXCOORD3;
+    float Alpha : TEXCOORD4;
 };
 
 float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
@@ -18,5 +19,5 @@ float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
        
        //colourMapValue /= 3.0;
 
-       return float4(colourMapValue/*IN.Color.rgb*/, pow(IN.Color.a,0.75));
+       return float4(colourMapValue*IN.Color.rgb,pow(IN.Alpha,0.75));
 }

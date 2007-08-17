@@ -40,7 +40,7 @@ namespace Ogre
 	   decl->removeAllElements();
 	   decl->addElement(0, 0, VET_FLOAT3, VES_POSITION);
 	   decl->addElement(0, 3 * sizeof(float), VET_FLOAT3, VES_NORMAL);
-	   decl->addElement(0, 6 * sizeof(float), VET_FLOAT4, VES_DIFFUSE);
+	   decl->addElement(0, 6 * sizeof(float), VET_FLOAT1, VES_TEXTURE_COORDINATES);
 
 	   //LogManager::getSingleton().logMessage("Creating Vertex Buffer");
 	   HardwareVertexBufferSharedPtr vbuf =
@@ -81,10 +81,7 @@ namespace Ogre
 		  *prPos++ = verticesToSet[i].normal.y;
 		  *prPos++ = verticesToSet[i].normal.z;
 
-		  *prPos++ = verticesToSet[i].colour.x;
-		  *prPos++ = verticesToSet[i].colour.y;
-		  *prPos++ = verticesToSet[i].colour.z;
-		  *prPos++ = verticesToSet[i].colour.w;
+		  *prPos++ = verticesToSet[i].alpha;
 
 		  if(verticesToSet[i].position.x < vaabMin.x)
 			 vaabMin.x = verticesToSet[i].position.x;
