@@ -943,138 +943,100 @@ namespace Ogre
 		//Decimate mesh
 		//////////////////////////////////////////////////////////////////////////
 
-		//mergeVertices5(vertexData, indexData);
+		mergeVertices6(vertexData, indexData);
 	}
 
-	void PolyVoxSceneManager::mergeVertices5(std::vector<Vertex>& vertexData, std::vector< std::vector<Triangle> >& indexData) const
+	void PolyVoxSceneManager::mergeVertices6(std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const
 	{
-		if(vertexData.empty())
-			return;
-
-		std::vector< std::set<uint> > materialsUsingVertex;
-		materialsUsingVertex.resize(vertexData.size());
 		for(uint material = 1; material < 256; ++material)
 		{
-			for(uint triangleCt = 0; triangleCt < indexData[material].size(); ++triangleCt)
-			{
-				materialsUsingVertex[indexData[material][triangleCt].v0].insert(material);
-				materialsUsingVertex[indexData[material][triangleCt].v1].insert(material);
-				materialsUsingVertex[indexData[material][triangleCt].v2].insert(material);
-			}
-		}
-
-		std::vector<uint> noOfEdges; //0 means not on ege, 1 means edge, 2 or more means corner
-		noOfEdges.resize(vertexData.size());
-		for(uint vertexCt = 0; vertexCt < vertexData.size(); ++vertexCt)
-		{
-			noOfEdges[vertexCt] = 0;
-		}
-		for(uint vertexCt = 0; vertexCt < vertexData.size(); ++vertexCt)
-		{
-			if(vertexData[vertexCt].position.x < 0.25)
-				 noOfEdges[vertexCt] |= 1;
-			if(vertexData[vertexCt].position.y < 0.25)
-				noOfEdges[vertexCt] |= 2;
-			if(vertexData[vertexCt].position.z < 0.25)
-				noOfEdges[vertexCt] |= 4;
-			if(vertexData[vertexCt].position.x > OGRE_REGION_SIDE_LENGTH-0.25)
-				noOfEdges[vertexCt] |= 8;
-			if(vertexData[vertexCt].position.y > OGRE_REGION_SIDE_LENGTH-0.25)
-				noOfEdges[vertexCt] |= 16;
-			if(vertexData[vertexCt].position.z > OGRE_REGION_SIDE_LENGTH-0.25)
-				noOfEdges[vertexCt] |= 32;
-		}
-
-
-		for(uint material = 0; material < 256; ++material)
-		{
-			if(indexData[material].empty())
-			{
+			if(vertexData[material].empty())
 				continue;
+
+			Ogre::LogManager::getSingleton().logMessage("Material = " + Ogre::StringConverter::toString(material) + " No of vertices = " + Ogre::StringConverter::toString(vertexData[material].size()));
+
+			std::vector< std::set<uint> > connectedVertices;
+			connectedVertices.resize(vertexData[material].size());
+			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); vertexCt++)
+			{
+				for(uint triangleCt = 0; triangleCt < indexData[material].size(); ++triangleCt)
+				{
+					if((indexData[material][triangleCt].v0 == vertexCt) || (indexData[material][triangleCt].v1 == vertexCt) || (indexData[material][triangleCt].v2 == vertexCt))
+					{
+						connectedVertices[vertexCt].insert(indexData[material][triangleCt].v0);
+						connectedVertices[vertexCt].insert(indexData[material][triangleCt].v1);
+						connectedVertices[vertexCt].insert(indexData[material][triangleCt].v2);
+					}
+				}
+				connectedVertices[vertexCt].erase(vertexCt);
 			}
+
+			std::vector< bool > vertexIsFixed;
+			vertexIsFixed.resize(vertexData[material].size());
+			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); vertexCt++)
+			{
+				if(connectedVertices[vertexCt].size() < 6)
+					vertexIsFixed[vertexCt] = true;
+				else
+					vertexIsFixed[vertexCt] = false;
+			}
+
+			/*std::vector<uint> noOfEdges; //0 means not on ege, 1 means edge, 2 or more means corner
+			noOfEdges.resize(vertexData[material].size());
+			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); ++vertexCt)
+			{
+				noOfEdges[vertexCt] = 0;
+			}
+			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); ++vertexCt)
+			{
+				if(vertexData[material][vertexCt].position.x < 0.25)
+					 noOfEdges[vertexCt] |= 1;
+				if(vertexData[material][vertexCt].position.y < 0.25)
+					noOfEdges[vertexCt] |= 2;
+				if(vertexData[material][vertexCt].position.z < 0.25)
+					noOfEdges[vertexCt] |= 4;
+				if(vertexData[material][vertexCt].position.x > OGRE_REGION_SIDE_LENGTH-0.25)
+					noOfEdges[vertexCt] |= 8;
+				if(vertexData[material][vertexCt].position.y > OGRE_REGION_SIDE_LENGTH-0.25)
+					noOfEdges[vertexCt] |= 16;
+				if(vertexData[material][vertexCt].position.z > OGRE_REGION_SIDE_LENGTH-0.25)
+					noOfEdges[vertexCt] |= 32;
+			}*/
+
+			for(uint u = 0; u < 16; u++)
+			{
 
 			//FIXME - this is innefficient! iterating over ever vertex, even though one material might just use a few of them.
-			for(uint vertexCt = 0; vertexCt < vertexData.size(); vertexCt++)
-			{		
-				if(materialsUsingVertex[vertexCt].size() > 1)
-				{
-					continue;
-				}
-				/*if((vertexData[vertexCt].position.x > 0.25) &&
-					(vertexData[vertexCt].position.y > 0.25) &&
-					(vertexData[vertexCt].position.z > 0.25) &&
-					(vertexData[vertexCt].position.x < OGRE_REGION_SIDE_LENGTH-0.25) &&
-					(vertexData[vertexCt].position.y < OGRE_REGION_SIDE_LENGTH-0.25) &&
-					(vertexData[vertexCt].position.z < OGRE_REGION_SIDE_LENGTH-0.25))*/
-				if((noOfEdges[vertexCt] == 0) ||
-					(noOfEdges[vertexCt] == 1) ||
-					(noOfEdges[vertexCt] == 2) ||
-					(noOfEdges[vertexCt] == 4) ||
-					(noOfEdges[vertexCt] == 8) ||
-					(noOfEdges[vertexCt] == 16) ||
-					(noOfEdges[vertexCt] == 32))
+			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); vertexCt++)
+			{	
 				{	
-					
-					std::set<uint> setConnectedVertices;
-
-					for(uint triangleCt = 0; triangleCt < indexData[material].size(); ++triangleCt)
-					{
-						if((indexData[material][triangleCt].v0 == vertexCt) || (indexData[material][triangleCt].v1 == vertexCt) || (indexData[material][triangleCt].v2 == vertexCt))
-						{
-							if(noOfEdges[vertexCt] == 0)
-							{
-								setConnectedVertices.insert(indexData[material][triangleCt].v0);
-								setConnectedVertices.insert(indexData[material][triangleCt].v1);
-								setConnectedVertices.insert(indexData[material][triangleCt].v2);
-							}
-							else
-							{
-								if(noOfEdges[indexData[material][triangleCt].v0] == noOfEdges[vertexCt])
-									setConnectedVertices.insert(indexData[material][triangleCt].v0);
-								if(noOfEdges[indexData[material][triangleCt].v1] == noOfEdges[vertexCt])
-									setConnectedVertices.insert(indexData[material][triangleCt].v1);
-								if(noOfEdges[indexData[material][triangleCt].v2] == noOfEdges[vertexCt])
-									setConnectedVertices.insert(indexData[material][triangleCt].v2);
-							}
-						}
-					}
-					setConnectedVertices.erase(vertexCt);
-
-					if(setConnectedVertices.empty())
+					if(vertexIsFixed[vertexCt])
 					{
 						continue;
 					}
 
-					/*Vertex currentVertex = vertexData[vertexCt];
-					uint vertexScaledX = static_cast<uint>((currentVertex.position.x * 2.0) + 0.5);
-					uint vertexScaledY = static_cast<uint>((currentVertex.position.y * 2.0) + 0.5);
-					uint vertexScaledZ = static_cast<uint>((currentVertex.position.z * 2.0) + 0.5);
-					//FIXME - think whether this modding is actually necessary...
-					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;*/
-
-					/*bool shared = isVertexSharedBetweenMaterials[vertexScaledX][vertexScaledY][vertexScaledZ];
-					if(shared)
-					{
-						continue;
-					}*/
-
-					if(verticesArePlanar3(vertexCt, setConnectedVertices, vertexData))
+					if(verticesArePlanar3(vertexCt, connectedVertices[vertexCt], vertexData[material]))
 					{		
 						//FIXME - I'm not hapy that we have to use rbegin() here rather than begin().
 						//Surely it should be possible to merge with any vertex? Not just the last one?
-						std::set<uint>::reverse_iterator connectedIter = setConnectedVertices.rbegin();
+						std::set<uint>::iterator connectedIter = connectedVertices[vertexCt].begin();
 						for(uint triCt = 0; triCt < indexData[material].size(); triCt++)
 						{
-							/*if(noOfEdges[vertexCt] == 0)
-							{*/
+							//if(vertexIsFixed[indexData[material][triCt].v0] == false)
+							{
 								if(indexData[material][triCt].v0 == vertexCt)
 									indexData[material][triCt].v0 = *connectedIter;
+							}
+							//if(vertexIsFixed[indexData[material][triCt].v1] == false)
+							{
 								if(indexData[material][triCt].v1 == vertexCt)
 									indexData[material][triCt].v1 = *connectedIter;
+							}
+							//if(vertexIsFixed[indexData[material][triCt].v2] == false)
+							{
 								if(indexData[material][triCt].v2 == vertexCt)
 									indexData[material][triCt].v2 = *connectedIter;
+							}
 							/*}
 							else
 							{
@@ -1089,7 +1051,11 @@ namespace Ogre
 					}
 				}
 			}
+			}
 		}
+
+
+			
 
 		//Hide degenerate triangles
 		/*for(uint triCt = 0; triCt < indexData.size(); triCt++)
@@ -1109,6 +1075,8 @@ namespace Ogre
 		bool allYMatch = true;
 		bool allZMatch = true;
 		bool allNormalsMatch = true;
+
+		//FIXME - reorder come of these tests based on likelyness to fail?
 
 		std::set<uint>::iterator iterConnectedVertices;
 		for(iterConnectedVertices = setConnectedVertices.begin(); iterConnectedVertices != setConnectedVertices.end(); ++iterConnectedVertices)
