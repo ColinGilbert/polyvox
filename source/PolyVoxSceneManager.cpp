@@ -943,7 +943,9 @@ namespace Ogre
 		//Decimate mesh
 		//////////////////////////////////////////////////////////////////////////
 
-		mergeVertices6(vertexData, indexData);
+		//Ogre::LogManager::getSingleton().logMessage("Before merge: vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
+		//mergeVertices6(vertexData, indexData);
+		//Ogre::LogManager::getSingleton().logMessage("After merge:  vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
 	}
 
 	void PolyVoxSceneManager::mergeVertices6(std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const
@@ -953,7 +955,7 @@ namespace Ogre
 			if(vertexData[material].empty())
 				continue;
 
-			Ogre::LogManager::getSingleton().logMessage("Material = " + Ogre::StringConverter::toString(material) + " No of vertices = " + Ogre::StringConverter::toString(vertexData[material].size()));
+			//Ogre::LogManager::getSingleton().logMessage("Material = " + Ogre::StringConverter::toString(material) + " No of vertices = " + Ogre::StringConverter::toString(vertexData[material].size()));
 
 			std::vector< std::set<uint> > connectedVertices;
 			connectedVertices.resize(vertexData[material].size());
@@ -971,14 +973,11 @@ namespace Ogre
 				connectedVertices[vertexCt].erase(vertexCt);
 			}
 
-			std::vector< bool > vertexIsFixed;
-			vertexIsFixed.resize(vertexData[material].size());
+			std::vector< uint > initialConnections;
+			initialConnections.resize(vertexData[material].size());
 			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); vertexCt++)
 			{
-				if(connectedVertices[vertexCt].size() < 6)
-					vertexIsFixed[vertexCt] = true;
-				else
-					vertexIsFixed[vertexCt] = false;
+				initialConnections[vertexCt] = connectedVertices[vertexCt].size();
 			}
 
 			/*std::vector<uint> noOfEdges; //0 means not on ege, 1 means edge, 2 or more means corner
@@ -1003,74 +1002,70 @@ namespace Ogre
 					noOfEdges[vertexCt] |= 32;
 			}*/
 
-			for(uint u = 0; u < 16; u++)
+			for(uint u = 0; u < 50; u++)
 			{
-
-			//FIXME - this is innefficient! iterating over ever vertex, even though one material might just use a few of them.
-			for(uint vertexCt = 0; vertexCt < vertexData[material].size(); vertexCt++)
-			{	
+				//FIXME - this is innefficient! iterating over ever vertex, even though one material might just use a few of them.
+				for(uint vertexCt = 0; vertexCt < vertexData[material].size(); vertexCt++)
 				{	
-					if(vertexIsFixed[vertexCt])
+					//if((initialConnections[vertexCt] == 6) || (initialConnections[vertexCt] == initialConnections[*connectedIter]))
 					{
-						continue;
-					}
-
-					if(verticesArePlanar3(vertexCt, connectedVertices[vertexCt], vertexData[material]))
-					{		
-						//FIXME - I'm not hapy that we have to use rbegin() here rather than begin().
-						//Surely it should be possible to merge with any vertex? Not just the last one?
-						std::set<uint>::iterator connectedIter = connectedVertices[vertexCt].begin();
-						for(uint triCt = 0; triCt < indexData[material].size(); triCt++)
-						{
-							//if(vertexIsFixed[indexData[material][triCt].v0] == false)
-							{
+						if(verticesArePlanar3(vertexCt, connectedVertices[vertexCt], vertexData[material]))
+						{		
+							std::set<uint>::iterator connectedIter = connectedVertices[vertexCt].begin();
+							/*for(uint triCt = 0; triCt < indexData[material].size(); triCt++)
+							{							
 								if(indexData[material][triCt].v0 == vertexCt)
+								{								
 									indexData[material][triCt].v0 = *connectedIter;
-							}
-							//if(vertexIsFixed[indexData[material][triCt].v1] == false)
-							{
+								}
 								if(indexData[material][triCt].v1 == vertexCt)
+								{
 									indexData[material][triCt].v1 = *connectedIter;
-							}
-							//if(vertexIsFixed[indexData[material][triCt].v2] == false)
-							{
+								}
 								if(indexData[material][triCt].v2 == vertexCt)
+								{
 									indexData[material][triCt].v2 = *connectedIter;
-							}
-							/*}
-							else
-							{
-								if((indexData[material][triCt].v0 == vertexCt) && (noOfEdges[indexData[material][triCt].v0] == noOfEdges[vertexCt]))
-									indexData[material][triCt].v0 = *connectedIter;
-								if((indexData[material][triCt].v1 == vertexCt) && (noOfEdges[indexData[material][triCt].v1] == noOfEdges[vertexCt]))
-									indexData[material][triCt].v1 = *connectedIter;
-								if((indexData[material][triCt].v2 == vertexCt) && (noOfEdges[indexData[material][triCt].v2] == noOfEdges[vertexCt]))
-									indexData[material][triCt].v2 = *connectedIter;
+								}
 							}*/
+							for(uint innerVertexCt = 0; innerVertexCt < vertexData[material].size(); innerVertexCt++)
+							{
+								if(vertexData[material][innerVertexCt].position.distance(vertexData[material][vertexCt].position) < 0.1)
+								{
+									if((initialConnections[innerVertexCt] == 6) || (initialConnections[innerVertexCt] == initialConnections[*connectedIter]))
+										vertexData[material][innerVertexCt].position = vertexData[material][*connectedIter].position;
+								}
+							}
 						}
 					}
 				}
 			}
-			}
-		}
 
-
-			
-
-		//Hide degenerate triangles
-		/*for(uint triCt = 0; triCt < indexData.size(); triCt++)
-		{
-			if((indexData[material][triCt].v0 == indexData[material][triCt].v1) && (indexData[material][triCt].v1 == indexData[material][triCt].v2))
+			//Delete degenerate triangles
+			std::vector<Vertex> resultingVertexData;
+			std::vector<Triangle> resultingIndexData;
+			for(uint triCt = 0; triCt < indexData[material].size(); triCt++)
 			{
-				indexData[material][triCt].v0 = 0;
-				indexData[material][triCt].v1 = 0;
-				indexData[material][triCt].v2 = 0;
+				if((indexData[material][triCt].v0 != indexData[material][triCt].v1) || (indexData[material][triCt].v1 != indexData[material][triCt].v2))
+				{
+					uint pos = resultingVertexData.size();
+
+					resultingVertexData.push_back(vertexData[material][indexData[material][triCt].v0]);
+					resultingVertexData.push_back(vertexData[material][indexData[material][triCt].v1]);
+					resultingVertexData.push_back(vertexData[material][indexData[material][triCt].v2]);
+
+					Triangle triangle(pos, pos+1, pos+2);
+					resultingIndexData.push_back(triangle);
+				}
 			}
-		}*/
+			vertexData[material] = resultingVertexData;
+			indexData[material] = resultingIndexData;
+		}			
 	}
 
 	bool PolyVoxSceneManager::verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<Vertex>& vertexData) const
 	{
+		//FIXME - specially handle the case where they are all the same.
+		//This is happening a lot after many vertices have been moved round?
 		bool allXMatch = true;
 		bool allYMatch = true;
 		bool allZMatch = true;
