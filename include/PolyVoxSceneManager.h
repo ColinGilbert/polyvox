@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MaterialMap.h"
 #include "SurfacePatchRenderable.h"
 #include "SurfaceTriangle.h"
+#include "SurfacePatch.h"
 #include "TypeDef.h"
 #include "Volume.h"
 #include "SurfaceVertex.h"
@@ -80,7 +81,7 @@ namespace Ogre
 		
 		void generateLevelVolume(void);
 
-		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const;
+		std::map<uchar, SurfacePatch> generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ) const;
 		void mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const;
 		bool verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<SurfaceVertex>& vertexData) const;
 

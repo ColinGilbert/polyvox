@@ -332,9 +332,9 @@ namespace Ogre
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 						{
 							//Generate the surface
-							std::vector< std::vector<SurfaceVertex> > vertexData;
-							std::vector< std::vector<SurfaceTriangle> > indexData;
-							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
+							//std::vector< std::vector<SurfaceVertex> > vertexData;
+							//std::vector< std::vector<SurfaceTriangle> > indexData;
+							std::map<uchar, SurfacePatch> mapSurfacePatch = generateMeshDataForRegion(regionX,regionY,regionZ);
 
 							//If a SceneNode doesn't exist in this position then create one.
 							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
@@ -351,27 +351,30 @@ namespace Ogre
 							}
 
 							//For each surface attach it to the scene node.
-							for(uint meshCt = 1; meshCt < 256; ++meshCt)
+							//for(uint meshCt = 1; meshCt < 256; ++meshCt)
+							for(std::map<uchar, SurfacePatch>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
 							{
-								if(indexData[meshCt].size() == 0)
+								/*if(indexData[meshCt].size() == 0)
 								{
 									continue;
-								}
-								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(meshCt);
+								}*/
+								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(iterSurfacePatch->first);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
 								{
 									//We have to create the surface
-									SurfacePatchRenderable* surface = new SurfacePatchRenderable(materialMap->getMaterialAtIndex(meshCt));
-									surface->setGeometry(vertexData[meshCt],indexData[meshCt]);
+									SurfacePatchRenderable* surface = new SurfacePatchRenderable(materialMap->getMaterialAtIndex(iterSurfacePatch->first));
+									//surface->setGeometry(vertexData[meshCt],indexData[meshCt]);
+									surface->setGeometry(iterSurfacePatch->second.getVertexArray(),iterSurfacePatch->second.getTriangleArray());
 
-									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
+									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(iterSurfacePatch->first,surface));
 
 									sceneNode->attachObject(surface);
 								}
 								else
 								{
 									//We just update the existing surface
-									iterSurface->second->setGeometry(vertexData[meshCt],indexData[meshCt]);
+									//iterSurface->second->setGeometry(vertexData[meshCt],indexData[meshCt]);
+									iterSurface->second->setGeometry(iterSurfacePatch->second.getVertexArray(),iterSurfacePatch->second.getTriangleArray());
 									sceneNode->attachObject(iterSurface->second);
 								}
 							}
@@ -532,7 +535,7 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const
+	std::map<uchar, SurfacePatch> PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ) const
 	{	
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		/*LogManager::getSingleton().logMessage("HERE");
@@ -551,6 +554,9 @@ namespace Ogre
 		}
 		LogManager::getSingleton().logMessage("DONE");*/
 		//The vertex and index data
+		std::vector< std::vector<SurfaceVertex> > vertexData;
+		std::vector< std::vector<SurfaceTriangle> > indexData;
+
 		vertexData.resize(256);
 		indexData.resize(256);
 
@@ -946,6 +952,30 @@ namespace Ogre
 		//Ogre::LogManager::getSingleton().logMessage("Before merge: vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
 		//mergeVertices6(vertexData, indexData);
 		//Ogre::LogManager::getSingleton().logMessage("After merge:  vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
+
+		std::map<uchar, SurfacePatch> result;
+		for(uint materialCt = 1; materialCt < 256; materialCt++)
+		{
+			if(indexData[materialCt].size() == 0)
+			{
+				continue;
+			}
+
+			SurfacePatch surfacePatch;
+			for(uint indexCt = 0; indexCt < indexData[materialCt].size(); indexCt++)
+			{
+				surfacePatch.addTriangle
+				(
+					vertexData[materialCt][indexData[materialCt][indexCt].v0],
+					vertexData[materialCt][indexData[materialCt][indexCt].v1],
+					vertexData[materialCt][indexData[materialCt][indexCt].v2]
+				);
+			}
+
+			result.insert(std::make_pair(materialCt, surfacePatch));
+		}
+
+		return result;
 	}
 
 	void PolyVoxSceneManager::mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const
