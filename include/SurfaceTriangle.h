@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#ifndef __Triangle_H__
-#define __Triangle_H__
+#ifndef __SurfaceTriangle_H__
+#define __SurfaceTriangle_H__
 
 #include "OgrePrerequisites.h"
 
@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Ogre
 {
-	class Triangle
+	class SurfaceTriangle
 	{
 	public:
 
@@ -35,14 +35,14 @@ namespace Ogre
 		ulong v1;
 		ulong v2;
 
-		Triangle()
+		SurfaceTriangle()
 			:v0(0)
 			,v1(0)
 			,v2(0)
 		{
 		}
 
-		Triangle(uint v0ToSet, uint v1ToSet, uint v2ToSet)
+		SurfaceTriangle(uint v0ToSet, uint v1ToSet, uint v2ToSet)
 			:v0(v0ToSet)
 			,v1(v1ToSet)
 			,v2(v2ToSet)

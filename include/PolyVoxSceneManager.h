@@ -24,11 +24,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Constants.h"
 #include "MaterialMap.h"
-#include "Surface.h"
-#include "Triangle.h"
+#include "SurfacePatchRenderable.h"
+#include "SurfaceTriangle.h"
 #include "TypeDef.h"
 #include "Volume.h"
-#include "Vertex.h"
+#include "SurfaceVertex.h"
 
 #include <set>
 
@@ -80,9 +80,9 @@ namespace Ogre
 		
 		void generateLevelVolume(void);
 
-		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const;
-		void mergeVertices6(std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const;
-		bool verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<Vertex>& vertexData) const;
+		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const;
+		void mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const;
+		bool verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<SurfaceVertex>& vertexData) const;
 
 		void doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value);
 
@@ -96,7 +96,7 @@ namespace Ogre
 		bool surfaceUpToDate[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool regionIsHomogenous[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
-		std::map<uchar,Surface*> m_mapSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
+		std::map<uchar,SurfacePatchRenderable*> m_mapSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
 		void igniteVoxel(UIntVector3 voxelToIgnite);
 

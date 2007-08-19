@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "MarchingCubesTables.h"
 #include "MaterialMapManager.h"
-#include "Vertex.h"
+#include "SurfaceVertex.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
 #include "VolumeManager.h"
@@ -143,7 +143,7 @@ namespace Ogre
 				{					
 					surfaceUpToDate[blockX][blockY][blockZ] = false;
 
-					for(std::map<uchar,Surface*>::iterator iterSurfaces = m_mapSurfaces[blockX][blockY][blockZ].begin(); iterSurfaces != m_mapSurfaces[blockX][blockY][blockZ].end(); ++iterSurfaces)
+					for(std::map<uchar,SurfacePatchRenderable*>::iterator iterSurfaces = m_mapSurfaces[blockX][blockY][blockZ].begin(); iterSurfaces != m_mapSurfaces[blockX][blockY][blockZ].end(); ++iterSurfaces)
 					{
 						delete iterSurfaces->second;
 					}
@@ -332,8 +332,8 @@ namespace Ogre
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 						{
 							//Generate the surface
-							std::vector< std::vector<Vertex> > vertexData;
-							std::vector< std::vector< Triangle> > indexData;
+							std::vector< std::vector<SurfaceVertex> > vertexData;
+							std::vector< std::vector<SurfaceTriangle> > indexData;
 							generateMeshDataForRegion(regionX,regionY,regionZ,vertexData,indexData);
 
 							//If a SceneNode doesn't exist in this position then create one.
@@ -357,11 +357,11 @@ namespace Ogre
 								{
 									continue;
 								}
-								std::map<uchar,Surface*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(meshCt);
+								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(meshCt);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
 								{
 									//We have to create the surface
-									Surface* surface = new Surface(materialMap->getMaterialAtIndex(meshCt));
+									SurfacePatchRenderable* surface = new SurfacePatchRenderable(materialMap->getMaterialAtIndex(meshCt));
 									surface->setGeometry(vertexData[meshCt],indexData[meshCt]);
 
 									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(meshCt,surface));
@@ -532,7 +532,7 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const
+	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const
 	{	
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		/*LogManager::getSingleton().logMessage("HERE");
@@ -753,7 +753,7 @@ namespace Ogre
 				unsigned int vertexScaledY;
 				unsigned int vertexScaledZ;
 
-				Triangle triangle; //Triangle to be created...
+				SurfaceTriangle triangle; //Triangle to be created...
 
 				for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
 				{
@@ -771,12 +771,12 @@ namespace Ogre
 					if((index == -1))
 					{
 						//Add the vertex
-						Vertex vertex(vertex0);
+						SurfaceVertex vertex(vertex0);
 						if(material0 == material)
 							vertex.alpha = 1.0;
 						else
 							vertex.alpha = 0.0;
-						vertexData[material].push_back(Vertex(vertex));
+						vertexData[material].push_back(vertex);
 						triangle.v0 = vertexData[material].size()-1;
 						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
 					}
@@ -798,12 +798,12 @@ namespace Ogre
 					if((index == -1))
 					{
 						//Add the vertex
-						Vertex vertex(vertex1);
+						SurfaceVertex vertex(vertex1);
 						if(material1 == material)
 							vertex.alpha = 1.0;
 						else
 							vertex.alpha = 0.0;
-						vertexData[material].push_back(Vertex(vertex));
+						vertexData[material].push_back(vertex);
 						triangle.v1 = vertexData[material].size()-1;
 						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
 					}
@@ -825,12 +825,12 @@ namespace Ogre
 					if((index == -1))
 					{
 						//Add the vertex
-						Vertex vertex(vertex2);
+						SurfaceVertex vertex(vertex2);
 						if(material2 == material)
 							vertex.alpha = 1.0;
 						else
 							vertex.alpha = 0.0;
-						vertexData[material].push_back(Vertex(vertex));
+						vertexData[material].push_back(vertex);
 						triangle.v2 = vertexData[material].size()-1;
 						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
 					}
@@ -948,7 +948,7 @@ namespace Ogre
 		//Ogre::LogManager::getSingleton().logMessage("After merge:  vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
 	}
 
-	void PolyVoxSceneManager::mergeVertices6(std::vector< std::vector<Vertex> >& vertexData, std::vector< std::vector<Triangle> >& indexData) const
+	void PolyVoxSceneManager::mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const
 	{
 		for(uint material = 1; material < 256; ++material)
 		{
@@ -1041,8 +1041,8 @@ namespace Ogre
 			}
 
 			//Delete degenerate triangles
-			std::vector<Vertex> resultingVertexData;
-			std::vector<Triangle> resultingIndexData;
+			std::vector<SurfaceVertex> resultingVertexData;
+			std::vector<SurfaceTriangle> resultingIndexData;
 			for(uint triCt = 0; triCt < indexData[material].size(); triCt++)
 			{
 				if((indexData[material][triCt].v0 != indexData[material][triCt].v1) || (indexData[material][triCt].v1 != indexData[material][triCt].v2))
@@ -1053,7 +1053,7 @@ namespace Ogre
 					resultingVertexData.push_back(vertexData[material][indexData[material][triCt].v1]);
 					resultingVertexData.push_back(vertexData[material][indexData[material][triCt].v2]);
 
-					Triangle triangle(pos, pos+1, pos+2);
+					SurfaceTriangle triangle(pos, pos+1, pos+2);
 					resultingIndexData.push_back(triangle);
 				}
 			}
@@ -1062,7 +1062,7 @@ namespace Ogre
 		}			
 	}
 
-	bool PolyVoxSceneManager::verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<Vertex>& vertexData) const
+	bool PolyVoxSceneManager::verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<SurfaceVertex>& vertexData) const
 	{
 		//FIXME - specially handle the case where they are all the same.
 		//This is happening a lot after many vertices have been moved round?

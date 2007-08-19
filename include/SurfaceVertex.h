@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#ifndef __Vertex_H__
-#define __Vertex_H__
+#ifndef __SurfaceVertex_H__
+#define __SurfaceVertex_H__
 
 #include "OgrePrerequisites.h"
 
@@ -26,19 +26,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Ogre
 {
-	class Vertex
+	class SurfaceVertex
 	{
 	public:
 		Vector3 position;
 		Vector3 normal;
 		float alpha;
 
-		Vertex(Vector3 positionToSet)
+		SurfaceVertex(Vector3 positionToSet)
 			:position(positionToSet)
 		{
 		}
 
-		Vertex(Vector3 positionToSet, Vector3 normalToSet)
+		SurfaceVertex(Vector3 positionToSet, Vector3 normalToSet)
 			:position(positionToSet)
 			,normal(normalToSet)
 		{

@@ -8,7 +8,8 @@ SET(SRC_FILES
 	source/MaterialMapManager.cpp
 	source/MaterialMapSerializer.cpp
 	source/PolyVoxSceneManager.cpp
-        source/Surface.cpp
+        source/SurfacePatch.cpp
+        source/SurfacePatchRenderable.cpp
 	source/Volume.cpp
 	source/VolumeIterator.cpp
 	source/VolumeManager.cpp
@@ -25,10 +26,12 @@ SET(INC_FILES
 	include/MaterialMapManager.h
 	include/MaterialMapSerializer.h
         include/PolyVoxSceneManager.h
-        include/Surface.h
-        include/Triangle.h
+        include/SurfaceEdge.h
+        include/SurfacePatch.h
+        include/SurfacePatchRenderable.h
+        include/SurfaceTriangle.h
+        include/SurfaceVertex.h
 	include/TypeDef.h
-	include/Vertex.h
 	include/Volume.h
 	include/VolumeIterator.h
 	include/VolumeManager.h

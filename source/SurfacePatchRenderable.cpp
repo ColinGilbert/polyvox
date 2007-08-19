@@ -1,10 +1,10 @@
-#include "Surface.h"
+#include "SurfacePatchRenderable.h"
 
 #include "OgreVertexIndexData.h"
 
 namespace Ogre
 {
-	Surface::Surface(const String& material)
+	SurfacePatchRenderable::SurfacePatchRenderable(const String& material)
 	{
 	   mRenderOp.vertexData = new VertexData();
 	   mRenderOp.indexData = new IndexData();
@@ -12,13 +12,13 @@ namespace Ogre
 	   this->setMaterial(material);
 	}
 
-	Surface::~Surface(void)
+	SurfacePatchRenderable::~SurfacePatchRenderable(void)
 	{
 	   delete mRenderOp.vertexData;
 	   delete mRenderOp.indexData;
 	}
 
-	void Surface::setGeometry(std::vector<Vertex> verticesToSet, std::vector<Triangle> indicesToSet)
+	void SurfacePatchRenderable::setGeometry(std::vector<SurfaceVertex> verticesToSet, std::vector<SurfaceTriangle> indicesToSet)
 	{
 				
 		//LogManager::getSingleton().logMessage("In setGeometry()");
@@ -115,7 +115,7 @@ namespace Ogre
 	   ibuf->unlock();
 	}
 
-	Real Surface::getSquaredViewDepth(const Camera *cam) const
+	Real SurfacePatchRenderable::getSquaredViewDepth(const Camera *cam) const
 	{
 	   Vector3 vMin, vMax, vMid, vDist;
 	   vMin = mBox.getMinimum();
@@ -126,7 +126,7 @@ namespace Ogre
 	   return vDist.squaredLength();
 	}
 
-	Real Surface::getBoundingRadius(void) const
+	Real SurfacePatchRenderable::getBoundingRadius(void) const
 	{
 		return Math::Sqrt((std::max)(mBox.getMaximum().squaredLength(), mBox.getMinimum().squaredLength()));
 	   //return mRadius;
@@ -138,12 +138,12 @@ namespace Ogre
 	   *xform = Matrix4::IDENTITY;
 	}
 	*/
-	const Quaternion &Surface::getWorldOrientation(void) const
+	const Quaternion &SurfacePatchRenderable::getWorldOrientation(void) const
 	{
 	   return Quaternion::IDENTITY;
 	}
 
-	const Vector3 &Surface::getWorldPosition(void) const
+	const Vector3 &SurfacePatchRenderable::getWorldPosition(void) const
 	{
 	   return Vector3::ZERO;
 	}
