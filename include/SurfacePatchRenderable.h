@@ -15,7 +15,7 @@ namespace Ogre
 	   SurfacePatchRenderable(const String& material = "BaseWhiteNoLighting");
 	   ~SurfacePatchRenderable(void);
 
-	   void setGeometry(std::vector<SurfaceVertex> verticesToSet, std::vector<SurfaceTriangle> indicesToSet);
+	   void setGeometry(std::vector<SurfaceVertex> verticesToSet, std::vector<uint> indicesToSet);
 
 	   Real getSquaredViewDepth(const Camera *cam) const;
 	   Real getBoundingRadius(void) const;

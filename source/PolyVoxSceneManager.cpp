@@ -354,17 +354,17 @@ namespace Ogre
 							//for(uint meshCt = 1; meshCt < 256; ++meshCt)
 							for(std::map<uchar, SurfacePatch>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
 							{
-								/*if(indexData[meshCt].size() == 0)
-								{
-									continue;
-								}*/
+								std::vector<SurfaceVertex> vertexData;
+								std::vector<uint> indexData;
+								iterSurfacePatch->second.getVertexAndIndexData(vertexData, indexData);
+								
 								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(iterSurfacePatch->first);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
 								{
 									//We have to create the surface
 									SurfacePatchRenderable* surface = new SurfacePatchRenderable(materialMap->getMaterialAtIndex(iterSurfacePatch->first));
 									//surface->setGeometry(vertexData[meshCt],indexData[meshCt]);
-									surface->setGeometry(iterSurfacePatch->second.getVertexArray(),iterSurfacePatch->second.getTriangleArray());
+									surface->setGeometry(vertexData, indexData);
 
 									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(iterSurfacePatch->first,surface));
 
@@ -374,7 +374,7 @@ namespace Ogre
 								{
 									//We just update the existing surface
 									//iterSurface->second->setGeometry(vertexData[meshCt],indexData[meshCt]);
-									iterSurface->second->setGeometry(iterSurfacePatch->second.getVertexArray(),iterSurfacePatch->second.getTriangleArray());
+									iterSurface->second->setGeometry(vertexData, indexData);
 									sceneNode->attachObject(iterSurface->second);
 								}
 							}
@@ -559,6 +559,8 @@ namespace Ogre
 
 		vertexData.resize(256);
 		indexData.resize(256);
+
+		std::map<uchar, SurfacePatch> result;
 
 		//Used later to check if vertex has already been added
 		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][10];
@@ -754,19 +756,42 @@ namespace Ogre
 
 				//vertexScaled values are always integers and so can be used as indices.
 				//FIXME - these integer values can just be obtained by using floor()?
-				long int index;
+				/*long int index;
 				unsigned int vertexScaledX;
 				unsigned int vertexScaledY;
-				unsigned int vertexScaledZ;
+				unsigned int vertexScaledZ;*/
 
-				SurfaceTriangle triangle; //Triangle to be created...
+				//SurfaceTriangle triangle; //Triangle to be created...
 
 				for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
 				{
 					uchar material = *materialsIter;
 
+					SurfaceVertex surfaceVertex0(vertex0);
+					if(material0 == material)
+						surfaceVertex0.alpha = 1.0;
+					else
+						surfaceVertex0.alpha = 0.0;
+					surfaceVertex0.normal = Vector3(1.0,1.0,1.0);
+
+					SurfaceVertex surfaceVertex1(vertex1);
+					if(material1 == material)
+						surfaceVertex1.alpha = 1.0;
+					else
+						surfaceVertex1.alpha = 0.0;
+					surfaceVertex1.normal = Vector3(1.0,1.0,1.0);
+
+					SurfaceVertex surfaceVertex2(vertex2);
+					if(material2 == material)
+						surfaceVertex2.alpha = 1.0;
+					else
+						surfaceVertex2.alpha = 0.0;
+					surfaceVertex2.normal = Vector3(1.0,1.0,1.0);
+
+					result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+
 					//Get scaled values for vertex 0
-					vertexScaledX = static_cast<unsigned int>((vertex0.x * 2.0) + 0.5);
+					/*vertexScaledX = static_cast<unsigned int>((vertex0.x * 2.0) + 0.5);
 					vertexScaledY = static_cast<unsigned int>((vertex0.y * 2.0) + 0.5);
 					vertexScaledZ = static_cast<unsigned int>((vertex0.z * 2.0) + 0.5);
 					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
@@ -847,7 +872,7 @@ namespace Ogre
 					}
 
 					//Add the triangle
-					indexData[material].push_back(triangle);
+					indexData[material].push_back(triangle);*/
 				}
 			}
 		}	
@@ -859,7 +884,7 @@ namespace Ogre
 		//Compute normals
 		//////////////////////////////////////////////////////////////////////////
 
-		for(uint materialCt = 0; materialCt < 256; materialCt++)
+		/*for(uint materialCt = 0; materialCt < 256; materialCt++)
 		{
 			for(uint vertexCt = 0; vertexCt < vertexData[materialCt].size(); ++vertexCt)
 			{
@@ -943,7 +968,7 @@ namespace Ogre
 					}
 				}
 			}
-		}
+		}*/
 
 		//////////////////////////////////////////////////////////////////////////
 		//Decimate mesh
@@ -953,7 +978,7 @@ namespace Ogre
 		//mergeVertices6(vertexData, indexData);
 		//Ogre::LogManager::getSingleton().logMessage("After merge:  vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
 
-		std::map<uchar, SurfacePatch> result;
+		/*std::map<uchar, SurfacePatch> result;
 		for(uint materialCt = 1; materialCt < 256; materialCt++)
 		{
 			if(indexData[materialCt].size() == 0)
@@ -973,10 +998,12 @@ namespace Ogre
 			}
 
 			result.insert(std::make_pair(materialCt, surfacePatch));
-		}
+		}*/
 
 		return result;
 	}
+
+#ifdef BLAH
 
 	void PolyVoxSceneManager::mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const
 	{
@@ -1091,6 +1118,8 @@ namespace Ogre
 			indexData[material] = resultingIndexData;
 		}			
 	}
+
+#endif
 
 	bool PolyVoxSceneManager::verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<SurfaceVertex>& vertexData) const
 	{

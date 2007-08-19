@@ -82,7 +82,7 @@ namespace Ogre
 		void generateLevelVolume(void);
 
 		std::map<uchar, SurfacePatch> generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ) const;
-		void mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const;
+		//void mergeVertices6(std::vector< std::vector<SurfaceVertex> >& vertexData, std::vector< std::vector<SurfaceTriangle> >& indexData) const;
 		bool verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<SurfaceVertex>& vertexData) const;
 
 		void doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value);

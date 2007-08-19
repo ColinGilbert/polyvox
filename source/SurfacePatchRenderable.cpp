@@ -18,7 +18,7 @@ namespace Ogre
 	   delete mRenderOp.indexData;
 	}
 
-	void SurfacePatchRenderable::setGeometry(std::vector<SurfaceVertex> verticesToSet, std::vector<SurfaceTriangle> indicesToSet)
+	void SurfacePatchRenderable::setGeometry(std::vector<SurfaceVertex> verticesToSet, std::vector<uint> indicesToSet)
 	{
 				
 		//LogManager::getSingleton().logMessage("In setGeometry()");
@@ -28,7 +28,7 @@ namespace Ogre
 	   mRenderOp.operationType = RenderOperation::OT_TRIANGLE_LIST; // OT_LINE_LIST, OT_LINE_STRIP
 	   mRenderOp.useIndexes = true;
 	   mRenderOp.indexData->indexStart = 0;
-	   mRenderOp.indexData->indexCount = indicesToSet.size()*3;
+	   mRenderOp.indexData->indexCount = indicesToSet.size();
 
 	   //LogManager::getSingleton().logMessage("Finished initialisaing stuff");
 
@@ -55,7 +55,7 @@ namespace Ogre
 	   HardwareIndexBufferSharedPtr ibuf =
 		   HardwareBufferManager::getSingleton().createIndexBuffer(
 				HardwareIndexBuffer::IT_16BIT, // type of index
-				mRenderOp.indexData->indexCount * 3, // number of indexes
+				mRenderOp.indexData->indexCount, // number of indexes
 				HardwareBuffer::HBU_STATIC_WRITE_ONLY, // usage
 				false); // no shadow buffer	
 
@@ -105,12 +105,12 @@ namespace Ogre
 	   unsigned short* pIdx = static_cast<unsigned short*>(ibuf->lock(HardwareBuffer::HBL_DISCARD));
 	   for(int i = 0; i < indicesToSet.size(); i++)
 	   {
-		   *pIdx = indicesToSet[i].v0;
+		   *pIdx = indicesToSet[i];
 		   pIdx++;
-		   *pIdx = indicesToSet[i].v1;
+		   /**pIdx = indicesToSet[i].v1;
 		   pIdx++;
 		   *pIdx = indicesToSet[i].v2;
-		   pIdx++;
+		   pIdx++;*/
 	   }
 	   ibuf->unlock();
 	}

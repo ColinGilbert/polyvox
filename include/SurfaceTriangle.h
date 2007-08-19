@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgreVector3.h"
 
+#include "SurfaceVertex.h"
+
 namespace Ogre
 {
 	class SurfaceTriangle
@@ -31,18 +33,18 @@ namespace Ogre
 	public:
 
 		//FIXME - maybe these should be short?
-		ulong v0;
+		/*ulong v0;
 		ulong v1;
-		ulong v2;
+		ulong v2;*/
+		std::list<SurfaceVertex>::iterator v0;
+		std::list<SurfaceVertex>::iterator v1;
+		std::list<SurfaceVertex>::iterator v2;
 
 		SurfaceTriangle()
-			:v0(0)
-			,v1(0)
-			,v2(0)
 		{
 		}
 
-		SurfaceTriangle(uint v0ToSet, uint v1ToSet, uint v2ToSet)
+		SurfaceTriangle(std::list<SurfaceVertex>::iterator v0ToSet, std::list<SurfaceVertex>::iterator v1ToSet, std::list<SurfaceVertex>::iterator v2ToSet)
 			:v0(v0ToSet)
 			,v1(v1ToSet)
 			,v2(v2ToSet)

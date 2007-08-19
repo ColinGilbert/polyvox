@@ -33,6 +33,10 @@ namespace Ogre
 		Vector3 normal;
 		float alpha;
 
+		SurfaceVertex()
+		{
+		}
+
 		SurfaceVertex(Vector3 positionToSet)
 			:position(positionToSet)
 		{
@@ -50,21 +54,21 @@ namespace Ogre
 			return ((position - rhs).length() < 0.01);
 		}
 
-		/*bool operator < (const Vertex& rhs) const
+		bool operator < (const SurfaceVertex& rhs) const
 		{
-			if(z < rhs.z)
+			if(position.z < rhs.position.z)
 			{
 				return true;
 			}
 			else
 			{
-				if(y < rhs.y)
+				if(position.y < rhs.position.y)
 				{
 					return true;
 				}
 				else
 				{
-					if(x < rhs.x)
+					if(position.x < rhs.position.x)
 					{
 						return true;
 					}
@@ -74,7 +78,7 @@ namespace Ogre
 					}
 				}
 			}
-		}*/
+		}
 	};
 }
 
