@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Ogre
 {
+	class SurfaceTriangle;
+
 	class SurfaceVertex
 	{
 	public:
@@ -33,52 +35,17 @@ namespace Ogre
 		Vector3 normal;
 		float alpha;
 
-		SurfaceVertex()
-		{
-		}
+		std::list<std::list<SurfaceTriangle>::iterator> listTrianglesUsingThisVertex;
 
-		SurfaceVertex(Vector3 positionToSet)
-			:position(positionToSet)
-		{
-		}
+		SurfaceVertex();
 
-		SurfaceVertex(Vector3 positionToSet, Vector3 normalToSet)
-			:position(positionToSet)
-			,normal(normalToSet)
-		{
-		}
+		SurfaceVertex(Vector3 positionToSet);
 
-		bool matchesPosition(const Vector3& rhs) const
-		{
-			//return ((x == rhs.x) && (y == rhs.y) && (z == rhs.z));
-			return ((position - rhs).length() < 0.01);
-		}
+		SurfaceVertex(Vector3 positionToSet, Vector3 normalToSet);
 
-		bool operator < (const SurfaceVertex& rhs) const
-		{
-			if(position.z < rhs.position.z)
-			{
-				return true;
-			}
-			else
-			{
-				if(position.y < rhs.position.y)
-				{
-					return true;
-				}
-				else
-				{
-					if(position.x < rhs.position.x)
-					{
-						return true;
-					}
-					else
-					{
-						return false;
-					}
-				}
-			}
-		}
+		bool operator==(const SurfaceVertex& rhs) const;
+
+		//bool operator < (const SurfaceVertex& rhs) const;
 	};
 }
 

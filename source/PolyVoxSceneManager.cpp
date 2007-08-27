@@ -1000,6 +1000,11 @@ namespace Ogre
 			result.insert(std::make_pair(materialCt, surfacePatch));
 		}*/
 
+		for(std::map<uchar, SurfacePatch>::iterator iterPatch = result.begin(); iterPatch != result.end(); ++iterPatch)
+		{
+			iterPatch->second.endDefinition();
+		}
+
 		return result;
 	}
 

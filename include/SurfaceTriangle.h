@@ -24,10 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgreVector3.h"
 
-#include "SurfaceVertex.h"
-
 namespace Ogre
 {
+	class SurfaceVertex;
+
 	class SurfaceTriangle
 	{
 	public:
@@ -40,16 +40,11 @@ namespace Ogre
 		std::list<SurfaceVertex>::iterator v1;
 		std::list<SurfaceVertex>::iterator v2;
 
-		SurfaceTriangle()
-		{
-		}
+		SurfaceTriangle();
 
-		SurfaceTriangle(std::list<SurfaceVertex>::iterator v0ToSet, std::list<SurfaceVertex>::iterator v1ToSet, std::list<SurfaceVertex>::iterator v2ToSet)
-			:v0(v0ToSet)
-			,v1(v1ToSet)
-			,v2(v2ToSet)
-		{
-		}
+		SurfaceTriangle(std::list<SurfaceVertex>::iterator v0ToSet, std::list<SurfaceVertex>::iterator v1ToSet, std::list<SurfaceVertex>::iterator v2ToSet);
+
+		//bool operator < (const SurfaceTriangle& rhs) const;
 	};
 }
 

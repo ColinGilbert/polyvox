@@ -10,6 +10,8 @@ SET(SRC_FILES
 	source/PolyVoxSceneManager.cpp
         source/SurfacePatch.cpp
         source/SurfacePatchRenderable.cpp
+	source/SurfaceTriangle.cpp
+	source/SurfaceVertex.cpp
 	source/Volume.cpp
 	source/VolumeIterator.cpp
 	source/VolumeManager.cpp
