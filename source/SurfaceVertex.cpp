@@ -20,32 +20,46 @@ namespace Ogre
 	bool SurfaceVertex::operator==(const SurfaceVertex& rhs) const
 	{
 		//We dont't check the normal here as it may not have been set. But if two vertices have the same position they should have the same normal too.
-		return ((position.positionEquals(rhs.position)) && (abs(alpha - rhs.alpha) < 0.01));
+		return
+		(
+			(abs(position.x - rhs.position.x) <= 0.01) && 
+			(abs(position.y - rhs.position.y) <= 0.01) &&
+			(abs(position.z - rhs.position.z) <= 0.01) &&
+			(abs(alpha - rhs.alpha) <= 0.01)
+		);
+
+		/*return
+		(
+			(position.x == rhs.position.x) && 
+			(position.x == rhs.position.y) && 
+			(position.x == rhs.position.z) && 
+			(alpha == rhs.alpha)
+		);*/
 	}
 
-	/*bool SurfaceVertex::operator < (const SurfaceVertex& rhs) const
+	bool SurfaceVertex::operator < (const SurfaceVertex& rhs) const
 	{
-	if(position.z < rhs.position.z)
-	{
-	return true;
+		if((*this) == rhs)
+		{
+			return false;
+		}
+		if(alpha < rhs.alpha)
+		{
+			return true;
+		}
+		if(position.z < rhs.position.z)
+		{
+			return true;
+		}
+		if(position.y < rhs.position.y)
+		{
+			return true;
+		}
+		if(position.x < rhs.position.x)
+		{
+			return true;
+		}
+		
+		return false;
 	}
-	else
-	{
-	if(position.y < rhs.position.y)
-	{
-	return true;
-	}
-	else
-	{
-	if(position.x < rhs.position.x)
-	{
-	return true;
-	}
-	else
-	{
-	return false;
-	}
-	}
-	}
-	}*/
 }

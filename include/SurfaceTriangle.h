@@ -36,13 +36,13 @@ namespace Ogre
 		/*ulong v0;
 		ulong v1;
 		ulong v2;*/
-		std::list<SurfaceVertex>::iterator v0;
-		std::list<SurfaceVertex>::iterator v1;
-		std::list<SurfaceVertex>::iterator v2;
+		std::set<SurfaceVertex>::iterator v0;
+		std::set<SurfaceVertex>::iterator v1;
+		std::set<SurfaceVertex>::iterator v2;
 
 		SurfaceTriangle();
 
-		SurfaceTriangle(std::list<SurfaceVertex>::iterator v0ToSet, std::list<SurfaceVertex>::iterator v1ToSet, std::list<SurfaceVertex>::iterator v2ToSet);
+		SurfaceTriangle(std::set<SurfaceVertex>::iterator v0ToSet, std::set<SurfaceVertex>::iterator v1ToSet, std::set<SurfaceVertex>::iterator v2ToSet);
 
 		//bool operator < (const SurfaceTriangle& rhs) const;
 	};

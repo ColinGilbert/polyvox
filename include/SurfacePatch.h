@@ -15,6 +15,7 @@ namespace Ogre
 	   SurfacePatch();
 	   ~SurfacePatch();
 
+	   void beginDefinition(void);
 	   void endDefinition(void);
 
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);	   
@@ -22,13 +23,14 @@ namespace Ogre
 	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);
 
 	private:
-		std::list<SurfaceVertex> m_listVertices;
+		std::set<SurfaceVertex> m_setVertices;
 		std::list<SurfaceTriangle> m_listTriangles;
 
 		std::vector<SurfaceVertex> m_vecVertexData;
 		std::vector<uint> m_vecIndexData;
 
 		uint m_uTrianglesAdded;
+		uint m_uVerticesAdded;
 	};	
 }
 

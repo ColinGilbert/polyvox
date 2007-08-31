@@ -45,7 +45,7 @@ namespace Ogre
 
 		bool operator==(const SurfaceVertex& rhs) const;
 
-		//bool operator < (const SurfaceVertex& rhs) const;
+		bool operator < (const SurfaceVertex& rhs) const;
 	};
 }
 
