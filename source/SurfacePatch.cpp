@@ -44,6 +44,10 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
+		m_uTrianglesAdded++;
+
+		m_uVerticesAdded += 3;
+
 		/*m_vecVertexData.push_back(v0);
 		m_vecIndexData.push_back(m_vecVertexData.size()-1);
 		m_vecVertexData.push_back(v1);
@@ -51,13 +55,7 @@ namespace Ogre
 		m_vecVertexData.push_back(v2);
 		m_vecIndexData.push_back(m_vecVertexData.size()-1);*/
 
-		m_uTrianglesAdded++;
-
-		m_uVerticesAdded += 3;
-
-		SurfaceTriangle triangle;
-
-		long int index;
+		/*long int index;
 		//If a vertex has not yet been added, it's index is -1
 		index = vertexIndices[(v0.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v0.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v0.position.z)];
 		if((index == -1))
@@ -101,20 +99,19 @@ namespace Ogre
 		{
 			//Just reuse the existing vertex
 			m_vecIndexData.push_back(index);
-		}
+		}*/
 
+		SurfaceTriangle triangle;
 
+		triangle.v0 = m_setVertices.insert(v0).first;		
+		triangle.v1 = m_setVertices.insert(v1).first;
+		triangle.v2 = m_setVertices.insert(v2).first;
 
-
-		/*m_setVertices.insert(v0);		
-		m_setVertices.insert(v1);
-		m_setVertices.insert(v2);
-
-		triangle.v0 = std::find(m_setVertices.begin(), m_setVertices.end(), v0);
+		/*triangle.v0 = std::find(m_setVertices.begin(), m_setVertices.end(), v0);
 		triangle.v1 = std::find(m_setVertices.begin(), m_setVertices.end(), v1);
-		triangle.v2 = std::find(m_setVertices.begin(), m_setVertices.end(), v2);*/			
+		triangle.v2 = std::find(m_setVertices.begin(), m_setVertices.end(), v2);	*/		
 
-		//m_listTriangles.push_back(triangle);
+		m_listTriangles.push_back(triangle);
 
 		/*triangle.v0->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
 		triangle.v1->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
@@ -123,20 +120,21 @@ namespace Ogre
 
 	void SurfacePatch::getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData)
 	{
-		/*vertexData.clear();
-		indexData.clear();*/
+		vertexData.clear();
+		indexData.clear();
 
-		vertexData = m_vecVertexData;
-		indexData = m_vecIndexData;
+		/*vertexData = m_vecVertexData;
+		indexData = m_vecIndexData;*/
 
-		return;
-#ifdef BLAH
+		//return;
 
 		vertexData.resize(m_setVertices.size());
 		std::copy(m_setVertices.begin(), m_setVertices.end(), vertexData.begin());
 
-		sort(vertexData.begin(),vertexData.end());
+		//sort(vertexData.begin(),vertexData.end());
 		//reverse(vertexData.begin(),vertexData.end());
+
+		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
 
 		for(std::list<SurfaceTriangle>::iterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
 		{
@@ -145,7 +143,7 @@ namespace Ogre
 			vertexData.push_back(*(iterTriangles->v1));
 			indexData.push_back(vertexData.size()-1);
 			vertexData.push_back(*(iterTriangles->v2));
-			indexData.push_back(vertexData.size()-1);*/		
+			indexData.push_back(vertexData.size()-1);	*/	
 
 			/*std::set<SurfaceVertex>::iterator iterVertex = m_setVertices.find((*(iterTriangles->v0)));
 			indexData.push_back(iterVertex - m_setVertices.begin());
@@ -163,21 +161,21 @@ namespace Ogre
 				}				
 			}*/
 
-			std::vector<SurfaceVertex>::iterator iterVertex = find(vertexData.begin(), vertexData.end(),(*(iterTriangles->v0)));
+			std::vector<SurfaceVertex>::iterator iterVertex = lower_bound(vertexData.begin(), vertexData.end(),(*(iterTriangles->v0)));
 			if(iterVertex == vertexData.end())
 			{
 				LogManager::getSingleton().logMessage("Vertex 0 Not Found");
 			}
 			indexData.push_back(iterVertex - vertexData.begin());
 
-			iterVertex = find(vertexData.begin(), vertexData.end(),(*(iterTriangles->v1)));
+			iterVertex = lower_bound(vertexData.begin(), vertexData.end(),(*(iterTriangles->v1)));
 			if(iterVertex == vertexData.end())
 			{
 				LogManager::getSingleton().logMessage("Vertex 1 Not Found");
 			}
 			indexData.push_back(iterVertex - vertexData.begin());
 
-			iterVertex = find(vertexData.begin(), vertexData.end(),(*(iterTriangles->v2)));
+			iterVertex = lower_bound(vertexData.begin(), vertexData.end(),(*(iterTriangles->v2)));
 			if(iterVertex == vertexData.end())
 			{
 				LogManager::getSingleton().logMessage("Vertex 2 Not Found");
@@ -202,10 +200,10 @@ namespace Ogre
 				}
 			}*/
 		}
+		//LogManager::getSingleton().logMessage("Out of Loop");
 
 		/*vertexData = m_vecVertexData;
 		indexData = m_vecIndexData;*/
 
-#endif
 	}
 }
