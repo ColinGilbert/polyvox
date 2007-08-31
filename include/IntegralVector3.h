@@ -26,11 +26,18 @@ namespace Ogre
 	template <typename Type> class IntegralVector3
 	{
 	public:
-		IntegralVector3(Type xToSet, Type yToSet, Type zToSet)
+		IntegralVector3()
+			:x(0)
+			,y(0)
+			,z(0)
 		{
-			x = xToSet;
-			y = yToSet;
-			z = zToSet;
+		}
+
+		IntegralVector3(Type xToSet, Type yToSet, Type zToSet)
+			:x(xToSet)
+			,y(yToSet)
+			,z(zToSet)
+		{			
 		}
 
 		bool operator==(const IntegralVector3<Type>& rhs) const throw()
@@ -48,12 +55,24 @@ namespace Ogre
 				return (z < rhs.z);
 			else
 				return false; //They are equal
-		}
+		}		
 
 		Type x;
 		Type y;
 		Type z;
 	};
+
+	template <typename Type>
+	IntegralVector3<Type> operator-(const IntegralVector3<Type>& lhs, const IntegralVector3<Type>& rhs)
+	{
+		IntegralVector3<Type> result;
+
+		result.x = lhs.x - rhs.x;
+		result.y = lhs.y - rhs.y;
+		result.z = lhs.z - rhs.z;
+
+		return result;
+	}
 
 	typedef IntegralVector3<char> CharVector3;
 	typedef IntegralVector3<short> ShortVector3;

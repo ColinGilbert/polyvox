@@ -6,12 +6,12 @@ namespace Ogre
 	{
 	}
 
-	SurfaceVertex::SurfaceVertex(Vector3 positionToSet)
+	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet)
 		:position(positionToSet)
 	{
 	}
 
-	SurfaceVertex::SurfaceVertex(Vector3 positionToSet, Vector3 normalToSet)
+	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet)
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
@@ -20,21 +20,21 @@ namespace Ogre
 	bool SurfaceVertex::operator==(const SurfaceVertex& rhs) const
 	{
 		//We dont't check the normal here as it may not have been set. But if two vertices have the same position they should have the same normal too.
-		return
+		/*return
 		(
 			(abs(position.x - rhs.position.x) <= 0.01) && 
 			(abs(position.y - rhs.position.y) <= 0.01) &&
 			(abs(position.z - rhs.position.z) <= 0.01) &&
 			(abs(alpha - rhs.alpha) <= 0.01)
-		);
+		);*/
 
-		/*return
+		return
 		(
 			(position.x == rhs.position.x) && 
 			(position.x == rhs.position.y) && 
 			(position.x == rhs.position.z) && 
-			(alpha == rhs.alpha)
-		);*/
+			(abs(alpha - rhs.alpha) <= 0.01)
+		);
 	}
 
 	bool SurfaceVertex::operator < (const SurfaceVertex& rhs) const

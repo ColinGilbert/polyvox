@@ -593,9 +593,9 @@ namespace Ogre
 		const uint lastZ = (std::min)(firstZ + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint>(OGRE_VOLUME_SIDE_LENGTH-2));
 
 		//Offset from lower block corner
-		const Vector3 offset(firstX,firstY,firstZ);
+		const UIntVector3 offset(firstX*2,firstY*2,firstZ*2);
 
-		Vector3 vertlist[12];
+		UIntVector3 vertlist[12];
 		uchar vertMaterials[12];
 		VolumeIterator volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
@@ -645,95 +645,95 @@ namespace Ogre
 			/* Find the vertices where the surface intersects the cube */
 			if (edgeTable[iCubeIndex] & 1)
 			{
-				vertlist[0].x = (static_cast<double>(x) + 0.5);
-				vertlist[0].y = (static_cast<double>(y));
-				vertlist[0].z = (static_cast<double>(z));
+				vertlist[0].x = 2*x + 1;
+				vertlist[0].y = 2*y;
+				vertlist[0].z = 2*z;
 				vertMaterials[0] = (std::max)(v000,v100); //FIXME - faster way?
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
-				vertlist[1].x = (static_cast<double>(x + 1));
-				vertlist[1].y = (static_cast<double>(y) + 0.5);
-				vertlist[1].z = (static_cast<double>(z));
+				vertlist[1].x = 2*x + 2;
+				vertlist[1].y = 2*y + 1;
+				vertlist[1].z = 2*z;
 				vertMaterials[1] = (std::max)(v100,v110);
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
-				vertlist[2].x = (static_cast<double>(x) + 0.5);
-				vertlist[2].y = (static_cast<double>(y + 1));
-				vertlist[2].z = (static_cast<double>(z));
+				vertlist[2].x = 2*x + 1;
+				vertlist[2].y = 2*y + 2;
+				vertlist[2].z = 2*z;
 				vertMaterials[2] = (std::max)(v010,v110);
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
-				vertlist[3].x = (static_cast<double>(x));
-				vertlist[3].y = (static_cast<double>(y) + 0.5);
-				vertlist[3].z = (static_cast<double>(z));
+				vertlist[3].x = 2*x;
+				vertlist[3].y = 2*y + 1;
+				vertlist[3].z = 2*z;
 				vertMaterials[3] = (std::max)(v000,v010);
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
-				vertlist[4].x = (static_cast<double>(x) + 0.5);
-				vertlist[4].y = (static_cast<double>(y));
-				vertlist[4].z = (static_cast<double>(z + 1));
+				vertlist[4].x = 2*x + 1;
+				vertlist[4].y = 2*y;
+				vertlist[4].z = 2*z + 2;
 				vertMaterials[4] = (std::max)(v001,v101);
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
-				vertlist[5].x = (static_cast<double>(x + 1));
-				vertlist[5].y = (static_cast<double>(y) + 0.5);
-				vertlist[5].z = (static_cast<double>(z + 1));
+				vertlist[5].x = 2*x + 2;
+				vertlist[5].y = 2*y + 1;
+				vertlist[5].z = 2*z + 2;
 				vertMaterials[5] = (std::max)(v101,v111);
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
-				vertlist[6].x = (static_cast<double>(x) + 0.5);
-				vertlist[6].y = (static_cast<double>(y + 1));
-				vertlist[6].z = (static_cast<double>(z + 1));
+				vertlist[6].x = 2*x + 1;
+				vertlist[6].y = 2*y + 2;
+				vertlist[6].z = 2*z + 2;
 				vertMaterials[6] = (std::max)(v011,v111);
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
-				vertlist[7].x = (static_cast<double>(x));
-				vertlist[7].y = (static_cast<double>(y) + 0.5);
-				vertlist[7].z = (static_cast<double>(z + 1));
+				vertlist[7].x = 2*x;
+				vertlist[7].y = 2*y + 1;
+				vertlist[7].z = 2*z + 2;
 				vertMaterials[7] = (std::max)(v001,v011);
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
-				vertlist[8].x = (static_cast<double>(x));
-				vertlist[8].y = (static_cast<double>(y));
-				vertlist[8].z = (static_cast<double>(z) + 0.5);
+				vertlist[8].x = 2*x;
+				vertlist[8].y = 2*y;
+				vertlist[8].z = 2*z + 1;
 				vertMaterials[8] = (std::max)(v000,v001);
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
-				vertlist[9].x = (static_cast<double>(x + 1));
-				vertlist[9].y = (static_cast<double>(y));
-				vertlist[9].z = (static_cast<double>(z) + 0.5);
+				vertlist[9].x = 2*x + 2;
+				vertlist[9].y = 2*y;
+				vertlist[9].z = 2*z + 1;
 				vertMaterials[9] = (std::max)(v100,v101);
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
-				vertlist[10].x = (static_cast<double>(x + 1));
-				vertlist[10].y = (static_cast<double>(y + 1));
-				vertlist[10].z = (static_cast<double>(z) + 0.5);
+				vertlist[10].x = 2*x + 2;
+				vertlist[10].y = 2*y + 2;
+				vertlist[10].z = 2*z + 1;
 				vertMaterials[10] = (std::max)(v110,v111);
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
-				vertlist[11].x = (static_cast<double>(x));
-				vertlist[11].y = (static_cast<double>(y + 1));
-				vertlist[11].z = (static_cast<double>(z) + 0.5);
+				vertlist[11].x = 2*x;
+				vertlist[11].y = 2*y + 2;
+				vertlist[11].z = 2*z + 1;
 				vertMaterials[11] = (std::max)(v010,v011);
 			}
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 			{
 				//The three vertices forming a triangle
-				const Vector3 vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
-				const Vector3 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
-				const Vector3 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
+				const UIntVector3 vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
+				const UIntVector3 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
+				const UIntVector3 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
 
 				const uchar material0 = vertMaterials[triTable[iCubeIndex][i  ]];
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];

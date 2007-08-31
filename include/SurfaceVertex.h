@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgrePrerequisites.h"
 
 #include "OgreVector3.h"
+#include "IntegralVector3.h"
 
 namespace Ogre
 {
@@ -31,7 +32,7 @@ namespace Ogre
 	class SurfaceVertex
 	{
 	public:
-		Vector3 position;
+		UIntVector3 position;
 		Vector3 normal;
 		float alpha;
 
@@ -39,9 +40,9 @@ namespace Ogre
 
 		SurfaceVertex();
 
-		SurfaceVertex(Vector3 positionToSet);
+		SurfaceVertex(UIntVector3 positionToSet);
 
-		SurfaceVertex(Vector3 positionToSet, Vector3 normalToSet);
+		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);
 
 		bool operator==(const SurfaceVertex& rhs) const;
 

@@ -64,8 +64,14 @@ namespace Ogre
 	   
 	   // Drawing stuff
 	   int size = verticesToSet.size();
-	   Vector3 vaabMin = verticesToSet[0].position;
-	   Vector3 vaabMax = verticesToSet[0].position;
+	   Vector3 vaabMin;
+	   Vector3 vaabMax;
+	   vaabMin.x = verticesToSet[0].position.x/2.0f;
+	   vaabMin.y = verticesToSet[0].position.y/2.0f;
+	   vaabMin.z = verticesToSet[0].position.z/2.0f;
+	   vaabMax.x = verticesToSet[0].position.x/2.0f;
+	   vaabMax.y = verticesToSet[0].position.y/2.0f;
+	   vaabMax.z = verticesToSet[0].position.z/2.0f;
 
 	   //LogManager::getSingleton().logMessage("Setting Vertex Data of size " + StringConverter::toString(size));
 
@@ -73,9 +79,9 @@ namespace Ogre
 
 	   for(int i = 0; i < size; i++)
 	   {
-		  *prPos++ = verticesToSet[i].position.x;
-		  *prPos++ = verticesToSet[i].position.y;
-		  *prPos++ = verticesToSet[i].position.z;
+		  *prPos++ = verticesToSet[i].position.x/2.0f;
+		  *prPos++ = verticesToSet[i].position.y/2.0f;
+		  *prPos++ = verticesToSet[i].position.z/2.0f;
 
 		  *prPos++ = verticesToSet[i].normal.x;
 		  *prPos++ = verticesToSet[i].normal.y;
@@ -99,6 +105,9 @@ namespace Ogre
 	   }
 
 	   vbuf->unlock();
+
+	   vaabMin /= 2.0f;
+	   vaabMax /= 2.0f;
 
 	   mBox.setExtents(vaabMin, vaabMax);
 
