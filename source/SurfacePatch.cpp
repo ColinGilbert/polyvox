@@ -58,23 +58,13 @@ namespace Ogre
 		SurfaceTriangle triangle;
 
 		long int index;
-		unsigned int vertexScaledX;
-		unsigned int vertexScaledY;
-		unsigned int vertexScaledZ;
-
-		vertexScaledX = static_cast<unsigned int>((v0.position.x * 2.0) + 0.5);
-		vertexScaledY = static_cast<unsigned int>((v0.position.y * 2.0) + 0.5);
-		vertexScaledZ = static_cast<unsigned int>((v0.position.z * 2.0) + 0.5);
-		vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-		vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-		vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
 		//If a vertex has not yet been added, it's index is -1
-		index = vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)];
+		index = vertexIndices[(v0.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v0.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v0.position.z)];
 		if((index == -1))
 		{
 			//Add the vertex
 			m_vecVertexData.push_back(v0);
-			vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)] = m_vecVertexData.size()-1;
+			vertexIndices[(v0.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v0.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v0.position.z)] = m_vecVertexData.size()-1;
 			m_vecIndexData.push_back(m_vecVertexData.size()-1);
 		}
 		else
@@ -83,19 +73,13 @@ namespace Ogre
 			m_vecIndexData.push_back(index);
 		}
 
-		vertexScaledX = static_cast<unsigned int>((v1.position.x * 2.0) + 0.5);
-		vertexScaledY = static_cast<unsigned int>((v1.position.y * 2.0) + 0.5);
-		vertexScaledZ = static_cast<unsigned int>((v1.position.z * 2.0) + 0.5);
-		vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-		vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-		vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
 		//If a vertex has not yet been added, it's index is -1
-		index = vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)];
+		index = vertexIndices[(v1.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v1.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v1.position.z)];
 		if((index == -1))
 		{
 			//Add the vertex
 			m_vecVertexData.push_back(v1);
-			vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)] = m_vecVertexData.size()-1;
+			vertexIndices[(v1.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v1.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v1.position.z)] = m_vecVertexData.size()-1;
 			m_vecIndexData.push_back(m_vecVertexData.size()-1);
 		}
 		else
@@ -104,19 +88,13 @@ namespace Ogre
 			m_vecIndexData.push_back(index);
 		}
 
-		vertexScaledX = static_cast<unsigned int>((v2.position.x * 2.0) + 0.5);
-		vertexScaledY = static_cast<unsigned int>((v2.position.y * 2.0) + 0.5);
-		vertexScaledZ = static_cast<unsigned int>((v2.position.z * 2.0) + 0.5);
-		vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-		vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-		vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
 		//If a vertex has not yet been added, it's index is -1
-		index = vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)];
+		index = vertexIndices[(v2.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v2.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v2.position.z)];
 		if((index == -1))
 		{
 			//Add the vertex
 			m_vecVertexData.push_back(v2);
-			vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)] = m_vecVertexData.size()-1;
+			vertexIndices[(v2.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v2.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (v2.position.z)] = m_vecVertexData.size()-1;
 			m_vecIndexData.push_back(m_vecVertexData.size()-1);
 		}
 		else
