@@ -563,10 +563,10 @@ namespace Ogre
 		std::map<uchar, SurfacePatch> result;
 
 		//Used later to check if vertex has already been added
-		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][10];
+		//long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][10];
 		//uchar materialAtPosition[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1]; //FIXME - do we really need this? Can't we just get it from the volume...
 		//bool isVertexSharedBetweenMaterials[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
-		memset(vertexIndices,0xFF,sizeof(vertexIndices)); //0xFF is -1 as two's complement - this may not be portable...
+		//memset(vertexIndices,0xFF,sizeof(vertexIndices)); //0xFF is -1 as two's complement - this may not be portable...
 		//memset(materialAtPosition,0x00,sizeof(materialAtPosition));
 		//memset(isVertexSharedBetweenMaterials,0x00,sizeof(isVertexSharedBetweenMaterials));
 
@@ -1004,6 +1004,8 @@ namespace Ogre
 		{
 			iterPatch->second.endDefinition();
 		}
+
+		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
 
 		return result;
 	}

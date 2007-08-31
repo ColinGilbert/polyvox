@@ -1,4 +1,5 @@
 #include "SurfacePatch.h"
+#include "Constants.h"
 
 #include "OgreLogManager.h"
 #include "OgreStringConverter.h"
@@ -14,14 +15,24 @@ namespace Ogre
 
 		m_uTrianglesAdded = 0;
 		m_uVerticesAdded = 0;
+
+		vertexIndices = 0;
+
+		beginDefinition(); //FIXME - we shouldn't really be calling this from the constructor.
 	}
 
 	SurfacePatch::~SurfacePatch()
-	{
+	{		
 	}
 
 	void SurfacePatch::beginDefinition(void)
 	{
+		vertexIndices = new long int [(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)];
+		memset(vertexIndices,0xFF,sizeof(long int)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)); //0xFF is -1 as two's complement - this may not be portable...
+		/*for(unsigned long ct = 0;ct < (OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1); ct ++)
+		{
+			vertexIndices[ct] = -1;
+		}*/
 	}
 
 	void SurfacePatch::endDefinition(void)
@@ -30,52 +41,106 @@ namespace Ogre
 		//LogManager::getSingleton().logMessage("No of triangles present = " + StringConverter::toString(m_listTriangles.size())); 
 		//LogManager::getSingleton().logMessage("No of vertices added = " + StringConverter::toString(m_uVerticesAdded)); 
 		//LogManager::getSingleton().logMessage("No of vertices present = " + StringConverter::toString(m_setVertices.size())); 
+
+		delete vertexIndices;
+		vertexIndices = 0;
 	}
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
+		/*m_vecVertexData.push_back(v0);
+		m_vecIndexData.push_back(m_vecVertexData.size()-1);
+		m_vecVertexData.push_back(v1);
+		m_vecIndexData.push_back(m_vecVertexData.size()-1);
+		m_vecVertexData.push_back(v2);
+		m_vecIndexData.push_back(m_vecVertexData.size()-1);*/
+
 		m_uTrianglesAdded++;
+
+		m_uVerticesAdded += 3;
 
 		SurfaceTriangle triangle;
 
-		m_setVertices.insert(v0);
-		m_uVerticesAdded++;
+		long int index;
+		unsigned int vertexScaledX;
+		unsigned int vertexScaledY;
+		unsigned int vertexScaledZ;
+
+		vertexScaledX = static_cast<unsigned int>((v0.position.x * 2.0) + 0.5);
+		vertexScaledY = static_cast<unsigned int>((v0.position.y * 2.0) + 0.5);
+		vertexScaledZ = static_cast<unsigned int>((v0.position.z * 2.0) + 0.5);
+		vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
+		vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
+		vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
+		//If a vertex has not yet been added, it's index is -1
+		index = vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)];
+		if((index == -1))
+		{
+			//Add the vertex
+			m_vecVertexData.push_back(v0);
+			vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)] = m_vecVertexData.size()-1;
+			m_vecIndexData.push_back(m_vecVertexData.size()-1);
+		}
+		else
+		{
+			//Just reuse the existing vertex
+			m_vecIndexData.push_back(index);
+		}
+
+		vertexScaledX = static_cast<unsigned int>((v1.position.x * 2.0) + 0.5);
+		vertexScaledY = static_cast<unsigned int>((v1.position.y * 2.0) + 0.5);
+		vertexScaledZ = static_cast<unsigned int>((v1.position.z * 2.0) + 0.5);
+		vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
+		vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
+		vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
+		//If a vertex has not yet been added, it's index is -1
+		index = vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)];
+		if((index == -1))
+		{
+			//Add the vertex
+			m_vecVertexData.push_back(v1);
+			vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)] = m_vecVertexData.size()-1;
+			m_vecIndexData.push_back(m_vecVertexData.size()-1);
+		}
+		else
+		{
+			//Just reuse the existing vertex
+			m_vecIndexData.push_back(index);
+		}
+
+		vertexScaledX = static_cast<unsigned int>((v2.position.x * 2.0) + 0.5);
+		vertexScaledY = static_cast<unsigned int>((v2.position.y * 2.0) + 0.5);
+		vertexScaledZ = static_cast<unsigned int>((v2.position.z * 2.0) + 0.5);
+		vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
+		vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
+		vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
+		//If a vertex has not yet been added, it's index is -1
+		index = vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)];
+		if((index == -1))
+		{
+			//Add the vertex
+			m_vecVertexData.push_back(v2);
+			vertexIndices[(vertexScaledX*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledY*(OGRE_REGION_SIDE_LENGTH*2+1)) + (vertexScaledZ)] = m_vecVertexData.size()-1;
+			m_vecIndexData.push_back(m_vecVertexData.size()-1);
+		}
+		else
+		{
+			//Just reuse the existing vertex
+			m_vecIndexData.push_back(index);
+		}
+
+
+
+
+		/*m_setVertices.insert(v0);		
 		m_setVertices.insert(v1);
-		m_uVerticesAdded++;
 		m_setVertices.insert(v2);
-		m_uVerticesAdded++;
 
 		triangle.v0 = std::find(m_setVertices.begin(), m_setVertices.end(), v0);
 		triangle.v1 = std::find(m_setVertices.begin(), m_setVertices.end(), v1);
-		triangle.v2 = std::find(m_setVertices.begin(), m_setVertices.end(), v2);
-		
-		/*triangle.v0 = std::find(m_listVertices.begin(), m_listVertices.end(), v0);
-		if(triangle.v0 == m_listVertices.end()) //We have to add it
-		{
-			m_listVertices.push_back(v0);
-			triangle.v0 = m_listVertices.end();
-			triangle.v0--;
-		}
+		triangle.v2 = std::find(m_setVertices.begin(), m_setVertices.end(), v2);*/			
 
-		
-		triangle.v1 = std::find(m_listVertices.begin(), m_listVertices.end(), v1);
-		if(triangle.v1 == m_listVertices.end()) //We have to add it
-		{
-			m_listVertices.push_back(v1);
-			triangle.v1 = m_listVertices.end();
-			triangle.v1--;
-		}
-
-		
-		triangle.v2 = std::find(m_listVertices.begin(), m_listVertices.end(), v2);
-		if(triangle.v2 == m_listVertices.end()) //We have to add it
-		{
-			m_listVertices.push_back(v2);
-			triangle.v2 = m_listVertices.end();
-			triangle.v2--;
-		}*/	
-
-		m_listTriangles.push_back(triangle);
+		//m_listTriangles.push_back(triangle);
 
 		/*triangle.v0->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
 		triangle.v1->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
@@ -84,8 +149,14 @@ namespace Ogre
 
 	void SurfacePatch::getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData)
 	{
-		vertexData.clear();
-		indexData.clear();
+		/*vertexData.clear();
+		indexData.clear();*/
+
+		vertexData = m_vecVertexData;
+		indexData = m_vecIndexData;
+
+		return;
+#ifdef BLAH
 
 		vertexData.resize(m_setVertices.size());
 		std::copy(m_setVertices.begin(), m_setVertices.end(), vertexData.begin());
@@ -160,5 +231,7 @@ namespace Ogre
 
 		/*vertexData = m_vecVertexData;
 		indexData = m_vecIndexData;*/
+
+#endif
 	}
 }

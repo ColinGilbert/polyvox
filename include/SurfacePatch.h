@@ -31,6 +31,8 @@ namespace Ogre
 
 		uint m_uTrianglesAdded;
 		uint m_uVerticesAdded;
+
+		long int* vertexIndices;
 	};	
 }
 
