@@ -29,10 +29,6 @@ namespace Ogre
 	{
 		vertexIndices = new long int [(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)];
 		memset(vertexIndices,0xFF,sizeof(long int)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)); //0xFF is -1 as two's complement - this may not be portable...
-		/*for(unsigned long ct = 0;ct < (OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1); ct ++)
-		{
-			vertexIndices[ct] = -1;
-		}*/
 	}
 
 	void SurfacePatch::endDefinition(void)
