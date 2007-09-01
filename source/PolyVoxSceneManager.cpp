@@ -1005,7 +1005,8 @@ namespace Ogre
 
 		for(std::map<uchar, SurfacePatch>::iterator iterPatch = result.begin(); iterPatch != result.end(); ++iterPatch)
 		{
-			iterPatch->second.computeNormalsFromVolume(regionX,regionY,regionZ,volIter);
+			iterPatch->second.m_v3dOffset = offset;
+			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
 		}
 

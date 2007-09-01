@@ -32,7 +32,9 @@ namespace Ogre
 
 	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);
 
-	   void computeNormalsFromVolume(uint regionX, uint regionY, uint regionZ, VolumeIterator volIter);
+	   void computeNormalsFromVolume(VolumeIterator volIter);
+
+	   UIntVector3 m_v3dOffset;
 
 	private:
 		std::set<SurfaceVertex> m_setVertices;
@@ -45,6 +47,8 @@ namespace Ogre
 		uint m_uVerticesAdded;
 
 		long int* vertexIndices;
+
+		//UIntVector3 m_v3dOffset;
 	};	
 }
 

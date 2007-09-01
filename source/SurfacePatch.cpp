@@ -56,19 +56,19 @@ namespace Ogre
 		triangle.v2->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
 	}
 
-	void SurfacePatch::computeNormalsFromVolume(uint regionX, uint regionY, uint regionZ, VolumeIterator volIter)
+	void SurfacePatch::computeNormalsFromVolume(VolumeIterator volIter)
 	{
 		//LogManager::getSingleton().logMessage("In SurfacePatch::computeNormalsFromVolume");
 		for(std::set<SurfaceVertex>::iterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
 		{
 			//LogManager::getSingleton().logMessage("In Loop");
-			const float posX = vertexIter->position.x/2.0f + static_cast<float>(regionX * OGRE_REGION_SIDE_LENGTH);
-			const float posY = vertexIter->position.y/2.0f + static_cast<float>(regionY * OGRE_REGION_SIDE_LENGTH);
-			const float posZ = vertexIter->position.z/2.0f + static_cast<float>(regionZ * OGRE_REGION_SIDE_LENGTH);
+			const float posX = (vertexIter->position.x + m_v3dOffset.x) / 2.0f;
+			const float posY = (vertexIter->position.y + m_v3dOffset.y) / 2.0f;
+			const float posZ = (vertexIter->position.z + m_v3dOffset.z) / 2.0f;
 
-			const uint floorX = static_cast<uint>(vertexIter->position.x/2.0f) + regionX * OGRE_REGION_SIDE_LENGTH;
-			const uint floorY = static_cast<uint>(vertexIter->position.y/2.0f) + regionY * OGRE_REGION_SIDE_LENGTH;
-			const uint floorZ = static_cast<uint>(vertexIter->position.z/2.0f) + regionZ * OGRE_REGION_SIDE_LENGTH;
+			const uint floorX = static_cast<uint>(posX);
+			const uint floorY = static_cast<uint>(posY);
+			const uint floorZ = static_cast<uint>(posZ);
 
 			NormalGenerationMethod normalGenerationMethod = CENTRAL_DIFFERENCE;
 
