@@ -772,21 +772,24 @@ namespace Ogre
 						surfaceVertex0.alpha = 1.0;
 					else
 						surfaceVertex0.alpha = 0.0;
-					surfaceVertex0.normal = Vector3(1.0,1.0,1.0);
+					//surfaceVertex0.normal = Vector3(1.0,1.0,1.0);
+					surfaceVertex0.normal = Vector3(0.0,0.0,0.0);
 
 					SurfaceVertex surfaceVertex1(vertex1);
 					if(material1 == material)
 						surfaceVertex1.alpha = 1.0;
 					else
 						surfaceVertex1.alpha = 0.0;
-					surfaceVertex1.normal = Vector3(1.0,1.0,1.0);
+					//surfaceVertex1.normal = Vector3(1.0,1.0,1.0);
+					surfaceVertex1.normal = Vector3(0.0,0.0,0.0);
 
 					SurfaceVertex surfaceVertex2(vertex2);
 					if(material2 == material)
 						surfaceVertex2.alpha = 1.0;
 					else
 						surfaceVertex2.alpha = 0.0;
-					surfaceVertex2.normal = Vector3(1.0,1.0,1.0);
+					//surfaceVertex2.normal = Vector3(1.0,1.0,1.0);
+					surfaceVertex2.normal = Vector3(0.0,0.0,0.0);
 
 					result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
 
@@ -1002,6 +1005,7 @@ namespace Ogre
 
 		for(std::map<uchar, SurfacePatch>::iterator iterPatch = result.begin(); iterPatch != result.end(); ++iterPatch)
 		{
+			iterPatch->second.computeNormalsFromVolume(regionX,regionY,regionZ,volIter);
 			iterPatch->second.endDefinition();
 		}
 

@@ -7,8 +7,18 @@
 #include "SurfaceVertex.h"
 #include "SurfaceTriangle.h"
 
+#include "VolumeIterator.h"
+
+
 namespace Ogre
 {
+	enum NormalGenerationMethod
+	{
+		SIMPLE,
+		CENTRAL_DIFFERENCE,
+		SOBEL
+	};
+
 	class SurfacePatch
 	{
 	public:
@@ -22,12 +32,14 @@ namespace Ogre
 
 	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);
 
+	   void computeNormalsFromVolume(uint regionX, uint regionY, uint regionZ, VolumeIterator volIter);
+
 	private:
 		std::set<SurfaceVertex> m_setVertices;
 		std::list<SurfaceTriangle> m_listTriangles;
 
-		std::vector<SurfaceVertex> m_vecVertexData;
-		std::vector<uint> m_vecIndexData;
+		//std::vector<SurfaceVertex> m_vecVertexData;
+		//std::vector<uint> m_vecIndexData;
 
 		uint m_uTrianglesAdded;
 		uint m_uVerticesAdded;
