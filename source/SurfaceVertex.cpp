@@ -18,7 +18,7 @@ namespace Ogre
 	{
 	}
 
-	bool SurfaceVertex::operator==(const SurfaceVertex& rhs) const
+	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs)
 	{
 		//We dont't check the normal here as it may not have been set. But if two vertices have the same position they should have the same normal too.
 		/*return
@@ -45,13 +45,13 @@ namespace Ogre
 
 		return value == rhsValue;*/
 
-		unsigned long offset = (position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z);
+		unsigned long lhsOffset = (lhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.z);
 		unsigned long rhsOffset = (rhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.z);
 
-		return offset == rhsOffset;
+		return (lhsOffset == rhsOffset) && (abs(lhs.alpha - rhs.alpha) <= 0.01);
 	}
 
-	bool SurfaceVertex::operator < (const SurfaceVertex& rhs) const
+	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs)
 	{
 		/*if((*this) == rhs)
 		{
@@ -92,9 +92,20 @@ namespace Ogre
 
 		return value < rhsValue;*/
 
-		unsigned long offset = (position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z);
+		unsigned long lhsOffset = (lhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.z);
 		unsigned long rhsOffset = (rhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.z);
 
-		return offset < rhsOffset;
+		return lhsOffset < rhsOffset;
+
+		if(lhsOffset == rhsOffset)
+		{
+			return (lhs.alpha < rhs.alpha);
+		}
+		return (lhsOffset < rhsOffset);
 	}
+
+	/*bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs)
+	{
+		return (*lhs) < (*rhs);
+	}*/
 }

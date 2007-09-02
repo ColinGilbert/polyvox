@@ -26,28 +26,34 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IntegralVector3.h"
 
 namespace Ogre
-{
+{	
+	class SurfaceVertex;
+	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
 	class SurfaceTriangle;
+	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 
 	class SurfaceVertex
 	{
-	public:
+	public:		
 		UIntVector3 position;
 		Vector3 normal;
 		float alpha;
 
-		std::list<std::list<SurfaceTriangle>::iterator> listTrianglesUsingThisVertex;
+		std::list<SurfaceTriangleIterator> listTrianglesUsingThisVertex;
+		std::list<SurfaceVertexIterator> listConnectedVertices;
 
 		SurfaceVertex();
 
 		SurfaceVertex(UIntVector3 positionToSet);
 
-		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);
-
-		bool operator==(const SurfaceVertex& rhs) const;
-
-		bool operator < (const SurfaceVertex& rhs) const;
+		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);		
 	};
+
+	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
+	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
+	
+
+	//bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs);
 }
 
 #endif

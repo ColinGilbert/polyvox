@@ -22,30 +22,32 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgrePrerequisites.h"
 
-#include "OgreVector3.h"
-
 namespace Ogre
 {
 	class SurfaceVertex;
+	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
+	class SurfaceTriangle;
+	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 
 	class SurfaceTriangle
 	{
 	public:
 
-		//FIXME - maybe these should be short?
-		/*ulong v0;
-		ulong v1;
-		ulong v2;*/
-		std::set<SurfaceVertex>::iterator v0;
-		std::set<SurfaceVertex>::iterator v1;
-		std::set<SurfaceVertex>::iterator v2;
+		SurfaceVertexIterator v0;
+		SurfaceVertexIterator v1;
+		SurfaceVertexIterator v2;
 
 		SurfaceTriangle();
 
-		SurfaceTriangle(std::set<SurfaceVertex>::iterator v0ToSet, std::set<SurfaceVertex>::iterator v1ToSet, std::set<SurfaceVertex>::iterator v2ToSet);
-
-		//bool operator < (const SurfaceTriangle& rhs) const;
+		SurfaceTriangle(SurfaceVertexIterator v0ToSet, SurfaceVertexIterator v1ToSet, SurfaceVertexIterator v2ToSet);
 	};
+
+	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
+
+	bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
+	bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
+
+	//bool operator < (const SurfaceTriangleIterator& lhs, const SurfaceTriangleIterator& rhs);
 }
 
 #endif

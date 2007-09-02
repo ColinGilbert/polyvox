@@ -4,8 +4,7 @@
 #include <list>
 #include <vector>
 
-#include "SurfaceVertex.h"
-#include "SurfaceTriangle.h"
+#include "IntegralVector3.h"
 
 #include "VolumeIterator.h"
 
@@ -18,6 +17,11 @@ namespace Ogre
 		CENTRAL_DIFFERENCE,
 		SOBEL
 	};
+
+	class SurfaceVertex;
+	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
+	class SurfaceTriangle;
+	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 
 	class SurfacePatch
 	{
@@ -34,11 +38,15 @@ namespace Ogre
 
 	   void computeNormalsFromVolume(VolumeIterator volIter);
 
+	   void decimate(void);
+
+	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
+
 	   UIntVector3 m_v3dOffset;
 
 	private:
 		std::set<SurfaceVertex> m_setVertices;
-		std::list<SurfaceTriangle> m_listTriangles;
+		std::set<SurfaceTriangle> m_setTriangles;
 
 		//std::vector<SurfaceVertex> m_vecVertexData;
 		//std::vector<uint> m_vecIndexData;

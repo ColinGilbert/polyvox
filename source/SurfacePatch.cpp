@@ -1,6 +1,9 @@
 #include "SurfacePatch.h"
 #include "Constants.h"
 
+#include "SurfaceVertex.h"
+#include "SurfaceTriangle.h"
+
 #include "OgreLogManager.h"
 #include "OgreStringConverter.h"
 
@@ -11,7 +14,7 @@ namespace Ogre
 	SurfacePatch::SurfacePatch()
 	{
 		m_setVertices.clear();
-		m_listTriangles.clear();
+		m_setTriangles.clear();
 
 		m_uTrianglesAdded = 0;
 		m_uVerticesAdded = 0;
@@ -49,17 +52,17 @@ namespace Ogre
 		triangle.v1 = m_setVertices.insert(v1).first;
 		triangle.v2 = m_setVertices.insert(v2).first;	
 
-		m_listTriangles.push_back(triangle);
+		SurfaceTriangleIterator iterTriangle = m_setTriangles.insert(triangle).first;
 
-		triangle.v0->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
-		triangle.v1->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
-		triangle.v2->listTrianglesUsingThisVertex.push_back(m_listTriangles.end());
+		triangle.v0->listTrianglesUsingThisVertex.push_back(iterTriangle);
+		triangle.v1->listTrianglesUsingThisVertex.push_back(iterTriangle);
+		triangle.v2->listTrianglesUsingThisVertex.push_back(iterTriangle);
 	}
 
 	void SurfacePatch::computeNormalsFromVolume(VolumeIterator volIter)
 	{
 		//LogManager::getSingleton().logMessage("In SurfacePatch::computeNormalsFromVolume");
-		for(std::set<SurfaceVertex>::iterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
+		for(SurfaceVertexIterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
 		{
 			//LogManager::getSingleton().logMessage("In Loop");
 			const float posX = (vertexIter->position.x + m_v3dOffset.x) / 2.0f;
@@ -152,7 +155,7 @@ namespace Ogre
 		vertexData.resize(m_setVertices.size());
 		std::copy(m_setVertices.begin(), m_setVertices.end(), vertexData.begin());
 
-		for(std::list<SurfaceTriangle>::iterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
+		for(SurfaceTriangleIterator iterTriangles = m_setTriangles.begin(); iterTriangles != m_setTriangles.end(); ++iterTriangles)
 		{
 			std::vector<SurfaceVertex>::iterator iterVertex;
 
@@ -166,4 +169,90 @@ namespace Ogre
 			indexData.push_back(iterVertex - vertexData.begin());			
 		}
 	}
+
+	void SurfacePatch::decimate(void)
+	{
+		//Build the lists of connected vertices
+		for(SurfaceVertexIterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
+		{
+			for(std::list<SurfaceTriangleIterator>::iterator triangleIter = vertexIter->listTrianglesUsingThisVertex.begin(); triangleIter != vertexIter->listTrianglesUsingThisVertex.end(); ++triangleIter) 
+			{
+				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),(*triangleIter)->v0) == vertexIter->listConnectedVertices.end())
+					vertexIter->listConnectedVertices.push_back((*triangleIter)->v0);
+				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),(*triangleIter)->v1) == vertexIter->listConnectedVertices.end())
+					vertexIter->listConnectedVertices.push_back((*triangleIter)->v1);
+				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),(*triangleIter)->v2) == vertexIter->listConnectedVertices.end())
+					vertexIter->listConnectedVertices.push_back((*triangleIter)->v2);
+			}
+		}
+
+		//do the vertex merging
+		for(SurfaceVertexIterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
+		{
+			if(vertexIter->alpha < 0.9)
+				continue;
+
+			if(true/*verticesArePlanar(vertexIter)*/)
+			{
+				//Find a vertex to merge with
+				SurfaceVertexIterator vertexToMergeWith = (*(vertexIter->listTrianglesUsingThisVertex.begin()))->v0;
+				if(vertexIter == vertexToMergeWith)
+				{
+					vertexToMergeWith = (*(vertexIter->listTrianglesUsingThisVertex.begin()))->v1;
+				}
+
+				//Change triangles to use new vertex
+				for(SurfaceTriangleIterator iterTriangles = m_setTriangles.begin(); iterTriangles != m_setTriangles.end(); ++iterTriangles)
+				{
+					if(iterTriangles->v0 == vertexIter)
+						iterTriangles->v0 = vertexToMergeWith;
+					if(iterTriangles->v1 == vertexIter)
+						iterTriangles->v1 = vertexToMergeWith;
+					if(iterTriangles->v2 == vertexIter)
+						iterTriangles->v2 = vertexToMergeWith;
+				}
+
+				//Change connected vertices to use new vertex
+			}
+		}
+	}
+
+	/*bool SurfacePatch::verticesArePlanar(SurfaceVertexIterator iterCurrentVertex)
+	{
+		//FIXME - specially handle the case where they are all the same.
+		//This is happening a lot after many vertices have been moved round?
+		bool allXMatch = true;
+		bool allYMatch = true;
+		bool allZMatch = true;
+		bool allNormalsMatch = true;
+
+		//FIXME - reorder come of these tests based on likelyness to fail?
+
+		//std::set<uint>::iterator iterConnectedVertices;
+
+		std::list<SurfaceVertexIterator> listConnectedVertices = iterCurrentVertex->listConnectedVertices;
+		std::list<SurfaceVertexIterator>::iterator iterConnectedVertices;
+		for(iterConnectedVertices = listConnectedVertices.begin(); iterConnectedVertices != listConnectedVertices.end(); ++iterConnectedVertices)
+		{
+			if(iterCurrentVertex->position.x != (*iterConnectedVertices)->position.x)
+			{
+				allXMatch = false;
+			}
+			if(iterCurrentVertex->position.y != (*iterConnectedVertices)->position.y)
+			{
+				allYMatch = false;
+			}
+			if(iterCurrentVertex->position.z != (*iterConnectedVertices)->position.z)
+			{
+				allZMatch = false;
+			}
+			//FIXME - are these already normalised? We should make sure they are...
+			if(iterCurrentVertex->normal.normalisedCopy().dotProduct((*iterConnectedVertices)->normal.normalisedCopy()) < 0.99)
+			{
+				return false;				
+			}
+		}
+
+		return allXMatch || allYMatch || allZMatch;
+	}*/
 }

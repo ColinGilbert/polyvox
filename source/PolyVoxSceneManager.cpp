@@ -1008,6 +1008,7 @@ namespace Ogre
 			iterPatch->second.m_v3dOffset = offset;
 			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
+			//iterPatch->second.decimate();
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
@@ -1132,6 +1133,7 @@ namespace Ogre
 	}
 
 #endif
+
 
 	bool PolyVoxSceneManager::verticesArePlanar3(uint uCurrentVertex, std::set<uint> setConnectedVertices, std::vector<SurfaceVertex>& vertexData) const
 	{
