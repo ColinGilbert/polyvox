@@ -172,47 +172,75 @@ namespace Ogre
 
 	void SurfacePatch::decimate(void)
 	{
+		LogManager::getSingleton().logMessage("Vertices before decimation = " + StringConverter::toString(m_setVertices.size()));
+		LogManager::getSingleton().logMessage("Triangles before decimation = " + StringConverter::toString(m_setTriangles.size())); 		
+
 		//Build the lists of connected vertices
 		for(SurfaceVertexIterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
 		{
+			vertexIter->listConnectedVertices.clear();
+
 			for(std::list<SurfaceTriangleIterator>::iterator triangleIter = vertexIter->listTrianglesUsingThisVertex.begin(); triangleIter != vertexIter->listTrianglesUsingThisVertex.end(); ++triangleIter) 
 			{
-				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),(*triangleIter)->v0) == vertexIter->listConnectedVertices.end())
-					vertexIter->listConnectedVertices.push_back((*triangleIter)->v0);
-				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),(*triangleIter)->v1) == vertexIter->listConnectedVertices.end())
-					vertexIter->listConnectedVertices.push_back((*triangleIter)->v1);
-				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),(*triangleIter)->v2) == vertexIter->listConnectedVertices.end())
-					vertexIter->listConnectedVertices.push_back((*triangleIter)->v2);
+				SurfaceVertexIterator connectedVertex;
+
+				connectedVertex = (*triangleIter)->v0;
+				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),connectedVertex) == vertexIter->listConnectedVertices.end())
+					vertexIter->listConnectedVertices.push_back(connectedVertex);
+
+				connectedVertex = (*triangleIter)->v1;
+				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),connectedVertex) == vertexIter->listConnectedVertices.end())
+					vertexIter->listConnectedVertices.push_back(connectedVertex);
+
+				connectedVertex = (*triangleIter)->v2;
+				if(find(vertexIter->listConnectedVertices.begin(),vertexIter->listConnectedVertices.end(),connectedVertex) == vertexIter->listConnectedVertices.end())
+					vertexIter->listConnectedVertices.push_back(connectedVertex);
 			}
+
+			//Remove self from own connected vertex list
+			vertexIter->listConnectedVertices.remove(vertexIter);
 		}
 
 		//do the vertex merging
 		for(SurfaceVertexIterator vertexIter = m_setVertices.begin(); vertexIter != m_setVertices.end(); ++vertexIter)
 		{
-			if(vertexIter->alpha < 0.9)
+			//LogManager::getSingleton().logMessage("Vertex Pos = " + StringConverter::toString(vertexIter->position.x) + "," + StringConverter::toString(vertexIter->position.y) + "," + StringConverter::toString(vertexIter->position.z) + " No of connected vertices = " + StringConverter::toString(vertexIter->listConnectedVertices.size()));
+			/*if(vertexIter->alpha < 0.9)
+				continue;*/
+			if(vertexIter->listConnectedVertices.size() != 6)
+			{
+				//LogManager::getSingleton().logMessage("Skipping edge/corner vertex");
 				continue;
+			}
 
 			if(true/*verticesArePlanar(vertexIter)*/)
 			{
 				//Find a vertex to merge with
-				SurfaceVertexIterator vertexToMergeWith = (*(vertexIter->listTrianglesUsingThisVertex.begin()))->v0;
-				if(vertexIter == vertexToMergeWith)
-				{
-					vertexToMergeWith = (*(vertexIter->listTrianglesUsingThisVertex.begin()))->v1;
-				}
+				std::list<SurfaceVertexIterator>::iterator vertexToMergeWith = vertexIter->listConnectedVertices.begin();
 
 				//Change triangles to use new vertex
 				for(SurfaceTriangleIterator iterTriangles = m_setTriangles.begin(); iterTriangles != m_setTriangles.end(); ++iterTriangles)
 				{
 					if(iterTriangles->v0 == vertexIter)
-						iterTriangles->v0 = vertexToMergeWith;
+						iterTriangles->v0 = *vertexToMergeWith;
 					if(iterTriangles->v1 == vertexIter)
-						iterTriangles->v1 = vertexToMergeWith;
+						iterTriangles->v1 = *vertexToMergeWith;
 					if(iterTriangles->v2 == vertexIter)
-						iterTriangles->v2 = vertexToMergeWith;
+						iterTriangles->v2 = *vertexToMergeWith;
 				}
 
 				//Change connected vertices to use new vertex
+				for(std::list<SurfaceVertexIterator>::iterator connectedVertex = vertexIter->listConnectedVertices.begin(); connectedVertex != vertexIter->listConnectedVertices.end(); ++connectedVertex)
+				{
+					for(std::list<SurfaceVertexIterator>::iterator secondLevelConnected = (*connectedVertex)->listConnectedVertices.begin(); secondLevelConnected != (*connectedVertex)->listConnectedVertices.end(); ++secondLevelConnected)
+					{
+						if((*secondLevelConnected) == vertexIter)
+							(*secondLevelConnected) = *vertexToMergeWith;
+					}
+				}
+
+				//Now remove the vertex as nothing should point to it.
+				//m_setVertices.erase(vertexIter);
 			}
 		}
 	}
