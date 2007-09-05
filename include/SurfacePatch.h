@@ -19,9 +19,11 @@ namespace Ogre
 	};
 
 	class SurfaceVertex;
-	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
+	typedef std::list<SurfaceVertex>::iterator SurfaceVertexIterator;
 	class SurfaceTriangle;
-	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
+	typedef std::list<SurfaceTriangle>::iterator SurfaceTriangleIterator;
+	class SurfaceEdge;
+	typedef std::list<SurfaceEdge>::iterator SurfaceEdgeIterator;
 
 	class SurfacePatch
 	{
@@ -38,15 +40,16 @@ namespace Ogre
 
 	   void computeNormalsFromVolume(VolumeIterator volIter);
 
-	   void decimate(void);
+	   //void decimate(void);
 
 	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
 
 	   UIntVector3 m_v3dOffset;
 
 	private:
-		std::set<SurfaceVertex> m_setVertices;
-		std::set<SurfaceTriangle> m_setTriangles;
+		std::list<SurfaceVertex> m_listVertices;
+		std::list<SurfaceTriangle> m_listTriangles;
+		std::list<SurfaceEdge> m_listEdges;
 
 		//std::vector<SurfaceVertex> m_vecVertexData;
 		//std::vector<uint> m_vecIndexData;

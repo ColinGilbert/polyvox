@@ -1,5 +1,7 @@
 #include "Constants.h"
 #include "SurfaceVertex.h"
+#include "SurfaceTriangle.h"
+#include "SurfaceEdge.h"
 
 namespace Ogre
 {
@@ -10,12 +12,30 @@ namespace Ogre
 	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet)
 		:position(positionToSet)
 	{
+		flags = 0;
+		if(position.x == 0)
+			flags |= 0x01;
+		if(position.x == 32)
+			flags |= 0x02;
+		if(position.y == 0)
+			flags |= 0x04;
+		if(position.y == 32)
+			flags |= 0x08;
 	}
 
 	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet)
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
+		flags = 0;
+		if(position.x == 0)
+			flags |= 0x01;
+		if(position.x == 32)
+			flags |= 0x02;
+		if(position.y == 0)
+			flags |= 0x04;
+		if(position.y == 32)
+			flags |= 0x08;
 	}
 
 	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs)
@@ -48,7 +68,7 @@ namespace Ogre
 		unsigned long lhsOffset = (lhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.z);
 		unsigned long rhsOffset = (rhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.z);
 
-		return (lhsOffset == rhsOffset) && (abs(lhs.alpha - rhs.alpha) <= 0.01);
+		return (lhsOffset == rhsOffset) /*&& (abs(lhs.alpha - rhs.alpha) <= 0.01)*/;
 	}
 
 	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs)
@@ -97,15 +117,10 @@ namespace Ogre
 
 		return lhsOffset < rhsOffset;
 
-		if(lhsOffset == rhsOffset)
+		/*if(lhsOffset == rhsOffset)
 		{
 			return (lhs.alpha < rhs.alpha);
 		}
-		return (lhsOffset < rhsOffset);
+		return (lhsOffset < rhsOffset)*/;
 	}
-
-	/*bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs)
-	{
-		return (*lhs) < (*rhs);
-	}*/
 }

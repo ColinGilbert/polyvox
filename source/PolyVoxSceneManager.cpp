@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MarchingCubesTables.h"
 #include "MaterialMapManager.h"
 #include "SurfaceVertex.h"
+#include "SurfaceEdge.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
 #include "VolumeManager.h"
@@ -323,10 +324,10 @@ namespace Ogre
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 			{		
 				//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
-				for(uint regionY = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
+				for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 				{
 					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
-					for(uint regionX = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
+					for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 					{
 						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
@@ -1008,7 +1009,7 @@ namespace Ogre
 			iterPatch->second.m_v3dOffset = offset;
 			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
-			iterPatch->second.decimate();
+			//iterPatch->second.decimate();
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");

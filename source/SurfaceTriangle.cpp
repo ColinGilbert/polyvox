@@ -1,5 +1,6 @@
 #include "SurfaceTriangle.h"
 #include "SurfaceVertex.h"
+#include "SurfaceEdge.h"
 
 namespace Ogre
 {
@@ -7,26 +8,21 @@ namespace Ogre
 	{
 	}
 
-	SurfaceTriangle::SurfaceTriangle(SurfaceVertexIterator v0ToSet, SurfaceVertexIterator v1ToSet, SurfaceVertexIterator v2ToSet)
-		:v0(v0ToSet)
-		,v1(v1ToSet)
-		,v2(v2ToSet)
-	{
-	}
-
 	bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs)
 		{
-			return
+			/*return
 			(
 				(lhs.v0 == rhs.v0) &&
 				(lhs.v1 == rhs.v1) &&
 				(lhs.v2 == rhs.v2)
-			);
+			);*/
+
+			return lhs.edge == rhs.edge;
 		}
 
 		bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs)
 		{
-			if(lhs.v0 == rhs.v0)
+			/*if(lhs.v0 == rhs.v0)
 			{
 				if(lhs.v1 == rhs.v1)
 				{
@@ -38,7 +34,9 @@ namespace Ogre
 				}
 				return (*(lhs.v1) < *(rhs.v1));
 			}
-			return (*(lhs.v0) < *(rhs.v0));
+			return (*(lhs.v0) < *(rhs.v0));*/
+
+			return (*lhs.edge < *rhs.edge);
 		}
 
 		/*bool operator < (const SurfaceTriangleIterator& lhs, const SurfaceTriangleIterator& rhs)

@@ -8,6 +8,7 @@ SET(SRC_FILES
 	source/MaterialMapManager.cpp
 	source/MaterialMapSerializer.cpp
 	source/PolyVoxSceneManager.cpp
+        source/SurfaceEdge.cpp
         source/SurfacePatch.cpp
         source/SurfacePatchRenderable.cpp
 	source/SurfaceTriangle.cpp
