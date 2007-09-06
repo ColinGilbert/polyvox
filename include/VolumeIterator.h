@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgrePrerequisites.h"
 #include "OgreSharedPtr.h"
 
-#include "Typedef.h"
+#include "TypeDef.h"
 
 namespace Ogre
 {
