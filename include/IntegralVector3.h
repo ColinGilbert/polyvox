@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __IntegralVector3_H__
 
 #include <OgrePrerequisites.h>
+#include <OgreVector3.h>
 
 namespace Ogre
 {
@@ -55,7 +56,12 @@ namespace Ogre
 				return (z < rhs.z);
 			else
 				return false; //They are equal
-		}		
+		}
+
+		Vector3 toOgreVector3(void)
+		{
+			return Vector3(Real(x), Real(y), Real(z));
+		}
 
 		Type x;
 		Type y;

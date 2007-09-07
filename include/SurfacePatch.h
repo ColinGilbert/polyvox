@@ -40,7 +40,9 @@ namespace Ogre
 
 	   void computeNormalsFromVolume(VolumeIterator volIter);
 
-	   //void decimate(void);
+	   void computeOtherHalfEdges(void);
+
+	   bool decimate(void);
 
 	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
 

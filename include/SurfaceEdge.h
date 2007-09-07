@@ -39,11 +39,18 @@ namespace Ogre
 
 		SurfaceTriangleIterator triangle;
 
+		SurfaceEdgeIterator previousHalfEdge;
+
 		SurfaceEdgeIterator nextHalfEdge;
 
 		SurfaceEdgeIterator otherHalfEdge;
 
+		//FIXME - could use boost::optional for this?
+		bool hasOtherHalfEdge;
+
 		SurfaceEdge();
+
+		std::string toString(void);
 	};
 
 	bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);

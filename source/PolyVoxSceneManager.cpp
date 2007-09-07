@@ -1009,7 +1009,12 @@ namespace Ogre
 			iterPatch->second.m_v3dOffset = offset;
 			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
-			//iterPatch->second.decimate();
+			bool removedVertex = false;
+			do
+			{
+				removedVertex = iterPatch->second.decimate();
+			}
+			while(removedVertex);
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");

@@ -48,7 +48,9 @@ namespace Ogre
 
 		SurfaceVertex(UIntVector3 positionToSet);
 
-		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);		
+		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);	
+
+		std::string toString(void);
 	};
 
 	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);

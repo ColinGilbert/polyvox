@@ -38,6 +38,8 @@ namespace Ogre
 		SurfaceEdgeIterator edge;
 
 		SurfaceTriangle();
+
+		//std::string toString(void);
 	};
 
 	bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);

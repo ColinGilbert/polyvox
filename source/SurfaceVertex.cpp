@@ -38,6 +38,13 @@ namespace Ogre
 			flags |= 0x08;
 	}
 
+	std::string SurfaceVertex::toString(void)
+	{
+		std::stringstream ss;
+		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Flags = " << int(flags);
+		return ss.str();
+	}
+
 	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs)
 	{
 		//We dont't check the normal here as it may not have been set. But if two vertices have the same position they should have the same normal too.
@@ -122,5 +129,5 @@ namespace Ogre
 			return (lhs.alpha < rhs.alpha);
 		}
 		return (lhsOffset < rhsOffset)*/;
-	}
+	}	
 }

@@ -40,10 +40,38 @@ namespace Ogre
 		//LogManager::getSingleton().logMessage("No of triangles present = " + StringConverter::toString(m_listTriangles.size())); 
 		//LogManager::getSingleton().logMessage("No of vertices added = " + StringConverter::toString(m_uVerticesAdded)); 
 		//LogManager::getSingleton().logMessage("No of vertices present = " + StringConverter::toString(m_setVertices.size())); 
+
+		/*m_listVertices.clear();
+		m_listTriangles.clear();
+		m_listEdges.clear();*/
+
+		//addTriangle(SurfaceVertex(UIntVector3(40 ,40 ,15)),SurfaceVertex(UIntVector3(42 ,42 ,15)),SurfaceVertex(UIntVector3(40 ,42 ,15)));
+		//addTriangle(SurfaceVertex(UIntVector3(40 ,40 ,15)),SurfaceVertex(UIntVector3(42 ,42 ,15)),SurfaceVertex(UIntVector3(42 ,40 ,15)));
+
+		computeOtherHalfEdges();
+
+		/*for(SurfaceTriangleIterator triangleIter = m_listTriangles.begin(); triangleIter != m_listTriangles.end(); triangleIter++)
+		{
+			LogManager::getSingleton().logMessage(triangleIter->toString());
+		}*/
 	}
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
+		/*if(v0.position.x > 16)
+			return;
+		if(v0.position.y > 16)
+			return;
+		if(v1.position.x > 16)
+			return;
+		if(v1.position.y > 16)
+			return;
+		if(v2.position.x > 16)
+			return;
+		if(v2.position.y > 16)
+			return;*/
+
+
 		//if(m_uTrianglesAdded > 1) return;
 		//LogManager::getSingleton().logMessage("Adding Triangle " + StringConverter::toString(m_uTrianglesAdded));
 		m_uTrianglesAdded++;
@@ -108,6 +136,10 @@ namespace Ogre
 		v0v1Iter->nextHalfEdge = v1v2Iter;
 		v1v2Iter->nextHalfEdge = v2v0Iter;
 		v2v0Iter->nextHalfEdge = v0v1Iter;
+
+		v0v1Iter->previousHalfEdge = v2v0Iter;
+		v1v2Iter->previousHalfEdge = v0v1Iter;
+		v2v0Iter->previousHalfEdge = v1v2Iter;
 
 		SurfaceTriangle triangle;
 
@@ -218,16 +250,16 @@ namespace Ogre
 		vertexData.resize(m_listVertices.size());
 		std::copy(m_listVertices.begin(), m_listVertices.end(), vertexData.begin());
 
-		/*LogManager::getSingleton().logMessage("----------Vertex Data----------");
+		LogManager::getSingleton().logMessage("----------Vertex Data----------");
 		for(std::vector<SurfaceVertex>::iterator vertexIter = vertexData.begin(); vertexIter != vertexData.end(); ++vertexIter)
 		{
 			LogManager::getSingleton().logMessage(StringConverter::toString(vertexIter->position.x) + "," + StringConverter::toString(vertexIter->position.y) + "," + StringConverter::toString(vertexIter->position.z));
 		}
-		LogManager::getSingleton().logMessage("----------End Vertex Data----------");*/
+		LogManager::getSingleton().logMessage("----------End Vertex Data----------");
 
 		for(SurfaceTriangleIterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
 		{		
-			//LogManager::getSingleton().logMessage("Begin Triangle:");
+			LogManager::getSingleton().logMessage("Begin Triangle:");
 			std::vector<SurfaceVertex>::iterator iterVertex;
 			SurfaceEdgeIterator edgeIter;
 			
@@ -239,15 +271,43 @@ namespace Ogre
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
-			//LogManager::getSingleton().logMessage("End Triangle");
+			LogManager::getSingleton().logMessage("End Triangle");
+		}
+	}
+
+	void SurfacePatch::computeOtherHalfEdges(void)
+	{
+		//Clear all other edges
+		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
+		{
+			edgeIter->otherHalfEdge = m_listEdges.end();
+			edgeIter->hasOtherHalfEdge = false;
+		}
+
+		//FIXME - speed this up by storing edges in a container which sorts by edge 'target'.
+
+		//Assign all other edges
+		for(SurfaceEdgeIterator outerEdgeIter = m_listEdges.begin(); outerEdgeIter != m_listEdges.end(); ++outerEdgeIter)
+		{
+			for(SurfaceEdgeIterator innerEdgeIter = m_listEdges.begin(); innerEdgeIter != m_listEdges.end(); ++innerEdgeIter)
+			{
+				if((innerEdgeIter->target == outerEdgeIter->previousHalfEdge->target) && (outerEdgeIter->target == innerEdgeIter->previousHalfEdge->target))
+				{
+					innerEdgeIter->otherHalfEdge = outerEdgeIter;
+					outerEdgeIter->otherHalfEdge = innerEdgeIter;
+
+					innerEdgeIter->hasOtherHalfEdge = true;
+					outerEdgeIter->hasOtherHalfEdge = true;
+				}
+			}
 		}
 	}
 
@@ -273,6 +333,98 @@ namespace Ogre
 			indexData.push_back(iterVertex - vertexData.begin());			
 		}
 	}*/
+
+	bool SurfacePatch::decimate(void)
+	{
+		bool removedEdge = false;
+		//LogManager::getSingleton().logMessage("Performing decimation");
+		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
+
+		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
+		{						
+			//LogManager::getSingleton().logMessage("Examining Edge " + edgeIter->toString());
+
+			SurfaceVertexIterator targetVertexIter = edgeIter->target;
+			SurfaceVertexIterator otherVertexIter = edgeIter->nextHalfEdge->nextHalfEdge->target;
+
+			//LogManager::getSingleton().logMessage("Target Vertex = " + targetVertexIter->toString());
+			//LogManager::getSingleton().logMessage("Other  Vertex = " + otherVertexIter->toString());
+
+			if((targetVertexIter->flags == 0) /*&& (otherVertexIter->flags == 0)*/)
+			{
+				//LogManager::getSingleton().logMessage("    Collapsing Edge");
+				for(SurfaceEdgeIterator innerEdgeIter = m_listEdges.begin(); innerEdgeIter != m_listEdges.end(); ++innerEdgeIter)
+				{
+					if(innerEdgeIter->target == targetVertexIter)
+					{
+						//LogManager::getSingleton().logMessage("    Reset Edge Target");
+						innerEdgeIter->target = otherVertexIter;
+					}
+				}
+				
+				if(edgeIter->hasOtherHalfEdge)
+				{
+					//LogManager::getSingleton().logMessage("    Has Other Edge");
+					SurfaceEdgeIterator otherEdgeIter = edgeIter->otherHalfEdge;
+
+					//LogManager::getSingleton().logMessage("    Removing Other Edges");
+					SurfaceTriangleIterator otherTriangleIter = otherEdgeIter->triangle;
+					SurfaceEdgeIterator currentIter = otherTriangleIter->edge;
+					for(uint ct = 0; ct < 3; ++ct)
+					{
+						SurfaceEdgeIterator previousIter = currentIter;
+						currentIter = currentIter->nextHalfEdge;
+
+						if(previousIter->hasOtherHalfEdge)
+						{
+							previousIter->otherHalfEdge->hasOtherHalfEdge = false;
+						}
+						m_listEdges.erase(previousIter);
+					}
+					//LogManager::getSingleton().logMessage("    Removing Other Triangle");
+					m_listTriangles.erase(otherTriangleIter);
+				}
+				else
+				{
+					//LogManager::getSingleton().logMessage("    Does Not Have Other Edge");
+				}
+
+				//LogManager::getSingleton().logMessage("    Removing Edges");
+				SurfaceTriangleIterator triangleIter = edgeIter->triangle;
+				SurfaceEdgeIterator currentIter = triangleIter->edge;
+				for(uint ct = 0; ct < 3; ++ct)
+				{
+					SurfaceEdgeIterator previousIter = currentIter;
+					currentIter = currentIter->nextHalfEdge;
+
+					if(previousIter->hasOtherHalfEdge)
+					{
+						previousIter->otherHalfEdge->hasOtherHalfEdge = false;
+					}
+					m_listEdges.erase(previousIter);
+				}
+				//LogManager::getSingleton().logMessage("    Removing Triangle");
+				m_listTriangles.erase(triangleIter);
+
+				//LogManager::getSingleton().logMessage("    Removing Vertex");
+				m_listVertices.erase(targetVertexIter);
+
+				removedEdge = true;
+
+				break;
+			}
+			else
+			{
+				//LogManager::getSingleton().logMessage("    Not Collapsing Edge");
+				//LogManager::getSingleton().logMessage("Edge Target Vertex = " + StringConverter::toString(edgeIter->target->position.toOgreVector3()));
+				//LogManager::getSingleton().logMessage("Other Edge Non-Existant");
+			}
+		}
+		//LogManager::getSingleton().logMessage("Done decimation");
+		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
+
+		return removedEdge;
+	}
 
 #ifdef BLAH
 
