@@ -42,7 +42,15 @@ namespace Ogre
 
 	   void computeOtherHalfEdges(void);
 
+#ifdef BLAH
 	   bool decimate(void);
+	   bool canCollapseEdge(SurfaceVertex target, SurfaceVertex other);
+	   void collapseEdge(SurfaceEdgeIterator edgeIter);
+#endif
+
+	   bool decimate2(void);
+	   bool canCollapseEdge2(SurfaceVertex target, SurfaceVertex other);
+	   void collapseEdge2(SurfaceEdgeIterator edgeIter);
 
 	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
 
