@@ -323,7 +323,7 @@ namespace Ogre
 			//Regenerate meshes.
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 			{		
-				//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
+				LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
 				for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 				{
 					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
@@ -1011,9 +1011,9 @@ namespace Ogre
 			iterPatch->second.endDefinition();
 			bool removedVertex = false;
 			//do
-			//{
-				removedVertex = iterPatch->second.decimate2();
-			//}
+			{
+				//removedVertex = iterPatch->second.decimate3();
+			}
 			//while(removedVertex);
 		}
 

@@ -41,6 +41,9 @@ namespace Ogre
 		Vector3 normal;
 		float alpha;
 		uchar flags;
+		uchar noOfUses;
+
+		bool fixed;
 
 		SurfaceEdgeIterator edge;
 

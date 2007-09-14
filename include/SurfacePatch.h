@@ -48,9 +48,16 @@ namespace Ogre
 	   void collapseEdge(SurfaceEdgeIterator edgeIter);
 #endif
 
+#ifdef BLAH2
 	   bool decimate2(void);
 	   bool canCollapseEdge2(SurfaceVertex target, SurfaceVertex other);
 	   void collapseEdge2(SurfaceEdgeIterator edgeIter);
+	   bool matchesAll(uchar target, uchar other);
+#endif
+
+#ifdef BLAH3
+	   bool decimate3(void);
+#endif
 
 	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
 

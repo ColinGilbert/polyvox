@@ -41,19 +41,8 @@ namespace Ogre
 		//LogManager::getSingleton().logMessage("No of vertices added = " + StringConverter::toString(m_uVerticesAdded)); 
 		//LogManager::getSingleton().logMessage("No of vertices present = " + StringConverter::toString(m_setVertices.size())); 
 
-		/*m_listVertices.clear();
-		m_listTriangles.clear();
-		m_listEdges.clear();*/
+		//computeOtherHalfEdges();
 
-		//addTriangle(SurfaceVertex(UIntVector3(40 ,40 ,15)),SurfaceVertex(UIntVector3(42 ,42 ,15)),SurfaceVertex(UIntVector3(40 ,42 ,15)));
-		//addTriangle(SurfaceVertex(UIntVector3(40 ,40 ,15)),SurfaceVertex(UIntVector3(42 ,42 ,15)),SurfaceVertex(UIntVector3(42 ,40 ,15)));
-
-		computeOtherHalfEdges();
-
-		/*for(SurfaceTriangleIterator triangleIter = m_listTriangles.begin(); triangleIter != m_listTriangles.end(); triangleIter++)
-		{
-			LogManager::getSingleton().logMessage(triangleIter->toString());
-		}*/
 	}
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
@@ -108,6 +97,11 @@ namespace Ogre
 			v2Iter = m_listVertices.end();
 			v2Iter--;
 		}
+
+		v0Iter->noOfUses++;
+		v1Iter->noOfUses++;
+		v2Iter->noOfUses++;
+
 		//else
 			//LogManager::getSingleton().logMessage("Already Exists " + StringConverter::toString(v2.position.x) + "," + StringConverter::toString(v2.position.y) + "," + StringConverter::toString(v2.position.z));
 
@@ -250,36 +244,36 @@ namespace Ogre
 		vertexData.resize(m_listVertices.size());
 		std::copy(m_listVertices.begin(), m_listVertices.end(), vertexData.begin());
 
-		LogManager::getSingleton().logMessage("----------Vertex Data----------");
+		/*LogManager::getSingleton().logMessage("----------Vertex Data----------");
 		for(std::vector<SurfaceVertex>::iterator vertexIter = vertexData.begin(); vertexIter != vertexData.end(); ++vertexIter)
 		{
 			LogManager::getSingleton().logMessage(StringConverter::toString(vertexIter->position.x) + "," + StringConverter::toString(vertexIter->position.y) + "," + StringConverter::toString(vertexIter->position.z));
 		}
-		LogManager::getSingleton().logMessage("----------End Vertex Data----------");
+		LogManager::getSingleton().logMessage("----------End Vertex Data----------");*/
 
 		for(SurfaceTriangleIterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
 		{		
-			LogManager::getSingleton().logMessage("Begin Triangle:");
+			//LogManager::getSingleton().logMessage("Begin Triangle:");
 			std::vector<SurfaceVertex>::iterator iterVertex;
 			SurfaceEdgeIterator edgeIter;
 			
 			edgeIter = iterTriangles->edge;
 			//LogManager::getSingleton().logMessage("Edge Target " + StringConverter::toString(edgeIter->target->position.x) + "," + StringConverter::toString(edgeIter->target->position.y) + "," + StringConverter::toString(edgeIter->target->position.z));
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
-			LogManager::getSingleton().logMessage("End Triangle");
+			//LogManager::getSingleton().logMessage("End Triangle");
 		}
 	}
 
@@ -311,28 +305,72 @@ namespace Ogre
 		}
 	}
 
-	/*void SurfacePatch::getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData)
+#ifdef BLAH3
+
+	bool SurfacePatch::decimate3(void)
 	{
-		vertexData.clear();
-		indexData.clear();
-
-		vertexData.resize(m_setVertices.size());
-		std::copy(m_setVertices.begin(), m_setVertices.end(), vertexData.begin());
-
-		for(SurfaceTriangleIterator iterTriangles = m_setTriangles.begin(); iterTriangles != m_setTriangles.end(); ++iterTriangles)
+		int fixed = 0;
+		int movable = 0;
+		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			std::vector<SurfaceVertex>::iterator iterVertex;
+			std::list<SurfaceVertexIterator> listConnectedVertices;
 
-			iterVertex = lower_bound(vertexData.begin(), vertexData.end(),(*(iterTriangles->v0)));
-			indexData.push_back(iterVertex - vertexData.begin());
+			//listConnectedVertices.push_back(vertexIter);
+			
+			SurfaceEdgeIterator firstEdge = vertexIter->edge;
+			SurfaceVertexIterator firstVertex = firstEdge->target;
 
-			iterVertex = lower_bound(vertexData.begin(), vertexData.end(),(*(iterTriangles->v1)));
-			indexData.push_back(iterVertex - vertexData.begin());
+			SurfaceEdgeIterator nextEdge = firstEdge;
+			do
+			{
+				listConnectedVertices.push_back(nextEdge->target);
+				nextEdge = nextEdge->nextHalfEdge->nextHalfEdge->otherHalfEdge;
+			}while((nextEdge != firstEdge) && (nextEdge != m_listEdges.end()));
 
-			iterVertex = lower_bound(vertexData.begin(), vertexData.end(),(*(iterTriangles->v2)));
-			indexData.push_back(iterVertex - vertexData.begin());			
+			if(nextEdge == m_listEdges.end())
+			{
+				fixed++;
+				continue;
+			}
+			movable++;
+
+			bool allXMatch = true;
+			bool allYMatch = true;
+			bool allZMatch = true;
+			for(std::list<SurfaceVertexIterator>::iterator connectedVertexIter = listConnectedVertices.begin(); connectedVertexIter != listConnectedVertices.end(); ++connectedVertexIter)
+			{
+				if((*connectedVertexIter)->position.x != vertexIter->position.x)
+				{
+					allXMatch = false;
+				}
+				if((*connectedVertexIter)->position.y != vertexIter->position.y)
+				{
+					allYMatch = false;
+				}
+				if((*connectedVertexIter)->position.z != vertexIter->position.z)
+				{
+					allZMatch = false;
+				}
+			}
+
+			if((allXMatch) || (allYMatch) || (allZMatch))
+			{
+				for(SurfaceVertexIterator innerVertexIter = m_listVertices.begin(); innerVertexIter != m_listVertices.end(); ++innerVertexIter)
+				{
+					if(innerVertexIter->position == vertexIter->position)
+					{
+						innerVertexIter->position = (*listConnectedVertices.begin())->position;
+					}
+				}
+			}
 		}
-	}*/
+
+		//LogManager::getSingleton().logMessage("Fixed = " + StringConverter::toString(fixed) + " Movable = "  + StringConverter::toString(movable));
+
+		return false;
+	}
+
+#endif
 
 #ifdef BLAH
 	bool SurfacePatch::decimate(void)
@@ -498,53 +536,110 @@ namespace Ogre
 	}
 #endif
 
+#ifdef BLAH2
+
 	bool SurfacePatch::decimate2(void)
 	{
+		bool didDecimate = false;
+		//return false;
 		LogManager::getSingleton().logMessage("Performing decimation");
 		LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
 
+		std::list<SurfaceEdgeIterator> edgeList;
+
+		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
+		{
+			vertexIter->fixed = false;
+		}
+
 		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
 		{						
-			//LogManager::getSingleton().logMessage("Examining Edge " + edgeIter->toString());
+			LogManager::getSingleton().logMessage("Examining Edge " + edgeIter->toString());
 
 			SurfaceVertexIterator targetVertexIter = edgeIter->target;
 			SurfaceVertexIterator otherVertexIter = edgeIter->nextHalfEdge->nextHalfEdge->target;
 
-			//LogManager::getSingleton().logMessage("Target Vertex = " + targetVertexIter->toString());
-			//LogManager::getSingleton().logMessage("Other  Vertex = " + otherVertexIter->toString());
+			LogManager::getSingleton().logMessage("Target Vertex = " + targetVertexIter->toString());
+			LogManager::getSingleton().logMessage("Other  Vertex = " + otherVertexIter->toString());
 
 			if(canCollapseEdge2(*targetVertexIter,*otherVertexIter))
 			{
-				//LogManager::getSingleton().logMessage("    Collapsing Edge");
+				LogManager::getSingleton().logMessage("    Collapsing Edge");
+				edgeList.push_back(edgeIter);
 				//collapseEdge2(edgeIter);
-				for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
+				/*for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 				{
 					if(vertexIter->position == targetVertexIter->position)
 					{
 						vertexIter->position = otherVertexIter->position;
 						vertexIter->flags = otherVertexIter->flags;
+
+						vertexIter->fixed = true;
 					}
-				}
+				}*/
 			}
 			else
 			{
-				//LogManager::getSingleton().logMessage("    Not Collapsing Edge");
+				LogManager::getSingleton().logMessage("    Not Collapsing Edge");
 				//LogManager::getSingleton().logMessage("Edge Target Vertex = " + StringConverter::toString(edgeIter->target->position.toOgreVector3()));
 				//LogManager::getSingleton().logMessage("Other Edge Non-Existant");
 			}
 		}
+
+		for(std::list<SurfaceEdgeIterator>::iterator edgeIter = edgeList.begin(); edgeIter != edgeList.end(); ++edgeIter)
+		{
+			SurfaceVertexIterator targetVertexIter = (*edgeIter)->target;
+			SurfaceVertexIterator otherVertexIter = (*edgeIter)->nextHalfEdge->nextHalfEdge->target;
+
+			if(targetVertexIter->fixed == true)
+				continue;
+
+			for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
+			{
+				if(vertexIter->position == targetVertexIter->position)
+				{
+					vertexIter->position = otherVertexIter->position;
+					vertexIter->flags = otherVertexIter->flags;
+
+					vertexIter->noOfUses = otherVertexIter->noOfUses;
+
+					vertexIter->fixed = true;
+
+					didDecimate = true;
+				}
+			}
+		}
+		
+
 		LogManager::getSingleton().logMessage("Done decimation");
 		LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
 
-		return true;
+		return didDecimate;
 	}
 
 	bool SurfacePatch::canCollapseEdge2(SurfaceVertex target, SurfaceVertex other)
 	{
 		if(target.position == other.position)
 			return false;
+
+		if(target.fixed)
+			return false;
+
+		//FIXME - are these already normalised? We should make sure they are...
+		if(target.normal.normalisedCopy().dotProduct(other.normal.normalisedCopy()) < 0.999)
+		{
+			return false;				
+		}
+
+		/*if((target.flags == 0) && (other.flags != 0))
+			return true;
+
+		return false;*/
+
 		/*if(target.flags == other.flags)
-			return true;*/
+			return true;
+
+		return false;*/
 
 		/*if(target.position == UIntVector3(0,0,15))
 			return false;
@@ -562,11 +657,30 @@ namespace Ogre
 		if(target.position.x > 13)
 			return false;
 		if(target.position.y > 13)
-			return false;*/
+			return false;*/		
 
-		if(target.flags & 0x01)
+		//return true;
+
+		if((target.noOfUses == 6) && (other.noOfUses != 6))
+			return true;
+
+		/*if((target.noOfUses == 6) && (other.noOfUses == 3))
+			return true;*/
+
+		return false;
+
+		/*if((matchesAll(other.flags, target.flags)) && (!matchesAll(target.flags, other.flags)))
 		{
-			if(other.flags & 0x01)
+			return false;
+		}
+		return true;*/
+	}
+
+	bool SurfacePatch::matchesAll(uchar target, uchar other)
+	{
+		if(target & 1)
+		{
+			if(other & 1)
 			{
 			}
 			else
@@ -575,9 +689,9 @@ namespace Ogre
 			}
 		}
 
-		if(target.flags & 0x02)
+		if(target & 2)
 		{
-			if(other.flags & 0x02)
+			if(other & 2)
 			{
 			}
 			else
@@ -586,9 +700,9 @@ namespace Ogre
 			}
 		}
 
-		if(target.flags & 0x04)
+		if(target & 4)
 		{
-			if(other.flags & 0x04)
+			if(other & 4)
 			{
 			}
 			else
@@ -597,9 +711,9 @@ namespace Ogre
 			}
 		}
 
-		if(target.flags & 0x08)
+		if(target & 8)
 		{
-			if(other.flags & 0x08)
+			if(other & 8)
 			{
 			}
 			else
@@ -608,7 +722,27 @@ namespace Ogre
 			}
 		}
 
-		return true;
+		if(target & 16)
+		{
+			if(other & 16)
+			{
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		if(target & 32)
+		{
+			if(other & 32)
+			{
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 
 	void SurfacePatch::collapseEdge2(SurfaceEdgeIterator edgeIter)
@@ -624,4 +758,6 @@ namespace Ogre
 			}
 		}
 	}
+#endif
+
 }
