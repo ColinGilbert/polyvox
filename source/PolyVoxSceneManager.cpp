@@ -1010,7 +1010,7 @@ namespace Ogre
 			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
 			bool removedVertex = false;
-			//for(uint ct = 0; ct < 10; ct++)
+			//for(uint ct = 0; ct < 20; ct++)
 			do
 			{
 				removedVertex = iterPatch->second.decimate3();
