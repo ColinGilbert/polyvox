@@ -14,7 +14,7 @@ namespace Ogre
 	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet)
 		:position(positionToSet)
 	{
-		noOfUses = 0;
+		/*noOfUses = 0;
 		flags = 0;
 		if(position.x == 0)
 			flags |= 1;
@@ -27,14 +27,14 @@ namespace Ogre
 		if(position.z == 0)
 			flags |= 16;
 		if(position.z == 8)
-			flags |= 32;
+			flags |= 32;*/
 	}
 
 	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet)
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
-		noOfUses = 0;
+		/*noOfUses = 0;
 		flags = 0;
 		if(position.x == 0)
 			flags |= 1;
@@ -47,13 +47,13 @@ namespace Ogre
 		if(position.z == 0)
 			flags |= 16;
 		if(position.z == 8)
-			flags |= 32;
+			flags |= 32;*/
 	}
 
 	std::string SurfaceVertex::toString(void)
 	{
 		std::stringstream ss;
-		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << StringConverter::toString(normal) << ", Flags = " << uint(flags);
+		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << StringConverter::toString(normal);
 		return ss.str();
 	}
 

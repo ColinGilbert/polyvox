@@ -40,8 +40,8 @@ namespace Ogre
 		UIntVector3 position;
 		Vector3 normal;
 		float alpha;
-		uchar flags;
-		uchar noOfUses;
+		//uchar flags;
+		//uchar noOfUses;
 
 		bool fixed;
 

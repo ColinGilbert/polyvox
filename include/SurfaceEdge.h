@@ -46,7 +46,7 @@ namespace Ogre
 		SurfaceEdgeIterator otherHalfEdge;
 
 		//FIXME - could use boost::optional for this?
-		bool hasOtherHalfEdge;
+		bool hasTriangle;
 
 		SurfaceEdge();
 

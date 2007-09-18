@@ -5,14 +5,14 @@
 namespace Ogre
 {
 	SurfaceEdge::SurfaceEdge()
-		:hasOtherHalfEdge(false)
+		:hasTriangle(false)
 	{
 	}
 
 	std::string SurfaceEdge::toString(void)
 	{
 		std::stringstream ss;
-		ss << "SurfaceEdge: Target Vertex = " << target->toString();
+		ss << "SurfaceEdge: Target Vertex = " << target->toString() << "Source Vertex = " << otherHalfEdge->target->toString();
 		return ss.str();
 	}
 
@@ -21,7 +21,8 @@ namespace Ogre
 		return
 		(
 			(lhs.target == rhs.target) &&
-			(lhs.triangle == rhs.triangle)
+			//(lhs.triangle == rhs.triangle)
+			(lhs.otherHalfEdge->target == rhs.otherHalfEdge->target)
 		);
 	}
 
@@ -29,11 +30,11 @@ namespace Ogre
 	{
 		if(lhs.target == rhs.target)
 		{
-			if(lhs.triangle == rhs.triangle)
+			if(lhs.otherHalfEdge->target == rhs.otherHalfEdge->target)
 			{
 				return false;
 			}
-			return (*(lhs.triangle) < *(rhs.triangle));
+			return (*(lhs.otherHalfEdge->target) < *(rhs.otherHalfEdge->target));
 		}
 		return (*(lhs.target) < *(rhs.target));
 	}	

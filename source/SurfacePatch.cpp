@@ -97,13 +97,37 @@ namespace Ogre
 			v2Iter = m_listVertices.end();
 			v2Iter--;
 		}
-
-		v0Iter->noOfUses++;
-		v1Iter->noOfUses++;
-		v2Iter->noOfUses++;
-
 		//else
 			//LogManager::getSingleton().logMessage("Already Exists " + StringConverter::toString(v2.position.x) + "," + StringConverter::toString(v2.position.y) + "," + StringConverter::toString(v2.position.z));
+
+		/*SurfaceEdgeIterator v0v1Iter = m_listEdges.end();
+		SurfaceEdgeIterator v1v2Iter = m_listEdges.end();
+		SurfaceEdgeIterator v2v0Iter = m_listEdges.end();
+		SurfaceEdgeIterator v1v0Iter = m_listEdges.end();
+		SurfaceEdgeIterator v2v1Iter = m_listEdges.end();
+		SurfaceEdgeIterator v0v2Iter = m_listEdges.end();
+		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
+		{
+			if((edgeIter->otherHalfEdge->target == v0) && (edgeIter->target == v1))
+				v0v1Iter = edgeIter;
+			if((edgeIter->otherHalfEdge->target == v1) && (edgeIter->target == v2))
+				v1v2Iter = edgeIter;
+			if((edgeIter->otherHalfEdge->target == v2) && (edgeIter->target == v0))
+				v2v0Iter = edgeIter;
+			if((edgeIter->otherHalfEdge->target == v1) && (edgeIter->target == v0))
+				v1v0Iter = edgeIter;
+			if((edgeIter->otherHalfEdge->target == v2) && (edgeIter->target == v1))
+				v2v1Iter = edgeIter;
+			if((edgeIter->otherHalfEdge->target == v0) && (edgeIter->target == v2))
+				v0v2Iter = edgeIter;
+		}
+
+		if(v0v1Iter == m_listEdges.end())
+		{
+			SurfaceEdge v0v1;
+			m_listEdges.push_back(v0v1);
+			SurfaceEdgeIterator v0v1ToAdd;
+		}*/
 
 		//LogManager::getSingleton().logMessage("Creating Edges");
 		SurfaceEdge v0v1;
@@ -146,6 +170,10 @@ namespace Ogre
 		v0v1Iter->triangle = iterTriangle;
 		v1v2Iter->triangle = iterTriangle;
 		v2v0Iter->triangle = iterTriangle;
+
+		v0v1Iter->hasTriangle = true;
+		v1v2Iter->hasTriangle = true;
+		v2v0Iter->hasTriangle = true;
 	}
 
 	void SurfacePatch::computeNormalsFromVolume(VolumeIterator volIter)
@@ -279,18 +307,21 @@ namespace Ogre
 
 	void SurfacePatch::computeOtherHalfEdges(void)
 	{
+		LogManager::getSingleton().logMessage("Computing other half edges");
 		//Clear all other edges
 		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
 		{
 			edgeIter->otherHalfEdge = m_listEdges.end();
-			edgeIter->hasOtherHalfEdge = false;
 		}
 
 		//FIXME - speed this up by storing edges in a container which sorts by edge 'target'.
 
+		std::list<SurfaceEdge> listAddedEdges;
+
 		//Assign all other edges
 		for(SurfaceEdgeIterator outerEdgeIter = m_listEdges.begin(); outerEdgeIter != m_listEdges.end(); ++outerEdgeIter)
 		{
+			bool foundOtherHalf = false;
 			for(SurfaceEdgeIterator innerEdgeIter = m_listEdges.begin(); innerEdgeIter != m_listEdges.end(); ++innerEdgeIter)
 			{
 				if((innerEdgeIter->target == outerEdgeIter->previousHalfEdge->target) && (outerEdgeIter->target == innerEdgeIter->previousHalfEdge->target))
@@ -298,11 +329,34 @@ namespace Ogre
 					innerEdgeIter->otherHalfEdge = outerEdgeIter;
 					outerEdgeIter->otherHalfEdge = innerEdgeIter;
 
-					innerEdgeIter->hasOtherHalfEdge = true;
-					outerEdgeIter->hasOtherHalfEdge = true;
+					foundOtherHalf = true;
 				}
 			}
+			if(!foundOtherHalf)
+			{				
+				SurfaceEdge tempEdge;
+
+				tempEdge.otherHalfEdge = outerEdgeIter;
+				tempEdge.target = outerEdgeIter->nextHalfEdge->nextHalfEdge->target;
+
+				listAddedEdges.push_back(tempEdge);
+			}
 		}
+
+		LogManager::getSingleton().logMessage("No of added edges = " + StringConverter::toString(listAddedEdges.size()));
+
+		for(SurfaceEdgeIterator addedEdgeIter = listAddedEdges.begin(); addedEdgeIter != listAddedEdges.end(); ++addedEdgeIter)
+		{
+			LogManager::getSingleton().logMessage("Adding new edge");
+			m_listEdges.push_back(*addedEdgeIter);
+			SurfaceEdgeIterator justAddedIter = m_listEdges.end();
+			--justAddedIter;
+
+			justAddedIter->otherHalfEdge->otherHalfEdge = justAddedIter;
+			LogManager::getSingleton().logMessage("Done adding new edge");
+		}
+
+		LogManager::getSingleton().logMessage("Done computing other half edges");
 	}
 
 	bool SurfacePatch::decimate3(void)
@@ -325,11 +379,15 @@ namespace Ogre
 			SurfaceEdgeIterator nextEdge = firstEdge;
 			do
 			{
+				if(nextEdge->hasTriangle == false)
+				{
+					break;
+				}
 				listConnectedVertices.push_back(nextEdge->target);
 				nextEdge = nextEdge->nextHalfEdge->nextHalfEdge->otherHalfEdge;
 			}while((nextEdge != firstEdge) && (nextEdge != m_listEdges.end()));
 
-			if(nextEdge == m_listEdges.end())
+			if(nextEdge->hasTriangle == false)
 			{
 				continue;
 			}
