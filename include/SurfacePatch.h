@@ -55,9 +55,7 @@ namespace Ogre
 	   bool matchesAll(uchar target, uchar other);
 #endif
 
-#ifdef BLAH3
 	   bool decimate3(void);
-#endif
 
 	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
 

@@ -59,15 +59,15 @@ namespace Ogre
 						LogManager::getSingleton().logMessage("Value is " + StringConverter::toString(int(value)));
 					}*/
 					volIter.setVoxelAt(x,y,z,value);
-					/*if(z < 24)
+					if(z < 24)
 					{
-						if(x % 32 < 16)
+						//if(x % 32 < 16)
 							volIter.setVoxelAt(x,y,z,4);
-						else
-							volIter.setVoxelAt(x,y,z,5);
+						/*else
+							volIter.setVoxelAt(x,y,z,5);*/
 					}
 					else
-						volIter.setVoxelAt(x,y,z,0);*/
+						volIter.setVoxelAt(x,y,z,0);
 				}
 			}
 			//volIter.setVoxelAt(130,130,23,0);

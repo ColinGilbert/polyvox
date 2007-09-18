@@ -18,15 +18,15 @@ namespace Ogre
 		flags = 0;
 		if(position.x == 0)
 			flags |= 1;
-		if(position.x == 32)
+		if(position.x == 8)
 			flags |= 2;
 		if(position.y == 0)
 			flags |= 4;
-		if(position.y == 32)
+		if(position.y == 8)
 			flags |= 8;
 		if(position.z == 0)
 			flags |= 16;
-		if(position.z == 32)
+		if(position.z == 8)
 			flags |= 32;
 	}
 
@@ -38,15 +38,15 @@ namespace Ogre
 		flags = 0;
 		if(position.x == 0)
 			flags |= 1;
-		if(position.x == 32)
+		if(position.x == 8)
 			flags |= 2;
 		if(position.y == 0)
 			flags |= 4;
-		if(position.y == 32)
+		if(position.y == 8)
 			flags |= 8;
 		if(position.z == 0)
 			flags |= 16;
-		if(position.z == 32)
+		if(position.z == 8)
 			flags |= 32;
 	}
 
