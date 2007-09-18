@@ -1010,12 +1010,12 @@ namespace Ogre
 			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
 			bool removedVertex = false;
-			for(uint ct = 0; ct < 10; ct++)
-			//do
+			//for(uint ct = 0; ct < 10; ct++)
+			do
 			{
 				removedVertex = iterPatch->second.decimate3();
 			}
-			//while(removedVertex);
+			while(removedVertex);
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");

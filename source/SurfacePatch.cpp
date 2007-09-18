@@ -47,7 +47,7 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		if(v0.position.x > 8)
+		/*if(v0.position.x > 8)
 			return;
 		if(v0.position.y > 8)
 			return;
@@ -58,7 +58,7 @@ namespace Ogre
 		if(v2.position.x > 8)
 			return;
 		if(v2.position.y > 8)
-			return;
+			return;*/
 
 
 		//if(m_uTrianglesAdded > 1) return;
@@ -501,6 +501,10 @@ namespace Ogre
 					(*secondEdgeIter)->triangle = iterTriangle;
 					newEdgeIter->triangle = iterTriangle;
 
+					lastAddedEdge->hasTriangle = true;
+					(*secondEdgeIter)->hasTriangle = true;
+					newEdgeIter->hasTriangle = true;
+
 					//++firstEdgeIter;
 					++secondEdgeIter;
 					lastAddedEdge = otherNewEdgeIter;
@@ -524,6 +528,10 @@ namespace Ogre
 				lastAddedEdge->triangle = iterTriangle;
 				(*secondEdgeIter)->triangle = iterTriangle;
 				(*endEdgeIter)->triangle = iterTriangle;
+
+				lastAddedEdge->hasTriangle = true;
+				(*secondEdgeIter)->hasTriangle = true;
+				(*endEdgeIter)->hasTriangle = true;
 			}
 			didDecimation = true;
 			break;
