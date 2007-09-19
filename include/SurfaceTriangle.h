@@ -43,7 +43,7 @@ namespace Ogre
 	};
 
 	bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
-	bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
+	//bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
 
 	//bool operator < (const SurfaceTriangleIterator& lhs, const SurfaceTriangleIterator& rhs);
 }

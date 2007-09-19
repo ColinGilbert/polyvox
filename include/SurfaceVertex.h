@@ -43,7 +43,7 @@ namespace Ogre
 		//uchar flags;
 		//uchar noOfUses;
 
-		bool fixed;
+		//bool fixed;
 
 		SurfaceEdgeIterator edge;
 
@@ -57,7 +57,7 @@ namespace Ogre
 	};
 
 	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
-	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
+	//bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
 	
 
 	//bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs);

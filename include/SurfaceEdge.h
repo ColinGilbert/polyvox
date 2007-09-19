@@ -54,7 +54,7 @@ namespace Ogre
 	};
 
 	bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
-	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
+	//bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 }
 
 #endif

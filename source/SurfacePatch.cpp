@@ -47,17 +47,17 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		if(v0.position.x > 8)
+		if(v0.position.x > 16)
 			return;
-		if(v0.position.y > 8)
+		if(v0.position.y > 16)
 			return;
-		if(v1.position.x > 8)
+		if(v1.position.x > 16)
 			return;
-		if(v1.position.y > 8)
+		if(v1.position.y > 16)
 			return;
-		if(v2.position.x > 8)
+		if(v2.position.x > 16)
 			return;
-		if(v2.position.y > 8)
+		if(v2.position.y > 16)
 			return;
 
 
@@ -377,14 +377,21 @@ namespace Ogre
 			SurfaceVertexIterator firstVertex = firstEdge->target;
 
 			SurfaceEdgeIterator nextEdge = firstEdge;
+			int ct = 0;
 			do
 			{
+				ct++;
+				LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
+				if(ct > 100)
+				{
+					exit(1);
+				}
 				if(nextEdge->hasTriangle == false)
 				{
 					break;
 				}
 				listConnectedVertices.push_back(nextEdge->target);
-				nextEdge = nextEdge->nextHalfEdge->nextHalfEdge->otherHalfEdge;
+				nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
 			}while((nextEdge != firstEdge) && (nextEdge != m_listEdges.end()));
 
 			if(nextEdge->hasTriangle == false)

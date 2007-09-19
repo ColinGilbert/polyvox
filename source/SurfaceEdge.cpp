@@ -22,11 +22,11 @@ namespace Ogre
 		(
 			(lhs.target == rhs.target) &&
 			//(lhs.triangle == rhs.triangle)
-			(lhs.otherHalfEdge->target == rhs.otherHalfEdge->target)
+			(lhs.otherHalfEdge == rhs.otherHalfEdge)
 		);
 	}
 
-	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
+	/*bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
 	{
 		if(lhs.target == rhs.target)
 		{
@@ -37,5 +37,5 @@ namespace Ogre
 			return (*(lhs.otherHalfEdge->target) < *(rhs.otherHalfEdge->target));
 		}
 		return (*(lhs.target) < *(rhs.target));
-	}	
+	}*/
 }
