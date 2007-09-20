@@ -160,12 +160,12 @@ namespace Ogre
 		otherEdgeIter--;
 
 		edgeIter->otherHalfEdge = otherEdgeIter;
-		edgeIter->nextHalfEdge = edgeIter;
-		edgeIter->previousHalfEdge = edgeIter;
+		edgeIter->nextHalfEdge = otherEdgeIter;
+		edgeIter->previousHalfEdge = otherEdgeIter;
 
 		otherEdgeIter->otherHalfEdge = edgeIter;
-		otherEdgeIter->nextHalfEdge = otherEdgeIter;
-		otherEdgeIter->previousHalfEdge = otherEdgeIter;
+		otherEdgeIter->nextHalfEdge = edgeIter;
+		otherEdgeIter->previousHalfEdge = edgeIter;
 
 		edgeIter->hasTriangle = false;
 		otherEdgeIter->hasTriangle = false;
@@ -374,6 +374,7 @@ namespace Ogre
 			SurfaceVertexIterator firstVertex = firstEdge->target;
 
 			SurfaceEdgeIterator nextEdge = firstEdge;
+			SurfaceEdgeIterator previousEdge = firstEdge;
 			int ct = 0;
 			do
 			{
@@ -381,17 +382,17 @@ namespace Ogre
 				LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
 				if(ct > 100)
 				{
+					LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
 					exit(1);
 				}
-				if(nextEdge->hasTriangle == false)
-				{
-					break;
-				}
-				listConnectedVertices.push_back(nextEdge->target);
-				nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
-			}while((nextEdge != firstEdge) && (nextEdge != m_listEdges.end()));
 
-			if(nextEdge->hasTriangle == false)
+				listConnectedVertices.push_back(nextEdge->target);
+
+				previousEdge = nextEdge;
+				nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
+			}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
+
+			if(nextEdge == previousEdge)
 			{
 				continue;
 			}
@@ -419,13 +420,7 @@ namespace Ogre
 			if((allXMatch) || (allYMatch) || (allZMatch))
 			{
 				LogManager::getSingleton().logMessage("    All flat");
-				/*for(SurfaceVertexIterator innerVertexIter = m_listVertices.begin(); innerVertexIter != m_listVertices.end(); ++innerVertexIter)
-				{
-					if(innerVertexIter->position == vertexIter->position)
-					{
-						innerVertexIter->position = (*listConnectedVertices.begin())->position;
-					}
-				}*/
+				
 				nextEdge = firstEdge;
 				//std::list<SurfaceVertexIterator> verticesFormingPolygon;
 				do
@@ -433,7 +428,7 @@ namespace Ogre
 					//verticesFormingPolygon.push_back(nextEdge->target);
 					LogManager::getSingleton().logMessage("Removing triangle");
 					m_listTriangles.erase(nextEdge->triangle);
-					nextEdge = nextEdge->nextHalfEdge->nextHalfEdge->otherHalfEdge;
+					nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
 				}while(nextEdge != firstEdge);
 
 				//nextEdge = firstEdge;
