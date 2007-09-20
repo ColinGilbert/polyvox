@@ -35,6 +35,8 @@ namespace Ogre
 	{
 	public:
 
+		int crud;
+
 		SurfaceVertexIterator target;
 
 		SurfaceTriangleIterator triangle;
@@ -46,9 +48,6 @@ namespace Ogre
 		SurfaceEdgeIterator otherHalfEdge;
 
 		//FIXME - could use boost::optional for this?
-		bool hasTriangle;
-
-		SurfaceEdge();
 
 		std::string toString(void);
 	};

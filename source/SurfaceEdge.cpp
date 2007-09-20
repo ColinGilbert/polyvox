@@ -4,11 +4,6 @@
 
 namespace Ogre
 {
-	SurfaceEdge::SurfaceEdge()
-		:hasTriangle(false)
-	{
-	}
-
 	std::string SurfaceEdge::toString(void)
 	{
 		std::stringstream ss;

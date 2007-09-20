@@ -117,9 +117,9 @@ namespace Ogre
 		v1v2Iter->triangle = iterTriangle;
 		v2v0Iter->triangle = iterTriangle;
 
-		v0v1Iter->hasTriangle = true;
+		/*v0v1Iter->hasTriangle = true;
 		v1v2Iter->hasTriangle = true;
-		v2v0Iter->hasTriangle = true;
+		v2v0Iter->hasTriangle = true;*/
 	}
 
 	SurfaceVertexIterator SurfacePatch::findVertex(const SurfaceVertex& vertex)
@@ -167,8 +167,8 @@ namespace Ogre
 		otherEdgeIter->nextHalfEdge = edgeIter;
 		otherEdgeIter->previousHalfEdge = edgeIter;
 
-		edgeIter->hasTriangle = false;
-		otherEdgeIter->hasTriangle = false;
+		/*edgeIter->hasTriangle = false;
+		otherEdgeIter->hasTriangle = false;*/
 
 		return edgeIter;
 	}
@@ -365,7 +365,7 @@ namespace Ogre
 		//int movable = 0;
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			LogManager::getSingleton().logMessage("Examining vertex");
+			LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());
 			std::list<SurfaceVertexIterator> listConnectedVertices;
 
 			//listConnectedVertices.push_back(vertexIter);
@@ -379,7 +379,7 @@ namespace Ogre
 			do
 			{
 				ct++;
-				LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
+				//LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
 				if(ct > 100)
 				{
 					LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
@@ -422,34 +422,40 @@ namespace Ogre
 				LogManager::getSingleton().logMessage("    All flat");
 				
 				nextEdge = firstEdge;
-				//std::list<SurfaceVertexIterator> verticesFormingPolygon;
-				do
-				{
-					//verticesFormingPolygon.push_back(nextEdge->target);
-					LogManager::getSingleton().logMessage("Removing triangle");
-					m_listTriangles.erase(nextEdge->triangle);
-					nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
-				}while(nextEdge != firstEdge);
-
-				//nextEdge = firstEdge;
 				std::list<SurfaceEdgeIterator> edgesToRemove;
 				std::list<SurfaceEdgeIterator> edgesFormingPolygon;
 				do
 				{
-					LogManager::getSingleton().logMessage("Adding Edges To Remove");
+					LogManager::getSingleton().logMessage("Removing triangle");
+					m_listTriangles.erase(nextEdge->triangle);
+
 					edgesToRemove.push_back(nextEdge);
-					nextEdge = nextEdge->nextHalfEdge;
-					edgesFormingPolygon.push_back(nextEdge);
-					nextEdge = nextEdge->nextHalfEdge;
+					edgesFormingPolygon.push_back(nextEdge->nextHalfEdge);
+					nextEdge = nextEdge->previousHalfEdge;
 					edgesToRemove.push_back(nextEdge);
 					nextEdge = nextEdge->otherHalfEdge;
 				}while(nextEdge != firstEdge);
+
+				//nextEdge = firstEdge;
+				
+				//std::list<SurfaceEdgeIterator> edgesFormingPolygon;
+				/*do
+				{
+					LogManager::getSingleton().logMessage("Adding Edges To Remove");
+					edgesToRemove.push_back(nextEdge);
+					nextEdge = nextEdge->nextHalfEdge;
+					//edgesFormingPolygon.push_back(nextEdge);
+					nextEdge = nextEdge->nextHalfEdge;
+					edgesToRemove.push_back(nextEdge);
+					nextEdge = nextEdge->otherHalfEdge;
+				}while(nextEdge != firstEdge);*/
 
 				for(std::list<SurfaceEdgeIterator>::iterator edgesToRemoveIter = edgesToRemove.begin(); edgesToRemoveIter != edgesToRemove.end(); ++edgesToRemoveIter)
 				{
 					m_listEdges.erase(*edgesToRemoveIter);
 				}
 
+				LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
 				m_listVertices.erase(vertexIter);
 
 				//Now triangulate...
@@ -500,9 +506,9 @@ namespace Ogre
 					(*secondEdgeIter)->triangle = iterTriangle;
 					newEdgeIter->triangle = iterTriangle;
 
-					lastAddedEdge->hasTriangle = true;
+					/*lastAddedEdge->hasTriangle = true;
 					(*secondEdgeIter)->hasTriangle = true;
-					newEdgeIter->hasTriangle = true;
+					newEdgeIter->hasTriangle = true;*/
 
 					//++firstEdgeIter;
 					++secondEdgeIter;
@@ -528,9 +534,9 @@ namespace Ogre
 				(*secondEdgeIter)->triangle = iterTriangle;
 				(*endEdgeIter)->triangle = iterTriangle;
 
-				lastAddedEdge->hasTriangle = true;
+				/*lastAddedEdge->hasTriangle = true;
 				(*secondEdgeIter)->hasTriangle = true;
-				(*endEdgeIter)->hasTriangle = true;
+				(*endEdgeIter)->hasTriangle = true;*/
 
 				didDecimation = true;
 				break;
