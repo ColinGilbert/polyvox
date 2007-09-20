@@ -43,8 +43,6 @@ namespace Ogre
 
 	   void computeNormalsFromVolume(VolumeIterator volIter);
 
-	   void computeOtherHalfEdges(void);
-
 #ifdef BLAH
 	   bool decimate(void);
 	   bool canCollapseEdge(SurfaceVertex target, SurfaceVertex other);

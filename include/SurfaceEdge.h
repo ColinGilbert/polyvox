@@ -35,7 +35,7 @@ namespace Ogre
 	{
 	public:
 
-		int crud;
+		//int crud;
 
 		SurfaceVertexIterator target;
 

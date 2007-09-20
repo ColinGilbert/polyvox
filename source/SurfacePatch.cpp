@@ -47,22 +47,20 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		if(v0.position.x > 8)
+		/*if(v0.position.x > 16)
 			return;
-		if(v0.position.y > 8)
+		if(v0.position.y > 16)
 			return;
-		if(v1.position.x > 8)
+		if(v1.position.x > 16)
 			return;
-		if(v1.position.y > 8)
+		if(v1.position.y > 16)
 			return;
-		if(v2.position.x > 8)
+		if(v2.position.x > 16)
 			return;
-		if(v2.position.y > 8)
-			return;
+		if(v2.position.y > 16)
+			return;*/
 
 
-		//if(m_uTrianglesAdded > 1) return;
-		//LogManager::getSingleton().logMessage("Adding Triangle " + StringConverter::toString(m_uTrianglesAdded));
 		m_uTrianglesAdded++;
 		m_uVerticesAdded += 3;			
 		
@@ -70,24 +68,6 @@ namespace Ogre
 		SurfaceVertexIterator v1Iter = findVertex(v1);
 		SurfaceVertexIterator v2Iter = findVertex(v2);
 		
-
-		//LogManager::getSingleton().logMessage("Creating Edges");
-		/*SurfaceEdge v0v1;
-		v0v1.target = v1Iter;
-		SurfaceEdge v1v2;
-		v1v2.target = v2Iter;
-		SurfaceEdge v2v0;
-		v2v0.target = v0Iter;
-
-		m_listEdges.push_back(v0v1);
-		SurfaceEdgeIterator v0v1Iter = m_listEdges.end();
-		v0v1Iter--;
-		m_listEdges.push_back(v1v2);
-		SurfaceEdgeIterator v1v2Iter = m_listEdges.end();
-		v1v2Iter--;
-		m_listEdges.push_back(v2v0);
-		SurfaceEdgeIterator v2v0Iter = m_listEdges.end();
-		v2v0Iter--;*/
 
 		SurfaceEdgeIterator v0v1Iter = findEdge(v0Iter,v1Iter);
 		SurfaceEdgeIterator v1v2Iter = findEdge(v1Iter,v2Iter);
@@ -116,10 +96,6 @@ namespace Ogre
 		v0v1Iter->triangle = iterTriangle;
 		v1v2Iter->triangle = iterTriangle;
 		v2v0Iter->triangle = iterTriangle;
-
-		/*v0v1Iter->hasTriangle = true;
-		v1v2Iter->hasTriangle = true;
-		v2v0Iter->hasTriangle = true;*/
 	}
 
 	SurfaceVertexIterator SurfacePatch::findVertex(const SurfaceVertex& vertex)
@@ -302,70 +278,16 @@ namespace Ogre
 		}
 	}
 
-	void SurfacePatch::computeOtherHalfEdges(void)
-	{
-		LogManager::getSingleton().logMessage("Computing other half edges");
-		//Clear all other edges
-		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
-		{
-			edgeIter->otherHalfEdge = m_listEdges.end();
-		}
-
-		//FIXME - speed this up by storing edges in a container which sorts by edge 'target'.
-
-		std::list<SurfaceEdge> listAddedEdges;
-
-		//Assign all other edges
-		for(SurfaceEdgeIterator outerEdgeIter = m_listEdges.begin(); outerEdgeIter != m_listEdges.end(); ++outerEdgeIter)
-		{
-			bool foundOtherHalf = false;
-			for(SurfaceEdgeIterator innerEdgeIter = m_listEdges.begin(); innerEdgeIter != m_listEdges.end(); ++innerEdgeIter)
-			{
-				if((innerEdgeIter->target == outerEdgeIter->previousHalfEdge->target) && (outerEdgeIter->target == innerEdgeIter->previousHalfEdge->target))
-				{
-					innerEdgeIter->otherHalfEdge = outerEdgeIter;
-					outerEdgeIter->otherHalfEdge = innerEdgeIter;
-
-					foundOtherHalf = true;
-				}
-			}
-			if(!foundOtherHalf)
-			{				
-				SurfaceEdge tempEdge;
-
-				tempEdge.otherHalfEdge = outerEdgeIter;
-				tempEdge.target = outerEdgeIter->nextHalfEdge->nextHalfEdge->target;
-
-				listAddedEdges.push_back(tempEdge);
-			}
-		}
-
-		LogManager::getSingleton().logMessage("No of added edges = " + StringConverter::toString(listAddedEdges.size()));
-
-		for(SurfaceEdgeIterator addedEdgeIter = listAddedEdges.begin(); addedEdgeIter != listAddedEdges.end(); ++addedEdgeIter)
-		{
-			LogManager::getSingleton().logMessage("Adding new edge");
-			m_listEdges.push_back(*addedEdgeIter);
-			SurfaceEdgeIterator justAddedIter = m_listEdges.end();
-			--justAddedIter;
-
-			justAddedIter->otherHalfEdge->otherHalfEdge = justAddedIter;
-			LogManager::getSingleton().logMessage("Done adding new edge");
-		}
-
-		LogManager::getSingleton().logMessage("Done computing other half edges");
-	}
-
 	bool SurfacePatch::decimate3(void)
 	{
 		bool didDecimation = false;
-		LogManager::getSingleton().logMessage("Performing decimation");
-		LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
+		//LogManager::getSingleton().logMessage("Performing decimation");
+		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
 		//int fixed = 0;
 		//int movable = 0;
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());
+			//LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());
 			std::list<SurfaceVertexIterator> listConnectedVertices;
 
 			//listConnectedVertices.push_back(vertexIter);
@@ -400,7 +322,7 @@ namespace Ogre
 			bool allXMatch = true;
 			bool allYMatch = true;
 			bool allZMatch = true;
-			LogManager::getSingleton().logMessage("Checking connected vertices");
+			//LogManager::getSingleton().logMessage("Checking connected vertices");
 			for(std::list<SurfaceVertexIterator>::iterator connectedVertexIter = listConnectedVertices.begin(); connectedVertexIter != listConnectedVertices.end(); ++connectedVertexIter)
 			{
 				if((*connectedVertexIter)->position.x != vertexIter->position.x)
@@ -419,124 +341,54 @@ namespace Ogre
 
 			if((allXMatch) || (allYMatch) || (allZMatch))
 			{
-				LogManager::getSingleton().logMessage("    All flat");
+				//LogManager::getSingleton().logMessage("    All flat");
 				
 				nextEdge = firstEdge;
 				std::list<SurfaceEdgeIterator> edgesToRemove;
-				std::list<SurfaceEdgeIterator> edgesFormingPolygon;
+				//std::list<SurfaceEdgeIterator> edgesFormingPolygon;
 				do
 				{
-					LogManager::getSingleton().logMessage("Removing triangle");
+					//LogManager::getSingleton().logMessage("Removing triangle");
 					m_listTriangles.erase(nextEdge->triangle);
 
 					edgesToRemove.push_back(nextEdge);
-					edgesFormingPolygon.push_back(nextEdge->nextHalfEdge);
+					//edgesFormingPolygon.push_back(nextEdge->nextHalfEdge);
 					nextEdge = nextEdge->previousHalfEdge;
 					edgesToRemove.push_back(nextEdge);
 					nextEdge = nextEdge->otherHalfEdge;
 				}while(nextEdge != firstEdge);
-
-				//nextEdge = firstEdge;
-				
-				//std::list<SurfaceEdgeIterator> edgesFormingPolygon;
-				/*do
-				{
-					LogManager::getSingleton().logMessage("Adding Edges To Remove");
-					edgesToRemove.push_back(nextEdge);
-					nextEdge = nextEdge->nextHalfEdge;
-					//edgesFormingPolygon.push_back(nextEdge);
-					nextEdge = nextEdge->nextHalfEdge;
-					edgesToRemove.push_back(nextEdge);
-					nextEdge = nextEdge->otherHalfEdge;
-				}while(nextEdge != firstEdge);*/
 
 				for(std::list<SurfaceEdgeIterator>::iterator edgesToRemoveIter = edgesToRemove.begin(); edgesToRemoveIter != edgesToRemove.end(); ++edgesToRemoveIter)
 				{
 					m_listEdges.erase(*edgesToRemoveIter);
 				}
 
-				LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
+				//LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
 				m_listVertices.erase(vertexIter);
 
 				//Now triangulate...
-				LogManager::getSingleton().logMessage("Doing triangulation");
+				//LogManager::getSingleton().logMessage("Doing triangulation");
 				//std::list<SurfaceEdgeIterator>::iterator firstEdgeIter = edgesFormingPolygon.begin();
-				std::list<SurfaceEdgeIterator>::iterator secondEdgeIter = edgesFormingPolygon.begin();
-				SurfaceEdgeIterator lastAddedEdge = (*edgesFormingPolygon.begin());
+				//std::list<SurfaceEdgeIterator>::iterator secondEdgeIter = edgesFormingPolygon.begin();
+				//SurfaceEdgeIterator lastAddedEdge = (*edgesFormingPolygon.begin());
 
-				//++firstEdgeIter;
-				//++secondEdgeIter;
-				++secondEdgeIter;
-
-				std::list<SurfaceEdgeIterator>::iterator endEdgeIter = edgesFormingPolygon.end();
-				--endEdgeIter;
-				--endEdgeIter;
-				while(secondEdgeIter != endEdgeIter)
+				std::list<SurfaceVertexIterator>::iterator v0IterIter = listConnectedVertices.begin();
+				std::list<SurfaceVertexIterator>::iterator v1IterIter = listConnectedVertices.begin();
+				std::list<SurfaceVertexIterator>::iterator v2IterIter = listConnectedVertices.begin();
+				++v1IterIter;
+				++v2IterIter;
+				++v2IterIter;
+				while(v2IterIter != listConnectedVertices.end())
 				{
-					SurfaceEdge newEdge;
-					newEdge.target = (lastAddedEdge)->otherHalfEdge->target;
-					newEdge.nextHalfEdge = (lastAddedEdge);
-					newEdge.previousHalfEdge = (*secondEdgeIter);
-					m_listEdges.push_back(newEdge);
+					SurfaceVertexIterator v0Iter = *v0IterIter;
+					SurfaceVertexIterator v1Iter = *v1IterIter;
+					SurfaceVertexIterator v2Iter = *v2IterIter;
 
-					SurfaceEdgeIterator newEdgeIter = m_listEdges.end();
-					--newEdgeIter;
+					addTriangle(*v0Iter, *v1Iter, *v2Iter);
 
-					(lastAddedEdge)->nextHalfEdge = (*secondEdgeIter);
-					(lastAddedEdge)->previousHalfEdge = (newEdgeIter);
-					(*secondEdgeIter)->nextHalfEdge = (newEdgeIter);
-					(*secondEdgeIter)->previousHalfEdge = (lastAddedEdge);
-
-					SurfaceEdge otherNewEdge;
-					m_listEdges.push_back(otherNewEdge);
-					SurfaceEdgeIterator otherNewEdgeIter = m_listEdges.end();
-					--otherNewEdgeIter;
-
-					otherNewEdgeIter->target = (*secondEdgeIter)->target;
-					otherNewEdgeIter->otherHalfEdge = newEdgeIter;
-					newEdgeIter->otherHalfEdge = otherNewEdgeIter;
-
-					SurfaceTriangle triangle;
-					m_listTriangles.push_back(triangle);
-					SurfaceTriangleIterator iterTriangle = m_listTriangles.end();
-					iterTriangle--;
-
-					iterTriangle->edge = lastAddedEdge;
-					lastAddedEdge->triangle = iterTriangle;
-					(*secondEdgeIter)->triangle = iterTriangle;
-					newEdgeIter->triangle = iterTriangle;
-
-					/*lastAddedEdge->hasTriangle = true;
-					(*secondEdgeIter)->hasTriangle = true;
-					newEdgeIter->hasTriangle = true;*/
-
-					//++firstEdgeIter;
-					++secondEdgeIter;
-					lastAddedEdge = otherNewEdgeIter;
+					++v1IterIter;
+					++v2IterIter;
 				}
-
-				++endEdgeIter;
-				lastAddedEdge->nextHalfEdge = (*secondEdgeIter);
-				(*secondEdgeIter)->nextHalfEdge = (*endEdgeIter);
-				(*endEdgeIter)->nextHalfEdge = lastAddedEdge;
-
-				lastAddedEdge->previousHalfEdge = (*endEdgeIter);
-				(*endEdgeIter)->previousHalfEdge = (*secondEdgeIter);
-				(*secondEdgeIter)->previousHalfEdge = lastAddedEdge;
-
-				SurfaceTriangle triangle;
-				m_listTriangles.push_back(triangle);
-				SurfaceTriangleIterator iterTriangle = m_listTriangles.end();
-				iterTriangle--;
-
-				iterTriangle->edge = lastAddedEdge;
-				lastAddedEdge->triangle = iterTriangle;
-				(*secondEdgeIter)->triangle = iterTriangle;
-				(*endEdgeIter)->triangle = iterTriangle;
-
-				/*lastAddedEdge->hasTriangle = true;
-				(*secondEdgeIter)->hasTriangle = true;
-				(*endEdgeIter)->hasTriangle = true;*/
 
 				didDecimation = true;
 				break;
@@ -544,8 +396,8 @@ namespace Ogre
 		}
 
 		//LogManager::getSingleton().logMessage("Fixed = " + StringConverter::toString(fixed) + " Movable = "  + StringConverter::toString(movable));
-		LogManager::getSingleton().logMessage("Done decimation");
-		LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
+		//LogManager::getSingleton().logMessage("Done decimation");
+		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
 
 		return didDecimation;
 	}
