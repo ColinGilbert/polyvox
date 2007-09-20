@@ -41,96 +41,38 @@ namespace Ogre
 		//LogManager::getSingleton().logMessage("No of vertices added = " + StringConverter::toString(m_uVerticesAdded)); 
 		//LogManager::getSingleton().logMessage("No of vertices present = " + StringConverter::toString(m_setVertices.size())); 
 
-		computeOtherHalfEdges();
+		//computeOtherHalfEdges();
 
 	}
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		if(v0.position.x > 16)
+		if(v0.position.x > 8)
 			return;
-		if(v0.position.y > 16)
+		if(v0.position.y > 8)
 			return;
-		if(v1.position.x > 16)
+		if(v1.position.x > 8)
 			return;
-		if(v1.position.y > 16)
+		if(v1.position.y > 8)
 			return;
-		if(v2.position.x > 16)
+		if(v2.position.x > 8)
 			return;
-		if(v2.position.y > 16)
+		if(v2.position.y > 8)
 			return;
 
 
 		//if(m_uTrianglesAdded > 1) return;
 		//LogManager::getSingleton().logMessage("Adding Triangle " + StringConverter::toString(m_uTrianglesAdded));
 		m_uTrianglesAdded++;
-		m_uVerticesAdded += 3;	
-
+		m_uVerticesAdded += 3;			
 		
-		SurfaceVertexIterator v0Iter = find(m_listVertices.begin(), m_listVertices.end(), v0);
-		if(v0Iter == m_listVertices.end())
-		{		
-			//LogManager::getSingleton().logMessage("Adding Vertex " + StringConverter::toString(v0.position.x) + "," + StringConverter::toString(v0.position.y) + "," + StringConverter::toString(v0.position.z));
-			m_listVertices.push_back(v0);
-			v0Iter = m_listVertices.end();
-			v0Iter--;
-		}
-		//else
-			//LogManager::getSingleton().logMessage("Already Exists " + StringConverter::toString(v0.position.x) + "," + StringConverter::toString(v0.position.y) + "," + StringConverter::toString(v0.position.z));
-
-		SurfaceVertexIterator v1Iter = find(m_listVertices.begin(), m_listVertices.end(), v1);
-		if(v1Iter == m_listVertices.end())
-		{
-			//LogManager::getSingleton().logMessage("Adding Vertex " + StringConverter::toString(v1.position.x) + "," + StringConverter::toString(v1.position.y) + "," + StringConverter::toString(v1.position.z));
-			m_listVertices.push_back(v1);
-			v1Iter = m_listVertices.end();
-			v1Iter--;
-		}
-		//else
-			//LogManager::getSingleton().logMessage("Already Exists " + StringConverter::toString(v1.position.x) + "," + StringConverter::toString(v1.position.y) + "," + StringConverter::toString(v1.position.z));
-
-		SurfaceVertexIterator v2Iter = find(m_listVertices.begin(), m_listVertices.end(), v2);
-		if(v2Iter == m_listVertices.end())
-		{
-			//LogManager::getSingleton().logMessage("Adding Vertex " + StringConverter::toString(v2.position.x) + "," + StringConverter::toString(v2.position.y) + "," + StringConverter::toString(v2.position.z));
-			m_listVertices.push_back(v2);
-			v2Iter = m_listVertices.end();
-			v2Iter--;
-		}
-		//else
-			//LogManager::getSingleton().logMessage("Already Exists " + StringConverter::toString(v2.position.x) + "," + StringConverter::toString(v2.position.y) + "," + StringConverter::toString(v2.position.z));
-
-		/*SurfaceEdgeIterator v0v1Iter = m_listEdges.end();
-		SurfaceEdgeIterator v1v2Iter = m_listEdges.end();
-		SurfaceEdgeIterator v2v0Iter = m_listEdges.end();
-		SurfaceEdgeIterator v1v0Iter = m_listEdges.end();
-		SurfaceEdgeIterator v2v1Iter = m_listEdges.end();
-		SurfaceEdgeIterator v0v2Iter = m_listEdges.end();
-		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
-		{
-			if((edgeIter->otherHalfEdge->target == v0) && (edgeIter->target == v1))
-				v0v1Iter = edgeIter;
-			if((edgeIter->otherHalfEdge->target == v1) && (edgeIter->target == v2))
-				v1v2Iter = edgeIter;
-			if((edgeIter->otherHalfEdge->target == v2) && (edgeIter->target == v0))
-				v2v0Iter = edgeIter;
-			if((edgeIter->otherHalfEdge->target == v1) && (edgeIter->target == v0))
-				v1v0Iter = edgeIter;
-			if((edgeIter->otherHalfEdge->target == v2) && (edgeIter->target == v1))
-				v2v1Iter = edgeIter;
-			if((edgeIter->otherHalfEdge->target == v0) && (edgeIter->target == v2))
-				v0v2Iter = edgeIter;
-		}
-
-		if(v0v1Iter == m_listEdges.end())
-		{
-			SurfaceEdge v0v1;
-			m_listEdges.push_back(v0v1);
-			SurfaceEdgeIterator v0v1ToAdd;
-		}*/
+		SurfaceVertexIterator v0Iter = findVertex(v0);
+		SurfaceVertexIterator v1Iter = findVertex(v1);
+		SurfaceVertexIterator v2Iter = findVertex(v2);
+		
 
 		//LogManager::getSingleton().logMessage("Creating Edges");
-		SurfaceEdge v0v1;
+		/*SurfaceEdge v0v1;
 		v0v1.target = v1Iter;
 		SurfaceEdge v1v2;
 		v1v2.target = v2Iter;
@@ -145,7 +87,11 @@ namespace Ogre
 		v1v2Iter--;
 		m_listEdges.push_back(v2v0);
 		SurfaceEdgeIterator v2v0Iter = m_listEdges.end();
-		v2v0Iter--;
+		v2v0Iter--;*/
+
+		SurfaceEdgeIterator v0v1Iter = findEdge(v0Iter,v1Iter);
+		SurfaceEdgeIterator v1v2Iter = findEdge(v1Iter,v2Iter);
+		SurfaceEdgeIterator v2v0Iter = findEdge(v2Iter,v0Iter);
 
 		v0Iter->edge = v0v1Iter;
 		v1Iter->edge = v1v2Iter;
@@ -174,6 +120,57 @@ namespace Ogre
 		v0v1Iter->hasTriangle = true;
 		v1v2Iter->hasTriangle = true;
 		v2v0Iter->hasTriangle = true;
+	}
+
+	SurfaceVertexIterator SurfacePatch::findVertex(const SurfaceVertex& vertex)
+	{
+		SurfaceVertexIterator vertexIter = find(m_listVertices.begin(), m_listVertices.end(), vertex);
+		if(vertexIter == m_listVertices.end())
+		{		
+			//LogManager::getSingleton().logMessage("Adding Vertex " + StringConverter::toString(v0.position.x) + "," + StringConverter::toString(v0.position.y) + "," + StringConverter::toString(v0.position.z));
+			m_listVertices.push_back(vertex);
+			vertexIter = m_listVertices.end();
+			vertexIter--;
+		}
+		return vertexIter;
+	}
+
+	SurfaceEdgeIterator SurfacePatch::findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
+	{
+		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
+		{
+			if((edgeIter->target == target) && (edgeIter->otherHalfEdge->target == source))
+			{
+				return edgeIter;
+			}
+		}
+
+		//Not found - add it.
+		SurfaceEdge edge;
+		edge.target = target;
+		SurfaceEdge otherEdge;
+		otherEdge.target = source;
+
+		m_listEdges.push_back(edge);
+		SurfaceEdgeIterator edgeIter = m_listEdges.end();
+		edgeIter--;
+
+		m_listEdges.push_back(otherEdge);
+		SurfaceEdgeIterator otherEdgeIter = m_listEdges.end();
+		otherEdgeIter--;
+
+		edgeIter->otherHalfEdge = otherEdgeIter;
+		edgeIter->nextHalfEdge = edgeIter;
+		edgeIter->previousHalfEdge = edgeIter;
+
+		otherEdgeIter->otherHalfEdge = edgeIter;
+		otherEdgeIter->nextHalfEdge = otherEdgeIter;
+		otherEdgeIter->previousHalfEdge = otherEdgeIter;
+
+		edgeIter->hasTriangle = false;
+		otherEdgeIter->hasTriangle = false;
+
+		return edgeIter;
 	}
 
 	void SurfacePatch::computeNormalsFromVolume(VolumeIterator volIter)
