@@ -57,7 +57,8 @@ namespace Ogre
 #endif
 
 	   bool canRemoveVertex(SurfaceVertexIterator vertexIter);
-	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter);
+	   bool canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge);
+	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge);
 	   std::list<SurfaceEdgeIterator> removeTrianglesAndFindEdges(SurfaceVertexIterator vertexIter);
 	   bool decimate3(void);
 

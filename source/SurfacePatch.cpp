@@ -47,17 +47,17 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		if(v0.position.x > 8)
+		if(v0.position.x > 16)
 			return;
-		if(v0.position.y > 8)
+		if(v0.position.y > 16)
 			return;
-		if(v1.position.x > 8)
+		if(v1.position.x > 16)
 			return;
-		if(v1.position.y > 8)
+		if(v1.position.y > 16)
 			return;
-		if(v2.position.x > 8)
+		if(v2.position.x > 16)
 			return;
-		if(v2.position.y > 8)
+		if(v2.position.y > 16)
 			return;
 
 
@@ -388,8 +388,55 @@ namespace Ogre
 		return allXMatch || allYMatch || allZMatch;
 	}
 
-	std::list<SurfaceVertexIterator> SurfacePatch::findConnectedVertices(SurfaceVertexIterator vertexIter)
+	bool SurfacePatch::canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge)
 	{
+		bool allXMatch = true;
+		bool allYMatch = true;
+		bool allZMatch = true;
+		bool allNormalsMatch = true;
+		bool twoEdgesMatch = true;
+
+		for(std::list<SurfaceVertexIterator>::iterator connectedIter = listConnectedIter.begin(); connectedIter != listConnectedIter.end(); ++connectedIter)
+		{
+			if((*connectedIter)->position.x != vertexIter->position.x)
+			{
+				allXMatch = false;
+			}
+			if((*connectedIter)->position.y != vertexIter->position.y)
+			{
+				allYMatch = false;
+			}
+			if((*connectedIter)->position.z != vertexIter->position.z)
+			{
+				allZMatch = false;
+			}
+			//FIXME - already normalised?
+			if((*connectedIter)->normal.normalisedCopy().dotProduct(vertexIter->normal.normalisedCopy()) < 0.99)
+			{
+				return false;				
+			}
+		}
+
+		if(isEdge)
+		{
+			SurfaceVertexIterator firstExtreme = *(listConnectedIter.begin());
+			SurfaceVertexIterator secondExtreme = *(--listConnectedIter.end());
+
+			bool edgeXMatch = (firstExtreme->position.x == vertexIter->position.x) && (secondExtreme->position.x == vertexIter->position.x);
+			bool edgeYMatch = (firstExtreme->position.y == vertexIter->position.y) && (secondExtreme->position.y == vertexIter->position.y);
+			bool edgeZMatch = (firstExtreme->position.z == vertexIter->position.z) && (secondExtreme->position.z == vertexIter->position.z);
+
+			twoEdgesMatch = ((edgeXMatch&&edgeYMatch) || (edgeXMatch&&edgeZMatch) || (edgeYMatch&&edgeZMatch));
+		}
+		
+
+		return (allXMatch || allYMatch || allZMatch)
+			&& (twoEdgesMatch);
+	}
+
+	std::list<SurfaceVertexIterator> SurfacePatch::findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge)
+	{
+		isEdge = false;
 		std::list<SurfaceVertexIterator> result;
 		//LogManager::getSingleton().logMessage("findConnectedVertices " + vertexIter->toString());
 
@@ -417,6 +464,8 @@ namespace Ogre
 		{
 			//LogManager::getSingleton().logMessage("Is edge");
 			//In this case vertexIter is on an edge/
+
+			isEdge = true;
 
 			nextEdge = firstEdge;
 			previousEdge = firstEdge;
@@ -525,27 +574,27 @@ namespace Ogre
 		//int movable = 0;
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());
-			if(canRemoveVertex(vertexIter) == false)
-			{
-				continue;
-			}
-			LogManager::getSingleton().logMessage("Vertex can be removed");
+			LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());			
 
-			std::list<SurfaceVertexIterator> listConnectedVertices = findConnectedVertices(vertexIter);		
+			bool isEdge;
+			std::list<SurfaceVertexIterator> listConnectedVertices = findConnectedVertices(vertexIter,isEdge);		
 			listConnectedVertices.remove(vertexIter);
 			listConnectedVertices.unique();
-
-			SurfaceEdgeIterator firstEdge = vertexIter->edge;
-			SurfaceEdgeIterator nextEdge = firstEdge;
-
 			
 			LogManager::getSingleton().logMessage("No of connected vertices = " + StringConverter::toString(listConnectedVertices.size()));
 			for(std::list<SurfaceVertexIterator>::iterator iter = listConnectedVertices.begin(); iter != listConnectedVertices.end(); ++iter)
 			{
 				LogManager::getSingleton().logMessage("    Connected vertex = " + (*iter)->toString());
 			}
+
+			if(canRemoveVertexFrom(vertexIter, listConnectedVertices, isEdge) == false)
+			{
+				continue;
+			}
+			LogManager::getSingleton().logMessage("Vertex can be removed");
 			
+			SurfaceEdgeIterator firstEdge = vertexIter->edge;
+			SurfaceEdgeIterator nextEdge = firstEdge;
 			nextEdge = firstEdge;
 			std::list<SurfaceEdgeIterator> edgesToRemove = removeTrianglesAndFindEdges(vertexIter);
 			/*do
