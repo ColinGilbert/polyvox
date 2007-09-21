@@ -35,8 +35,9 @@ namespace Ogre
 	   void endDefinition(void);
 
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);	   
-	   SurfaceVertexIterator findVertex(const SurfaceVertex& vertex);
+	   SurfaceVertexIterator findOrAddVertex(const SurfaceVertex& vertex);
 	   SurfaceEdgeIterator findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target);
+	   SurfaceEdgeIterator findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target);
 	   //SurfaceVertexIterator findTriangle(const SurfaceTriangle& triangle);
 
 	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);

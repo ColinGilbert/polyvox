@@ -70,7 +70,7 @@ namespace Ogre
 						volIter.setVoxelAt(x,y,z,0);
 				}
 			}
-			//volIter.setVoxelAt(130,130,23,0);
+			volIter.setVoxelAt(130,130,23,0);
 
 			//Periodically see if we can tidy the memory to avoid excessive usage during loading.
 			if(z%OGRE_BLOCK_SIDE_LENGTH == OGRE_BLOCK_SIDE_LENGTH-1)

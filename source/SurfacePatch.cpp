@@ -64,14 +64,14 @@ namespace Ogre
 		m_uTrianglesAdded++;
 		m_uVerticesAdded += 3;			
 		
-		SurfaceVertexIterator v0Iter = findVertex(v0);
-		SurfaceVertexIterator v1Iter = findVertex(v1);
-		SurfaceVertexIterator v2Iter = findVertex(v2);
+		SurfaceVertexIterator v0Iter = findOrAddVertex(v0);
+		SurfaceVertexIterator v1Iter = findOrAddVertex(v1);
+		SurfaceVertexIterator v2Iter = findOrAddVertex(v2);
 		
 
-		SurfaceEdgeIterator v0v1Iter = findEdge(v0Iter,v1Iter);
-		SurfaceEdgeIterator v1v2Iter = findEdge(v1Iter,v2Iter);
-		SurfaceEdgeIterator v2v0Iter = findEdge(v2Iter,v0Iter);
+		SurfaceEdgeIterator v0v1Iter = findOrAddEdge(v0Iter,v1Iter);
+		SurfaceEdgeIterator v1v2Iter = findOrAddEdge(v1Iter,v2Iter);
+		SurfaceEdgeIterator v2v0Iter = findOrAddEdge(v2Iter,v0Iter);
 
 		v0Iter->edge = v0v1Iter;
 		v1Iter->edge = v1v2Iter;
@@ -98,7 +98,7 @@ namespace Ogre
 		v2v0Iter->triangle = iterTriangle;
 	}
 
-	SurfaceVertexIterator SurfacePatch::findVertex(const SurfaceVertex& vertex)
+	SurfaceVertexIterator SurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
 	{
 		SurfaceVertexIterator vertexIter = find(m_listVertices.begin(), m_listVertices.end(), vertex);
 		if(vertexIter == m_listVertices.end())
@@ -112,6 +112,20 @@ namespace Ogre
 	}
 
 	SurfaceEdgeIterator SurfacePatch::findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
+	{
+		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
+		{
+			if((edgeIter->target == target) && (edgeIter->otherHalfEdge->target == source))
+			{
+				return edgeIter;
+			}
+		}
+
+		//Not found - return end.
+		return m_listEdges.end();
+	}
+
+	SurfaceEdgeIterator SurfacePatch::findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
 	{
 		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
 		{
@@ -484,25 +498,28 @@ namespace Ogre
 			}
 			LogManager::getSingleton().logMessage("Vertex can be removed");
 			
-			SurfaceEdgeIterator firstEdge = vertexIter->edge;
+			/*SurfaceEdgeIterator firstEdge = vertexIter->edge;
 			SurfaceEdgeIterator nextEdge = firstEdge;
 			nextEdge = firstEdge;
-			std::list<SurfaceEdgeIterator> edgesToRemove = removeTrianglesAndFindEdges(vertexIter);
-			/*do
-			{
-				LogManager::getSingleton().logMessage("Removing triangle");
-				m_listTriangles.erase(nextEdge->triangle);
+			std::list<SurfaceEdgeIterator> edgesToRemove = removeTrianglesAndFindEdges(vertexIter);			
 
-				edgesToRemove.push_back(nextEdge);
-				nextEdge = nextEdge->previousHalfEdge;
-				edgesToRemove.push_back(nextEdge);
-				nextEdge = nextEdge->otherHalfEdge;
-			}while(nextEdge != firstEdge);*/
-
-			LogManager::getSingleton().logMessage("Removing edges " + vertexIter->toString());
 			for(std::list<SurfaceEdgeIterator>::iterator edgesToRemoveIter = edgesToRemove.begin(); edgesToRemoveIter != edgesToRemove.end(); ++edgesToRemoveIter)
 			{
 				m_listEdges.erase(*edgesToRemoveIter);
+			}*/
+
+			for(std::list<SurfaceVertexIterator>::iterator iter = listConnectedVertices.begin(); iter != listConnectedVertices.end(); ++iter)
+			{
+				SurfaceEdgeIterator edgeToDelete = findEdge(vertexIter, *iter);
+				SurfaceEdgeIterator otherEdgeToDelete = edgeToDelete->otherHalfEdge;
+
+				if(edgeToDelete->nextHalfEdge != edgeToDelete->otherHalfEdge)
+				{
+					m_listTriangles.erase(edgeToDelete->triangle);
+				}
+
+				m_listEdges.erase(edgeToDelete);
+				m_listEdges.erase(otherEdgeToDelete);
 			}
 
 			LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
