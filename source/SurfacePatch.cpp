@@ -401,75 +401,6 @@ namespace Ogre
 		return result;
 	}
 
-	std::list<SurfaceEdgeIterator> SurfacePatch::removeTrianglesAndFindEdges(SurfaceVertexIterator vertexIter)
-	{
-		std::list<SurfaceEdgeIterator> result;
-		//LogManager::getSingleton().logMessage("removeTrianglesAndFindEdges " + vertexIter->toString());
-
-		SurfaceEdgeIterator firstEdge = vertexIter->edge;
-		SurfaceEdgeIterator nextEdge = firstEdge;
-		SurfaceEdgeIterator previousEdge = firstEdge;
-		int ct = 0;
-		do
-		{
-			ct++;
-			//LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
-			if(ct > 100)
-			{
-				LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
-				exit(1);
-			}
-
-			if(nextEdge->nextHalfEdge != nextEdge->otherHalfEdge)
-			{
-				m_listTriangles.erase(nextEdge->triangle);
-			}
-
-			result.push_back(nextEdge);
-			result.push_back(nextEdge->otherHalfEdge);
-			previousEdge = nextEdge;
-			nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
-
-		}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
-
-		if(nextEdge == previousEdge)
-		{
-			//LogManager::getSingleton().logMessage("Is edge");
-			//In this case vertexIter is on an edge
-			//return false;
-
-			nextEdge = firstEdge;
-			previousEdge = firstEdge;
-
-			previousEdge = nextEdge;
-			nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
-
-			int ct2 = 0;
-			do
-			{
-				ct2++;
-				//LogManager::getSingleton().logMessage("ct2 = " + StringConverter::toString(ct2));
-				if(ct2 > 100)
-				{
-					LogManager::getSingleton().logMessage("ct2 too big!!! Aborting decimation");
-					exit(1);
-				}
-
-				m_listTriangles.erase(nextEdge->triangle);
-
-				result.push_back(nextEdge);
-				result.push_back(nextEdge->otherHalfEdge);
-				previousEdge = nextEdge;
-				nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
-
-			}while(nextEdge != previousEdge);
-		}
-
-		//LogManager::getSingleton().logMessage("Done find");
-
-		return result;
-	}
-
 	bool SurfacePatch::decimateOneVertex(void)
 	{
 		bool didDecimation = false;
@@ -497,16 +428,6 @@ namespace Ogre
 				continue;
 			}
 			LogManager::getSingleton().logMessage("Vertex can be removed");
-			
-			/*SurfaceEdgeIterator firstEdge = vertexIter->edge;
-			SurfaceEdgeIterator nextEdge = firstEdge;
-			nextEdge = firstEdge;
-			std::list<SurfaceEdgeIterator> edgesToRemove = removeTrianglesAndFindEdges(vertexIter);			
-
-			for(std::list<SurfaceEdgeIterator>::iterator edgesToRemoveIter = edgesToRemove.begin(); edgesToRemoveIter != edgesToRemove.end(); ++edgesToRemoveIter)
-			{
-				m_listEdges.erase(*edgesToRemoveIter);
-			}*/
 
 			for(std::list<SurfaceVertexIterator>::iterator iter = listConnectedVertices.begin(); iter != listConnectedVertices.end(); ++iter)
 			{
