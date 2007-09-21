@@ -48,6 +48,7 @@ namespace Ogre
 	   bool canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge);
 	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge);
 	   bool decimateOneVertex(void);
+	   void triangulate(std::list<SurfaceVertexIterator> listVertices);
 
 
 	   UIntVector3 m_v3dOffset;

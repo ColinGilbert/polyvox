@@ -448,37 +448,10 @@ namespace Ogre
 
 			//Now triangulate...
 			LogManager::getSingleton().logMessage("Doing triangulation");
-
-			std::list<SurfaceVertexIterator>::iterator v0IterIter = listConnectedVertices.begin();
-			std::list<SurfaceVertexIterator>::iterator v1IterIter = listConnectedVertices.begin();
-			std::list<SurfaceVertexIterator>::iterator v2IterIter = listConnectedVertices.begin();
-			++v1IterIter;
-			++v2IterIter;
-			++v2IterIter;
-			while(v2IterIter != listConnectedVertices.end())
-			{
-				LogManager::getSingleton().logMessage("Dereferenceing");
-				SurfaceVertexIterator v0Iter = *v0IterIter;
-				SurfaceVertexIterator v1Iter = *v1IterIter;
-				SurfaceVertexIterator v2Iter = *v2IterIter;
-
-				LogManager::getSingleton().logMessage("Adding Triangle");
-				addTriangle(*v0Iter, *v1Iter, *v2Iter);
-
-				++v1IterIter;
-				++v2IterIter;
-			}
+			triangulate(listConnectedVertices);
 
 			didDecimation = true;
 			break;	
-		}
-
-		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
-		{
-			if(edgeIter->isDegenerate())
-			{
-				LogManager::getSingleton().logMessage("Error - found degenerate edge");
-			}
 		}
 
 		//LogManager::getSingleton().logMessage("Fixed = " + StringConverter::toString(fixed) + " Movable = "  + StringConverter::toString(movable));
@@ -490,5 +463,26 @@ namespace Ogre
 		getVertexAndIndexData(vertexDataTemp, indexDataTemp);
 
 		return didDecimation;
+	}
+
+	void SurfacePatch::triangulate(std::list<SurfaceVertexIterator> listVertices)
+	{
+		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
+		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
+		std::list<SurfaceVertexIterator>::iterator v2IterIter = listVertices.begin();
+		++v1IterIter;
+		++v2IterIter;
+		++v2IterIter;
+		while(v2IterIter != listVertices.end())
+		{
+			SurfaceVertexIterator v0Iter = *v0IterIter;
+			SurfaceVertexIterator v1Iter = *v1IterIter;
+			SurfaceVertexIterator v2Iter = *v2IterIter;
+
+			addTriangle(*v0Iter, *v1Iter, *v2Iter);
+
+			++v1IterIter;
+			++v2IterIter;
+		}
 	}
 }
