@@ -61,16 +61,16 @@ namespace Ogre
 					volIter.setVoxelAt(x,y,z,value);
 					if(z < 24)
 					{
-						if(x % 32 < 16)
+						//if(x % 32 < 16)
 							volIter.setVoxelAt(x,y,z,4);
-						else
-							volIter.setVoxelAt(x,y,z,5);
+						//else
+							//volIter.setVoxelAt(x,y,z,5);
 					}
 					else
 						volIter.setVoxelAt(x,y,z,0);
 				}
 			}
-			//volIter.setVoxelAt(130,130,23,0);
+			volIter.setVoxelAt(130,130,23,0);
 
 			//Periodically see if we can tidy the memory to avoid excessive usage during loading.
 			if(z%OGRE_BLOCK_SIDE_LENGTH == OGRE_BLOCK_SIDE_LENGTH-1)

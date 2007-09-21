@@ -56,6 +56,9 @@ namespace Ogre
 	   bool matchesAll(uchar target, uchar other);
 #endif
 
+	   bool canRemoveVertex(SurfaceVertexIterator vertexIter);
+	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter);
+	   std::list<SurfaceEdgeIterator> removeTrianglesAndFindEdges(SurfaceVertexIterator vertexIter);
 	   bool decimate3(void);
 
 	   

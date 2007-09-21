@@ -21,6 +21,11 @@ namespace Ogre
 		);
 	}
 
+	bool SurfaceEdge::isDegenerate(void)
+	{
+		return (target == otherHalfEdge->target);
+	}
+
 	/*bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
 	{
 		if(lhs.target == rhs.target)

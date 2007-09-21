@@ -47,18 +47,18 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		/*if(v0.position.x > 16)
+		if(v0.position.x > 8)
 			return;
-		if(v0.position.y > 16)
+		if(v0.position.y > 8)
 			return;
-		if(v1.position.x > 16)
+		if(v1.position.x > 8)
 			return;
-		if(v1.position.y > 16)
+		if(v1.position.y > 8)
 			return;
-		if(v2.position.x > 16)
+		if(v2.position.x > 8)
 			return;
-		if(v2.position.y > 16)
-			return;*/
+		if(v2.position.y > 8)
+			return;
 
 
 		m_uTrianglesAdded++;
@@ -245,12 +245,12 @@ namespace Ogre
 		vertexData.resize(m_listVertices.size());
 		std::copy(m_listVertices.begin(), m_listVertices.end(), vertexData.begin());
 
-		/*LogManager::getSingleton().logMessage("----------Vertex Data----------");
+		LogManager::getSingleton().logMessage("----------Vertex Data----------");
 		for(std::vector<SurfaceVertex>::iterator vertexIter = vertexData.begin(); vertexIter != vertexData.end(); ++vertexIter)
 		{
 			LogManager::getSingleton().logMessage(StringConverter::toString(vertexIter->position.x) + "," + StringConverter::toString(vertexIter->position.y) + "," + StringConverter::toString(vertexIter->position.z));
 		}
-		LogManager::getSingleton().logMessage("----------End Vertex Data----------");*/
+		LogManager::getSingleton().logMessage("----------End Vertex Data----------");
 
 		for(SurfaceTriangleIterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
 		{		
@@ -261,143 +261,355 @@ namespace Ogre
 			edgeIter = iterTriangles->edge;
 			//LogManager::getSingleton().logMessage("Edge Target " + StringConverter::toString(edgeIter->target->position.x) + "," + StringConverter::toString(edgeIter->target->position.y) + "," + StringConverter::toString(edgeIter->target->position.z));
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			LogManager::getSingleton().logMessage("");
+			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			//LogManager::getSingleton().logMessage("End Triangle");
 		}
 	}
 
+	bool SurfacePatch::canRemoveVertex(SurfaceVertexIterator vertexIter)
+	{
+		//LogManager::getSingleton().logMessage("Checking to remove vertex " + vertexIter->toString());
+		//FIXME - use bit flags
+		bool allXMatch = true;
+		bool allYMatch = true;
+		bool allZMatch = true;
+
+		SurfaceEdgeIterator firstEdge = vertexIter->edge;
+		SurfaceEdgeIterator nextEdge = firstEdge;
+		SurfaceEdgeIterator previousEdge = firstEdge;
+		int ct = 0;
+		do
+		{
+			ct++;
+			//LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
+			if(ct > 100)
+			{
+				LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
+				exit(1);
+			}
+
+			LogManager::getSingleton().logMessage("Edge Target = " + nextEdge->target->toString() + " Edge Source = " + nextEdge->otherHalfEdge->target->toString());
+
+			if(nextEdge->target->position.x != vertexIter->position.x)
+			{
+				allXMatch = false;
+			}
+			if(nextEdge->target->position.y != vertexIter->position.y)
+			{
+				allYMatch = false;
+			}
+			if(nextEdge->target->position.z != vertexIter->position.z)
+			{
+				allZMatch = false;
+			}
+
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
+		}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
+
+		if(nextEdge == previousEdge)
+		{
+			LogManager::getSingleton().logMessage("Is edge");
+			//In this case vertexIter is on an edge
+			//return false;
+			SurfaceVertexIterator firstExtreme = nextEdge->target;
+
+			nextEdge = firstEdge;
+			previousEdge = firstEdge;
+
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+
+			int ct2 = 0;
+			do
+			{
+				ct2++;
+				//LogManager::getSingleton().logMessage("ct2 = " + StringConverter::toString(ct2));
+				if(ct2 > 100)
+				{
+					LogManager::getSingleton().logMessage("ct2 too big!!! Aborting decimation");
+					exit(1);
+				}
+
+				LogManager::getSingleton().logMessage("Edge Target = " + nextEdge->target->toString() + " Edge Source = " + nextEdge->otherHalfEdge->target->toString());
+				if(nextEdge->isDegenerate())
+				{
+					LogManager::getSingleton().logMessage("Degenerate Edge Here!!");
+				}
+
+				if(nextEdge->target->position.x != vertexIter->position.x)
+				{
+					allXMatch = false;
+				}
+				if(nextEdge->target->position.y != vertexIter->position.y)
+				{
+					allYMatch = false;
+				}
+				if(nextEdge->target->position.z != vertexIter->position.z)
+				{
+					allZMatch = false;
+				}
+
+				previousEdge = nextEdge;
+				nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+			}while(nextEdge != previousEdge);
+
+			SurfaceVertexIterator secondExtreme = nextEdge->target;
+
+			LogManager::getSingleton().logMessage("FirstExtreme = " + firstExtreme->toString() + ", SecondExtreme = " + secondExtreme->toString());
+
+			bool edgeXMatch = (firstExtreme->position.x == vertexIter->position.x) && (secondExtreme->position.x == vertexIter->position.x);
+			bool edgeYMatch = (firstExtreme->position.y == vertexIter->position.y) && (secondExtreme->position.y == vertexIter->position.y);
+			bool edgeZMatch = (firstExtreme->position.z == vertexIter->position.z) && (secondExtreme->position.z == vertexIter->position.z);
+
+			bool twoEdgesMatch = ((edgeXMatch&&edgeYMatch) || (edgeXMatch&&edgeZMatch) || (edgeYMatch&&edgeZMatch));
+			
+			//LogManager::getSingleton().logMessage("Done checking (edge)");
+
+			return (allXMatch || allYMatch || allZMatch)
+				&& (twoEdgesMatch);
+		}
+
+		//LogManager::getSingleton().logMessage("Done checking (not edge)");
+
+		return allXMatch || allYMatch || allZMatch;
+	}
+
+	std::list<SurfaceVertexIterator> SurfacePatch::findConnectedVertices(SurfaceVertexIterator vertexIter)
+	{
+		std::list<SurfaceVertexIterator> result;
+		//LogManager::getSingleton().logMessage("findConnectedVertices " + vertexIter->toString());
+
+		SurfaceEdgeIterator firstEdge = vertexIter->edge;
+		SurfaceEdgeIterator nextEdge = firstEdge;
+		SurfaceEdgeIterator previousEdge = firstEdge;
+		int ct = 0;
+		do
+		{
+			ct++;
+			//LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
+			if(ct > 100)
+			{
+				LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
+				exit(1);
+			}
+
+			result.push_back(nextEdge->target);
+
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
+		}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
+
+		if(nextEdge == previousEdge)
+		{
+			//LogManager::getSingleton().logMessage("Is edge");
+			//In this case vertexIter is on an edge/
+
+			nextEdge = firstEdge;
+			previousEdge = firstEdge;
+
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+
+			int ct2 = 0;
+			do
+			{
+				ct2++;
+				//LogManager::getSingleton().logMessage("ct2 = " + StringConverter::toString(ct2));
+				if(ct2 > 100)
+				{
+					LogManager::getSingleton().logMessage("ct2 too big!!! Aborting decimation");
+					exit(1);
+				}
+
+				result.push_front(nextEdge->target);
+
+				previousEdge = nextEdge;
+				nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+			}while(nextEdge != previousEdge);
+		}
+
+		//LogManager::getSingleton().logMessage("Done find");
+
+		return result;
+	}
+
+	std::list<SurfaceEdgeIterator> SurfacePatch::removeTrianglesAndFindEdges(SurfaceVertexIterator vertexIter)
+	{
+		std::list<SurfaceEdgeIterator> result;
+		//LogManager::getSingleton().logMessage("removeTrianglesAndFindEdges " + vertexIter->toString());
+
+		SurfaceEdgeIterator firstEdge = vertexIter->edge;
+		SurfaceEdgeIterator nextEdge = firstEdge;
+		SurfaceEdgeIterator previousEdge = firstEdge;
+		int ct = 0;
+		do
+		{
+			ct++;
+			//LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
+			if(ct > 100)
+			{
+				LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
+				exit(1);
+			}
+
+			if(nextEdge->nextHalfEdge != nextEdge->otherHalfEdge)
+			{
+				m_listTriangles.erase(nextEdge->triangle);
+			}
+
+			result.push_back(nextEdge);
+			result.push_back(nextEdge->otherHalfEdge);
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
+
+		}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
+
+		if(nextEdge == previousEdge)
+		{
+			//LogManager::getSingleton().logMessage("Is edge");
+			//In this case vertexIter is on an edge
+			//return false;
+
+			nextEdge = firstEdge;
+			previousEdge = firstEdge;
+
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+
+			int ct2 = 0;
+			do
+			{
+				ct2++;
+				//LogManager::getSingleton().logMessage("ct2 = " + StringConverter::toString(ct2));
+				if(ct2 > 100)
+				{
+					LogManager::getSingleton().logMessage("ct2 too big!!! Aborting decimation");
+					exit(1);
+				}
+
+				m_listTriangles.erase(nextEdge->triangle);
+
+				result.push_back(nextEdge);
+				result.push_back(nextEdge->otherHalfEdge);
+				previousEdge = nextEdge;
+				nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+
+			}while(nextEdge != previousEdge);
+		}
+
+		//LogManager::getSingleton().logMessage("Done find");
+
+		return result;
+	}
+
 	bool SurfacePatch::decimate3(void)
 	{
 		bool didDecimation = false;
-		//LogManager::getSingleton().logMessage("Performing decimation");
-		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
+		LogManager::getSingleton().logMessage("\n\nPerforming decimation");
+		LogManager::getSingleton().logMessage("No of triangles at start = " + StringConverter::toString(m_listTriangles.size()));
 		//int fixed = 0;
 		//int movable = 0;
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			//LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());
-			std::list<SurfaceVertexIterator> listConnectedVertices;
-
-			//listConnectedVertices.push_back(vertexIter);
-			
-			SurfaceEdgeIterator firstEdge = vertexIter->edge;
-			SurfaceVertexIterator firstVertex = firstEdge->target;
-
-			SurfaceEdgeIterator nextEdge = firstEdge;
-			SurfaceEdgeIterator previousEdge = firstEdge;
-			int ct = 0;
-			do
-			{
-				ct++;
-				//LogManager::getSingleton().logMessage("ct = " + StringConverter::toString(ct));
-				if(ct > 100)
-				{
-					LogManager::getSingleton().logMessage("ct too big!!! Aborting decimation");
-					exit(1);
-				}
-
-				listConnectedVertices.push_back(nextEdge->target);
-
-				previousEdge = nextEdge;
-				nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
-			}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
-
-			if(nextEdge == previousEdge)
+			LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());
+			if(canRemoveVertex(vertexIter) == false)
 			{
 				continue;
 			}
+			LogManager::getSingleton().logMessage("Vertex can be removed");
 
-			bool allXMatch = true;
-			bool allYMatch = true;
-			bool allZMatch = true;
-			//LogManager::getSingleton().logMessage("Checking connected vertices");
-			for(std::list<SurfaceVertexIterator>::iterator connectedVertexIter = listConnectedVertices.begin(); connectedVertexIter != listConnectedVertices.end(); ++connectedVertexIter)
+			std::list<SurfaceVertexIterator> listConnectedVertices = findConnectedVertices(vertexIter);		
+			listConnectedVertices.remove(vertexIter);
+			listConnectedVertices.unique();
+
+			SurfaceEdgeIterator firstEdge = vertexIter->edge;
+			SurfaceEdgeIterator nextEdge = firstEdge;
+
+			
+			LogManager::getSingleton().logMessage("No of connected vertices = " + StringConverter::toString(listConnectedVertices.size()));
+			for(std::list<SurfaceVertexIterator>::iterator iter = listConnectedVertices.begin(); iter != listConnectedVertices.end(); ++iter)
 			{
-				if((*connectedVertexIter)->position.x != vertexIter->position.x)
-				{
-					allXMatch = false;
-				}
-				if((*connectedVertexIter)->position.y != vertexIter->position.y)
-				{
-					allYMatch = false;
-				}
-				if((*connectedVertexIter)->position.z != vertexIter->position.z)
-				{
-					allZMatch = false;
-				}
+				LogManager::getSingleton().logMessage("    Connected vertex = " + (*iter)->toString());
+			}
+			
+			nextEdge = firstEdge;
+			std::list<SurfaceEdgeIterator> edgesToRemove = removeTrianglesAndFindEdges(vertexIter);
+			/*do
+			{
+				LogManager::getSingleton().logMessage("Removing triangle");
+				m_listTriangles.erase(nextEdge->triangle);
+
+				edgesToRemove.push_back(nextEdge);
+				nextEdge = nextEdge->previousHalfEdge;
+				edgesToRemove.push_back(nextEdge);
+				nextEdge = nextEdge->otherHalfEdge;
+			}while(nextEdge != firstEdge);*/
+
+			LogManager::getSingleton().logMessage("Removing edges " + vertexIter->toString());
+			for(std::list<SurfaceEdgeIterator>::iterator edgesToRemoveIter = edgesToRemove.begin(); edgesToRemoveIter != edgesToRemove.end(); ++edgesToRemoveIter)
+			{
+				m_listEdges.erase(*edgesToRemoveIter);
 			}
 
-			if((allXMatch) || (allYMatch) || (allZMatch))
+			LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
+			m_listVertices.erase(vertexIter);
+
+			//Now triangulate...
+			LogManager::getSingleton().logMessage("Doing triangulation");
+
+			std::list<SurfaceVertexIterator>::iterator v0IterIter = listConnectedVertices.begin();
+			std::list<SurfaceVertexIterator>::iterator v1IterIter = listConnectedVertices.begin();
+			std::list<SurfaceVertexIterator>::iterator v2IterIter = listConnectedVertices.begin();
+			++v1IterIter;
+			++v2IterIter;
+			++v2IterIter;
+			while(v2IterIter != listConnectedVertices.end())
 			{
-				//LogManager::getSingleton().logMessage("    All flat");
-				
-				nextEdge = firstEdge;
-				std::list<SurfaceEdgeIterator> edgesToRemove;
-				//std::list<SurfaceEdgeIterator> edgesFormingPolygon;
-				do
-				{
-					//LogManager::getSingleton().logMessage("Removing triangle");
-					m_listTriangles.erase(nextEdge->triangle);
+				LogManager::getSingleton().logMessage("Dereferenceing");
+				SurfaceVertexIterator v0Iter = *v0IterIter;
+				SurfaceVertexIterator v1Iter = *v1IterIter;
+				SurfaceVertexIterator v2Iter = *v2IterIter;
 
-					edgesToRemove.push_back(nextEdge);
-					//edgesFormingPolygon.push_back(nextEdge->nextHalfEdge);
-					nextEdge = nextEdge->previousHalfEdge;
-					edgesToRemove.push_back(nextEdge);
-					nextEdge = nextEdge->otherHalfEdge;
-				}while(nextEdge != firstEdge);
+				LogManager::getSingleton().logMessage("Adding Triangle");
+				addTriangle(*v0Iter, *v1Iter, *v2Iter);
 
-				for(std::list<SurfaceEdgeIterator>::iterator edgesToRemoveIter = edgesToRemove.begin(); edgesToRemoveIter != edgesToRemove.end(); ++edgesToRemoveIter)
-				{
-					m_listEdges.erase(*edgesToRemoveIter);
-				}
-
-				//LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
-				m_listVertices.erase(vertexIter);
-
-				//Now triangulate...
-				//LogManager::getSingleton().logMessage("Doing triangulation");
-				//std::list<SurfaceEdgeIterator>::iterator firstEdgeIter = edgesFormingPolygon.begin();
-				//std::list<SurfaceEdgeIterator>::iterator secondEdgeIter = edgesFormingPolygon.begin();
-				//SurfaceEdgeIterator lastAddedEdge = (*edgesFormingPolygon.begin());
-
-				std::list<SurfaceVertexIterator>::iterator v0IterIter = listConnectedVertices.begin();
-				std::list<SurfaceVertexIterator>::iterator v1IterIter = listConnectedVertices.begin();
-				std::list<SurfaceVertexIterator>::iterator v2IterIter = listConnectedVertices.begin();
 				++v1IterIter;
 				++v2IterIter;
-				++v2IterIter;
-				while(v2IterIter != listConnectedVertices.end())
-				{
-					SurfaceVertexIterator v0Iter = *v0IterIter;
-					SurfaceVertexIterator v1Iter = *v1IterIter;
-					SurfaceVertexIterator v2Iter = *v2IterIter;
+			}
 
-					addTriangle(*v0Iter, *v1Iter, *v2Iter);
+			didDecimation = true;
+			break;	
+		}
 
-					++v1IterIter;
-					++v2IterIter;
-				}
-
-				didDecimation = true;
-				break;
-			}			
+		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
+		{
+			if(edgeIter->isDegenerate())
+			{
+				LogManager::getSingleton().logMessage("Error - found degenerate edge");
+			}
 		}
 
 		//LogManager::getSingleton().logMessage("Fixed = " + StringConverter::toString(fixed) + " Movable = "  + StringConverter::toString(movable));
-		//LogManager::getSingleton().logMessage("Done decimation");
-		//LogManager::getSingleton().logMessage("No of triangles = " + StringConverter::toString(m_listTriangles.size()));
+		LogManager::getSingleton().logMessage("Done decimation");
+		LogManager::getSingleton().logMessage("No of triangles at end = " + StringConverter::toString(m_listTriangles.size()));
+
+		std::vector<SurfaceVertex> vertexDataTemp;
+		std::vector<uint> indexDataTemp;
+		getVertexAndIndexData(vertexDataTemp, indexDataTemp);
 
 		return didDecimation;
 	}

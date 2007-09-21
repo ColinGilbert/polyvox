@@ -50,6 +50,8 @@ namespace Ogre
 		//FIXME - could use boost::optional for this?
 
 		std::string toString(void);
+
+		bool isDegenerate(void);
 	};
 
 	bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
