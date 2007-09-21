@@ -43,28 +43,12 @@ namespace Ogre
 
 	   void computeNormalsFromVolume(VolumeIterator volIter);
 
-#ifdef BLAH
-	   bool decimate(void);
-	   bool canCollapseEdge(SurfaceVertex target, SurfaceVertex other);
-	   void collapseEdge(SurfaceEdgeIterator edgeIter);
-#endif
 
-#ifdef BLAH2
-	   bool decimate2(void);
-	   bool canCollapseEdge2(SurfaceVertex target, SurfaceVertex other);
-	   void collapseEdge2(SurfaceEdgeIterator edgeIter);
-	   bool matchesAll(uchar target, uchar other);
-#endif
-
-	   bool canRemoveVertex(SurfaceVertexIterator vertexIter);
 	   bool canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge);
 	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge);
 	   std::list<SurfaceEdgeIterator> removeTrianglesAndFindEdges(SurfaceVertexIterator vertexIter);
-	   bool decimate3(void);
+	   bool decimateOneVertex(void);
 
-	   
-
-	   //bool verticesArePlanar(SurfaceVertexIterator iterCurrentVertex);
 
 	   UIntVector3 m_v3dOffset;
 
