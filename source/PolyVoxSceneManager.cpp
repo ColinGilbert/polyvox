@@ -770,25 +770,25 @@ namespace Ogre
 
 					SurfaceVertex surfaceVertex0(vertex0);
 					if(material0 == material)
-						surfaceVertex0.alpha = 1.0;
+						surfaceVertex0.setAlpha(1.0);
 					else
-						surfaceVertex0.alpha = 0.0;
+						surfaceVertex0.setAlpha(0.0);
 					//surfaceVertex0.normal = Vector3(1.0,1.0,1.0);
 					surfaceVertex0.setNormal(Vector3(0.0,0.0,0.0));
 
 					SurfaceVertex surfaceVertex1(vertex1);
 					if(material1 == material)
-						surfaceVertex1.alpha = 1.0;
+						surfaceVertex1.setAlpha(1.0);
 					else
-						surfaceVertex1.alpha = 0.0;
+						surfaceVertex1.setAlpha(0.0);
 					//surfaceVertex1.normal = Vector3(1.0,1.0,1.0);
 					surfaceVertex1.setNormal(Vector3(0.0,0.0,0.0));
 
 					SurfaceVertex surfaceVertex2(vertex2);
 					if(material2 == material)
-						surfaceVertex2.alpha = 1.0;
+						surfaceVertex2.setAlpha(1.0);
 					else
-						surfaceVertex2.alpha = 0.0;
+						surfaceVertex2.setAlpha(0.0);
 					//surfaceVertex2.normal = Vector3(1.0,1.0,1.0);
 					surfaceVertex2.setNormal(Vector3(0.0,0.0,0.0));
 

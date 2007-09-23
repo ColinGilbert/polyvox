@@ -73,9 +73,9 @@ namespace Ogre
 		SurfaceEdgeIterator v1v2Iter = findOrAddEdge(v1Iter,v2Iter);
 		SurfaceEdgeIterator v2v0Iter = findOrAddEdge(v2Iter,v0Iter);
 
-		v0Iter->edge = v0v1Iter;
-		v1Iter->edge = v1v2Iter;
-		v2Iter->edge = v2v0Iter;
+		v0Iter->setEdge(v0v1Iter);
+		v1Iter->setEdge(v1v2Iter);
+		v2Iter->setEdge(v2v0Iter);
 
 		v0v1Iter->nextHalfEdge = v1v2Iter;
 		v1v2Iter->nextHalfEdge = v2v0Iter;
@@ -345,7 +345,7 @@ namespace Ogre
 		std::list<SurfaceVertexIterator> result;
 		//LogManager::getSingleton().logMessage("findConnectedVertices " + vertexIter->toString());
 
-		SurfaceEdgeIterator firstEdge = vertexIter->edge;
+		SurfaceEdgeIterator firstEdge = vertexIter->getEdge();
 		SurfaceEdgeIterator nextEdge = firstEdge;
 		SurfaceEdgeIterator previousEdge = firstEdge;
 		int ct = 0;

@@ -87,7 +87,7 @@ namespace Ogre
 		  *prPos++ = verticesToSet[i].getNormal().y;
 		  *prPos++ = verticesToSet[i].getNormal().z;
 
-		  *prPos++ = verticesToSet[i].alpha;
+		  *prPos++ = verticesToSet[i].getAlpha();
 
 		  if(verticesToSet[i].getPosition().x < vaabMin.x)
 			 vaabMin.x = verticesToSet[i].getPosition().x;

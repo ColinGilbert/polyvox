@@ -24,9 +24,14 @@ namespace Ogre
 		m_uHash = (position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z);
 	}
 
-	const UIntVector3& SurfaceVertex::getPosition(void) const
+	float SurfaceVertex::getAlpha(void) const
 	{
-		return position;
+		return alpha;
+	}	
+
+	const SurfaceEdgeIterator& SurfaceVertex::getEdge(void) const
+	{
+		return edge;
 	}
 
 	const Vector3& SurfaceVertex::getNormal(void) const
@@ -34,11 +39,26 @@ namespace Ogre
 		return normal;
 	}
 
+	const UIntVector3& SurfaceVertex::getPosition(void) const
+	{
+		return position;
+	}
+
+	void SurfaceVertex::setAlpha(float alphaToSet)
+	{
+		alpha = alphaToSet;
+	}
+
+	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet)
+	{
+		edge = edgeToSet;
+	}
+
 	void SurfaceVertex::setNormal(const Vector3& normalToSet)
 	{
 		normal = normalToSet;
 		normal.normalise();
-	}
+	}		
 
 	std::string SurfaceVertex::toString(void)
 	{
