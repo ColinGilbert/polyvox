@@ -1,8 +1,8 @@
 #ifndef __SurfacePatch_H__
 #define __SurfacePatch_H__
 
+#include <set>
 #include <list>
-#include <vector>
 
 #include "IntegralVector3.h"
 
@@ -19,9 +19,9 @@ namespace Ogre
 	};
 
 	class SurfaceVertex;
-	typedef std::list<SurfaceVertex>::iterator SurfaceVertexIterator;
+	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
 	class SurfaceTriangle;
-	typedef std::list<SurfaceTriangle>::iterator SurfaceTriangleIterator;
+	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 	class SurfaceEdge;
 	typedef std::list<SurfaceEdge>::iterator SurfaceEdgeIterator;
 
@@ -55,8 +55,8 @@ namespace Ogre
 	   UIntVector3 m_v3dOffset;
 
 	private:
-		std::list<SurfaceVertex> m_listVertices;
-		std::list<SurfaceTriangle> m_listTriangles;
+		std::set<SurfaceVertex> m_listVertices;
+		std::set<SurfaceTriangle> m_listTriangles;
 		std::list<SurfaceEdge> m_listEdges;
 
 		//std::vector<SurfaceVertex> m_vecVertexData;

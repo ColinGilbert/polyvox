@@ -50,6 +50,11 @@ namespace Ogre
 			flags |= 32;*/
 	}
 
+	const UIntVector3& SurfaceVertex::getPosition(void) const
+	{
+		return position;
+	}
+
 	std::string SurfaceVertex::toString(void)
 	{
 		std::stringstream ss;
@@ -84,17 +89,17 @@ namespace Ogre
 
 		return value == rhsValue;*/
 
-		unsigned long lhsOffset = (lhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.z);
-		unsigned long rhsOffset = (rhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.z);
+		unsigned long lhsOffset = (lhs.getPosition().x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.getPosition().y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.getPosition().z);
+		unsigned long rhsOffset = (rhs.getPosition().x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.getPosition().y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.getPosition().z);
 
 		return (lhsOffset == rhsOffset) /*&& (abs(lhs.alpha - rhs.alpha) <= 0.01)*/;
 	}
 
-	/*bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs)
+	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs)
 	{
-		unsigned long lhsOffset = (lhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.position.z);
-		unsigned long rhsOffset = (rhs.position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.position.z);
+		unsigned long lhsOffset = (lhs.getPosition().x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.getPosition().y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (lhs.getPosition().z);
+		unsigned long rhsOffset = (rhs.getPosition().x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.getPosition().y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (rhs.getPosition().z);
 
 		return lhsOffset < rhsOffset;		
-	}*/	
+	}	
 }

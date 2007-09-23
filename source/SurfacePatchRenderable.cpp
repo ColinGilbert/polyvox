@@ -66,12 +66,12 @@ namespace Ogre
 	   int size = verticesToSet.size();
 	   Vector3 vaabMin;
 	   Vector3 vaabMax;
-	   vaabMin.x = verticesToSet[0].position.x/2.0f;
-	   vaabMin.y = verticesToSet[0].position.y/2.0f;
-	   vaabMin.z = verticesToSet[0].position.z/2.0f;
-	   vaabMax.x = verticesToSet[0].position.x/2.0f;
-	   vaabMax.y = verticesToSet[0].position.y/2.0f;
-	   vaabMax.z = verticesToSet[0].position.z/2.0f;
+	   vaabMin.x = verticesToSet[0].getPosition().x/2.0f;
+	   vaabMin.y = verticesToSet[0].getPosition().y/2.0f;
+	   vaabMin.z = verticesToSet[0].getPosition().z/2.0f;
+	   vaabMax.x = verticesToSet[0].getPosition().x/2.0f;
+	   vaabMax.y = verticesToSet[0].getPosition().y/2.0f;
+	   vaabMax.z = verticesToSet[0].getPosition().z/2.0f;
 
 	   //LogManager::getSingleton().logMessage("Setting Vertex Data of size " + StringConverter::toString(size));
 
@@ -79,9 +79,9 @@ namespace Ogre
 
 	   for(int i = 0; i < size; i++)
 	   {
-		  *prPos++ = verticesToSet[i].position.x/2.0f;
-		  *prPos++ = verticesToSet[i].position.y/2.0f;
-		  *prPos++ = verticesToSet[i].position.z/2.0f;
+		  *prPos++ = verticesToSet[i].getPosition().x/2.0f;
+		  *prPos++ = verticesToSet[i].getPosition().y/2.0f;
+		  *prPos++ = verticesToSet[i].getPosition().z/2.0f;
 
 		  *prPos++ = verticesToSet[i].normal.x;
 		  *prPos++ = verticesToSet[i].normal.y;
@@ -89,19 +89,19 @@ namespace Ogre
 
 		  *prPos++ = verticesToSet[i].alpha;
 
-		  if(verticesToSet[i].position.x < vaabMin.x)
-			 vaabMin.x = verticesToSet[i].position.x;
-		  if(verticesToSet[i].position.y < vaabMin.y)
-			 vaabMin.y = verticesToSet[i].position.y;
-		  if(verticesToSet[i].position.z < vaabMin.z)
-			 vaabMin.z = verticesToSet[i].position.z;
+		  if(verticesToSet[i].getPosition().x < vaabMin.x)
+			 vaabMin.x = verticesToSet[i].getPosition().x;
+		  if(verticesToSet[i].getPosition().y < vaabMin.y)
+			 vaabMin.y = verticesToSet[i].getPosition().y;
+		  if(verticesToSet[i].getPosition().z < vaabMin.z)
+			 vaabMin.z = verticesToSet[i].getPosition().z;
 
-		  if(verticesToSet[i].position.x > vaabMax.x)
-			 vaabMax.x = verticesToSet[i].position.x;
-		  if(verticesToSet[i].position.y > vaabMax.y)
-			 vaabMax.y = verticesToSet[i].position.y;
-		  if(verticesToSet[i].position.z > vaabMax.z)
-			 vaabMax.z = verticesToSet[i].position.z;
+		  if(verticesToSet[i].getPosition().x > vaabMax.x)
+			 vaabMax.x = verticesToSet[i].getPosition().x;
+		  if(verticesToSet[i].getPosition().y > vaabMax.y)
+			 vaabMax.y = verticesToSet[i].getPosition().y;
+		  if(verticesToSet[i].getPosition().z > vaabMax.z)
+			 vaabMax.z = verticesToSet[i].getPosition().z;
 	   }
 
 	   vbuf->unlock();

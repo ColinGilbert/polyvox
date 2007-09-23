@@ -38,10 +38,10 @@ namespace Ogre
 		return lhs.edge == rhs.edge;
 	}
 
-	/*bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs)
+	bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs)
 	{
 		return (*lhs.edge < *rhs.edge);
-	}*/
+	}
 
 	/*bool operator < (const SurfaceTriangleIterator& lhs, const SurfaceTriangleIterator& rhs)
 	{

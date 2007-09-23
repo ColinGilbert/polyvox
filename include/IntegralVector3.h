@@ -58,7 +58,7 @@ namespace Ogre
 				return false; //They are equal
 		}
 
-		Vector3 toOgreVector3(void)
+		Vector3 toOgreVector3(void) const
 		{
 			return Vector3(Real(x), Real(y), Real(z));
 		}

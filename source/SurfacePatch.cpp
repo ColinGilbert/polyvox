@@ -89,9 +89,11 @@ namespace Ogre
 
 		triangle.edge = v0v1Iter;	
 
-		m_listTriangles.push_back(triangle);
-		SurfaceTriangleIterator iterTriangle = m_listTriangles.end();
-		iterTriangle--;
+		//m_listTriangles.push_back(triangle);
+		//SurfaceTriangleIterator iterTriangle = m_listTriangles.end();
+		//iterTriangle--;
+
+		SurfaceTriangleIterator iterTriangle = m_listTriangles.insert(triangle).first;
 
 		v0v1Iter->triangle = iterTriangle;
 		v1v2Iter->triangle = iterTriangle;
@@ -100,7 +102,7 @@ namespace Ogre
 
 	SurfaceVertexIterator SurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
 	{
-		SurfaceVertexIterator vertexIter = find(m_listVertices.begin(), m_listVertices.end(), vertex);
+		/*SurfaceVertexIterator vertexIter = find(m_listVertices.begin(), m_listVertices.end(), vertex);
 		if(vertexIter == m_listVertices.end())
 		{		
 			//LogManager::getSingleton().logMessage("Adding Vertex " + StringConverter::toString(v0.position.x) + "," + StringConverter::toString(v0.position.y) + "," + StringConverter::toString(v0.position.z));
@@ -108,7 +110,9 @@ namespace Ogre
 			vertexIter = m_listVertices.end();
 			vertexIter--;
 		}
-		return vertexIter;
+		return vertexIter;*/
+
+		return m_listVertices.insert(vertex).first;
 	}
 
 	SurfaceEdgeIterator SurfacePatch::findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
@@ -144,10 +148,12 @@ namespace Ogre
 		m_listEdges.push_back(edge);
 		SurfaceEdgeIterator edgeIter = m_listEdges.end();
 		edgeIter--;
+		//SurfaceEdgeIterator edgeIter = m_listEdges.insert(edge).first;
 
 		m_listEdges.push_back(otherEdge);
 		SurfaceEdgeIterator otherEdgeIter = m_listEdges.end();
 		otherEdgeIter--;
+		//SurfaceEdgeIterator otherEdgeIter = m_listEdges.insert(edge).first;
 
 		edgeIter->otherHalfEdge = otherEdgeIter;
 		edgeIter->nextHalfEdge = otherEdgeIter;
@@ -169,9 +175,9 @@ namespace Ogre
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
 			//LogManager::getSingleton().logMessage("In Loop");
-			const float posX = (vertexIter->position.x + m_v3dOffset.x) / 2.0f;
-			const float posY = (vertexIter->position.y + m_v3dOffset.y) / 2.0f;
-			const float posZ = (vertexIter->position.z + m_v3dOffset.z) / 2.0f;
+			const float posX = (vertexIter->getPosition().x + m_v3dOffset.x) / 2.0f;
+			const float posY = (vertexIter->getPosition().y + m_v3dOffset.y) / 2.0f;
+			const float posZ = (vertexIter->getPosition().z + m_v3dOffset.z) / 2.0f;
 
 			const uint floorX = static_cast<uint>(posX);
 			const uint floorY = static_cast<uint>(posY);
@@ -259,12 +265,12 @@ namespace Ogre
 		vertexData.resize(m_listVertices.size());
 		std::copy(m_listVertices.begin(), m_listVertices.end(), vertexData.begin());
 
-		LogManager::getSingleton().logMessage("----------Vertex Data----------");
+		/*LogManager::getSingleton().logMessage("----------Vertex Data----------");
 		for(std::vector<SurfaceVertex>::iterator vertexIter = vertexData.begin(); vertexIter != vertexData.end(); ++vertexIter)
 		{
-			LogManager::getSingleton().logMessage(StringConverter::toString(vertexIter->position.x) + "," + StringConverter::toString(vertexIter->position.y) + "," + StringConverter::toString(vertexIter->position.z));
+			LogManager::getSingleton().logMessage(StringConverter::toString(vertexIter->getPosition().x) + "," + StringConverter::toString(vertexIter->getPosition().y) + "," + StringConverter::toString(vertexIter->getPosition().z));
 		}
-		LogManager::getSingleton().logMessage("----------End Vertex Data----------");
+		LogManager::getSingleton().logMessage("----------End Vertex Data----------");*/
 
 		for(SurfaceTriangleIterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
 		{		
@@ -275,18 +281,18 @@ namespace Ogre
 			edgeIter = iterTriangles->edge;
 			//LogManager::getSingleton().logMessage("Edge Target " + StringConverter::toString(edgeIter->target->position.x) + "," + StringConverter::toString(edgeIter->target->position.y) + "," + StringConverter::toString(edgeIter->target->position.z));
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			LogManager::getSingleton().logMessage("");
-			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			//LogManager::getSingleton().logMessage("");
+			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
+			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
 			indexData.push_back(iterVertex - vertexData.begin());	
 
 			//LogManager::getSingleton().logMessage("End Triangle");
@@ -303,15 +309,15 @@ namespace Ogre
 
 		for(std::list<SurfaceVertexIterator>::iterator connectedIter = listConnectedIter.begin(); connectedIter != listConnectedIter.end(); ++connectedIter)
 		{
-			if((*connectedIter)->position.x != vertexIter->position.x)
+			if((*connectedIter)->getPosition().x != vertexIter->getPosition().x)
 			{
 				allXMatch = false;
 			}
-			if((*connectedIter)->position.y != vertexIter->position.y)
+			if((*connectedIter)->getPosition().y != vertexIter->getPosition().y)
 			{
 				allYMatch = false;
 			}
-			if((*connectedIter)->position.z != vertexIter->position.z)
+			if((*connectedIter)->getPosition().z != vertexIter->getPosition().z)
 			{
 				allZMatch = false;
 			}
@@ -327,9 +333,9 @@ namespace Ogre
 			SurfaceVertexIterator firstExtreme = *(listConnectedIter.begin());
 			SurfaceVertexIterator secondExtreme = *(--listConnectedIter.end());
 
-			bool edgeXMatch = (firstExtreme->position.x == vertexIter->position.x) && (secondExtreme->position.x == vertexIter->position.x);
-			bool edgeYMatch = (firstExtreme->position.y == vertexIter->position.y) && (secondExtreme->position.y == vertexIter->position.y);
-			bool edgeZMatch = (firstExtreme->position.z == vertexIter->position.z) && (secondExtreme->position.z == vertexIter->position.z);
+			bool edgeXMatch = (firstExtreme->getPosition().x == vertexIter->getPosition().x) && (secondExtreme->getPosition().x == vertexIter->getPosition().x);
+			bool edgeYMatch = (firstExtreme->getPosition().y == vertexIter->getPosition().y) && (secondExtreme->getPosition().y == vertexIter->getPosition().y);
+			bool edgeZMatch = (firstExtreme->getPosition().z == vertexIter->getPosition().z) && (secondExtreme->getPosition().z == vertexIter->getPosition().z);
 
 			twoEdgesMatch = ((edgeXMatch&&edgeYMatch) || (edgeXMatch&&edgeZMatch) || (edgeYMatch&&edgeZMatch));
 		}		
@@ -403,13 +409,13 @@ namespace Ogre
 	bool SurfacePatch::decimateOneVertex(void)
 	{
 		bool didDecimation = false;
-		LogManager::getSingleton().logMessage("\n\nPerforming decimation");
-		LogManager::getSingleton().logMessage("No of triangles at start = " + StringConverter::toString(m_listTriangles.size()));
+		//LogManager::getSingleton().logMessage("\n\nPerforming decimation");
+		//LogManager::getSingleton().logMessage("No of triangles at start = " + StringConverter::toString(m_listTriangles.size()));
 		//int fixed = 0;
 		//int movable = 0;
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());			
+			//LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());			
 
 			bool isEdge;
 			std::list<SurfaceVertexIterator> listConnectedVertices = findConnectedVertices(vertexIter,isEdge);		
@@ -432,7 +438,7 @@ namespace Ogre
 				continue;
 			}
 
-			LogManager::getSingleton().logMessage("Vertex can be removed");
+			//LogManager::getSingleton().logMessage("Vertex can be removed");
 
 			for(std::list<SurfaceVertexIterator>::iterator iter = listConnectedVertices.begin(); iter != listConnectedVertices.end(); ++iter)
 			{
@@ -448,11 +454,11 @@ namespace Ogre
 				m_listEdges.erase(otherEdgeToDelete);
 			}
 
-			LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
+			//LogManager::getSingleton().logMessage("Removing vertex " + vertexIter->toString());
 			m_listVertices.erase(vertexIter);
 
 			//Now triangulate...
-			LogManager::getSingleton().logMessage("Doing triangulation");
+			//LogManager::getSingleton().logMessage("Doing triangulation");
 			triangulate(listConnectedVertices);
 
 			didDecimation = true;
@@ -460,8 +466,8 @@ namespace Ogre
 		}
 
 		//LogManager::getSingleton().logMessage("Fixed = " + StringConverter::toString(fixed) + " Movable = "  + StringConverter::toString(movable));
-		LogManager::getSingleton().logMessage("Done decimation");
-		LogManager::getSingleton().logMessage("No of triangles at end = " + StringConverter::toString(m_listTriangles.size()));
+		//LogManager::getSingleton().logMessage("Done decimation");
+		//LogManager::getSingleton().logMessage("No of triangles at end = " + StringConverter::toString(m_listTriangles.size()));
 
 		/*std::vector<SurfaceVertex> vertexDataTemp;
 		std::vector<uint> indexDataTemp;
@@ -506,8 +512,8 @@ namespace Ogre
 			SurfaceVertexIterator v1Iter = *v1IterIter;
 			SurfaceVertexIterator v2Iter = *v2IterIter;
 
-			Vector3 v1tov0(v0Iter->position.toOgreVector3() -v1Iter->position.toOgreVector3());
-			Vector3 v1tov2(v2Iter->position.toOgreVector3() -v1Iter->position.toOgreVector3());
+			Vector3 v1tov0(v0Iter->getPosition().toOgreVector3() - v1Iter->getPosition().toOgreVector3());
+			Vector3 v1tov2(v2Iter->getPosition().toOgreVector3() - v1Iter->getPosition().toOgreVector3());
 			Vector3 cross = (v1tov2).crossProduct(v1tov0);
 			cross.normalise();
 			

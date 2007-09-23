@@ -25,9 +25,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace Ogre
 {
 	class SurfaceVertex;
-	typedef std::list<SurfaceVertex>::iterator SurfaceVertexIterator;
+	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
 	class SurfaceTriangle;
-	typedef std::list<SurfaceTriangle>::iterator SurfaceTriangleIterator;
+	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 	class SurfaceEdge;
 	typedef std::list<SurfaceEdge>::iterator SurfaceEdgeIterator;
 
@@ -55,7 +55,7 @@ namespace Ogre
 	};
 
 	bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
-	//bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
+	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 }
 
 #endif
