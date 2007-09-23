@@ -87,7 +87,7 @@ namespace Ogre
 
 		SurfaceTriangle triangle;
 
-		triangle.edge = v0v1Iter;	
+		triangle.setEdge(v0v1Iter);	
 
 		//m_listTriangles.push_back(triangle);
 		//SurfaceTriangleIterator iterTriangle = m_listTriangles.end();
@@ -273,7 +273,7 @@ namespace Ogre
 			std::vector<SurfaceVertex>::iterator iterVertex;
 			SurfaceEdgeIterator edgeIter;
 			
-			edgeIter = iterTriangles->edge;
+			edgeIter = iterTriangles->getEdge();
 			//LogManager::getSingleton().logMessage("Edge Target " + StringConverter::toString(edgeIter->target->position.x) + "," + StringConverter::toString(edgeIter->target->position.y) + "," + StringConverter::toString(edgeIter->target->position.z));
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
 			//LogManager::getSingleton().logMessage("");

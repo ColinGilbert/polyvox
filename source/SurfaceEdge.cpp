@@ -15,9 +15,8 @@ namespace Ogre
 	{
 		return
 		(
-			(lhs.target == rhs.target) &&
-			//(lhs.triangle == rhs.triangle)
-			(lhs.otherHalfEdge == rhs.otherHalfEdge)
+			((*lhs.target) == (*rhs.target)) &&
+			((*lhs.otherHalfEdge->target) == (*rhs.otherHalfEdge->target))
 		);
 	}
 
@@ -28,14 +27,16 @@ namespace Ogre
 
 	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
 	{
-		if(lhs.target == rhs.target)
-		{
-			if(lhs.otherHalfEdge->target == rhs.otherHalfEdge->target)
-			{
-				return false;
-			}
-			return (*(lhs.otherHalfEdge->target) < *(rhs.otherHalfEdge->target));
-		}
-		return (*(lhs.target) < *(rhs.target));
+		if ((*lhs.target) < (*rhs.target))
+			return true;
+		if ((*rhs.target) < (*lhs.target))
+			return false;
+
+		if ((*lhs.otherHalfEdge->target) < (*rhs.otherHalfEdge->target))
+			return true;
+		if ((*rhs.otherHalfEdge->target) < (*lhs.otherHalfEdge->target))
+			return false;
+
+		return false;
 	}
 }

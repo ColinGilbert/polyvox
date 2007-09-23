@@ -34,16 +34,22 @@ namespace Ogre
 	class SurfaceTriangle
 	{
 	public:
-
-		SurfaceEdgeIterator edge;
-
 		SurfaceTriangle();
 
+		friend bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
+		friend bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
+
+		const SurfaceEdgeIterator& getEdge(void) const;
+
+		void setEdge(const SurfaceEdgeIterator& edgeToSet);
+
 		//std::string toString(void);
+
+	private:
+		SurfaceEdgeIterator edge;		
 	};
 
-	bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
-	bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs);
+	
 
 	//bool operator < (const SurfaceTriangleIterator& lhs, const SurfaceTriangleIterator& rhs);
 }

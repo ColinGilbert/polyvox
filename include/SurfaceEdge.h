@@ -35,6 +35,9 @@ namespace Ogre
 	{
 	public:
 
+		friend bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
+		friend bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
+
 		//int crud;
 
 		SurfaceVertexIterator target;
@@ -52,10 +55,7 @@ namespace Ogre
 		std::string toString(void);
 
 		bool isDegenerate(void);
-	};
-
-	bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
-	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
+	};	
 }
 
 #endif
