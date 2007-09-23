@@ -36,28 +36,34 @@ namespace Ogre
 
 	class SurfaceVertex
 	{
-	public:		
-		
-		Vector3 normal;
-		float alpha;		
-
-
+	public:	
 		SurfaceEdgeIterator edge;
 
 		SurfaceVertex();
 		SurfaceVertex(UIntVector3 positionToSet);
 		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);	
 
+		friend bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
+		friend bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
+
 		const UIntVector3& getPosition(void) const;
 
+		const Vector3& getNormal(void) const;
+		void setNormal(const Vector3& normalToSet);
+
 		std::string toString(void);
+		float alpha;
 
 	private:
 		UIntVector3 position;
+		Vector3 normal;
+		
+
+		unsigned long m_uHash;
 	};
 
-	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
-	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
+	
+	
 	
 
 	//bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs);

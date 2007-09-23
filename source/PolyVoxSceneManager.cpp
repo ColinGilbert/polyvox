@@ -324,10 +324,10 @@ namespace Ogre
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 			{		
 				LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
-				for(uint regionY = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-2; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
+				for(uint regionY = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-1; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
 				{
 					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
-					for(uint regionX = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-2; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
+					for(uint regionX = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-1; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
 					{
 						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
@@ -774,7 +774,7 @@ namespace Ogre
 					else
 						surfaceVertex0.alpha = 0.0;
 					//surfaceVertex0.normal = Vector3(1.0,1.0,1.0);
-					surfaceVertex0.normal = Vector3(0.0,0.0,0.0);
+					surfaceVertex0.setNormal(Vector3(0.0,0.0,0.0));
 
 					SurfaceVertex surfaceVertex1(vertex1);
 					if(material1 == material)
@@ -782,7 +782,7 @@ namespace Ogre
 					else
 						surfaceVertex1.alpha = 0.0;
 					//surfaceVertex1.normal = Vector3(1.0,1.0,1.0);
-					surfaceVertex1.normal = Vector3(0.0,0.0,0.0);
+					surfaceVertex1.setNormal(Vector3(0.0,0.0,0.0));
 
 					SurfaceVertex surfaceVertex2(vertex2);
 					if(material2 == material)
@@ -790,7 +790,7 @@ namespace Ogre
 					else
 						surfaceVertex2.alpha = 0.0;
 					//surfaceVertex2.normal = Vector3(1.0,1.0,1.0);
-					surfaceVertex2.normal = Vector3(0.0,0.0,0.0);
+					surfaceVertex2.setNormal(Vector3(0.0,0.0,0.0));
 
 					result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
 

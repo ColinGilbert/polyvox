@@ -83,9 +83,9 @@ namespace Ogre
 		  *prPos++ = verticesToSet[i].getPosition().y/2.0f;
 		  *prPos++ = verticesToSet[i].getPosition().z/2.0f;
 
-		  *prPos++ = verticesToSet[i].normal.x;
-		  *prPos++ = verticesToSet[i].normal.y;
-		  *prPos++ = verticesToSet[i].normal.z;
+		  *prPos++ = verticesToSet[i].getNormal().x;
+		  *prPos++ = verticesToSet[i].getNormal().y;
+		  *prPos++ = verticesToSet[i].getNormal().z;
 
 		  *prPos++ = verticesToSet[i].alpha;
 

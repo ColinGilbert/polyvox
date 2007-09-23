@@ -194,19 +194,18 @@ namespace Ogre
 					if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 					{					
 						uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-						vertexIter->normal = Vector3(uFloor - uCeil,0.0,0.0);
+						vertexIter->setNormal(Vector3(uFloor - uCeil,0.0,0.0));
 					}
 					else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
 					{
 						uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-						vertexIter->normal = Vector3(0.0,uFloor - uCeil,0.0);
+						vertexIter->setNormal(Vector3(0.0,uFloor - uCeil,0.0));
 					}
 					else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
 					{
 						uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-						vertexIter->normal = Vector3(0.0, 0.0,uFloor - uCeil);					
+						vertexIter->setNormal(Vector3(0.0, 0.0,uFloor - uCeil));					
 					}
-					vertexIter->normal.normalise();
 					break;
 				}
 			case CENTRAL_DIFFERENCE:
@@ -226,9 +225,7 @@ namespace Ogre
 						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
 					}
 					const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
-					vertexIter->normal = gradFloor + gradCeil;
-					vertexIter->normal *= -1;
-					vertexIter->normal.normalise();
+					vertexIter->setNormal((gradFloor + gradCeil) * -1.0);
 					break;
 				}
 			case SOBEL:
@@ -248,9 +245,7 @@ namespace Ogre
 						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
 					}
 					const Vector3 gradCeil = volIter.getSobelGradient();
-					vertexIter->normal = gradFloor + gradCeil;
-					vertexIter->normal *= -1;
-					vertexIter->normal.normalise();
+					vertexIter->setNormal((gradFloor + gradCeil) * -1.0);
 					break;
 				}
 			}
@@ -322,7 +317,7 @@ namespace Ogre
 				allZMatch = false;
 			}
 			//FIXME - already normalised?
-			if((*connectedIter)->normal.normalisedCopy().dotProduct(vertexIter->normal.normalisedCopy()) < 0.99)
+			if((*connectedIter)->getNormal().dotProduct(vertexIter->getNormal()) < 0.99)
 			{
 				return false;				
 			}
@@ -433,7 +428,7 @@ namespace Ogre
 				continue;
 			}
 
-			if(isPolygonConvex(listConnectedVertices, vertexIter->normal) == false)
+			if(isPolygonConvex(listConnectedVertices, vertexIter->getNormal()) == false)
 			{
 				continue;
 			}
@@ -499,7 +494,6 @@ namespace Ogre
 
 	bool SurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal)
 	{
-		normal.normalise(); //FIXME - don't need this?
 		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
 		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
 		std::list<SurfaceVertexIterator>::iterator v2IterIter = listVertices.begin();
