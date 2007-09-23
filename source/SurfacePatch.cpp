@@ -47,7 +47,7 @@ namespace Ogre
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		if(v0.position.x > 16)
+		/*if(v0.position.x > 16)
 			return;
 		if(v0.position.y > 16)
 			return;
@@ -58,7 +58,7 @@ namespace Ogre
 		if(v2.position.x > 16)
 			return;
 		if(v2.position.y > 16)
-			return;
+			return;*/
 
 
 		m_uTrianglesAdded++;
@@ -435,7 +435,7 @@ namespace Ogre
 
 			if(isPolygonConvex(listConnectedVertices) == false)
 			{
-				return false;
+				continue;
 			}
 
 			LogManager::getSingleton().logMessage("Vertex can be removed");
