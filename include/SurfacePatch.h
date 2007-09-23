@@ -49,7 +49,7 @@ namespace Ogre
 	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge);
 	   bool decimateOneVertex(void);
 	   void triangulate(std::list<SurfaceVertexIterator> listVertices);
-	   bool isPolygonConvex(std::list<SurfaceVertexIterator> listVertices);
+	   bool isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal);
 
 
 	   UIntVector3 m_v3dOffset;

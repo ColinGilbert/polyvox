@@ -275,25 +275,19 @@ namespace Ogre
 			edgeIter = iterTriangles->edge;
 			//LogManager::getSingleton().logMessage("Edge Target " + StringConverter::toString(edgeIter->target->position.x) + "," + StringConverter::toString(edgeIter->target->position.y) + "," + StringConverter::toString(edgeIter->target->position.z));
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			Vector3 v0 = (*(edgeIter->target)).position.toOgreVector3();
 			LogManager::getSingleton().logMessage("");
 			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			Vector3 v1 = (*(edgeIter->target)).position.toOgreVector3();
 			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
 			edgeIter = edgeIter->nextHalfEdge;
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->target));
-			Vector3 v2 = (*(edgeIter->target)).position.toOgreVector3();
 			LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->position.x) + "," + StringConverter::toString(iterVertex->position.y) + "," + StringConverter::toString(iterVertex->position.z));
 			indexData.push_back(iterVertex - vertexData.begin());	
-
-			Vector3 cross = (v0-v1).crossProduct(v2-v1);
-			LogManager::getSingleton().logMessage("Cross = " + StringConverter::toString(cross));
 
 			//LogManager::getSingleton().logMessage("End Triangle");
 		}
@@ -422,18 +416,18 @@ namespace Ogre
 			listConnectedVertices.remove(vertexIter);
 			listConnectedVertices.unique();
 			
-			LogManager::getSingleton().logMessage("No of connected vertices = " + StringConverter::toString(listConnectedVertices.size()));
+			/*LogManager::getSingleton().logMessage("No of connected vertices = " + StringConverter::toString(listConnectedVertices.size()));
 			for(std::list<SurfaceVertexIterator>::iterator iter = listConnectedVertices.begin(); iter != listConnectedVertices.end(); ++iter)
 			{
 				LogManager::getSingleton().logMessage("    Connected vertex = " + (*iter)->toString());
-			}
+			}*/
 
 			if(canRemoveVertexFrom(vertexIter, listConnectedVertices, isEdge) == false)
 			{
 				continue;
 			}
 
-			if(isPolygonConvex(listConnectedVertices) == false)
+			if(isPolygonConvex(listConnectedVertices, vertexIter->normal) == false)
 			{
 				continue;
 			}
@@ -497,8 +491,9 @@ namespace Ogre
 		}
 	}
 
-	bool SurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices)
+	bool SurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal)
 	{
+		normal.normalise(); //FIXME - don't need this?
 		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
 		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
 		std::list<SurfaceVertexIterator>::iterator v2IterIter = listVertices.begin();
@@ -513,10 +508,12 @@ namespace Ogre
 
 			Vector3 v1tov0(v0Iter->position.toOgreVector3() -v1Iter->position.toOgreVector3());
 			Vector3 v1tov2(v2Iter->position.toOgreVector3() -v1Iter->position.toOgreVector3());
-			Vector3 cross = (v1tov0).crossProduct(v1tov2);
-			LogManager::getSingleton().logMessage("Cross = " + StringConverter::toString(cross));
+			Vector3 cross = (v1tov2).crossProduct(v1tov0);
+			cross.normalise();
+			
+			//LogManager::getSingleton().logMessage("Cross = " + StringConverter::toString(cross));
 
-			if(cross.z > 0.0)
+			if(cross.dotProduct(normal) < 0.99)
 			{
 				return false;
 			}
@@ -527,88 +524,4 @@ namespace Ogre
 
 		return true;
 	}
-
-	/*bool SurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices)
-	{
-		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
-		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
-		++v1IterIter;
-
-		while(v1IterIter != listVertices.end())
-		{
-			SurfaceVertexIterator v0Iter = *v0IterIter;
-			SurfaceVertexIterator v1Iter = *v1IterIter;
-
-			Vector3 currentEdge = v1Iter->position.toOgreVector3() - v0Iter->position.toOgreVector3();
-			for(std::list<SurfaceVertexIterator>::iterator currentVertex = listVertices.begin(); currentVertex != listVertices.end(); ++currentVertex)
-			{
-				if((currentVertex == v0IterIter) || (currentVertex == v1IterIter))
-				{
-					continue;
-				}
-				Vector3 v0ToCurrent = (*currentVertex)->position.toOgreVector3() - v0Iter->position.toOgreVector3();
-				if(currentEdge.)
-			}
-
-			++v0IterIter;
-			++v1IterIter;
-		}
-
-		return true;
-	}*/
-
-	/*bool SurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices)
-	{
-		if(listVertices.size() < 3)
-		{
-			LogManager::getSingleton().logMessage("Not enough vertices!");
-			return false;
-		}
-
-		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
-		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
-		std::list<SurfaceVertexIterator>::iterator v2IterIter = listVertices.begin();
-		++v1IterIter;
-		++v2IterIter;
-		++v2IterIter;
-
-		SurfaceVertexIterator v0Iter = *v0IterIter;
-		SurfaceVertexIterator v1Iter = *v1IterIter;
-		SurfaceVertexIterator v2Iter = *v2IterIter;
-
-		Vector3 v0tov1 = v1Iter->position.toOgreVector3() - v0Iter->position.toOgreVector3();
-		Vector3 v1tov2 = v2Iter->position.toOgreVector3() - v1Iter->position.toOgreVector3();
-
-		Vector3 firstCrossProduct = v0tov1.crossProduct(v1tov2);
-		firstCrossProduct.normalise();
-
-		++v0IterIter;
-		++v1IterIter;
-		++v2IterIter;
-
-
-		while(v2IterIter != listVertices.end())
-		{
-			v0Iter = *v0IterIter;
-			v1Iter = *v1IterIter;
-			v2Iter = *v2IterIter;
-
-			v0tov1 = v1Iter->position.toOgreVector3() - v0Iter->position.toOgreVector3();
-			v1tov2 = v2Iter->position.toOgreVector3() - v1Iter->position.toOgreVector3();
-
-			Vector3 currentCrossProduct = v0tov1.crossProduct(v1tov2);
-			currentCrossProduct.normalise();
-			
-			if(firstCrossProduct.dotProduct(currentCrossProduct) < 0.99)
-			{
-				return false;
-			}
-
-			++v0IterIter;
-			++v1IterIter;
-			++v2IterIter;
-		}
-
-		return true;
-	}*/
 }
