@@ -29,18 +29,17 @@ namespace Ogre
 	class SurfaceTriangle;
 	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 	class SurfaceEdge;
-	typedef std::list<SurfaceEdge>::iterator SurfaceEdgeIterator;
+	typedef std::set<SurfaceEdge>::iterator SurfaceEdgeIterator;
 
 	class SurfaceEdge
 	{
 	public:
+		SurfaceEdge(const SurfaceVertexIterator& targetToSet,const SurfaceVertexIterator& sourceToSet);
 
 		friend bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 		friend bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 
-		//int crud;
-
-		SurfaceVertexIterator target;
+		//int crud;		
 
 		SurfaceTriangleIterator triangle;
 
@@ -55,6 +54,20 @@ namespace Ogre
 		std::string toString(void);
 
 		bool isDegenerate(void);
+
+		const SurfaceVertexIterator& getTarget(void)
+		{
+			return target;
+		}
+
+		const SurfaceVertexIterator& getSource(void)
+		{
+			return source;
+		}
+
+	private:
+		SurfaceVertexIterator target;
+		SurfaceVertexIterator source;
 	};	
 }
 

@@ -23,7 +23,7 @@ namespace Ogre
 	class SurfaceTriangle;
 	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 	class SurfaceEdge;
-	typedef std::list<SurfaceEdge>::iterator SurfaceEdgeIterator;
+	typedef std::set<SurfaceEdge>::iterator SurfaceEdgeIterator;
 
 	class SurfacePatch
 	{
@@ -57,7 +57,7 @@ namespace Ogre
 	private:
 		std::set<SurfaceVertex> m_listVertices;
 		std::set<SurfaceTriangle> m_listTriangles;
-		std::list<SurfaceEdge> m_listEdges;
+		std::set<SurfaceEdge> m_listEdges;
 
 		//std::vector<SurfaceVertex> m_vecVertexData;
 		//std::vector<uint> m_vecIndexData;

@@ -29,7 +29,7 @@ namespace Ogre
 	class SurfaceTriangle;
 	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
 	class SurfaceEdge;
-	typedef std::list<SurfaceEdge>::iterator SurfaceEdgeIterator;
+	typedef std::set<SurfaceEdge>::iterator SurfaceEdgeIterator;
 
 	class SurfaceTriangle
 	{

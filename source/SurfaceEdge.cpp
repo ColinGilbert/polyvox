@@ -4,10 +4,16 @@
 
 namespace Ogre
 {
+	SurfaceEdge::SurfaceEdge(const SurfaceVertexIterator& targetToSet,const SurfaceVertexIterator& sourceToSet)
+	{
+		target = targetToSet;
+		source = sourceToSet;
+	}
+
 	std::string SurfaceEdge::toString(void)
 	{
 		std::stringstream ss;
-		ss << "SurfaceEdge: Target Vertex = " << target->toString() << "Source Vertex = " << otherHalfEdge->target->toString();
+		ss << "SurfaceEdge: Target Vertex = " << target->toString() << "Source Vertex = " << source->toString();
 		return ss.str();
 	}
 
@@ -16,13 +22,13 @@ namespace Ogre
 		return
 		(
 			((*lhs.target) == (*rhs.target)) &&
-			((*lhs.otherHalfEdge->target) == (*rhs.otherHalfEdge->target))
+			((*lhs.source) == (*rhs.source))
 		);
 	}
 
 	bool SurfaceEdge::isDegenerate(void)
 	{
-		return (target == otherHalfEdge->target);
+		return (target == source);
 	}
 
 	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
@@ -32,9 +38,9 @@ namespace Ogre
 		if ((*rhs.target) < (*lhs.target))
 			return false;
 
-		if ((*lhs.otherHalfEdge->target) < (*rhs.otherHalfEdge->target))
+		if ((*lhs.source) < (*rhs.source))
 			return true;
-		if ((*rhs.otherHalfEdge->target) < (*lhs.otherHalfEdge->target))
+		if ((*rhs.source) < (*lhs.source))
 			return false;
 
 		return false;
