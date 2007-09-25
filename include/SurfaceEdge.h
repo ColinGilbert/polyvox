@@ -43,11 +43,7 @@ namespace Ogre
 
 		SurfaceTriangleIterator triangle;
 
-		SurfaceEdgeIterator previousHalfEdge;
-
-		SurfaceEdgeIterator nextHalfEdge;
-
-		SurfaceEdgeIterator otherHalfEdge;
+		
 
 		//FIXME - could use boost::optional for this?
 
@@ -55,19 +51,24 @@ namespace Ogre
 
 		bool isDegenerate(void);
 
-		const SurfaceVertexIterator& getTarget(void)
-		{
-			return target;
-		}
+		const SurfaceVertexIterator& getTarget(void);
+		const SurfaceVertexIterator& getSource(void);
+		const SurfaceEdgeIterator& getOtherHalfEdge(void);
+		const SurfaceEdgeIterator& getPreviousHalfEdge(void);
+		const SurfaceEdgeIterator& getNextHalfEdge(void);
 
-		const SurfaceVertexIterator& getSource(void)
-		{
-			return source;
-		}
+		void setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet);
+		void setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet);
+
+		void pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair);
 
 	private:
 		SurfaceVertexIterator target;
 		SurfaceVertexIterator source;
+
+		SurfaceEdgeIterator previousHalfEdge;
+		SurfaceEdgeIterator nextHalfEdge;
+		SurfaceEdgeIterator otherHalfEdge;
 	};	
 }
 

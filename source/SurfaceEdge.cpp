@@ -45,4 +45,46 @@ namespace Ogre
 
 		return false;
 	}
+
+	const SurfaceVertexIterator& SurfaceEdge::getTarget(void)
+	{
+		return target;
+	}
+
+	const SurfaceVertexIterator& SurfaceEdge::getSource(void)
+	{
+		return source;
+	}
+
+	void SurfaceEdge::pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair)
+	{
+		otherHalfEdge = otherHalfEdgeToPair;
+		previousHalfEdge = otherHalfEdgeToPair;
+		nextHalfEdge = otherHalfEdgeToPair;
+	}
+
+	const SurfaceEdgeIterator& SurfaceEdge::getOtherHalfEdge(void)
+	{
+		return otherHalfEdge;
+	}
+
+	const SurfaceEdgeIterator& SurfaceEdge::getPreviousHalfEdge(void)
+	{
+		return previousHalfEdge;
+	}
+
+	const SurfaceEdgeIterator& SurfaceEdge::getNextHalfEdge(void)
+	{
+		return nextHalfEdge;
+	}
+
+	void SurfaceEdge::setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet)
+	{
+		previousHalfEdge = previousHalfEdgeToSet;
+	}
+
+	void SurfaceEdge::setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet)
+	{
+		nextHalfEdge = nextHalfEdgeToSet;
+	}
 }

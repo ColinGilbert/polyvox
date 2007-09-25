@@ -77,13 +77,13 @@ namespace Ogre
 		v1Iter->setEdge(v1v2Iter);
 		v2Iter->setEdge(v2v0Iter);
 
-		v0v1Iter->nextHalfEdge = v1v2Iter;
-		v1v2Iter->nextHalfEdge = v2v0Iter;
-		v2v0Iter->nextHalfEdge = v0v1Iter;
+		v0v1Iter->setNextHalfEdge(v1v2Iter);
+		v1v2Iter->setNextHalfEdge(v2v0Iter);
+		v2v0Iter->setNextHalfEdge(v0v1Iter);
 
-		v0v1Iter->previousHalfEdge = v2v0Iter;
-		v1v2Iter->previousHalfEdge = v0v1Iter;
-		v2v0Iter->previousHalfEdge = v1v2Iter;
+		v0v1Iter->setPreviousHalfEdge(v2v0Iter);
+		v1v2Iter->setPreviousHalfEdge(v0v1Iter);
+		v2v0Iter->setPreviousHalfEdge(v1v2Iter);
 
 		SurfaceTriangle triangle;
 
@@ -137,45 +137,21 @@ namespace Ogre
 
 	SurfaceEdgeIterator SurfacePatch::findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
 	{
-		/*for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
-		{
-			if((edgeIter->target == target) && (edgeIter->source == source))
-			{
-				return edgeIter;
-			}
-		}*/
-
-		SurfaceEdge edgeToFind(target, source);
-		SurfaceEdgeIterator foundEdgeIter = m_listEdges.find(edgeToFind);
-		if(foundEdgeIter != m_listEdges.end())
-		{
-			return foundEdgeIter;
-		}
-
-		//Not found - add it.
 		SurfaceEdge edge(target,source);
-		SurfaceEdge otherEdge(source, target);
+		std::pair<SurfaceEdgeIterator, bool> insertionResult = m_listEdges.insert(edge);
 
-		/*m_listEdges.push_back(edge);
-		SurfaceEdgeIterator edgeIter = m_listEdges.end();
-		edgeIter--;*/
-		SurfaceEdgeIterator edgeIter = m_listEdges.insert(edge).first;
+		if(insertionResult.second == false)
+		{
+			//Edge was already in there, so other edge is too.
+			return insertionResult.first;
+		}
+		SurfaceEdgeIterator edgeIter = insertionResult.first;
 
-		/*m_listEdges.push_back(otherEdge);
-		SurfaceEdgeIterator otherEdgeIter = m_listEdges.end();
-		otherEdgeIter--;*/
+		SurfaceEdge otherEdge(source, target);		
 		SurfaceEdgeIterator otherEdgeIter = m_listEdges.insert(otherEdge).first;
 
-		edgeIter->otherHalfEdge = otherEdgeIter;
-		edgeIter->nextHalfEdge = otherEdgeIter;
-		edgeIter->previousHalfEdge = otherEdgeIter;
-
-		otherEdgeIter->otherHalfEdge = edgeIter;
-		otherEdgeIter->nextHalfEdge = edgeIter;
-		otherEdgeIter->previousHalfEdge = edgeIter;
-
-		/*edgeIter->hasTriangle = false;
-		otherEdgeIter->hasTriangle = false;*/
+		edgeIter->pairWithOtherHalfEdge(otherEdgeIter);
+		otherEdgeIter->pairWithOtherHalfEdge(edgeIter);
 
 		return edgeIter;
 	}
@@ -291,12 +267,12 @@ namespace Ogre
 			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
-			edgeIter = edgeIter->nextHalfEdge;
+			edgeIter = edgeIter->getNextHalfEdge();
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
 			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
 			indexData.push_back(iterVertex - vertexData.begin());
 
-			edgeIter = edgeIter->nextHalfEdge;
+			edgeIter = edgeIter->getNextHalfEdge();
 			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
 			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
 			indexData.push_back(iterVertex - vertexData.begin());	
@@ -373,7 +349,7 @@ namespace Ogre
 			result.push_back(nextEdge->getTarget());
 
 			previousEdge = nextEdge;
-			nextEdge = nextEdge->previousHalfEdge->otherHalfEdge;
+			nextEdge = nextEdge->getPreviousHalfEdge()->getOtherHalfEdge();
 		}while((nextEdge != firstEdge) && (nextEdge != previousEdge));
 
 		if(nextEdge == previousEdge)
@@ -387,7 +363,7 @@ namespace Ogre
 			previousEdge = firstEdge;
 
 			previousEdge = nextEdge;
-			nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+			nextEdge = nextEdge->getOtherHalfEdge()->getNextHalfEdge();
 
 			int ct2 = 0;
 			do
@@ -403,7 +379,7 @@ namespace Ogre
 				result.push_front(nextEdge->getTarget());
 
 				previousEdge = nextEdge;
-				nextEdge = nextEdge->otherHalfEdge->nextHalfEdge;
+				nextEdge = nextEdge->getOtherHalfEdge()->getNextHalfEdge();
 			}while(nextEdge != previousEdge);
 		}
 
@@ -456,9 +432,9 @@ namespace Ogre
 				{
 					LogManager::getSingleton().logMessage("Error - Failed to find");
 				}*/
-				SurfaceEdgeIterator otherEdgeToDelete = edgeToDelete->otherHalfEdge;
+				SurfaceEdgeIterator otherEdgeToDelete = edgeToDelete->getOtherHalfEdge();
 
-				if(edgeToDelete->nextHalfEdge != edgeToDelete->otherHalfEdge)
+				if(edgeToDelete->getNextHalfEdge() != edgeToDelete->getOtherHalfEdge())
 				{
 					m_listTriangles.erase(edgeToDelete->triangle);
 				}

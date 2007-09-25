@@ -324,10 +324,10 @@ namespace Ogre
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 			{		
 				LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
-				for(uint regionY = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-2; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
+				for(uint regionY = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-1; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
 				{
 					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
-					for(uint regionX = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-2; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
+					for(uint regionX = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-1; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
 					{
 						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
