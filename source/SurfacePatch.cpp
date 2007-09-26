@@ -303,7 +303,6 @@ namespace Ogre
 			{
 				allZMatch = false;
 			}
-			//FIXME - already normalised?
 			if((*connectedIter)->getNormal().dotProduct(vertexIter->getNormal()) < 0.99)
 			{
 				return false;				
