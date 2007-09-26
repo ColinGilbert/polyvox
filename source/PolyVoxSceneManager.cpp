@@ -320,14 +320,15 @@ namespace Ogre
 				}*/
 			}
 
+			unsigned long triangleCounter = 0;
 			//Regenerate meshes.
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 			{		
 				LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
-				for(uint regionY = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-1; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
+				for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 				{
 					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
-					for(uint regionX = OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2-1; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
+					for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 					{
 						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
@@ -358,6 +359,7 @@ namespace Ogre
 								std::vector<SurfaceVertex> vertexData;
 								std::vector<uint> indexData;
 								iterSurfacePatch->second.getVertexAndIndexData(vertexData, indexData);
+								triangleCounter += iterSurfacePatch->second.m_listTriangles.size();
 								
 								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(iterSurfacePatch->first);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
@@ -385,6 +387,7 @@ namespace Ogre
 					}
 				}
 			}
+			LogManager::getSingleton().logMessage("No of tris = " + StringConverter::toString(triangleCounter));
 		}
 		//showBoundingBoxes(true);
 		//Now call the base class to do the actual visibility determination...
@@ -1009,13 +1012,13 @@ namespace Ogre
 			iterPatch->second.m_v3dOffset = offset;
 			iterPatch->second.computeNormalsFromVolume(volIter);
 			iterPatch->second.endDefinition();
-			bool removedVertex = false;
+			uint noOfRemovedVertices = 0;
 			//for(uint ct = 0; ct < 5; ct++)
 			do
 			{
-				removedVertex = iterPatch->second.decimateOneVertex();
+				noOfRemovedVertices = iterPatch->second.decimate();
 			}
-			while(removedVertex);
+			while(noOfRemovedVertices > 0);
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");

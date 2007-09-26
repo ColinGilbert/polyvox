@@ -388,17 +388,29 @@ namespace Ogre
 		return result;
 	}
 
-	bool SurfacePatch::decimateOneVertex(void)
+	uint SurfacePatch::decimate(void)
 	{
-		bool didDecimation = false;
+		uint uNoRemoved = 0;
 		//LogManager::getSingleton().logMessage("\n\nPerforming decimation");
 		//LogManager::getSingleton().logMessage("No of triangles at start = " + StringConverter::toString(m_listTriangles.size()));
 		//LogManager::getSingleton().logMessage("No of edges at start = " + StringConverter::toString(m_listEdges.size()));
 		//int fixed = 0;
 		//int movable = 0;
+
+		std::vector<SurfaceVertexIterator> listVertexIterators;
+		//listVertexIterators.resize(m_listVertices.size());
 		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
 		{
-			//LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());			
+			listVertexIterators.push_back(vertexIter);
+		}
+		//random_shuffle(listVertexIterators.begin(),listVertexIterators.end());
+
+		for(std::vector<SurfaceVertexIterator>::iterator vertexIterIter = listVertexIterators.begin(); vertexIterIter != listVertexIterators.end(); ++vertexIterIter)
+		//for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
+		{
+			//LogManager::getSingleton().logMessage("Examining vertex " + vertexIter->toString());	
+
+			SurfaceVertexIterator vertexIter = *vertexIterIter;
 
 			bool isEdge;
 			std::list<SurfaceVertexIterator> listConnectedVertices = findConnectedVertices(vertexIter,isEdge);		
@@ -460,8 +472,8 @@ namespace Ogre
 			//LogManager::getSingleton().logMessage("Doing triangulation");
 			triangulate(listConnectedVertices);
 
-			didDecimation = true;
-			break;	
+			++uNoRemoved;
+			//break;	
 		}
 
 		//LogManager::getSingleton().logMessage("Fixed = " + StringConverter::toString(fixed) + " Movable = "  + StringConverter::toString(movable));
@@ -472,7 +484,7 @@ namespace Ogre
 		std::vector<uint> indexDataTemp;
 		getVertexAndIndexData(vertexDataTemp, indexDataTemp);*/
 
-		return didDecimation;
+		return uNoRemoved;
 	}
 
 	void SurfacePatch::triangulate(std::list<SurfaceVertexIterator> listVertices)
