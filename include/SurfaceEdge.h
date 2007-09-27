@@ -39,13 +39,6 @@ namespace Ogre
 		friend bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 		friend bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 
-		//int crud;		
-
-		SurfaceTriangleIterator triangle;
-
-		
-
-		//FIXME - could use boost::optional for this?
 
 		std::string toString(void);
 
@@ -56,9 +49,11 @@ namespace Ogre
 		const SurfaceEdgeIterator& getOtherHalfEdge(void);
 		const SurfaceEdgeIterator& getPreviousHalfEdge(void);
 		const SurfaceEdgeIterator& getNextHalfEdge(void);
+		const SurfaceTriangleIterator& getTriangle(void);
 
 		void setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet);
 		void setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet);
+		void setTriangle(const SurfaceTriangleIterator& triangleToSet);
 
 		void pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair);
 
@@ -69,6 +64,8 @@ namespace Ogre
 		SurfaceEdgeIterator previousHalfEdge;
 		SurfaceEdgeIterator nextHalfEdge;
 		SurfaceEdgeIterator otherHalfEdge;
+
+		SurfaceTriangleIterator triangle;
 	};	
 }
 

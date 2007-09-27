@@ -19,10 +19,12 @@ namespace Ogre
 
 	bool operator == (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
 	{
+		//Vertices are unique in the set, so if the two positions are the same the 
+		//two iterators must also be the same. So we just check the iterators.
 		return
 		(
-			((*lhs.target) == (*rhs.target)) &&
-			((*lhs.source) == (*rhs.source))
+			(lhs.target == rhs.target) &&
+			(lhs.source == rhs.source)
 		);
 	}
 
@@ -33,6 +35,8 @@ namespace Ogre
 
 	bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs)
 	{
+		//Unlike the equality operator, we can't compare iterators.
+		//So dereference and compare the results.
 		if ((*lhs.target) < (*rhs.target))
 			return true;
 		if ((*rhs.target) < (*lhs.target))
@@ -78,6 +82,11 @@ namespace Ogre
 		return nextHalfEdge;
 	}
 
+	const SurfaceTriangleIterator& SurfaceEdge::getTriangle(void)
+	{
+		return triangle;
+	}
+
 	void SurfaceEdge::setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet)
 	{
 		previousHalfEdge = previousHalfEdgeToSet;
@@ -86,5 +95,10 @@ namespace Ogre
 	void SurfaceEdge::setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet)
 	{
 		nextHalfEdge = nextHalfEdgeToSet;
+	}
+
+	void SurfaceEdge::setTriangle(const SurfaceTriangleIterator& triangleToSet)
+	{
+		triangle = triangleToSet;
 	}
 }

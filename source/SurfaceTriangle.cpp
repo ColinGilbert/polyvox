@@ -45,11 +45,15 @@ namespace Ogre
 
 	bool operator == (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs)
 	{
-		return (*lhs.edge == *rhs.edge);
+		//Edges are unique in the set, so if the two positions are the same the 
+		//two iterators must also be the same. So we just check the iterators.
+		return (lhs.edge == rhs.edge);
 	}
 
 	bool operator < (const SurfaceTriangle& lhs, const SurfaceTriangle& rhs)
 	{
+		//Unlike the equality operator, we can't compare iterators.
+		//So dereference and compare the results.
 		return (*lhs.edge < *rhs.edge);
 	}
 }

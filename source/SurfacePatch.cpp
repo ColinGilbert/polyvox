@@ -95,9 +95,9 @@ namespace Ogre
 
 		SurfaceTriangleIterator iterTriangle = m_listTriangles.insert(triangle).first;
 
-		v0v1Iter->triangle = iterTriangle;
-		v1v2Iter->triangle = iterTriangle;
-		v2v0Iter->triangle = iterTriangle;
+		v0v1Iter->setTriangle(iterTriangle);
+		v1v2Iter->setTriangle(iterTriangle);
+		v2v0Iter->setTriangle(iterTriangle);
 	}
 
 	SurfaceVertexIterator SurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
@@ -447,7 +447,7 @@ namespace Ogre
 
 				if(edgeToDelete->getNextHalfEdge() != edgeToDelete->getOtherHalfEdge())
 				{
-					m_listTriangles.erase(edgeToDelete->triangle);
+					m_listTriangles.erase(edgeToDelete->getTriangle());
 				}
 
 				//LogManager::getSingleton().logMessage("Removing edge " + edgeToDelete->toString());				
