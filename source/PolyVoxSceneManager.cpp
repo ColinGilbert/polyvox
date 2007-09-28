@@ -71,16 +71,6 @@ namespace Ogre
 		,m_normalGenerationMethod(SOBEL)
 		,m_bHaveGeneratedMeshes(false)
 	{	
-		/*for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
-		{		
-			for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
-			{
-				for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
-				{
-					sceneNodes[regionX][regionY][regionZ] = 0; 
-				}
-			}
-		}*/
 		sceneNodes.clear();
 	}
 
@@ -95,18 +85,6 @@ namespace Ogre
 
 	bool PolyVoxSceneManager::loadScene(const String& filename)
 	{
-		/*volumeData = new Volume;
-		
-		if(filename.empty())
-		{
-			generateLevelVolume();
-		}
-		else
-		{
-			volumeData->load(filename);
-		}	*/
-
-		//volumeData = VolumeManager::getSingletonPtr()->getByName(filename + ".volume");
 		volumeData = VolumeManager::getSingletonPtr()->load(filename + ".volume", "General");
 		if(volumeData.isNull())
 		{
@@ -119,22 +97,6 @@ namespace Ogre
 
 		//Load material map
 		materialMap = MaterialMapManager::getSingletonPtr()->load(filename + ".materialmap", "General");
-
-		LogManager::getSingleton().logMessage("HERE");
-		VolumeIterator volIter1(*volumeData);
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; z += 10)
-		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; y += 10)
-			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; x += 10)
-				{
-					volIter1.setPosition(x,y,z);
-					uchar value = volIter1.getVoxel();
-					//LogManager::getSingleton().logMessage("Value is " + StringConverter::toString(int(value)));
-				}
-			}
-		}
-		LogManager::getSingleton().logMessage("DONE");
 
 		for(uint blockZ = 0; blockZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
 		{
@@ -281,45 +243,6 @@ namespace Ogre
 	{
 		if(!volumeData.isNull())
 		{
-			//Do burning
-			//FIXME - can make this more efficient
-			ulong uNoOfVoxelsToBurn = m_queueVoxelsToBurn.size();
-			uNoOfVoxelsToBurn = (std::min)(uNoOfVoxelsToBurn, OGRE_MAX_VOXELS_TO_BURN_PER_FRAME);
-			VolumeIterator volIter(*volumeData);
-			for(ulong ct = 0; ct < uNoOfVoxelsToBurn; ++ct)
-			{
-				UIntVector3 pos = m_queueVoxelsToBurn.front();
-				m_queueVoxelsToBurn.pop();
-				if((pos.x >= 0) && (pos.y >= 0) && (pos.z >= 0) && (pos.x < OGRE_VOLUME_SIDE_LENGTH) && (pos.y < OGRE_VOLUME_SIDE_LENGTH) && (pos.z < OGRE_VOLUME_SIDE_LENGTH))
-				{
-					volIter.setPosition(pos.x,pos.y,pos.z);
-					if(volIter.getVoxel() != 0)
-					{
-						volIter.setVoxelAt(pos.x,pos.y,pos.z,0);
-						markVoxelChanged(pos.x,pos.y,pos.z);
-
-						m_queueVoxelsToBurn.push(UIntVector3(pos.x  ,pos.y  ,pos.z-1));
-						m_queueVoxelsToBurn.push(UIntVector3(pos.x  ,pos.y  ,pos.z+1));
-						m_queueVoxelsToBurn.push(UIntVector3(pos.x  ,pos.y-1,pos.z  ));
-						m_queueVoxelsToBurn.push(UIntVector3(pos.x  ,pos.y+1,pos.z  ));
-						m_queueVoxelsToBurn.push(UIntVector3(pos.x-1,pos.y  ,pos.z  ));
-						m_queueVoxelsToBurn.push(UIntVector3(pos.x+1,pos.y  ,pos.z  ));
-					}
-				}			
-
-				//LogManager::getSingleton().logMessage("Burnt voxel at x = " + StringConverter::toString(pos.x) + " y = " + StringConverter::toString(pos.y) + " z = " + StringConverter::toString(pos.z));
-
-				/*if((pos.x > 0) && (pos.y > 0) && (pos.z > 0) && (pos.x < OGRE_VOLUME_SIDE_LENGTH-1) && (pos.y < OGRE_VOLUME_SIDE_LENGTH-1) && (pos.z < OGRE_VOLUME_SIDE_LENGTH-1))
-				{*/
-					//In this case we can definatly move in all direction
-					
-				/*}
-				else
-				{
-					//In this case we need to check more carefully.
-				}*/
-			}
-
 			unsigned long triangleCounter = 0;
 			//Regenerate meshes.
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
@@ -390,6 +313,7 @@ namespace Ogre
 			LogManager::getSingleton().logMessage("No of tris = " + StringConverter::toString(triangleCounter));
 		}
 		//showBoundingBoxes(true);
+
 		//Now call the base class to do the actual visibility determination...
 		SceneManager::_findVisibleObjects(cam, visibleBounds, onlyShadowCasters);
 	}
@@ -1000,10 +924,5 @@ namespace Ogre
 	bool PolyVoxSceneManager::containsPoint(IntVector3 pos, uint boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
-	}
-
-	void PolyVoxSceneManager::igniteVoxel(UIntVector3 voxelToIgnite)
-	{
-		m_queueVoxelsToBurn.push(voxelToIgnite);
 	}
 }

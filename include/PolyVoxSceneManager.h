@@ -97,8 +97,6 @@ namespace Ogre
 
 		std::map<uchar,SurfacePatchRenderable*> m_mapSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
-		void igniteVoxel(UIntVector3 voxelToIgnite);
-
 		Vector3 computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const;
 
 	private:
@@ -116,8 +114,6 @@ namespace Ogre
 
 		VolumePtr volumeData;
 		MaterialMapPtr materialMap;
-
-		std::queue<UIntVector3> m_queueVoxelsToBurn;
 
 		bool m_bHaveGeneratedMeshes;
 
