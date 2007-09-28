@@ -42,8 +42,6 @@ namespace Ogre
 
 	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);
 
-	   void computeNormalsFromVolume(VolumeIterator volIter);
-
 
 	   bool canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge);
 	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge);
@@ -51,10 +49,13 @@ namespace Ogre
 	   void triangulate(std::list<SurfaceVertexIterator> listVertices);
 	   bool isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal);
 
+	   SurfaceVertexIterator getVerticesBegin(void);
+	   SurfaceVertexIterator getVerticesEnd(void);
 
-	   UIntVector3 m_v3dOffset;
+	   uint getNoOfTriangles(void);
 
-	public:
+
+	private:
 		std::set<SurfaceVertex> m_listVertices;
 		std::set<SurfaceTriangle> m_listTriangles;
 		std::set<SurfaceEdge> m_listEdges;

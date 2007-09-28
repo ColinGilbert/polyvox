@@ -156,89 +156,6 @@ namespace Ogre
 		return edgeIter;
 	}
 
-	void SurfacePatch::computeNormalsFromVolume(VolumeIterator volIter)
-	{
-		//LogManager::getSingleton().logMessage("In SurfacePatch::computeNormalsFromVolume");
-		for(SurfaceVertexIterator vertexIter = m_listVertices.begin(); vertexIter != m_listVertices.end(); ++vertexIter)
-		{
-			//LogManager::getSingleton().logMessage("In Loop");
-			const float posX = (vertexIter->getPosition().x + m_v3dOffset.x) / 2.0f;
-			const float posY = (vertexIter->getPosition().y + m_v3dOffset.y) / 2.0f;
-			const float posZ = (vertexIter->getPosition().z + m_v3dOffset.z) / 2.0f;
-
-			const uint floorX = static_cast<uint>(posX);
-			const uint floorY = static_cast<uint>(posY);
-			const uint floorZ = static_cast<uint>(posZ);
-
-			NormalGenerationMethod normalGenerationMethod = CENTRAL_DIFFERENCE;
-
-			switch(normalGenerationMethod)
-			{
-			case SIMPLE:
-				{
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-					const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
-					if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-					{					
-						uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-						vertexIter->setNormal(Vector3(uFloor - uCeil,0.0,0.0));
-					}
-					else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-					{
-						uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-						vertexIter->setNormal(Vector3(0.0,uFloor - uCeil,0.0));
-					}
-					else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-					{
-						uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-						vertexIter->setNormal(Vector3(0.0, 0.0,uFloor - uCeil));					
-					}
-					break;
-				}
-			case CENTRAL_DIFFERENCE:
-				{
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-					const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
-					if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-					{			
-						volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
-					}
-					if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-					{			
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
-					}
-					if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-					{			
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
-					}
-					const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
-					vertexIter->setNormal((gradFloor + gradCeil) * -1.0);
-					break;
-				}
-			case SOBEL:
-				{
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-					const Vector3 gradFloor = volIter.getSobelGradient();
-					if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-					{			
-						volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
-					}
-					if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-					{			
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
-					}
-					if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-					{			
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
-					}
-					const Vector3 gradCeil = volIter.getSobelGradient();
-					vertexIter->setNormal((gradFloor + gradCeil) * -1.0);
-					break;
-				}
-			}
-		}
-	}
-
 	void SurfacePatch::getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData)
 	{
 		vertexData.clear();
@@ -538,5 +455,20 @@ namespace Ogre
 		}
 
 		return true;
+	}
+
+	SurfaceVertexIterator SurfacePatch::getVerticesBegin(void)
+	{
+		return m_listVertices.begin();
+	}
+
+	SurfaceVertexIterator SurfacePatch::getVerticesEnd(void)
+	{
+		return m_listVertices.end();
+	}
+
+	uint SurfacePatch::getNoOfTriangles(void)
+	{
+		return m_listTriangles.size();
 	}
 }

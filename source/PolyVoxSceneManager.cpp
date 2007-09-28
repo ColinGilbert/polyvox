@@ -359,7 +359,7 @@ namespace Ogre
 								std::vector<SurfaceVertex> vertexData;
 								std::vector<uint> indexData;
 								iterSurfacePatch->second.getVertexAndIndexData(vertexData, indexData);
-								triangleCounter += iterSurfacePatch->second.m_listTriangles.size();
+								triangleCounter += iterSurfacePatch->second.getNoOfTriangles();
 								
 								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(iterSurfacePatch->first);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
@@ -781,8 +781,8 @@ namespace Ogre
 		for(std::map<uchar, SurfacePatch>::iterator iterPatch = result.begin(); iterPatch != result.end(); ++iterPatch)
 		{
 
-			SurfaceVertexIterator iterSurfaceVertex = iterPatch->second.m_listVertices.begin();
-			while(iterSurfaceVertex != iterPatch->second.m_listVertices.end())
+			SurfaceVertexIterator iterSurfaceVertex = iterPatch->second.getVerticesBegin();
+			while(iterSurfaceVertex != iterPatch->second.getVerticesEnd())
 			{
 				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
 				iterSurfaceVertex->setNormal(tempNormal);
