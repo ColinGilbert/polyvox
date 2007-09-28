@@ -92,6 +92,8 @@ namespace Ogre
 
 		void igniteVoxel(UIntVector3 voxelToIgnite);
 
+		Vector3 computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const;
+
 	private:
 		void markVoxelChanged(uint x, uint y, uint z);
 		void markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ);

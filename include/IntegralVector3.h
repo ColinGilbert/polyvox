@@ -80,6 +80,18 @@ namespace Ogre
 		return result;
 	}
 
+	template <typename Type>
+	IntegralVector3<Type> operator+(const IntegralVector3<Type>& lhs, const IntegralVector3<Type>& rhs)
+	{
+		IntegralVector3<Type> result;
+
+		result.x = lhs.x + rhs.x;
+		result.y = lhs.y + rhs.y;
+		result.z = lhs.z + rhs.z;
+
+		return result;
+	}
+
 	typedef IntegralVector3<char> CharVector3;
 	typedef IntegralVector3<short> ShortVector3;
 	typedef IntegralVector3<int> IntVector3;

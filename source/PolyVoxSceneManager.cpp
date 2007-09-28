@@ -743,29 +743,10 @@ namespace Ogre
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
-				//FIXME - for the time being the material is the highest vertex
-				//Need to think about this...
-				/*uchar material = std::max(v000,v001);
-				material = std::max(material,v010);
-				material = std::max(material,v011);
-				material = std::max(material,v100);
-				material = std::max(material,v101);
-				material = std::max(material,v110);
-				material = std::max(material,v111);	*/
-
 				std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
 				materials.insert(material0);
 				materials.insert(material1);
 				materials.insert(material2);
-
-				//vertexScaled values are always integers and so can be used as indices.
-				//FIXME - these integer values can just be obtained by using floor()?
-				/*long int index;
-				unsigned int vertexScaledX;
-				unsigned int vertexScaledY;
-				unsigned int vertexScaledZ;*/
-
-				//SurfaceTriangle triangle; //Triangle to be created...
 
 				for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
 				{
@@ -776,244 +757,40 @@ namespace Ogre
 						surfaceVertex0.setAlpha(1.0);
 					else
 						surfaceVertex0.setAlpha(0.0);
-					//surfaceVertex0.normal = Vector3(1.0,1.0,1.0);
-					surfaceVertex0.setNormal(Vector3(0.0,0.0,0.0));
 
 					SurfaceVertex surfaceVertex1(vertex1);
 					if(material1 == material)
 						surfaceVertex1.setAlpha(1.0);
 					else
 						surfaceVertex1.setAlpha(0.0);
-					//surfaceVertex1.normal = Vector3(1.0,1.0,1.0);
-					surfaceVertex1.setNormal(Vector3(0.0,0.0,0.0));
 
 					SurfaceVertex surfaceVertex2(vertex2);
 					if(material2 == material)
 						surfaceVertex2.setAlpha(1.0);
 					else
 						surfaceVertex2.setAlpha(0.0);
-					//surfaceVertex2.normal = Vector3(1.0,1.0,1.0);
-					surfaceVertex2.setNormal(Vector3(0.0,0.0,0.0));
 
-					result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-
-					//Get scaled values for vertex 0
-					/*vertexScaledX = static_cast<unsigned int>((vertex0.x * 2.0) + 0.5);
-					vertexScaledY = static_cast<unsigned int>((vertex0.y * 2.0) + 0.5);
-					vertexScaledZ = static_cast<unsigned int>((vertex0.z * 2.0) + 0.5);
-					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
-					//If a vertex has not yet been added, it's index is -1
-					index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
-					if((index == -1))
-					{
-						//Add the vertex
-						SurfaceVertex vertex(vertex0);
-						if(material0 == material)
-							vertex.alpha = 1.0;
-						else
-							vertex.alpha = 0.0;
-						vertexData[material].push_back(vertex);
-						triangle.v0 = vertexData[material].size()-1;
-						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
-					}
-					else
-					{
-						//Just reuse the existing vertex
-						triangle.v0 = index;
-					}
-
-					//Get scaled values for vertex 1
-					vertexScaledX = static_cast<unsigned int>((vertex1.x * 2.0) + 0.5);
-					vertexScaledY = static_cast<unsigned int>((vertex1.y * 2.0) + 0.5);
-					vertexScaledZ = static_cast<unsigned int>((vertex1.z * 2.0) + 0.5);
-					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
-					//If a vertex has not yet been added, it's index is -1
-					index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
-					if((index == -1))
-					{
-						//Add the vertex
-						SurfaceVertex vertex(vertex1);
-						if(material1 == material)
-							vertex.alpha = 1.0;
-						else
-							vertex.alpha = 0.0;
-						vertexData[material].push_back(vertex);
-						triangle.v1 = vertexData[material].size()-1;
-						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
-					}
-					else
-					{
-						//Just reuse the existing vertex
-						triangle.v1 = index;
-					}
-
-					//Get scaled values for vertex 2
-					vertexScaledX = static_cast<unsigned int>((vertex2.x * 2.0) + 0.5);
-					vertexScaledY = static_cast<unsigned int>((vertex2.y * 2.0) + 0.5);
-					vertexScaledZ = static_cast<unsigned int>((vertex2.z * 2.0) + 0.5);
-					vertexScaledX %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledY %= OGRE_REGION_SIDE_LENGTH*2+1;
-					vertexScaledZ %= OGRE_REGION_SIDE_LENGTH*2+1;
-					//If a vertex has not yet been added, it's index is -1
-					index = vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material];
-					if((index == -1))
-					{
-						//Add the vertex
-						SurfaceVertex vertex(vertex2);
-						if(material2 == material)
-							vertex.alpha = 1.0;
-						else
-							vertex.alpha = 0.0;
-						vertexData[material].push_back(vertex);
-						triangle.v2 = vertexData[material].size()-1;
-						vertexIndices[vertexScaledX][vertexScaledY][vertexScaledZ][material] = vertexData[material].size()-1;
-					}
-					else
-					{
-						//Just reuse the existing vertex
-						triangle.v2 = index;
-					}
-
-					//Add the triangle
-					indexData[material].push_back(triangle);*/
+					result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);					
 				}
 			}
 		}	
 
 		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
 
-		
-		//////////////////////////////////////////////////////////////////////////
-		//Compute normals
-		//////////////////////////////////////////////////////////////////////////
-
-		/*for(uint materialCt = 0; materialCt < 256; materialCt++)
-		{
-			for(uint vertexCt = 0; vertexCt < vertexData[materialCt].size(); ++vertexCt)
-			{
-				const Vector3 vertexPosition = vertexData[materialCt][vertexCt].position;
-
-				const float posX = vertexPosition.x + static_cast<float>(regionX * OGRE_REGION_SIDE_LENGTH);
-				const float posY = vertexPosition.y + static_cast<float>(regionY * OGRE_REGION_SIDE_LENGTH);
-				const float posZ = vertexPosition.z + static_cast<float>(regionZ * OGRE_REGION_SIDE_LENGTH);
-
-				const uint floorX = static_cast<uint>(vertexPosition.x) + regionX * OGRE_REGION_SIDE_LENGTH;
-				const uint floorY = static_cast<uint>(vertexPosition.y) + regionY * OGRE_REGION_SIDE_LENGTH;
-				const uint floorZ = static_cast<uint>(vertexPosition.z) + regionZ * OGRE_REGION_SIDE_LENGTH;
-
-				switch(m_normalGenerationMethod)
-				{
-				case SIMPLE:
-					{
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-						const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
-						if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-						{					
-							uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-							vertexData[materialCt][vertexCt].normal = Vector3(uFloor - uCeil,0.0,0.0);
-						}
-						else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-						{
-							uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-							vertexData[materialCt][vertexCt].normal = Vector3(0.0,uFloor - uCeil,0.0);
-						}
-						else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-						{
-							uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-							vertexData[materialCt][vertexCt].normal = Vector3(0.0, 0.0,uFloor - uCeil);					
-						}
-						vertexData[materialCt][vertexCt].normal.normalise();
-						break;
-					}
-				case CENTRAL_DIFFERENCE:
-					{
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-						const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
-						if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-						{			
-							volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
-						}
-						if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-						{			
-							volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
-						}
-						if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-						{			
-							volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
-						}
-						const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
-						vertexData[materialCt][vertexCt].normal = gradFloor + gradCeil;
-						vertexData[materialCt][vertexCt].normal *= -1;
-						vertexData[materialCt][vertexCt].normal.normalise();
-						break;
-					}
-				case SOBEL:
-					{
-						volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-						const Vector3 gradFloor = volIter.getSobelGradient();
-						if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-						{			
-							volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
-						}
-						if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-						{			
-							volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
-						}
-						if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-						{			
-							volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
-						}
-						const Vector3 gradCeil = volIter.getSobelGradient();
-						vertexData[materialCt][vertexCt].normal = gradFloor + gradCeil;
-						vertexData[materialCt][vertexCt].normal *= -1;
-						vertexData[materialCt][vertexCt].normal.normalise();
-						break;
-					}
-				}
-			}
-		}*/
-
-		//////////////////////////////////////////////////////////////////////////
-		//Decimate mesh
-		//////////////////////////////////////////////////////////////////////////
-
-		//Ogre::LogManager::getSingleton().logMessage("Before merge: vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
-		//mergeVertices6(vertexData, indexData);
-		//Ogre::LogManager::getSingleton().logMessage("After merge:  vertices = " + Ogre::StringConverter::toString(vertexData[4].size()) + ", triangles = " + Ogre::StringConverter::toString(indexData[4].size()/3));
-
-		/*std::map<uchar, SurfacePatch> result;
-		for(uint materialCt = 1; materialCt < 256; materialCt++)
-		{
-			if(indexData[materialCt].size() == 0)
-			{
-				continue;
-			}
-
-			SurfacePatch surfacePatch;
-			for(uint indexCt = 0; indexCt < indexData[materialCt].size(); indexCt++)
-			{
-				surfacePatch.addTriangle
-				(
-					vertexData[materialCt][indexData[materialCt][indexCt].v0],
-					vertexData[materialCt][indexData[materialCt][indexCt].v1],
-					vertexData[materialCt][indexData[materialCt][indexCt].v2]
-				);
-			}
-
-			result.insert(std::make_pair(materialCt, surfacePatch));
-		}*/
 
 		for(std::map<uchar, SurfacePatch>::iterator iterPatch = result.begin(); iterPatch != result.end(); ++iterPatch)
 		{
-			iterPatch->second.m_v3dOffset = offset;
-			iterPatch->second.computeNormalsFromVolume(volIter);
+
+			SurfaceVertexIterator iterSurfaceVertex = iterPatch->second.m_listVertices.begin();
+			while(iterSurfaceVertex != iterPatch->second.m_listVertices.end())
+			{
+				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
+				iterSurfaceVertex->setNormal(tempNormal);
+				++iterSurfaceVertex;
+			}
+
 			iterPatch->second.endDefinition();
 			uint noOfRemovedVertices = 0;
-			//for(uint ct = 0; ct < 5; ct++)
 			do
 			{
 				noOfRemovedVertices = iterPatch->second.decimate();
@@ -1023,6 +800,88 @@ namespace Ogre
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
 
+		return result;
+	}
+
+	Vector3 PolyVoxSceneManager::computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const
+	{
+		VolumeIterator volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
+
+		//LogManager::getSingleton().logMessage("In Loop");
+		const float posX = position.x;
+		const float posY = position.y;
+		const float posZ = position.z;
+
+		const uint floorX = static_cast<uint>(posX);
+		const uint floorY = static_cast<uint>(posY);
+		const uint floorZ = static_cast<uint>(posZ);
+
+		Vector3 result;
+
+		switch(normalGenerationMethod)
+		{
+			case SOBEL:
+			{
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+				const Vector3 gradFloor = volIter.getSobelGradient();
+				if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
+				{			
+					volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
+				}
+				if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+				{			
+					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
+				}
+				if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+				{			
+					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
+				}
+				const Vector3 gradCeil = volIter.getSobelGradient();
+				result = ((gradFloor + gradCeil) * -1.0);
+				break;
+			}
+			case CENTRAL_DIFFERENCE:
+			{
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+				const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
+				if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
+				{			
+					volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
+				}
+				if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+				{			
+					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
+				}
+				if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+				{			
+					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
+				}
+				const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
+				result = ((gradFloor + gradCeil) * -1.0);
+				break;
+			}
+			case SIMPLE:
+			default:
+			{
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+				const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
+				if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
+				{					
+					uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
+					result = Vector3(uFloor - uCeil,0.0,0.0);
+				}
+				else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+				{
+					uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
+					result = Vector3(0.0,uFloor - uCeil,0.0);
+				}
+				else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+				{
+					uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
+					result = Vector3(0.0, 0.0,uFloor - uCeil);					
+				}
+			}
+		}
 		return result;
 	}
 
