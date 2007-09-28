@@ -5,40 +5,33 @@
 #include <list>
 
 #include "IntegralVector3.h"
-
+#include "SurfaceTypes.h"
 #include "VolumeIterator.h"
 
 
 namespace Ogre
 {
-	enum NormalGenerationMethod
-	{
-		SIMPLE,
-		CENTRAL_DIFFERENCE,
-		SOBEL
-	};
-
-	class SurfaceVertex;
-	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
-	class SurfaceTriangle;
-	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
-	class SurfaceEdge;
-	typedef std::set<SurfaceEdge>::iterator SurfaceEdgeIterator;
-
 	class SurfacePatch
 	{
 	public:
 	   SurfacePatch();
 	   ~SurfacePatch();
 
-	   void beginDefinition(void);
-	   void endDefinition(void);
+	   //This allow users of the class to iterate over its contents.
+	   SurfaceEdgeIterator getEdgesBegin(void);
+	   SurfaceEdgeIterator getEdgesEnd(void);
+	   SurfaceTriangleIterator getTrianglesBegin(void);
+	   SurfaceTriangleIterator getTrianglesEnd(void);
+	   SurfaceVertexIterator getVerticesBegin(void);
+	   SurfaceVertexIterator getVerticesEnd(void);
 
-	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);	   
-	   SurfaceVertexIterator findOrAddVertex(const SurfaceVertex& vertex);
-	   SurfaceEdgeIterator findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target);
-	   SurfaceEdgeIterator findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target);
-	   //SurfaceVertexIterator findTriangle(const SurfaceTriangle& triangle);
+	   //Users of the class might want these for debugging or info purposes.
+	   uint getNoOfEdges(void);
+	   uint getNoOfTriangles(void);
+	   uint getNoOfVertices(void);
+
+	   	   
+	   
 
 	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);
 
@@ -48,11 +41,9 @@ namespace Ogre
 	   uint decimate(void);
 	   void triangulate(std::list<SurfaceVertexIterator> listVertices);
 	   bool isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal);
+	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);
 
-	   SurfaceVertexIterator getVerticesBegin(void);
-	   SurfaceVertexIterator getVerticesEnd(void);
-
-	   uint getNoOfTriangles(void);
+	   
 
 
 	private:
@@ -60,15 +51,9 @@ namespace Ogre
 		std::set<SurfaceTriangle> m_listTriangles;
 		std::set<SurfaceEdge> m_listEdges;
 
-		//std::vector<SurfaceVertex> m_vecVertexData;
-		//std::vector<uint> m_vecIndexData;
-
-		uint m_uTrianglesAdded;
-		uint m_uVerticesAdded;
-
-		long int* vertexIndices;
-
-		//UIntVector3 m_v3dOffset;
+		SurfaceEdgeIterator findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target);
+		SurfaceEdgeIterator findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target);
+		SurfaceVertexIterator findOrAddVertex(const SurfaceVertex& vertex);
 	};	
 }
 

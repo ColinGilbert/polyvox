@@ -35,6 +35,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Ogre
 {	
+	enum NormalGenerationMethod
+	{
+		SIMPLE,
+		CENTRAL_DIFFERENCE,
+		SOBEL
+	};
+
 	/// Factory for default scene manager
 	class VOXEL_SCENE_MANAGER_API PolyVoxSceneManagerFactory : public SceneManagerFactory
 	{	

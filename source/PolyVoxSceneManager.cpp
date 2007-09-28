@@ -743,6 +743,12 @@ namespace Ogre
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
+				/*const uchar uMaxMaterial = (std::max)(material0,(std::max)(material1,material2));
+				SurfaceVertex surfaceVertex0(vertex0);
+				SurfaceVertex surfaceVertex1(vertex1);
+				SurfaceVertex surfaceVertex2(vertex2);
+				result[uMaxMaterial].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);*/
+
 				std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
 				materials.insert(material0);
 				materials.insert(material1);
@@ -789,7 +795,6 @@ namespace Ogre
 				++iterSurfaceVertex;
 			}
 
-			iterPatch->second.endDefinition();
 			uint noOfRemovedVertices = 0;
 			do
 			{

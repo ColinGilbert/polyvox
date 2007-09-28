@@ -31,6 +31,7 @@ SET(INC_FILES
         include/PolyVoxSceneManager.h
         include/SurfaceEdge.h
         include/SurfacePatch.h
+	include/SurfaceTypes.h
         include/SurfacePatchRenderable.h
         include/SurfaceTriangle.h
         include/SurfaceVertex.h

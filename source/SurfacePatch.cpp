@@ -17,57 +17,62 @@ namespace Ogre
 		m_listVertices.clear();
 		m_listTriangles.clear();
 		m_listEdges.clear();
-
-		m_uTrianglesAdded = 0;
-		m_uVerticesAdded = 0;
-
-		vertexIndices = 0;
-
-		//beginDefinition(); //FIXME - we shouldn't really be calling this from the constructor.
 	}
 
 	SurfacePatch::~SurfacePatch()
 	{		
 	}
 
-	void SurfacePatch::beginDefinition(void)
+	SurfaceEdgeIterator SurfacePatch::getEdgesBegin(void)
 	{
+		return m_listEdges.begin();
 	}
 
-	void SurfacePatch::endDefinition(void)
+	SurfaceEdgeIterator SurfacePatch::getEdgesEnd(void)
 	{
-		//LogManager::getSingleton().logMessage("No of triangles added = " + StringConverter::toString(m_uTrianglesAdded)); 
-		//LogManager::getSingleton().logMessage("No of triangles present = " + StringConverter::toString(m_listTriangles.size())); 
-		//LogManager::getSingleton().logMessage("No of vertices added = " + StringConverter::toString(m_uVerticesAdded)); 
-		//LogManager::getSingleton().logMessage("No of vertices present = " + StringConverter::toString(m_setVertices.size())); 
+		return m_listEdges.end();
+	}
 
-		//computeOtherHalfEdges();
+	SurfaceTriangleIterator SurfacePatch::getTrianglesBegin(void)
+	{
+		return m_listTriangles.begin();
+	}
 
+	SurfaceTriangleIterator SurfacePatch::getTrianglesEnd(void)
+	{
+		return m_listTriangles.end();
+	}
+
+	SurfaceVertexIterator SurfacePatch::getVerticesBegin(void)
+	{
+		return m_listVertices.begin();
+	}
+
+	SurfaceVertexIterator SurfacePatch::getVerticesEnd(void)
+	{
+		return m_listVertices.end();
+	}
+
+	uint SurfacePatch::getNoOfEdges(void)
+	{
+		return m_listEdges.size();
+	}
+
+	uint SurfacePatch::getNoOfTriangles(void)
+	{
+		return m_listTriangles.size();
+	}
+
+	uint SurfacePatch::getNoOfVertices(void)
+	{
+		return m_listVertices.size();
 	}
 
 	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
-	{
-		/*if(v0.getPosition().x > 4)
-			return;
-		if(v0.getPosition().y > 4)
-			return;
-		if(v1.getPosition().x > 4)
-			return;
-		if(v1.getPosition().y > 4)
-			return;
-		if(v2.getPosition().x > 4)
-			return;
-		if(v2.getPosition().y > 4)
-			return;*/
-
-
-		m_uTrianglesAdded++;
-		m_uVerticesAdded += 3;			
-		
+	{	
 		SurfaceVertexIterator v0Iter = findOrAddVertex(v0);
 		SurfaceVertexIterator v1Iter = findOrAddVertex(v1);
-		SurfaceVertexIterator v2Iter = findOrAddVertex(v2);
-		
+		SurfaceVertexIterator v2Iter = findOrAddVertex(v2);		
 
 		SurfaceEdgeIterator v0v1Iter = findOrAddEdge(v0Iter,v1Iter);
 		SurfaceEdgeIterator v1v2Iter = findOrAddEdge(v1Iter,v2Iter);
@@ -89,10 +94,6 @@ namespace Ogre
 
 		triangle.setEdge(v0v1Iter);	
 
-		//m_listTriangles.push_back(triangle);
-		//SurfaceTriangleIterator iterTriangle = m_listTriangles.end();
-		//iterTriangle--;
-
 		SurfaceTriangleIterator iterTriangle = m_listTriangles.insert(triangle).first;
 
 		v0v1Iter->setTriangle(iterTriangle);
@@ -102,37 +103,12 @@ namespace Ogre
 
 	SurfaceVertexIterator SurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
 	{
-		/*SurfaceVertexIterator vertexIter = find(m_listVertices.begin(), m_listVertices.end(), vertex);
-		if(vertexIter == m_listVertices.end())
-		{		
-			//LogManager::getSingleton().logMessage("Adding Vertex " + StringConverter::toString(v0.position.x) + "," + StringConverter::toString(v0.position.y) + "," + StringConverter::toString(v0.position.z));
-			m_listVertices.push_back(vertex);
-			vertexIter = m_listVertices.end();
-			vertexIter--;
-		}
-		return vertexIter;*/
-
 		return m_listVertices.insert(vertex).first;
 	}
 
 	SurfaceEdgeIterator SurfacePatch::findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
 	{
-		/*LogManager::getSingleton().logMessage("In findEdge()");
-		LogManager::getSingleton().logMessage("Input: source = " + source->toString() + " target = " + target->toString());
-		for(SurfaceEdgeIterator edgeIter = m_listEdges.begin(); edgeIter != m_listEdges.end(); ++edgeIter)
-		{
-			LogManager::getSingleton().logMessage("Current: source = " + edgeIter->getSource()->toString() + " target = " + edgeIter->getTarget()->toString());
-			if((edgeIter->getTarget() == target) && (edgeIter->getSource() == source))
-			{
-				return edgeIter;
-			}
-		}
-
-		//Not found - return end.
-		return m_listEdges.end();*/
-
-		SurfaceEdge edgeToFind(target,source);
-		return m_listEdges.find(edgeToFind);
+		return m_listEdges.find(SurfaceEdge(target,source));
 	}
 
 	SurfaceEdgeIterator SurfacePatch::findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
@@ -455,20 +431,5 @@ namespace Ogre
 		}
 
 		return true;
-	}
-
-	SurfaceVertexIterator SurfacePatch::getVerticesBegin(void)
-	{
-		return m_listVertices.begin();
-	}
-
-	SurfaceVertexIterator SurfacePatch::getVerticesEnd(void)
-	{
-		return m_listVertices.end();
-	}
-
-	uint SurfacePatch::getNoOfTriangles(void)
-	{
-		return m_listTriangles.size();
 	}
 }

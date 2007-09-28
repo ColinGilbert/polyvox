@@ -24,16 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "OgreVector3.h"
 #include "IntegralVector3.h"
+#include "SurfaceTypes.h"
 
 namespace Ogre
 {	
-	class SurfaceVertex;
-	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
-	class SurfaceTriangle;
-	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
-	class SurfaceEdge;
-	typedef std::set<SurfaceEdge>::iterator SurfaceEdgeIterator;
-
 	class SurfaceVertex
 	{
 	public:	

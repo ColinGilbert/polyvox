@@ -21,16 +21,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __SurfaceEdge_H__
 
 #include "OgrePrerequisites.h"
+#include "SurfaceTypes.h"
 
 namespace Ogre
 {
-	class SurfaceVertex;
-	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;
-	class SurfaceTriangle;
-	typedef std::set<SurfaceTriangle>::iterator SurfaceTriangleIterator;
-	class SurfaceEdge;
-	typedef std::set<SurfaceEdge>::iterator SurfaceEdgeIterator;
-
 	class SurfaceEdge
 	{
 	public:
