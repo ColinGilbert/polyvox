@@ -4,6 +4,7 @@
 #include "Ogre.h"
 #include <vector>
 
+#include "SurfacePatch.h"
 #include "SurfaceTriangle.h"
 #include "SurfaceVertex.h"
 
@@ -12,10 +13,11 @@ namespace Ogre
 	class SurfacePatchRenderable : public SimpleRenderable
 	{
 	public:
-	   SurfacePatchRenderable(const String& material = "BaseWhiteNoLighting");
+	   SurfacePatchRenderable(SurfacePatch& patchToRender, const String& material = "BaseWhiteNoLighting");
 	   ~SurfacePatchRenderable(void);
 
-	   void setGeometry(std::vector<SurfaceVertex> verticesToSet, std::vector<uint> indicesToSet);
+	   void updateWithNewSurfacePatch(SurfacePatch& patchToRender);
+	   void setGeometry(SurfacePatch& patchToRender);
 
 	   Real getSquaredViewDepth(const Camera *cam) const;
 	   Real getBoundingRadius(void) const;

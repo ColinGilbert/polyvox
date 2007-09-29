@@ -279,18 +279,18 @@ namespace Ogre
 							//for(uint meshCt = 1; meshCt < 256; ++meshCt)
 							for(std::map<uchar, SurfacePatch>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
 							{
-								std::vector<SurfaceVertex> vertexData;
+								/*std::vector<SurfaceVertex> vertexData;
 								std::vector<uint> indexData;
 								iterSurfacePatch->second.getVertexAndIndexData(vertexData, indexData);
-								triangleCounter += iterSurfacePatch->second.getNoOfTriangles();
+								triangleCounter += iterSurfacePatch->second.getNoOfTriangles();*/
 								
 								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(iterSurfacePatch->first);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
 								{
 									//We have to create the surface
-									SurfacePatchRenderable* surface = new SurfacePatchRenderable(materialMap->getMaterialAtIndex(iterSurfacePatch->first));
+									SurfacePatchRenderable* surface = new SurfacePatchRenderable(iterSurfacePatch->second,materialMap->getMaterialAtIndex(iterSurfacePatch->first));
 									//surface->setGeometry(vertexData[meshCt],indexData[meshCt]);
-									surface->setGeometry(vertexData, indexData);
+									//surface->setGeometry(vertexData, indexData);
 
 									m_mapSurfaces[regionX][regionY][regionZ].insert(std::make_pair(iterSurfacePatch->first,surface));
 
@@ -300,7 +300,8 @@ namespace Ogre
 								{
 									//We just update the existing surface
 									//iterSurface->second->setGeometry(vertexData[meshCt],indexData[meshCt]);
-									iterSurface->second->setGeometry(vertexData, indexData);
+									//iterSurface->second->setGeometry(vertexData, indexData);
+									iterSurface->second->updateWithNewSurfacePatch(iterSurfacePatch->second);
 									sceneNode->attachObject(iterSurface->second);
 								}
 							}

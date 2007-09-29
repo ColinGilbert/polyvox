@@ -53,17 +53,17 @@ namespace Ogre
 		return m_listVertices.end();
 	}
 
-	uint SurfacePatch::getNoOfEdges(void)
+	uint SurfacePatch::getNoOfEdges(void) const
 	{
 		return m_listEdges.size();
 	}
 
-	uint SurfacePatch::getNoOfTriangles(void)
+	uint SurfacePatch::getNoOfTriangles(void) const
 	{
 		return m_listTriangles.size();
 	}
 
-	uint SurfacePatch::getNoOfVertices(void)
+	uint SurfacePatch::getNoOfVertices(void) const
 	{
 		return m_listVertices.size();
 	}
@@ -130,48 +130,6 @@ namespace Ogre
 		otherEdgeIter->pairWithOtherHalfEdge(edgeIter);
 
 		return edgeIter;
-	}
-
-	void SurfacePatch::getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData)
-	{
-		vertexData.clear();
-		indexData.clear();
-
-		vertexData.resize(m_listVertices.size());
-		std::copy(m_listVertices.begin(), m_listVertices.end(), vertexData.begin());
-
-		/*LogManager::getSingleton().logMessage("----------Vertex Data----------");
-		for(std::vector<SurfaceVertex>::iterator vertexIter = vertexData.begin(); vertexIter != vertexData.end(); ++vertexIter)
-		{
-			LogManager::getSingleton().logMessage(StringConverter::toString(vertexIter->getPosition().x) + "," + StringConverter::toString(vertexIter->getPosition().y) + "," + StringConverter::toString(vertexIter->getPosition().z));
-		}
-		LogManager::getSingleton().logMessage("----------End Vertex Data----------");*/
-
-		for(SurfaceTriangleIterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
-		{		
-			//LogManager::getSingleton().logMessage("Begin Triangle:");
-			std::vector<SurfaceVertex>::iterator iterVertex;
-			SurfaceEdgeIterator edgeIter;
-			
-			edgeIter = iterTriangles->getEdge();
-			//LogManager::getSingleton().logMessage("Edge Target " + StringConverter::toString(edgeIter->target->position.x) + "," + StringConverter::toString(edgeIter->target->position.y) + "," + StringConverter::toString(edgeIter->target->position.z));
-			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
-			//LogManager::getSingleton().logMessage("");
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
-			indexData.push_back(iterVertex - vertexData.begin());
-
-			edgeIter = edgeIter->getNextHalfEdge();
-			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
-			indexData.push_back(iterVertex - vertexData.begin());
-
-			edgeIter = edgeIter->getNextHalfEdge();
-			iterVertex = find(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
-			//LogManager::getSingleton().logMessage("    " + StringConverter::toString(iterVertex->getPosition().x) + "," + StringConverter::toString(iterVertex->getPosition().y) + "," + StringConverter::toString(iterVertex->getPosition().z));
-			indexData.push_back(iterVertex - vertexData.begin());	
-
-			//LogManager::getSingleton().logMessage("End Triangle");
-		}
 	}
 
 	bool SurfacePatch::canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge)

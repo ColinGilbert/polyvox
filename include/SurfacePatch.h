@@ -26,15 +26,9 @@ namespace Ogre
 	   SurfaceVertexIterator getVerticesEnd(void);
 
 	   //Users of the class might want these for debugging or info purposes.
-	   uint getNoOfEdges(void);
-	   uint getNoOfTriangles(void);
-	   uint getNoOfVertices(void);
-
-	   	   
-	   
-
-	   void getVertexAndIndexData(std::vector<SurfaceVertex>& vertexData, std::vector<uint>& indexData);
-
+	   uint getNoOfEdges(void) const;
+	   uint getNoOfTriangles(void) const;
+	   uint getNoOfVertices(void) const;
 
 	   bool canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge);
 	   std::list<SurfaceVertexIterator> findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge);
