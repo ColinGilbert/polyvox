@@ -3,6 +3,8 @@
 #include "SurfaceEdge.h"
 #include "OgreVertexIndexData.h"
 
+#include <limits>
+
 namespace Ogre
 {
 	SurfacePatchRenderable::SurfacePatchRenderable(SurfacePatch& patchToRender, const String& material)
@@ -48,14 +50,9 @@ namespace Ogre
 		//Initialization stuff
 		mRenderOp.vertexData->vertexCount = patchToRender.getNoOfVertices();		
 		mRenderOp.indexData->indexCount = patchToRender.getNoOfTriangles() * 3;
-
 		
 		VertexBufferBinding *bind = mRenderOp.vertexData->vertexBufferBinding;
 
-		
-		
-
-		//LogManager::getSingleton().logMessage("Creating Vertex Buffer");
 		HardwareVertexBufferSharedPtr vbuf =
 			HardwareBufferManager::getSingleton().createVertexBuffer(
 			mRenderOp.vertexData->vertexDeclaration->getVertexSize(0),
@@ -65,7 +62,6 @@ namespace Ogre
 
 		bind->setBinding(0, vbuf);
 
-		//LogManager::getSingleton().logMessage("Creating Index Buffer");
 		HardwareIndexBufferSharedPtr ibuf =
 			HardwareBufferManager::getSingleton().createIndexBuffer(
 			HardwareIndexBuffer::IT_16BIT, // type of index
@@ -80,8 +76,10 @@ namespace Ogre
 		std::copy(patchToRender.getVerticesBegin(), patchToRender.getVerticesEnd(), vertexData.begin());
 
 		// Drawing stuff
-		Vector3 vaabMin = vertexData[0].getPosition().toOgreVector3();
-		Vector3 vaabMax = vertexData[vertexData.size()-1].getPosition().toOgreVector3();
+		Vector3 vaabMin(std::numeric_limits<Real>::max(),std::numeric_limits<Real>::max(),std::numeric_limits<Real>::max());
+		Vector3 vaabMax(0.0,0.0,0.0);
+		//Vector3 vaabMin2 = vertexData[0].getPosition().toOgreVector3();
+		//Vector3 vaabMax2 = vertexData[vertexData.size()-1].getPosition().toOgreVector3();
 
 		
 		Real *prPos = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
@@ -98,9 +96,26 @@ namespace Ogre
 			*prPos++ = vertexIter->getNormal().z;
 
 			*prPos++ = vertexIter->getAlpha();
+
+			if(vertexIter->getPosition().x < vaabMin.x)
+				vaabMin.x = vertexIter->getPosition().x;
+			if(vertexIter->getPosition().y < vaabMin.y)
+				vaabMin.y = vertexIter->getPosition().y;
+			if(vertexIter->getPosition().z < vaabMin.z)
+				vaabMin.z = vertexIter->getPosition().z;
+
+			if(vertexIter->getPosition().x > vaabMax.x)
+				vaabMax.x = vertexIter->getPosition().x;
+			if(vertexIter->getPosition().y > vaabMax.y)
+				vaabMax.y = vertexIter->getPosition().y;
+			if(vertexIter->getPosition().z > vaabMax.z)
+				vaabMax.z = vertexIter->getPosition().z;
 		}		
 
 		vbuf->unlock();
+
+		//LogManager::getSingleton().logMessage("vaabMin  = " + StringConverter::toString(vaabMin ) + ", vaabMax  = " + StringConverter::toString(vaabMax ));
+		//LogManager::getSingleton().logMessage("vaabMin2 = " + StringConverter::toString(vaabMin2) + ", vaabMax2 = " + StringConverter::toString(vaabMax2));
 
 		vaabMin /= 2.0f;
 		vaabMax /= 2.0f;
