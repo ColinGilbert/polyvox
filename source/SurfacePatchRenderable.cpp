@@ -140,6 +140,8 @@ namespace Ogre
 			SurfaceEdgeIterator edgeIter;
 			
 			edgeIter = iterTriangles->getEdge();
+			SurfaceVertexConstIterator vertexToFindIter = edgeIter->getTarget();
+			SurfaceVertex vertexToFind = *vertexToFindIter;
 			iterVertex = lower_bound(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
 			*pIdx = (iterVertex - vertexData.begin());
 			//LogManager::getSingleton().logMessage("Wrong pIdx =   " + StringConverter::toString(*pIdx));

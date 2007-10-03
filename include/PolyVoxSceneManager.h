@@ -81,7 +81,7 @@ namespace Ogre
 		
 		void generateLevelVolume(void);
 
-		std::map<uchar, SurfacePatch> generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ) const;
+		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, std::map<uchar, SurfacePatch>& result) const;
 
 		void doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value);
 

@@ -247,7 +247,7 @@ namespace Ogre
 			//Regenerate meshes.
 			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 			{		
-				LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
+				//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
 				for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 				{
 					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
@@ -259,7 +259,8 @@ namespace Ogre
 							//Generate the surface
 							//std::vector< std::vector<SurfaceVertex> > vertexData;
 							//std::vector< std::vector<SurfaceTriangle> > indexData;
-							std::map<uchar, SurfacePatch> mapSurfacePatch = generateMeshDataForRegion(regionX,regionY,regionZ);
+							std::map<uchar, SurfacePatch> mapSurfacePatch;
+							generateMeshDataForRegion(regionX,regionY,regionZ, mapSurfacePatch);
 
 							//If a SceneNode doesn't exist in this position then create one.
 							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
@@ -464,7 +465,7 @@ namespace Ogre
 		}
 	}
 
-	std::map<uchar, SurfacePatch> PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ) const
+	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::map<uchar, SurfacePatch>& result) const
 	{	
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		/*LogManager::getSingleton().logMessage("HERE");
@@ -483,13 +484,13 @@ namespace Ogre
 		}
 		LogManager::getSingleton().logMessage("DONE");*/
 		//The vertex and index data
-		std::vector< std::vector<SurfaceVertex> > vertexData;
+		/*std::vector< std::vector<SurfaceVertex> > vertexData;
 		std::vector< std::vector<SurfaceTriangle> > indexData;
 
 		vertexData.resize(256);
-		indexData.resize(256);
+		indexData.resize(256);*/
 
-		std::map<uchar, SurfacePatch> result;
+		//std::map<uchar, SurfacePatch> result;
 
 		//Used later to check if vertex has already been added
 		//long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][10];
@@ -721,16 +722,16 @@ namespace Ogre
 			}
 
 			uint noOfRemovedVertices = 0;
-			do
+			//do
 			{
-				noOfRemovedVertices = iterPatch->second.decimate();
+				//noOfRemovedVertices = iterPatch->second.decimate();
 			}
-			while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
+			//while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
 
-		return result;
+		//return result;
 	}
 
 	Vector3 PolyVoxSceneManager::computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const
