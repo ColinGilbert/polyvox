@@ -44,17 +44,17 @@ namespace Ogre
 		const UIntVector3& getPosition(void) const;	
 
 		void setAlpha(float alphaToSet);	
-		void setEdge(const SurfaceEdgeIterator& edgeToSet);
-		void setNormal(const Vector3& normalToSet);			
+		void setEdge(const SurfaceEdgeIterator& edgeToSet) const;
+		void setNormal(const Vector3& normalToSet) const;
 
-		std::string toString(void);
+		std::string toString(void) const;
 
 	private:
 		UIntVector3 position;
-		Vector3 normal;
+		mutable Vector3 normal;
 		float alpha;
 
-		SurfaceEdgeIterator edge;		
+		mutable SurfaceEdgeIterator edge;		
 
 		unsigned long m_uHash;
 	};

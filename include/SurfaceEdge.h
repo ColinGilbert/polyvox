@@ -38,28 +38,28 @@ namespace Ogre
 
 		bool isDegenerate(void);
 
-		const SurfaceVertexIterator& getTarget(void);
-		const SurfaceVertexIterator& getSource(void);
-		const SurfaceEdgeIterator& getOtherHalfEdge(void);
-		const SurfaceEdgeIterator& getPreviousHalfEdge(void);
-		const SurfaceEdgeIterator& getNextHalfEdge(void);
-		const SurfaceTriangleIterator& getTriangle(void);
+		const SurfaceVertexIterator& getTarget(void) const;
+		const SurfaceVertexIterator& getSource(void) const;
+		const SurfaceEdgeIterator& getOtherHalfEdge(void) const;
+		const SurfaceEdgeIterator& getPreviousHalfEdge(void) const;
+		const SurfaceEdgeIterator& getNextHalfEdge(void) const;
+		const SurfaceTriangleIterator& getTriangle(void) const;
 
-		void setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet);
-		void setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet);
-		void setTriangle(const SurfaceTriangleIterator& triangleToSet);
+		void setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet) const;
+		void setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet) const;
+		void setTriangle(const SurfaceTriangleIterator& triangleToSet) const;
 
-		void pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair);
+		void pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair) const;
 
 	private:
 		SurfaceVertexIterator target;
 		SurfaceVertexIterator source;
 
-		SurfaceEdgeIterator previousHalfEdge;
-		SurfaceEdgeIterator nextHalfEdge;
-		SurfaceEdgeIterator otherHalfEdge;
+		mutable SurfaceEdgeIterator previousHalfEdge;
+		mutable SurfaceEdgeIterator nextHalfEdge;
+		mutable SurfaceEdgeIterator otherHalfEdge;
 
-		SurfaceTriangleIterator triangle;
+		mutable SurfaceTriangleIterator triangle;
 	};	
 }
 

@@ -49,18 +49,18 @@ namespace Ogre
 		alpha = alphaToSet;
 	}
 
-	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet)
+	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet) const
 	{
 		edge = edgeToSet;
 	}
 
-	void SurfaceVertex::setNormal(const Vector3& normalToSet)
+	void SurfaceVertex::setNormal(const Vector3& normalToSet) const
 	{
 		normal = normalToSet;
 		normal.normalise();
 	}		
 
-	std::string SurfaceVertex::toString(void)
+	std::string SurfaceVertex::toString(void) const
 	{
 		std::stringstream ss;
 		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << StringConverter::toString(normal);

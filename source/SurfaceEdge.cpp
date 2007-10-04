@@ -50,54 +50,54 @@ namespace Ogre
 		return false;
 	}
 
-	const SurfaceVertexIterator& SurfaceEdge::getTarget(void)
+	const SurfaceVertexIterator& SurfaceEdge::getTarget(void) const
 	{
 		return target;
 	}
 
-	const SurfaceVertexIterator& SurfaceEdge::getSource(void)
+	const SurfaceVertexIterator& SurfaceEdge::getSource(void) const
 	{
 		return source;
 	}
 
-	void SurfaceEdge::pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair)
+	void SurfaceEdge::pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair) const
 	{
 		otherHalfEdge = otherHalfEdgeToPair;
 		previousHalfEdge = otherHalfEdgeToPair;
 		nextHalfEdge = otherHalfEdgeToPair;
 	}
 
-	const SurfaceEdgeIterator& SurfaceEdge::getOtherHalfEdge(void)
+	const SurfaceEdgeIterator& SurfaceEdge::getOtherHalfEdge(void) const
 	{
 		return otherHalfEdge;
 	}
 
-	const SurfaceEdgeIterator& SurfaceEdge::getPreviousHalfEdge(void)
+	const SurfaceEdgeIterator& SurfaceEdge::getPreviousHalfEdge(void) const
 	{
 		return previousHalfEdge;
 	}
 
-	const SurfaceEdgeIterator& SurfaceEdge::getNextHalfEdge(void)
+	const SurfaceEdgeIterator& SurfaceEdge::getNextHalfEdge(void) const
 	{
 		return nextHalfEdge;
 	}
 
-	const SurfaceTriangleIterator& SurfaceEdge::getTriangle(void)
+	const SurfaceTriangleIterator& SurfaceEdge::getTriangle(void) const
 	{
 		return triangle;
 	}
 
-	void SurfaceEdge::setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet)
+	void SurfaceEdge::setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet) const
 	{
 		previousHalfEdge = previousHalfEdgeToSet;
 	}
 
-	void SurfaceEdge::setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet)
+	void SurfaceEdge::setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet) const
 	{
 		nextHalfEdge = nextHalfEdgeToSet;
 	}
 
-	void SurfaceEdge::setTriangle(const SurfaceTriangleIterator& triangleToSet)
+	void SurfaceEdge::setTriangle(const SurfaceTriangleIterator& triangleToSet) const
 	{
 		triangle = triangleToSet;
 	}
