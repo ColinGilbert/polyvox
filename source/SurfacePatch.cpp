@@ -137,6 +137,7 @@ namespace Ogre
 		bool allXMatch = true;
 		bool allYMatch = true;
 		bool allZMatch = true;
+		bool allAlphaMatch = true;
 		bool allNormalsMatch = true;
 		bool twoEdgesMatch = true;
 
@@ -153,6 +154,10 @@ namespace Ogre
 			if((*connectedIter)->getPosition().z != vertexIter->getPosition().z)
 			{
 				allZMatch = false;
+			}
+			if((*connectedIter)->getAlpha() != vertexIter->getAlpha())
+			{
+				allAlphaMatch = false;
 			}
 			if((*connectedIter)->getNormal().dotProduct(vertexIter->getNormal()) < 0.99)
 			{
@@ -173,6 +178,7 @@ namespace Ogre
 		}		
 
 		return (allXMatch || allYMatch || allZMatch)
+			&& (allAlphaMatch)
 			&& (twoEdgesMatch);
 	}
 

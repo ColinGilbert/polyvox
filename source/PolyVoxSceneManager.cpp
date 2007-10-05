@@ -722,11 +722,11 @@ namespace Ogre
 			}
 
 			uint noOfRemovedVertices = 0;
-			//do
+			do
 			{
-				//noOfRemovedVertices = iterPatch->second.decimate();
+				noOfRemovedVertices = iterPatch->second.decimate();
 			}
-			//while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
+			while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
