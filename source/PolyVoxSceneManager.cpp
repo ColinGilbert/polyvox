@@ -25,13 +25,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VolumeIterator.h"
 #include "VolumeManager.h"
 
-#include "OgreManualObject.h"
 #include "OgreStringConverter.h"
 #include "OgreLogManager.h"
-
-//Tempory...
-#include "OgreMeshManager.h"
-#include "OgreEntity.h"
 
 namespace Ogre
 {
@@ -468,52 +463,6 @@ namespace Ogre
 	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::map<uchar, SurfacePatch>& result) const
 	{	
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
-		/*LogManager::getSingleton().logMessage("HERE");
-		VolumeIterator volIter1(volumeData);
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; z += 10)
-		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; y += 10)
-			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; x += 10)
-				{
-					volIter1.setPosition(x,y,z);
-					uchar value = volIter1.getVoxel();
-					LogManager::getSingleton().logMessage("Value is " + StringConverter::toString(int(value)));
-				}
-			}
-		}
-		LogManager::getSingleton().logMessage("DONE");*/
-		//The vertex and index data
-		/*std::vector< std::vector<SurfaceVertex> > vertexData;
-		std::vector< std::vector<SurfaceTriangle> > indexData;
-
-		vertexData.resize(256);
-		indexData.resize(256);*/
-
-		//std::map<uchar, SurfacePatch> result;
-
-		//Used later to check if vertex has already been added
-		//long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][10];
-		//uchar materialAtPosition[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1]; //FIXME - do we really need this? Can't we just get it from the volume...
-		//bool isVertexSharedBetweenMaterials[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
-		//memset(vertexIndices,0xFF,sizeof(vertexIndices)); //0xFF is -1 as two's complement - this may not be portable...
-		//memset(materialAtPosition,0x00,sizeof(materialAtPosition));
-		//memset(isVertexSharedBetweenMaterials,0x00,sizeof(isVertexSharedBetweenMaterials));
-
-		//tracks triangles using each vertex
-		//std::set<uint> trianglesUsingVertex[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
-		//FIXME - is this loop necessary or is a default set empty?
-		/*for(uint z = 0; z < OGRE_REGION_SIDE_LENGTH*2+1; z += 10)
-		{
-			for(uint y = 0; y < OGRE_REGION_SIDE_LENGTH*2+1; y += 10)
-			{
-				for(uint x = 0; x < OGRE_REGION_SIDE_LENGTH*2+1; x += 10)
-				{
-					trianglesUsingVertex[x][y][z].clear();
-				}
-			}
-		}*/
-
 		//First and last voxels in the region
 		const uint firstX = regionX * OGRE_REGION_SIDE_LENGTH;
 		const uint firstY = regionY * OGRE_REGION_SIDE_LENGTH;
@@ -675,35 +624,49 @@ namespace Ogre
 				SurfaceVertex surfaceVertex2(vertex2);
 				result[uMaxMaterial].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);*/
 
-				std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
-				materials.insert(material0);
-				materials.insert(material1);
-				materials.insert(material2);
-
-				for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
+				if((material0 == material1) && (material1 == material2))
 				{
-					uchar material = *materialsIter;
-
 					SurfaceVertex surfaceVertex0(vertex0);
-					if(material0 == material)
-						surfaceVertex0.setAlpha(1.0);
-					else
-						surfaceVertex0.setAlpha(0.0);
-
+					surfaceVertex0.setAlpha(1.0);
 					SurfaceVertex surfaceVertex1(vertex1);
-					if(material1 == material)
-						surfaceVertex1.setAlpha(1.0);
-					else
-						surfaceVertex1.setAlpha(0.0);
-
+					surfaceVertex1.setAlpha(1.0);
 					SurfaceVertex surfaceVertex2(vertex2);
-					if(material2 == material)
-						surfaceVertex2.setAlpha(1.0);
-					else
-						surfaceVertex2.setAlpha(0.0);
+					surfaceVertex2.setAlpha(1.0);
 
-					result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);					
+					result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
 				}
+				else
+				{
+					std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
+					materials.insert(material0);
+					materials.insert(material1);
+					materials.insert(material2);
+
+					for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
+					{
+						uchar material = *materialsIter;
+
+						SurfaceVertex surfaceVertex0(vertex0);
+						if(material0 == material)
+							surfaceVertex0.setAlpha(1.0);
+						else
+							surfaceVertex0.setAlpha(0.0);
+
+						SurfaceVertex surfaceVertex1(vertex1);
+						if(material1 == material)
+							surfaceVertex1.setAlpha(1.0);
+						else
+							surfaceVertex1.setAlpha(0.0);
+
+						SurfaceVertex surfaceVertex2(vertex2);
+						if(material2 == material)
+							surfaceVertex2.setAlpha(1.0);
+						else
+							surfaceVertex2.setAlpha(0.0);
+
+						result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);					
+					}
+				}				
 			}
 		}	
 
