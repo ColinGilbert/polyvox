@@ -60,7 +60,7 @@ namespace Ogre
 		return source;
 	}
 
-	void SurfaceEdge::pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair) const
+	void SurfaceEdge::pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair)
 	{
 		otherHalfEdge = otherHalfEdgeToPair;
 		previousHalfEdge = otherHalfEdgeToPair;
@@ -87,17 +87,17 @@ namespace Ogre
 		return triangle;
 	}
 
-	void SurfaceEdge::setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet) const
+	void SurfaceEdge::setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet)
 	{
 		previousHalfEdge = previousHalfEdgeToSet;
 	}
 
-	void SurfaceEdge::setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet) const
+	void SurfaceEdge::setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet)
 	{
 		nextHalfEdge = nextHalfEdgeToSet;
 	}
 
-	void SurfaceEdge::setTriangle(const SurfaceTriangleIterator& triangleToSet) const
+	void SurfaceEdge::setTriangle(const SurfaceTriangleIterator& triangleToSet)
 	{
 		triangle = triangleToSet;
 	}

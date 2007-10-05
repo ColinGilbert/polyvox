@@ -717,7 +717,7 @@ namespace Ogre
 			while(iterSurfaceVertex != iterPatch->second.getVerticesEnd())
 			{
 				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
-				iterSurfaceVertex->setNormal(tempNormal);
+				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
 

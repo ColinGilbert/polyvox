@@ -49,12 +49,12 @@ namespace Ogre
 		alpha = alphaToSet;
 	}
 
-	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet) const
+	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet)
 	{
 		edge = edgeToSet;
 	}
 
-	void SurfaceVertex::setNormal(const Vector3& normalToSet) const
+	void SurfaceVertex::setNormal(const Vector3& normalToSet)
 	{
 		normal = normalToSet;
 		normal.normalise();

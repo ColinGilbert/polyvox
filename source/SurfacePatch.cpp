@@ -78,17 +78,17 @@ namespace Ogre
 		SurfaceEdgeIterator v1v2Iter = findOrAddEdge(v1Iter,v2Iter);
 		SurfaceEdgeIterator v2v0Iter = findOrAddEdge(v2Iter,v0Iter);
 
-		v0Iter->setEdge(v0v1Iter);
-		v1Iter->setEdge(v1v2Iter);
-		v2Iter->setEdge(v2v0Iter);
+		const_cast<SurfaceVertex&>(*v0Iter).setEdge(v0v1Iter);
+		const_cast<SurfaceVertex&>(*v1Iter).setEdge(v1v2Iter);
+		const_cast<SurfaceVertex&>(*v2Iter).setEdge(v2v0Iter);
 
-		v0v1Iter->setNextHalfEdge(v1v2Iter);
-		v1v2Iter->setNextHalfEdge(v2v0Iter);
-		v2v0Iter->setNextHalfEdge(v0v1Iter);
+		const_cast<SurfaceEdge&>(*v0v1Iter).setNextHalfEdge(v1v2Iter);
+		const_cast<SurfaceEdge&>(*v1v2Iter).setNextHalfEdge(v2v0Iter);
+		const_cast<SurfaceEdge&>(*v2v0Iter).setNextHalfEdge(v0v1Iter);
 
-		v0v1Iter->setPreviousHalfEdge(v2v0Iter);
-		v1v2Iter->setPreviousHalfEdge(v0v1Iter);
-		v2v0Iter->setPreviousHalfEdge(v1v2Iter);
+		const_cast<SurfaceEdge&>(*v0v1Iter).setPreviousHalfEdge(v2v0Iter);
+		const_cast<SurfaceEdge&>(*v1v2Iter).setPreviousHalfEdge(v0v1Iter);
+		const_cast<SurfaceEdge&>(*v2v0Iter).setPreviousHalfEdge(v1v2Iter);
 
 		SurfaceTriangle triangle;
 
@@ -96,9 +96,9 @@ namespace Ogre
 
 		SurfaceTriangleIterator iterTriangle = m_listTriangles.insert(triangle).first;
 
-		v0v1Iter->setTriangle(iterTriangle);
-		v1v2Iter->setTriangle(iterTriangle);
-		v2v0Iter->setTriangle(iterTriangle);
+		const_cast<SurfaceEdge&>(*v0v1Iter).setTriangle(iterTriangle);
+		const_cast<SurfaceEdge&>(*v1v2Iter).setTriangle(iterTriangle);
+		const_cast<SurfaceEdge&>(*v2v0Iter).setTriangle(iterTriangle);
 	}
 
 	SurfaceVertexIterator SurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
@@ -126,8 +126,8 @@ namespace Ogre
 		SurfaceEdge otherEdge(source, target);		
 		SurfaceEdgeIterator otherEdgeIter = m_listEdges.insert(otherEdge).first;
 
-		edgeIter->pairWithOtherHalfEdge(otherEdgeIter);
-		otherEdgeIter->pairWithOtherHalfEdge(edgeIter);
+		const_cast<SurfaceEdge&>(*edgeIter).pairWithOtherHalfEdge(otherEdgeIter);
+		const_cast<SurfaceEdge&>(*otherEdgeIter).pairWithOtherHalfEdge(edgeIter);
 
 		return edgeIter;
 	}

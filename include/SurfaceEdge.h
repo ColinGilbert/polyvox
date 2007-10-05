@@ -45,21 +45,21 @@ namespace Ogre
 		const SurfaceEdgeIterator& getNextHalfEdge(void) const;
 		const SurfaceTriangleIterator& getTriangle(void) const;
 
-		void setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet) const;
-		void setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet) const;
-		void setTriangle(const SurfaceTriangleIterator& triangleToSet) const;
+		void setPreviousHalfEdge(const SurfaceEdgeIterator& previousHalfEdgeToSet);
+		void setNextHalfEdge(const SurfaceEdgeIterator& nextHalfEdgeToSet);
+		void setTriangle(const SurfaceTriangleIterator& triangleToSet);
 
-		void pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair) const;
+		void pairWithOtherHalfEdge(const SurfaceEdgeIterator& otherHalfEdgeToPair);
 
 	private:
 		SurfaceVertexIterator target;
 		SurfaceVertexIterator source;
 
-		mutable SurfaceEdgeIterator previousHalfEdge;
-		mutable SurfaceEdgeIterator nextHalfEdge;
-		mutable SurfaceEdgeIterator otherHalfEdge;
+		SurfaceEdgeIterator previousHalfEdge;
+		SurfaceEdgeIterator nextHalfEdge;
+		SurfaceEdgeIterator otherHalfEdge;
 
-		mutable SurfaceTriangleIterator triangle;
+		SurfaceTriangleIterator triangle;
 	};	
 }
 
