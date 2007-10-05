@@ -626,16 +626,80 @@ namespace Ogre
 
 				if((material0 == material1) && (material1 == material2))
 				{
-					SurfaceVertex surfaceVertex0(vertex0);
-					surfaceVertex0.setAlpha(1.0);
-					SurfaceVertex surfaceVertex1(vertex1);
-					surfaceVertex1.setAlpha(1.0);
-					SurfaceVertex surfaceVertex2(vertex2);
-					surfaceVertex2.setAlpha(1.0);
+					SurfaceVertex surfaceVertex0(vertex0,1.0);
+					SurfaceVertex surfaceVertex1(vertex1,1.0);
+					SurfaceVertex surfaceVertex2(vertex2,1.0);
 
 					result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
 				}
+				else if(material0 == material1)
+				{
+					{
+						SurfaceVertex surfaceVertex0(vertex0,1.0);
+						SurfaceVertex surfaceVertex1(vertex1,1.0);
+						SurfaceVertex surfaceVertex2(vertex2,0.0);
+						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+					{
+						SurfaceVertex surfaceVertex0(vertex0,0.0);
+						SurfaceVertex surfaceVertex1(vertex1,0.0);
+						SurfaceVertex surfaceVertex2(vertex2,1.0);
+						result[material2].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+				}
+				else if(material1 == material2)
+				{
+					{
+						SurfaceVertex surfaceVertex0(vertex0,0.0);
+						SurfaceVertex surfaceVertex1(vertex1,1.0);
+						SurfaceVertex surfaceVertex2(vertex2,1.0);
+						result[material1].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+					{
+						SurfaceVertex surfaceVertex0(vertex0,1.0);
+						SurfaceVertex surfaceVertex1(vertex1,0.0);
+						SurfaceVertex surfaceVertex2(vertex2,0.0);
+						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+				}
+				else if(material2 == material0)
+				{
+					{
+						SurfaceVertex surfaceVertex0(vertex0,1.0);
+						SurfaceVertex surfaceVertex1(vertex1,0.0);
+						SurfaceVertex surfaceVertex2(vertex2,1.0);
+						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+					{
+						SurfaceVertex surfaceVertex0(vertex0,0.0);
+						SurfaceVertex surfaceVertex1(vertex1,1.0);
+						SurfaceVertex surfaceVertex2(vertex2,0.0);
+						surfaceVertex2.setAlpha(0.0);
+						result[material1].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+				}
 				else
+				{
+					{
+						SurfaceVertex surfaceVertex0(vertex0,1.0);
+						SurfaceVertex surfaceVertex1(vertex1,0.0);
+						SurfaceVertex surfaceVertex2(vertex2,0.0);
+						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+					{
+						SurfaceVertex surfaceVertex0(vertex0,0.0);
+						SurfaceVertex surfaceVertex1(vertex1,1.0);
+						SurfaceVertex surfaceVertex2(vertex2,0.0);
+						result[material1].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+					{
+						SurfaceVertex surfaceVertex0(vertex0,0.0);
+						SurfaceVertex surfaceVertex1(vertex1,0.0);
+						SurfaceVertex surfaceVertex2(vertex2,1.0);
+						result[material2].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+					}
+				}
+				/*else
 				{
 					std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
 					materials.insert(material0);
@@ -666,7 +730,7 @@ namespace Ogre
 
 						result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);					
 					}
-				}				
+				}*/				
 			}
 		}	
 

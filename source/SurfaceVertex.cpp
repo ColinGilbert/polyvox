@@ -11,10 +11,12 @@ namespace Ogre
 	{
 	}
 
-	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet)
-		:position(positionToSet)
+	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, float alphaToSet)
+		:alpha(alphaToSet)
+		,position(positionToSet)
+		,m_uHash((position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z))
 	{
-		m_uHash = (position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z);
+		
 	}
 
 	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet)
