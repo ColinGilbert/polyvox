@@ -396,4 +396,29 @@ namespace Ogre
 
 		return true;
 	}
+
+	void SurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices)
+	{
+		vecVertices.resize(m_listVertices.size());
+		std::copy(m_listVertices.begin(), m_listVertices.end(), vecVertices.begin());
+
+		//vecIndices.resize(m_listTriangles.size() * 3);
+		for(SurfaceTriangleConstIterator iterTriangles = m_listTriangles.begin(); iterTriangles != m_listTriangles.end(); ++iterTriangles)
+		{		
+			std::vector<SurfaceVertex>::iterator iterVertex;
+			SurfaceEdgeIterator edgeIter;
+			
+			edgeIter = iterTriangles->getEdge();
+			iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), *(edgeIter->getTarget()));
+			vecIndices.push_back(iterVertex - vecVertices.begin());
+
+			edgeIter = edgeIter->getNextHalfEdge();
+			iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), *(edgeIter->getTarget()));
+			vecIndices.push_back(iterVertex - vecVertices.begin());
+
+			edgeIter = edgeIter->getNextHalfEdge();
+			iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), *(edgeIter->getTarget()));
+			vecIndices.push_back(iterVertex - vecVertices.begin());
+		}
+	}
 }

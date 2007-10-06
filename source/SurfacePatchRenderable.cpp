@@ -47,9 +47,13 @@ namespace Ogre
 
 	void SurfacePatchRenderable::setGeometry(SurfacePatch& patchToRender)
 	{
+		std::vector<SurfaceVertex> vecVertices;
+		std::vector<ushort> vecIndices;
+		patchToRender.fillVertexAndIndexData(vecVertices,vecIndices);
+
 		//Initialization stuff
-		mRenderOp.vertexData->vertexCount = patchToRender.getNoOfVertices();		
-		mRenderOp.indexData->indexCount = patchToRender.getNoOfTriangles() * 3;
+		mRenderOp.vertexData->vertexCount = vecVertices.size();		
+		mRenderOp.indexData->indexCount = vecIndices.size();
 		
 		VertexBufferBinding *bind = mRenderOp.vertexData->vertexBufferBinding;
 
@@ -71,21 +75,13 @@ namespace Ogre
 
 		mRenderOp.indexData->indexBuffer = ibuf;	
 
-		std::vector<SurfaceVertex> vertexData;
-		vertexData.resize(patchToRender.getNoOfVertices());
-		std::copy(patchToRender.getVerticesBegin(), patchToRender.getVerticesEnd(), vertexData.begin());
-
 		// Drawing stuff
 		Vector3 vaabMin(std::numeric_limits<Real>::max(),std::numeric_limits<Real>::max(),std::numeric_limits<Real>::max());
 		Vector3 vaabMax(0.0,0.0,0.0);
-		//Vector3 vaabMin2 = vertexData[0].getPosition().toOgreVector3();
-		//Vector3 vaabMax2 = vertexData[vertexData.size()-1].getPosition().toOgreVector3();
-
 		
 		Real *prPos = static_cast<Real*>(vbuf->lock(HardwareBuffer::HBL_DISCARD));
 
-		//for(int i = 0; i < size; i++)		
-		for(SurfaceVertexConstIterator vertexIter = patchToRender.getVerticesBegin(); vertexIter != patchToRender.getVerticesEnd(); ++vertexIter)
+		for(std::vector<SurfaceVertex>::iterator vertexIter = vecVertices.begin(); vertexIter != vecVertices.end(); ++vertexIter)
 		{
 			*prPos++ = vertexIter->getPosition().x/2.0f;
 			*prPos++ = vertexIter->getPosition().y/2.0f;
@@ -114,51 +110,19 @@ namespace Ogre
 
 		vbuf->unlock();
 
-		//LogManager::getSingleton().logMessage("vaabMin  = " + StringConverter::toString(vaabMin ) + ", vaabMax  = " + StringConverter::toString(vaabMax ));
-		//LogManager::getSingleton().logMessage("vaabMin2 = " + StringConverter::toString(vaabMin2) + ", vaabMax2 = " + StringConverter::toString(vaabMax2));
-
 		vaabMin /= 2.0f;
 		vaabMax /= 2.0f;
-
 		mBox.setExtents(vaabMin, vaabMax);
-
-		/*std::vector<SurfaceVertex> verticesToSet;
-		std::vector<uint> indicesToSet;
-		patchToRender.getVertexAndIndexData(verticesToSet, indicesToSet);*/
-
+		
 		unsigned short* pIdx = static_cast<unsigned short*>(ibuf->lock(HardwareBuffer::HBL_DISCARD));
-		/*for(int i = 0; i < indicesToSet.size(); i++)
+		//for(int i = 0; i < indexData.size(); i++)
+		for(std::vector<ushort>::iterator indexIter = vecIndices.begin(); indexIter != vecIndices.end(); ++indexIter)
 		{
-			*pIdx = indicesToSet[i];
-			LogManager::getSingleton().logMessage("Correct pIdx = " + StringConverter::toString(*pIdx));
+			//*pIdx = indexData[i];
+			*pIdx = *indexIter;
 			pIdx++;
-		}*/		
+		}	
 
-		for(SurfaceTriangleConstIterator iterTriangles = patchToRender.getTrianglesBegin(); iterTriangles != patchToRender.getTrianglesEnd(); ++iterTriangles)
-		{		
-			std::vector<SurfaceVertex>::iterator iterVertex;
-			SurfaceEdgeIterator edgeIter;
-			
-			edgeIter = iterTriangles->getEdge();
-			SurfaceVertexConstIterator vertexToFindIter = edgeIter->getTarget();
-			SurfaceVertex vertexToFind = *vertexToFindIter;
-			iterVertex = lower_bound(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
-			*pIdx = (iterVertex - vertexData.begin());
-			//LogManager::getSingleton().logMessage("Wrong pIdx =   " + StringConverter::toString(*pIdx));
-			pIdx++;
-
-			edgeIter = edgeIter->getNextHalfEdge();
-			iterVertex = lower_bound(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
-			*pIdx = (iterVertex - vertexData.begin());
-			//LogManager::getSingleton().logMessage("Wrong pIdx =   " + StringConverter::toString(*pIdx));
-			pIdx++;
-
-			edgeIter = edgeIter->getNextHalfEdge();
-			iterVertex = lower_bound(vertexData.begin(), vertexData.end(), *(edgeIter->getTarget()));
-			*pIdx = (iterVertex - vertexData.begin());
-			//LogManager::getSingleton().logMessage("Wrong pIdx =   " + StringConverter::toString(*pIdx));
-			pIdx++;	
-		}
 		ibuf->unlock();
 	}
 

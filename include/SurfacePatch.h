@@ -37,6 +37,8 @@ namespace Ogre
 	   bool isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal);
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);
 
+	   void fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices);
+
 	   
 
 
