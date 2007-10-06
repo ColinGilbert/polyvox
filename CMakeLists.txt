@@ -2,14 +2,15 @@ PROJECT(PolyVoxSceneManager)
 
 #Projects source files
 SET(SRC_FILES
+	source/AbstractSurfacePatch.cpp
 	source/Block.cpp
+	source/HalfEdgeSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/MaterialMap.cpp
 	source/MaterialMapManager.cpp
 	source/MaterialMapSerializer.cpp
 	source/PolyVoxSceneManager.cpp
-        source/SurfaceEdge.cpp
-        source/SurfacePatch.cpp
+        source/SurfaceEdge.cpp        
         source/SurfacePatchRenderable.cpp
 	source/SurfaceTriangle.cpp
 	source/SurfaceVertex.cpp
@@ -21,8 +22,10 @@ SET(SRC_FILES
 
 #Projects headers files
 SET(INC_FILES
+	include/AbstractSurfacePatch.h
 	include/Block.h
 	include/Constants.h
+	include/HalfEdgeSurfacePatch.h
 	include/IntegralVector3.h
 	include/MarchingCubesTables.h
 	include/MaterialMap.h
@@ -30,7 +33,6 @@ SET(INC_FILES
 	include/MaterialMapSerializer.h
         include/PolyVoxSceneManager.h
         include/SurfaceEdge.h
-        include/SurfacePatch.h
 	include/SurfaceTypes.h
         include/SurfacePatchRenderable.h
         include/SurfaceTriangle.h

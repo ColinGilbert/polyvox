@@ -1,6 +1,8 @@
 #ifndef __SurfaceTypes_H__
 #define __SurfaceTypes_H__
 
+#include <set>
+
 namespace Ogre
 {	
 	class SurfaceVertex;

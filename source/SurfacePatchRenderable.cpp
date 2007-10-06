@@ -7,7 +7,7 @@
 
 namespace Ogre
 {
-	SurfacePatchRenderable::SurfacePatchRenderable(SurfacePatch& patchToRender, const String& material)
+	SurfacePatchRenderable::SurfacePatchRenderable(AbstractSurfacePatch* patchToRender, const String& material)
 	{
 		//Set up what we can of the vertex data
 		mRenderOp.vertexData = new VertexData();
@@ -40,16 +40,16 @@ namespace Ogre
 		delete mRenderOp.indexData;
 	}
 
-	void SurfacePatchRenderable::updateWithNewSurfacePatch(SurfacePatch& patchToRender)
+	void SurfacePatchRenderable::updateWithNewSurfacePatch(AbstractSurfacePatch* patchToRender)
 	{		
 		setGeometry(patchToRender);
 	}
 
-	void SurfacePatchRenderable::setGeometry(SurfacePatch& patchToRender)
+	void SurfacePatchRenderable::setGeometry(AbstractSurfacePatch* patchToRender)
 	{
 		std::vector<SurfaceVertex> vecVertices;
 		std::vector<ushort> vecIndices;
-		patchToRender.fillVertexAndIndexData(vecVertices,vecIndices);
+		patchToRender->fillVertexAndIndexData(vecVertices,vecIndices);
 
 		//Initialization stuff
 		mRenderOp.vertexData->vertexCount = vecVertices.size();		

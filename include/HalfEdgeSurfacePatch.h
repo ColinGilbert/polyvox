@@ -4,6 +4,7 @@
 #include <set>
 #include <list>
 
+#include "AbstractSurfacePatch.h"
 #include "IntegralVector3.h"
 #include "SurfaceTypes.h"
 #include "VolumeIterator.h"
@@ -11,7 +12,7 @@
 
 namespace Ogre
 {
-	class SurfacePatch
+	class SurfacePatch : public AbstractSurfacePatch
 	{
 	public:
 	   SurfacePatch();
@@ -21,9 +22,7 @@ namespace Ogre
 	   SurfaceEdgeIterator getEdgesBegin(void);
 	   SurfaceEdgeIterator getEdgesEnd(void);
 	   SurfaceTriangleIterator getTrianglesBegin(void);
-	   SurfaceTriangleIterator getTrianglesEnd(void);
-	   SurfaceVertexIterator getVerticesBegin(void);
-	   SurfaceVertexIterator getVerticesEnd(void);
+	   SurfaceTriangleIterator getTrianglesEnd(void);	   
 
 	   //Users of the class might want these for debugging or info purposes.
 	   uint getNoOfEdges(void) const;
@@ -42,8 +41,7 @@ namespace Ogre
 	   
 
 
-	private:
-		std::set<SurfaceVertex> m_listVertices;
+	private:		
 		std::set<SurfaceTriangle> m_listTriangles;
 		std::set<SurfaceEdge> m_listEdges;
 

@@ -1,4 +1,4 @@
-#include "SurfacePatch.h"
+#include "HalfEdgeSurfacePatch.h"
 #include "Constants.h"
 
 #include "SurfaceVertex.h"
@@ -41,17 +41,7 @@ namespace Ogre
 	SurfaceTriangleIterator SurfacePatch::getTrianglesEnd(void)
 	{
 		return m_listTriangles.end();
-	}
-
-	SurfaceVertexIterator SurfacePatch::getVerticesBegin(void)
-	{
-		return m_listVertices.begin();
-	}
-
-	SurfaceVertexIterator SurfacePatch::getVerticesEnd(void)
-	{
-		return m_listVertices.end();
-	}
+	}	
 
 	uint SurfacePatch::getNoOfEdges(void) const
 	{

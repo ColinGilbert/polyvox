@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MaterialMapManager.h"
 #include "SurfaceVertex.h"
 #include "SurfaceEdge.h"
+#include "HalfEdgeSurfacePatch.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
 #include "VolumeManager.h"
@@ -254,8 +255,7 @@ namespace Ogre
 							//Generate the surface
 							//std::vector< std::vector<SurfaceVertex> > vertexData;
 							//std::vector< std::vector<SurfaceTriangle> > indexData;
-							std::map<uchar, SurfacePatch> mapSurfacePatch;
-							generateMeshDataForRegion(regionX,regionY,regionZ, mapSurfacePatch);
+							std::map<uchar, AbstractSurfacePatch*> mapSurfacePatch = generateMeshDataForRegion(regionX,regionY,regionZ);
 
 							//If a SceneNode doesn't exist in this position then create one.
 							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
@@ -273,7 +273,7 @@ namespace Ogre
 
 							//For each surface attach it to the scene node.
 							//for(uint meshCt = 1; meshCt < 256; ++meshCt)
-							for(std::map<uchar, SurfacePatch>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
+							for(std::map<uchar, AbstractSurfacePatch*>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
 							{
 								/*std::vector<SurfaceVertex> vertexData;
 								std::vector<uint> indexData;
@@ -460,8 +460,10 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, std::map<uchar, SurfacePatch>& result) const
+	std::map<uchar, AbstractSurfacePatch*> PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ) const
 	{	
+		std::map<uchar, AbstractSurfacePatch*> surfacePatchMapResult;
+
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		//First and last voxels in the region
 		const uint firstX = regionX * OGRE_REGION_SIDE_LENGTH;
@@ -618,6 +620,19 @@ namespace Ogre
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
+				if(surfacePatchMapResult.find(material0) == surfacePatchMapResult.end())
+				{
+					surfacePatchMapResult.insert(std::make_pair(material0,new SurfacePatch));
+				}
+				if(surfacePatchMapResult.find(material1) == surfacePatchMapResult.end())
+				{
+					surfacePatchMapResult.insert(std::make_pair(material1,new SurfacePatch));
+				}
+				if(surfacePatchMapResult.find(material2) == surfacePatchMapResult.end())
+				{
+					surfacePatchMapResult.insert(std::make_pair(material2,new SurfacePatch));
+				}
+
 				SurfaceVertex surfaceVertex0Alpha1(vertex0,1.0);
 				SurfaceVertex surfaceVertex1Alpha1(vertex1,1.0);
 				SurfaceVertex surfaceVertex2Alpha1(vertex2,1.0);				
@@ -625,7 +640,7 @@ namespace Ogre
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
 				{
-					result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 				}
 				//If there not all the same, we need one triangle for each unique material.
 				//We'll also need some vertices with low alphas for blending.
@@ -637,24 +652,24 @@ namespace Ogre
 
 					if(material0 == material1)
 					{
-						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-						result[material2].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+						surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
 					}
 					else if(material1 == material2)
 					{
-						result[material1].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
+						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
 					}
 					else if(material2 == material0)
 					{
-						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-						result[material1].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
 					}
 					else
 					{
-						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
-						result[material1].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-						result[material2].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
+						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+						surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
 					}
 				}
 			}//For each triangle
@@ -663,11 +678,11 @@ namespace Ogre
 		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
 
 
-		for(std::map<uchar, SurfacePatch>::iterator iterPatch = result.begin(); iterPatch != result.end(); ++iterPatch)
+		for(std::map<uchar, AbstractSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
 		{
 
-			SurfaceVertexIterator iterSurfaceVertex = iterPatch->second.getVerticesBegin();
-			while(iterSurfaceVertex != iterPatch->second.getVerticesEnd())
+			SurfaceVertexIterator iterSurfaceVertex = iterPatch->second->getVerticesBegin();
+			while(iterSurfaceVertex != iterPatch->second->getVerticesEnd())
 			{
 				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
@@ -684,7 +699,7 @@ namespace Ogre
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
 
-		//return result;
+		return surfacePatchMapResult;
 	}
 
 	Vector3 PolyVoxSceneManager::computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const
