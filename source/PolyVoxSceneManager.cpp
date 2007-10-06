@@ -702,68 +702,73 @@ namespace Ogre
 
 		Vector3 result;
 
-		switch(normalGenerationMethod)
+		
+		if(normalGenerationMethod == SOBEL)
 		{
-		case SOBEL:
-			{
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-				const Vector3 gradFloor = volIter.getSobelGradient();
-				if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-				{			
-					volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
-				}
-				if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-				{			
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
-				}
-				if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-				{			
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
-				}
-				const Vector3 gradCeil = volIter.getSobelGradient();
-				result = ((gradFloor + gradCeil) * -1.0);
-				break;
+			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+			const Vector3 gradFloor = volIter.getSobelGradient();
+			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
 			}
-		case CENTRAL_DIFFERENCE:
-			{
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-				const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
-				if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-				{			
-					volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
-				}
-				if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-				{			
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
-				}
-				if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-				{			
-					volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
-				}
-				const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
-				result = ((gradFloor + gradCeil) * -1.0);
-				break;
+			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
 			}
-		case SIMPLE:
-		default:
+			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
+			}
+			const Vector3 gradCeil = volIter.getSobelGradient();
+			result = ((gradFloor + gradCeil) * -1.0);
+			if(result.squaredLength() < 0.0001)
 			{
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-				const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
-				if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-				{					
-					uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-					result = Vector3(uFloor - uCeil,0.0,0.0);
-				}
-				else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-				{
-					uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-					result = Vector3(0.0,uFloor - uCeil,0.0);
-				}
-				else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-				{
-					uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-					result = Vector3(0.0, 0.0,uFloor - uCeil);					
-				}
+				//Operation failed - fall back on simple gradient estimation
+				normalGenerationMethod = SIMPLE;
+			}
+		}
+		if(normalGenerationMethod == CENTRAL_DIFFERENCE)
+		{
+			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+			const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
+			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
+			}
+			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
+			}
+			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
+			}
+			const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
+			result = ((gradFloor + gradCeil) * -1.0);
+			if(result.squaredLength() < 0.0001)
+			{
+				//Operation failed - fall back on simple gradient estimation
+				normalGenerationMethod = SIMPLE;
+			}
+		}
+		if(normalGenerationMethod == SIMPLE)
+		{
+			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+			const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
+			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
+			{					
+				uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
+				result = Vector3(uFloor - uCeil,0.0,0.0);
+			}
+			else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+			{
+				uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
+				result = Vector3(0.0,uFloor - uCeil,0.0);
+			}
+			else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+			{
+				uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
+				result = Vector3(0.0, 0.0,uFloor - uCeil);					
 			}
 		}
 		return result;
