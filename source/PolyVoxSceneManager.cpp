@@ -111,7 +111,7 @@ namespace Ogre
 		}
 
 		getRootSceneNode()->removeAndDestroyAllChildren();
-		
+
 
 		//Create surrounding box
 		//FIXME - should do this using indices
@@ -231,7 +231,7 @@ namespace Ogre
 		SceneNode* waterSceneNode = getRootSceneNode()->createChildSceneNode();
 		waterSceneNode->attachObject(water);*/
 
-	return true;
+		return true;
 	}
 
 	void PolyVoxSceneManager::_findVisibleObjects(Camera* cam, VisibleObjectsBoundsInfo *  visibleBounds,  bool onlyShadowCasters)
@@ -279,7 +279,7 @@ namespace Ogre
 								std::vector<uint> indexData;
 								iterSurfacePatch->second.getVertexAndIndexData(vertexData, indexData);
 								triangleCounter += iterSurfacePatch->second.getNoOfTriangles();*/
-								
+
 								std::map<uchar,SurfacePatchRenderable*>::iterator iterSurface = m_mapSurfaces[regionX][regionY][regionZ].find(iterSurfacePatch->first);
 								if(iterSurface == m_mapSurfaces[regionX][regionY][regionZ].end())
 								{
@@ -502,7 +502,7 @@ namespace Ogre
 			const uchar v101 = volIter.peekVoxel1px0py1pz();
 			const uchar v011 = volIter.peekVoxel0px1py1pz();
 			const uchar v111 = volIter.peekVoxel1px1py1pz();
-			
+
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
 			uchar iCubeIndex = 0;
 
@@ -527,84 +527,84 @@ namespace Ogre
 				vertlist[0].x = 2*x + 1;
 				vertlist[0].y = 2*y;
 				vertlist[0].z = 2*z;
-				vertMaterials[0] = (std::max)(v000,v100); //FIXME - faster way?
+				vertMaterials[0] = v000 | v100; //Because one of these is 0, the or operation takes the max.
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
 				vertlist[1].x = 2*x + 2;
 				vertlist[1].y = 2*y + 1;
 				vertlist[1].z = 2*z;
-				vertMaterials[1] = (std::max)(v100,v110);
+				vertMaterials[1] = v100 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
 				vertlist[2].x = 2*x + 1;
 				vertlist[2].y = 2*y + 2;
 				vertlist[2].z = 2*z;
-				vertMaterials[2] = (std::max)(v010,v110);
+				vertMaterials[2] = v010 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
 				vertlist[3].x = 2*x;
 				vertlist[3].y = 2*y + 1;
 				vertlist[3].z = 2*z;
-				vertMaterials[3] = (std::max)(v000,v010);
+				vertMaterials[3] = v000 | v010;
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
 				vertlist[4].x = 2*x + 1;
 				vertlist[4].y = 2*y;
 				vertlist[4].z = 2*z + 2;
-				vertMaterials[4] = (std::max)(v001,v101);
+				vertMaterials[4] = v001 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
 				vertlist[5].x = 2*x + 2;
 				vertlist[5].y = 2*y + 1;
 				vertlist[5].z = 2*z + 2;
-				vertMaterials[5] = (std::max)(v101,v111);
+				vertMaterials[5] = v101 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
 				vertlist[6].x = 2*x + 1;
 				vertlist[6].y = 2*y + 2;
 				vertlist[6].z = 2*z + 2;
-				vertMaterials[6] = (std::max)(v011,v111);
+				vertMaterials[6] = v011 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
 				vertlist[7].x = 2*x;
 				vertlist[7].y = 2*y + 1;
 				vertlist[7].z = 2*z + 2;
-				vertMaterials[7] = (std::max)(v001,v011);
+				vertMaterials[7] = v001 | v011;
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
 				vertlist[8].x = 2*x;
 				vertlist[8].y = 2*y;
 				vertlist[8].z = 2*z + 1;
-				vertMaterials[8] = (std::max)(v000,v001);
+				vertMaterials[8] = v000 | v001;
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
 				vertlist[9].x = 2*x + 2;
 				vertlist[9].y = 2*y;
 				vertlist[9].z = 2*z + 1;
-				vertMaterials[9] = (std::max)(v100,v101);
+				vertMaterials[9] = v100 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
 				vertlist[10].x = 2*x + 2;
 				vertlist[10].y = 2*y + 2;
 				vertlist[10].z = 2*z + 1;
-				vertMaterials[10] = (std::max)(v110,v111);
+				vertMaterials[10] = v110 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
 				vertlist[11].x = 2*x;
 				vertlist[11].y = 2*y + 2;
 				vertlist[11].z = 2*z + 1;
-				vertMaterials[11] = (std::max)(v010,v011);
+				vertMaterials[11] = v010 | v011;
 			}
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
@@ -618,121 +618,47 @@ namespace Ogre
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
-				/*const uchar uMaxMaterial = (std::max)(material0,(std::max)(material1,material2));
-				SurfaceVertex surfaceVertex0(vertex0);
-				SurfaceVertex surfaceVertex1(vertex1);
-				SurfaceVertex surfaceVertex2(vertex2);
-				result[uMaxMaterial].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);*/
+				SurfaceVertex surfaceVertex0Alpha1(vertex0,1.0);
+				SurfaceVertex surfaceVertex1Alpha1(vertex1,1.0);
+				SurfaceVertex surfaceVertex2Alpha1(vertex2,1.0);				
 
+				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
 				{
-					SurfaceVertex surfaceVertex0(vertex0,1.0);
-					SurfaceVertex surfaceVertex1(vertex1,1.0);
-					SurfaceVertex surfaceVertex2(vertex2,1.0);
+					result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+				}
+				//If there not all the same, we need one triangle for each unique material.
+				//We'll also need some vertices with low alphas for blending.
+				else 
+				{
+					SurfaceVertex surfaceVertex0Alpha0(vertex0,0.0);
+					SurfaceVertex surfaceVertex1Alpha0(vertex1,0.0);
+					SurfaceVertex surfaceVertex2Alpha0(vertex2,0.0);
 
-					result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-				}
-				else if(material0 == material1)
-				{
+					if(material0 == material1)
 					{
-						SurfaceVertex surfaceVertex0(vertex0,1.0);
-						SurfaceVertex surfaceVertex1(vertex1,1.0);
-						SurfaceVertex surfaceVertex2(vertex2,0.0);
-						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+						result[material2].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
 					}
+					else if(material1 == material2)
 					{
-						SurfaceVertex surfaceVertex0(vertex0,0.0);
-						SurfaceVertex surfaceVertex1(vertex1,0.0);
-						SurfaceVertex surfaceVertex2(vertex2,1.0);
-						result[material2].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+						result[material1].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
 					}
-				}
-				else if(material1 == material2)
-				{
+					else if(material2 == material0)
 					{
-						SurfaceVertex surfaceVertex0(vertex0,0.0);
-						SurfaceVertex surfaceVertex1(vertex1,1.0);
-						SurfaceVertex surfaceVertex2(vertex2,1.0);
-						result[material1].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+						result[material1].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
 					}
+					else
 					{
-						SurfaceVertex surfaceVertex0(vertex0,1.0);
-						SurfaceVertex surfaceVertex1(vertex1,0.0);
-						SurfaceVertex surfaceVertex2(vertex2,0.0);
-						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
+						result[material0].addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
+						result[material1].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+						result[material2].addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
 					}
 				}
-				else if(material2 == material0)
-				{
-					{
-						SurfaceVertex surfaceVertex0(vertex0,1.0);
-						SurfaceVertex surfaceVertex1(vertex1,0.0);
-						SurfaceVertex surfaceVertex2(vertex2,1.0);
-						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-					}
-					{
-						SurfaceVertex surfaceVertex0(vertex0,0.0);
-						SurfaceVertex surfaceVertex1(vertex1,1.0);
-						SurfaceVertex surfaceVertex2(vertex2,0.0);
-						surfaceVertex2.setAlpha(0.0);
-						result[material1].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-					}
-				}
-				else
-				{
-					{
-						SurfaceVertex surfaceVertex0(vertex0,1.0);
-						SurfaceVertex surfaceVertex1(vertex1,0.0);
-						SurfaceVertex surfaceVertex2(vertex2,0.0);
-						result[material0].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-					}
-					{
-						SurfaceVertex surfaceVertex0(vertex0,0.0);
-						SurfaceVertex surfaceVertex1(vertex1,1.0);
-						SurfaceVertex surfaceVertex2(vertex2,0.0);
-						result[material1].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-					}
-					{
-						SurfaceVertex surfaceVertex0(vertex0,0.0);
-						SurfaceVertex surfaceVertex1(vertex1,0.0);
-						SurfaceVertex surfaceVertex2(vertex2,1.0);
-						result[material2].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);
-					}
-				}
-				/*else
-				{
-					std::set<uchar> materials; //FIXME - set::set is pretty slow for this as it only holds up to 3 vertices.
-					materials.insert(material0);
-					materials.insert(material1);
-					materials.insert(material2);
-
-					for(std::set<uchar>::iterator materialsIter = materials.begin(); materialsIter != materials.end(); ++materialsIter)
-					{
-						uchar material = *materialsIter;
-
-						SurfaceVertex surfaceVertex0(vertex0);
-						if(material0 == material)
-							surfaceVertex0.setAlpha(1.0);
-						else
-							surfaceVertex0.setAlpha(0.0);
-
-						SurfaceVertex surfaceVertex1(vertex1);
-						if(material1 == material)
-							surfaceVertex1.setAlpha(1.0);
-						else
-							surfaceVertex1.setAlpha(0.0);
-
-						SurfaceVertex surfaceVertex2(vertex2);
-						if(material2 == material)
-							surfaceVertex2.setAlpha(1.0);
-						else
-							surfaceVertex2.setAlpha(0.0);
-
-						result[material].addTriangle(surfaceVertex0, surfaceVertex1, surfaceVertex2);					
-					}
-				}*/				
-			}
-		}	
+			}//For each triangle
+		}//For each cell
 
 		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
 
@@ -749,11 +675,11 @@ namespace Ogre
 			}
 
 			uint noOfRemovedVertices = 0;
-			do
+			//do
 			{
-				noOfRemovedVertices = iterPatch->second.decimate();
+				//noOfRemovedVertices = iterPatch->second.decimate();
 			}
-			while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
+			//while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
 		}
 
 		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
@@ -778,7 +704,7 @@ namespace Ogre
 
 		switch(normalGenerationMethod)
 		{
-			case SOBEL:
+		case SOBEL:
 			{
 				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
 				const Vector3 gradFloor = volIter.getSobelGradient();
@@ -798,7 +724,7 @@ namespace Ogre
 				result = ((gradFloor + gradCeil) * -1.0);
 				break;
 			}
-			case CENTRAL_DIFFERENCE:
+		case CENTRAL_DIFFERENCE:
 			{
 				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
 				const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
@@ -818,8 +744,8 @@ namespace Ogre
 				result = ((gradFloor + gradCeil) * -1.0);
 				break;
 			}
-			case SIMPLE:
-			default:
+		case SIMPLE:
+		default:
 			{
 				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
 				const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
@@ -942,7 +868,7 @@ namespace Ogre
 
 	/*void PolyVoxSceneManager::setMaterialNameForIndex(uchar uIndex, std::string sMaterialName)
 	{
-		m_aMaterialNames[uIndex] = sMaterialName;
+	m_aMaterialNames[uIndex] = sMaterialName;
 	}*/
 
 	bool PolyVoxSceneManager::containsPoint(Vector3 pos, float boundary)
