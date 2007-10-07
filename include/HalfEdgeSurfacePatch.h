@@ -1,5 +1,5 @@
-#ifndef __SurfacePatch_H__
-#define __SurfacePatch_H__
+#ifndef __HalfEdgeSurfacePatch_H__
+#define __HalfEdgeSurfacePatch_H__
 
 #include <set>
 #include <list>
@@ -12,11 +12,11 @@
 
 namespace Ogre
 {
-	class SurfacePatch : public AbstractSurfacePatch
+	class HalfEdgeSurfacePatch : public AbstractSurfacePatch
 	{
 	public:
-	   SurfacePatch();
-	   ~SurfacePatch();
+	   HalfEdgeSurfacePatch();
+	   ~HalfEdgeSurfacePatch();
 
 	   //This allow users of the class to iterate over its contents.
 	   SurfaceEdgeIterator getEdgesBegin(void);
@@ -51,4 +51,4 @@ namespace Ogre
 	};	
 }
 
-#endif /* __SurfacePatch_H__ */
+#endif /* __HalfEdgeSurfacePatch_H__ */

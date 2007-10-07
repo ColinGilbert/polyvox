@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SurfaceVertex.h"
 #include "SurfaceEdge.h"
 #include "HalfEdgeSurfacePatch.h"
+#include "IndexedSurfacePatch.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
 #include "VolumeManager.h"
@@ -622,15 +623,15 @@ namespace Ogre
 
 				if(surfacePatchMapResult.find(material0) == surfacePatchMapResult.end())
 				{
-					surfacePatchMapResult.insert(std::make_pair(material0,new SurfacePatch));
+					surfacePatchMapResult.insert(std::make_pair(material0,new IndexedSurfacePatch));
 				}
 				if(surfacePatchMapResult.find(material1) == surfacePatchMapResult.end())
 				{
-					surfacePatchMapResult.insert(std::make_pair(material1,new SurfacePatch));
+					surfacePatchMapResult.insert(std::make_pair(material1,new IndexedSurfacePatch));
 				}
 				if(surfacePatchMapResult.find(material2) == surfacePatchMapResult.end())
 				{
-					surfacePatchMapResult.insert(std::make_pair(material2,new SurfacePatch));
+					surfacePatchMapResult.insert(std::make_pair(material2,new IndexedSurfacePatch));
 				}
 
 				SurfaceVertex surfaceVertex0Alpha1(vertex0,1.0);

@@ -5,6 +5,7 @@ SET(SRC_FILES
 	source/AbstractSurfacePatch.cpp
 	source/Block.cpp
 	source/HalfEdgeSurfacePatch.cpp
+	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/MaterialMap.cpp
 	source/MaterialMapManager.cpp
@@ -26,6 +27,7 @@ SET(INC_FILES
 	include/Block.h
 	include/Constants.h
 	include/HalfEdgeSurfacePatch.h
+	include/IndexedSurfacePatch.h
 	include/IntegralVector3.h
 	include/MarchingCubesTables.h
 	include/MaterialMap.h

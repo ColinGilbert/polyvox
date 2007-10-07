@@ -12,53 +12,53 @@
 
 namespace Ogre
 {
-	SurfacePatch::SurfacePatch()
+	HalfEdgeSurfacePatch::HalfEdgeSurfacePatch()
 	{
 		m_listVertices.clear();
 		m_listTriangles.clear();
 		m_listEdges.clear();
 	}
 
-	SurfacePatch::~SurfacePatch()
+	HalfEdgeSurfacePatch::~HalfEdgeSurfacePatch()
 	{		
 	}
 
-	SurfaceEdgeIterator SurfacePatch::getEdgesBegin(void)
+	SurfaceEdgeIterator HalfEdgeSurfacePatch::getEdgesBegin(void)
 	{
 		return m_listEdges.begin();
 	}
 
-	SurfaceEdgeIterator SurfacePatch::getEdgesEnd(void)
+	SurfaceEdgeIterator HalfEdgeSurfacePatch::getEdgesEnd(void)
 	{
 		return m_listEdges.end();
 	}
 
-	SurfaceTriangleIterator SurfacePatch::getTrianglesBegin(void)
+	SurfaceTriangleIterator HalfEdgeSurfacePatch::getTrianglesBegin(void)
 	{
 		return m_listTriangles.begin();
 	}
 
-	SurfaceTriangleIterator SurfacePatch::getTrianglesEnd(void)
+	SurfaceTriangleIterator HalfEdgeSurfacePatch::getTrianglesEnd(void)
 	{
 		return m_listTriangles.end();
 	}	
 
-	uint SurfacePatch::getNoOfEdges(void) const
+	uint HalfEdgeSurfacePatch::getNoOfEdges(void) const
 	{
 		return m_listEdges.size();
 	}
 
-	uint SurfacePatch::getNoOfTriangles(void) const
+	uint HalfEdgeSurfacePatch::getNoOfTriangles(void) const
 	{
 		return m_listTriangles.size();
 	}
 
-	uint SurfacePatch::getNoOfVertices(void) const
+	uint HalfEdgeSurfacePatch::getNoOfVertices(void) const
 	{
 		return m_listVertices.size();
 	}
 
-	void SurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
+	void HalfEdgeSurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{	
 		SurfaceVertexIterator v0Iter = findOrAddVertex(v0);
 		SurfaceVertexIterator v1Iter = findOrAddVertex(v1);
@@ -91,17 +91,17 @@ namespace Ogre
 		const_cast<SurfaceEdge&>(*v2v0Iter).setTriangle(iterTriangle);
 	}
 
-	SurfaceVertexIterator SurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
+	SurfaceVertexIterator HalfEdgeSurfacePatch::findOrAddVertex(const SurfaceVertex& vertex)
 	{
 		return m_listVertices.insert(vertex).first;
 	}
 
-	SurfaceEdgeIterator SurfacePatch::findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
+	SurfaceEdgeIterator HalfEdgeSurfacePatch::findEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
 	{
 		return m_listEdges.find(SurfaceEdge(target,source));
 	}
 
-	SurfaceEdgeIterator SurfacePatch::findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
+	SurfaceEdgeIterator HalfEdgeSurfacePatch::findOrAddEdge(const SurfaceVertexIterator& source, const SurfaceVertexIterator& target)
 	{
 		SurfaceEdge edge(target,source);
 		std::pair<SurfaceEdgeIterator, bool> insertionResult = m_listEdges.insert(edge);
@@ -122,7 +122,7 @@ namespace Ogre
 		return edgeIter;
 	}
 
-	bool SurfacePatch::canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge)
+	bool HalfEdgeSurfacePatch::canRemoveVertexFrom(SurfaceVertexIterator vertexIter, std::list<SurfaceVertexIterator> listConnectedIter, bool isEdge)
 	{
 		bool allXMatch = true;
 		bool allYMatch = true;
@@ -172,7 +172,7 @@ namespace Ogre
 			&& (twoEdgesMatch);
 	}
 
-	std::list<SurfaceVertexIterator> SurfacePatch::findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge)
+	std::list<SurfaceVertexIterator> HalfEdgeSurfacePatch::findConnectedVertices(SurfaceVertexIterator vertexIter, bool& isEdge)
 	{
 		isEdge = false;
 		std::list<SurfaceVertexIterator> result;
@@ -234,7 +234,7 @@ namespace Ogre
 		return result;
 	}
 
-	uint SurfacePatch::decimate(void)
+	uint HalfEdgeSurfacePatch::decimate(void)
 	{
 		uint uNoRemoved = 0;
 		//LogManager::getSingleton().logMessage("\n\nPerforming decimation");
@@ -333,7 +333,7 @@ namespace Ogre
 		return uNoRemoved;
 	}
 
-	void SurfacePatch::triangulate(std::list<SurfaceVertexIterator> listVertices)
+	void HalfEdgeSurfacePatch::triangulate(std::list<SurfaceVertexIterator> listVertices)
 	{
 		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
 		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
@@ -354,7 +354,7 @@ namespace Ogre
 		}
 	}
 
-	bool SurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal)
+	bool HalfEdgeSurfacePatch::isPolygonConvex(std::list<SurfaceVertexIterator> listVertices, Vector3 normal)
 	{
 		std::list<SurfaceVertexIterator>::iterator v0IterIter = listVertices.begin();
 		std::list<SurfaceVertexIterator>::iterator v1IterIter = listVertices.begin();
@@ -387,7 +387,7 @@ namespace Ogre
 		return true;
 	}
 
-	void SurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices)
+	void HalfEdgeSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices)
 	{
 		vecVertices.resize(m_listVertices.size());
 		std::copy(m_listVertices.begin(), m_listVertices.end(), vecVertices.begin());
