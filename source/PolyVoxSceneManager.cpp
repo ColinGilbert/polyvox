@@ -115,13 +115,11 @@ namespace Ogre
 		getRootSceneNode()->removeAndDestroyAllChildren();
 
 		//Create Arrows
-
-		ManualObject* xAxis = createManualObject("X-Axis");
-
-
 		uint uArrowTotalLength = 256;
 		uint uArrowHeadLength = 8;
 		uint uArrowBarLength = uArrowTotalLength - uArrowHeadLength;
+
+		ManualObject* xAxis = createManualObject("X-Axis");	
 
 		xAxis->begin("BaseWhiteNoLighting",RenderOperation::OT_TRIANGLE_LIST);
 		xAxis->position(0,					-1,-1);
@@ -159,8 +157,49 @@ namespace Ogre
 		xAxis->index(10); xAxis->index(8); xAxis->index(12);
 		xAxis->end();
 
+		ManualObject* yAxis = createManualObject("Y-Axis");	
+
+		yAxis->begin("BaseWhiteNoLighting",RenderOperation::OT_TRIANGLE_LIST);
+		yAxis->position(-1,					 0,-1);
+		yAxis->position(-1,	uArrowBarLength,   -1);
+		yAxis->position(1,					 0,-1);
+		yAxis->position(1,	uArrowBarLength,-1);
+		yAxis->position(-1,					0, 1);
+		yAxis->position(-1,	uArrowBarLength, 1);
+		yAxis->position(1,					 0, 1);
+		yAxis->position(1,	 uArrowBarLength, 1);
+
+		yAxis->position(-2,	uArrowBarLength, -2);
+		yAxis->position(2,	 uArrowBarLength, -2);
+		yAxis->position(-2,	uArrowBarLength,  2);
+		yAxis->position(2,	 uArrowBarLength,  2);
+		yAxis->position(0,	 uArrowTotalLength,  0);
+
+		yAxis->index(0); yAxis->index(2); yAxis->index(4);
+		yAxis->index(2); yAxis->index(6); yAxis->index(4);
+
+		yAxis->index(7); yAxis->index(4); yAxis->index(6);
+		yAxis->index(4); yAxis->index(7); yAxis->index(5);
+		yAxis->index(0); yAxis->index(3); yAxis->index(2);
+		yAxis->index(3); yAxis->index(0); yAxis->index(1);
+		yAxis->index(2); yAxis->index(7); yAxis->index(6);
+		yAxis->index(7); yAxis->index(2); yAxis->index(3);
+		yAxis->index(0); yAxis->index(5); yAxis->index(1);
+		yAxis->index(5); yAxis->index(0); yAxis->index(4);
+
+		yAxis->index(8); yAxis->index(9); yAxis->index(11);
+		yAxis->index(8); yAxis->index(11); yAxis->index(10);
+		yAxis->index(9); yAxis->index(12); yAxis->index(11);
+		yAxis->index(11); yAxis->index(12); yAxis->index(10);
+		yAxis->index(8); yAxis->index(12); yAxis->index(9);
+		yAxis->index(10); yAxis->index(12); yAxis->index(8);
+		yAxis->end();
+
+
+
 		SceneNode* axisNode = getRootSceneNode()->createChildSceneNode();
 		axisNode->attachObject(xAxis);
+		axisNode->attachObject(yAxis);
 
 		return true;
 	}
