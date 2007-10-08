@@ -26,12 +26,9 @@ namespace Ogre
 		vecVertices.resize(m_listVertices.size());
 		std::copy(m_listVertices.begin(), m_listVertices.end(), vecVertices.begin());
 
-		//vecIndices.resize(m_listTriangles.size() * 3);
 		for(std::vector<SurfaceVertexIterator>::iterator iterVertices = m_vecTriangleIndices.begin(); iterVertices != m_vecTriangleIndices.end(); ++iterVertices)
 		{		
-			std::vector<SurfaceVertex>::iterator iterVertex;
-			
-			iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), **iterVertices);
+			std::vector<SurfaceVertex>::iterator iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), **iterVertices);
 			vecIndices.push_back(iterVertex - vecVertices.begin());
 		}
 	}

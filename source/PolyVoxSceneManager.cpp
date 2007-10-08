@@ -114,124 +114,53 @@ namespace Ogre
 
 		getRootSceneNode()->removeAndDestroyAllChildren();
 
+		//Create Arrows
 
-		//Create surrounding box
-		//FIXME - should do this using indices
-		/*ManualObject* metalBox = createManualObject("MetalBox");
+		ManualObject* xAxis = createManualObject("X-Axis");
 
-		metalBox->begin("Examples/BumpyMetal",RenderOperation::OT_TRIANGLE_STRIP);
-		metalBox->position(0,0,0);
-		metalBox->textureCoord(0,0);
-		metalBox->normal(0,0,1);
-		metalBox->position(512,0,0);
-		metalBox->textureCoord(1,0);
-		metalBox->normal(0,0,1);
-		metalBox->position(0,512,0);
-		metalBox->textureCoord(0,1);
-		metalBox->normal(0,0,1);
-		metalBox->position(512,512,0);
-		metalBox->textureCoord(1,1);
-		metalBox->normal(0,0,1);
-		metalBox->end();*/
 
-		/*metalBox->begin("Examples/BumpyMetal",RenderOperation::OT_TRIANGLE_STRIP);
-		metalBox->position(0,0,0);
-		metalBox->textureCoord(0,0);
-		metalBox->normal(0,1,0);
-		metalBox->position(0,0,512);
-		metalBox->textureCoord(0,1);
-		metalBox->normal(0,1,0);
-		metalBox->position(512,0,0);
-		metalBox->textureCoord(1,0);
-		metalBox->normal(0,1,0);
-		metalBox->position(512,0,512);
-		metalBox->textureCoord(1,1);
-		metalBox->normal(0,1,0);
-		metalBox->end();*/
+		uint uArrowTotalLength = 256;
+		uint uArrowHeadLength = 8;
+		uint uArrowBarLength = uArrowTotalLength - uArrowHeadLength;
 
-		/*metalBox->begin("Examples/BumpyMetal",RenderOperation::OT_TRIANGLE_STRIP);
-		metalBox->position(0,0,0);
-		metalBox->textureCoord(0,0);
-		metalBox->normal(1,0,0);
-		metalBox->position(0,512,0);
-		metalBox->textureCoord(1,0);
-		metalBox->normal(1,0,0);
-		metalBox->position(0,0,512);
-		metalBox->textureCoord(0,1);
-		metalBox->normal(1,0,0);
-		metalBox->position(0,512,512);
-		metalBox->textureCoord(1,1);
-		metalBox->normal(1,0,0);
-		metalBox->end();
+		xAxis->begin("BaseWhiteNoLighting",RenderOperation::OT_TRIANGLE_LIST);
+		xAxis->position(0,					-1,-1);
+		xAxis->position(uArrowBarLength,	-1,-1);
+		xAxis->position(0,					 1,-1);
+		xAxis->position(uArrowBarLength,	 1,-1);
+		xAxis->position(0,					-1, 1);
+		xAxis->position(uArrowBarLength,	-1, 1);
+		xAxis->position(0,					 1, 1);
+		xAxis->position(uArrowBarLength,	 1, 1);
 
-		metalBox->begin("Examples/BumpyMetal",RenderOperation::OT_TRIANGLE_STRIP);
-		metalBox->position(0,0,512);
-		metalBox->textureCoord(0,0);	
-		metalBox->normal(0,0,-1);
-		metalBox->position(0,512,512);
-		metalBox->textureCoord(0,1);
-		metalBox->normal(0,0,-1);
-		metalBox->position(512,0,512);
-		metalBox->textureCoord(1,0);
-		metalBox->normal(0,0,-1);
-		metalBox->position(512,512,512);
-		metalBox->textureCoord(1,1);
-		metalBox->normal(0,0,-1);
-		metalBox->end();
+		xAxis->position(uArrowBarLength,	-2, -2);
+		xAxis->position(uArrowBarLength,	 2, -2);
+		xAxis->position(uArrowBarLength,	-2,  2);
+		xAxis->position(uArrowBarLength,	 2,  2);
+		xAxis->position(uArrowTotalLength,	 0,  0);
 
-		metalBox->begin("Examples/BumpyMetal",RenderOperation::OT_TRIANGLE_STRIP);
-		metalBox->position(0,512,0);
-		metalBox->textureCoord(0,0);	
-		metalBox->normal(0,-1,0);
-		metalBox->position(512,512,0);
-		metalBox->textureCoord(1,0);
-		metalBox->normal(0,-1,0);
-		metalBox->position(0,512,512);
-		metalBox->textureCoord(0,1);
-		metalBox->normal(0,-1,0);
-		metalBox->position(512,512,512);
-		metalBox->textureCoord(1,1);
-		metalBox->normal(0,-1,0);
-		metalBox->end();
+		xAxis->index(0); xAxis->index(4); xAxis->index(2);
+		xAxis->index(2); xAxis->index(4); xAxis->index(6);
 
-		metalBox->begin("Examples/BumpyMetal",RenderOperation::OT_TRIANGLE_STRIP);
-		metalBox->position(512,0,0);
-		metalBox->textureCoord(0,0);
-		metalBox->normal(-1,0,0);
-		metalBox->position(512,0,512);
-		metalBox->textureCoord(0,1);
-		metalBox->normal(-1,0,0);
-		metalBox->position(512,512,0);
-		metalBox->textureCoord(1,0);
-		metalBox->normal(-1,0,0);
-		metalBox->position(512,512,512);
-		metalBox->textureCoord(1,1);
-		metalBox->normal(-1,0,0);
-		metalBox->end();
+		xAxis->index(7); xAxis->index(6); xAxis->index(4);
+		xAxis->index(4); xAxis->index(5); xAxis->index(7);
+		xAxis->index(0); xAxis->index(2); xAxis->index(3);
+		xAxis->index(3); xAxis->index(1); xAxis->index(0);
+		xAxis->index(2); xAxis->index(6); xAxis->index(7);
+		xAxis->index(7); xAxis->index(3); xAxis->index(2);
+		xAxis->index(0); xAxis->index(1); xAxis->index(5);
+		xAxis->index(5); xAxis->index(4); xAxis->index(0);
 
-		SceneNode* boxSceneNode = getRootSceneNode()->createChildSceneNode();
-		boxSceneNode->attachObject(metalBox);*/
+		xAxis->index(8); xAxis->index(11); xAxis->index(9);
+		xAxis->index(8); xAxis->index(10); xAxis->index(11);
+		xAxis->index(9); xAxis->index(11); xAxis->index(12);
+		xAxis->index(11); xAxis->index(10); xAxis->index(12);
+		xAxis->index(8); xAxis->index(9); xAxis->index(12);
+		xAxis->index(10); xAxis->index(8); xAxis->index(12);
+		xAxis->end();
 
-		/*ManualObject* water = createManualObject("WaterPlane");
-
-		water->begin("DavidWater",RenderOperation::OT_TRIANGLE_STRIP);
-		water->position(-1024,100,-1024);
-		water->textureCoord(0,0);
-		water->normal(0,1,0);
-		water->position(-1024,100,1024);
-		water->textureCoord(0,1);
-		water->normal(0,1,0);
-		water->position(1024,100,-1024);
-		water->textureCoord(1,0);
-		water->normal(0,1,0);
-		water->position(1024,100,1024);
-		water->textureCoord(1,1);
-		water->normal(0,1,0);
-
-		water->end();
-
-		SceneNode* waterSceneNode = getRootSceneNode()->createChildSceneNode();
-		waterSceneNode->attachObject(water);*/
+		SceneNode* axisNode = getRootSceneNode()->createChildSceneNode();
+		axisNode->attachObject(xAxis);
 
 		return true;
 	}
@@ -886,11 +815,6 @@ namespace Ogre
 	{
 		m_normalGenerationMethod = method;
 	}
-
-	/*void PolyVoxSceneManager::setMaterialNameForIndex(uchar uIndex, std::string sMaterialName)
-	{
-	m_aMaterialNames[uIndex] = sMaterialName;
-	}*/
 
 	bool PolyVoxSceneManager::containsPoint(Vector3 pos, float boundary)
 	{
