@@ -1,0 +1,101 @@
+material ColourMap2DOneLight
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref ColourMap2DOneLightVertexProgram
+			{
+				param_named_auto world world_matrix
+				param_named_auto viewProj viewproj_matrix
+				param_named textureScale float 16
+				param_named_auto ambient ambient_light_colour 
+				param_named_auto light0.position light_position 0
+				param_named_auto light0.diffuseColour light_diffuse_colour 0
+				param_named_auto light0.attenuation light_attenuation 0
+			}
+			
+			fragment_program_ref ColourMap2DFragmentProgram
+			{
+			}
+		}
+	}
+}
+
+material ColourMap2DTwoLights
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref ColourMap2DTwoLightsVertexProgram
+			{
+				param_named_auto world world_matrix
+				param_named_auto viewProj viewproj_matrix
+				param_named textureScale float 16
+				param_named_auto ambient ambient_light_colour
+				param_named_auto light0.position light_position 0
+				param_named_auto light0.diffuseColour light_diffuse_colour 0
+				param_named_auto light0.attenuation light_attenuation 0
+				param_named_auto light1.position light_position 1
+				param_named_auto light1.diffuseColour light_diffuse_colour 1
+				param_named_auto light1.attenuation light_attenuation 1
+			}
+		}
+	}
+}
+
+material ColourMap2DThreeLights
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref ColourMap2DThreeLightsVertexProgram
+			{
+				param_named_auto world world_matrix
+				param_named_auto viewProj viewproj_matrix
+				param_named textureScale float 16
+				param_named_auto ambient ambient_light_colour
+				param_named_auto light0.position light_position 0
+				param_named_auto light0.diffuseColour light_diffuse_colour 0
+				param_named_auto light0.attenuation light_attenuation 0
+				param_named_auto light1.position light_position 1
+				param_named_auto light1.diffuseColour light_diffuse_colour 1
+				param_named_auto light1.attenuation light_attenuation 1
+				param_named_auto light2.position light_position 2
+				param_named_auto light2.diffuseColour light_diffuse_colour 2
+				param_named_auto light2.attenuation light_attenuation 2
+			}
+		}
+	}
+}
+
+material ColourMap2DFourLights
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref ColourMap2DFourLightsVertexProgram
+			{
+				param_named_auto world world_matrix
+				param_named_auto viewProj viewproj_matrix
+				param_named textureScale float 16
+				param_named_auto ambient ambient_light_colour
+				param_named_auto light0.position light_position 0
+				param_named_auto light0.diffuseColour light_diffuse_colour 0
+				param_named_auto light0.attenuation light_attenuation 0
+				param_named_auto light1.position light_position 1
+				param_named_auto light1.diffuseColour light_diffuse_colour 1
+				param_named_auto light1.attenuation light_attenuation 1
+				param_named_auto light2.position light_position 2
+				param_named_auto light2.diffuseColour light_diffuse_colour 2
+				param_named_auto light2.attenuation light_attenuation 2
+				param_named_auto light3.position light_position 3
+				param_named_auto light3.diffuseColour light_diffuse_colour 3
+				param_named_auto light3.attenuation light_attenuation 3
+			}
+		}
+	}
+}

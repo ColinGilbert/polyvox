@@ -1,0 +1,68 @@
+struct a2v
+{
+    float4 Position : POSITION; //in object space
+    float3 Normal : NORMAL;
+};
+
+struct v2f
+{
+    float4 Position : POSITION; //in projection space
+    float4 TexCoords : TEXCOORD0;
+    float3 LightDirection : TEXCOORD1;
+    float3 Normal : TEXCOORD2;
+};
+
+v2f main(a2v IN,uniform float4x4 world, uniform float4x4 viewProj/*,uniform float4 ambient*/)
+{
+    v2f OUT;
+
+    OUT.Position = mul(world, IN.Position);
+
+    OUT.TexCoords.xyz = OUT.Position.xyz /8;
+	OUT.TexCoords.w = 1;
+	
+	OUT.Position = mul(viewProj, OUT.Position);
+	
+
+    
+    // calculate light vector
+	/*float3 N = normalize(IN.Normal);
+	float3 lightPosition = float3(0,0,0);
+	float3 L = normalize(lightPosition - IN.Position.xyz); */
+
+	// Calculate diffuse component
+	//float diffuse = max(dot(N, L) , 0);
+
+	//OUT.Color = ambient + float4(diffuse,diffuse,diffuse,1.0);
+	
+	//OUT.Color = float4((IN.Normal + float3(1.0,1.0,1.0)) / 2.0, 0.0);
+	
+	OUT.LightDirection = normalize(float3(1.0,1.0,1.0));
+	OUT.Normal = IN.Normal;
+
+    return OUT;
+}
+
+/*v2f main(a2v IN,uniform float4x4 worldViewProj,uniform float4 ambient)
+{
+    v2f OUT;
+
+    OUT.Position = mul(worldViewProj, IN.Position);
+
+    OUT.TexCoords.xyz = IN.Position.xyz / 4;
+	OUT.TexCoords.w = 1;
+
+    //OUT.Color = float4(1.0,0.0,0.0,1.0);
+    
+    // calculate light vector
+	float3 N = normalize(IN.Normal);
+	float3 lightPosition = float3(0,0,0);
+	float3 L = normalize(lightPosition - IN.Position.xyz);
+
+	// Calculate diffuse component
+	float diffuse = max(dot(N, L) , 0);
+
+	OUT.Color = ambient + float4(diffuse,diffuse,diffuse,1.0);
+
+    return OUT;
+}*/

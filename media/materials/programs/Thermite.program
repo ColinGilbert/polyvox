@@ -1,0 +1,76 @@
+vertex_program ColourMap2DOneLightVertexProgram cg
+{
+	source ColourMap2DVertexProgram.cg
+	entry_point OneLight
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap2DTwoLightsVertexProgram cg
+{
+	source ColourMap2DVertexProgram.cg
+	entry_point TwoLights
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap2DThreeLightsVertexProgram cg
+{
+	source ColourMap2DVertexProgram.cg
+	entry_point ThreeLights
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap2DFourLightsVertexProgram cg
+{
+	source ColourMap2DVertexProgram.cg
+	entry_point FourLights
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap3DOneLightVertexProgram cg
+{
+	source ColourMap3DVertexProgram.cg
+	entry_point OneLight
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap3DTwoLightsVertexProgram cg
+{
+	source ColourMap3DVertexProgram.cg
+	entry_point TwoLights
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap3DThreeLightsVertexProgram cg
+{
+	source ColourMap3DVertexProgram.cg
+	entry_point ThreeLights
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMap3DFourLightsVertexProgram cg
+{
+	source ColourMap3DVertexProgram.cg
+	entry_point FourLights
+	profiles vs_1_1 arbvp1
+}
+
+vertex_program ColourMapAndNormalMap3DVertexProgram cg
+{
+	source ColourMapAndNormalMap3DVertexProgram.cg
+	entry_point main
+	profiles vs_1_1 arbvp1
+}
+
+fragment_program ColourMapAndNormalMap3DFragmentProgram cg
+{
+	source ColourMapAndNormalMap3DFragmentProgram.cg
+	entry_point main
+	profiles ps_1_1 arbfp1
+}
+
+fragment_program ColourMap2DFragmentProgram cg
+{
+	source ColourMap2DFragmentProgram.cg
+	entry_point main
+	profiles ps_1_1 arbfp1
+}
