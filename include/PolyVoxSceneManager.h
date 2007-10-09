@@ -88,6 +88,8 @@ namespace Ogre
 		bool containsPoint(Vector3 pos, float boundary);
 		bool containsPoint(IntVector3 pos, uint boundary);
 
+		void setAxisVisible(bool visible);
+
 
 		
 		std::map<UIntVector3, SceneNode*> sceneNodes;
@@ -103,6 +105,8 @@ namespace Ogre
 		void markVoxelChanged(uint x, uint y, uint z);
 		void markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ);
 
+		void createAxis(uint uSideLength);		
+		SceneNode* m_axisNode;
 
 
 		static uint fileNo;

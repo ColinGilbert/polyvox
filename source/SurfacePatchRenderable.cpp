@@ -51,8 +51,8 @@ namespace Ogre
 		std::vector<ushort> vecIndices;
 		patchToRender->fillVertexAndIndexData(vecVertices,vecIndices);
 
-		LogManager::getSingleton().logMessage("No of Vertices = " + StringConverter::toString(vecVertices.size()));
-		LogManager::getSingleton().logMessage("No of Indices = " + StringConverter::toString(vecIndices.size()));
+		//LogManager::getSingleton().logMessage("No of Vertices = " + StringConverter::toString(vecVertices.size()));
+		//LogManager::getSingleton().logMessage("No of Indices = " + StringConverter::toString(vecIndices.size()));
 
 		//Initialization stuff
 		mRenderOp.vertexData->vertexCount = vecVertices.size();		

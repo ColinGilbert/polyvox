@@ -67,6 +67,7 @@ namespace Ogre
 		,normalSmoothingFilterSize(1)
 		,m_normalGenerationMethod(SOBEL)
 		,m_bHaveGeneratedMeshes(false)
+		,m_axisNode(0)
 	{	
 		sceneNodes.clear();
 	}
@@ -114,92 +115,11 @@ namespace Ogre
 
 		getRootSceneNode()->removeAndDestroyAllChildren();
 
-		//Create Arrows
-		uint uArrowTotalLength = 256;
-		uint uArrowHeadLength = 8;
-		uint uArrowBarLength = uArrowTotalLength - uArrowHeadLength;
+		createAxis(256);
+		setAxisVisible(false);
 
-		ManualObject* xAxis = createManualObject("X-Axis");	
+		
 
-		xAxis->begin("BaseWhiteNoLighting",RenderOperation::OT_TRIANGLE_LIST);
-		xAxis->position(0,					-1,-1);
-		xAxis->position(uArrowBarLength,	-1,-1);
-		xAxis->position(0,					 1,-1);
-		xAxis->position(uArrowBarLength,	 1,-1);
-		xAxis->position(0,					-1, 1);
-		xAxis->position(uArrowBarLength,	-1, 1);
-		xAxis->position(0,					 1, 1);
-		xAxis->position(uArrowBarLength,	 1, 1);
-
-		xAxis->position(uArrowBarLength,	-2, -2);
-		xAxis->position(uArrowBarLength,	 2, -2);
-		xAxis->position(uArrowBarLength,	-2,  2);
-		xAxis->position(uArrowBarLength,	 2,  2);
-		xAxis->position(uArrowTotalLength,	 0,  0);
-
-		xAxis->index(0); xAxis->index(4); xAxis->index(2);
-		xAxis->index(2); xAxis->index(4); xAxis->index(6);
-
-		xAxis->index(7); xAxis->index(6); xAxis->index(4);
-		xAxis->index(4); xAxis->index(5); xAxis->index(7);
-		xAxis->index(0); xAxis->index(2); xAxis->index(3);
-		xAxis->index(3); xAxis->index(1); xAxis->index(0);
-		xAxis->index(2); xAxis->index(6); xAxis->index(7);
-		xAxis->index(7); xAxis->index(3); xAxis->index(2);
-		xAxis->index(0); xAxis->index(1); xAxis->index(5);
-		xAxis->index(5); xAxis->index(4); xAxis->index(0);
-
-		xAxis->index(8); xAxis->index(11); xAxis->index(9);
-		xAxis->index(8); xAxis->index(10); xAxis->index(11);
-		xAxis->index(9); xAxis->index(11); xAxis->index(12);
-		xAxis->index(11); xAxis->index(10); xAxis->index(12);
-		xAxis->index(8); xAxis->index(9); xAxis->index(12);
-		xAxis->index(10); xAxis->index(8); xAxis->index(12);
-		xAxis->end();
-
-		ManualObject* yAxis = createManualObject("Y-Axis");	
-
-		yAxis->begin("BaseWhiteNoLighting",RenderOperation::OT_TRIANGLE_LIST);
-		yAxis->position(-1,					 0,-1);
-		yAxis->position(-1,	uArrowBarLength,   -1);
-		yAxis->position(1,					 0,-1);
-		yAxis->position(1,	uArrowBarLength,-1);
-		yAxis->position(-1,					0, 1);
-		yAxis->position(-1,	uArrowBarLength, 1);
-		yAxis->position(1,					 0, 1);
-		yAxis->position(1,	 uArrowBarLength, 1);
-
-		yAxis->position(-2,	uArrowBarLength, -2);
-		yAxis->position(2,	 uArrowBarLength, -2);
-		yAxis->position(-2,	uArrowBarLength,  2);
-		yAxis->position(2,	 uArrowBarLength,  2);
-		yAxis->position(0,	 uArrowTotalLength,  0);
-
-		yAxis->index(0); yAxis->index(2); yAxis->index(4);
-		yAxis->index(2); yAxis->index(6); yAxis->index(4);
-
-		yAxis->index(7); yAxis->index(4); yAxis->index(6);
-		yAxis->index(4); yAxis->index(7); yAxis->index(5);
-		yAxis->index(0); yAxis->index(3); yAxis->index(2);
-		yAxis->index(3); yAxis->index(0); yAxis->index(1);
-		yAxis->index(2); yAxis->index(7); yAxis->index(6);
-		yAxis->index(7); yAxis->index(2); yAxis->index(3);
-		yAxis->index(0); yAxis->index(5); yAxis->index(1);
-		yAxis->index(5); yAxis->index(0); yAxis->index(4);
-
-		yAxis->index(8); yAxis->index(9); yAxis->index(11);
-		yAxis->index(8); yAxis->index(11); yAxis->index(10);
-		yAxis->index(9); yAxis->index(12); yAxis->index(11);
-		yAxis->index(11); yAxis->index(12); yAxis->index(10);
-		yAxis->index(8); yAxis->index(12); yAxis->index(9);
-		yAxis->index(10); yAxis->index(12); yAxis->index(8);
-		yAxis->end();
-
-
-
-		SceneNode* axisNode = getRootSceneNode()->createChildSceneNode();
-		axisNode->attachObject(xAxis);
-		axisNode->attachObject(yAxis);
 
 		return true;
 	}
@@ -276,7 +196,7 @@ namespace Ogre
 					}
 				}
 			}
-			LogManager::getSingleton().logMessage("No of tris = " + StringConverter::toString(triangleCounter));
+			//LogManager::getSingleton().logMessage("No of tris = " + StringConverter::toString(triangleCounter));
 		}
 		//showBoundingBoxes(true);
 
@@ -863,5 +783,101 @@ namespace Ogre
 	bool PolyVoxSceneManager::containsPoint(IntVector3 pos, uint boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
+	}
+
+	void PolyVoxSceneManager::createAxis(uint uSideLength)
+	{
+		float fSideLength = static_cast<float>(uSideLength);
+		float fHalfSideLength = fSideLength/2.0;
+		Vector3 vecOriginAndConeScale(4.0,4.0,4.0);
+
+		//Create the main node for the axes
+		m_axisNode = getRootSceneNode()->createChildSceneNode();
+
+		//Create sphrere representing origin
+		SceneNode* originNode = m_axisNode->createChildSceneNode();
+		Entity *originSphereEntity = createEntity( "Origin Sphere", "Sphere.mesh" );
+		originSphereEntity->setMaterialName("WhiteMaterial");
+		originNode->attachObject(originSphereEntity);
+		originNode->scale(vecOriginAndConeScale);
+
+		//Create arrow body for x-axis
+		SceneNode *xAxisCylinderNode = m_axisNode->createChildSceneNode();
+		Entity *xAxisCylinderEntity = createEntity( "X Axis Cylinder", "Cylinder.mesh" );
+		xAxisCylinderEntity->setMaterialName("RedMaterial");
+		xAxisCylinderNode->attachObject(xAxisCylinderEntity);			
+		xAxisCylinderNode->scale(Vector3(1.0,1.0,fHalfSideLength-4.0));
+		xAxisCylinderNode->translate(Vector3(fHalfSideLength,0.0,0.0));
+		xAxisCylinderNode->rotate(Vector3::UNIT_Y, Radian(1.5707));
+
+		//Create arrow head for x-axis
+		SceneNode *xAxisConeNode = m_axisNode->createChildSceneNode();
+		Entity *xAxisConeEntity = createEntity( "X Axis Cone", "Cone.mesh" );
+		xAxisConeEntity->setMaterialName("RedMaterial");
+		xAxisConeNode->attachObject(xAxisConeEntity);		
+		xAxisConeNode->rotate(Vector3::UNIT_Y, Radian(1.5707));
+		xAxisConeNode->scale(vecOriginAndConeScale);
+		xAxisConeNode->translate(Vector3(fSideLength-4.0,0.0,0.0));
+
+		//Create arrow body for y-axis
+		SceneNode *yAxisCylinderNode = m_axisNode->createChildSceneNode();
+		Entity *yAxisCylinderEntity = createEntity( "Y Axis Cylinder", "Cylinder.mesh" );
+		yAxisCylinderEntity->setMaterialName("GreenMaterial");
+		yAxisCylinderNode->attachObject(yAxisCylinderEntity);		
+		yAxisCylinderNode->scale(Vector3(1.0,1.0,fHalfSideLength-4.0));
+		yAxisCylinderNode->translate(Vector3(0.0,fHalfSideLength,0.0));
+		yAxisCylinderNode->rotate(Vector3::UNIT_X, Radian(1.5707));
+
+		//Create arrow head for y-axis
+		SceneNode *yAxisConeNode = m_axisNode->createChildSceneNode();
+		Entity *yAxisConeEntity = createEntity( "Y Axis Cone", "Cone.mesh" );
+		yAxisConeEntity->setMaterialName("GreenMaterial");
+		yAxisConeNode->attachObject(yAxisConeEntity);		
+		yAxisConeNode->rotate(Vector3::UNIT_X, Radian(-1.5707));
+		yAxisConeNode->scale(vecOriginAndConeScale);
+		yAxisConeNode->translate(Vector3(0.0,fSideLength-4.0,0.0));
+
+		//Create arrow body for z-axis
+		SceneNode *zAxisCylinderNode = m_axisNode->createChildSceneNode();
+		Entity *zAxisCylinderEntity = createEntity( "Z Axis Cylinder", "Cylinder.mesh" );
+		zAxisCylinderEntity->setMaterialName("BlueMaterial");
+		zAxisCylinderNode->attachObject(zAxisCylinderEntity);
+		zAxisCylinderNode->translate(Vector3(0.0,0.0,fHalfSideLength));
+		zAxisCylinderNode->scale(Vector3(1.0,1.0,fHalfSideLength-4.0));	
+
+		//Create arrow head for z-axis
+		SceneNode *zAxisConeNode = m_axisNode->createChildSceneNode();
+		Entity *zAxisConeEntity = createEntity( "Z Axis Cone", "Cone.mesh" );
+		zAxisConeEntity->setMaterialName("BlueMaterial");
+		zAxisConeNode->attachObject(zAxisConeEntity);
+		zAxisConeNode->translate(Vector3(0.0,0.0,fSideLength-4.0));
+		zAxisConeNode->scale(vecOriginAndConeScale);
+
+		//Create remainder of box		
+		ManualObject* remainingBox = createManualObject("Remaining Box");
+		remainingBox->begin("BaseWhiteNoLighting",RenderOperation::OT_LINE_LIST);
+			remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(0.0,			0.0,			fSideLength	);
+			remainingBox->position(0.0,			fSideLength,	0.0			);	remainingBox->position(0.0,			fSideLength,	fSideLength	);
+			remainingBox->position(fSideLength, 0.0,			0.0			);	remainingBox->position(fSideLength, 0.0,			fSideLength	);
+			remainingBox->position(fSideLength, fSideLength,	0.0			);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
+
+			remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(0.0,			fSideLength,	0.0			);
+			remainingBox->position(0.0,			0.0,			fSideLength	);	remainingBox->position(0.0,			fSideLength,	fSideLength	);
+			remainingBox->position(fSideLength, 0.0,			0.0			);	remainingBox->position(fSideLength, fSideLength,	0.0			);
+			remainingBox->position(fSideLength, 0.0,			fSideLength	);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
+
+			remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(fSideLength, 0.0,			0.0			);
+			remainingBox->position(0.0,			0.0,			fSideLength	);	remainingBox->position(fSideLength, 0.0,			fSideLength	);
+			remainingBox->position(0.0,			fSideLength,	0.0			);	remainingBox->position(fSideLength, fSideLength,	0.0			);
+			remainingBox->position(0.0,			fSideLength,	fSideLength	);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
+			remainingBox->end();
+		SceneNode *remainingBoxNode = m_axisNode->createChildSceneNode();
+		remainingBoxNode->attachObject(remainingBox);
+	}
+
+	void PolyVoxSceneManager::setAxisVisible(bool visible)
+	{
+		if(m_axisNode)
+			m_axisNode->setVisible(visible);
 	}
 }
