@@ -144,7 +144,7 @@ namespace Ogre
 							//Generate the surface
 							//std::vector< std::vector<SurfaceVertex> > vertexData;
 							//std::vector< std::vector<SurfaceTriangle> > indexData;
-							std::map<uchar, AbstractSurfacePatch*> mapSurfacePatch = generateMeshDataForRegion(regionX,regionY,regionZ);
+							std::map<uchar, IndexedSurfacePatch*> mapSurfacePatch = generateMeshDataForRegion(regionX,regionY,regionZ);
 
 							//If a SceneNode doesn't exist in this position then create one.
 							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
@@ -162,7 +162,7 @@ namespace Ogre
 
 							//For each surface attach it to the scene node.
 							//for(uint meshCt = 1; meshCt < 256; ++meshCt)
-							for(std::map<uchar, AbstractSurfacePatch*>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
+							for(std::map<uchar, IndexedSurfacePatch*>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
 							{
 								/*std::vector<SurfaceVertex> vertexData;
 								std::vector<uint> indexData;
@@ -349,9 +349,11 @@ namespace Ogre
 		}
 	}
 
-	std::map<uchar, AbstractSurfacePatch*> PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ) const
+	std::map<uchar, IndexedSurfacePatch*> PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ) const
 	{	
-		std::map<uchar, AbstractSurfacePatch*> surfacePatchMapResult;
+		std::map<uchar, IndexedSurfacePatch*> surfacePatchMapResult;
+
+		surfacePatchMapResult.insert(std::make_pair(1,new IndexedSurfacePatch));
 
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		//First and last voxels in the region
@@ -509,7 +511,7 @@ namespace Ogre
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
-				if(surfacePatchMapResult.find(material0) == surfacePatchMapResult.end())
+				/*if(surfacePatchMapResult.find(material0) == surfacePatchMapResult.end())
 				{
 					surfacePatchMapResult.insert(std::make_pair(material0,new IndexedSurfacePatch));
 				}
@@ -520,20 +522,23 @@ namespace Ogre
 				if(surfacePatchMapResult.find(material2) == surfacePatchMapResult.end())
 				{
 					surfacePatchMapResult.insert(std::make_pair(material2,new IndexedSurfacePatch));
-				}
+				}*/
 
-				SurfaceVertex surfaceVertex0Alpha1(vertex0,1.0);
-				SurfaceVertex surfaceVertex1Alpha1(vertex1,1.0);
-				SurfaceVertex surfaceVertex2Alpha1(vertex2,1.0);				
+				//float materialToUse = std::max(material0,std::max(material1,material2));
+
+								
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
 				{
-					surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1);
+					surfacePatchMapResult[1]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 				}
 				//If there not all the same, we need one triangle for each unique material.
 				//We'll also need some vertices with low alphas for blending.
-				else 
+				/*else 
 				{
 					SurfaceVertex surfaceVertex0Alpha0(vertex0,0.0);
 					SurfaceVertex surfaceVertex1Alpha0(vertex1,0.0);
@@ -560,18 +565,18 @@ namespace Ogre
 						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
 						surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
 					}
-				}
+				}*/
 			}//For each triangle
 		}//For each cell
 
 		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
 
 
-		for(std::map<uchar, AbstractSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
+		for(std::map<uchar, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
 		{
 
-			SurfaceVertexIterator iterSurfaceVertex = iterPatch->second->getVerticesBegin();
-			while(iterSurfaceVertex != iterPatch->second->getVerticesEnd())
+			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = iterPatch->second->m_vecVertices.begin();
+			while(iterSurfaceVertex != iterPatch->second->m_vecVertices.end())
 			{
 				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);

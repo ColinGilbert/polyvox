@@ -23,10 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreSceneManager.h"
 
 #include "Constants.h"
+#include "IndexedSurfacePatch.h"
 #include "MaterialMap.h"
 #include "SurfacePatchRenderable.h"
 #include "SurfaceTriangle.h"
-#include "AbstractSurfacePatch.h"
+//#include "AbstractSurfacePatch.h"
 #include "TypeDef.h"
 #include "Volume.h"
 #include "SurfaceVertex.h"
@@ -81,7 +82,7 @@ namespace Ogre
 		
 		void generateLevelVolume(void);
 
-		std::map<uchar, AbstractSurfacePatch*> generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ) const;
+		std::map<uchar, IndexedSurfacePatch*> generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ) const;
 
 		void doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value);
 

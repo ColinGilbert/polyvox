@@ -4,6 +4,7 @@ namespace Ogre
 {
 	IndexedSurfacePatch::IndexedSurfacePatch()
 	{
+		memset(vertexIndices,0xFF,sizeof(vertexIndices)); //0xFF is -1 as two's complement - this may not be portable...
 	}
 
 	IndexedSurfacePatch::~IndexedSurfacePatch()	  
@@ -12,24 +13,60 @@ namespace Ogre
 
 	void IndexedSurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		SurfaceVertexIterator v0Iter = m_listVertices.insert(v0).first;
-		SurfaceVertexIterator v1Iter = m_listVertices.insert(v1).first;
-		SurfaceVertexIterator v2Iter = m_listVertices.insert(v2).first;
+		long int index = vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)];
+		if(index == -1)
+		{
+			m_vecVertices.push_back(v0);
+			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+		}
+		else
+		{
+			m_vecTriangleIndices.push_back(index);
+		}
 
-		m_vecTriangleIndices.push_back(v0Iter);
-		m_vecTriangleIndices.push_back(v1Iter);
-		m_vecTriangleIndices.push_back(v2Iter);
+		index = vertexIndices[long int(v1.getPosition().x +0.5)][long int(v1.getPosition().y +0.5)][long int(v1.getPosition().z +0.5)];
+		if(index == -1)
+		{
+			m_vecVertices.push_back(v1);
+			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+		}
+		else
+		{
+			m_vecTriangleIndices.push_back(index);
+		}
+
+		index = vertexIndices[long int(v2.getPosition().x +0.5)][long int(v2.getPosition().y +0.5)][long int(v2.getPosition().z +0.5)];
+		if(index == -1)
+		{
+			m_vecVertices.push_back(v2);
+			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+		}
+		else
+		{
+			m_vecTriangleIndices.push_back(index);
+		}
+		
+		
+		/*m_vecVertices.push_back(v0);
+		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+		m_vecVertices.push_back(v1);
+		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+		m_vecVertices.push_back(v2);
+		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);*/
 	}
 
 	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices)
 	{
-		vecVertices.resize(m_listVertices.size());
-		std::copy(m_listVertices.begin(), m_listVertices.end(), vecVertices.begin());
+		vecVertices.resize(m_vecVertices.size());
+		std::copy(m_vecVertices.begin(), m_vecVertices.end(), vecVertices.begin());
 
-		for(std::vector<SurfaceVertexIterator>::iterator iterVertices = m_vecTriangleIndices.begin(); iterVertices != m_vecTriangleIndices.end(); ++iterVertices)
+		vecIndices.resize(m_vecTriangleIndices.size());
+		std::copy(m_vecTriangleIndices.begin(), m_vecTriangleIndices.end(), vecIndices.begin());
+
+		/*for(std::vector<SurfaceVertexIterator>::iterator iterVertices = m_vecTriangleIndices.begin(); iterVertices != m_vecTriangleIndices.end(); ++iterVertices)
 		{		
 			std::vector<SurfaceVertex>::iterator iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), **iterVertices);
 			vecIndices.push_back(iterVertex - vecVertices.begin());
-		}
+		}*/
 	}
 }

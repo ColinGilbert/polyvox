@@ -1,0 +1,44 @@
+struct v2f
+{
+    float4 Position : POSITION; //in projection space
+    float4 Color : COLOR;
+    float4 TexCoords : TEXCOORD0;
+    float4 Normal : TEXCOORD1;
+    float Alpha : TEXCOORD2;
+};
+
+float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
+{
+	/*OUT.TexCoordsXY.xy = OUT.Position.xy;
+    OUT.TexCoordsYZ.xy = OUT.Position.yz;
+    OUT.TexCoordsXZ.xy = OUT.Position.xz;*/
+    
+    /*OUT.TexCoordsXY.xy /= textureScale;
+    OUT.TexCoordsYZ.xy /= textureScale;
+    OUT.TexCoordsXZ.xy /= textureScale;*/
+	
+	IN.TexCoords /= 16;
+	IN.TexCoords.x = frac(IN.TexCoords.x);
+	IN.TexCoords.y = frac(IN.TexCoords.y);
+	IN.TexCoords.z = frac(IN.TexCoords.z);
+	
+	IN.TexCoords /= 4.0;
+	float material = floor(IN.Alpha);
+	float y = floor(material / 4.0);
+	//float x = material - y;
+	float x = fmod(material,4.0);
+	//x = 1.0 - x;
+	float2 offset = float2(x,y);
+	offset /= 4.0;
+	
+       float3 colourMapValueXY = tex2D(colourMap, IN.TexCoords.xy + offset).rgb * abs(IN.Normal.z);
+       float3 colourMapValueYZ = tex2D(colourMap, IN.TexCoords.yz + offset).rgb * abs(IN.Normal.x);
+       float3 colourMapValueXZ = tex2D(colourMap, IN.TexCoords.xz + offset).rgb * abs(IN.Normal.y);
+       
+       float3 colourMapValue = colourMapValueXY + colourMapValueYZ + colourMapValueXZ;
+       
+       //colourMapValue /= 3.0;
+
+       return float4(colourMapValue*IN.Color.rgb,1.0);
+	   //return float4(1.0,0.0,0.0,1.0);
+}

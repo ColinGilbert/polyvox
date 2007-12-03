@@ -1,13 +1,14 @@
 #include "SurfacePatchRenderable.h"
 
 #include "SurfaceEdge.h"
+#include "SurfaceVertex.h"
 #include "OgreVertexIndexData.h"
 
 #include <limits>
 
 namespace Ogre
 {
-	SurfacePatchRenderable::SurfacePatchRenderable(AbstractSurfacePatch* patchToRender, const String& material)
+	SurfacePatchRenderable::SurfacePatchRenderable(IndexedSurfacePatch* patchToRender, const String& material)
 	{
 		//Set up what we can of the vertex data
 		mRenderOp.vertexData = new VertexData();
@@ -40,12 +41,12 @@ namespace Ogre
 		delete mRenderOp.indexData;
 	}
 
-	void SurfacePatchRenderable::updateWithNewSurfacePatch(AbstractSurfacePatch* patchToRender)
-	{		
+	void SurfacePatchRenderable::updateWithNewSurfacePatch(IndexedSurfacePatch* patchToRender)
+	{
 		setGeometry(patchToRender);
 	}
 
-	void SurfacePatchRenderable::setGeometry(AbstractSurfacePatch* patchToRender)
+	void SurfacePatchRenderable::setGeometry(IndexedSurfacePatch* patchToRender)
 	{
 		std::vector<SurfaceVertex> vecVertices;
 		std::vector<ushort> vecIndices;

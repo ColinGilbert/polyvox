@@ -74,3 +74,17 @@ fragment_program ColourMap2DFragmentProgram cg
 	entry_point main
 	profiles ps_1_1 arbfp1
 }
+
+vertex_program TextureAtlasOneLightVertexProgram cg
+{
+	source TextureAtlasVertexProgram.cg
+	entry_point OneLight
+	profiles vs_1_1 arbvp1
+}
+
+fragment_program TextureAtlasFragmentProgram cg
+{
+	source TextureAtlasFragmentProgram.cg
+	entry_point main
+	profiles ps_1_1 arbfp1
+}
