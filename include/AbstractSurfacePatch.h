@@ -2,7 +2,7 @@
 #define __AbstractSurfacePatch_H__
 
 #include "SurfaceTypes.h"
-#include "Surfacevertex.h"
+#include "SurfaceVertex.h"
 
 namespace Ogre
 {
