@@ -529,11 +529,11 @@ namespace Ogre
 								
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
-				if((material0 == material1) && (material1 == material2))
+				//if((material0 == material1) && (material1 == material2))
 				{
 					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1);
 					surfacePatchMapResult[1]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 				}
 				//If there not all the same, we need one triangle for each unique material.
