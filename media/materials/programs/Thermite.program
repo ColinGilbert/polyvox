@@ -88,3 +88,10 @@ fragment_program TextureAtlasFragmentProgram cg
 	entry_point main
 	profiles ps_1_1 arbfp1
 }
+
+fragment_program TextureAtlasExperimentalFragmentProgram cg
+{
+	source TextureAtlasExperimentalFragmentProgram.cg
+	entry_point main
+	profiles ps_1_1 arbfp1
+}

@@ -9,36 +9,36 @@ struct v2f
 
 float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
 {
-	/*OUT.TexCoordsXY.xy = OUT.Position.xy;
-    OUT.TexCoordsYZ.xy = OUT.Position.yz;
-    OUT.TexCoordsXZ.xy = OUT.Position.xz;*/
-    
-    /*OUT.TexCoordsXY.xy /= textureScale;
-    OUT.TexCoordsYZ.xy /= textureScale;
-    OUT.TexCoordsXZ.xy /= textureScale;*/
+	float textureScalingFactor = 20.0f;
+	float textureSize = 512.0f;
+	float noOfTexturesPerDimension = 4.0;
 	
-	IN.TexCoords /= 16;
+	//Scale the texture.
+	IN.TexCoords /= textureScalingFactor;
+	
+	//Make sure texture coordinates are in the range 0.0 - 1.0 (or 0.9999? Is this necessary?)
 	IN.TexCoords.x = frac(IN.TexCoords.x);
 	IN.TexCoords.y = frac(IN.TexCoords.y);
 	IN.TexCoords.z = frac(IN.TexCoords.z);
 	
-	IN.TexCoords /= 4.0;
-	float material = floor(IN.Alpha);
-	float y = floor(material / 4.0);
-	//float x = material - y;
-	float x = fmod(material,4.0);
-	//x = 1.0 - x;
-	float2 offset = float2(x,y);
-	offset /= 4.0;
+	//Now scale the texture coordinates to the right range for the texture atlas.
+	IN.TexCoords /= noOfTexturesPerDimension;	
 	
-       float3 colourMapValueXY = tex2D(colourMap, IN.TexCoords.xy + offset).rgb * abs(IN.Normal.z);
-       float3 colourMapValueYZ = tex2D(colourMap, IN.TexCoords.yz + offset).rgb * abs(IN.Normal.x);
-       float3 colourMapValueXZ = tex2D(colourMap, IN.TexCoords.xz + offset).rgb * abs(IN.Normal.y);
-       
-       float3 colourMapValue = colourMapValueXY + colourMapValueYZ + colourMapValueXZ;
-       
-       //colourMapValue /= 3.0;
+	//Next we compute the offset of the texture in the texture atlas
+	float material = floor(IN.Alpha);
+	float y = floor(material / noOfTexturesPerDimension);
+	float x = fmod(material,noOfTexturesPerDimension);
+	float2 offset = float2(x,y);
+	offset /= noOfTexturesPerDimension;	
+	
+	//Retrieve the 3 samples
+	float3 colourMapValueXY = tex2D(colourMap, IN.TexCoords.xy + offset).rgb * abs(IN.Normal.z);
+	float3 colourMapValueYZ = tex2D(colourMap, IN.TexCoords.yz + offset).rgb * abs(IN.Normal.x);
+	float3 colourMapValueXZ = tex2D(colourMap, IN.TexCoords.xz + offset).rgb * abs(IN.Normal.y);
 
-       return float4(colourMapValue*IN.Color.rgb,1.0);
-	   //return float4(1.0,0.0,0.0,1.0);
+	//Blend according to triplanar texturing
+	float3 colourMapValue = colourMapValueXY + colourMapValueYZ + colourMapValueXZ;
+
+	//Return the result
+	return float4(colourMapValue*IN.Color.rgb,1.0);
 }
