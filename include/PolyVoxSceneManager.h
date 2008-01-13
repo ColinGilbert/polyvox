@@ -70,7 +70,6 @@ namespace Ogre
 
 
 		//Setters
-		//void setMaterialNameForIndex(uchar uIndex, std::string sMaterialName);
 		void setNormalGenerationMethod(NormalGenerationMethod method);
 		void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
 
@@ -82,7 +81,7 @@ namespace Ogre
 		
 		void generateLevelVolume(void);
 
-		std::map<uchar, IndexedSurfacePatch*> generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ) const;
+		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
 		void doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value);
 
@@ -94,11 +93,11 @@ namespace Ogre
 
 		
 		std::map<UIntVector3, SceneNode*> sceneNodes;
-		//std::map<uchar,ManualObject*> m_mapManualObjects[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool surfaceUpToDate[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool regionIsHomogenous[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
-		std::map<uchar,SurfacePatchRenderable*> m_mapSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
+		SurfacePatchRenderable* m_singleMaterialSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
+		SurfacePatchRenderable* m_multiMaterialSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
 		Vector3 computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const;
 
