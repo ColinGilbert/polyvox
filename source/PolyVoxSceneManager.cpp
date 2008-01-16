@@ -181,7 +181,10 @@ namespace Ogre
 								{
 									//We have to create the surfaces
 									singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
-									multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(1));
+									multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
+
+									multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RenderQueueGroupID::RENDER_QUEUE_3);
+									singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RenderQueueGroupID::RENDER_QUEUE_4);
 
 									m_singleMaterialSurfaces[regionX][regionY][regionZ] = singleMaterialSurfacePatchRenderable;
 									sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
