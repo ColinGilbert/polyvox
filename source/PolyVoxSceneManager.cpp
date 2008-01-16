@@ -520,22 +520,6 @@ namespace Ogre
 				const uchar material0 = vertMaterials[triTable[iCubeIndex][i  ]];
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
-
-				/*if(surfacePatchMapResult.find(material0) == surfacePatchMapResult.end())
-				{
-					surfacePatchMapResult.insert(std::make_pair(material0,new IndexedSurfacePatch));
-				}
-				if(surfacePatchMapResult.find(material1) == surfacePatchMapResult.end())
-				{
-					surfacePatchMapResult.insert(std::make_pair(material1,new IndexedSurfacePatch));
-				}
-				if(surfacePatchMapResult.find(material2) == surfacePatchMapResult.end())
-				{
-					surfacePatchMapResult.insert(std::make_pair(material2,new IndexedSurfacePatch));
-				}*/
-
-				//float materialToUse = std::max(material0,std::max(material1,material2));
-
 								
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.

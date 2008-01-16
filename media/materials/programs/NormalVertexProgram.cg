@@ -1,0 +1,27 @@
+struct a2v
+{
+    float4 Position : POSITION; //in object space
+    float3 Normal : NORMAL;
+	float2 Alpha : TEXCOORD0;
+};
+
+struct v2f
+{
+    float4 Position : POSITION; //in projection space
+    float4 Normal : TEXCOORD0;
+};
+
+v2f main(a2v IN, uniform float4x4 world, uniform float4x4 viewProj)
+{
+    v2f OUT;
+
+    OUT.Position = mul(world, IN.Position);
+	
+    IN.Normal = normalize(IN.Normal);
+
+    OUT.Normal = float4(IN.Normal,0.0);
+	
+    OUT.Position = mul(viewProj, OUT.Position);
+	
+    return OUT;
+}

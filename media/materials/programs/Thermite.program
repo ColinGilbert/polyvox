@@ -95,3 +95,17 @@ fragment_program TextureAtlasExperimentalFragmentProgram cg
 	entry_point main
 	profiles ps_1_1 arbfp1
 }
+
+vertex_program NormalVertexProgram cg
+{
+	source NormalVertexProgram.cg
+	entry_point main
+	profiles vs_1_1 arbvp1
+}
+
+fragment_program NormalFragmentProgram cg
+{
+	source NormalFragmentProgram.cg
+	entry_point main
+	profiles ps_1_1 arbfp1
+}
