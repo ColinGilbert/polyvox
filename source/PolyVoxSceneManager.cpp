@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "MaterialMapManager.h"
 #include "SurfaceVertex.h"
 #include "SurfaceEdge.h"
-#include "HalfEdgeSurfacePatch.h"
 #include "IndexedSurfacePatch.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
@@ -183,8 +182,8 @@ namespace Ogre
 									singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
 									multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
 
-									multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RenderQueueGroupID::RENDER_QUEUE_3);
-									singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RenderQueueGroupID::RENDER_QUEUE_4);
+									multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
+									singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
 
 									m_singleMaterialSurfaces[regionX][regionY][regionZ] = singleMaterialSurfacePatchRenderable;
 									sceneNode->attachObject(singleMaterialSurfacePatchRenderable);

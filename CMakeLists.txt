@@ -2,9 +2,7 @@ PROJECT(PolyVoxSceneManager)
 
 #Projects source files
 SET(SRC_FILES
-	source/AbstractSurfacePatch.cpp
 	source/Block.cpp
-	source/HalfEdgeSurfacePatch.cpp
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/MaterialMap.cpp
@@ -23,10 +21,8 @@ SET(SRC_FILES
 
 #Projects headers files
 SET(INC_FILES
-	include/AbstractSurfacePatch.h
 	include/Block.h
 	include/Constants.h
-	include/HalfEdgeSurfacePatch.h
 	include/IndexedSurfacePatch.h
 	include/IntegralVector3.h
 	include/MarchingCubesTables.h
