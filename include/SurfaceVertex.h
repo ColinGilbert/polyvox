@@ -32,7 +32,7 @@ namespace Ogre
 	{
 	public:	
 		SurfaceVertex();
-		SurfaceVertex(UIntVector3 positionToSet, float alphaToSet);
+		SurfaceVertex(UIntVector3 positionToSet, float materialToSet, float alphaToSet);
 		SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet);	
 
 		friend bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
@@ -40,20 +40,22 @@ namespace Ogre
 
 		float getAlpha(void) const;
 		const SurfaceEdgeIterator& getEdge(void) const;
+		float getMaterial(void) const;
 		const Vector3& getNormal(void) const;
 		const UIntVector3& getPosition(void) const;	
 
 		void setAlpha(float alphaToSet);	
 		void setEdge(const SurfaceEdgeIterator& edgeToSet);
+		void setMaterial(float materialToSet);
 		void setNormal(const Vector3& normalToSet);
 
 		std::string toString(void) const;
 
-	private:
-		float alpha;
-		Vector3 normal;
+	private:		
 		UIntVector3 position;
-		
+		Vector3 normal;
+		float material;
+		float alpha;
 		
 
 		SurfaceEdgeIterator edge;		

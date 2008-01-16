@@ -11,8 +11,9 @@ namespace Ogre
 	{
 	}
 
-	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, float alphaToSet)
-		:alpha(alphaToSet)
+	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, float materialToSet, float alphaToSet)
+		:material(materialToSet)
+		,alpha(alphaToSet)
 		,position(positionToSet)
 		,m_uHash((position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z))
 	{
@@ -30,6 +31,11 @@ namespace Ogre
 	{
 		return alpha;
 	}	
+
+	float SurfaceVertex::getMaterial(void) const
+	{
+		return material;
+	}
 
 	const SurfaceEdgeIterator& SurfaceVertex::getEdge(void) const
 	{
@@ -49,6 +55,11 @@ namespace Ogre
 	void SurfaceVertex::setAlpha(float alphaToSet)
 	{
 		alpha = alphaToSet;
+	}
+
+	void SurfaceVertex::setMaterial(float materialToSet)
+	{
+		material = materialToSet;
 	}
 
 	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet)

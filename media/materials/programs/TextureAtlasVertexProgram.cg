@@ -2,7 +2,7 @@ struct a2v
 {
     float4 Position : POSITION; //in object space
     float3 Normal : NORMAL;
-    float Alpha : TEXCOORD0;
+	float2 Alpha : TEXCOORD0;
 };
 
 struct v2f
@@ -11,7 +11,7 @@ struct v2f
     float4 Color : COLOR;
     float4 TexCoords : TEXCOORD0;
     float4 Normal : TEXCOORD1;
-    float Alpha : TEXCOORD2;
+    float2 Alpha : TEXCOORD2;	
 };
 
 struct light
@@ -94,6 +94,8 @@ v2f doWork(a2v IN, float4x4 world, float4x4 viewProj, float4 ambient, int iNoOfL
     OUT.Position = mul(viewProj, OUT.Position);
     
     OUT.Alpha = IN.Alpha;
+	
+	//OUT.Material = IN.Material;
 
     return OUT;
 }

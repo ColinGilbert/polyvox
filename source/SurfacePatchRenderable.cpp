@@ -27,7 +27,8 @@ namespace Ogre
 		decl->removeAllElements();
 		decl->addElement(0, 0, VET_FLOAT3, VES_POSITION);
 		decl->addElement(0, 3 * sizeof(float), VET_FLOAT3, VES_NORMAL);
-		decl->addElement(0, 6 * sizeof(float), VET_FLOAT1, VES_TEXTURE_COORDINATES);
+		decl->addElement(0, 6 * sizeof(float), VET_FLOAT2, VES_TEXTURE_COORDINATES);
+		//decl->addElement(0, 7 * sizeof(float), VET_FLOAT1, VES_TEXTURE_COORDINATES);
 		
 
 		this->setMaterial(material);
@@ -95,7 +96,9 @@ namespace Ogre
 			*prPos++ = vertexIter->getNormal().y;
 			*prPos++ = vertexIter->getNormal().z;
 
-			*prPos++ = vertexIter->getAlpha();
+			*prPos++ = vertexIter->getMaterial();
+
+			*prPos++ = vertexIter->getAlpha();			
 
 			if(vertexIter->getPosition().x < vaabMin.x)
 				vaabMin.x = vertexIter->getPosition().x;

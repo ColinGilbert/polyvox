@@ -4,11 +4,13 @@ struct v2f
     float4 Color : COLOR;
     float4 TexCoords : TEXCOORD0;
     float4 Normal : TEXCOORD1;
-    float Alpha : TEXCOORD2;
+    float2 Alpha : TEXCOORD2;
 };
 
 float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
 {
+	//return float4(IN.Alpha.y, 1.0f-IN.Alpha.y, 0.0f,1.0f);
+	
 	float textureScalingFactor = 20.0f;
 	float textureSize = 512.0f;
 	float noOfTexturesPerDimension = 4.0;
@@ -25,7 +27,7 @@ float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
 	IN.TexCoords /= noOfTexturesPerDimension;	
 	
 	//Next we compute the offset of the texture in the texture atlas
-	float material = floor(IN.Alpha);
+	float material = floor(IN.Alpha.x);
 	float y = floor(material / noOfTexturesPerDimension);
 	float x = fmod(material,noOfTexturesPerDimension);
 	float2 offset = float2(x,y);
@@ -40,5 +42,5 @@ float4 main(v2f IN, uniform sampler2D colourMap : TEXUNIT0) : COLOR
 	float3 colourMapValue = colourMapValueXY + colourMapValueYZ + colourMapValueXZ;
 
 	//Return the result
-	return float4(colourMapValue*IN.Color.rgb,1.0);
+	return float4(colourMapValue*IN.Color.rgb*IN.Alpha.y,IN.Alpha.y);
 }

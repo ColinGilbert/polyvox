@@ -16,7 +16,7 @@ namespace Ogre
 	class IndexedSurfacePatch
 	{
 	public:
-	   IndexedSurfacePatch();
+	   IndexedSurfacePatch(bool allowDuplicateVertices);
 	   ~IndexedSurfacePatch();	   
 
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);
@@ -27,6 +27,9 @@ namespace Ogre
 		std::vector<SurfaceVertex> m_vecVertices;
 
 		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
+
+	private:
+		bool m_AllowDuplicateVertices;
 	};	
 }
 

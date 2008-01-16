@@ -2,7 +2,8 @@
 
 namespace Ogre
 {
-	IndexedSurfacePatch::IndexedSurfacePatch()
+	IndexedSurfacePatch::IndexedSurfacePatch(bool allowDuplicateVertices)
+		:m_AllowDuplicateVertices(allowDuplicateVertices)
 	{
 		memset(vertexIndices,0xFF,sizeof(vertexIndices)); //0xFF is -1 as two's complement - this may not be portable...
 	}
@@ -13,46 +14,50 @@ namespace Ogre
 
 	void IndexedSurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
-		long int index = vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)];
-		if(index == -1)
+		if(!m_AllowDuplicateVertices)
 		{
+			long int index = vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)];
+			if(index == -1)
+			{
+				m_vecVertices.push_back(v0);
+				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+			}
+			else
+			{
+				m_vecTriangleIndices.push_back(index);
+			}
+
+			index = vertexIndices[long int(v1.getPosition().x +0.5)][long int(v1.getPosition().y +0.5)][long int(v1.getPosition().z +0.5)];
+			if(index == -1)
+			{
+				m_vecVertices.push_back(v1);
+				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+			}
+			else
+			{
+				m_vecTriangleIndices.push_back(index);
+			}
+
+			index = vertexIndices[long int(v2.getPosition().x +0.5)][long int(v2.getPosition().y +0.5)][long int(v2.getPosition().z +0.5)];
+			if(index == -1)
+			{
+				m_vecVertices.push_back(v2);
+				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+			}
+			else
+			{
+				m_vecTriangleIndices.push_back(index);
+			}
+		}
+		else
+		{		
 			m_vecVertices.push_back(v0);
 			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-		}
-		else
-		{
-			m_vecTriangleIndices.push_back(index);
-		}
-
-		index = vertexIndices[long int(v1.getPosition().x +0.5)][long int(v1.getPosition().y +0.5)][long int(v1.getPosition().z +0.5)];
-		if(index == -1)
-		{
 			m_vecVertices.push_back(v1);
 			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-		}
-		else
-		{
-			m_vecTriangleIndices.push_back(index);
-		}
-
-		index = vertexIndices[long int(v2.getPosition().x +0.5)][long int(v2.getPosition().y +0.5)][long int(v2.getPosition().z +0.5)];
-		if(index == -1)
-		{
 			m_vecVertices.push_back(v2);
 			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
 		}
-		else
-		{
-			m_vecTriangleIndices.push_back(index);
-		}
-		
-		
-		/*m_vecVertices.push_back(v0);
-		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-		m_vecVertices.push_back(v1);
-		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-		m_vecVertices.push_back(v2);
-		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);*/
 	}
 
 	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices)

@@ -4,6 +4,12 @@ material TextureAtlasMaterial
 	{
 		pass
 		{
+			ambient 0.0 0.0 0.0
+			diffuse 0.0 0.0 0.0
+		}
+			 
+		pass
+		{
 			vertex_program_ref TextureAtlasOneLightVertexProgram
 			{
 				param_named_auto world world_matrix
@@ -23,6 +29,9 @@ material TextureAtlasMaterial
 				texture texture_atlas.png
 				filtering none
 			}
+			
+			depth_bias 1 1
+			scene_blend add
 		}
 	}
 }

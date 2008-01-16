@@ -147,8 +147,8 @@ namespace Ogre
 							//Generate the surface
 							//std::vector< std::vector<SurfaceVertex> > vertexData;
 							//std::vector< std::vector<SurfaceTriangle> > indexData;
-							IndexedSurfacePatch* singleMaterialPatch = new IndexedSurfacePatch;
-							IndexedSurfacePatch* multiMaterialPatch = new IndexedSurfacePatch;
+							IndexedSurfacePatch* singleMaterialPatch = new IndexedSurfacePatch(false);
+							IndexedSurfacePatch* multiMaterialPatch = new IndexedSurfacePatch(true);
 								
 							generateMeshDataForRegion(regionX,regionY,regionZ, singleMaterialPatch, multiMaterialPatch);
 
@@ -538,17 +538,81 @@ namespace Ogre
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
 				{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1);
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
 					singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+				}
+				else if(material0 == material1)
+				{
+					{
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+
+					{
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
+					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+				}
+				else if(material0 == material2)
+				{
+					{
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,1.0);
+					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+
+					{
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
+					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+				}
+				else if(material1 == material2)
+				{
+					{
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,1.0);
+					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+
+					{
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
 				}
 				else
 				{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					{
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+
+					{
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
+
+					{
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					}
 				}
 				//If there not all the same, we need one triangle for each unique material.
 				//We'll also need some vertices with low alphas for blending.
