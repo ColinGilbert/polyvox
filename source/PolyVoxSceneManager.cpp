@@ -144,12 +144,20 @@ namespace Ogre
 						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 						{
 							//Generate the surface
-							//std::vector< std::vector<SurfaceVertex> > vertexData;
-							//std::vector< std::vector<SurfaceTriangle> > indexData;
 							IndexedSurfacePatch* singleMaterialPatch = new IndexedSurfacePatch(false);
 							IndexedSurfacePatch* multiMaterialPatch = new IndexedSurfacePatch(true);
 								
 							generateMeshDataForRegion(regionX,regionY,regionZ, singleMaterialPatch, multiMaterialPatch);
+
+							/*if((singleMaterialPatch->m_vecVertices.size == 0) && (singleMaterialPatch->m_vecTriangleIndices.size == 0))
+							{
+								//No geometry exists. We can delete the scene node if it exists (it might, if the region has only just become empty)
+								std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
+								if(iterSceneNode != sceneNodes.end())
+								{
+									getRootSceneNode()->removeChild
+								}
+							}*/
 
 							//If a SceneNode doesn't exist in this position then create one.
 							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
@@ -175,21 +183,21 @@ namespace Ogre
 								triangleCounter += iterSurfacePatch->second.getNoOfTriangles();*/
 
 								SurfacePatchRenderable* singleMaterialSurfacePatchRenderable = m_singleMaterialSurfaces[regionX][regionY][regionZ];
-								SurfacePatchRenderable*  multiMaterialSurfacePatchRenderable = m_multiMaterialSurfaces[regionX][regionY][regionZ];
+								//SurfacePatchRenderable*  multiMaterialSurfacePatchRenderable = m_multiMaterialSurfaces[regionX][regionY][regionZ];
 								if(singleMaterialSurfacePatchRenderable == 0) //if single is null then multi should also be null
 								{
 									//We have to create the surfaces
 									singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
-									multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
+									//multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
 
-									multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
+									//multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
 									singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
 
 									m_singleMaterialSurfaces[regionX][regionY][regionZ] = singleMaterialSurfacePatchRenderable;
 									sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
 
-									m_multiMaterialSurfaces[regionX][regionY][regionZ] = multiMaterialSurfacePatchRenderable;
-									sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
+									//m_multiMaterialSurfaces[regionX][regionY][regionZ] = multiMaterialSurfacePatchRenderable;
+									//sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
 								}
 								else
 								{
@@ -197,8 +205,8 @@ namespace Ogre
 									singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(singleMaterialPatch);
 									sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
 
-									multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(multiMaterialPatch);
-									sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
+									//multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(multiMaterialPatch);
+									//sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
 								}
 							}
 							//sceneNode->showBoundingBox(true);
@@ -213,6 +221,10 @@ namespace Ogre
 
 		//Now call the base class to do the actual visibility determination...
 		SceneManager::_findVisibleObjects(cam, visibleBounds, onlyShadowCasters);
+
+		LogManager::getSingleton().logMessage("\nNo of triangles = " + StringConverter::toString(IndexedSurfacePatch::noOfTrianglesSubmitted));
+		LogManager::getSingleton().logMessage("No of vertices submitted = " + StringConverter::toString(IndexedSurfacePatch::noOfVerticesSubmitted));
+		LogManager::getSingleton().logMessage("No of vertices accepted = " + StringConverter::toString(IndexedSurfacePatch::noOfVerticesAccepted));
 	}
 
 	void PolyVoxSceneManager::setAllUpToDateFalse(void)

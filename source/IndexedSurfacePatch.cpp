@@ -2,6 +2,10 @@
 
 namespace Ogre
 {
+	long int IndexedSurfacePatch::noOfVerticesSubmitted = 0;
+	long int IndexedSurfacePatch::noOfVerticesAccepted = 0;
+	long int IndexedSurfacePatch::noOfTrianglesSubmitted = 0;
+
 	IndexedSurfacePatch::IndexedSurfacePatch(bool allowDuplicateVertices)
 		:m_AllowDuplicateVertices(allowDuplicateVertices)
 	{
@@ -14,6 +18,8 @@ namespace Ogre
 
 	void IndexedSurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
 	{
+		noOfTrianglesSubmitted++;
+		noOfVerticesSubmitted += 3;
 		if(!m_AllowDuplicateVertices)
 		{
 			long int index = vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)];
@@ -21,6 +27,9 @@ namespace Ogre
 			{
 				m_vecVertices.push_back(v0);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+				vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)] = m_vecVertices.size()-1;
+
+				noOfVerticesAccepted++;
 			}
 			else
 			{
@@ -32,6 +41,9 @@ namespace Ogre
 			{
 				m_vecVertices.push_back(v1);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+				vertexIndices[long int(v1.getPosition().x +0.5)][long int(v1.getPosition().y +0.5)][long int(v1.getPosition().z +0.5)] = m_vecVertices.size()-1;
+
+				noOfVerticesAccepted++;
 			}
 			else
 			{
@@ -43,6 +55,9 @@ namespace Ogre
 			{
 				m_vecVertices.push_back(v2);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+				vertexIndices[long int(v2.getPosition().x +0.5)][long int(v2.getPosition().y +0.5)][long int(v2.getPosition().z +0.5)] = m_vecVertices.size()-1;
+
+				noOfVerticesAccepted++;
 			}
 			else
 			{
@@ -57,6 +72,8 @@ namespace Ogre
 			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
 			m_vecVertices.push_back(v2);
 			m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
+
+			noOfVerticesAccepted += 3;
 		}
 	}
 

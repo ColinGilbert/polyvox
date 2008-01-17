@@ -1,8 +1,8 @@
 #ifndef __IndexedSurfacePatch_H__
 #define __IndexedSurfacePatch_H__
 
-#include <set>
-#include <list>
+//#include <set>
+//#include <list>
 
 #include "Constants.h"
 #include "IntegralVector3.h"
@@ -27,6 +27,10 @@ namespace Ogre
 		std::vector<SurfaceVertex> m_vecVertices;
 
 		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
+
+		static long int noOfVerticesSubmitted;
+		static long int noOfVerticesAccepted;
+		static long int noOfTrianglesSubmitted;
 
 	private:
 		bool m_AllowDuplicateVertices;
