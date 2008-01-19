@@ -41,6 +41,13 @@ namespace Ogre
 		{			
 		}
 
+		void setData(Type xToSet, Type yToSet, Type zToSet)
+		{			
+			x = xToSet;
+			y = yToSet;
+			z = zToSet;
+		}
+
 		bool operator==(const IntegralVector3<Type>& rhs) const throw()
 		{
 			return ((x == rhs.x) && (y == rhs.y) && (z == rhs.z));

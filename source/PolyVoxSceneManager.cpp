@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreStringConverter.h"
 #include "OgreLogManager.h"
 
+#include <list>
+
 namespace Ogre
 {
 
@@ -105,7 +107,7 @@ namespace Ogre
 
 					//for(std::map<uchar,SurfacePatchRenderable*>::iterator iterSurfaces = m_mapSurfaces[blockX][blockY][blockZ].begin(); iterSurfaces != m_mapSurfaces[blockX][blockY][blockZ].end(); ++iterSurfaces)
 					//{
-						//delete iterSurfaces->second;
+					//delete iterSurfaces->second;
 					//}
 					//m_mapSurfaces[blockX][blockY][blockZ].clear();
 
@@ -120,7 +122,7 @@ namespace Ogre
 		createAxis(256);
 		setAxisVisible(false);
 
-		
+
 
 
 		return true;
@@ -130,99 +132,74 @@ namespace Ogre
 	{
 		if(!volumeData.isNull())
 		{
-			unsigned long triangleCounter = 0;
-			//Regenerate meshes.
-			for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
-			{		
-				//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
-				for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
+			std::list<RegionGeometry> listChangedRegionGeometry = getChangedRegionGeometry();
+
+			for(std::list<RegionGeometry>::iterator iterRegionGeometry = listChangedRegionGeometry.begin(); iterRegionGeometry != listChangedRegionGeometry.end(); iterRegionGeometry++)
+			{
+				std::string location("");
+				location = location + "(" + iterRegionGeometry->m_v3dRegionPosition.x + "," + iterRegionGeometry->m_v3dRegionPosition.y + "," + iterRegionGeometry->m_v3dRegionPosition.z + ")";
+
+				//Generate the surface
+				IndexedSurfacePatch* singleMaterialPatch = iterRegionGeometry->m_patchSingleMaterial;
+				IndexedSurfacePatch* multiMaterialPatch = iterRegionGeometry->m_patchMultiMaterial;
+
+				if((singleMaterialPatch->m_vecVertices.size() == 0) && (singleMaterialPatch->m_vecTriangleIndices.size() == 0))
 				{
-					//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
-					for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
+					//No geometry exists. We can delete the scene node if it exists
+					std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(iterRegionGeometry->m_v3dRegionPosition);
+					if(iterSceneNode != sceneNodes.end())
 					{
-						//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
-						if(surfaceUpToDate[regionX][regionY][regionZ] == false)
-						{
-							std::stringstream locationStream;
-							locationStream << "(" << regionX << "," << regionY << "," << regionZ << ")";
-							std::string location = locationStream.str();
-
-							//Generate the surface
-							IndexedSurfacePatch* singleMaterialPatch = new IndexedSurfacePatch(false);
-							IndexedSurfacePatch* multiMaterialPatch = new IndexedSurfacePatch(true);
-								
-							generateMeshDataForRegion(regionX,regionY,regionZ, singleMaterialPatch, multiMaterialPatch);
-
-							if((singleMaterialPatch->m_vecVertices.size() == 0) && (singleMaterialPatch->m_vecTriangleIndices.size() == 0))
-							{
-								//No geometry exists. We can delete the scene node if it exists
-								std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
-								if(iterSceneNode != sceneNodes.end())
-								{
-									getRootSceneNode()->removeChild(location);
-								}
-								surfaceUpToDate[regionX][regionY][regionZ] = true;
-								continue;
-							}
-
-							//If a SceneNode doesn't exist in this position then create one.
-							std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(UIntVector3(regionX,regionY,regionZ));
-							SceneNode* sceneNode;
-							if(iterSceneNode == sceneNodes.end())
-							{
-								sceneNode = getRootSceneNode()->createChildSceneNode(location, Vector3(regionX*OGRE_REGION_SIDE_LENGTH,regionY*OGRE_REGION_SIDE_LENGTH,regionZ*OGRE_REGION_SIDE_LENGTH));
-								sceneNodes.insert(std::make_pair(UIntVector3(regionX,regionY,regionZ),sceneNode));
-							}
-							else
-							{
-								sceneNode = iterSceneNode->second;
-								sceneNode->detachAllObjects();
-							}
-
-							//For each surface attach it to the scene node.
-							//for(uint meshCt = 1; meshCt < 256; ++meshCt)
-							//for(std::map<uchar, IndexedSurfacePatch*>::iterator iterSurfacePatch = mapSurfacePatch.begin(); iterSurfacePatch != mapSurfacePatch.end(); ++iterSurfacePatch)
-							{
-								/*std::vector<SurfaceVertex> vertexData;
-								std::vector<uint> indexData;
-								iterSurfacePatch->second.getVertexAndIndexData(vertexData, indexData);
-								triangleCounter += iterSurfacePatch->second.getNoOfTriangles();*/
-
-								SurfacePatchRenderable* singleMaterialSurfacePatchRenderable = m_singleMaterialSurfaces[regionX][regionY][regionZ];
-								SurfacePatchRenderable*  multiMaterialSurfacePatchRenderable = m_multiMaterialSurfaces[regionX][regionY][regionZ];
-								if(singleMaterialSurfacePatchRenderable == 0) //if single is null then multi should also be null
-								{
-									//We have to create the surfaces
-									singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
-									multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
-
-									multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
-									singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
-
-									m_singleMaterialSurfaces[regionX][regionY][regionZ] = singleMaterialSurfacePatchRenderable;
-									sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
-
-									m_multiMaterialSurfaces[regionX][regionY][regionZ] = multiMaterialSurfacePatchRenderable;
-									sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
-								}
-								else
-								{
-									//We just update the existing surfaces
-									singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(singleMaterialPatch);
-									sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
-
-									multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(multiMaterialPatch);
-									sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
-								}
-							}
-							//sceneNode->showBoundingBox(true);
-							surfaceUpToDate[regionX][regionY][regionZ] = true;
-						}
+						getRootSceneNode()->removeChild(location);
 					}
+					continue;
+				}
+
+				//If a SceneNode doesn't exist in this position then create one.
+				std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(iterRegionGeometry->m_v3dRegionPosition);
+				SceneNode* sceneNode;
+				if(iterSceneNode == sceneNodes.end())
+				{
+					sceneNode = getRootSceneNode()->createChildSceneNode(location, Vector3(iterRegionGeometry->m_v3dRegionPosition.x*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.y*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.z*OGRE_REGION_SIDE_LENGTH));
+					sceneNodes.insert(std::make_pair(iterRegionGeometry->m_v3dRegionPosition, sceneNode));
+				}
+				else
+				{
+					sceneNode = iterSceneNode->second;
+					sceneNode->detachAllObjects();
+				}
+
+				SurfacePatchRenderable* singleMaterialSurfacePatchRenderable = m_singleMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z];
+				SurfacePatchRenderable*  multiMaterialSurfacePatchRenderable = m_multiMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z];
+				if(singleMaterialSurfacePatchRenderable == 0) //if single is null then multi should also be null
+				{
+					//We have to create the surfaces
+					singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
+					multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
+
+					multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
+					singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
+
+					m_singleMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z] = singleMaterialSurfacePatchRenderable;
+					sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
+
+					m_multiMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z] = multiMaterialSurfacePatchRenderable;
+					sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
+				}
+				else
+				{
+					//We just update the existing surfaces
+					singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(singleMaterialPatch);
+					sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
+
+					multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(multiMaterialPatch);
+					sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
 				}
 			}
-			//LogManager::getSingleton().logMessage("No of tris = " + StringConverter::toString(triangleCounter));
+
+			setAllUpToDateFlagsTo(true);
 		}
+
+
 		//showBoundingBoxes(true);
 
 		//Now call the base class to do the actual visibility determination...
@@ -233,7 +210,40 @@ namespace Ogre
 		//LogManager::getSingleton().logMessage("No of vertices accepted = " + StringConverter::toString(IndexedSurfacePatch::noOfVerticesAccepted));
 	}
 
-	void PolyVoxSceneManager::setAllUpToDateFalse(void)
+	std::list<RegionGeometry> PolyVoxSceneManager::getChangedRegionGeometry(void)
+	{
+		std::list<RegionGeometry> listChangedRegionGeometry;
+
+		//Regenerate meshes.
+		for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
+		{		
+			//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
+			for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
+			{
+				//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
+				for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
+				{
+					//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
+					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
+					{
+						//Generate the surface
+						RegionGeometry regionGeometry;
+						regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
+						regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
+						regionGeometry.m_v3dRegionPosition.setData(regionX, regionY, regionZ);
+
+						generateMeshDataForRegion(regionX,regionY,regionZ, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+
+						listChangedRegionGeometry.push_back(regionGeometry);
+					}
+				}
+			}
+		}
+
+		return listChangedRegionGeometry;
+	}
+
+	void PolyVoxSceneManager::setAllUpToDateFlagsTo(bool newUpToDateValue)
 	{
 		for(uint blockZ = 0; blockZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
 		{
@@ -241,7 +251,7 @@ namespace Ogre
 			{
 				for(uint blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
-					surfaceUpToDate[blockX][blockY][blockZ] = false;
+					surfaceUpToDate[blockX][blockY][blockZ] = newUpToDateValue;
 				}
 			}
 		}
@@ -537,7 +547,7 @@ namespace Ogre
 				const uchar material0 = vertMaterials[triTable[iCubeIndex][i  ]];
 				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
-								
+
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
@@ -550,49 +560,49 @@ namespace Ogre
 				else if(material0 == material1)
 				{
 					{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,1.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else if(material0 == material2)
 				{
 					{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,1.0);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,1.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else if(material1 == material2)
 				{
 					{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,1.0);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,1.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
-					multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else
@@ -622,31 +632,31 @@ namespace Ogre
 				//We'll also need some vertices with low alphas for blending.
 				/*else 
 				{
-					SurfaceVertex surfaceVertex0Alpha0(vertex0,0.0);
-					SurfaceVertex surfaceVertex1Alpha0(vertex1,0.0);
-					SurfaceVertex surfaceVertex2Alpha0(vertex2,0.0);
+				SurfaceVertex surfaceVertex0Alpha0(vertex0,0.0);
+				SurfaceVertex surfaceVertex1Alpha0(vertex1,0.0);
+				SurfaceVertex surfaceVertex2Alpha0(vertex2,0.0);
 
-					if(material0 == material1)
-					{
-						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-						surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-					}
-					else if(material1 == material2)
-					{
-						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
-					}
-					else if(material2 == material0)
-					{
-						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-					}
-					else
-					{
-						surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
-						surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-						surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-					}
+				if(material0 == material1)
+				{
+				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+				surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+				}
+				else if(material1 == material2)
+				{
+				surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
+				}
+				else if(material2 == material0)
+				{
+				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+				surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+				}
+				else
+				{
+				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
+				surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
+				surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
+				}
 				}*/
 			}//For each triangle
 		}//For each cell
@@ -701,7 +711,7 @@ namespace Ogre
 
 		Vector3 result;
 
-		
+
 		if(normalGenerationMethod == SOBEL)
 		{
 			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
@@ -951,21 +961,21 @@ namespace Ogre
 		//Create remainder of box		
 		ManualObject* remainingBox = createManualObject("Remaining Box");
 		remainingBox->begin("BaseWhiteNoLighting",RenderOperation::OT_LINE_LIST);
-			remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(0.0,			0.0,			fSideLength	);
-			remainingBox->position(0.0,			fSideLength,	0.0			);	remainingBox->position(0.0,			fSideLength,	fSideLength	);
-			remainingBox->position(fSideLength, 0.0,			0.0			);	remainingBox->position(fSideLength, 0.0,			fSideLength	);
-			remainingBox->position(fSideLength, fSideLength,	0.0			);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
+		remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(0.0,			0.0,			fSideLength	);
+		remainingBox->position(0.0,			fSideLength,	0.0			);	remainingBox->position(0.0,			fSideLength,	fSideLength	);
+		remainingBox->position(fSideLength, 0.0,			0.0			);	remainingBox->position(fSideLength, 0.0,			fSideLength	);
+		remainingBox->position(fSideLength, fSideLength,	0.0			);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
 
-			remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(0.0,			fSideLength,	0.0			);
-			remainingBox->position(0.0,			0.0,			fSideLength	);	remainingBox->position(0.0,			fSideLength,	fSideLength	);
-			remainingBox->position(fSideLength, 0.0,			0.0			);	remainingBox->position(fSideLength, fSideLength,	0.0			);
-			remainingBox->position(fSideLength, 0.0,			fSideLength	);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
+		remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(0.0,			fSideLength,	0.0			);
+		remainingBox->position(0.0,			0.0,			fSideLength	);	remainingBox->position(0.0,			fSideLength,	fSideLength	);
+		remainingBox->position(fSideLength, 0.0,			0.0			);	remainingBox->position(fSideLength, fSideLength,	0.0			);
+		remainingBox->position(fSideLength, 0.0,			fSideLength	);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
 
-			remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(fSideLength, 0.0,			0.0			);
-			remainingBox->position(0.0,			0.0,			fSideLength	);	remainingBox->position(fSideLength, 0.0,			fSideLength	);
-			remainingBox->position(0.0,			fSideLength,	0.0			);	remainingBox->position(fSideLength, fSideLength,	0.0			);
-			remainingBox->position(0.0,			fSideLength,	fSideLength	);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
-			remainingBox->end();
+		remainingBox->position(0.0,			0.0,			0.0			);	remainingBox->position(fSideLength, 0.0,			0.0			);
+		remainingBox->position(0.0,			0.0,			fSideLength	);	remainingBox->position(fSideLength, 0.0,			fSideLength	);
+		remainingBox->position(0.0,			fSideLength,	0.0			);	remainingBox->position(fSideLength, fSideLength,	0.0			);
+		remainingBox->position(0.0,			fSideLength,	fSideLength	);	remainingBox->position(fSideLength, fSideLength,	fSideLength	);
+		remainingBox->end();
 		SceneNode *remainingBoxNode = m_axisNode->createChildSceneNode();
 		remainingBoxNode->attachObject(remainingBox);
 	}

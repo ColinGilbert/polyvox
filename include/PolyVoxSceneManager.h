@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "TypeDef.h"
 #include "Volume.h"
 #include "SurfaceVertex.h"
+#include "RegionGeometry.h"
 
 #include <set>
 
@@ -73,7 +74,9 @@ namespace Ogre
 		void setNormalGenerationMethod(NormalGenerationMethod method);
 		void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
 
-		void setAllUpToDateFalse(void);
+		std::list<RegionGeometry> getChangedRegionGeometry(void);
+
+		void setAllUpToDateFlagsTo(bool newUpToDateValue);
 		void createSphereAt(Vector3 centre, Real radius, uchar value, bool painting);
 
 		bool loadScene(const String& filename);

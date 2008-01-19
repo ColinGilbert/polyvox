@@ -30,6 +30,7 @@ SET(INC_FILES
 	include/MaterialMapManager.h
 	include/MaterialMapSerializer.h
         include/PolyVoxSceneManager.h
+	include/RegionGeometry.h
         include/SurfaceEdge.h
 	include/SurfaceTypes.h
         include/SurfacePatchRenderable.h
