@@ -97,25 +97,7 @@ namespace Ogre
 		//Load material map
 		materialMap = MaterialMapManager::getSingletonPtr()->load(filename + ".materialmap", "General");
 
-		for(uint blockZ = 0; blockZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
-		{
-			for(uint blockY = 0; blockY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
-			{
-				for(uint blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
-				{					
-					surfaceUpToDate[blockX][blockY][blockZ] = false;
-
-					//for(std::map<uchar,SurfacePatchRenderable*>::iterator iterSurfaces = m_mapSurfaces[blockX][blockY][blockZ].begin(); iterSurfaces != m_mapSurfaces[blockX][blockY][blockZ].end(); ++iterSurfaces)
-					//{
-					//delete iterSurfaces->second;
-					//}
-					//m_mapSurfaces[blockX][blockY][blockZ].clear();
-
-					m_singleMaterialSurfaces[blockX][blockY][blockZ] = 0;
-					m_multiMaterialSurfaces[blockX][blockY][blockZ] = 0;
-				}
-			}
-		}
+		setAllUpToDateFlagsTo(false);
 
 		getRootSceneNode()->removeAndDestroyAllChildren();
 
@@ -165,40 +147,30 @@ namespace Ogre
 				{
 					sceneNode = 0;
 				}
+
 				if(sceneNode == 0)
 				{
 					sceneNode = getRootSceneNode()->createChildSceneNode(location, Vector3(iterRegionGeometry->m_v3dRegionPosition.x*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.y*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.z*OGRE_REGION_SIDE_LENGTH));
-				}
-				else
-				{
-					sceneNode->detachAllObjects();
-				}
 
-				SurfacePatchRenderable* singleMaterialSurfacePatchRenderable = m_singleMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z];
-				SurfacePatchRenderable*  multiMaterialSurfacePatchRenderable = m_multiMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z];
-				if(singleMaterialSurfacePatchRenderable == 0) //if single is null then multi should also be null
-				{
-					//We have to create the surfaces
-					singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
-					multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
+					SurfacePatchRenderable*singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialPatch,materialMap->getMaterialAtIndex(1));
+					SurfacePatchRenderable*multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialPatch,materialMap->getMaterialAtIndex(2));
 
 					multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
 					singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
 
-					m_singleMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z] = singleMaterialSurfacePatchRenderable;
 					sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
 
-					m_multiMaterialSurfaces[iterRegionGeometry->m_v3dRegionPosition.x][iterRegionGeometry->m_v3dRegionPosition.y][iterRegionGeometry->m_v3dRegionPosition.z] = multiMaterialSurfacePatchRenderable;
 					sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
 				}
 				else
 				{
-					//We just update the existing surfaces
+
+					SurfacePatchRenderable* singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(0));
+					SurfacePatchRenderable* multiMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(1));
+
 					singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(singleMaterialPatch);
-					sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
 
 					multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(multiMaterialPatch);
-					sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
 				}
 			}
 
