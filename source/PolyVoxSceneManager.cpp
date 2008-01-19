@@ -70,7 +70,7 @@ namespace Ogre
 		,m_bHaveGeneratedMeshes(false)
 		,m_axisNode(0)
 	{	
-		sceneNodes.clear();
+		//sceneNodes.clear();
 	}
 
 	PolyVoxSceneManager::~PolyVoxSceneManager()
@@ -139,32 +139,38 @@ namespace Ogre
 				std::string location("");
 				location = location + "(" + iterRegionGeometry->m_v3dRegionPosition.x + "," + iterRegionGeometry->m_v3dRegionPosition.y + "," + iterRegionGeometry->m_v3dRegionPosition.z + ")";
 
-				//Generate the surface
+				//Get the surface
 				IndexedSurfacePatch* singleMaterialPatch = iterRegionGeometry->m_patchSingleMaterial;
 				IndexedSurfacePatch* multiMaterialPatch = iterRegionGeometry->m_patchMultiMaterial;
 
 				if((singleMaterialPatch->m_vecVertices.size() == 0) && (singleMaterialPatch->m_vecTriangleIndices.size() == 0))
 				{
-					//No geometry exists. We can delete the scene node if it exists
-					std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(iterRegionGeometry->m_v3dRegionPosition);
-					if(iterSceneNode != sceneNodes.end())
+					try
 					{
-						getRootSceneNode()->removeChild(location);
+						getRootSceneNode()->removeAndDestroyChild(location);
+					}
+					catch(...)
+					{
 					}
 					continue;
 				}
 
 				//If a SceneNode doesn't exist in this position then create one.
-				std::map<UIntVector3, SceneNode*>::iterator iterSceneNode = sceneNodes.find(iterRegionGeometry->m_v3dRegionPosition);
 				SceneNode* sceneNode;
-				if(iterSceneNode == sceneNodes.end())
+				try
+				{
+					sceneNode = dynamic_cast<SceneNode*>(getRootSceneNode()->getChild(location));
+				}
+				catch(...)
+				{
+					sceneNode = 0;
+				}
+				if(sceneNode == 0)
 				{
 					sceneNode = getRootSceneNode()->createChildSceneNode(location, Vector3(iterRegionGeometry->m_v3dRegionPosition.x*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.y*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.z*OGRE_REGION_SIDE_LENGTH));
-					sceneNodes.insert(std::make_pair(iterRegionGeometry->m_v3dRegionPosition, sceneNode));
 				}
 				else
 				{
-					sceneNode = iterSceneNode->second;
 					sceneNode->detachAllObjects();
 				}
 

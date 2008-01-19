@@ -95,7 +95,7 @@ namespace Ogre
 
 
 		
-		std::map<UIntVector3, SceneNode*> sceneNodes;
+		//std::map<UIntVector3, SceneNode*> sceneNodes;
 		bool surfaceUpToDate[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool regionIsHomogenous[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
