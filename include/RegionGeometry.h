@@ -31,6 +31,9 @@ namespace Ogre
 		RegionGeometry(){};
 
 		bool m_bIsEmpty;
+		bool m_bContainsSingleMaterialPatch;
+		bool m_bContainsMultiMaterialPatch;
+
 		UIntVector3 m_v3dRegionPosition;
 		IndexedSurfacePatch* m_patchSingleMaterial;
 		IndexedSurfacePatch* m_patchMultiMaterial;

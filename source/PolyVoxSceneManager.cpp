@@ -118,56 +118,100 @@ namespace Ogre
 
 			for(std::list<RegionGeometry>::iterator iterRegionGeometry = listChangedRegionGeometry.begin(); iterRegionGeometry != listChangedRegionGeometry.end(); iterRegionGeometry++)
 			{
-				std::string location("");
-				location = location + "(" + iterRegionGeometry->m_v3dRegionPosition.x + "," + iterRegionGeometry->m_v3dRegionPosition.y + "," + iterRegionGeometry->m_v3dRegionPosition.z + ")";
+				std::stringstream location;
+				location << "(" << iterRegionGeometry->m_v3dRegionPosition.x << "," << iterRegionGeometry->m_v3dRegionPosition.y << "," << iterRegionGeometry->m_v3dRegionPosition.z << ")";
+
+				std::stringstream singleMaterialNode;
+				singleMaterialNode << "Single Material Node: " << location.str();
+
+				std::stringstream multiMaterialNode;
+				multiMaterialNode << "Multi Material Node: " << location.str();
+
+				//LogManager::getSingleton().logMessage(location.str());
+				//LogManager::getSingleton().logMessage(singleMaterialNode.str());
+				//LogManager::getSingleton().logMessage(multiMaterialNode.str());
+				//LogManager::getSingleton().logMessage("/n");
 
 				if(iterRegionGeometry->m_bIsEmpty)
 				{
-					try
+					if(hasSceneNode(location.str()))
 					{
-						getRootSceneNode()->removeAndDestroyChild(location);
-					}
-					catch(...)
-					{
+						getRootSceneNode()->removeAndDestroyChild(location.str());
 					}
 				}
 				else
 				{
-
 					//If a SceneNode doesn't exist in this position then create one.
 					SceneNode* sceneNode;
-					try
+					if(hasSceneNode(location.str()))
 					{
-						sceneNode = dynamic_cast<SceneNode*>(getRootSceneNode()->getChild(location));
-					}
-					catch(...)
-					{
-						sceneNode = 0;
-					}
-
-					if(sceneNode == 0)
-					{
-						sceneNode = getRootSceneNode()->createChildSceneNode(location, Vector3(iterRegionGeometry->m_v3dRegionPosition.x*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.y*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.z*OGRE_REGION_SIDE_LENGTH));
-
-						SurfacePatchRenderable*singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(iterRegionGeometry->m_patchSingleMaterial,materialMap->getMaterialAtIndex(1));
-						SurfacePatchRenderable*multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(iterRegionGeometry->m_patchMultiMaterial,materialMap->getMaterialAtIndex(2));
-
-						multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
-						singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
-
-						sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
-
-						sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
+						sceneNode = dynamic_cast<SceneNode*>(getRootSceneNode()->getChild(location.str()));
 					}
 					else
 					{
+						sceneNode = getRootSceneNode()->createChildSceneNode(location.str(), Vector3(iterRegionGeometry->m_v3dRegionPosition.x*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.y*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.z*OGRE_REGION_SIDE_LENGTH));
+					}
 
-						SurfacePatchRenderable* singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(0));
-						SurfacePatchRenderable* multiMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(1));
+					if(iterRegionGeometry->m_bContainsSingleMaterialPatch)
+					{
+						SurfacePatchRenderable* singleMaterialSurfacePatchRenderable;
+						try
+						//if(hasMovableObject(singleMaterialNode.str(),"SimpleRenderable") )
+						{
+							LogManager::getSingleton().logMessage("FOUND IT!!!!!!!!!!!!!!!!!!!!!!!!!!");
+							singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(singleMaterialNode.str()));
+							//singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(getMovableObject(singleMaterialNode.str(), "SurfacePatchRenderable"));
+							singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchSingleMaterial);
+						}
+						catch(Ogre::ItemIdentityException)
+						//else
+						{
+							singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialNode.str(), iterRegionGeometry->m_patchSingleMaterial,materialMap->getMaterialAtIndex(1));
+							singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
+							sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
+						}
+					}
+					else
+					{
+						try
+						{
+							sceneNode->detachObject(singleMaterialNode.str());
+						}
+						catch(...)
+						{}
+					}
 
-						singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchSingleMaterial);
-
-						multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchMultiMaterial);
+					if(iterRegionGeometry->m_bContainsMultiMaterialPatch)
+					{
+						//If a SceneNode doesn't exist in this position then create one.
+						SurfacePatchRenderable* multiMaterialSurfacePatchRenderable;
+						try
+						{
+							multiMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(multiMaterialNode.str()));
+						}
+						catch(...)
+						{
+							multiMaterialSurfacePatchRenderable = 0;
+						}
+						if(multiMaterialSurfacePatchRenderable == 0)
+						{
+							SurfacePatchRenderable* multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialNode.str(), iterRegionGeometry->m_patchMultiMaterial,materialMap->getMaterialAtIndex(2));
+							multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
+							sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
+						}
+						else
+						{
+							multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchMultiMaterial);
+						}
+					}
+					else
+					{
+						try
+						{
+							sceneNode->detachObject(multiMaterialNode.str());
+						}
+						catch(...)
+						{}
 					}
 				}
 			}
@@ -210,6 +254,8 @@ namespace Ogre
 
 						generateMeshDataForRegion(regionX,regionY,regionZ, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
+						regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->m_vecVertices.size() > 0;
+						regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->m_vecVertices.size() > 0;
 						regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->m_vecVertices.size() == 0) && (regionGeometry.m_patchMultiMaterial->m_vecTriangleIndices.size() == 0));
 
 						listChangedRegionGeometry.push_back(regionGeometry);

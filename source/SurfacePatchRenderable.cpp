@@ -8,7 +8,8 @@
 
 namespace Ogre
 {
-	SurfacePatchRenderable::SurfacePatchRenderable(IndexedSurfacePatch* patchToRender, const String& material)
+	SurfacePatchRenderable::SurfacePatchRenderable(const String& name, IndexedSurfacePatch* patchToRender, const String& material)
+		:SimpleRenderable(name)
 	{
 		//Set up what we can of the vertex data
 		mRenderOp.vertexData = new VertexData();
@@ -164,4 +165,31 @@ namespace Ogre
 	{
 		return Vector3::ZERO;
 	}
+
+	const String& SurfacePatchRenderable::getMovableType(void) const
+    {
+        static String movType = "SurfacePatchRenderable";
+        return movType;
+    }
+
+	//-----------------------------------------------------------------------
+	/*String LightFactory::FACTORY_TYPE_NAME = "SurfacePatchRenderable";
+	//-----------------------------------------------------------------------
+	const String& SimplePatchRenderableFactory::getType(void) const
+	{
+		return FACTORY_TYPE_NAME;
+	}
+	//-----------------------------------------------------------------------
+	MovableObject* SimplePatchRenderableFactory::createInstanceImpl( const String& name, 
+		const NameValuePairList* params)
+	{
+
+		return new SurfacePatchRenderable(name);
+
+	}
+	//-----------------------------------------------------------------------
+	void SimplePatchRenderableFactory::destroyInstance( MovableObject* obj)
+	{
+		delete obj;
+	}*/
 }

@@ -18,7 +18,7 @@ namespace Ogre
 	class SurfacePatchRenderable : public SimpleRenderable
 	{
 	public:
-	   SurfacePatchRenderable(IndexedSurfacePatch* patchToRender, const String& material = "BaseWhiteNoLighting");
+	   SurfacePatchRenderable(const String& name, IndexedSurfacePatch* patchToRender, const String& material = "BaseWhiteNoLighting");
 	   ~SurfacePatchRenderable(void);
 
 	   void updateWithNewSurfacePatch(IndexedSurfacePatch* patchToRender);
@@ -26,11 +26,29 @@ namespace Ogre
 
 	   Real getSquaredViewDepth(const Camera *cam) const;
 	   Real getBoundingRadius(void) const;
+
+	   virtual const String& getMovableType(void) const;
 	protected:
 	   //void getWorldTransforms(Matrix4 *xform) const;
 	   const Quaternion &getWorldOrientation(void) const;
 	   const Vector3 &getWorldPosition(void) const;
-	};	
+	};
+
+	/** Factory object for creating Light instances */
+	/*class _OgreExport SimplePatchRenderableFactory : public MovableObjectFactory
+	{
+	protected:
+		MovableObject* createInstanceImpl( const String& name, const NameValuePairList* params);
+	public:
+		SimplePatchRenderableFactory() {}
+		~SimplePatchRenderableFactory() {}
+
+		static String FACTORY_TYPE_NAME;
+
+		const String& getType(void) const;
+		void destroyInstance( MovableObject* obj);  
+
+	};*/
 }
 
 #endif /* __SurfacePatchRenderable_H__ */
