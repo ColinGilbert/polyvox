@@ -8,7 +8,7 @@
 
 namespace Ogre
 {
-	SurfacePatchRenderable::SurfacePatchRenderable(const String& name, IndexedSurfacePatch* patchToRender, const String& material)
+	SurfacePatchRenderable::SurfacePatchRenderable(const String& name)
 		:SimpleRenderable(name)
 	{
 		//Set up what we can of the vertex data
@@ -30,16 +30,19 @@ namespace Ogre
 		decl->addElement(0, 3 * sizeof(float), VET_FLOAT3, VES_NORMAL);
 		decl->addElement(0, 6 * sizeof(float), VET_FLOAT2, VES_TEXTURE_COORDINATES);
 		
-
-		this->setMaterial(material);
-
-		setGeometry(patchToRender);
 	}
 
 	SurfacePatchRenderable::~SurfacePatchRenderable(void)
 	{
 		delete mRenderOp.vertexData;
 		delete mRenderOp.indexData;
+	}
+
+	void SurfacePatchRenderable::setInitialSurfacePatch(IndexedSurfacePatch* patchToRender, const String& material)
+	{
+		this->setMaterial(material);
+
+		setGeometry(patchToRender);
 	}
 
 	void SurfacePatchRenderable::updateWithNewSurfacePatch(IndexedSurfacePatch* patchToRender)
@@ -173,14 +176,14 @@ namespace Ogre
     }
 
 	//-----------------------------------------------------------------------
-	/*String LightFactory::FACTORY_TYPE_NAME = "SurfacePatchRenderable";
+	String SurfacePatchRenderableFactory::FACTORY_TYPE_NAME = "SurfacePatchRenderable";
 	//-----------------------------------------------------------------------
-	const String& SimplePatchRenderableFactory::getType(void) const
+	const String& SurfacePatchRenderableFactory::getType(void) const
 	{
 		return FACTORY_TYPE_NAME;
 	}
 	//-----------------------------------------------------------------------
-	MovableObject* SimplePatchRenderableFactory::createInstanceImpl( const String& name, 
+	MovableObject* SurfacePatchRenderableFactory::createInstanceImpl( const String& name, 
 		const NameValuePairList* params)
 	{
 
@@ -188,8 +191,8 @@ namespace Ogre
 
 	}
 	//-----------------------------------------------------------------------
-	void SimplePatchRenderableFactory::destroyInstance( MovableObject* obj)
+	void SurfacePatchRenderableFactory::destroyInstance( MovableObject* obj)
 	{
 		delete obj;
-	}*/
+	}
 }

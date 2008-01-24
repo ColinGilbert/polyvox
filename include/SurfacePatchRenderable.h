@@ -18,10 +18,12 @@ namespace Ogre
 	class SurfacePatchRenderable : public SimpleRenderable
 	{
 	public:
-	   SurfacePatchRenderable(const String& name, IndexedSurfacePatch* patchToRender, const String& material = "BaseWhiteNoLighting");
+	   SurfacePatchRenderable(const String& name);
 	   ~SurfacePatchRenderable(void);
-
+	   
+	   void setInitialSurfacePatch(IndexedSurfacePatch* patchToRender, const String& material = "BaseWhiteNoLighting");
 	   void updateWithNewSurfacePatch(IndexedSurfacePatch* patchToRender);
+
 	   void setGeometry(IndexedSurfacePatch* patchToRender);
 
 	   Real getSquaredViewDepth(const Camera *cam) const;
@@ -35,20 +37,20 @@ namespace Ogre
 	};
 
 	/** Factory object for creating Light instances */
-	/*class _OgreExport SimplePatchRenderableFactory : public MovableObjectFactory
+	class VOXEL_SCENE_MANAGER_API SurfacePatchRenderableFactory : public MovableObjectFactory
 	{
 	protected:
 		MovableObject* createInstanceImpl( const String& name, const NameValuePairList* params);
 	public:
-		SimplePatchRenderableFactory() {}
-		~SimplePatchRenderableFactory() {}
+		SurfacePatchRenderableFactory() {}
+		~SurfacePatchRenderableFactory() {}
 
 		static String FACTORY_TYPE_NAME;
 
 		const String& getType(void) const;
 		void destroyInstance( MovableObject* obj);  
 
-	};*/
+	};
 }
 
 #endif /* __SurfacePatchRenderable_H__ */

@@ -155,18 +155,15 @@ namespace Ogre
 					if(iterRegionGeometry->m_bContainsSingleMaterialPatch)
 					{
 						SurfacePatchRenderable* singleMaterialSurfacePatchRenderable;
-						try
-						//if(hasMovableObject(singleMaterialNode.str(),"SimpleRenderable") )
+						if(hasMovableObject(singleMaterialNode.str(),SurfacePatchRenderableFactory::FACTORY_TYPE_NAME) )
 						{
-							LogManager::getSingleton().logMessage("FOUND IT!!!!!!!!!!!!!!!!!!!!!!!!!!");
-							singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(sceneNode->getAttachedObject(singleMaterialNode.str()));
-							//singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(getMovableObject(singleMaterialNode.str(), "SurfacePatchRenderable"));
+							singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(getMovableObject(singleMaterialNode.str(), SurfacePatchRenderableFactory::FACTORY_TYPE_NAME));
 							singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchSingleMaterial);
 						}
-						catch(Ogre::ItemIdentityException)
-						//else
+						else
 						{
-							singleMaterialSurfacePatchRenderable = new SurfacePatchRenderable(singleMaterialNode.str(), iterRegionGeometry->m_patchSingleMaterial,materialMap->getMaterialAtIndex(1));
+							singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(createMovableObject(singleMaterialNode.str(), SurfacePatchRenderableFactory::FACTORY_TYPE_NAME));
+							singleMaterialSurfacePatchRenderable->setInitialSurfacePatch(iterRegionGeometry->m_patchSingleMaterial,materialMap->getMaterialAtIndex(1));
 							singleMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_4);
 							sceneNode->attachObject(singleMaterialSurfacePatchRenderable);
 						}
@@ -195,7 +192,8 @@ namespace Ogre
 						}
 						if(multiMaterialSurfacePatchRenderable == 0)
 						{
-							SurfacePatchRenderable* multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialNode.str(), iterRegionGeometry->m_patchMultiMaterial,materialMap->getMaterialAtIndex(2));
+							SurfacePatchRenderable* multiMaterialSurfacePatchRenderable = new SurfacePatchRenderable(multiMaterialNode.str());
+							multiMaterialSurfacePatchRenderable->setInitialSurfacePatch(iterRegionGeometry->m_patchMultiMaterial,materialMap->getMaterialAtIndex(2));
 							multiMaterialSurfacePatchRenderable->setRenderQueueGroup(RENDER_QUEUE_3);
 							sceneNode->attachObject(multiMaterialSurfacePatchRenderable);
 						}
