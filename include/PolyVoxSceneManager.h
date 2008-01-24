@@ -93,6 +93,8 @@ namespace Ogre
 
 		void setAxisVisible(bool visible);
 
+		SceneNode* makeSureSceneNodeExists(const String strSceneNodeName, bool bShouldExist);
+
 
 		
 		//std::map<UIntVector3, SceneNode*> sceneNodes;
