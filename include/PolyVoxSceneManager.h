@@ -93,7 +93,7 @@ namespace Ogre
 
 		void setAxisVisible(bool visible);
 
-		SceneNode* makeSureSceneNodeExists(const String strSceneNodeName, bool bShouldExist);
+		SceneNode* makeSureSceneNodeExists(bool bShouldExist, const String strSceneNodeName);
 
 
 		

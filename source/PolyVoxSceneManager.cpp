@@ -135,26 +135,26 @@ namespace Ogre
 				ssMultiMaterialPatchName << "Multi Material Patch: " << strPosition;
 				const std::string strMultiMaterialPatchName = ssMultiMaterialPatchName.str();
 
-				//LogManager::getSingleton().logMessage(location.str());
-				//LogManager::getSingleton().logMessage(singleMaterialNode.str());
-				//LogManager::getSingleton().logMessage(multiMaterialNode.str());
-				//LogManager::getSingleton().logMessage("/n");
+				/*LogManager::getSingleton().logMessage(strPosition);
+				LogManager::getSingleton().logMessage(strSceneNodeName);
+				LogManager::getSingleton().logMessage(strSingleMaterialPatchName);
+				LogManager::getSingleton().logMessage(strMultiMaterialPatchName);
+				LogManager::getSingleton().logMessage("\n");*/
 
 				if(iterRegionGeometry->m_bIsEmpty)
 				{
-					makeSureSceneNodeExists(strSceneNodeName, false);
+					makeSureSceneNodeExists(false, strSceneNodeName);
 					continue;
 				}
-				SceneNode* sceneNode = makeSureSceneNodeExists(strSceneNodeName, true);
+				SceneNode* sceneNode = makeSureSceneNodeExists(true, strSceneNodeName);
 				sceneNode->setPosition(Vector3(iterRegionGeometry->m_v3dRegionPosition.x*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.y*OGRE_REGION_SIDE_LENGTH,iterRegionGeometry->m_v3dRegionPosition.z*OGRE_REGION_SIDE_LENGTH));
 				
 
-				bool bSingleMaterialPatchExists = hasMovableObject(strSingleMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME);
-				bool bMultiMaterialPatchExists = hasMovableObject(strMultiMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME);
+				bool bSingleMaterialPatchExists = hasMovableObject(strSingleMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME);				
 				if(iterRegionGeometry->m_bContainsSingleMaterialPatch)
 				{
 					SurfacePatchRenderable* singleMaterialSurfacePatchRenderable;
-					if(hasMovableObject(strSingleMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME))
+					if(bSingleMaterialPatchExists)
 					{
 						singleMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(getMovableObject(strSingleMaterialPatchName, SurfacePatchRenderableFactory::FACTORY_TYPE_NAME));
 						singleMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchSingleMaterial);
@@ -169,16 +169,17 @@ namespace Ogre
 				}
 				else
 				{
-					if(hasMovableObject(strSingleMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME))
+					if(bSingleMaterialPatchExists)
 					{
-						sceneNode->detachObject(strSingleMaterialPatchName);
+						destroyMovableObject(strSingleMaterialPatchName, SurfacePatchRenderableFactory::FACTORY_TYPE_NAME);
 					}
 				}
 
+				bool bMultiMaterialPatchExists = hasMovableObject(strMultiMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME);
 				if(iterRegionGeometry->m_bContainsMultiMaterialPatch)
 				{
 					SurfacePatchRenderable* multiMaterialSurfacePatchRenderable;
-					if(hasMovableObject(strMultiMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME) )
+					if(bMultiMaterialPatchExists)
 					{
 						multiMaterialSurfacePatchRenderable = dynamic_cast<SurfacePatchRenderable*>(getMovableObject(strMultiMaterialPatchName, SurfacePatchRenderableFactory::FACTORY_TYPE_NAME));
 						multiMaterialSurfacePatchRenderable->updateWithNewSurfacePatch(iterRegionGeometry->m_patchMultiMaterial);
@@ -193,9 +194,9 @@ namespace Ogre
 				}
 				else
 				{
-					if(hasMovableObject(strMultiMaterialPatchName,SurfacePatchRenderableFactory::FACTORY_TYPE_NAME))
+					if(bMultiMaterialPatchExists)
 					{
-						sceneNode->detachObject(strMultiMaterialPatchName);
+						destroyMovableObject(strMultiMaterialPatchName, SurfacePatchRenderableFactory::FACTORY_TYPE_NAME);
 					}
 				}
 			}
@@ -214,7 +215,7 @@ namespace Ogre
 		//LogManager::getSingleton().logMessage("No of vertices accepted = " + StringConverter::toString(IndexedSurfacePatch::noOfVerticesAccepted));
 	}
 
-	SceneNode* PolyVoxSceneManager::makeSureSceneNodeExists(const String strSceneNodeName, bool bShouldExist)
+	SceneNode* PolyVoxSceneManager::makeSureSceneNodeExists(bool bShouldExist, const String strSceneNodeName)
 	{
 		bool bSceneNodeExists = hasSceneNode(strSceneNodeName);
 		if(bShouldExist == false)
