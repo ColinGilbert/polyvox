@@ -15,7 +15,7 @@ namespace Ogre
 	//IDEA - If profiling identifies this class as a bottleneck, we could implement a memory pooling system.
 	//All buffers could be powers of two, and we get the smallest one which is big enough for our needs.
 	//See http://www.ogre3d.org/wiki/index.php/DynamicGrowingBuffers
-	class SurfacePatchRenderable : public SimpleRenderable
+	class VOXEL_SCENE_MANAGER_API SurfacePatchRenderable : public SimpleRenderable
 	{
 	public:
 	   SurfacePatchRenderable(const String& name);

@@ -110,6 +110,8 @@ namespace Ogre
 		return true;
 	}
 
+
+#ifdef BLAH
 	void PolyVoxSceneManager::_findVisibleObjects(Camera* cam, VisibleObjectsBoundsInfo *  visibleBounds,  bool onlyShadowCasters)
 	{
 		if(!volumeData.isNull())
@@ -239,6 +241,8 @@ namespace Ogre
 			}
 		}
 	}
+
+#endif
 
 	std::list<RegionGeometry> PolyVoxSceneManager::getChangedRegionGeometry(void)
 	{

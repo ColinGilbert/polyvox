@@ -72,7 +72,7 @@ namespace Ogre
 
 		//Setters
 		void setNormalGenerationMethod(NormalGenerationMethod method);
-		void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
+		//void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
 
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 
@@ -93,7 +93,7 @@ namespace Ogre
 
 		void setAxisVisible(bool visible);
 
-		SceneNode* makeSureSceneNodeExists(bool bShouldExist, const String strSceneNodeName);
+		//SceneNode* makeSureSceneNodeExists(bool bShouldExist, const String strSceneNodeName);
 
 
 		
@@ -106,7 +106,7 @@ namespace Ogre
 
 		Vector3 computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const;
 
-	private:
+	public:
 		void markVoxelChanged(uint x, uint y, uint z);
 		void markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ);
 

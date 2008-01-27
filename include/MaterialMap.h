@@ -3,9 +3,11 @@
 
 #include <OgreResourceManager.h>
 
+#include "TypeDef.h"
+
 namespace Ogre
 {
-	class MaterialMap : public Ogre::Resource
+	class VOXEL_SCENE_MANAGER_API MaterialMap : public Ogre::Resource
 	{
 	   String mMaterials[256];	   
 
