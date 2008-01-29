@@ -78,7 +78,7 @@ namespace Ogre
 		bool containsPoint(Vector3 pos, float boundary);
 		bool containsPoint(IntVector3 pos, uint boundary);
 
-		//void setAxisVisible(bool visible);
+		
 
 		bool surfaceUpToDate[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool regionIsHomogenous[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
@@ -91,9 +91,6 @@ namespace Ogre
 	public:
 		void markVoxelChanged(uint x, uint y, uint z);
 		void markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ);
-
-		/*void createAxis(uint uSideLength);		
-		SceneNode* m_axisNode;*/
 
 
 		static uint fileNo;
