@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Constants.h"
 #include "IndexedSurfacePatch.h"
-#include "MaterialMap.h"
 #include "SurfacePatchRenderable.h"
 #include "SurfaceTriangle.h"
 //#include "AbstractSurfacePatch.h"
@@ -105,7 +104,6 @@ namespace Ogre
 		NormalGenerationMethod m_normalGenerationMethod;
 
 		VolumePtr volumeData;
-		MaterialMapPtr materialMap;
 
 		bool m_bHaveGeneratedMeshes;
 

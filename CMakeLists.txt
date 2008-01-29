@@ -5,9 +5,6 @@ SET(SRC_FILES
 	source/Block.cpp
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
-	source/MaterialMap.cpp
-	source/MaterialMapManager.cpp
-	source/MaterialMapSerializer.cpp
 	source/PolyVoxSceneManager.cpp
         source/SurfaceEdge.cpp        
         source/SurfacePatchRenderable.cpp
@@ -26,9 +23,6 @@ SET(INC_FILES
 	include/IndexedSurfacePatch.h
 	include/IntegralVector3.h
 	include/MarchingCubesTables.h
-	include/MaterialMap.h
-	include/MaterialMapManager.h
-	include/MaterialMapSerializer.h
         include/PolyVoxSceneManager.h
 	include/RegionGeometry.h
         include/SurfaceEdge.h

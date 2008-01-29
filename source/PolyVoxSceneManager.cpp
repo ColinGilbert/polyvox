@@ -18,7 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
 #include "MarchingCubesTables.h"
-#include "MaterialMapManager.h"
 #include "SurfaceVertex.h"
 #include "SurfaceEdge.h"
 #include "IndexedSurfacePatch.h"
@@ -63,8 +62,6 @@ namespace Ogre
 
 		volumeData->tidy();
 
-		//Load material map
-		materialMap = MaterialMapManager::getSingletonPtr()->load(filename + ".materialmap", "General");
 
 		setAllUpToDateFlagsTo(false);
 
