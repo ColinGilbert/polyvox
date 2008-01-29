@@ -35,51 +35,20 @@ namespace Ogre
 {
 
 	//////////////////////////////////////////////////////////////////////////
-	// PolyVoxSceneManagerFactory
-	//////////////////////////////////////////////////////////////////////////
-	const String PolyVoxSceneManagerFactory::FACTORY_TYPE_NAME = "PolyVoxSceneManager";
-
-	SceneManager* PolyVoxSceneManagerFactory::createInstance(
-		const String& instanceName)
-	{
-		return new PolyVoxSceneManager(instanceName);
-	}
-
-	void PolyVoxSceneManagerFactory::destroyInstance(SceneManager* instance)
-	{
-		delete instance;
-	}
-
-	void PolyVoxSceneManagerFactory::initMetaData(void) const
-	{
-		mMetaData.typeName = FACTORY_TYPE_NAME;
-		mMetaData.description = "A voxel based scene manager";
-		mMetaData.sceneTypeMask = ST_GENERIC;
-		mMetaData.worldGeometrySupported = false;
-	}
-
-	//////////////////////////////////////////////////////////////////////////
 	// PolyVoxSceneManager
 	//////////////////////////////////////////////////////////////////////////
-	PolyVoxSceneManager::PolyVoxSceneManager(const String& name)
-		: SceneManager(name)
-		,volumeData(0)
+	PolyVoxSceneManager::PolyVoxSceneManager()
+		:volumeData(0)
 		,useNormalSmoothing(false)
 		,normalSmoothingFilterSize(1)
 		,m_normalGenerationMethod(SOBEL)
 		,m_bHaveGeneratedMeshes(false)
-		,m_axisNode(0)
 	{	
 		//sceneNodes.clear();
 	}
 
 	PolyVoxSceneManager::~PolyVoxSceneManager()
 	{
-	}
-
-	const String& PolyVoxSceneManager::getTypeName(void) const
-	{
-		return PolyVoxSceneManagerFactory::FACTORY_TYPE_NAME;
 	}
 
 	bool PolyVoxSceneManager::loadScene(const String& filename)
@@ -99,10 +68,9 @@ namespace Ogre
 
 		setAllUpToDateFlagsTo(false);
 
-		getRootSceneNode()->removeAndDestroyAllChildren();
 
-		createAxis(256);
-		setAxisVisible(false);
+		//createAxis(256);
+		//setAxisVisible(false);
 
 
 
@@ -794,7 +762,7 @@ namespace Ogre
 		return volumeData->containsPoint(pos, boundary);
 	}
 
-	void PolyVoxSceneManager::createAxis(uint uSideLength)
+	/*void PolyVoxSceneManager::createAxis(uint uSideLength)
 	{
 		float fSideLength = static_cast<float>(uSideLength);
 		float fHalfSideLength = fSideLength/2.0;
@@ -888,5 +856,5 @@ namespace Ogre
 	{
 		if(m_axisNode)
 			m_axisNode->setVisible(visible);
-	}
+	}*/
 }

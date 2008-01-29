@@ -44,24 +44,12 @@ namespace Ogre
 		SOBEL
 	};
 
-	/// Factory for default scene manager
-	class VOXEL_SCENE_MANAGER_API PolyVoxSceneManagerFactory : public SceneManagerFactory
-	{	
-	public:
-		/// Factory type name
-		static const String FACTORY_TYPE_NAME;
-		SceneManager* createInstance(const String& instanceName);
-		void destroyInstance(SceneManager* instance);
-	protected:
-		void initMetaData(void) const;
-	};
-
 	/// Voxel scene manager
-	class VOXEL_SCENE_MANAGER_API PolyVoxSceneManager : public SceneManager
+	class VOXEL_SCENE_MANAGER_API PolyVoxSceneManager
 	{
 	public:
 		//Constructors, etc
-		PolyVoxSceneManager(const String& name);
+		PolyVoxSceneManager();
 		~PolyVoxSceneManager();
 
 		//Getters
@@ -91,13 +79,8 @@ namespace Ogre
 		bool containsPoint(Vector3 pos, float boundary);
 		bool containsPoint(IntVector3 pos, uint boundary);
 
-		void setAxisVisible(bool visible);
+		//void setAxisVisible(bool visible);
 
-		//SceneNode* makeSureSceneNodeExists(bool bShouldExist, const String strSceneNodeName);
-
-
-		
-		//std::map<UIntVector3, SceneNode*> sceneNodes;
 		bool surfaceUpToDate[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		bool regionIsHomogenous[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
@@ -110,8 +93,8 @@ namespace Ogre
 		void markVoxelChanged(uint x, uint y, uint z);
 		void markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ);
 
-		void createAxis(uint uSideLength);		
-		SceneNode* m_axisNode;
+		/*void createAxis(uint uSideLength);		
+		SceneNode* m_axisNode;*/
 
 
 		static uint fileNo;
