@@ -12,9 +12,6 @@ SET(SRC_FILES
 	source/SurfaceVertex.cpp
 	source/Volume.cpp
 	source/VolumeIterator.cpp
-	source/VolumeManager.cpp
-	source/VolumeResource.cpp
-	source/VolumeSerializer.cpp
 )
 
 #Projects headers files
@@ -33,10 +30,7 @@ SET(INC_FILES
         include/SurfaceVertex.h
 	include/TypeDef.h
 	include/Volume.h
-	include/VolumeIterator.h
-	include/VolumeManager.h
-	include/VolumeResource.h
-	include/VolumeSerializer.h	
+	include/VolumeIterator.h	
 )
 
 ADD_DEFINITIONS(-DVOXEL_SCENE_MANAGER_EXPORT) #Export symbols in the .dll

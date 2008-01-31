@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IndexedSurfacePatch.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
-#include "VolumeManager.h"
 
 #include "OgreStringConverter.h"
 #include "OgreLogManager.h"
