@@ -37,8 +37,7 @@ namespace Ogre
 	// PolyVoxSceneManager
 	//////////////////////////////////////////////////////////////////////////
 	PolyVoxSceneManager::PolyVoxSceneManager()
-		:volumeResource(0)
-		,volumeData(0)
+		:volumeData(0)
 		,useNormalSmoothing(false)
 		,normalSmoothingFilterSize(1)
 		,m_normalGenerationMethod(SOBEL)
@@ -49,33 +48,6 @@ namespace Ogre
 
 	PolyVoxSceneManager::~PolyVoxSceneManager()
 	{
-	}
-
-	bool PolyVoxSceneManager::loadScene(const String& filename)
-	{
-		volumeResource = VolumeManager::getSingletonPtr()->load(filename + ".volume", "General");
-		if(volumeResource.isNull())
-		{
-			LogManager::getSingleton().logMessage("Generating default volume");
-			generateLevelVolume();
-			LogManager::getSingleton().logMessage("Done generating default volume");
-		}
-
-		volumeData = volumeResource->volume;
-
-		volumeData->tidy();
-
-
-		setAllUpToDateFlagsTo(false);
-
-
-		//createAxis(256);
-		//setAxisVisible(false);
-
-
-
-
-		return true;
 	}
 
 	std::list<RegionGeometry> PolyVoxSceneManager::getChangedRegionGeometry(void)
@@ -722,12 +694,6 @@ namespace Ogre
 		volumeData->regionGrow(xStart,yStart,zStart,value);
 		//FIXME - keep track of what has changed...
 		markRegionChanged(0,0,0,OGRE_VOLUME_SIDE_LENGTH-1,OGRE_VOLUME_SIDE_LENGTH-1,OGRE_VOLUME_SIDE_LENGTH-1);
-	}
-
-	bool PolyVoxSceneManager::saveScene(const String& filename)
-	{
-		volumeData->saveToFile(filename);
-		return true; //FIXME - check for error...
 	}
 
 	uint PolyVoxSceneManager::getSideLength(void)

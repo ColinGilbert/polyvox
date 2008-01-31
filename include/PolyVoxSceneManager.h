@@ -66,9 +66,6 @@ namespace Ogre
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
 		void createSphereAt(Vector3 centre, Real radius, uchar value, bool painting);
-
-		bool loadScene(const String& filename);
-		bool saveScene(const String& filename);
 		
 		void generateLevelVolume(void);
 
@@ -101,7 +98,7 @@ namespace Ogre
 
 		NormalGenerationMethod m_normalGenerationMethod;
 
-		VolumeResourcePtr volumeResource;
+		
 		Volume* volumeData;
 
 		bool m_bHaveGeneratedMeshes;
