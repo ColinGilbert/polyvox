@@ -2,7 +2,7 @@
 #define __VOLUMEMANAGER_H__
 
 #include <OgreResourceManager.h>
-#include "Volume.h"
+#include "VolumeResource.h"
 
 namespace Ogre
 {
@@ -20,7 +20,7 @@ namespace Ogre
 		VolumeManager ();
 		virtual ~VolumeManager ();
 
-		virtual VolumePtr load (const Ogre::String &name, const Ogre::String &group);
+		virtual VolumeResourcePtr load (const Ogre::String &name, const Ogre::String &group);
 
 		static VolumeManager &getSingleton ();
 		static VolumeManager *getSingletonPtr ();

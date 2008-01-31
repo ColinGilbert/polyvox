@@ -13,6 +13,7 @@ SET(SRC_FILES
 	source/Volume.cpp
 	source/VolumeIterator.cpp
 	source/VolumeManager.cpp
+	source/VolumeResource.cpp
 	source/VolumeSerializer.cpp
 )
 
@@ -34,6 +35,7 @@ SET(INC_FILES
 	include/Volume.h
 	include/VolumeIterator.h
 	include/VolumeManager.h
+	include/VolumeResource.h
 	include/VolumeSerializer.h	
 )
 

@@ -37,7 +37,8 @@ namespace Ogre
 	// PolyVoxSceneManager
 	//////////////////////////////////////////////////////////////////////////
 	PolyVoxSceneManager::PolyVoxSceneManager()
-		:volumeData(0)
+		:volumeResource(0)
+		,volumeData(0)
 		,useNormalSmoothing(false)
 		,normalSmoothingFilterSize(1)
 		,m_normalGenerationMethod(SOBEL)
@@ -52,13 +53,15 @@ namespace Ogre
 
 	bool PolyVoxSceneManager::loadScene(const String& filename)
 	{
-		volumeData = VolumeManager::getSingletonPtr()->load(filename + ".volume", "General");
-		if(volumeData.isNull())
+		volumeResource = VolumeManager::getSingletonPtr()->load(filename + ".volume", "General");
+		if(volumeResource.isNull())
 		{
 			LogManager::getSingleton().logMessage("Generating default volume");
 			generateLevelVolume();
 			LogManager::getSingleton().logMessage("Done generating default volume");
 		}
+
+		volumeData = volumeResource->volume;
 
 		volumeData->tidy();
 
@@ -177,7 +180,8 @@ namespace Ogre
 
 	void PolyVoxSceneManager::generateLevelVolume(void)
 	{
-		volumeData = VolumePtr(new Volume);
+		//volumeData = VolumePtr(new Volume);
+		volumeData = new Volume();
 		VolumeIterator volIter(*volumeData);
 		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
 		{

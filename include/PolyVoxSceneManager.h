@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Volume.h"
 #include "SurfaceVertex.h"
 #include "RegionGeometry.h"
+#include "VolumeResource.h"
 
 #include <set>
 
@@ -100,7 +101,8 @@ namespace Ogre
 
 		NormalGenerationMethod m_normalGenerationMethod;
 
-		VolumePtr volumeData;
+		VolumeResourcePtr volumeResource;
+		Volume* volumeData;
 
 		bool m_bHaveGeneratedMeshes;
 

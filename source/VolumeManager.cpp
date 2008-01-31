@@ -34,10 +34,10 @@ namespace Ogre
 		Ogre::ResourceGroupManager::getSingleton ()._unregisterResourceManager (mResourceType);
 	}
 
-	VolumePtr VolumeManager::load (const Ogre::String &name, const Ogre::String &group)
+	VolumeResourcePtr VolumeManager::load (const Ogre::String &name, const Ogre::String &group)
 	{
 		Ogre::LogManager::getSingleton().logMessage("DAVID - calling getByName");
-		VolumePtr textf = getByName (name);
+		VolumeResourcePtr textf = getByName (name);
 		Ogre::LogManager::getSingleton().logMessage("DAVID - done getByName");
 
 		if (textf.isNull ())
@@ -54,6 +54,6 @@ namespace Ogre
 												const Ogre::String &group, bool isManual, Ogre::ManualResourceLoader *loader, 
 												const Ogre::NameValuePairList *createParams)
 	{
-		return new Volume (this, name, handle, group, isManual, loader);
+		return new VolumeResource (this, name, handle, group, isManual, loader);
 	}
 }
