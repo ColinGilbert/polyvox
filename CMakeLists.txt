@@ -7,7 +7,6 @@ SET(SRC_FILES
 	source/MarchingCubesTables.cpp
 	source/PolyVoxSceneManager.cpp
         source/SurfaceEdge.cpp        
-        source/SurfacePatchRenderable.cpp
 	source/SurfaceTriangle.cpp
 	source/SurfaceVertex.cpp
 	source/Volume.cpp
@@ -25,7 +24,6 @@ SET(INC_FILES
 	include/RegionGeometry.h
         include/SurfaceEdge.h
 	include/SurfaceTypes.h
-        include/SurfacePatchRenderable.h
         include/SurfaceTriangle.h
         include/SurfaceVertex.h
 	include/TypeDef.h

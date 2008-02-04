@@ -8,12 +8,13 @@
 #include "IntegralVector3.h"
 #include "SurfaceTypes.h"
 #include "SurfaceVertex.h"
+#include "TypeDef.h"
 #include "VolumeIterator.h"
 
 
 namespace Ogre
 {
-	class IndexedSurfacePatch
+	class VOXEL_SCENE_MANAGER_API IndexedSurfacePatch
 	{
 	public:
 	   IndexedSurfacePatch(bool allowDuplicateVertices);

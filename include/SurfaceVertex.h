@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __SurfaceVertex_H__
 #define __SurfaceVertex_H__
 
+#include "TypeDef.h"
+
 #include "OgrePrerequisites.h"
 
 #include "OgreVector3.h"
@@ -28,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Ogre
 {	
-	class SurfaceVertex
+	class VOXEL_SCENE_MANAGER_API SurfaceVertex
 	{
 	public:	
 		SurfaceVertex();
