@@ -688,13 +688,6 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value)
-	{
-		volumeData->regionGrow(xStart,yStart,zStart,value);
-		//FIXME - keep track of what has changed...
-		markRegionChanged(0,0,0,OGRE_VOLUME_SIDE_LENGTH-1,OGRE_VOLUME_SIDE_LENGTH-1,OGRE_VOLUME_SIDE_LENGTH-1);
-	}
-
 	uint PolyVoxSceneManager::getSideLength(void)
 	{
 		return OGRE_VOLUME_SIDE_LENGTH;

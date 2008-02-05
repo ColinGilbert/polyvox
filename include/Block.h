@@ -16,46 +16,40 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
-#ifndef __Volume_H__
-#define __Volume_H__
+#ifndef __Block_H__
+#define __Block_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreSharedPtr.h"
 
-#include "Block.h"
 #include "Constants.h"
+
 #include "TypeDef.h"
-#include "IntegralVector3.h"
 
 namespace Ogre
 {
-	class VOXEL_SCENE_MANAGER_API Volume
+
+	class VOXEL_SCENE_MANAGER_API Block
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator;
 
-		//Volume interface
-	public:		
-		Volume();
-		Volume(const Volume& rhs);
-		~Volume();	
+		//Block interface
+	public:
+		Block();
+		Block(const Block& rhs);
+		~Block();
 
-		Volume& operator=(const Volume& rhs);
+		Block& operator=(const Block& rhs);
 
-		SharedPtr<Block> getBlock(uint index);
+		bool isHomogeneous(void);
 
-		bool containsPoint(Vector3 pos, float boundary);
-		bool containsPoint(IntVector3 pos, uint boundary);
+		uchar getVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition) const;
+		void setVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, const uchar value);
 
-		bool loadFromFile(const std::string& sFilename);
-		bool saveToFile(const std::string& sFilename);
-
-		void regionGrow(uint xStart, uint yStart, uint zStart, uchar value);
-		void tidy(void);
+		void fillWithValue(const uchar value);
 
 	private:
-		static SharedPtr<Block> mHomogeneousBlocks[256];
-		SharedPtr<Block> mBlocks[OGRE_NO_OF_BLOCKS_IN_VOLUME];
+		uchar mData[OGRE_NO_OF_VOXELS_IN_BLOCK];		
 	};
 }
 

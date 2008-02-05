@@ -129,7 +129,10 @@ namespace Ogre
 	block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}*/	
 
-
+	SharedPtr<Block> Volume::getBlock(uint index)
+	{
+		return mBlocks[index];
+	}
 
 	bool Volume::containsPoint(Vector3 pos, float boundary)
 	{
@@ -331,62 +334,5 @@ namespace Ogre
 				mBlocks[ct] = homogeneousBlock;
 			}
 		}
-	}
-
-	Volume createDilatedCopy(Volume& volInput, uchar value)
-	{		
-		Volume volResult = volInput;
-
-		VolumeIterator iterResult(volResult);
-		VolumeIterator iterInput(volInput);
-
-		//FIXME - use looping over region thing...
-		for(uint z = 1; z < OGRE_VOLUME_SIDE_LENGTH-1; z++)
-		{
-			//std::cout << "z = " << z << std::endl;
-			for(uint y = 1; y < OGRE_VOLUME_SIDE_LENGTH-1; y++)
-			{
-				for(uint x = 1; x < OGRE_VOLUME_SIDE_LENGTH-1; x++)
-				{
-					iterInput.setPosition(x,y,z);
-					if
-					(
-						(iterInput.peekVoxel1nx1ny1nz() == value) ||
-						(iterInput.peekVoxel1nx1ny0pz() == value) ||
-						(iterInput.peekVoxel1nx1ny1pz() == value) ||
-						(iterInput.peekVoxel1nx0py1nz() == value) ||
-						(iterInput.peekVoxel1nx0py0pz() == value) ||
-						(iterInput.peekVoxel1nx0py1pz() == value) ||
-						(iterInput.peekVoxel1nx1py1nz() == value) ||
-						(iterInput.peekVoxel1nx1py0pz() == value) ||
-						(iterInput.peekVoxel1nx1py1pz() == value) ||
-
-						(iterInput.peekVoxel0px1ny1nz() == value) ||
-						(iterInput.peekVoxel0px1ny0pz() == value) ||
-						(iterInput.peekVoxel0px1ny1pz() == value) ||
-						(iterInput.peekVoxel0px0py1nz() == value) ||
-						//(iterInput.peekVoxel0px0py0pz() == value) ||
-						(iterInput.peekVoxel0px0py1pz() == value) ||
-						(iterInput.peekVoxel0px1py1nz() == value) ||
-						(iterInput.peekVoxel0px1py0pz() == value) ||
-						(iterInput.peekVoxel0px1py1pz() == value) ||
-
-						(iterInput.peekVoxel1px1ny1nz() == value) ||
-						(iterInput.peekVoxel1px1ny0pz() == value) ||
-						(iterInput.peekVoxel1px1ny1pz() == value) ||
-						(iterInput.peekVoxel1px0py1nz() == value) ||
-						(iterInput.peekVoxel1px0py0pz() == value) ||
-						(iterInput.peekVoxel1px0py1pz() == value) ||
-						(iterInput.peekVoxel1px1py1nz() == value) ||
-						(iterInput.peekVoxel1px1py0pz() == value) ||
-						(iterInput.peekVoxel1px1py1pz() == value)
-					)
-					{
-						iterResult.setVoxelAt(x,y,z,value);
-					}
-				}
-			}
-		}
-		return volResult;
 	}
 }

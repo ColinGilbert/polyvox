@@ -69,8 +69,6 @@ namespace Ogre
 
 		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
-		void doRegionGrowing(uint xStart, uint yStart, uint zStart, uchar value);
-
 		bool containsPoint(Vector3 pos, float boundary);
 		bool containsPoint(IntVector3 pos, uint boundary);
 
