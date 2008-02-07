@@ -27,6 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <iostream> //FIXME - remove this...
 
+using namespace boost;
+
 namespace Ogre
 {
 
@@ -40,12 +42,12 @@ namespace Ogre
 			homogeneousBlock->fillWithValue(0);
 		}*/
 
-		/*for(uint i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		/*for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			mBlocks[i] = mHomogeneousBlocks[0];
 		}*/
 
-		for(uint i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			mBlocks[i] = new Block;
 		}
@@ -69,13 +71,13 @@ namespace Ogre
 			return *this;
 		}
 
-		/*for(uint i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		/*for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			//FIXME - Add checking...
 			mBlocks[i] = SharedPtr<Block>(new Block);
 		}*/
 
-		for(uint i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			//I think this is OK... If a block is in the homogeneous array it's ref count will be greater
 			//than 1 as there will be the pointer in the volume and the pointer in the static homogeneous array.
@@ -93,15 +95,15 @@ namespace Ogre
 		return *this;
 	}
 
-	/*uchar Volume::getVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition) const
+	/*uint8_t Volume::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
-	const uint blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
 
-	const uint xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
 
 	Block* block = mBlocks
 	[
@@ -113,15 +115,15 @@ namespace Ogre
 	return block->getVoxelAt(xOffset,yOffset,zOffset);
 	}*/
 
-	/*void Volume::setVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, const uchar value)
+	/*void Volume::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
 	{
-	const uint blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
 
-	const uint xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
 
 	Block* block = mBlocks
 	[
@@ -133,7 +135,7 @@ namespace Ogre
 	block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}*/	
 
-	Block* Volume::getBlock(uint index)
+	Block* Volume::getBlock(uint16_t index)
 	{
 		return mBlocks[index];
 	}
@@ -148,7 +150,7 @@ namespace Ogre
 			&& (pos.z > boundary);
 	}
 
-	bool Volume::containsPoint(IntVector3 pos, uint boundary)
+	bool Volume::containsPoint(IntVector3 pos, uint16_t boundary)
 	{
 		return (pos.x < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
 			&& (pos.y < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
@@ -170,9 +172,9 @@ namespace Ogre
 		}
 
 		//Read volume dimensions
-		uchar volumeWidth = 0;
-		uchar volumeHeight = 0;
-		uchar volumeDepth = 0;
+		uint8_t volumeWidth = 0;
+		uint8_t volumeHeight = 0;
+		uint8_t volumeDepth = 0;
 		file.read(reinterpret_cast<char*>(&volumeWidth), sizeof(volumeWidth));
 		file.read(reinterpret_cast<char*>(&volumeHeight), sizeof(volumeHeight));
 		file.read(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
@@ -184,13 +186,13 @@ namespace Ogre
 
 		//Read data
 		VolumeIterator volIter(*this);
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
 				{
-					uchar value;
+					uint8_t value;
 					file.read(reinterpret_cast<char*>(&value), sizeof(value)); //FIXME - check for error here
 					volIter.setVoxelAt(x,y,z,value);
 				}
@@ -218,9 +220,9 @@ namespace Ogre
 		}
 
 		//Read volume dimensions
-		uchar volumeWidth = 0;
-		uchar volumeHeight = 0;
-		uchar volumeDepth = 0;
+		uint8_t volumeWidth = 0;
+		uint8_t volumeHeight = 0;
+		uint8_t volumeDepth = 0;
 		file.write(reinterpret_cast<char*>(&volumeWidth), sizeof(volumeWidth));
 		file.write(reinterpret_cast<char*>(&volumeHeight), sizeof(volumeHeight));
 		file.write(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
@@ -232,13 +234,13 @@ namespace Ogre
 
 		//Write data
 		VolumeIterator volIter(*this);
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
 				{
-					uchar value = volIter.getVoxelAt(x,y,z);
+					uint8_t value = volIter.getVoxelAt(x,y,z);
 					file.write(reinterpret_cast<char*>(&value), sizeof(value));	//FIXME - check for error here				
 				}
 			}
@@ -246,7 +248,7 @@ namespace Ogre
 		return true;
 	}
 
-	void Volume::regionGrow(uint xStart, uint yStart, uint zStart, uchar value)
+	void Volume::regionGrow(uint16_t xStart, uint16_t yStart, uint16_t zStart, uint8_t value)
 	{
 		//FIXME - introduce integrer 'isInVolume' function
 		if((xStart > OGRE_VOLUME_SIDE_LENGTH-1) || (yStart > OGRE_VOLUME_SIDE_LENGTH-1) || (zStart > OGRE_VOLUME_SIDE_LENGTH-1)
@@ -257,7 +259,7 @@ namespace Ogre
 		}
 
 		VolumeIterator volIter(*this);
-		const uchar uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
+		const uint8_t uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
 
 		if(value == uSeedValue)
 		{
@@ -322,13 +324,13 @@ namespace Ogre
 	void Volume::tidy(void)
 	{
 		//Check for homogeneous blocks
-		/*for(ulong ct = 0; ct < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++ct)
+		/*for(uint32_t ct = 0; ct < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++ct)
 		{
 			if(mBlocks[ct]->isHomogeneous())
 			{
 				//LogManager::getSingleton().logMessage("Got homogeneous block with value " + StringConverter::toString(mBlocks[ct]->getVoxelAt(0,0,0)));
 
-				const uchar homogeneousValue = mBlocks[ct]->getVoxelAt(0,0,0);
+				const uint8_t homogeneousValue = mBlocks[ct]->getVoxelAt(0,0,0);
 				SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[homogeneousValue];
 				if(homogeneousBlock.isNull())
 				{

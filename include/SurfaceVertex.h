@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "TypeDef.h"
 
-#include "OgrePrerequisites.h"
 
 #include "OgreVector3.h"
 #include "IntegralVector3.h"

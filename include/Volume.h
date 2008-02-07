@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Volume_H__
 #define __Volume_H__
 
-#include "OgrePrerequisites.h"
+#include "boost/cstdint.hpp"
+
 
 #include "Block.h"
 #include "Constants.h"
@@ -41,15 +42,15 @@ namespace Ogre
 
 		Volume& operator=(const Volume& rhs);
 
-		Block* getBlock(uint index);
+		Block* getBlock(boost::uint16_t index);
 
 		bool containsPoint(Vector3 pos, float boundary);
-		bool containsPoint(IntVector3 pos, uint boundary);
+		bool containsPoint(IntVector3 pos, boost::uint16_t boundary);
 
 		bool loadFromFile(const std::string& sFilename);
 		bool saveToFile(const std::string& sFilename);
 
-		void regionGrow(uint xStart, uint yStart, uint zStart, uchar value);
+		void regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, boost::uint8_t value);
 		void tidy(void);
 
 	private:

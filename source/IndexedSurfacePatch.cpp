@@ -1,5 +1,7 @@
 #include "IndexedSurfacePatch.h"
 
+using namespace boost;
+
 namespace Ogre
 {
 	long int IndexedSurfacePatch::noOfVerticesSubmitted = 0;
@@ -77,7 +79,7 @@ namespace Ogre
 		}
 	}
 
-	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<ushort>& vecIndices)
+	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint16_t>& vecIndices)
 	{
 		vecVertices.resize(m_vecVertices.size());
 		std::copy(m_vecVertices.begin(), m_vecVertices.end(), vecVertices.begin());

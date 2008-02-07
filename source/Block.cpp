@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Block.h"
 
+using namespace boost;
+
 namespace Ogre {
 
 	Block::Block()
@@ -50,7 +52,7 @@ namespace Ogre {
 		return *this;
 	}
 
-	uchar Block::getVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition) const
+	uint8_t Block::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
 		return mData
 			[
@@ -60,7 +62,7 @@ namespace Ogre {
 			];
 	}
 
-	void Block::setVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, const uchar value)
+	void Block::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
 	{
 		mData
 			[
@@ -70,15 +72,15 @@ namespace Ogre {
 			] = value;
 	}
 
-	/*void Block::fillWithValue(const uchar value)
+	/*void Block::fillWithValue(const uint8_t value)
 	{
 		memset(mData,value,OGRE_NO_OF_VOXELS_IN_BLOCK);
 	}*/
 
 	/*bool Block::isHomogeneous(void)
 	{
-		uchar uFirstVoxel = mData[0];
-		for(ulong ct = 1; ct < OGRE_NO_OF_VOXELS_IN_BLOCK; ++ct)
+		uint8_t uFirstVoxel = mData[0];
+		for(uint32_t ct = 1; ct < OGRE_NO_OF_VOXELS_IN_BLOCK; ++ct)
 		{
 			if(mData[ct] != uFirstVoxel)
 			{

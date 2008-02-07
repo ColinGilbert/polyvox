@@ -22,7 +22,7 @@ namespace Ogre
 	{
 		std::stringstream ss;
 
-		uint ct = 0;
+		uint16_t ct = 0;
 		SurfaceEdgeIterator edgeIter = edge;
 		ss << "SurfaceTriangle:";
 		do

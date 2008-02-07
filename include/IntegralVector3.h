@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __IntegralVector3_H__
 #define __IntegralVector3_H__
 
-#include <OgrePrerequisites.h>
+#include "boost/cstdint.hpp"
+
 #include <OgreVector3.h>
 
 namespace Ogre
@@ -104,10 +105,10 @@ namespace Ogre
 	typedef IntegralVector3<int> IntVector3;
 	typedef IntegralVector3<long> LongVector3;
 
-	typedef IntegralVector3<uchar> UCharVector3;
-	typedef IntegralVector3<ushort> UShortVector3;
-	typedef IntegralVector3<uint> UIntVector3;
-	typedef IntegralVector3<ulong> ULongVector3;
+	typedef IntegralVector3<boost::uint8_t> UCharVector3;
+	typedef IntegralVector3<boost::uint16_t> UShortVector3;
+	typedef IntegralVector3<boost::uint16_t> UIntVector3;
+	typedef IntegralVector3<boost::uint32_t> ULongVector3;
 }
 
 #endif

@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __SurfaceTriangle_H__
 #define __SurfaceTriangle_H__
 
-#include "OgrePrerequisites.h"
 #include "SurfaceTypes.h"
 
 namespace Ogre

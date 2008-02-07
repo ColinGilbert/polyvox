@@ -29,6 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 
+using namespace boost;
+
 namespace Ogre
 {
 
@@ -54,13 +56,13 @@ namespace Ogre
 		std::list<RegionGeometry> listChangedRegionGeometry;
 
 		//Regenerate meshes.
-		for(uint regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
+		for(uint16_t regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 		{		
 			//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
-			for(uint regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
+			for(uint16_t regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 			{
 				//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
-				for(uint regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
+				for(uint16_t regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 				{
 					//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
@@ -88,11 +90,11 @@ namespace Ogre
 
 	void PolyVoxSceneManager::setAllUpToDateFlagsTo(bool newUpToDateValue)
 	{
-		for(uint blockZ = 0; blockZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
+		for(uint16_t blockZ = 0; blockZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
 		{
-			for(uint blockY = 0; blockY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
+			for(uint16_t blockY = 0; blockY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
 			{
-				for(uint blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
+				for(uint16_t blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
 					surfaceUpToDate[blockX][blockY][blockZ] = newUpToDateValue;
 				}
@@ -100,7 +102,7 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::createSphereAt(Vector3 centre, Real radius, uchar value, bool painting)
+	void PolyVoxSceneManager::createSphereAt(Vector3 centre, Real radius, uint8_t value, bool painting)
 	{
 		int firstX = static_cast<int>(std::floor(centre.x - radius));
 		int firstY = static_cast<int>(std::floor(centre.y - radius));
@@ -154,11 +156,11 @@ namespace Ogre
 		//volumeData = VolumePtr(new Volume);
 		volumeData = new Volume();
 		VolumeIterator volIter(*volumeData);
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
 				{
 					if((x/16+y/16+z/16)%2 == 0)
 						volIter.setVoxelAt(x,y,z,4);
@@ -168,11 +170,11 @@ namespace Ogre
 			}
 		}		
 
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
 				{
 					if(
 						(z<62)||
@@ -193,26 +195,26 @@ namespace Ogre
 		Vector3 centre(128,128,128);
 		Vector3 v3dSize(192,96,128);
 
-		uint uHalfX = static_cast<uint>(v3dSize.x / 2);
-		uint uHalfY = static_cast<uint>(v3dSize.y / 2);
-		uint uHalfZ = static_cast<uint>(v3dSize.z / 2);
+		uint16_t uHalfX = static_cast<uint16_t>(v3dSize.x / 2);
+		uint16_t uHalfY = static_cast<uint16_t>(v3dSize.y / 2);
+		uint16_t uHalfZ = static_cast<uint16_t>(v3dSize.z / 2);
 
-		for(uint z = static_cast<uint>(centre.z) - uHalfZ; z < static_cast<uint>(centre.z) + uHalfZ; z++)
+		for(uint16_t z = static_cast<uint16_t>(centre.z) - uHalfZ; z < static_cast<uint16_t>(centre.z) + uHalfZ; z++)
 		{
-			for(uint y = static_cast<uint>(centre.y) - uHalfY; y < static_cast<uint>(centre.y) + uHalfY; y++)
+			for(uint16_t y = static_cast<uint16_t>(centre.y) - uHalfY; y < static_cast<uint16_t>(centre.y) + uHalfY; y++)
 			{
-				for(uint x = static_cast<uint>(centre.x) - uHalfX; x < static_cast<uint>(centre.x) + uHalfX; x++)
+				for(uint16_t x = static_cast<uint16_t>(centre.x) - uHalfX; x < static_cast<uint16_t>(centre.x) + uHalfX; x++)
 				{
 					volIter.setVoxelAt(x,y,z,0);
 				}
 			}
 		}
 
-		for(uint z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
 				{
 					if(
 						(x%64 < 8) &&
@@ -232,24 +234,24 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::generateMeshDataForRegion(const uint regionX, const uint regionY, const uint regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const
+	void PolyVoxSceneManager::generateMeshDataForRegion(const uint16_t regionX, const uint16_t regionY, const uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const
 	{	
 		//IndexedSurfacePatch* surfacePatchResult = new IndexedSurfacePatch;
 
 		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		//First and last voxels in the region
-		const uint firstX = regionX * OGRE_REGION_SIDE_LENGTH;
-		const uint firstY = regionY * OGRE_REGION_SIDE_LENGTH;
-		const uint firstZ = regionZ * OGRE_REGION_SIDE_LENGTH;
-		const uint lastX = (std::min)(firstX + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint>(OGRE_VOLUME_SIDE_LENGTH-2));
-		const uint lastY = (std::min)(firstY + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint>(OGRE_VOLUME_SIDE_LENGTH-2));
-		const uint lastZ = (std::min)(firstZ + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint>(OGRE_VOLUME_SIDE_LENGTH-2));
+		const uint16_t firstX = regionX * OGRE_REGION_SIDE_LENGTH;
+		const uint16_t firstY = regionY * OGRE_REGION_SIDE_LENGTH;
+		const uint16_t firstZ = regionZ * OGRE_REGION_SIDE_LENGTH;
+		const uint16_t lastX = (std::min)(firstX + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
+		const uint16_t lastY = (std::min)(firstY + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
+		const uint16_t lastZ = (std::min)(firstZ + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
 
 		//Offset from lower block corner
 		const UIntVector3 offset(firstX*2,firstY*2,firstZ*2);
 
 		UIntVector3 vertlist[12];
-		uchar vertMaterials[12];
+		uint8_t vertMaterials[12];
 		VolumeIterator volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
 
@@ -261,24 +263,24 @@ namespace Ogre
 		for(volIter.setPosition(firstX,firstY,firstZ);volIter.isValidForRegion();volIter.moveForwardInRegion())
 		{		
 			//Current position
-			const uint x = volIter.getPosX();
-			const uint y = volIter.getPosY();
-			const uint z = volIter.getPosZ();
+			const uint16_t x = volIter.getPosX();
+			const uint16_t y = volIter.getPosY();
+			const uint16_t z = volIter.getPosZ();
 
 			//LogManager::getSingleton().logMessage("x = " + StringConverter::toString(int(x)) + " y = " + StringConverter::toString(int(y)) + " z = " + StringConverter::toString(int(z)));
 
 			//Voxels values
-			const uchar v000 = volIter.getVoxel();
-			const uchar v100 = volIter.peekVoxel1px0py0pz();
-			const uchar v010 = volIter.peekVoxel0px1py0pz();
-			const uchar v110 = volIter.peekVoxel1px1py0pz();
-			const uchar v001 = volIter.peekVoxel0px0py1pz();
-			const uchar v101 = volIter.peekVoxel1px0py1pz();
-			const uchar v011 = volIter.peekVoxel0px1py1pz();
-			const uchar v111 = volIter.peekVoxel1px1py1pz();
+			const uint8_t v000 = volIter.getVoxel();
+			const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+			const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+			const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+			const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+			const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+			const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+			const uint8_t v111 = volIter.peekVoxel1px1py1pz();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uchar iCubeIndex = 0;
+			uint8_t iCubeIndex = 0;
 
 			if (v000 == 0) iCubeIndex |= 1;
 			if (v100 == 0) iCubeIndex |= 2;
@@ -388,9 +390,9 @@ namespace Ogre
 				const UIntVector3 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
 				const UIntVector3 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
 
-				const uchar material0 = vertMaterials[triTable[iCubeIndex][i  ]];
-				const uchar material1 = vertMaterials[triTable[iCubeIndex][i+1]];
-				const uchar material2 = vertMaterials[triTable[iCubeIndex][i+2]];
+				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
+				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
+				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
@@ -508,7 +510,7 @@ namespace Ogre
 		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
 
 
-		//for(std::map<uchar, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
+		//for(std::map<uint8_t, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
 		{
 
 			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->m_vecVertices.begin();
@@ -527,7 +529,7 @@ namespace Ogre
 				++iterSurfaceVertex;
 			}
 
-			uint noOfRemovedVertices = 0;
+			uint16_t noOfRemovedVertices = 0;
 			//do
 			{
 				//noOfRemovedVertices = iterPatch->second.decimate();
@@ -549,28 +551,28 @@ namespace Ogre
 		const float posY = position.y;
 		const float posZ = position.z;
 
-		const uint floorX = static_cast<uint>(posX);
-		const uint floorY = static_cast<uint>(posY);
-		const uint floorZ = static_cast<uint>(posZ);
+		const uint16_t floorX = static_cast<uint16_t>(posX);
+		const uint16_t floorY = static_cast<uint16_t>(posY);
+		const uint16_t floorZ = static_cast<uint16_t>(posZ);
 
 		Vector3 result;
 
 
 		if(normalGenerationMethod == SOBEL)
 		{
-			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
 			const Vector3 gradFloor = volIter.getSobelGradient();
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
+				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
 			}
 			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
+				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY+1.0),static_cast<uint16_t>(posZ));
 			}
 			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
+				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
 			const Vector3 gradCeil = volIter.getSobelGradient();
 			result = ((gradFloor + gradCeil) * -1.0);
@@ -582,19 +584,19 @@ namespace Ogre
 		}
 		if(normalGenerationMethod == CENTRAL_DIFFERENCE)
 		{
-			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
+			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
 			const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint>(posX+1.0),static_cast<uint>(posY),static_cast<uint>(posZ));
+				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
 			}
 			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY+1.0),static_cast<uint>(posZ));
+				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY+1.0),static_cast<uint16_t>(posZ));
 			}
 			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ+1.0));					
+				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
 			const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
 			result = ((gradFloor + gradCeil) * -1.0);
@@ -606,28 +608,28 @@ namespace Ogre
 		}
 		if(normalGenerationMethod == SIMPLE)
 		{
-			volIter.setPosition(static_cast<uint>(posX),static_cast<uint>(posY),static_cast<uint>(posZ));
-			const uchar uFloor = volIter.getVoxel() > 0 ? 1 : 0;
+			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
+			const uint8_t uFloor = volIter.getVoxel() > 0 ? 1 : 0;
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{					
-				uchar uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
+				uint8_t uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
 				result = Vector3(uFloor - uCeil,0.0,0.0);
 			}
 			else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
 			{
-				uchar uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
+				uint8_t uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
 				result = Vector3(0.0,uFloor - uCeil,0.0);
 			}
 			else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
 			{
-				uchar uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
+				uint8_t uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
 				result = Vector3(0.0, 0.0,uFloor - uCeil);					
 			}
 		}
 		return result;
 	}
 
-	void PolyVoxSceneManager::markVoxelChanged(uint x, uint y, uint z)
+	void PolyVoxSceneManager::markVoxelChanged(uint16_t x, uint16_t y, uint16_t z)
 	{
 		//If we are not on a boundary, just mark one region.
 		if((x % OGRE_REGION_SIDE_LENGTH != 0) &&
@@ -641,23 +643,23 @@ namespace Ogre
 		}
 		else //Mark surrounding block as well
 		{
-			const uint regionX = x >> OGRE_REGION_SIDE_LENGTH_POWER;
-			const uint regionY = y >> OGRE_REGION_SIDE_LENGTH_POWER;
-			const uint regionZ = z >> OGRE_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionX = x >> OGRE_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionY = y >> OGRE_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionZ = z >> OGRE_REGION_SIDE_LENGTH_POWER;
 
-			const uint minRegionX = (std::max)(uint(0),regionX-1);
-			const uint minRegionY = (std::max)(uint(0),regionY-1);
-			const uint minRegionZ = (std::max)(uint(0),regionZ-1);
+			const uint16_t minRegionX = (std::max)(uint16_t(0),uint16_t(regionX-1));
+			const uint16_t minRegionY = (std::max)(uint16_t(0),uint16_t(regionY-1));
+			const uint16_t minRegionZ = (std::max)(uint16_t(0),uint16_t(regionZ-1));
 
-			const uint maxRegionX = (std::min)(uint(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),regionX+1);
-			const uint maxRegionY = (std::min)(uint(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),regionY+1);
-			const uint maxRegionZ = (std::min)(uint(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),regionZ+1);
+			const uint16_t maxRegionX = (std::min)(uint16_t(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionX+1));
+			const uint16_t maxRegionY = (std::min)(uint16_t(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionY+1));
+			const uint16_t maxRegionZ = (std::min)(uint16_t(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionZ+1));
 
-			for(uint zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
+			for(uint16_t zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
 			{
-				for(uint yCt = minRegionY; yCt <= maxRegionY; yCt++)
+				for(uint16_t yCt = minRegionY; yCt <= maxRegionY; yCt++)
 				{
-					for(uint xCt = minRegionX; xCt <= maxRegionX; xCt++)
+					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
 						surfaceUpToDate[xCt][yCt][zCt] = false;
 					}
@@ -666,21 +668,21 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ)
+	void PolyVoxSceneManager::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
 	{
-		const uint firstRegionX = firstX >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint firstRegionY = firstY >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint firstRegionZ = firstZ >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionX = firstX >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionY = firstY >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionZ = firstZ >> OGRE_REGION_SIDE_LENGTH_POWER;
 
-		const uint lastRegionX = lastX >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint lastRegionY = lastY >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint lastRegionZ = lastZ >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionX = lastX >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionY = lastY >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionZ = lastZ >> OGRE_REGION_SIDE_LENGTH_POWER;
 
-		for(uint zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
+		for(uint16_t zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
 		{
-			for(uint yCt = firstRegionY; yCt <= lastRegionY; yCt++)
+			for(uint16_t yCt = firstRegionY; yCt <= lastRegionY; yCt++)
 			{
-				for(uint xCt = firstRegionX; xCt <= lastRegionX; xCt++)
+				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
 					surfaceUpToDate[xCt][yCt][zCt] = false;
 				}
@@ -688,12 +690,12 @@ namespace Ogre
 		}
 	}
 
-	uint PolyVoxSceneManager::getSideLength(void)
+	uint16_t PolyVoxSceneManager::getSideLength(void)
 	{
 		return OGRE_VOLUME_SIDE_LENGTH;
 	}
 
-	uchar PolyVoxSceneManager::getMaterialIndexAt(uint uX, uint uY, uint uZ)
+	uint8_t PolyVoxSceneManager::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
 		if(volumeData->containsPoint(IntVector3(uX,uY,uZ),0))
 		{
@@ -716,7 +718,7 @@ namespace Ogre
 		return volumeData->containsPoint(pos, boundary);
 	}
 
-	bool PolyVoxSceneManager::containsPoint(IntVector3 pos, uint boundary)
+	bool PolyVoxSceneManager::containsPoint(IntVector3 pos, uint16_t boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
 	}

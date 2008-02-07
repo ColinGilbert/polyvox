@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Block_H__
 #define __Block_H__
 
-#include "OgrePrerequisites.h"
+#include "boost/cstdint.hpp"
 
 #include "Constants.h"
 
@@ -43,13 +43,13 @@ namespace Ogre
 
 		//bool isHomogeneous(void);
 
-		uchar getVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition) const;
-		void setVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, const uchar value);
+		boost::uint8_t getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
+		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const boost::uint8_t value);
 
-		//void fillWithValue(const uchar value);
+		//void fillWithValue(const uint8_t value);
 
 	private:
-		uchar mData[OGRE_NO_OF_VOXELS_IN_BLOCK];		
+		boost::uint8_t mData[OGRE_NO_OF_VOXELS_IN_BLOCK];		
 	};
 }
 

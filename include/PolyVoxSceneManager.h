@@ -19,7 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVoxSceneManager_H__
 #define __PolyVoxSceneManager_H__
 
-#include "OgrePrerequisites.h"
+#include "boost/cstdint.hpp"
+
 #include "OgreSceneManager.h"
 
 #include "Constants.h"
@@ -51,9 +52,9 @@ namespace Ogre
 		~PolyVoxSceneManager();
 
 		//Getters
-		uchar getMaterialIndexAt(uint uX, uint uY, uint uZ);
+		boost::uint8_t getMaterialIndexAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
 		const String& getTypeName(void) const;
-		uint getSideLength(void);
+		boost::uint16_t getSideLength(void);
 
 
 		//Setters
@@ -63,14 +64,14 @@ namespace Ogre
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
-		void createSphereAt(Vector3 centre, Real radius, uchar value, bool painting);
+		void createSphereAt(Vector3 centre, Real radius, boost::uint8_t value, bool painting);
 		
 		void generateLevelVolume(void);
 
-		void generateMeshDataForRegion(uint regionX, uint regionY, uint regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
+		void generateMeshDataForRegion(boost::uint16_t regionX,boost:: uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
 		bool containsPoint(Vector3 pos, float boundary);
-		bool containsPoint(IntVector3 pos, uint boundary);
+		bool containsPoint(IntVector3 pos, boost::uint16_t boundary);
 
 		
 
@@ -83,14 +84,14 @@ namespace Ogre
 		Vector3 computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const;
 
 	public:
-		void markVoxelChanged(uint x, uint y, uint z);
-		void markRegionChanged(uint firstX, uint firstY, uint firstZ, uint lastX, uint lastY, uint lastZ);
+		void markVoxelChanged(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z);
+		void markRegionChanged(boost::uint16_t firstX, boost::uint16_t firstY, boost::uint16_t firstZ, boost::uint16_t lastX, boost::uint16_t lastY, boost::uint16_t lastZ);
 
 
-		static uint fileNo;
+		static boost::uint16_t fileNo;
 
 		bool useNormalSmoothing;
-		uint normalSmoothingFilterSize;
+		boost::uint16_t normalSmoothingFilterSize;
 
 		NormalGenerationMethod m_normalGenerationMethod;
 

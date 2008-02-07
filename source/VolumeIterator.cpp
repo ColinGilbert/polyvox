@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "OgreStringConverter.h"
 #include "OgreVector3.h"
 
+using namespace boost;
+
 namespace Ogre
 {
 	VolumeIterator::VolumeIterator(Volume& volume)
@@ -61,7 +63,7 @@ namespace Ogre
 	{
 	}	
 
-	void VolumeIterator::setVoxel(uchar value)
+	void VolumeIterator::setVoxel(uint8_t value)
 	{
 		Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
@@ -77,21 +79,21 @@ namespace Ogre
 		*mCurrentVoxel = value;
 	}
 
-	uchar VolumeIterator::getVoxel(void)
+	uint8_t VolumeIterator::getVoxel(void)
 	{
 		//return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume);
 		return *mCurrentVoxel;
 	}
 
-	uchar VolumeIterator::getVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition) const
+	uint8_t VolumeIterator::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
-		const uint blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
 
-		const uint xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
 
 		const Block* block = mVolume.mBlocks
 			[
@@ -103,14 +105,14 @@ namespace Ogre
 		return block->getVoxelAt(xOffset,yOffset,zOffset);
 	}
 
-	float VolumeIterator::getAveragedVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, uint size) const
+	float VolumeIterator::getAveragedVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, uint16_t size) const
 	{
 		float sum = 0.0;
-		for(uint z = zPosition-size; z <= zPosition+size; ++z)
+		for(uint16_t z = zPosition-size; z <= zPosition+size; ++z)
 		{
-			for(uint y = yPosition-size; y <= yPosition+size; ++y)
+			for(uint16_t y = yPosition-size; y <= yPosition+size; ++y)
 			{
-				for(uint x = xPosition-size; x <= xPosition+size; ++x)
+				for(uint16_t x = xPosition-size; x <= xPosition+size; ++x)
 				{
 					if(getVoxelAt(x,y,z) != 0)
 					{
@@ -120,22 +122,22 @@ namespace Ogre
 			}
 		}
 
-		uint kernelSideLength = size * 2 + 1;
-		uint kernelVolume = kernelSideLength * kernelSideLength * kernelSideLength;
+		uint16_t kernelSideLength = size * 2 + 1;
+		uint16_t kernelVolume = kernelSideLength * kernelSideLength * kernelSideLength;
 
 		sum /= static_cast<float>(kernelVolume);
 		return sum;
 	}
 
-	void VolumeIterator::setVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, const uchar value)
+	void VolumeIterator::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
 		{
-		const uint blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
 
-		const uint xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
 
 		Block* block = mVolume.mBlocks
 			[
@@ -168,14 +170,14 @@ namespace Ogre
 		}
 
 		//FIXME - bitwise way of doing this?
-		uchar voxel1nx = peekVoxel1nx0py0pz() > 0 ? 1: 0;
-		uchar voxel1px = peekVoxel1px0py0pz() > 0 ? 1: 0;
+		uint8_t voxel1nx = peekVoxel1nx0py0pz() > 0 ? 1: 0;
+		uint8_t voxel1px = peekVoxel1px0py0pz() > 0 ? 1: 0;
 
-		uchar voxel1ny = peekVoxel0px1ny0pz() > 0 ? 1: 0;
-		uchar voxel1py = peekVoxel0px1py0pz() > 0 ? 1: 0;
+		uint8_t voxel1ny = peekVoxel0px1ny0pz() > 0 ? 1: 0;
+		uint8_t voxel1py = peekVoxel0px1py0pz() > 0 ? 1: 0;
 
-		uchar voxel1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
-		uchar voxel1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
+		uint8_t voxel1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
+		uint8_t voxel1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
 
 		return Vector3(int(voxel1px) - int(voxel1nx),int(voxel1py) - int(voxel1ny),int(voxel1pz) - int(voxel1nz));
 	}
@@ -218,35 +220,35 @@ namespace Ogre
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
 
-			const uchar pVoxel1nx1ny1nz = peekVoxel1nx1ny1nz() > 0 ? 1: 0;
-			const uchar pVoxel1nx1ny0pz = peekVoxel1nx1ny0pz() > 0 ? 1: 0;
-			const uchar pVoxel1nx1ny1pz = peekVoxel1nx1ny1pz() > 0 ? 1: 0;
-			const uchar pVoxel1nx0py1nz = peekVoxel1nx0py1nz() > 0 ? 1: 0;
-			const uchar pVoxel1nx0py0pz = peekVoxel1nx0py0pz() > 0 ? 1: 0;
-			const uchar pVoxel1nx0py1pz = peekVoxel1nx0py1pz() > 0 ? 1: 0;
-			const uchar pVoxel1nx1py1nz = peekVoxel1nx1py1nz() > 0 ? 1: 0;
-			const uchar pVoxel1nx1py0pz = peekVoxel1nx1py0pz() > 0 ? 1: 0;
-			const uchar pVoxel1nx1py1pz = peekVoxel1nx1py1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx1ny1nz = peekVoxel1nx1ny1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx1ny0pz = peekVoxel1nx1ny0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx1ny1pz = peekVoxel1nx1ny1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx0py1nz = peekVoxel1nx0py1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx0py0pz = peekVoxel1nx0py0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx0py1pz = peekVoxel1nx0py1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx1py1nz = peekVoxel1nx1py1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx1py0pz = peekVoxel1nx1py0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1nx1py1pz = peekVoxel1nx1py1pz() > 0 ? 1: 0;
 
-			const uchar pVoxel0px1ny1nz = peekVoxel0px1ny1nz() > 0 ? 1: 0;
-			const uchar pVoxel0px1ny0pz = peekVoxel0px1ny0pz() > 0 ? 1: 0;
-			const uchar pVoxel0px1ny1pz = peekVoxel0px1ny1pz() > 0 ? 1: 0;
-			const uchar pVoxel0px0py1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
-			//const uchar pVoxel0px0py0pz = peekVoxel0px0py0pz() > 0 ? 1: 0;
-			const uchar pVoxel0px0py1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
-			const uchar pVoxel0px1py1nz = peekVoxel0px1py1nz() > 0 ? 1: 0;
-			const uchar pVoxel0px1py0pz = peekVoxel0px1py0pz() > 0 ? 1: 0;
-			const uchar pVoxel0px1py1pz = peekVoxel0px1py1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px1ny1nz = peekVoxel0px1ny1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px1ny0pz = peekVoxel0px1ny0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px1ny1pz = peekVoxel0px1ny1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px0py1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
+			//const uint8_t pVoxel0px0py0pz = peekVoxel0px0py0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px0py1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px1py1nz = peekVoxel0px1py1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px1py0pz = peekVoxel0px1py0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel0px1py1pz = peekVoxel0px1py1pz() > 0 ? 1: 0;
 
-			const uchar pVoxel1px1ny1nz = peekVoxel1px1ny1nz() > 0 ? 1: 0;
-			const uchar pVoxel1px1ny0pz = peekVoxel1px1ny0pz() > 0 ? 1: 0;
-			const uchar pVoxel1px1ny1pz = peekVoxel1px1ny1pz() > 0 ? 1: 0;
-			const uchar pVoxel1px0py1nz = peekVoxel1px0py1nz() > 0 ? 1: 0;
-			const uchar pVoxel1px0py0pz = peekVoxel1px0py0pz() > 0 ? 1: 0;
-			const uchar pVoxel1px0py1pz = peekVoxel1px0py1pz() > 0 ? 1: 0;
-			const uchar pVoxel1px1py1nz = peekVoxel1px1py1nz() > 0 ? 1: 0;
-			const uchar pVoxel1px1py0pz = peekVoxel1px1py0pz() > 0 ? 1: 0;
-			const uchar pVoxel1px1py1pz = peekVoxel1px1py1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px1ny1nz = peekVoxel1px1ny1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px1ny0pz = peekVoxel1px1ny0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px1ny1pz = peekVoxel1px1ny1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px0py1nz = peekVoxel1px0py1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px0py0pz = peekVoxel1px0py0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px0py1pz = peekVoxel1px0py1pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px1py1nz = peekVoxel1px1py1nz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px1py0pz = peekVoxel1px1py0pz() > 0 ? 1: 0;
+			const uint8_t pVoxel1px1py1pz = peekVoxel1px1py1pz() > 0 ? 1: 0;
 
 
 
@@ -295,22 +297,22 @@ namespace Ogre
 			return Vector3(xGrad,yGrad,zGrad);
 	}
 
-	uint VolumeIterator::getPosX(void)
+	uint16_t VolumeIterator::getPosX(void)
 	{
 		return mXPosInVolume;
 	}
 
-	uint VolumeIterator::getPosY(void)
+	uint16_t VolumeIterator::getPosY(void)
 	{
 		return mYPosInVolume;
 	}
 
-	uint VolumeIterator::getPosZ(void)
+	uint16_t VolumeIterator::getPosZ(void)
 	{
 		return mZPosInVolume;
 	}
 
-	void VolumeIterator::setPosition(uint xPos, uint yPos, uint zPos)
+	void VolumeIterator::setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -336,7 +338,7 @@ namespace Ogre
 		mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 	}
 
-	void VolumeIterator::setValidRegion(uint xFirst, uint yFirst, uint zFirst, uint xLast, uint yLast, uint zLast)
+	void VolumeIterator::setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -370,7 +372,7 @@ namespace Ogre
 		mXPosInVolume++;
 		if((mXPosInBlock == OGRE_BLOCK_SIDE_LENGTH) || (mXPosInVolume > mXRegionLast))
 		{
-			mXPosInVolume = (std::max)(mXRegionFirst,mXBlock * OGRE_BLOCK_SIDE_LENGTH);
+			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * OGRE_BLOCK_SIDE_LENGTH));
 			mXPosInBlock = mXPosInVolume - (mXBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * OGRE_BLOCK_SIDE_LENGTH + 
@@ -383,7 +385,7 @@ namespace Ogre
 			mCurrentVoxel += OGRE_BLOCK_SIDE_LENGTH;
 			if((mYPosInBlock == OGRE_BLOCK_SIDE_LENGTH) || (mYPosInVolume > mYRegionLast))
 			{
-				mYPosInVolume = (std::max)(mYRegionFirst,mYBlock * OGRE_BLOCK_SIDE_LENGTH);
+				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * OGRE_BLOCK_SIDE_LENGTH));
 				mYPosInBlock = mYPosInVolume - (mYBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * OGRE_BLOCK_SIDE_LENGTH + 
@@ -430,9 +432,9 @@ namespace Ogre
 					Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->mBlocks[mBlockIndexInVolume];					
 
-					mXPosInVolume = (std::max)(mXRegionFirst,mXBlock * OGRE_BLOCK_SIDE_LENGTH);					
-					mYPosInVolume = (std::max)(mYRegionFirst,mYBlock * OGRE_BLOCK_SIDE_LENGTH);					
-					mZPosInVolume = (std::max)(mZRegionFirst,mZBlock * OGRE_BLOCK_SIDE_LENGTH);					
+					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * OGRE_BLOCK_SIDE_LENGTH));					
+					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * OGRE_BLOCK_SIDE_LENGTH));					
+					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * OGRE_BLOCK_SIDE_LENGTH));					
 
 					mXPosInBlock = mXPosInVolume - (mXBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
 					mYPosInBlock = mYPosInVolume - (mYBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
@@ -453,7 +455,7 @@ namespace Ogre
 		return mIsValidForRegion;
 	}
 
-	uchar VolumeIterator::peekVoxel1nx1ny1nz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx1ny1nz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -462,7 +464,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx1ny0pz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx1ny0pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -471,7 +473,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx1ny1pz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx1ny1pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -480,7 +482,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx0py1nz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx0py1nz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -489,7 +491,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx0py0pz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx0py0pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -498,7 +500,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx0py1pz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx0py1pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -507,7 +509,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx1py1nz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx1py1nz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -516,7 +518,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx1py0pz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx1py0pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -525,7 +527,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel1nx1py1pz(void) const
+	uint8_t VolumeIterator::peekVoxel1nx1py1pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -536,7 +538,7 @@ namespace Ogre
 
 	//////////////////////////////////////////////////////////////////////////
 
-	uchar VolumeIterator::peekVoxel0px1ny1nz(void) const
+	uint8_t VolumeIterator::peekVoxel0px1ny1nz(void) const
 	{
 		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -545,7 +547,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel0px1ny0pz(void) const
+	uint8_t VolumeIterator::peekVoxel0px1ny0pz(void) const
 	{
 		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -554,7 +556,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel0px1ny1pz(void) const
+	uint8_t VolumeIterator::peekVoxel0px1ny1pz(void) const
 	{
 		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -563,7 +565,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
-	uchar VolumeIterator::peekVoxel0px0py1nz(void) const
+	uint8_t VolumeIterator::peekVoxel0px0py1nz(void) const
 	{
 		if((mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -572,12 +574,12 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel0px0py0pz(void) const
+	uint8_t VolumeIterator::peekVoxel0px0py0pz(void) const
 	{
 			return *mCurrentVoxel;
 	}
 
-	uchar VolumeIterator::peekVoxel0px0py1pz(void) const
+	uint8_t VolumeIterator::peekVoxel0px0py1pz(void) const
 	{
 		if((mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -586,7 +588,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
 	}
 
-	uchar VolumeIterator::peekVoxel0px1py1nz(void) const
+	uint8_t VolumeIterator::peekVoxel0px1py1nz(void) const
 	{
 		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -595,7 +597,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel0px1py0pz(void) const
+	uint8_t VolumeIterator::peekVoxel0px1py0pz(void) const
 	{
 		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -604,7 +606,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel0px1py1pz(void) const
+	uint8_t VolumeIterator::peekVoxel0px1py1pz(void) const
 	{
 		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -615,7 +617,7 @@ namespace Ogre
 
 	//////////////////////////////////////////////////////////////////////////
 
-	uchar VolumeIterator::peekVoxel1px1ny1nz(void) const
+	uint8_t VolumeIterator::peekVoxel1px1ny1nz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -624,7 +626,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel1px1ny0pz(void) const
+	uint8_t VolumeIterator::peekVoxel1px1ny0pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -633,7 +635,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel1px1ny1pz(void) const
+	uint8_t VolumeIterator::peekVoxel1px1ny1pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -642,7 +644,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
-	uchar VolumeIterator::peekVoxel1px0py1nz(void) const
+	uint8_t VolumeIterator::peekVoxel1px0py1nz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -651,7 +653,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel1px0py0pz(void) const
+	uint8_t VolumeIterator::peekVoxel1px0py0pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -660,7 +662,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel1px0py1pz(void) const
+	uint8_t VolumeIterator::peekVoxel1px0py1pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -669,7 +671,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
 	}
 
-	uchar VolumeIterator::peekVoxel1px1py1nz(void) const
+	uint8_t VolumeIterator::peekVoxel1px1py1nz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -678,7 +680,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
-	uchar VolumeIterator::peekVoxel1px1py0pz(void) const
+	uint8_t VolumeIterator::peekVoxel1px1py0pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
@@ -687,7 +689,7 @@ namespace Ogre
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
 	}
 
-	uchar VolumeIterator::peekVoxel1px1py1pz(void) const
+	uint8_t VolumeIterator::peekVoxel1px1py1pz(void) const
 	{
 		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
 		{
