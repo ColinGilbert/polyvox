@@ -41,12 +41,12 @@ namespace Ogre
 
 		Block& operator=(const Block& rhs);
 
-		bool isHomogeneous(void);
+		//bool isHomogeneous(void);
 
 		uchar getVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition) const;
 		void setVoxelAt(const uint xPosition, const uint yPosition, const uint zPosition, const uchar value);
 
-		void fillWithValue(const uchar value);
+		//void fillWithValue(const uchar value);
 
 	private:
 		uchar mData[OGRE_NO_OF_VOXELS_IN_BLOCK];		

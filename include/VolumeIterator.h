@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __VolumeIterator_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreSharedPtr.h"
 
 #include "TypeDef.h"
 
@@ -108,7 +107,6 @@ namespace Ogre
 
 		//Other current position information
 		uchar* mCurrentVoxel;
-		//SharedPtr<Block> mCurrentBlock;
 		ulong mBlockIndexInVolume;
 		ulong mVoxelIndexInBlock;
 

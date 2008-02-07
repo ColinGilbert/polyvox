@@ -29,21 +29,25 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace Ogre
 {
-	SharedPtr<Block> Volume::mHomogeneousBlocks[256];
 
 	Volume::Volume()
 	{
 		//FIXME - Add checking...
-		SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[0];
+		/*SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[0];
 		if(homogeneousBlock.isNull())
 		{
 			homogeneousBlock = SharedPtr<Block>(new Block);
 			homogeneousBlock->fillWithValue(0);
-		}
+		}*/
+
+		/*for(uint i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		{
+			mBlocks[i] = mHomogeneousBlocks[0];
+		}*/
 
 		for(uint i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
-			mBlocks[i] = mHomogeneousBlocks[0];
+			mBlocks[i] = new Block;
 		}
 	}
 
@@ -75,15 +79,15 @@ namespace Ogre
 		{
 			//I think this is OK... If a block is in the homogeneous array it's ref count will be greater
 			//than 1 as there will be the pointer in the volume and the pointer in the static homogeneous array.
-			if(rhs.mBlocks[i].unique())
+			/*if(rhs.mBlocks[i].unique())
 			{
 				mBlocks[i] = SharedPtr<Block>(new Block(*(rhs.mBlocks[i])));
 			}
 			else
-			{
+			{*/
 				//we have a block in the homogeneous array - just copy the pointer.
 				mBlocks[i] = rhs.mBlocks[i];
-			}
+			//}
 		}
 
 		return *this;
@@ -129,7 +133,7 @@ namespace Ogre
 	block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}*/	
 
-	SharedPtr<Block> Volume::getBlock(uint index)
+	Block* Volume::getBlock(uint index)
 	{
 		return mBlocks[index];
 	}
@@ -318,7 +322,7 @@ namespace Ogre
 	void Volume::tidy(void)
 	{
 		//Check for homogeneous blocks
-		for(ulong ct = 0; ct < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++ct)
+		/*for(ulong ct = 0; ct < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++ct)
 		{
 			if(mBlocks[ct]->isHomogeneous())
 			{
@@ -333,6 +337,6 @@ namespace Ogre
 				}
 				mBlocks[ct] = homogeneousBlock;
 			}
-		}
+		}*/
 	}
 }

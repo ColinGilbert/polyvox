@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __Volume_H__
 
 #include "OgrePrerequisites.h"
-#include "OgreSharedPtr.h"
 
 #include "Block.h"
 #include "Constants.h"
@@ -42,7 +41,7 @@ namespace Ogre
 
 		Volume& operator=(const Volume& rhs);
 
-		SharedPtr<Block> getBlock(uint index);
+		Block* getBlock(uint index);
 
 		bool containsPoint(Vector3 pos, float boundary);
 		bool containsPoint(IntVector3 pos, uint boundary);
@@ -54,8 +53,7 @@ namespace Ogre
 		void tidy(void);
 
 	private:
-		static SharedPtr<Block> mHomogeneousBlocks[256];
-		SharedPtr<Block> mBlocks[OGRE_NO_OF_BLOCKS_IN_VOLUME];
+		Block* mBlocks[OGRE_NO_OF_BLOCKS_IN_VOLUME];
 	};
 }
 
