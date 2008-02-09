@@ -20,7 +20,7 @@ namespace Ogre
 		
 	}
 
-	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3 normalToSet)
+	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3DFloat normalToSet)
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
@@ -42,7 +42,7 @@ namespace Ogre
 		return edge;
 	}
 
-	const Vector3& SurfaceVertex::getNormal(void) const
+	const Vector3DFloat& SurfaceVertex::getNormal(void) const
 	{
 		return normal;
 	}
@@ -67,7 +67,7 @@ namespace Ogre
 		edge = edgeToSet;
 	}
 
-	void SurfaceVertex::setNormal(const Vector3& normalToSet)
+	void SurfaceVertex::setNormal(const Vector3DFloat& normalToSet)
 	{
 		normal = normalToSet;
 		normal.normalise();
@@ -76,7 +76,7 @@ namespace Ogre
 	std::string SurfaceVertex::toString(void) const
 	{
 		std::stringstream ss;
-		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << StringConverter::toString(normal);
+		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << normal;
 		return ss.str();
 	}
 

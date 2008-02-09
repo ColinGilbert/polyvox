@@ -20,8 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Volume.h"
 #include "VolumeIterator.h"
 
-#include "OgreVector3.h"
-
 using namespace boost;
 
 namespace Ogre
@@ -154,7 +152,7 @@ namespace Ogre
 		block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}
 
-	Vector3 VolumeIterator::getCentralDifferenceGradient(void) const
+	Vector3DFloat VolumeIterator::getCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
 		if((mXPosInVolume < 1) || (mXPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2) ||
@@ -162,7 +160,7 @@ namespace Ogre
 			(mZPosInVolume < 1) || (mZPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2))
 		{
 			//LogManager::getSingleton().logMessage("Out of range");
-			return Vector3(0.0,0.0,0.0);
+			return Vector3DFloat(0.0,0.0,0.0);
 		}
 
 		//FIXME - bitwise way of doing this?
@@ -175,10 +173,10 @@ namespace Ogre
 		uint8_t voxel1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
 		uint8_t voxel1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
 
-		return Vector3(int(voxel1px) - int(voxel1nx),int(voxel1py) - int(voxel1ny),int(voxel1pz) - int(voxel1nz));
+		return Vector3DFloat(int(voxel1px) - int(voxel1nx),int(voxel1py) - int(voxel1ny),int(voxel1pz) - int(voxel1nz));
 	}
 
-	Vector3 VolumeIterator::getAveragedCentralDifferenceGradient(void) const
+	Vector3DFloat VolumeIterator::getAveragedCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
 		if((mXPosInVolume < 2) || (mXPosInVolume > OGRE_VOLUME_SIDE_LENGTH-3) ||
@@ -186,7 +184,7 @@ namespace Ogre
 			(mZPosInVolume < 2) || (mZPosInVolume > OGRE_VOLUME_SIDE_LENGTH-3))
 		{
 			//LogManager::getSingleton().logMessage("Out of range");
-			return Vector3(0.0,0.0,0.0);
+			return Vector3DFloat(0.0,0.0,0.0);
 		}
 
 		//FIXME - bitwise way of doing this?
@@ -199,10 +197,10 @@ namespace Ogre
 		float voxel1nz = getAveragedVoxelAt(mXPosInVolume  ,mYPosInVolume  ,mZPosInVolume-1,2);
 		float voxel1pz = getAveragedVoxelAt(mXPosInVolume  ,mYPosInVolume  ,mZPosInVolume+1,2);
 
-		return Vector3(voxel1px - voxel1nx,voxel1py - voxel1ny,voxel1pz - voxel1nz);
+		return Vector3DFloat(voxel1px - voxel1nx,voxel1py - voxel1ny,voxel1pz - voxel1nz);
 	}
 
-	Vector3 VolumeIterator::getSobelGradient(void) const
+	Vector3DFloat VolumeIterator::getSobelGradient(void) const
 	{
 		//FIXME - should this test be here?
 		if((mXPosInVolume < 1) || (mXPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2) ||
@@ -210,7 +208,7 @@ namespace Ogre
 			(mZPosInVolume < 1) || (mZPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2))
 		{
 			//LogManager::getSingleton().logMessage("Out of range");
-			return Vector3(0.0,0.0,0.0);
+			return Vector3DFloat(0.0,0.0,0.0);
 		}
 
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
@@ -290,7 +288,7 @@ namespace Ogre
 				weights[0][2][2] * ( pVoxel1px1py1nz) + weights[2][2][2] *
 				( pVoxel1px1py1pz));
 
-			return Vector3(xGrad,yGrad,zGrad);
+			return Vector3DFloat(xGrad,yGrad,zGrad);
 	}
 
 	uint16_t VolumeIterator::getPosX(void)

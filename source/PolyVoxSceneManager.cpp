@@ -96,15 +96,15 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::createSphereAt(Vector3 centre, Real radius, uint8_t value, bool painting)
+	void PolyVoxSceneManager::createSphereAt(Vector3DFloat centre, Real radius, uint8_t value, bool painting)
 	{
-		int firstX = static_cast<int>(std::floor(centre.x - radius));
-		int firstY = static_cast<int>(std::floor(centre.y - radius));
-		int firstZ = static_cast<int>(std::floor(centre.z - radius));
+		int firstX = static_cast<int>(std::floor(centre.x() - radius));
+		int firstY = static_cast<int>(std::floor(centre.y() - radius));
+		int firstZ = static_cast<int>(std::floor(centre.z() - radius));
 
-		int lastX = static_cast<int>(std::ceil(centre.x + radius));
-		int lastY = static_cast<int>(std::ceil(centre.y + radius));
-		int lastZ = static_cast<int>(std::ceil(centre.z + radius));
+		int lastX = static_cast<int>(std::ceil(centre.x() + radius));
+		int lastY = static_cast<int>(std::ceil(centre.y() + radius));
+		int lastZ = static_cast<int>(std::ceil(centre.z() + radius));
 
 		Real radiusSquared = radius * radius;
 
@@ -123,7 +123,7 @@ namespace Ogre
 		while(volIter.isValidForRegion())
 		{
 			//if((volIter.getPosX()*volIter.getPosX()+volIter.getPosY()*volIter.getPosY()+volIter.getPosZ()*volIter.getPosZ()) < radiusSquared)
-			if((centre - Vector3(volIter.getPosX(),volIter.getPosY(),volIter.getPosZ())).squaredLength() <= radiusSquared)
+			if((centre - Vector3DFloat(volIter.getPosX(),volIter.getPosY(),volIter.getPosZ())).lengthSquared() <= radiusSquared)
 			{
 				if(painting)
 				{
@@ -186,18 +186,18 @@ namespace Ogre
 		}		
 
 		//Rooms
-		Vector3 centre(128,128,128);
-		Vector3 v3dSize(192,96,128);
+		Vector3DFloat centre(128,128,128);
+		Vector3DFloat v3dSize(192,96,128);
 
-		uint16_t uHalfX = static_cast<uint16_t>(v3dSize.x / 2);
-		uint16_t uHalfY = static_cast<uint16_t>(v3dSize.y / 2);
-		uint16_t uHalfZ = static_cast<uint16_t>(v3dSize.z / 2);
+		uint16_t uHalfX = static_cast<uint16_t>(v3dSize.x() / 2);
+		uint16_t uHalfY = static_cast<uint16_t>(v3dSize.y() / 2);
+		uint16_t uHalfZ = static_cast<uint16_t>(v3dSize.z() / 2);
 
-		for(uint16_t z = static_cast<uint16_t>(centre.z) - uHalfZ; z < static_cast<uint16_t>(centre.z) + uHalfZ; z++)
+		for(uint16_t z = static_cast<uint16_t>(centre.z()) - uHalfZ; z < static_cast<uint16_t>(centre.z()) + uHalfZ; z++)
 		{
-			for(uint16_t y = static_cast<uint16_t>(centre.y) - uHalfY; y < static_cast<uint16_t>(centre.y) + uHalfY; y++)
+			for(uint16_t y = static_cast<uint16_t>(centre.y()) - uHalfY; y < static_cast<uint16_t>(centre.y()) + uHalfY; y++)
 			{
-				for(uint16_t x = static_cast<uint16_t>(centre.x) - uHalfX; x < static_cast<uint16_t>(centre.x) + uHalfX; x++)
+				for(uint16_t x = static_cast<uint16_t>(centre.x()) - uHalfX; x < static_cast<uint16_t>(centre.x()) + uHalfX; x++)
 				{
 					volIter.setVoxelAt(x,y,z,0);
 				}
@@ -507,7 +507,7 @@ namespace Ogre
 			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->m_vecVertices.begin();
 			while(iterSurfaceVertex != singleMaterialPatch->m_vecVertices.end())
 			{
-				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
+				Vector3DFloat tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toVector3DFloat()/2.0f, CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
@@ -515,7 +515,7 @@ namespace Ogre
 			iterSurfaceVertex = multiMaterialPatch->m_vecVertices.begin();
 			while(iterSurfaceVertex != multiMaterialPatch->m_vecVertices.end())
 			{
-				Vector3 tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toOgreVector3()/2.0f, CENTRAL_DIFFERENCE);
+				Vector3DFloat tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toVector3DFloat()/2.0f, CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
@@ -531,25 +531,25 @@ namespace Ogre
 		//return singleMaterialPatch;
 	}
 
-	Vector3 PolyVoxSceneManager::computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const
+	Vector3DFloat PolyVoxSceneManager::computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const
 	{
 		VolumeIterator volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
-		const float posX = position.x;
-		const float posY = position.y;
-		const float posZ = position.z;
+		const float posX = position.x();
+		const float posY = position.y();
+		const float posZ = position.z();
 
 		const uint16_t floorX = static_cast<uint16_t>(posX);
 		const uint16_t floorY = static_cast<uint16_t>(posY);
 		const uint16_t floorZ = static_cast<uint16_t>(posZ);
 
-		Vector3 result;
+		Vector3DFloat result;
 
 
 		if(normalGenerationMethod == SOBEL)
 		{
 			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const Vector3 gradFloor = volIter.getSobelGradient();
+			const Vector3DFloat gradFloor = volIter.getSobelGradient();
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
@@ -562,9 +562,9 @@ namespace Ogre
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
-			const Vector3 gradCeil = volIter.getSobelGradient();
+			const Vector3DFloat gradCeil = volIter.getSobelGradient();
 			result = ((gradFloor + gradCeil) * -1.0);
-			if(result.squaredLength() < 0.0001)
+			if(result.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation
 				normalGenerationMethod = SIMPLE;
@@ -573,7 +573,7 @@ namespace Ogre
 		if(normalGenerationMethod == CENTRAL_DIFFERENCE)
 		{
 			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const Vector3 gradFloor = volIter.getCentralDifferenceGradient();
+			const Vector3DFloat gradFloor = volIter.getCentralDifferenceGradient();
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
@@ -586,9 +586,9 @@ namespace Ogre
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
-			const Vector3 gradCeil = volIter.getCentralDifferenceGradient();
+			const Vector3DFloat gradCeil = volIter.getCentralDifferenceGradient();
 			result = ((gradFloor + gradCeil) * -1.0);
-			if(result.squaredLength() < 0.0001)
+			if(result.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation
 				normalGenerationMethod = SIMPLE;
@@ -601,17 +601,17 @@ namespace Ogre
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{					
 				uint8_t uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-				result = Vector3(uFloor - uCeil,0.0,0.0);
+				result = Vector3DFloat(uFloor - uCeil,0.0,0.0);
 			}
 			else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
 			{
 				uint8_t uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-				result = Vector3(0.0,uFloor - uCeil,0.0);
+				result = Vector3DFloat(0.0,uFloor - uCeil,0.0);
 			}
 			else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
 			{
 				uint8_t uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-				result = Vector3(0.0, 0.0,uFloor - uCeil);					
+				result = Vector3DFloat(0.0, 0.0,uFloor - uCeil);					
 			}
 		}
 		return result;
@@ -701,7 +701,7 @@ namespace Ogre
 		m_normalGenerationMethod = method;
 	}
 
-	bool PolyVoxSceneManager::containsPoint(Vector3 pos, float boundary)
+	bool PolyVoxSceneManager::containsPoint(Vector3DFloat pos, float boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
 	}

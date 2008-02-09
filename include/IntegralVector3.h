@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <OgreVector3.h>
 
+#include "Vector.hpp"
+
 namespace Ogre
 {
 	template <typename Type> class IntegralVector3
@@ -66,9 +68,9 @@ namespace Ogre
 				return false; //They are equal
 		}
 
-		Vector3 toOgreVector3(void) const
+		Vector3DFloat toVector3DFloat(void) const
 		{
-			return Vector3(Real(x), Real(y), Real(z));
+			return Vector3DFloat(x, y, z);
 		}
 
 		Type x;

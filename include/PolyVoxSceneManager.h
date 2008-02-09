@@ -32,6 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SurfaceVertex.h"
 #include "RegionGeometry.h"
 
+#include "Vector.hpp"
+
 #include <set>
 
 namespace Ogre
@@ -64,13 +66,13 @@ namespace Ogre
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
-		void createSphereAt(Vector3 centre, Real radius, boost::uint8_t value, bool painting);
+		void createSphereAt(Vector3DFloat centre, Real radius, boost::uint8_t value, bool painting);
 		
 		void generateLevelVolume(void);
 
 		void generateMeshDataForRegion(boost::uint16_t regionX,boost:: uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
-		bool containsPoint(Vector3 pos, float boundary);
+		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(IntVector3 pos, boost::uint16_t boundary);
 
 		
@@ -81,7 +83,7 @@ namespace Ogre
 		//SurfacePatchRenderable* m_singleMaterialSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 		//SurfacePatchRenderable* m_multiMaterialSurfaces[OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS][OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS];
 
-		Vector3 computeNormal(const Vector3& position, NormalGenerationMethod normalGenerationMethod) const;
+		Vector3DFloat computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const;
 
 	public:
 		void markVoxelChanged(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z);

@@ -44,7 +44,7 @@ namespace Ogre
 
 		Block* getBlock(boost::uint16_t index);
 
-		bool containsPoint(Vector3 pos, float boundary);
+		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(IntVector3 pos, boost::uint16_t boundary);
 
 		bool loadFromFile(const std::string& sFilename);

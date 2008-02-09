@@ -138,14 +138,14 @@ namespace Ogre
 		return mBlocks[index];
 	}
 
-	bool Volume::containsPoint(Vector3 pos, float boundary)
+	bool Volume::containsPoint(Vector3DFloat pos, float boundary)
 	{
-		return (pos.x < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.y < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
-			&& (pos.z < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.x > boundary)
-			&& (pos.y > boundary)
-			&& (pos.z > boundary);
+		return (pos.x() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
+			&& (pos.y() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
+			&& (pos.z() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
+			&& (pos.x() > boundary)
+			&& (pos.y() > boundary)
+			&& (pos.z() > boundary);
 	}
 
 	bool Volume::containsPoint(IntVector3 pos, uint16_t boundary)

@@ -42,9 +42,9 @@ namespace Ogre
 		float getAveragedVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, boost::uint16_t size) const;
 
 		//FIXME - this shouldn't return float vector
-		Vector3 getCentralDifferenceGradient(void) const;
-		Vector3 getAveragedCentralDifferenceGradient(void) const;
-		Vector3 getSobelGradient(void) const;
+		Vector3DFloat getCentralDifferenceGradient(void) const;
+		Vector3DFloat getAveragedCentralDifferenceGradient(void) const;
+		Vector3DFloat getSobelGradient(void) const;
 
 		boost::uint16_t getPosX(void);
 		boost::uint16_t getPosY(void);
