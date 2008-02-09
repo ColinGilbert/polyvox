@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "VolumeIterator.h"
 
 #include "OgreVector3.h"
-#include "OgreLogManager.h"
-#include "OgreStringConverter.h"
 
 #include <iostream> //FIXME - remove this...
 
@@ -167,7 +165,7 @@ namespace Ogre
 		file.open(sFilename.c_str(), std::ios::in | std::ios::binary);
 		if(!file.is_open())
 		{
-			LogManager::getSingleton().logMessage("Failed to open volume file " + sFilename);
+			//LogManager::getSingleton().logMessage("Failed to open volume file " + sFilename);
 			return false;
 		}
 
@@ -180,7 +178,7 @@ namespace Ogre
 		file.read(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
 		if(file.fail())
 		{
-			LogManager::getSingleton().logMessage("Failed to read dimentions");
+			//LogManager::getSingleton().logMessage("Failed to read dimentions");
 			return false;
 		} 
 
@@ -215,7 +213,7 @@ namespace Ogre
 		file.open(sFilename.c_str(), std::ios::out | std::ios::binary);
 		if(!file.is_open())
 		{
-			LogManager::getSingleton().logMessage("Failed to open file for saving volume");
+			//LogManager::getSingleton().logMessage("Failed to open file for saving volume");
 			return false;
 		}
 
@@ -228,7 +226,7 @@ namespace Ogre
 		file.write(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
 		if(file.fail())
 		{
-			LogManager::getSingleton().logMessage("Failed to write dimensions");
+			//LogManager::getSingleton().logMessage("Failed to write dimensions");
 			return false;
 		} 
 

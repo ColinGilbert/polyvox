@@ -24,9 +24,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
 
-#include "OgreStringConverter.h"
-#include "OgreLogManager.h"
-
 #include <list>
 
 using namespace boost;
@@ -58,13 +55,10 @@ namespace Ogre
 		//Regenerate meshes.
 		for(uint16_t regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 		{		
-			//LogManager::getSingleton().logMessage("regionZ = " + StringConverter::toString(regionZ));
 			for(uint16_t regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 			{
-				//LogManager::getSingleton().logMessage("regionY = " + StringConverter::toString(regionY));
 				for(uint16_t regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 				{
-					//LogManager::getSingleton().logMessage("regionX = " + StringConverter::toString(regionX));
 					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 					{
 						//Generate the surface
@@ -238,7 +232,6 @@ namespace Ogre
 	{	
 		//IndexedSurfacePatch* surfacePatchResult = new IndexedSurfacePatch;
 
-		//LogManager::getSingleton().logMessage("Generating Mesh Data");
 		//First and last voxels in the region
 		const uint16_t firstX = regionX * OGRE_REGION_SIDE_LENGTH;
 		const uint16_t firstY = regionY * OGRE_REGION_SIDE_LENGTH;
@@ -266,8 +259,6 @@ namespace Ogre
 			const uint16_t x = volIter.getPosX();
 			const uint16_t y = volIter.getPosY();
 			const uint16_t z = volIter.getPosZ();
-
-			//LogManager::getSingleton().logMessage("x = " + StringConverter::toString(int(x)) + " y = " + StringConverter::toString(int(y)) + " z = " + StringConverter::toString(int(z)));
 
 			//Voxels values
 			const uint8_t v000 = volIter.getVoxel();
@@ -537,8 +528,6 @@ namespace Ogre
 			//while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
 		}
 
-		//LogManager::getSingleton().logMessage("Finished Generating Mesh Data");
-
 		//return singleMaterialPatch;
 	}
 
@@ -546,7 +535,6 @@ namespace Ogre
 	{
 		VolumeIterator volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
-		//LogManager::getSingleton().logMessage("In Loop");
 		const float posX = position.x;
 		const float posY = position.y;
 		const float posZ = position.z;

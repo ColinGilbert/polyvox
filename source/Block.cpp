@@ -18,8 +18,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
 #include "OgreVector3.h"
-#include "OgreLogManager.h"
-#include "OgreStringConverter.h"
 
 #include "Block.h"
 
