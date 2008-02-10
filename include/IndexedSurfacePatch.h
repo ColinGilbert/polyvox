@@ -16,7 +16,7 @@
 #include "VolumeIterator.h"
 
 
-namespace Ogre
+namespace PolyVox
 {
 	class VOXEL_SCENE_MANAGER_API IndexedSurfacePatch
 	{

@@ -27,6 +27,8 @@ SET(INC_FILES
         include/SurfaceTriangle.h
         include/SurfaceVertex.h
 	include/TypeDef.h
+	include/Vector.h
+	include/Vector.inl
 	include/Volume.h
 	include/VolumeIterator.h	
 )

@@ -2,7 +2,7 @@
 #include "SurfaceVertex.h"
 #include "SurfaceEdge.h"
 
-namespace Ogre
+namespace PolyVox
 {
 	SurfaceTriangle::SurfaceTriangle()
 	{

@@ -5,7 +5,7 @@
 #include "SurfaceTriangle.h"
 #include "SurfaceEdge.h"
 
-namespace Ogre
+namespace PolyVox
 {
 	SurfaceVertex::SurfaceVertex()
 	{

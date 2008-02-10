@@ -3,7 +3,7 @@
 
 #include "boost/cstdint.hpp"
 
-namespace Ogre
+namespace PolyVox
 {
 	//FIXME - i think we can define mod using a bitmask which flattens the upper bits. Should define that here.
 	const boost::uint32_t OGRE_BLOCK_SIDE_LENGTH_POWER = 5;

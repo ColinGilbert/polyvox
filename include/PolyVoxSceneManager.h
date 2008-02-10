@@ -32,11 +32,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SurfaceVertex.h"
 #include "RegionGeometry.h"
 
-#include "Vector.hpp"
+#include "Vector.h"
 
 #include <set>
 
-namespace Ogre
+namespace PolyVox
 {	
 	enum NormalGenerationMethod
 	{

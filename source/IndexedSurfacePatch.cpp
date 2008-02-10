@@ -2,7 +2,7 @@
 
 using namespace boost;
 
-namespace Ogre
+namespace PolyVox
 {
 	long int IndexedSurfacePatch::noOfVerticesSubmitted = 0;
 	long int IndexedSurfacePatch::noOfVerticesAccepted = 0;

@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "boost/cstdint.hpp"
 
-#include "Vector.hpp"
+#include "Vector.h"
 
-namespace Ogre
+namespace PolyVox
 {
 	template <typename Type> class IntegralVector3
 	{

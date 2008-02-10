@@ -6,7 +6,7 @@
 //#include "..\Base\Typedef.hpp"
 #include "boost/cstdint.hpp"
 
-namespace Ogre
+namespace PolyVox
 {
 	//template <boost::uint32_t Size, typename Type> class Matrix; //Forward declaration
 

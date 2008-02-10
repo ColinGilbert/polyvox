@@ -2,7 +2,7 @@
 #include <cmath>
 #include <string>
 
-namespace Ogre
+namespace PolyVox
 {
 	/**
 	This Vector class is templated on both size and data type. It is designed to be

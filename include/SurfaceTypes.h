@@ -3,7 +3,7 @@
 
 #include <set>
 
-namespace Ogre
+namespace PolyVox
 {	
 	class SurfaceVertex;
 	typedef std::set<SurfaceVertex>::iterator SurfaceVertexIterator;

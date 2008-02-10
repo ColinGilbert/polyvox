@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IntegralVector3.h"
 #include "SurfaceTypes.h"
 
-namespace Ogre
+namespace PolyVox
 {	
 	class VOXEL_SCENE_MANAGER_API SurfaceVertex
 	{

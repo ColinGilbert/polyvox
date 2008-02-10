@@ -4,7 +4,7 @@
 
 #include <sstream>
 
-namespace Ogre
+namespace PolyVox
 {
 	SurfaceEdge::SurfaceEdge(const SurfaceVertexIterator& targetToSet,const SurfaceVertexIterator& sourceToSet)
 	{
