@@ -96,7 +96,7 @@ namespace Ogre
 		}
 	}
 
-	void PolyVoxSceneManager::createSphereAt(Vector3DFloat centre, Real radius, uint8_t value, bool painting)
+	void PolyVoxSceneManager::createSphereAt(Vector3DFloat centre, float radius, uint8_t value, bool painting)
 	{
 		int firstX = static_cast<int>(std::floor(centre.x() - radius));
 		int firstY = static_cast<int>(std::floor(centre.y() - radius));
@@ -106,7 +106,7 @@ namespace Ogre
 		int lastY = static_cast<int>(std::ceil(centre.y() + radius));
 		int lastZ = static_cast<int>(std::ceil(centre.z() + radius));
 
-		Real radiusSquared = radius * radius;
+		float radiusSquared = radius * radius;
 
 		//Check bounds
 		firstX = std::max(firstX,0);

@@ -2,6 +2,8 @@
 #include "SurfaceTriangle.h"
 #include "SurfaceVertex.h"
 
+#include <sstream>
+
 namespace Ogre
 {
 	SurfaceEdge::SurfaceEdge(const SurfaceVertexIterator& targetToSet,const SurfaceVertexIterator& sourceToSet)
@@ -10,10 +12,10 @@ namespace Ogre
 		source = sourceToSet;
 	}
 
-	std::string SurfaceEdge::toString(void)
+	std::string SurfaceEdge::tostring(void)
 	{
 		std::stringstream ss;
-		ss << "SurfaceEdge: Target Vertex = " << target->toString() << "Source Vertex = " << source->toString();
+		ss << "SurfaceEdge: Target Vertex = " << target->tostring() << "Source Vertex = " << source->tostring();
 		return ss.str();
 	}
 

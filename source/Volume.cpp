@@ -21,9 +21,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Volume.h"
 #include "VolumeIterator.h"
 
-#include "OgreVector3.h"
-
+#include <fstream>
 #include <iostream> //FIXME - remove this...
+#include <queue>
 
 using namespace boost;
 
@@ -326,7 +326,7 @@ namespace Ogre
 		{
 			if(mBlocks[ct]->isHomogeneous())
 			{
-				//LogManager::getSingleton().logMessage("Got homogeneous block with value " + StringConverter::toString(mBlocks[ct]->getVoxelAt(0,0,0)));
+				//LogManager::getSingleton().logMessage("Got homogeneous block with value " + stringConverter::tostring(mBlocks[ct]->getVoxelAt(0,0,0)));
 
 				const uint8_t homogeneousValue = mBlocks[ct]->getVoxelAt(0,0,0);
 				SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[homogeneousValue];

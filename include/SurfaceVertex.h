@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "TypeDef.h"
 
-
-#include "OgreVector3.h"
 #include "IntegralVector3.h"
 #include "SurfaceTypes.h"
 
@@ -50,7 +48,7 @@ namespace Ogre
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
 
-		std::string toString(void) const;
+		std::string tostring(void) const;
 
 	private:		
 		UIntVector3 position;

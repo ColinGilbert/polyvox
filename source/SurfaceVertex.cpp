@@ -1,9 +1,9 @@
+#include <sstream>
+
 #include "Constants.h"
 #include "SurfaceVertex.h"
 #include "SurfaceTriangle.h"
 #include "SurfaceEdge.h"
-
-#include "OgreStringConverter.h"
 
 namespace Ogre
 {
@@ -73,7 +73,7 @@ namespace Ogre
 		normal.normalise();
 	}		
 
-	std::string SurfaceVertex::toString(void) const
+	std::string SurfaceVertex::tostring(void) const
 	{
 		std::stringstream ss;
 		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << normal;

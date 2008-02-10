@@ -19,9 +19,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVoxSceneManager_H__
 #define __PolyVoxSceneManager_H__
 
-#include "boost/cstdint.hpp"
+#include <list>
 
-#include "OgreSceneManager.h"
+#include "boost/cstdint.hpp"
 
 #include "Constants.h"
 #include "IndexedSurfacePatch.h"
@@ -55,7 +55,7 @@ namespace Ogre
 
 		//Getters
 		boost::uint8_t getMaterialIndexAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
-		const String& getTypeName(void) const;
+		const std::string& getTypeName(void) const;
 		boost::uint16_t getSideLength(void);
 
 
@@ -66,7 +66,7 @@ namespace Ogre
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
-		void createSphereAt(Vector3DFloat centre, Real radius, boost::uint8_t value, bool painting);
+		void createSphereAt(Vector3DFloat centre, float radius, boost::uint8_t value, bool painting);
 		
 		void generateLevelVolume(void);
 

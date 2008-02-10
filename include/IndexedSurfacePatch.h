@@ -6,6 +6,8 @@
 //#include <set>
 //#include <list>
 
+#include <vector>
+
 #include "Constants.h"
 #include "IntegralVector3.h"
 #include "SurfaceTypes.h"

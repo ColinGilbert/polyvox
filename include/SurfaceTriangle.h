@@ -36,7 +36,7 @@ namespace Ogre
 
 		void setEdge(const SurfaceEdgeIterator& edgeToSet);
 
-		//std::string toString(void);
+		//std::string tostring(void);
 
 	private:
 		SurfaceEdgeIterator edge;		

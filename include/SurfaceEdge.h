@@ -33,7 +33,7 @@ namespace Ogre
 		friend bool operator < (const SurfaceEdge& lhs, const SurfaceEdge& rhs);
 
 
-		std::string toString(void);
+		std::string tostring(void);
 
 		bool isDegenerate(void);
 

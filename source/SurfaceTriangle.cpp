@@ -18,7 +18,7 @@ namespace Ogre
 		edge = edgeToSet;
 	}
 
-	/*std::string SurfaceTriangle::toString(void)
+	/*std::string SurfaceTriangle::tostring(void)
 	{
 		std::stringstream ss;
 
@@ -27,10 +27,10 @@ namespace Ogre
 		ss << "SurfaceTriangle:";
 		do
 		{
-			ss << "\n        Edge " << ct << " = " << edgeIter->toString();
+			ss << "\n        Edge " << ct << " = " << edgeIter->tostring();
 			if(edgeIter->hasOtherHalfEdge)
 			{
-				ss << "\n    Opp Edge " << ct << " = " << edgeIter->otherHalfEdge->toString();
+				ss << "\n    Opp Edge " << ct << " = " << edgeIter->otherHalfEdge->tostring();
 			}
 			else
 			{
