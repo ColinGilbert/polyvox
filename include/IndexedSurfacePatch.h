@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "Constants.h"
-#include "IntegralVector3.h"
 #include "SurfaceTypes.h"
 #include "SurfaceVertex.h"
 #include "TypeDef.h"
@@ -18,7 +17,7 @@
 
 namespace PolyVox
 {
-	class VOXEL_SCENE_MANAGER_API IndexedSurfacePatch
+	class POLYVOX_API IndexedSurfacePatch
 	{
 	public:
 	   IndexedSurfacePatch(bool allowDuplicateVertices);

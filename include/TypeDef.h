@@ -17,28 +17,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#ifndef __RegionGeometry_H__
-#define __RegionGeometry_H__
+//Dave, maybe make use of OgrePlatform.h instead?
+// I think use _OgreExport instead of POLYVOX_API and define OGRE_NONCLIENT_BUILD instead of POLYVOX_EXPORT?
+#ifndef __TYPEDEF_H__
+#define __TYPEDEF_H__
 
-#include "IndexedSurfacePatch.h"
-#include "IntegralVector3.h"
-
-namespace PolyVox
-{
-	class RegionGeometry
-	{
-	public:
-		RegionGeometry(){};
-
-		bool m_bIsEmpty;
-		bool m_bContainsSingleMaterialPatch;
-		bool m_bContainsMultiMaterialPatch;
-
-		Vector3DInt32 m_v3dRegionPosition;
-		IndexedSurfacePatch* m_patchSingleMaterial;
-		IndexedSurfacePatch* m_patchMultiMaterial;
-
-	};	
-}
+#ifdef WIN32
+	#ifdef POLYVOX_EXPORT
+		#define POLYVOX_API __declspec(dllexport)
+	#else
+		#define POLYVOX_API __declspec(dllimport)
+	#endif
+#else
+	#define POLYVOX_API __attribute__ ((visibility("default")))
+#endif
 
 #endif

@@ -1,3 +1,4 @@
+#pragma region License
 /******************************************************************************
 This file is part of a voxel plugin for OGRE
 Copyright (C) 2006  David Williams
@@ -16,19 +17,26 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
+#pragma endregion
+
 #ifndef __Block_H__
 #define __Block_H__
 
+#pragma region Standard Headers
+#pragma endregion
+
+#pragma region Boost Headers
 #include "boost/cstdint.hpp"
+#pragma endregion
 
+#pragma region PolyVox Headers
 #include "Constants.h"
-
 #include "TypeDef.h"
+#pragma endregion
 
 namespace PolyVox
 {
-
-	class VOXEL_SCENE_MANAGER_API Block
+	class POLYVOX_API Block
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator;

@@ -24,12 +24,12 @@ namespace PolyVox
 		noOfVerticesSubmitted += 3;
 		if(!m_AllowDuplicateVertices)
 		{
-			long int index = vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)];
+			long int index = vertexIndices[long int(v0.getPosition().x() +0.5)][long int(v0.getPosition().y() +0.5)][long int(v0.getPosition().z() +0.5)];
 			if(index == -1)
 			{
 				m_vecVertices.push_back(v0);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-				vertexIndices[long int(v0.getPosition().x +0.5)][long int(v0.getPosition().y +0.5)][long int(v0.getPosition().z +0.5)] = m_vecVertices.size()-1;
+				vertexIndices[long int(v0.getPosition().x() +0.5)][long int(v0.getPosition().y() +0.5)][long int(v0.getPosition().z() +0.5)] = m_vecVertices.size()-1;
 
 				noOfVerticesAccepted++;
 			}
@@ -38,12 +38,12 @@ namespace PolyVox
 				m_vecTriangleIndices.push_back(index);
 			}
 
-			index = vertexIndices[long int(v1.getPosition().x +0.5)][long int(v1.getPosition().y +0.5)][long int(v1.getPosition().z +0.5)];
+			index = vertexIndices[long int(v1.getPosition().x() +0.5)][long int(v1.getPosition().y() +0.5)][long int(v1.getPosition().z() +0.5)];
 			if(index == -1)
 			{
 				m_vecVertices.push_back(v1);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-				vertexIndices[long int(v1.getPosition().x +0.5)][long int(v1.getPosition().y +0.5)][long int(v1.getPosition().z +0.5)] = m_vecVertices.size()-1;
+				vertexIndices[long int(v1.getPosition().x() +0.5)][long int(v1.getPosition().y() +0.5)][long int(v1.getPosition().z() +0.5)] = m_vecVertices.size()-1;
 
 				noOfVerticesAccepted++;
 			}
@@ -52,12 +52,12 @@ namespace PolyVox
 				m_vecTriangleIndices.push_back(index);
 			}
 
-			index = vertexIndices[long int(v2.getPosition().x +0.5)][long int(v2.getPosition().y +0.5)][long int(v2.getPosition().z +0.5)];
+			index = vertexIndices[long int(v2.getPosition().x() +0.5)][long int(v2.getPosition().y() +0.5)][long int(v2.getPosition().z() +0.5)];
 			if(index == -1)
 			{
 				m_vecVertices.push_back(v2);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-				vertexIndices[long int(v2.getPosition().x +0.5)][long int(v2.getPosition().y +0.5)][long int(v2.getPosition().z +0.5)] = m_vecVertices.size()-1;
+				vertexIndices[long int(v2.getPosition().x() +0.5)][long int(v2.getPosition().y() +0.5)][long int(v2.getPosition().z() +0.5)] = m_vecVertices.size()-1;
 
 				noOfVerticesAccepted++;
 			}

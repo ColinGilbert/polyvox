@@ -17,6 +17,7 @@ SET(SRC_FILES
 SET(INC_FILES
 	include/Block.h
 	include/Constants.h
+	include/ForwardDeclarations.h
 	include/IndexedSurfacePatch.h
 	include/IntegralVector3.h
 	include/MarchingCubesTables.h
@@ -33,7 +34,7 @@ SET(INC_FILES
 	include/VolumeIterator.h	
 )
 
-ADD_DEFINITIONS(-DVOXEL_SCENE_MANAGER_EXPORT) #Export symbols in the .dll
+ADD_DEFINITIONS(-DPOLYVOX_EXPORT) #Export symbols in the .dll
 
 #Appends "_d" to the generated library when in debug mode
 SET(CMAKE_DEBUG_POSTFIX "_d")

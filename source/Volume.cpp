@@ -264,57 +264,57 @@ namespace PolyVox
 			return; //FIXME - Error message? Exception?
 		}
 
-		std::queue<UIntVector3> seeds;
-		seeds.push(UIntVector3(xStart,yStart,zStart));
+		std::queue<Vector3DUint32> seeds;
+		seeds.push(Vector3DUint32(xStart,yStart,zStart));
 
 		while(!seeds.empty())
 		{
-			UIntVector3 currentSeed = seeds.front();
+			Vector3DUint32 currentSeed = seeds.front();
 			seeds.pop();
 
 			//std::cout << "x = " << currentSeed.x << " y = " << currentSeed.y << " z = " << currentSeed.z << std::endl;
 
 			//FIXME - introduce 'safe' function which tests this?
-			if((currentSeed.x > OGRE_VOLUME_SIDE_LENGTH-2) || (currentSeed.y > OGRE_VOLUME_SIDE_LENGTH-2) || (currentSeed.z > OGRE_VOLUME_SIDE_LENGTH-2)
-				|| (currentSeed.x < 1) || (currentSeed.y < 1) || (currentSeed.z < 1))
+			if((currentSeed.x() > OGRE_VOLUME_SIDE_LENGTH-2) || (currentSeed.y() > OGRE_VOLUME_SIDE_LENGTH-2) || (currentSeed.z() > OGRE_VOLUME_SIDE_LENGTH-2)
+				|| (currentSeed.x() < 1) || (currentSeed.y() < 1) || (currentSeed.z() < 1))
 			{
 				continue;
 			}
 
-			if(volIter.getVoxelAt(currentSeed.x, currentSeed.y, currentSeed.z+1) == uSeedValue)
+			if(volIter.getVoxelAt(currentSeed.x(), currentSeed.y(), currentSeed.z()+1) == uSeedValue)
 			{
-				volIter.setVoxelAt(currentSeed.x, currentSeed.y, currentSeed.z+1, value);
-				seeds.push(UIntVector3(currentSeed.x, currentSeed.y, currentSeed.z+1));
+				volIter.setVoxelAt(currentSeed.x(), currentSeed.y(), currentSeed.z()+1, value);
+				seeds.push(Vector3DUint32(currentSeed.x(), currentSeed.y(), currentSeed.z()+1));
 			}
 
-			if(volIter.getVoxelAt(currentSeed.x, currentSeed.y, currentSeed.z-1) == uSeedValue)
+			if(volIter.getVoxelAt(currentSeed.x(), currentSeed.y(), currentSeed.z()-1) == uSeedValue)
 			{
-				volIter.setVoxelAt(currentSeed.x, currentSeed.y, currentSeed.z-1, value);
-				seeds.push(UIntVector3(currentSeed.x, currentSeed.y, currentSeed.z-1));
+				volIter.setVoxelAt(currentSeed.x(), currentSeed.y(), currentSeed.z()-1, value);
+				seeds.push(Vector3DUint32(currentSeed.x(), currentSeed.y(), currentSeed.z()-1));
 			}
 
-			if(volIter.getVoxelAt(currentSeed.x, currentSeed.y+1, currentSeed.z) == uSeedValue)
+			if(volIter.getVoxelAt(currentSeed.x(), currentSeed.y()+1, currentSeed.z()) == uSeedValue)
 			{
-				volIter.setVoxelAt(currentSeed.x, currentSeed.y+1, currentSeed.z, value);
-				seeds.push(UIntVector3(currentSeed.x, currentSeed.y+1, currentSeed.z));
+				volIter.setVoxelAt(currentSeed.x(), currentSeed.y()+1, currentSeed.z(), value);
+				seeds.push(Vector3DUint32(currentSeed.x(), currentSeed.y()+1, currentSeed.z()));
 			}
 
-			if(volIter.getVoxelAt(currentSeed.x, currentSeed.y-1, currentSeed.z) == uSeedValue)
+			if(volIter.getVoxelAt(currentSeed.x(), currentSeed.y()-1, currentSeed.z()) == uSeedValue)
 			{
-				volIter.setVoxelAt(currentSeed.x, currentSeed.y-1, currentSeed.z, value);
-				seeds.push(UIntVector3(currentSeed.x, currentSeed.y-1, currentSeed.z));
+				volIter.setVoxelAt(currentSeed.x(), currentSeed.y()-1, currentSeed.z(), value);
+				seeds.push(Vector3DUint32(currentSeed.x(), currentSeed.y()-1, currentSeed.z()));
 			}
 
-			if(volIter.getVoxelAt(currentSeed.x+1, currentSeed.y, currentSeed.z) == uSeedValue)
+			if(volIter.getVoxelAt(currentSeed.x()+1, currentSeed.y(), currentSeed.z()) == uSeedValue)
 			{
-				volIter.setVoxelAt(currentSeed.x+1, currentSeed.y, currentSeed.z, value);
-				seeds.push(UIntVector3(currentSeed.x+1, currentSeed.y, currentSeed.z));
+				volIter.setVoxelAt(currentSeed.x()+1, currentSeed.y(), currentSeed.z(), value);
+				seeds.push(Vector3DUint32(currentSeed.x()+1, currentSeed.y(), currentSeed.z()));
 			}
 
-			if(volIter.getVoxelAt(currentSeed.x-1, currentSeed.y, currentSeed.z) == uSeedValue)
+			if(volIter.getVoxelAt(currentSeed.x()-1, currentSeed.y(), currentSeed.z()) == uSeedValue)
 			{
-				volIter.setVoxelAt(currentSeed.x-1, currentSeed.y, currentSeed.z, value);
-				seeds.push(UIntVector3(currentSeed.x-1, currentSeed.y, currentSeed.z));
+				volIter.setVoxelAt(currentSeed.x()-1, currentSeed.y(), currentSeed.z(), value);
+				seeds.push(Vector3DUint32(currentSeed.x()-1, currentSeed.y(), currentSeed.z()));
 			}
 		}
 	}

@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	class VOXEL_SCENE_MANAGER_API Volume
+	class POLYVOX_API Volume
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator;

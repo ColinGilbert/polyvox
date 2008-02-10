@@ -46,7 +46,7 @@ namespace PolyVox
 	};
 
 	/// Voxel scene manager
-	class VOXEL_SCENE_MANAGER_API PolyVoxSceneManager
+	class POLYVOX_API PolyVoxSceneManager
 	{
 	public:
 		//Constructors, etc

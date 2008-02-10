@@ -27,7 +27,7 @@ namespace PolyVox
 {
 	class Volume;
 
-	class VOXEL_SCENE_MANAGER_API VolumeIterator
+	class POLYVOX_API VolumeIterator
 	{
 	public:
 		VolumeIterator(Volume& volume);

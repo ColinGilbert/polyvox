@@ -11,20 +11,20 @@ namespace PolyVox
 	{
 	}
 
-	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, float materialToSet, float alphaToSet)
+	SurfaceVertex::SurfaceVertex(Vector3DUint32 positionToSet, float materialToSet, float alphaToSet)
 		:material(materialToSet)
 		,alpha(alphaToSet)
 		,position(positionToSet)
-		,m_uHash((position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z))
+		,m_uHash((position.x()*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y()*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z()))
 	{
 		
 	}
 
-	SurfaceVertex::SurfaceVertex(UIntVector3 positionToSet, Vector3DFloat normalToSet)
+	SurfaceVertex::SurfaceVertex(Vector3DUint32 positionToSet, Vector3DFloat normalToSet)
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
-		m_uHash = (position.x*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z);
+		m_uHash = (position.x()*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y()*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z());
 	}
 
 	float SurfaceVertex::getAlpha(void) const
@@ -47,7 +47,7 @@ namespace PolyVox
 		return normal;
 	}
 
-	const UIntVector3& SurfaceVertex::getPosition(void) const
+	const Vector3DUint32& SurfaceVertex::getPosition(void) const
 	{
 		return position;
 	}
@@ -76,7 +76,7 @@ namespace PolyVox
 	std::string SurfaceVertex::tostring(void) const
 	{
 		std::stringstream ss;
-		ss << "SurfaceVertex: Position = (" << position.x << "," << position.y << "," << position.z << "), Normal = " << normal;
+		ss << "SurfaceVertex: Position = (" << position.x() << "," << position.y() << "," << position.z() << "), Normal = " << normal;
 		return ss.str();
 	}
 

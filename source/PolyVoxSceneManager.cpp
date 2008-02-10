@@ -65,7 +65,7 @@ namespace PolyVox
 						RegionGeometry regionGeometry;
 						regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
 						regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
-						regionGeometry.m_v3dRegionPosition.setData(regionX, regionY, regionZ);
+						regionGeometry.m_v3dRegionPosition = Vector3DInt32(regionX, regionY, regionZ);
 
 						generateMeshDataForRegion(regionX,regionY,regionZ, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
@@ -241,9 +241,9 @@ namespace PolyVox
 		const uint16_t lastZ = (std::min)(firstZ + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
 
 		//Offset from lower block corner
-		const UIntVector3 offset(firstX*2,firstY*2,firstZ*2);
+		const Vector3DUint32 offset(firstX*2,firstY*2,firstZ*2);
 
-		UIntVector3 vertlist[12];
+		Vector3DUint32 vertlist[12];
 		uint8_t vertMaterials[12];
 		VolumeIterator volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
@@ -291,95 +291,95 @@ namespace PolyVox
 			/* Find the vertices where the surface intersects the cube */
 			if (edgeTable[iCubeIndex] & 1)
 			{
-				vertlist[0].x = 2*x + 1;
-				vertlist[0].y = 2*y;
-				vertlist[0].z = 2*z;
+				vertlist[0].setX(2*x + 1);
+				vertlist[0].setY(2*y);
+				vertlist[0].setZ(2*z);
 				vertMaterials[0] = v000 | v100; //Because one of these is 0, the or operation takes the max.
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
-				vertlist[1].x = 2*x + 2;
-				vertlist[1].y = 2*y + 1;
-				vertlist[1].z = 2*z;
+				vertlist[1].setX(2*x + 2);
+				vertlist[1].setY(2*y + 1);
+				vertlist[1].setZ(2*z);
 				vertMaterials[1] = v100 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
-				vertlist[2].x = 2*x + 1;
-				vertlist[2].y = 2*y + 2;
-				vertlist[2].z = 2*z;
+				vertlist[2].setX(2*x + 1);
+				vertlist[2].setY(2*y + 2);
+				vertlist[2].setZ(2*z);
 				vertMaterials[2] = v010 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
-				vertlist[3].x = 2*x;
-				vertlist[3].y = 2*y + 1;
-				vertlist[3].z = 2*z;
+				vertlist[3].setX(2*x);
+				vertlist[3].setY(2*y + 1);
+				vertlist[3].setZ(2*z);
 				vertMaterials[3] = v000 | v010;
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
-				vertlist[4].x = 2*x + 1;
-				vertlist[4].y = 2*y;
-				vertlist[4].z = 2*z + 2;
+				vertlist[4].setX(2*x + 1);
+				vertlist[4].setY(2*y);
+				vertlist[4].setZ(2*z + 2);
 				vertMaterials[4] = v001 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
-				vertlist[5].x = 2*x + 2;
-				vertlist[5].y = 2*y + 1;
-				vertlist[5].z = 2*z + 2;
+				vertlist[5].setX(2*x + 2);
+				vertlist[5].setY(2*y + 1);
+				vertlist[5].setZ(2*z + 2);
 				vertMaterials[5] = v101 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
-				vertlist[6].x = 2*x + 1;
-				vertlist[6].y = 2*y + 2;
-				vertlist[6].z = 2*z + 2;
+				vertlist[6].setX(2*x + 1);
+				vertlist[6].setY(2*y + 2);
+				vertlist[6].setZ(2*z + 2);
 				vertMaterials[6] = v011 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
-				vertlist[7].x = 2*x;
-				vertlist[7].y = 2*y + 1;
-				vertlist[7].z = 2*z + 2;
+				vertlist[7].setX(2*x);
+				vertlist[7].setY(2*y + 1);
+				vertlist[7].setZ(2*z + 2);
 				vertMaterials[7] = v001 | v011;
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
-				vertlist[8].x = 2*x;
-				vertlist[8].y = 2*y;
-				vertlist[8].z = 2*z + 1;
+				vertlist[8].setX(2*x);
+				vertlist[8].setY(2*y);
+				vertlist[8].setZ(2*z + 1);
 				vertMaterials[8] = v000 | v001;
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
-				vertlist[9].x = 2*x + 2;
-				vertlist[9].y = 2*y;
-				vertlist[9].z = 2*z + 1;
+				vertlist[9].setX(2*x + 2);
+				vertlist[9].setY(2*y);
+				vertlist[9].setZ(2*z + 1);
 				vertMaterials[9] = v100 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
-				vertlist[10].x = 2*x + 2;
-				vertlist[10].y = 2*y + 2;
-				vertlist[10].z = 2*z + 1;
+				vertlist[10].setX(2*x + 2);
+				vertlist[10].setY(2*y + 2);
+				vertlist[10].setZ(2*z + 1);
 				vertMaterials[10] = v110 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
-				vertlist[11].x = 2*x;
-				vertlist[11].y = 2*y + 2;
-				vertlist[11].z = 2*z + 1;
+				vertlist[11].setX(2*x);
+				vertlist[11].setY(2*y + 2);
+				vertlist[11].setZ(2*z + 1);
 				vertMaterials[11] = v010 | v011;
 			}
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 			{
 				//The three vertices forming a triangle
-				const UIntVector3 vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
-				const UIntVector3 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
-				const UIntVector3 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
+				const Vector3DUint32 vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
+				const Vector3DUint32 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
+				const Vector3DUint32 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
 
 				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
 				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
@@ -507,7 +507,7 @@ namespace PolyVox
 			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->m_vecVertices.begin();
 			while(iterSurfaceVertex != singleMaterialPatch->m_vecVertices.end())
 			{
-				Vector3DFloat tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toVector3DFloat()/2.0f, CENTRAL_DIFFERENCE);
+				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset)/2.0f, CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
@@ -515,7 +515,7 @@ namespace PolyVox
 			iterSurfaceVertex = multiMaterialPatch->m_vecVertices.begin();
 			while(iterSurfaceVertex != multiMaterialPatch->m_vecVertices.end())
 			{
-				Vector3DFloat tempNormal = computeNormal((iterSurfaceVertex->getPosition() + offset).toVector3DFloat()/2.0f, CENTRAL_DIFFERENCE);
+				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset)/2.0f, CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
