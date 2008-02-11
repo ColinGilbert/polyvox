@@ -31,19 +31,6 @@ namespace PolyVox
 
 	Volume::Volume()
 	{
-		//FIXME - Add checking...
-		/*SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[0];
-		if(homogeneousBlock.isNull())
-		{
-			homogeneousBlock = SharedPtr<Block>(new Block);
-			homogeneousBlock->fillWithValue(0);
-		}*/
-
-		/*for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
-		{
-			mBlocks[i] = mHomogeneousBlocks[0];
-		}*/
-
 		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			mBlocks[i] = new Block;
@@ -58,6 +45,10 @@ namespace PolyVox
 
 	Volume::~Volume()
 	{
+		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		{
+			delete mBlocks[i];
+		}
 	}
 
 	Volume& Volume::operator=(const Volume& rhs)

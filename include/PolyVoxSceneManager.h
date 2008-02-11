@@ -26,15 +26,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Constants.h"
 #include "IndexedSurfacePatch.h"
 #include "SurfaceTriangle.h"
-//#include "AbstractSurfacePatch.h"
 #include "TypeDef.h"
 #include "Volume.h"
 #include "SurfaceVertex.h"
 #include "RegionGeometry.h"
-
 #include "Vector.h"
-
-#include <set>
 
 namespace PolyVox
 {	

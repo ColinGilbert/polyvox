@@ -37,11 +37,13 @@ namespace PolyVox
 		//Volume interface
 	public:		
 		Volume();
-		Volume(const Volume& rhs);
-		~Volume();	
+		~Volume();
 
+	private:
+		Volume(const Volume& rhs);
 		Volume& operator=(const Volume& rhs);
 
+	public:
 		Block* getBlock(boost::uint16_t index);
 
 		bool containsPoint(Vector3DFloat pos, float boundary);

@@ -18,13 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
 #include "MarchingCubesTables.h"
-#include "SurfaceVertex.h"
-#include "SurfaceEdge.h"
-#include "IndexedSurfacePatch.h"
 #include "PolyVoxSceneManager.h"
 #include "VolumeIterator.h"
-
-#include <list>
 
 using namespace boost;
 

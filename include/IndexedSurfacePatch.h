@@ -1,19 +1,14 @@
 #ifndef __IndexedSurfacePatch_H__
 #define __IndexedSurfacePatch_H__
 
-#include "boost/cstdint.hpp"
-
-//#include <set>
-//#include <list>
-
 #include <vector>
+
+#include "boost/cstdint.hpp"
 
 #include "Constants.h"
 #include "SurfaceTypes.h"
 #include "SurfaceVertex.h"
 #include "TypeDef.h"
-#include "VolumeIterator.h"
-
 
 namespace PolyVox
 {
