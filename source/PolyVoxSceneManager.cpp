@@ -53,11 +53,11 @@ namespace PolyVox
 		std::list<RegionGeometry> listChangedRegionGeometry;
 
 		//Regenerate meshes.
-		for(uint16_t regionZ = 0; regionZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
+		for(uint16_t regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 		{		
-			for(uint16_t regionY = 0; regionY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
+			for(uint16_t regionY = 0; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
 			{
-				for(uint16_t regionX = 0; regionX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
+				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 				{
 					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 					{
@@ -84,11 +84,11 @@ namespace PolyVox
 
 	void PolyVoxSceneManager::setAllUpToDateFlagsTo(bool newUpToDateValue)
 	{
-		for(uint16_t blockZ = 0; blockZ < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
+		for(uint16_t blockZ = 0; blockZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
 		{
-			for(uint16_t blockY = 0; blockY < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
+			for(uint16_t blockY = 0; blockY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
 			{
-				for(uint16_t blockX = 0; blockX < OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
+				for(uint16_t blockX = 0; blockX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
 					surfaceUpToDate[blockX][blockY][blockZ] = newUpToDateValue;
 				}
@@ -113,9 +113,9 @@ namespace PolyVox
 		firstY = std::max(firstY,0);
 		firstZ = std::max(firstZ,0);
 
-		lastX = std::min(lastX,int(OGRE_VOLUME_SIDE_LENGTH-1));
-		lastY = std::min(lastY,int(OGRE_VOLUME_SIDE_LENGTH-1));
-		lastZ = std::min(lastZ,int(OGRE_VOLUME_SIDE_LENGTH-1));
+		lastX = std::min(lastX,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
+		lastY = std::min(lastY,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
+		lastZ = std::min(lastZ,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
 
 		VolumeIterator volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
@@ -150,11 +150,11 @@ namespace PolyVox
 		//volumeData = VolumePtr(new Volume);
 		volumeData = new Volume();
 		VolumeIterator volIter(*volumeData);
-		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
 					if((x/16+y/16+z/16)%2 == 0)
 						volIter.setVoxelAt(x,y,z,4);
@@ -164,11 +164,11 @@ namespace PolyVox
 			}
 		}		
 
-		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
 					if(
 						(z<62)||
@@ -204,11 +204,11 @@ namespace PolyVox
 			}
 		}
 
-		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
 					if(
 						(x%64 < 8) &&
@@ -233,12 +233,12 @@ namespace PolyVox
 		//IndexedSurfacePatch* surfacePatchResult = new IndexedSurfacePatch;
 
 		//First and last voxels in the region
-		const uint16_t firstX = regionX * OGRE_REGION_SIDE_LENGTH;
-		const uint16_t firstY = regionY * OGRE_REGION_SIDE_LENGTH;
-		const uint16_t firstZ = regionZ * OGRE_REGION_SIDE_LENGTH;
-		const uint16_t lastX = (std::min)(firstX + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
-		const uint16_t lastY = (std::min)(firstY + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
-		const uint16_t lastZ = (std::min)(firstZ + OGRE_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(OGRE_VOLUME_SIDE_LENGTH-2));
+		const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
+		const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
+		const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
+		const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
+		const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
+		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
 
 		//Offset from lower block corner
 		const Vector3DUint32 offset(firstX*2,firstY*2,firstZ*2);
@@ -620,28 +620,28 @@ namespace PolyVox
 	void PolyVoxSceneManager::markVoxelChanged(uint16_t x, uint16_t y, uint16_t z)
 	{
 		//If we are not on a boundary, just mark one region.
-		if((x % OGRE_REGION_SIDE_LENGTH != 0) &&
-			(x % OGRE_REGION_SIDE_LENGTH != OGRE_REGION_SIDE_LENGTH-1) &&
-			(y % OGRE_REGION_SIDE_LENGTH != 0) &&
-			(y % OGRE_REGION_SIDE_LENGTH != OGRE_REGION_SIDE_LENGTH-1) &&
-			(z % OGRE_REGION_SIDE_LENGTH != 0) &&
-			(z % OGRE_REGION_SIDE_LENGTH != OGRE_REGION_SIDE_LENGTH-1))
+		if((x % POLYVOX_REGION_SIDE_LENGTH != 0) &&
+			(x % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1) &&
+			(y % POLYVOX_REGION_SIDE_LENGTH != 0) &&
+			(y % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1) &&
+			(z % POLYVOX_REGION_SIDE_LENGTH != 0) &&
+			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
 		{
-			surfaceUpToDate[x >> OGRE_REGION_SIDE_LENGTH_POWER][y >> OGRE_REGION_SIDE_LENGTH_POWER][z >> OGRE_REGION_SIDE_LENGTH_POWER] = false;
+			surfaceUpToDate[x >> POLYVOX_REGION_SIDE_LENGTH_POWER][y >> POLYVOX_REGION_SIDE_LENGTH_POWER][z >> POLYVOX_REGION_SIDE_LENGTH_POWER] = false;
 		}
 		else //Mark surrounding block as well
 		{
-			const uint16_t regionX = x >> OGRE_REGION_SIDE_LENGTH_POWER;
-			const uint16_t regionY = y >> OGRE_REGION_SIDE_LENGTH_POWER;
-			const uint16_t regionZ = z >> OGRE_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionX = x >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionY = y >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionZ = z >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 
 			const uint16_t minRegionX = (std::max)(uint16_t(0),uint16_t(regionX-1));
 			const uint16_t minRegionY = (std::max)(uint16_t(0),uint16_t(regionY-1));
 			const uint16_t minRegionZ = (std::max)(uint16_t(0),uint16_t(regionZ-1));
 
-			const uint16_t maxRegionX = (std::min)(uint16_t(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionX+1));
-			const uint16_t maxRegionY = (std::min)(uint16_t(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionY+1));
-			const uint16_t maxRegionZ = (std::min)(uint16_t(OGRE_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionZ+1));
+			const uint16_t maxRegionX = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionX+1));
+			const uint16_t maxRegionY = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionY+1));
+			const uint16_t maxRegionZ = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionZ+1));
 
 			for(uint16_t zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
 			{
@@ -658,13 +658,13 @@ namespace PolyVox
 
 	void PolyVoxSceneManager::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
 	{
-		const uint16_t firstRegionX = firstX >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint16_t firstRegionY = firstY >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint16_t firstRegionZ = firstZ >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionX = firstX >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionY = firstY >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionZ = firstZ >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 
-		const uint16_t lastRegionX = lastX >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint16_t lastRegionY = lastY >> OGRE_REGION_SIDE_LENGTH_POWER;
-		const uint16_t lastRegionZ = lastZ >> OGRE_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionX = lastX >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionY = lastY >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionZ = lastZ >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 
 		for(uint16_t zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
 		{
@@ -680,7 +680,7 @@ namespace PolyVox
 
 	uint16_t PolyVoxSceneManager::getSideLength(void)
 	{
-		return OGRE_VOLUME_SIDE_LENGTH;
+		return POLYVOX_VOLUME_SIDE_LENGTH;
 	}
 
 	uint8_t PolyVoxSceneManager::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)

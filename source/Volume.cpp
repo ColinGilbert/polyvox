@@ -39,12 +39,12 @@ namespace PolyVox
 			homogeneousBlock->fillWithValue(0);
 		}*/
 
-		/*for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		/*for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			mBlocks[i] = mHomogeneousBlocks[0];
 		}*/
 
-		for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			mBlocks[i] = new Block;
 		}
@@ -68,13 +68,13 @@ namespace PolyVox
 			return *this;
 		}
 
-		/*for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		/*for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			//FIXME - Add checking...
 			mBlocks[i] = SharedPtr<Block>(new Block);
 		}*/
 
-		for(uint16_t i = 0; i < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			//I think this is OK... If a block is in the homogeneous array it's ref count will be greater
 			//than 1 as there will be the pointer in the volume and the pointer in the static homogeneous array.
@@ -94,19 +94,19 @@ namespace PolyVox
 
 	/*uint8_t Volume::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
-	const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockZ = zPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 
-	const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t xOffset = xPosition - (blockX << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
 	Block* block = mBlocks
 	[
 	blockX + 
-	blockY * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-	blockZ * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS
+	blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+	blockZ * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS
 	];
 
 	return block->getVoxelAt(xOffset,yOffset,zOffset);
@@ -114,19 +114,19 @@ namespace PolyVox
 
 	/*void Volume::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
 	{
-	const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-	const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+	const uint16_t blockZ = zPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 
-	const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-	const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t xOffset = xPosition - (blockX << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+	const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
 	Block* block = mBlocks
 	[
 	blockX + 
-	blockY * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-	blockZ * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS
+	blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+	blockZ * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS
 	];
 
 	block->setVoxelAt(xOffset,yOffset,zOffset, value);
@@ -139,9 +139,9 @@ namespace PolyVox
 
 	bool Volume::containsPoint(Vector3DFloat pos, float boundary)
 	{
-		return (pos.x() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.y() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
-			&& (pos.z() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
+		return (pos.x() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
+			&& (pos.y() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary) 
+			&& (pos.z() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
 			&& (pos.x() > boundary)
 			&& (pos.y() > boundary)
 			&& (pos.z() > boundary);
@@ -149,9 +149,9 @@ namespace PolyVox
 
 	bool Volume::containsPoint(Vector3DInt32 pos, uint16_t boundary)
 	{
-		return (pos.x() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.y() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
-			&& (pos.z() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
+		return (pos.x() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
+			&& (pos.y() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary) 
+			&& (pos.z() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
 			&& (pos.x() > boundary)
 			&& (pos.y() > boundary)
 			&& (pos.z() > boundary);
@@ -183,11 +183,11 @@ namespace PolyVox
 
 		//Read data
 		VolumeIterator volIter(*this);
-		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
 					uint8_t value;
 					file.read(reinterpret_cast<char*>(&value), sizeof(value)); //FIXME - check for error here
@@ -196,7 +196,7 @@ namespace PolyVox
 			}
 
 			//Periodically see if we can tidy the memory to avoid excessive usage during loading.
-			if(z%OGRE_BLOCK_SIDE_LENGTH == OGRE_BLOCK_SIDE_LENGTH-1)
+			if(z%POLYVOX_BLOCK_SIDE_LENGTH == POLYVOX_BLOCK_SIDE_LENGTH-1)
 			{
 				tidy(); //FIXME - we don't actually have to tidy the whole volume here - just the part we loaded since the last call to tidy.
 			}
@@ -231,11 +231,11 @@ namespace PolyVox
 
 		//Write data
 		VolumeIterator volIter(*this);
-		for(uint16_t z = 0; z < OGRE_VOLUME_SIDE_LENGTH; ++z)
+		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint16_t y = 0; y < OGRE_VOLUME_SIDE_LENGTH; ++y)
+			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint16_t x = 0; x < OGRE_VOLUME_SIDE_LENGTH; ++x)
+				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
 					uint8_t value = volIter.getVoxelAt(x,y,z);
 					file.write(reinterpret_cast<char*>(&value), sizeof(value));	//FIXME - check for error here				
@@ -248,7 +248,7 @@ namespace PolyVox
 	void Volume::regionGrow(uint16_t xStart, uint16_t yStart, uint16_t zStart, uint8_t value)
 	{
 		//FIXME - introduce integrer 'isInVolume' function
-		if((xStart > OGRE_VOLUME_SIDE_LENGTH-1) || (yStart > OGRE_VOLUME_SIDE_LENGTH-1) || (zStart > OGRE_VOLUME_SIDE_LENGTH-1)
+		if((xStart > POLYVOX_VOLUME_SIDE_LENGTH-1) || (yStart > POLYVOX_VOLUME_SIDE_LENGTH-1) || (zStart > POLYVOX_VOLUME_SIDE_LENGTH-1)
 			|| (xStart < 0) || (yStart < 0) || (zStart < 0))
 		{
             //FIXME - error message..
@@ -274,7 +274,7 @@ namespace PolyVox
 			//std::cout << "x = " << currentSeed.x << " y = " << currentSeed.y << " z = " << currentSeed.z << std::endl;
 
 			//FIXME - introduce 'safe' function which tests this?
-			if((currentSeed.x() > OGRE_VOLUME_SIDE_LENGTH-2) || (currentSeed.y() > OGRE_VOLUME_SIDE_LENGTH-2) || (currentSeed.z() > OGRE_VOLUME_SIDE_LENGTH-2)
+			if((currentSeed.x() > POLYVOX_VOLUME_SIDE_LENGTH-2) || (currentSeed.y() > POLYVOX_VOLUME_SIDE_LENGTH-2) || (currentSeed.z() > POLYVOX_VOLUME_SIDE_LENGTH-2)
 				|| (currentSeed.x() < 1) || (currentSeed.y() < 1) || (currentSeed.z() < 1))
 			{
 				continue;
@@ -321,7 +321,7 @@ namespace PolyVox
 	void Volume::tidy(void)
 	{
 		//Check for homogeneous blocks
-		/*for(uint32_t ct = 0; ct < OGRE_NO_OF_BLOCKS_IN_VOLUME; ++ct)
+		/*for(uint32_t ct = 0; ct < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++ct)
 		{
 			if(mBlocks[ct]->isHomogeneous())
 			{

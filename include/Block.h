@@ -22,14 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __Block_H__
 #define __Block_H__
 
-#pragma region Standard Headers
-#pragma endregion
-
-#pragma region Boost Headers
+#pragma region Headers
 #include "boost/cstdint.hpp"
-#pragma endregion
 
-#pragma region PolyVox Headers
 #include "Constants.h"
 #include "TypeDef.h"
 #pragma endregion
@@ -57,7 +52,7 @@ namespace PolyVox
 		//void fillWithValue(const uint8_t value);
 
 	private:
-		boost::uint8_t mData[OGRE_NO_OF_VOXELS_IN_BLOCK];		
+		boost::uint8_t mData[POLYVOX_NO_OF_VOXELS_IN_BLOCK];		
 	};
 }
 

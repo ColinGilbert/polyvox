@@ -29,15 +29,15 @@ namespace PolyVox
 		,mXRegionFirst(0)
 		,mYRegionFirst(0)
 		,mZRegionFirst(0)
-		,mXRegionLast(OGRE_VOLUME_SIDE_LENGTH-1)
-		,mYRegionLast(OGRE_VOLUME_SIDE_LENGTH-1)
-		,mZRegionLast(OGRE_VOLUME_SIDE_LENGTH-1)
+		,mXRegionLast(POLYVOX_VOLUME_SIDE_LENGTH-1)
+		,mYRegionLast(POLYVOX_VOLUME_SIDE_LENGTH-1)
+		,mZRegionLast(POLYVOX_VOLUME_SIDE_LENGTH-1)
 		,mXRegionFirstBlock(0)
 		,mYRegionFirstBlock(0)
 		,mZRegionFirstBlock(0)
-		,mXRegionLastBlock(OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
-		,mYRegionLastBlock(OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
-		,mZRegionLastBlock(OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
+		,mXRegionLastBlock(POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
+		,mYRegionLastBlock(POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
+		,mZRegionLastBlock(POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
 		,mXPosInVolume(0)
 		,mYPosInVolume(0)
 		,mZPosInVolume(0)
@@ -82,19 +82,19 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
-		const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockZ = zPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 
-		const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t xOffset = xPosition - (blockX << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
 		const Block* block = mVolume.mBlocks
 			[
 				blockX + 
-				blockY * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-				blockZ * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS
+				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+				blockZ * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS
 			];
 
 		return block->getVoxelAt(xOffset,yOffset,zOffset);
@@ -126,19 +126,19 @@ namespace PolyVox
 
 	void VolumeIterator::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
 		{
-		const uint16_t blockX = xPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockY = yPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockZ = zPosition >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockZ = zPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 
-		const uint16_t xOffset = xPosition - (blockX << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t yOffset = yPosition - (blockY << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t zOffset = zPosition - (blockZ << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t xOffset = xPosition - (blockX << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
 		Block* block = mVolume.mBlocks
 			[
 				blockX + 
-				blockY * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-				blockZ * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS
+				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+				blockZ * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS
 			];
 
 		/*if(!block.unique())
@@ -155,9 +155,9 @@ namespace PolyVox
 	Vector3DFloat VolumeIterator::getCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
-		if((mXPosInVolume < 1) || (mXPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2) ||
-			(mYPosInVolume < 1) || (mYPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2) ||
-			(mZPosInVolume < 1) || (mZPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2))
+		if((mXPosInVolume < 1) || (mXPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
+			(mYPosInVolume < 1) || (mYPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
+			(mZPosInVolume < 1) || (mZPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2))
 		{
 			//LogManager::getSingleton().logMessage("Out of range");
 			return Vector3DFloat(0.0,0.0,0.0);
@@ -179,9 +179,9 @@ namespace PolyVox
 	Vector3DFloat VolumeIterator::getAveragedCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
-		if((mXPosInVolume < 2) || (mXPosInVolume > OGRE_VOLUME_SIDE_LENGTH-3) ||
-			(mYPosInVolume < 2) || (mYPosInVolume > OGRE_VOLUME_SIDE_LENGTH-3) ||
-			(mZPosInVolume < 2) || (mZPosInVolume > OGRE_VOLUME_SIDE_LENGTH-3))
+		if((mXPosInVolume < 2) || (mXPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-3) ||
+			(mYPosInVolume < 2) || (mYPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-3) ||
+			(mZPosInVolume < 2) || (mZPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-3))
 		{
 			//LogManager::getSingleton().logMessage("Out of range");
 			return Vector3DFloat(0.0,0.0,0.0);
@@ -203,9 +203,9 @@ namespace PolyVox
 	Vector3DFloat VolumeIterator::getSobelGradient(void) const
 	{
 		//FIXME - should this test be here?
-		if((mXPosInVolume < 1) || (mXPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2) ||
-			(mYPosInVolume < 1) || (mYPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2) ||
-			(mZPosInVolume < 1) || (mZPosInVolume > OGRE_VOLUME_SIDE_LENGTH-2))
+		if((mXPosInVolume < 1) || (mXPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
+			(mYPosInVolume < 1) || (mYPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
+			(mZPosInVolume < 1) || (mZPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2))
 		{
 			//LogManager::getSingleton().logMessage("Out of range");
 			return Vector3DFloat(0.0,0.0,0.0);
@@ -312,22 +312,22 @@ namespace PolyVox
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		mXBlock = mXPosInVolume >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		mYBlock = mYPosInVolume >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		mZBlock = mZPosInVolume >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		mXBlock = mXPosInVolume >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mYBlock = mYPosInVolume >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mZBlock = mZPosInVolume >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 
-		mXPosInBlock = mXPosInVolume - (mXBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		mYPosInBlock = mYPosInVolume - (mYBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
-		mZPosInBlock = mZPosInVolume - (mZBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
+		mXPosInBlock = mXPosInVolume - (mXBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		mYPosInBlock = mYPosInVolume - (mYBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		mZPosInBlock = mZPosInVolume - (mZBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
 		mBlockIndexInVolume = mXBlock + 
-			mYBlock * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-			mZBlock * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+			mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+			mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
 		Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
-			mYPosInBlock * OGRE_BLOCK_SIDE_LENGTH + 
-			mZPosInBlock * OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH;
+			mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
+			mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 
 		mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 	}
@@ -346,17 +346,17 @@ namespace PolyVox
 		mYRegionFirst = (std::max)(0,yFirst);
 		mZRegionFirst = (std::max)(0,zFirst);
 
-		mXRegionLast = (std::min)(OGRE_VOLUME_SIDE_LENGTH-1, xLast);
-		mYRegionLast = (std::min)(OGRE_VOLUME_SIDE_LENGTH-1, yLast);
-		mZRegionLast = (std::min)(OGRE_VOLUME_SIDE_LENGTH-1, zLast);*/
+		mXRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, xLast);
+		mYRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, yLast);
+		mZRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, zLast);*/
 
-		mXRegionFirstBlock = mXRegionFirst >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		mYRegionFirstBlock = mYRegionFirst >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		mZRegionFirstBlock = mZRegionFirst >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		mXRegionFirstBlock = mXRegionFirst >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mYRegionFirstBlock = mYRegionFirst >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mZRegionFirstBlock = mZRegionFirst >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 
-		mXRegionLastBlock = mXRegionLast >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		mYRegionLastBlock = mYRegionLast >> OGRE_BLOCK_SIDE_LENGTH_POWER;
-		mZRegionLastBlock = mZRegionLast >> OGRE_BLOCK_SIDE_LENGTH_POWER;
+		mXRegionLastBlock = mXRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mYRegionLastBlock = mYRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mZRegionLastBlock = mZRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 	}
 
 	void VolumeIterator::moveForwardInRegion(void)
@@ -364,34 +364,34 @@ namespace PolyVox
 		mXPosInBlock++;
 		mCurrentVoxel++;
 		mXPosInVolume++;
-		if((mXPosInBlock == OGRE_BLOCK_SIDE_LENGTH) || (mXPosInVolume > mXRegionLast))
+		if((mXPosInBlock == POLYVOX_BLOCK_SIDE_LENGTH) || (mXPosInVolume > mXRegionLast))
 		{
-			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * OGRE_BLOCK_SIDE_LENGTH));
-			mXPosInBlock = mXPosInVolume - (mXBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
+			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * POLYVOX_BLOCK_SIDE_LENGTH));
+			mXPosInBlock = mXPosInVolume - (mXBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 			mVoxelIndexInBlock = mXPosInBlock + 
-				mYPosInBlock * OGRE_BLOCK_SIDE_LENGTH + 
-				mZPosInBlock * OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH;
+				mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
+				mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 			Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
 			mYPosInVolume++;
-			mCurrentVoxel += OGRE_BLOCK_SIDE_LENGTH;
-			if((mYPosInBlock == OGRE_BLOCK_SIDE_LENGTH) || (mYPosInVolume > mYRegionLast))
+			mCurrentVoxel += POLYVOX_BLOCK_SIDE_LENGTH;
+			if((mYPosInBlock == POLYVOX_BLOCK_SIDE_LENGTH) || (mYPosInVolume > mYRegionLast))
 			{
-				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * OGRE_BLOCK_SIDE_LENGTH));
-				mYPosInBlock = mYPosInVolume - (mYBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
+				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * POLYVOX_BLOCK_SIDE_LENGTH));
+				mYPosInBlock = mYPosInVolume - (mYBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 				mVoxelIndexInBlock = mXPosInBlock + 
-					mYPosInBlock * OGRE_BLOCK_SIDE_LENGTH + 
-					mZPosInBlock * OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH;
+					mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
+					mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 				Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
 				mZPosInVolume++;
-				mCurrentVoxel += OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH;
+				mCurrentVoxel += POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 
-				if((mZPosInBlock == OGRE_BLOCK_SIDE_LENGTH) || (mZPosInVolume > mZRegionLast))
+				if((mZPosInBlock == POLYVOX_BLOCK_SIDE_LENGTH) || (mZPosInVolume > mZRegionLast))
 				{
 					//At this point we've left the current block. Find a new one...
 
@@ -401,20 +401,20 @@ namespace PolyVox
 					{
 						mXBlock = mXRegionFirstBlock;
 						mBlockIndexInVolume = mXBlock + 
-							mYBlock * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-							mZBlock * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+							mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+							mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
 
 						++mYBlock;
-						mBlockIndexInVolume += OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+						mBlockIndexInVolume += POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
 						if(mYBlock > mYRegionLastBlock)
 						{
 							mYBlock = mYRegionFirstBlock;
 							mBlockIndexInVolume = mXBlock + 
-								mYBlock * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-								mZBlock * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+								mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
+								mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
 
 							++mZBlock;
-							mBlockIndexInVolume += OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS * OGRE_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+							mBlockIndexInVolume += POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
 							if(mZBlock > mZRegionLastBlock)
 							{
 								mIsValidForRegion = false;
@@ -426,17 +426,17 @@ namespace PolyVox
 					Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->mBlocks[mBlockIndexInVolume];					
 
-					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * OGRE_BLOCK_SIDE_LENGTH));					
-					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * OGRE_BLOCK_SIDE_LENGTH));					
-					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * OGRE_BLOCK_SIDE_LENGTH));					
+					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
+					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
+					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
 
-					mXPosInBlock = mXPosInVolume - (mXBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
-					mYPosInBlock = mYPosInVolume - (mYBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
-					mZPosInBlock = mZPosInVolume - (mZBlock << OGRE_BLOCK_SIDE_LENGTH_POWER);
+					mXPosInBlock = mXPosInVolume - (mXBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+					mYPosInBlock = mYPosInVolume - (mYBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+					mZPosInBlock = mZPosInVolume - (mZBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
 					mVoxelIndexInBlock = mXPosInBlock + 
-						mYPosInBlock * OGRE_BLOCK_SIDE_LENGTH + 
-						mZPosInBlock * OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH;
+						mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
+						mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 
 					mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 				}
@@ -451,43 +451,43 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::peekVoxel1nx1ny1nz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - 1 - OGRE_BLOCK_SIDE_LENGTH - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx1ny0pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - 1 - OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx1ny1pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel - 1 - OGRE_BLOCK_SIDE_LENGTH + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx0py1nz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - 1 - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx0py0pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
 			return *(mCurrentVoxel - 1);
 		}
@@ -496,36 +496,36 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::peekVoxel1nx0py1pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel - 1 + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx1py1nz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - 1 + OGRE_BLOCK_SIDE_LENGTH - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx1py0pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel - 1 + OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1nx1py1pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel - 1 + OGRE_BLOCK_SIDE_LENGTH + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume+1);
 	}
@@ -534,36 +534,36 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::peekVoxel0px1ny1nz(void) const
 	{
-		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - OGRE_BLOCK_SIDE_LENGTH - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel0px1ny0pz(void) const
 	{
-		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
 	}
 
 	uint8_t VolumeIterator::peekVoxel0px1ny1pz(void) const
 	{
-		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel - OGRE_BLOCK_SIDE_LENGTH + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel0px0py1nz(void) const
 	{
-		if((mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
 	}
@@ -575,36 +575,36 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::peekVoxel0px0py1pz(void) const
 	{
-		if((mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel0px1py1nz(void) const
 	{
-		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel + OGRE_BLOCK_SIDE_LENGTH - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel0px1py0pz(void) const
 	{
-		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
 	}
 
 	uint8_t VolumeIterator::peekVoxel0px1py1pz(void) const
 	{
-		if((mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + OGRE_BLOCK_SIDE_LENGTH + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume+1);
 	}
@@ -613,43 +613,43 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::peekVoxel1px1ny1nz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel + 1 - OGRE_BLOCK_SIDE_LENGTH - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px1ny0pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel + 1 - OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px1ny1pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + 1 - OGRE_BLOCK_SIDE_LENGTH + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px0py1nz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel + 1 - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px0py0pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
 			return *(mCurrentVoxel + 1);
 		}
@@ -658,36 +658,36 @@ namespace PolyVox
 
 	uint8_t VolumeIterator::peekVoxel1px0py1pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + 1 + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px1py1nz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
-			return *(mCurrentVoxel + 1 + OGRE_BLOCK_SIDE_LENGTH - OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px1py0pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + 1 + OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
 	}
 
 	uint8_t VolumeIterator::peekVoxel1px1py1pz(void) const
 	{
-		if((mXPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%OGRE_BLOCK_SIDE_LENGTH != OGRE_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
-			return *(mCurrentVoxel + 1 + OGRE_BLOCK_SIDE_LENGTH + OGRE_BLOCK_SIDE_LENGTH*OGRE_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
 	}

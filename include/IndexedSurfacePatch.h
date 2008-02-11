@@ -30,7 +30,7 @@ namespace PolyVox
 		std::vector<boost::uint16_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
 
-		long int vertexIndices[OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1][OGRE_REGION_SIDE_LENGTH*2+1];
+		long int vertexIndices[POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1];
 
 		static long int noOfVerticesSubmitted;
 		static long int noOfVerticesAccepted;

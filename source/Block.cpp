@@ -43,7 +43,7 @@ namespace PolyVox {
 			return *this;
 		}
 
-		memcpy(mData,rhs.mData,OGRE_NO_OF_VOXELS_IN_BLOCK);
+		memcpy(mData,rhs.mData,POLYVOX_NO_OF_VOXELS_IN_BLOCK);
 
 		return *this;
 	}
@@ -53,8 +53,8 @@ namespace PolyVox {
 		return mData
 			[
 				xPosition + 
-				yPosition * OGRE_BLOCK_SIDE_LENGTH + 
-				zPosition * OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH
+				yPosition * POLYVOX_BLOCK_SIDE_LENGTH + 
+				zPosition * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH
 			];
 	}
 
@@ -63,20 +63,20 @@ namespace PolyVox {
 		mData
 			[
 				xPosition + 
-				yPosition * OGRE_BLOCK_SIDE_LENGTH + 
-				zPosition * OGRE_BLOCK_SIDE_LENGTH * OGRE_BLOCK_SIDE_LENGTH
+				yPosition * POLYVOX_BLOCK_SIDE_LENGTH + 
+				zPosition * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH
 			] = value;
 	}
 
 	/*void Block::fillWithValue(const uint8_t value)
 	{
-		memset(mData,value,OGRE_NO_OF_VOXELS_IN_BLOCK);
+		memset(mData,value,POLYVOX_NO_OF_VOXELS_IN_BLOCK);
 	}*/
 
 	/*bool Block::isHomogeneous(void)
 	{
 		uint8_t uFirstVoxel = mData[0];
-		for(uint32_t ct = 1; ct < OGRE_NO_OF_VOXELS_IN_BLOCK; ++ct)
+		for(uint32_t ct = 1; ct < POLYVOX_NO_OF_VOXELS_IN_BLOCK; ++ct)
 		{
 			if(mData[ct] != uFirstVoxel)
 			{

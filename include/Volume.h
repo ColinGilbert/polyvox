@@ -54,7 +54,7 @@ namespace PolyVox
 		void tidy(void);
 
 	private:
-		Block* mBlocks[OGRE_NO_OF_BLOCKS_IN_VOLUME];
+		Block* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
 	};
 }
 

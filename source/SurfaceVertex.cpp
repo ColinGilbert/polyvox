@@ -15,7 +15,7 @@ namespace PolyVox
 		:material(materialToSet)
 		,alpha(alphaToSet)
 		,position(positionToSet)
-		,m_uHash((position.x()*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y()*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z()))
+		,m_uHash((position.x()*(POLYVOX_REGION_SIDE_LENGTH*2+1)*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.y()*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.z()))
 	{
 		
 	}
@@ -24,7 +24,7 @@ namespace PolyVox
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
-		m_uHash = (position.x()*(OGRE_REGION_SIDE_LENGTH*2+1)*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.y()*(OGRE_REGION_SIDE_LENGTH*2+1)) + (position.z());
+		m_uHash = (position.x()*(POLYVOX_REGION_SIDE_LENGTH*2+1)*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.y()*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.z());
 	}
 
 	float SurfaceVertex::getAlpha(void) const
