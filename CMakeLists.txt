@@ -19,7 +19,6 @@ SET(INC_FILES
 	include/Constants.h
 	include/ForwardDeclarations.h
 	include/IndexedSurfacePatch.h
-	include/IntegralVector3.h
 	include/MarchingCubesTables.h
         include/PolyVoxSceneManager.h
 	include/RegionGeometry.h

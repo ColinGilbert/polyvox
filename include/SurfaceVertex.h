@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "TypeDef.h"
 
-#include "IntegralVector3.h"
 #include "SurfaceTypes.h"
+#include "Vector.h"
 
 namespace PolyVox
 {	

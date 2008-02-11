@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#include "IntegralVector3.h"
 #include "Volume.h"
 #include "VolumeIterator.h"
 
@@ -148,14 +147,14 @@ namespace PolyVox
 			&& (pos.z() > boundary);
 	}
 
-	bool Volume::containsPoint(IntVector3 pos, uint16_t boundary)
+	bool Volume::containsPoint(Vector3DInt32 pos, uint16_t boundary)
 	{
-		return (pos.x < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.y < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
-			&& (pos.z < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.x > boundary)
-			&& (pos.y > boundary)
-			&& (pos.z > boundary);
+		return (pos.x() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
+			&& (pos.y() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary) 
+			&& (pos.z() < OGRE_VOLUME_SIDE_LENGTH - 1 - boundary)
+			&& (pos.x() > boundary)
+			&& (pos.y() > boundary)
+			&& (pos.z() > boundary);
 	}
 
 	bool Volume::loadFromFile(const std::string& sFilename)

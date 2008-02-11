@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "boost/cstdint.hpp"
 
 #include "TypeDef.h"
+#include "Vector.h"
 
 namespace PolyVox
 {

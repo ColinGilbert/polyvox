@@ -685,7 +685,7 @@ namespace PolyVox
 
 	uint8_t PolyVoxSceneManager::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
-		if(volumeData->containsPoint(IntVector3(uX,uY,uZ),0))
+		if(volumeData->containsPoint(Vector3DInt32(uX,uY,uZ),0))
 		{
 			VolumeIterator volIter(*volumeData);
 			return volIter.getVoxelAt(uX,uY,uZ);
@@ -706,7 +706,7 @@ namespace PolyVox
 		return volumeData->containsPoint(pos, boundary);
 	}
 
-	bool PolyVoxSceneManager::containsPoint(IntVector3 pos, uint16_t boundary)
+	bool PolyVoxSceneManager::containsPoint(Vector3DInt32 pos, uint16_t boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
 	}

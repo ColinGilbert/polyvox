@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Block.h"
 #include "Constants.h"
 #include "TypeDef.h"
-#include "IntegralVector3.h"
+#include "Vector.h"
 
 namespace PolyVox
 {
@@ -45,7 +45,7 @@ namespace PolyVox
 		Block* getBlock(boost::uint16_t index);
 
 		bool containsPoint(Vector3DFloat pos, float boundary);
-		bool containsPoint(IntVector3 pos, boost::uint16_t boundary);
+		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 
 		bool loadFromFile(const std::string& sFilename);
 		bool saveToFile(const std::string& sFilename);

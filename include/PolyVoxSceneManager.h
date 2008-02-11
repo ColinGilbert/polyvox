@@ -73,7 +73,7 @@ namespace PolyVox
 		void generateMeshDataForRegion(boost::uint16_t regionX,boost:: uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
 		bool containsPoint(Vector3DFloat pos, float boundary);
-		bool containsPoint(IntVector3 pos, boost::uint16_t boundary);
+		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 
 		
 
