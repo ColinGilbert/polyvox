@@ -6,6 +6,7 @@ SET(SRC_FILES
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/PolyVoxSceneManager.cpp
+        source/RegionGeometry.cpp  
         source/SurfaceEdge.cpp        
 	source/SurfaceTriangle.cpp
 	source/SurfaceVertex.cpp

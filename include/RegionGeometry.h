@@ -20,15 +20,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __RegionGeometry_H__
 #define __RegionGeometry_H__
 
-#include "IndexedSurfacePatch.h"
+#include "ForwardDeclarations.h"
+#include "TypeDef.h"
 #include "Vector.h"
 
 namespace PolyVox
 {
-	class RegionGeometry
+	class POLYVOX_API RegionGeometry
 	{
 	public:
-		RegionGeometry(){};
+		RegionGeometry();
 
 		bool m_bIsEmpty;
 		bool m_bContainsSingleMaterialPatch;
@@ -38,19 +39,7 @@ namespace PolyVox
 		IndexedSurfacePatch* m_patchSingleMaterial;
 		IndexedSurfacePatch* m_patchMultiMaterial;
 
-		long int getSizeInBytes(void)
-		{
-			long int size = sizeof(RegionGeometry);
-			if(m_patchSingleMaterial)
-			{
-				size += m_patchSingleMaterial->getSizeInBytes();
-			}
-			if(m_patchMultiMaterial)
-			{
-				size += m_patchMultiMaterial->getSizeInBytes();
-			}
-			return size;
-		}
+		long int getSizeInBytes(void);
 
 	};	
 }

@@ -7,6 +7,7 @@
 
 #include "Constants.h"
 #include "ForwardDeclarations.h"
+#include "SurfaceVertex.h"
 #include "TypeDef.h"
 
 namespace PolyVox
