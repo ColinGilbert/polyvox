@@ -1,8 +1,8 @@
+#include <sstream>
+
 #include "SurfaceEdge.h"
 #include "SurfaceTriangle.h"
 #include "SurfaceVertex.h"
-
-#include <sstream>
 
 namespace PolyVox
 {

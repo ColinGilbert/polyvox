@@ -1,4 +1,6 @@
 #include "IndexedSurfacePatch.h"
+#include "SurfaceTypes.h"
+#include "SurfaceVertex.h"
 
 using namespace boost;
 

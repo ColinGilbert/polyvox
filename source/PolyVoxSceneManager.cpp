@@ -17,8 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
+#include "IndexedSurfacePatch.h"
 #include "MarchingCubesTables.h"
 #include "PolyVoxSceneManager.h"
+#include "RegionGeometry.h"
+#include "SurfaceVertex.h"
+#include "Vector.h"
+#include "Volume.h"
 #include "VolumeIterator.h"
 
 using namespace boost;

@@ -17,12 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#include "Volume.h"
-#include "VolumeIterator.h"
-
 #include <fstream>
 #include <iostream> //FIXME - remove this...
 #include <queue>
+
+#include "Block.h"
+#include "Volume.h"
+#include "VolumeIterator.h" //Maybe this shouldn't be here?
 
 using namespace boost;
 

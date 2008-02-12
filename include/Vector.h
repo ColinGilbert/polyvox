@@ -1,10 +1,10 @@
 #ifndef VECTOR_HEADER_INCLUDED
 #define VECTOR_HEADER_INCLUDED
 
-#include <boost\operators.hpp>
+#include <iostream>
 
-//#include "..\Base\Typedef.hpp"
 #include "boost/cstdint.hpp"
+#include <boost\operators.hpp>
 
 namespace PolyVox
 {

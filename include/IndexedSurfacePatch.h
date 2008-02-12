@@ -6,8 +6,7 @@
 #include "boost/cstdint.hpp"
 
 #include "Constants.h"
-#include "SurfaceTypes.h"
-#include "SurfaceVertex.h"
+#include "ForwardDeclarations.h"
 #include "TypeDef.h"
 
 namespace PolyVox
