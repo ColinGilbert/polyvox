@@ -49,10 +49,13 @@ namespace PolyVox
 
 		//Regenerate meshes.
 		for(uint16_t regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
+		//for(uint16_t regionZ = 6; regionZ < 7; ++regionZ)
 		{		
 			for(uint16_t regionY = 0; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
+			//for(uint16_t regionY = POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS/2; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionY)
 			{
 				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
+				//for(uint16_t regionX = POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS/2; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS/2+1; ++regionX)
 				{
 					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 					{

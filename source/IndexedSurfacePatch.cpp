@@ -7,6 +7,7 @@ namespace PolyVox
 	long int IndexedSurfacePatch::noOfVerticesSubmitted = 0;
 	long int IndexedSurfacePatch::noOfVerticesAccepted = 0;
 	long int IndexedSurfacePatch::noOfTrianglesSubmitted = 0;
+	long int IndexedSurfacePatch::vertexIndices[POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1];
 
 	IndexedSurfacePatch::IndexedSurfacePatch(bool allowDuplicateVertices)
 		:m_AllowDuplicateVertices(allowDuplicateVertices)
@@ -92,5 +93,13 @@ namespace PolyVox
 			std::vector<SurfaceVertex>::iterator iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), **iterVertices);
 			vecIndices.push_back(iterVertex - vecVertices.begin());
 		}*/
+	}
+
+	long int IndexedSurfacePatch::getSizeInBytes(void)
+	{
+		long int size = sizeof(IndexedSurfacePatch);
+		size += m_vecVertices.capacity() * sizeof(m_vecVertices[0]);
+		size += m_vecTriangleIndices.capacity() * sizeof(m_vecTriangleIndices[0]);
+		return size;
 	}
 }
