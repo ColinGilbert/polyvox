@@ -1,5 +1,5 @@
-#ifndef __SurfaceTypes_H__
-#define __SurfaceTypes_H__
+#ifndef __PolyVox_SurfaceTypes_H__
+#define __PolyVox_SurfaceTypes_H__
 
 #include <set>
 

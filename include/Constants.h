@@ -1,5 +1,5 @@
-#ifndef __Constants_H__
-#define __Constants_H__
+#ifndef __PolyVox_Constants_H__
+#define __PolyVox_Constants_H__
 
 #include "boost/cstdint.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef __ForwardDeclarations_H__
-#define __ForwardDeclarations_H__
+#ifndef __PolyVox_ForwardDeclarations_H__
+#define __PolyVox_ForwardDeclarations_H__
 
 #include "boost/cstdint.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef MARCHING_CUBES_TABLES_HEADER_INCLUDED
-#define MARCHING_CUBES_TABLES_HEADER_INCLUDED
+#ifndef __PolyVox_MarchingCubeTables_H__
+#define __PolyVox_MarchingCubeTables_H__
 
 namespace PolyVox
 {

@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __Block_H__
-#define __Block_H__
+#ifndef __PolyVox_Block_H__
+#define __PolyVox_Block_H__
 
 #pragma region Headers
 #include "boost/cstdint.hpp"

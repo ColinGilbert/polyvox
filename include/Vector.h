@@ -1,5 +1,5 @@
-#ifndef VECTOR_HEADER_INCLUDED
-#define VECTOR_HEADER_INCLUDED
+#ifndef __PolyVox_Vector_H__
+#define __PolyVox_Vector_H__
 
 #include <iostream>
 

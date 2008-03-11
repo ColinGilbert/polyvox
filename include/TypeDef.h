@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Dave, maybe make use of OgrePlatform.h instead?
 // I think use _OgreExport instead of POLYVOX_API and define OGRE_NONCLIENT_BUILD instead of POLYVOX_EXPORT?
-#ifndef __TYPEDEF_H__
-#define __TYPEDEF_H__
+#ifndef __PolyVox_TypeDef_H__
+#define __PolyVox_TypeDef_H__
 
 #ifdef WIN32
 	#ifdef POLYVOX_EXPORT

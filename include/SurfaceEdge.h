@@ -17,8 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#ifndef __SurfaceEdge_H__
-#define __SurfaceEdge_H__
+#ifndef __PolyVox_SurfaceEdge_H__
+#define __PolyVox_SurfaceEdge_H__
 
 #include "SurfaceTypes.h"
 

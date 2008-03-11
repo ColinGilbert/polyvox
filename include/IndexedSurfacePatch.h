@@ -1,5 +1,5 @@
-#ifndef __IndexedSurfacePatch_H__
-#define __IndexedSurfacePatch_H__
+#ifndef __PolyVox_IndexedSurfacePatch_H__
+#define __PolyVox_IndexedSurfacePatch_H__
 
 #include <vector>
 
