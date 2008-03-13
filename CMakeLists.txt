@@ -17,10 +17,10 @@ SET(SRC_FILES
 #Projects headers files
 SET(INC_FILES
 	include/Block.h
-	include/Constants.h
-	include/ForwardDeclarations.h
+	include/Constants.h	
 	include/IndexedSurfacePatch.h
 	include/MarchingCubesTables.h
+	include/PolyVoxForwardDeclarations.h
         include/PolyVoxSceneManager.h
 	include/RegionGeometry.h
         include/SurfaceEdge.h

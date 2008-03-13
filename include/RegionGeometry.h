@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_RegionGeometry_H__
 #define __PolyVox_RegionGeometry_H__
 
-#include "ForwardDeclarations.h"
+#include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
 #include "Vector.h"
 

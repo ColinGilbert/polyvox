@@ -6,7 +6,7 @@
 #include "boost/cstdint.hpp"
 
 #include "Constants.h"
-#include "ForwardDeclarations.h"
+#include "PolyVoxForwardDeclarations.h"
 #include "SurfaceVertex.h"
 #include "TypeDef.h"
 
