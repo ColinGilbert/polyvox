@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "boost/cstdint.hpp"
-#include <boost\operators.hpp>
+#include <boost/operators.hpp>
 
 namespace PolyVox
 {

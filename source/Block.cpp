@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Block.h"
 
+#include <cstring>
+
 using namespace boost;
 
 namespace PolyVox
