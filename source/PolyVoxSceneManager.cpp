@@ -57,10 +57,10 @@ namespace PolyVox
 		//for(uint16_t regionZ = 6; regionZ < 7; ++regionZ)
 		{		
 			for(uint16_t regionY = 0; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
-			//for(uint16_t regionY = 6; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-6; ++regionY)
+			//for(uint16_t regionY = 6; regionY < 7; ++regionY)
 			{
 				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
-				//for(uint16_t regionX = 3; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-8; ++regionX)
+				//for(uint16_t regionX = 3; regionX < 4; ++regionX)
 				{
 					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 					{
