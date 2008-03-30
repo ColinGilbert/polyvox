@@ -40,6 +40,8 @@ namespace PolyVox
         Vector<Size,Type>& operator=(const Vector<Size,Type>& rhs) throw();
         ///Equality Operator.
         bool operator==(const Vector<Size,Type>& rhs) const throw();
+		///Comparison Operator.
+        bool operator<(const Vector<Size,Type>& rhs) const throw();
         ///Addition and Assignment Operator.
         Vector<Size,Type>& operator+=(const Vector<Size,Type> &rhs) throw();
         ///Subtraction and Assignment Operator.

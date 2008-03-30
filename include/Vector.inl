@@ -155,6 +155,26 @@ namespace PolyVox
 		return equal;
     }
 
+	/**
+    Checks whether this vector is less than the parameter. The metric is
+	meaningless but it allows Vectors to me used as key in sdt::map, etc.
+    \param rhs The Vector to compare to.
+    \return true if this is less than the parameter
+    \see operator!=
+    */
+    template <boost::uint32_t Size, typename Type>
+        inline bool Vector<Size, Type>::operator<(const Vector<Size, Type> &rhs) const throw()
+    {
+		for(int ct = 0; ct < Size; ++ct)
+		{
+			if (m_tElements[ct] < rhs.m_tElements[ct])
+				return true;
+			if (rhs.m_tElements[ct] < m_tElements[ct])
+				return false;
+		}
+		return false;
+    }
+
     /**
     Subtraction operator subtracts corresponding elements of one Vector from the other.
     \param rhs Vector to subtract
