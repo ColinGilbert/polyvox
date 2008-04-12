@@ -1,0 +1,101 @@
+struct v2f
+{
+    float4 Position : POSITION; //in projection space
+    float4 Color : COLOR;
+    float4 TexCoords : TEXCOORD0;
+    float4 Normal : TEXCOORD1;
+    float2 Alpha : TEXCOORD2;
+};
+
+float4 main(v2f IN, 
+uniform sampler2D colourMap0 : TEXUNIT0, 
+uniform sampler2D colourMap1 : TEXUNIT1, 
+uniform sampler2D colourMap2 : TEXUNIT2,
+uniform sampler2D colourMap3 : TEXUNIT3,
+uniform sampler2D colourMap4 : TEXUNIT4,
+uniform sampler2D colourMap5 : TEXUNIT5,
+uniform sampler2D colourMap6 : TEXUNIT6,
+uniform sampler2D colourMap7 : TEXUNIT7) : COLOR
+{
+	//return float4(IN.Alpha.y, 1.0f-IN.Alpha.y, 0.0f,1.0f);
+	
+	float textureScalingFactor = 20.0f;
+	//float textureSize = 512.0f;
+	//float noOfTexturesPerDimension = 4.0;
+	
+	//Scale the texture.
+	IN.TexCoords /= textureScalingFactor;
+	//Next we compute the offset of the texture in the texture atlas
+	//float material = floor(IN.Alpha.x);
+	//float y = floor(material / noOfTexturesPerDimension);
+	//float x = fmod(material,noOfTexturesPerDimension);
+	//float2 offset = float2(x,y);
+	//offset /= noOfTexturesPerDimension;	
+	
+	float3 colourMapValueXY;
+	float3 colourMapValueYZ;
+	float3 colourMapValueXZ;
+	
+	if(IN.Alpha.x < 1.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap0, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap0, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap0, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else if(IN.Alpha.x < 2.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap1, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap1, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap1, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else if(IN.Alpha.x < 3.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap2, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap2, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap2, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else if(IN.Alpha.x < 4.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap3, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap3, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap3, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else if(IN.Alpha.x < 5.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap4, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap4, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap4, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else if(IN.Alpha.x < 6.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap5, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap5, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap5, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else if(IN.Alpha.x < 7.5)
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap6, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap6, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap6, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+	else
+	{
+		//Retrieve the 3 samples
+		colourMapValueXY = tex2D(colourMap7, IN.TexCoords.xy).rgb * abs(IN.Normal.z);
+		colourMapValueYZ = tex2D(colourMap7, IN.TexCoords.yz).rgb * abs(IN.Normal.x);
+		colourMapValueXZ = tex2D(colourMap7, IN.TexCoords.xz).rgb * abs(IN.Normal.y);
+	}
+
+	//Blend according to triplanar texturing
+	float3 colourMapValue = colourMapValueXY + colourMapValueYZ + colourMapValueXZ;
+
+	//Return the result
+	return float4(colourMapValue*IN.Color.rgb*IN.Alpha.y,IN.Alpha.y);
+}

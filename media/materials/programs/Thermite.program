@@ -109,3 +109,17 @@ fragment_program NormalFragmentProgram cg
 	entry_point main
 	profiles ps_1_1 arbfp1
 }
+
+vertex_program SingleOneLightVertexProgram cg
+{
+	source SingleVertexProgram.cg
+	entry_point OneLight
+	profiles vs_1_1 arbvp1
+}
+
+fragment_program SingleFragmentProgram cg
+{
+	source SingleFragmentProgram.cg
+	entry_point main
+	profiles ps_1_1 arbfp1
+}

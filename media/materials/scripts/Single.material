@@ -1,0 +1,62 @@
+material SingleMaterial
+{
+	technique
+	{
+		pass
+		{
+			vertex_program_ref SingleOneLightVertexProgram
+			{
+				param_named_auto world world_matrix
+				param_named_auto viewProj viewproj_matrix
+				param_named_auto ambient ambient_light_colour 
+				param_named_auto light0.position light_position 0
+				param_named_auto light0.diffuseColour light_diffuse_colour 0
+				param_named_auto light0.attenuation light_attenuation 0
+			}
+			
+			fragment_program_ref SingleFragmentProgram
+			{
+			}
+			
+			texture_unit
+			{
+				texture bricks.jpg
+			}
+			
+			texture_unit
+			{
+				texture castle_wall.png
+			}
+			
+			texture_unit
+			{
+				texture roof_tiles.png
+			}
+			
+			texture_unit
+			{
+				texture grass.png
+			}
+			
+			texture_unit
+			{
+				texture water.png
+			}
+			
+			texture_unit
+			{
+				texture ground.png
+			}
+			
+			texture_unit
+			{
+				texture stained_glass.png
+			}
+			
+			texture_unit
+			{
+				texture wall.png
+			}
+		}
+	}
+}
