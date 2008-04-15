@@ -34,6 +34,13 @@ SET(INC_FILES
 	include/VolumeIterator.h	
 )
 
+FIND_PACKAGE(Boost REQUIRED)
+
+#under windows boost linking is automatic. Under Linux it is specified here. Might need changing for MinGW
+#IF(NOT WIN32)
+#	SET(BOOST_LIBRARIES boost_program_options boost_filesystem)
+#ENDIF(NOT WIN32)
+
 ADD_DEFINITIONS(-DPOLYVOX_EXPORT) #Export symbols in the .dll
 
 #Appends "_d" to the generated library when in debug mode
@@ -45,7 +52,7 @@ SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
 #Tell CMake the paths
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #Build
 ADD_LIBRARY(PolyVoxSceneManager SHARED ${SRC_FILES} ${INC_FILES})
@@ -58,5 +65,3 @@ INSTALL(TARGETS PolyVoxSceneManager
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib
 )
-
-INSTALL(DIRECTORY media/ DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/media PATTERN "*.svn*" EXCLUDE)
