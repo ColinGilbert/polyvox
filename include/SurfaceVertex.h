@@ -20,7 +20,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_SurfaceVertex_H__
 #define __PolyVox_SurfaceVertex_H__
 
-#include "SurfaceTypes.h"
 #include "TypeDef.h"
 #include "Vector.h"
 
@@ -37,13 +36,11 @@ namespace PolyVox
 		friend bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
 
 		float getAlpha(void) const;
-		const SurfaceEdgeIterator& getEdge(void) const;
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
 
 		void setAlpha(float alphaToSet);	
-		void setEdge(const SurfaceEdgeIterator& edgeToSet);
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
 
@@ -54,11 +51,7 @@ namespace PolyVox
 		Vector3DFloat normal;
 		float material;
 		float alpha;
-		
-
-		SurfaceEdgeIterator edge;		
-
-		unsigned long m_uHash;
+			
 	};
 
 	

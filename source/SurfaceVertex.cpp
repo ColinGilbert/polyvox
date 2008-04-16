@@ -2,8 +2,6 @@
 
 #include "Constants.h"
 #include "SurfaceVertex.h"
-#include "SurfaceTriangle.h"
-#include "SurfaceEdge.h"
 
 namespace PolyVox
 {
@@ -15,7 +13,6 @@ namespace PolyVox
 		:material(materialToSet)
 		,alpha(alphaToSet)
 		,position(positionToSet)
-		,m_uHash((position.x()*(POLYVOX_REGION_SIDE_LENGTH*2+1)*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.y()*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.z()))
 	{
 		
 	}
@@ -24,7 +21,6 @@ namespace PolyVox
 		:position(positionToSet)
 		,normal(normalToSet)
 	{
-		m_uHash = (position.x()*(POLYVOX_REGION_SIDE_LENGTH*2+1)*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.y()*(POLYVOX_REGION_SIDE_LENGTH*2+1)) + (position.z());
 	}
 
 	float SurfaceVertex::getAlpha(void) const
@@ -35,11 +31,6 @@ namespace PolyVox
 	float SurfaceVertex::getMaterial(void) const
 	{
 		return material;
-	}
-
-	const SurfaceEdgeIterator& SurfaceVertex::getEdge(void) const
-	{
-		return edge;
 	}
 
 	const Vector3DFloat& SurfaceVertex::getNormal(void) const
@@ -62,11 +53,6 @@ namespace PolyVox
 		material = materialToSet;
 	}
 
-	void SurfaceVertex::setEdge(const SurfaceEdgeIterator& edgeToSet)
-	{
-		edge = edgeToSet;
-	}
-
 	void SurfaceVertex::setNormal(const Vector3DFloat& normalToSet)
 	{
 		normal = normalToSet;
@@ -78,15 +64,5 @@ namespace PolyVox
 		std::stringstream ss;
 		ss << "SurfaceVertex: Position = (" << position.x() << "," << position.y() << "," << position.z() << "), Normal = " << normal;
 		return ss.str();
-	}
-
-	bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs)
-	{
-		return (lhs.m_uHash == rhs.m_uHash);
-	}
-
-	bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs)
-	{
-		return (lhs.m_uHash < rhs.m_uHash);	
 	}	
 }

@@ -10,9 +10,9 @@ namespace PolyVox
 	class IntegrealVector3;
 	class PolyVoxSceneManager;
 	class RegionGeometry;
-	class SurfaceEdge;
-	class SurfaceTriange;
-	class SurfaceTypes;
+	//class SurfaceEdge;
+	//class SurfaceTriange;
+	//class SurfaceTypes;
 	class SurfaceVertex;
 	template <boost::uint32_t Size, typename Type> class Vector;
 	typedef Vector<2,float> Vector2DFloat;

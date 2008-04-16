@@ -7,8 +7,6 @@ SET(SRC_FILES
 	source/MarchingCubesTables.cpp
 	source/PolyVoxSceneManager.cpp
         source/RegionGeometry.cpp  
-        source/SurfaceEdge.cpp        
-	source/SurfaceTriangle.cpp
 	source/SurfaceVertex.cpp
 	source/Volume.cpp
 	source/VolumeIterator.cpp
@@ -23,9 +21,6 @@ SET(INC_FILES
 	include/PolyVoxForwardDeclarations.h
         include/PolyVoxSceneManager.h
 	include/RegionGeometry.h
-        include/SurfaceEdge.h
-	include/SurfaceTypes.h
-        include/SurfaceTriangle.h
         include/SurfaceVertex.h
 	include/TypeDef.h
 	include/Vector.h
