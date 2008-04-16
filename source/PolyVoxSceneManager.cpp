@@ -244,7 +244,7 @@ namespace PolyVox
 		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
 
 		//Offset from lower block corner
-		const Vector3DUint32 offset(firstX*2,firstY*2,firstZ*2);
+		const Vector3DFloat offset(firstX,firstY,firstZ);
 
 		Vector3DUint32 vertlist[12];
 		uint8_t vertMaterials[12];
@@ -380,9 +380,14 @@ namespace PolyVox
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 			{
 				//The three vertices forming a triangle
-				const Vector3DUint32 vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
-				const Vector3DUint32 vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
-				const Vector3DUint32 vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
+				const Vector3DUint32 vertex0 = vertlist[triTable[iCubeIndex][i  ]];
+				const Vector3DUint32 vertex1 = vertlist[triTable[iCubeIndex][i+1]];
+				const Vector3DUint32 vertex2 = vertlist[triTable[iCubeIndex][i+2]];
+
+				//Cast to floats and divide by two.
+				const Vector3DFloat vertex0AsFloat = (static_cast<Vector3DFloat>(vertex0) / 2.0f) - offset;
+				const Vector3DFloat vertex1AsFloat = (static_cast<Vector3DFloat>(vertex1) / 2.0f) - offset;
+				const Vector3DFloat vertex2AsFloat = (static_cast<Vector3DFloat>(vertex2) / 2.0f) - offset;
 
 				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
 				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
@@ -392,79 +397,79 @@ namespace PolyVox
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
 				{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
+					SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material2 + 0.1,1.0);
 					singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 				}
 				else if(material0 == material1)
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material2 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else if(material0 == material2)
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material1 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else if(material1 == material2)
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material1 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material1 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material2 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
@@ -510,7 +515,7 @@ namespace PolyVox
 			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->m_vecVertices.begin();
 			while(iterSurfaceVertex != singleMaterialPatch->m_vecVertices.end())
 			{
-				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset)/2.0f, CENTRAL_DIFFERENCE);
+				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
@@ -518,7 +523,7 @@ namespace PolyVox
 			iterSurfaceVertex = multiMaterialPatch->m_vecVertices.begin();
 			while(iterSurfaceVertex != multiMaterialPatch->m_vecVertices.end())
 			{
-				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset)/2.0f, CENTRAL_DIFFERENCE);
+				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}

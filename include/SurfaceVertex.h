@@ -30,8 +30,8 @@ namespace PolyVox
 	{
 	public:	
 		SurfaceVertex();
-		SurfaceVertex(Vector3DUint32 positionToSet, float materialToSet, float alphaToSet);
-		SurfaceVertex(Vector3DUint32 positionToSet, Vector3DFloat normalToSet);	
+		SurfaceVertex(Vector3DFloat positionToSet, float materialToSet, float alphaToSet);
+		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet);	
 
 		friend bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
 		friend bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
@@ -40,7 +40,7 @@ namespace PolyVox
 		const SurfaceEdgeIterator& getEdge(void) const;
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
-		const Vector3DUint32& getPosition(void) const;	
+		const Vector3DFloat& getPosition(void) const;	
 
 		void setAlpha(float alphaToSet);	
 		void setEdge(const SurfaceEdgeIterator& edgeToSet);
@@ -50,7 +50,7 @@ namespace PolyVox
 		std::string tostring(void) const;
 
 	private:		
-		Vector3DUint32 position;
+		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material;
 		float alpha;
