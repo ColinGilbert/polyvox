@@ -34,7 +34,7 @@ namespace PolyVox
 	{
 		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
-			mBlocks[i] = new Block;
+			mBlocks[i] = new Block<boost::uint8_t>;
 		}
 	}
 
@@ -124,7 +124,7 @@ namespace PolyVox
 	block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}*/	
 
-	Block* Volume::getBlock(uint16_t index)
+	Block<boost::uint8_t>* Volume::getBlock(uint16_t index)
 	{
 		return mBlocks[index];
 	}

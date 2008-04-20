@@ -43,7 +43,7 @@ namespace PolyVox
 		Volume& operator=(const Volume& rhs);
 
 	public:
-		Block* getBlock(boost::uint16_t index);
+		Block<boost::uint8_t>* getBlock(boost::uint16_t index);
 
 		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
@@ -55,7 +55,7 @@ namespace PolyVox
 		void tidy(void);
 
 	private:
-		Block* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
+		Block<boost::uint8_t>* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
 	};
 }
 

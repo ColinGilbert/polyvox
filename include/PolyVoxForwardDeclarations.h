@@ -5,7 +5,7 @@
 
 namespace PolyVox
 {
-	class Block;
+	template <typename VoxelType> class Block;
 	class IndexedSurfacePatch;
 	class IntegrealVector3;
 	class PolyVoxSceneManager;

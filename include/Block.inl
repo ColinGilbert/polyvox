@@ -17,29 +17,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
-#include "Block.h"
-
 #include <cstring>
-
-using namespace boost;
 
 namespace PolyVox
 {
 
-	Block::Block()
+	template <typename VoxelType>
+	Block<VoxelType>::Block()
 	{
 	}
 
-	Block::Block(const Block& rhs)
+	template <typename VoxelType>
+	Block<VoxelType>::Block(const Block<VoxelType>& rhs)
 	{
 		*this = rhs;
 	}
 
-	Block::~Block()
+	template <typename VoxelType>
+	Block<VoxelType>::~Block()
 	{
 	}
 
-	Block& Block::operator=(const Block& rhs)
+	template <typename VoxelType>
+	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
 	{
 		if (this == &rhs)
 		{
@@ -51,7 +51,8 @@ namespace PolyVox
 		return *this;
 	}
 
-	uint8_t Block::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
+	template <typename VoxelType>
+	VoxelType Block<VoxelType>::getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const
 	{
 		return mData
 			[
@@ -61,7 +62,8 @@ namespace PolyVox
 			];
 	}
 
-	void Block::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
+	template <typename VoxelType>
+	void Block<VoxelType>::setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value)
 	{
 		mData
 			[

@@ -62,7 +62,7 @@ namespace PolyVox
 
 	void VolumeIterator::setVoxel(uint8_t value)
 	{
-		Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+		Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
 		/*if(!currentBlock.unique())
 		{
@@ -91,7 +91,7 @@ namespace PolyVox
 		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
-		const Block* block = mVolume.mBlocks
+		const Block<boost::uint8_t>* block = mVolume.mBlocks
 			[
 				blockX + 
 				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
@@ -135,7 +135,7 @@ namespace PolyVox
 		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
-		Block* block = mVolume.mBlocks
+		Block<boost::uint8_t>* block = mVolume.mBlocks
 			[
 				blockX + 
 				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
@@ -324,7 +324,7 @@ namespace PolyVox
 		mBlockIndexInVolume = mXBlock + 
 			mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
 			mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
-		Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+		Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
 			mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
@@ -372,7 +372,7 @@ namespace PolyVox
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 				mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
-			Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+			Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
@@ -385,7 +385,7 @@ namespace PolyVox
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 					mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
-				Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+				Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
@@ -424,7 +424,7 @@ namespace PolyVox
 						}
 					}
 
-					Block* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+					Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->mBlocks[mBlockIndexInVolume];					
 
 					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
