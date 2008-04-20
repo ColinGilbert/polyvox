@@ -159,10 +159,11 @@ namespace PolyVox
 			{
 				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
+					volIter.setPosition(x,y,z);
 					if((x/16+y/16+z/16)%2 == 0)
-						volIter.setVoxelAt(x,y,z,4);
+						volIter.setVoxel(4);
 					else
-						volIter.setVoxelAt(x,y,z,8);
+						volIter.setVoxel(8);
 				}
 			}
 		}		
@@ -182,7 +183,8 @@ namespace PolyVox
 						(x>225)
 						)
 					{
-						volIter.setVoxelAt(x,y,z,2);
+						volIter.setPosition(x,y,z);
+						volIter.setVoxel(2);
 					}
 				}
 			}
@@ -202,7 +204,8 @@ namespace PolyVox
 			{
 				for(uint16_t x = static_cast<uint16_t>(centre.x()) - uHalfX; x < static_cast<uint16_t>(centre.x()) + uHalfX; x++)
 				{
-					volIter.setVoxelAt(x,y,z,0);
+					volIter.setPosition(x,y,z);
+					volIter.setVoxel(0);
 				}
 			}
 		}
@@ -224,7 +227,8 @@ namespace PolyVox
 						(x<=225)
 						)
 					{
-						volIter.setVoxelAt(x,y,z,1);
+						volIter.setPosition(x,y,z);
+						volIter.setVoxel(1);
 					}
 				}
 			}
@@ -696,7 +700,8 @@ namespace PolyVox
 		if(volumeData->containsPoint(Vector3DInt32(uX,uY,uZ),0))
 		{
 			VolumeIterator<boost::uint8_t> volIter(*volumeData);
-			return volIter.getVoxelAt(uX,uY,uZ);
+			volIter.setPosition(uX,uY,uZ);
+			return volIter.getVoxel();
 		}
 		else
 		{

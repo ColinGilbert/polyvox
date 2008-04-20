@@ -37,9 +37,6 @@ namespace PolyVox
 		void setVoxel(VoxelType value);
 		VoxelType getVoxel(void);
 
-		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
-		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value);
-
 		float getAveragedVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, boost::uint16_t size) const;
 
 		//FIXME - this shouldn't return float vector
@@ -88,6 +85,9 @@ namespace PolyVox
 		VoxelType peekVoxel1px1py1pz(void) const;
 
 	private:
+
+		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
+
 		//The current volume
 		Volume<VoxelType>& mVolume;
 

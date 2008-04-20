@@ -44,20 +44,20 @@ namespace PolyVox
 		Volume& operator=(const Volume& rhs);
 
 	public:
-		Block<VoxelType>* getBlock(boost::uint16_t index);
-
 		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 
-		bool loadFromFile(const std::string& sFilename);
-		bool saveToFile(const std::string& sFilename);
-
-		void regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, VoxelType value);
 		void tidy(void);
 
 	private:
+		Block<VoxelType>* getBlock(boost::uint16_t index);
 		Block<VoxelType>* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
 	};
+
+	//Some handy typedefs
+	typedef Volume<float> FloatVolume;
+	typedef Volume<boost::uint8_t> UInt8Volume;
+	typedef Volume<boost::uint16_t> UInt16Volume;	
 }
 
 #include "Volume.inl"

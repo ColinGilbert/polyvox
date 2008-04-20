@@ -21,6 +21,10 @@ namespace PolyVox
 	typedef Vector<3,boost::int32_t> Vector3DInt32;
 	typedef Vector<3,boost::uint32_t> Vector3DUint32;
 	template <typename VoxelType> class Volume;
+	//Some handy typedefs
+	typedef Volume<float> FloatVolume;
+	typedef Volume<boost::uint8_t> UInt8Volume;
+	typedef Volume<boost::uint16_t> UInt16Volume;	
 	template <typename VoxelType> class VolumeIterator;
 }
 

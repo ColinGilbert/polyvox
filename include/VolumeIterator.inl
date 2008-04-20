@@ -131,35 +131,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const VoxelType value)
-		{
-		const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockZ = zPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-
-		const uint16_t xOffset = xPosition - (blockX << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-
-		Block<VoxelType>* block = mVolume.mBlocks
-			[
-				blockX + 
-				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-				blockZ * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS
-			];
-
-		/*if(!block.unique())
-		{
-			Block* copy(new Block(*block));
-			block = copy;
-
-			mCurrentVoxel = block->mData + mVoxelIndexInBlock;
-		}*/
-
-		block->setVoxelAt(xOffset,yOffset,zOffset, value);
-	}
-
-	template <typename VoxelType>
 	Vector3DFloat VolumeIterator<VoxelType>::getCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
