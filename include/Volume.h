@@ -52,7 +52,7 @@ namespace PolyVox
 		bool loadFromFile(const std::string& sFilename);
 		bool saveToFile(const std::string& sFilename);
 
-		void regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, boost::uint8_t value);
+		void regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, VoxelType value);
 		void tidy(void);
 
 	private:

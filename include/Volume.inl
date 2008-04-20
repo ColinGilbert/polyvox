@@ -85,7 +85,7 @@ namespace PolyVox
 		return *this;
 	}
 
-	/*uint8_t Volume::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
+	/*VoxelType Volume::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
 	const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 	const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
@@ -105,7 +105,7 @@ namespace PolyVox
 	return block->getVoxelAt(xOffset,yOffset,zOffset);
 	}*/
 
-	/*void Volume::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
+	/*void Volume::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const VoxelType value)
 	{
 	const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 	const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
@@ -186,7 +186,7 @@ namespace PolyVox
 			{
 				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
-					uint8_t value;
+					VoxelType value;
 					file.read(reinterpret_cast<char*>(&value), sizeof(value)); //FIXME - check for error here
 					volIter.setVoxelAt(x,y,z,value);
 				}
@@ -235,7 +235,7 @@ namespace PolyVox
 			{
 				for(boost::uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
-					boost::uint8_t value = volIter.getVoxelAt(x,y,z);
+					VoxelType value = volIter.getVoxelAt(x,y,z);
 					file.write(reinterpret_cast<char*>(&value), sizeof(value));	//FIXME - check for error here				
 				}
 			}
@@ -244,7 +244,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, boost::uint8_t value)
+	void Volume<VoxelType>::regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, VoxelType value)
 	{
 		//FIXME - introduce integrer 'isInVolume' function
 		if((xStart > POLYVOX_VOLUME_SIDE_LENGTH-1) || (yStart > POLYVOX_VOLUME_SIDE_LENGTH-1) || (zStart > POLYVOX_VOLUME_SIDE_LENGTH-1)
@@ -255,7 +255,7 @@ namespace PolyVox
 		}
 
 		VolumeIterator<VoxelType> volIter(*this);
-		const boost::uint8_t uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
+		const VoxelType uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
 
 		if(value == uSeedValue)
 		{
@@ -327,7 +327,7 @@ namespace PolyVox
 			{
 				//LogManager::getSingleton().logMessage("Got homogeneous block with value " + stringConverter::tostring(mBlocks[ct]->getVoxelAt(0,0,0)));
 
-				const uint8_t homogeneousValue = mBlocks[ct]->getVoxelAt(0,0,0);
+				const VoxelType homogeneousValue = mBlocks[ct]->getVoxelAt(0,0,0);
 				SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[homogeneousValue];
 				if(homogeneousBlock.isNull())
 				{

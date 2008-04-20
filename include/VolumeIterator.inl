@@ -95,7 +95,7 @@ namespace PolyVox
 		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
-		const Block<boost::uint8_t>* block = mVolume.mBlocks
+		const Block<VoxelType>* block = mVolume.mBlocks
 			[
 				blockX + 
 				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
@@ -141,7 +141,7 @@ namespace PolyVox
 		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 
-		Block<boost::uint8_t>* block = mVolume.mBlocks
+		Block<VoxelType>* block = mVolume.mBlocks
 			[
 				blockX + 
 				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
@@ -172,14 +172,14 @@ namespace PolyVox
 		}
 
 		//FIXME - bitwise way of doing this?
-		uint8_t voxel1nx = peekVoxel1nx0py0pz() > 0 ? 1: 0;
-		uint8_t voxel1px = peekVoxel1px0py0pz() > 0 ? 1: 0;
+		VoxelType voxel1nx = peekVoxel1nx0py0pz() > 0 ? 1: 0;
+		VoxelType voxel1px = peekVoxel1px0py0pz() > 0 ? 1: 0;
 
-		uint8_t voxel1ny = peekVoxel0px1ny0pz() > 0 ? 1: 0;
-		uint8_t voxel1py = peekVoxel0px1py0pz() > 0 ? 1: 0;
+		VoxelType voxel1ny = peekVoxel0px1ny0pz() > 0 ? 1: 0;
+		VoxelType voxel1py = peekVoxel0px1py0pz() > 0 ? 1: 0;
 
-		uint8_t voxel1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
-		uint8_t voxel1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
+		VoxelType voxel1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
+		VoxelType voxel1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
 
 		return Vector3DFloat(int(voxel1px) - int(voxel1nx),int(voxel1py) - int(voxel1ny),int(voxel1pz) - int(voxel1nz));
 	}
@@ -224,35 +224,35 @@ namespace PolyVox
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
 
-			const uint8_t pVoxel1nx1ny1nz = peekVoxel1nx1ny1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx1ny0pz = peekVoxel1nx1ny0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx1ny1pz = peekVoxel1nx1ny1pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx0py1nz = peekVoxel1nx0py1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx0py0pz = peekVoxel1nx0py0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx0py1pz = peekVoxel1nx0py1pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx1py1nz = peekVoxel1nx1py1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx1py0pz = peekVoxel1nx1py0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1nx1py1pz = peekVoxel1nx1py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1ny1nz = peekVoxel1nx1ny1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1ny0pz = peekVoxel1nx1ny0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1ny1pz = peekVoxel1nx1ny1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx0py1nz = peekVoxel1nx0py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx0py0pz = peekVoxel1nx0py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx0py1pz = peekVoxel1nx0py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1py1nz = peekVoxel1nx1py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1py0pz = peekVoxel1nx1py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1py1pz = peekVoxel1nx1py1pz() > 0 ? 1: 0;
 
-			const uint8_t pVoxel0px1ny1nz = peekVoxel0px1ny1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px1ny0pz = peekVoxel0px1ny0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px1ny1pz = peekVoxel0px1ny1pz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px0py1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
-			//const uint8_t pVoxel0px0py0pz = peekVoxel0px0py0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px0py1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px1py1nz = peekVoxel0px1py1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px1py0pz = peekVoxel0px1py0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel0px1py1pz = peekVoxel0px1py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1ny1nz = peekVoxel0px1ny1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1ny0pz = peekVoxel0px1ny0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1ny1pz = peekVoxel0px1ny1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px0py1nz = peekVoxel0px0py1nz() > 0 ? 1: 0;
+			//const VoxelType pVoxel0px0py0pz = peekVoxel0px0py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px0py1pz = peekVoxel0px0py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1py1nz = peekVoxel0px1py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1py0pz = peekVoxel0px1py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1py1pz = peekVoxel0px1py1pz() > 0 ? 1: 0;
 
-			const uint8_t pVoxel1px1ny1nz = peekVoxel1px1ny1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px1ny0pz = peekVoxel1px1ny0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px1ny1pz = peekVoxel1px1ny1pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px0py1nz = peekVoxel1px0py1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px0py0pz = peekVoxel1px0py0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px0py1pz = peekVoxel1px0py1pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px1py1nz = peekVoxel1px1py1nz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px1py0pz = peekVoxel1px1py0pz() > 0 ? 1: 0;
-			const uint8_t pVoxel1px1py1pz = peekVoxel1px1py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1ny1nz = peekVoxel1px1ny1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1ny0pz = peekVoxel1px1ny0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1ny1pz = peekVoxel1px1ny1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px0py1nz = peekVoxel1px0py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px0py0pz = peekVoxel1px0py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px0py1pz = peekVoxel1px0py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1py1nz = peekVoxel1px1py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1py0pz = peekVoxel1px1py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1py1pz = peekVoxel1px1py1pz() > 0 ? 1: 0;
 
 
 
@@ -337,7 +337,7 @@ namespace PolyVox
 		mBlockIndexInVolume = mXBlock + 
 			mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
 			mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
-		Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+		Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
 			mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
@@ -387,7 +387,7 @@ namespace PolyVox
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 				mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
-			Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+			Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
@@ -400,7 +400,7 @@ namespace PolyVox
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 					mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
-				Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+				Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
@@ -439,7 +439,7 @@ namespace PolyVox
 						}
 					}
 
-					Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+					Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->mBlocks[mBlockIndexInVolume];					
 
 					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * POLYVOX_BLOCK_SIDE_LENGTH));					

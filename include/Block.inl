@@ -73,14 +73,14 @@ namespace PolyVox
 			] = value;
 	}
 
-	/*void Block::fillWithValue(const uint8_t value)
+	/*void Block::fillWithValue(const VoxelType value)
 	{
 		memset(mData,value,POLYVOX_NO_OF_VOXELS_IN_BLOCK);
 	}*/
 
 	/*bool Block::isHomogeneous(void)
 	{
-		uint8_t uFirstVoxel = mData[0];
+		VoxelType uFirstVoxel = mData[0];
 		for(uint32_t ct = 1; ct < POLYVOX_NO_OF_VOXELS_IN_BLOCK; ++ct)
 		{
 			if(mData[ct] != uFirstVoxel)

@@ -51,7 +51,7 @@ namespace PolyVox
 		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
 		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value);
 
-		//void fillWithValue(const uint8_t value);
+		//void fillWithValue(const VoxelType value);
 
 	private:
 		VoxelType mData[POLYVOX_NO_OF_VOXELS_IN_BLOCK];		
