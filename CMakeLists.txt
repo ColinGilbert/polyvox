@@ -13,7 +13,9 @@ SET(SRC_FILES
 SET(INC_FILES
 	include/Block.h
 	include/Block.inl
-	include/Constants.h	
+	include/Constants.h
+	include/GradientEstimators.h	
+	include/GradientEstimators.inl
 	include/IndexedSurfacePatch.h
 	include/MarchingCubesTables.h
 	include/PolyVoxForwardDeclarations.h

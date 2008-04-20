@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 
+#include "GradientEstimators.h"
 #include "IndexedSurfacePatch.h"
 #include "MarchingCubesTables.h"
 #include "PolyVoxSceneManager.h"
@@ -561,7 +562,7 @@ namespace PolyVox
 		if(normalGenerationMethod == SOBEL)
 		{
 			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const Vector3DFloat gradFloor = volIter.getSobelGradient();
+			const Vector3DFloat gradFloor = computeSobelGradient(volIter);
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
@@ -574,7 +575,7 @@ namespace PolyVox
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
-			const Vector3DFloat gradCeil = volIter.getSobelGradient();
+			const Vector3DFloat gradCeil = computeSobelGradient(volIter);
 			result = ((gradFloor + gradCeil) * -1.0);
 			if(result.lengthSquared() < 0.0001)
 			{
@@ -585,7 +586,7 @@ namespace PolyVox
 		if(normalGenerationMethod == CENTRAL_DIFFERENCE)
 		{
 			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const Vector3DFloat gradFloor = volIter.getCentralDifferenceGradient();
+			const Vector3DFloat gradFloor = computeCentralDifferenceGradient(volIter);
 			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
@@ -598,7 +599,7 @@ namespace PolyVox
 			{			
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
-			const Vector3DFloat gradCeil = volIter.getCentralDifferenceGradient();
+			const Vector3DFloat gradCeil = computeCentralDifferenceGradient(volIter);
 			result = ((gradFloor + gradCeil) * -1.0);
 			if(result.lengthSquared() < 0.0001)
 			{

@@ -39,14 +39,11 @@ namespace PolyVox
 
 		float getAveragedVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, boost::uint16_t size) const;
 
-		//FIXME - this shouldn't return float vector
-		Vector3DFloat getCentralDifferenceGradient(void) const;
-		Vector3DFloat getAveragedCentralDifferenceGradient(void) const;
-		Vector3DFloat getSobelGradient(void) const;
+		
 
-		boost::uint16_t getPosX(void);
-		boost::uint16_t getPosY(void);
-		boost::uint16_t getPosZ(void);
+		boost::uint16_t getPosX(void) const;
+		boost::uint16_t getPosY(void) const;
+		boost::uint16_t getPosZ(void) const;
 
 		void setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos);
 		void setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast);
