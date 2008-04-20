@@ -31,7 +31,7 @@ namespace PolyVox
 	class Vector3DDouble;
 	class Vector3DInt32;
 	class Vector3DUint32;*/
-	class Volume;
+	template <typename VoxelType> class Volume;
 	class VolumeIterator;
 }
 

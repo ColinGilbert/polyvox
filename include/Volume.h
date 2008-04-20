@@ -28,7 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	class POLYVOX_API Volume
+	template <typename VoxelType>
+	class Volume
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator;
@@ -43,7 +44,7 @@ namespace PolyVox
 		Volume& operator=(const Volume& rhs);
 
 	public:
-		Block<boost::uint8_t>* getBlock(boost::uint16_t index);
+		Block<VoxelType>* getBlock(boost::uint16_t index);
 
 		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
@@ -55,8 +56,10 @@ namespace PolyVox
 		void tidy(void);
 
 	private:
-		Block<boost::uint8_t>* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
+		Block<VoxelType>* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
 	};
 }
+
+#include "Volume.inl"
 
 #endif

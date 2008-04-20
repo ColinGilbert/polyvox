@@ -25,7 +25,7 @@ using namespace boost;
 
 namespace PolyVox
 {
-	VolumeIterator::VolumeIterator(Volume& volume)
+	VolumeIterator::VolumeIterator(Volume<boost::uint8_t>& volume)
 		:mVolume(volume)
 		,mXRegionFirst(0)
 		,mYRegionFirst(0)

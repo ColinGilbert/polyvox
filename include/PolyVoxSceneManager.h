@@ -89,7 +89,7 @@ namespace PolyVox
 		NormalGenerationMethod m_normalGenerationMethod;
 
 		
-		Volume* volumeData;
+		Volume<boost::uint8_t>* volumeData;
 
 		bool m_bHaveGeneratedMeshes;
 

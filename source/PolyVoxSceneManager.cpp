@@ -151,7 +151,7 @@ namespace PolyVox
 	void PolyVoxSceneManager::generateLevelVolume(void)
 	{
 		//volumeData = VolumePtr(new Volume);
-		volumeData = new Volume();
+		volumeData = new Volume<boost::uint8_t>();
 		VolumeIterator volIter(*volumeData);
 		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{

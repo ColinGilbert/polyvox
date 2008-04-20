@@ -7,7 +7,6 @@ SET(SRC_FILES
 	source/PolyVoxSceneManager.cpp
         source/RegionGeometry.cpp  
 	source/SurfaceVertex.cpp
-	source/Volume.cpp
 	source/VolumeIterator.cpp
 )
 
@@ -26,6 +25,7 @@ SET(INC_FILES
 	include/Vector.h
 	include/Vector.inl
 	include/Volume.h
+	include/Volume.inl
 	include/VolumeIterator.h	
 )
 

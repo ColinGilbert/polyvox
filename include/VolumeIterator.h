@@ -21,17 +21,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "boost/cstdint.hpp"
 
+#include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
 #include "Vector.h"
 
 namespace PolyVox
 {
-	class Volume;
-
 	class POLYVOX_API VolumeIterator
 	{
 	public:
-		VolumeIterator(Volume& volume);
+		VolumeIterator(Volume<boost::uint8_t>& volume);
 		~VolumeIterator();
 
 		void setVoxel(boost::uint8_t value);
@@ -89,7 +88,7 @@ namespace PolyVox
 
 	private:
 		//The current volume
-		Volume& mVolume;
+		Volume<boost::uint8_t>& mVolume;
 
 		//The current position in the volume
 		boost::uint16_t mXPosInVolume;

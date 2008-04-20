@@ -25,34 +25,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Volume.h"
 #include "VolumeIterator.h" //Maybe this shouldn't be here?
 
-using namespace boost;
-
 namespace PolyVox
 {
 
-	Volume::Volume()
+	template <typename VoxelType>
+	Volume<VoxelType>::Volume()
 	{
-		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(boost::uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
-			mBlocks[i] = new Block<boost::uint8_t>;
+			mBlocks[i] = new Block<VoxelType>;
 		}
 	}
 
-	Volume::Volume(const Volume& rhs)
+	template <typename VoxelType>
+	Volume<VoxelType>::Volume(const Volume<VoxelType>& rhs)
 	{
 		std::cout << "Warning - Copying Volume" << std::endl;
 		*this = rhs;
 	}
 
-	Volume::~Volume()
+	template <typename VoxelType>
+	Volume<VoxelType>::~Volume()
 	{
-		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(boost::uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			delete mBlocks[i];
 		}
 	}
 
-	Volume& Volume::operator=(const Volume& rhs)
+	template <typename VoxelType>
+	Volume<VoxelType>& Volume<VoxelType>::operator=(const Volume& rhs)
 	{
 		std::cout << "Warning - Assigning Volume" << std::endl;
 		if (this == &rhs)
@@ -124,12 +126,14 @@ namespace PolyVox
 	block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}*/	
 
-	Block<boost::uint8_t>* Volume::getBlock(uint16_t index)
+	template <typename VoxelType>
+	Block<VoxelType>* Volume<VoxelType>::getBlock(boost::uint16_t index)
 	{
 		return mBlocks[index];
 	}
 
-	bool Volume::containsPoint(Vector3DFloat pos, float boundary)
+	template <typename VoxelType>
+	bool Volume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary)
 	{
 		return (pos.x() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
 			&& (pos.y() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary) 
@@ -139,7 +143,8 @@ namespace PolyVox
 			&& (pos.z() > boundary);
 	}
 
-	bool Volume::containsPoint(Vector3DInt32 pos, uint16_t boundary)
+	template <typename VoxelType>
+	bool Volume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary)
 	{
 		return (pos.x() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
 			&& (pos.y() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary) 
@@ -149,7 +154,8 @@ namespace PolyVox
 			&& (pos.z() > boundary);
 	}
 
-	bool Volume::loadFromFile(const std::string& sFilename)
+	template <typename VoxelType>
+	bool Volume<VoxelType>::loadFromFile(const std::string& sFilename)
 	{
 		//Open the file
 		std::ifstream file;
@@ -196,7 +202,8 @@ namespace PolyVox
 		return true;
 	}
 
-	bool Volume::saveToFile(const std::string& sFilename)
+	template <typename VoxelType>
+	bool Volume<VoxelType>::saveToFile(const std::string& sFilename)
 	{
 		//Open the file
 		std::ofstream file;
@@ -209,9 +216,9 @@ namespace PolyVox
 		}
 
 		//Read volume dimensions
-		uint8_t volumeWidth = 0;
-		uint8_t volumeHeight = 0;
-		uint8_t volumeDepth = 0;
+		boost::uint8_t volumeWidth = 0;
+		boost::uint8_t volumeHeight = 0;
+		boost::uint8_t volumeDepth = 0;
 		file.write(reinterpret_cast<char*>(&volumeWidth), sizeof(volumeWidth));
 		file.write(reinterpret_cast<char*>(&volumeHeight), sizeof(volumeHeight));
 		file.write(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
@@ -223,13 +230,13 @@ namespace PolyVox
 
 		//Write data
 		VolumeIterator volIter(*this);
-		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
+		for(boost::uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
-			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
+			for(boost::uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
 			{
-				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
+				for(boost::uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
 				{
-					uint8_t value = volIter.getVoxelAt(x,y,z);
+					boost::uint8_t value = volIter.getVoxelAt(x,y,z);
 					file.write(reinterpret_cast<char*>(&value), sizeof(value));	//FIXME - check for error here				
 				}
 			}
@@ -237,7 +244,8 @@ namespace PolyVox
 		return true;
 	}
 
-	void Volume::regionGrow(uint16_t xStart, uint16_t yStart, uint16_t zStart, uint8_t value)
+	template <typename VoxelType>
+	void Volume<VoxelType>::regionGrow(boost::uint16_t xStart, boost::uint16_t yStart, boost::uint16_t zStart, boost::uint8_t value)
 	{
 		//FIXME - introduce integrer 'isInVolume' function
 		if((xStart > POLYVOX_VOLUME_SIDE_LENGTH-1) || (yStart > POLYVOX_VOLUME_SIDE_LENGTH-1) || (zStart > POLYVOX_VOLUME_SIDE_LENGTH-1)
@@ -248,7 +256,7 @@ namespace PolyVox
 		}
 
 		VolumeIterator volIter(*this);
-		const uint8_t uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
+		const boost::uint8_t uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
 
 		if(value == uSeedValue)
 		{
@@ -310,7 +318,8 @@ namespace PolyVox
 		}
 	}
 
-	void Volume::tidy(void)
+	template <typename VoxelType>
+	void Volume<VoxelType>::tidy(void)
 	{
 		//Check for homogeneous blocks
 		/*for(uint32_t ct = 0; ct < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++ct)
