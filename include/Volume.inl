@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <queue>
 
 #include "Block.h"
-#include "Volume.h"
 #include "VolumeIterator.h" //Maybe this shouldn't be here?
 
 namespace PolyVox
@@ -229,7 +228,7 @@ namespace PolyVox
 		} 
 
 		//Write data
-		VolumeIterator volIter(*this);
+		VolumeIterator<VoxelType> volIter(*this);
 		for(boost::uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
 			for(boost::uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
@@ -255,7 +254,7 @@ namespace PolyVox
 			return;
 		}
 
-		VolumeIterator volIter(*this);
+		VolumeIterator<VoxelType> volIter(*this);
 		const boost::uint8_t uSeedValue = volIter.getVoxelAt(xStart,yStart,zStart);
 
 		if(value == uSeedValue)

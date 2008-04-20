@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "block.h"
 #include "Volume.h"
-#include "VolumeIterator.h"
 
 using namespace boost;
 
 namespace PolyVox
 {
-	VolumeIterator::VolumeIterator(Volume<boost::uint8_t>& volume)
+	template <typename VoxelType>
+	VolumeIterator<VoxelType>::VolumeIterator(Volume<VoxelType>& volume)
 		:mVolume(volume)
 		,mXRegionFirst(0)
 		,mYRegionFirst(0)
@@ -56,13 +56,15 @@ namespace PolyVox
 	{
 	}
 
-	VolumeIterator::~VolumeIterator()
+	template <typename VoxelType>
+	VolumeIterator<VoxelType>::~VolumeIterator()
 	{
 	}	
 
-	void VolumeIterator::setVoxel(uint8_t value)
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::setVoxel(VoxelType value)
 	{
-		Block<boost::uint8_t>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+		Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
 		/*if(!currentBlock.unique())
 		{
@@ -75,13 +77,15 @@ namespace PolyVox
 		*mCurrentVoxel = value;
 	}
 
-	uint8_t VolumeIterator::getVoxel(void)
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::getVoxel(void)
 	{
 		//return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume);
 		return *mCurrentVoxel;
 	}
 
-	uint8_t VolumeIterator::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
 		const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 		const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
@@ -101,7 +105,8 @@ namespace PolyVox
 		return block->getVoxelAt(xOffset,yOffset,zOffset);
 	}
 
-	float VolumeIterator::getAveragedVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, uint16_t size) const
+	template <typename VoxelType>
+	float VolumeIterator<VoxelType>::getAveragedVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, uint16_t size) const
 	{
 		float sum = 0.0;
 		for(uint16_t z = zPosition-size; z <= zPosition+size; ++z)
@@ -125,7 +130,8 @@ namespace PolyVox
 		return sum;
 	}
 
-	void VolumeIterator::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const uint8_t value)
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::setVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition, const VoxelType value)
 		{
 		const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 		const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
@@ -153,7 +159,8 @@ namespace PolyVox
 		block->setVoxelAt(xOffset,yOffset,zOffset, value);
 	}
 
-	Vector3DFloat VolumeIterator::getCentralDifferenceGradient(void) const
+	template <typename VoxelType>
+	Vector3DFloat VolumeIterator<VoxelType>::getCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
 		if((mXPosInVolume < 1) || (mXPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
@@ -177,7 +184,8 @@ namespace PolyVox
 		return Vector3DFloat(int(voxel1px) - int(voxel1nx),int(voxel1py) - int(voxel1ny),int(voxel1pz) - int(voxel1nz));
 	}
 
-	Vector3DFloat VolumeIterator::getAveragedCentralDifferenceGradient(void) const
+	template <typename VoxelType>
+	Vector3DFloat VolumeIterator<VoxelType>::getAveragedCentralDifferenceGradient(void) const
 	{
 		//FIXME - should this test be here?
 		if((mXPosInVolume < 2) || (mXPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-3) ||
@@ -201,7 +209,8 @@ namespace PolyVox
 		return Vector3DFloat(voxel1px - voxel1nx,voxel1py - voxel1ny,voxel1pz - voxel1nz);
 	}
 
-	Vector3DFloat VolumeIterator::getSobelGradient(void) const
+	template <typename VoxelType>
+	Vector3DFloat VolumeIterator<VoxelType>::getSobelGradient(void) const
 	{
 		//FIXME - should this test be here?
 		if((mXPosInVolume < 1) || (mXPosInVolume > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
@@ -292,22 +301,26 @@ namespace PolyVox
 			return Vector3DFloat(xGrad,yGrad,zGrad);
 	}
 
-	uint16_t VolumeIterator::getPosX(void)
+	template <typename VoxelType>
+	uint16_t VolumeIterator<VoxelType>::getPosX(void)
 	{
 		return mXPosInVolume;
 	}
 
-	uint16_t VolumeIterator::getPosY(void)
+	template <typename VoxelType>
+	uint16_t VolumeIterator<VoxelType>::getPosY(void)
 	{
 		return mYPosInVolume;
 	}
 
-	uint16_t VolumeIterator::getPosZ(void)
+	template <typename VoxelType>
+	uint16_t VolumeIterator<VoxelType>::getPosZ(void)
 	{
 		return mZPosInVolume;
 	}
 
-	void VolumeIterator::setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos)
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -333,7 +346,8 @@ namespace PolyVox
 		mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
 	}
 
-	void VolumeIterator::setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast)
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -360,7 +374,8 @@ namespace PolyVox
 		mZRegionLastBlock = mZRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
 	}
 
-	void VolumeIterator::moveForwardInRegion(void)
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::moveForwardInRegion(void)
 	{
 		mXPosInBlock++;
 		mCurrentVoxel++;
@@ -445,12 +460,14 @@ namespace PolyVox
 		}		
 	}
 
-	bool VolumeIterator::isValidForRegion(void)
+	template <typename VoxelType>
+	bool VolumeIterator<VoxelType>::isValidForRegion(void)
 	{
 		return mIsValidForRegion;
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx1ny1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1nz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -459,7 +476,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx1ny0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny0pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -468,7 +486,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx1ny1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -477,7 +496,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx0py1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py1nz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -486,7 +506,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx0py0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py0pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -495,7 +516,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx0py1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py1pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -504,7 +526,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx1py1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py1nz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -513,7 +536,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx1py0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py0pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -522,7 +546,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1nx1py1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py1pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -533,7 +558,8 @@ namespace PolyVox
 
 	//////////////////////////////////////////////////////////////////////////
 
-	uint8_t VolumeIterator::peekVoxel0px1ny1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny1nz(void) const
 	{
 		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -542,7 +568,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px1ny0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny0pz(void) const
 	{
 		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -551,7 +578,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px1ny1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny1pz(void) const
 	{
 		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -560,7 +588,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px0py1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py1nz(void) const
 	{
 		if((mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -569,12 +598,14 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px0py0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py0pz(void) const
 	{
 			return *mCurrentVoxel;
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px0py1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py1pz(void) const
 	{
 		if((mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -583,7 +614,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px1py1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py1nz(void) const
 	{
 		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -592,7 +624,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px1py0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py0pz(void) const
 	{
 		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -601,7 +634,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel0px1py1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py1pz(void) const
 	{
 		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -612,7 +646,8 @@ namespace PolyVox
 
 	//////////////////////////////////////////////////////////////////////////
 
-	uint8_t VolumeIterator::peekVoxel1px1ny1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny1nz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -621,7 +656,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px1ny0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny0pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -630,7 +666,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px1ny1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny1pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -639,7 +676,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px0py1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py1nz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -648,7 +686,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px0py0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py0pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -657,7 +696,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px0py1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py1pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -666,7 +706,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px1py1nz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py1nz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
 		{
@@ -675,7 +716,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px1py0pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py0pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{
@@ -684,7 +726,8 @@ namespace PolyVox
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
 	}
 
-	uint8_t VolumeIterator::peekVoxel1px1py1pz(void) const
+	template <typename VoxelType>
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py1pz(void) const
 	{
 		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
 		{

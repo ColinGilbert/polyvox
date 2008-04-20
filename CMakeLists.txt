@@ -7,7 +7,6 @@ SET(SRC_FILES
 	source/PolyVoxSceneManager.cpp
         source/RegionGeometry.cpp  
 	source/SurfaceVertex.cpp
-	source/VolumeIterator.cpp
 )
 
 #Projects headers files
@@ -26,7 +25,8 @@ SET(INC_FILES
 	include/Vector.inl
 	include/Volume.h
 	include/Volume.inl
-	include/VolumeIterator.h	
+	include/VolumeIterator.h
+	include/VolumeIterator.inl	
 )
 
 FIND_PACKAGE(Boost REQUIRED)

@@ -26,6 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "boost/cstdint.hpp"
 
 #include "Constants.h"
+#include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
 #pragma endregion
 
@@ -35,7 +36,7 @@ namespace PolyVox
 	class Block
 	{
 		//Make VolumeIterator a friend
-		friend class VolumeIterator;
+		friend class VolumeIterator<VoxelType>;
 
 		//Block interface
 	public:

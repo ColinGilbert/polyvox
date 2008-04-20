@@ -32,7 +32,7 @@ namespace PolyVox
 	class Volume
 	{
 		//Make VolumeIterator a friend
-		friend class VolumeIterator;
+		friend class VolumeIterator<VoxelType>;
 
 		//Volume interface
 	public:		

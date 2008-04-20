@@ -27,17 +27,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	class POLYVOX_API VolumeIterator
+	template <typename VoxelType>
+	class VolumeIterator
 	{
 	public:
-		VolumeIterator(Volume<boost::uint8_t>& volume);
+		VolumeIterator(Volume<VoxelType>& volume);
 		~VolumeIterator();
 
-		void setVoxel(boost::uint8_t value);
-		boost::uint8_t getVoxel(void);
+		void setVoxel(VoxelType value);
+		VoxelType getVoxel(void);
 
-		boost::uint8_t getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
-		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const boost::uint8_t value);
+		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
+		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value);
 
 		float getAveragedVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, boost::uint16_t size) const;
 
@@ -56,39 +57,39 @@ namespace PolyVox
 
 		bool isValidForRegion(void);
 
-		boost::uint8_t peekVoxel1nx1ny1nz(void) const;
-		boost::uint8_t peekVoxel1nx1ny0pz(void) const;
-		boost::uint8_t peekVoxel1nx1ny1pz(void) const;
-		boost::uint8_t peekVoxel1nx0py1nz(void) const;
-		boost::uint8_t peekVoxel1nx0py0pz(void) const;
-		boost::uint8_t peekVoxel1nx0py1pz(void) const;
-		boost::uint8_t peekVoxel1nx1py1nz(void) const;
-		boost::uint8_t peekVoxel1nx1py0pz(void) const;
-		boost::uint8_t peekVoxel1nx1py1pz(void) const;
+		VoxelType peekVoxel1nx1ny1nz(void) const;
+		VoxelType peekVoxel1nx1ny0pz(void) const;
+		VoxelType peekVoxel1nx1ny1pz(void) const;
+		VoxelType peekVoxel1nx0py1nz(void) const;
+		VoxelType peekVoxel1nx0py0pz(void) const;
+		VoxelType peekVoxel1nx0py1pz(void) const;
+		VoxelType peekVoxel1nx1py1nz(void) const;
+		VoxelType peekVoxel1nx1py0pz(void) const;
+		VoxelType peekVoxel1nx1py1pz(void) const;
 
-		boost::uint8_t peekVoxel0px1ny1nz(void) const;
-		boost::uint8_t peekVoxel0px1ny0pz(void) const;
-		boost::uint8_t peekVoxel0px1ny1pz(void) const;
-		boost::uint8_t peekVoxel0px0py1nz(void) const;
-		boost::uint8_t peekVoxel0px0py0pz(void) const;
-		boost::uint8_t peekVoxel0px0py1pz(void) const;
-		boost::uint8_t peekVoxel0px1py1nz(void) const;
-		boost::uint8_t peekVoxel0px1py0pz(void) const;
-		boost::uint8_t peekVoxel0px1py1pz(void) const;
+		VoxelType peekVoxel0px1ny1nz(void) const;
+		VoxelType peekVoxel0px1ny0pz(void) const;
+		VoxelType peekVoxel0px1ny1pz(void) const;
+		VoxelType peekVoxel0px0py1nz(void) const;
+		VoxelType peekVoxel0px0py0pz(void) const;
+		VoxelType peekVoxel0px0py1pz(void) const;
+		VoxelType peekVoxel0px1py1nz(void) const;
+		VoxelType peekVoxel0px1py0pz(void) const;
+		VoxelType peekVoxel0px1py1pz(void) const;
 
-		boost::uint8_t peekVoxel1px1ny1nz(void) const;
-		boost::uint8_t peekVoxel1px1ny0pz(void) const;
-		boost::uint8_t peekVoxel1px1ny1pz(void) const;
-		boost::uint8_t peekVoxel1px0py1nz(void) const;
-		boost::uint8_t peekVoxel1px0py0pz(void) const;
-		boost::uint8_t peekVoxel1px0py1pz(void) const;
-		boost::uint8_t peekVoxel1px1py1nz(void) const;
-		boost::uint8_t peekVoxel1px1py0pz(void) const;
-		boost::uint8_t peekVoxel1px1py1pz(void) const;
+		VoxelType peekVoxel1px1ny1nz(void) const;
+		VoxelType peekVoxel1px1ny0pz(void) const;
+		VoxelType peekVoxel1px1ny1pz(void) const;
+		VoxelType peekVoxel1px0py1nz(void) const;
+		VoxelType peekVoxel1px0py0pz(void) const;
+		VoxelType peekVoxel1px0py1pz(void) const;
+		VoxelType peekVoxel1px1py1nz(void) const;
+		VoxelType peekVoxel1px1py0pz(void) const;
+		VoxelType peekVoxel1px1py1pz(void) const;
 
 	private:
 		//The current volume
-		Volume<boost::uint8_t>& mVolume;
+		Volume<VoxelType>& mVolume;
 
 		//The current position in the volume
 		boost::uint16_t mXPosInVolume;
@@ -106,7 +107,7 @@ namespace PolyVox
 		boost::uint16_t mZPosInBlock;
 
 		//Other current position information
-		boost::uint8_t* mCurrentVoxel;
+		VoxelType* mCurrentVoxel;
 		boost::uint32_t mBlockIndexInVolume;
 		boost::uint32_t mVoxelIndexInBlock;
 
@@ -127,5 +128,7 @@ namespace PolyVox
 		bool mIsValidForRegion;
 	};
 }
+
+#include "VolumeIterator.inl"
 
 #endif

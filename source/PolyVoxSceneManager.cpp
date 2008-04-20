@@ -120,7 +120,7 @@ namespace PolyVox
 		lastY = std::min(lastY,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
 		lastZ = std::min(lastZ,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
 
-		VolumeIterator volIter(*volumeData);
+		VolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
 		volIter.setPosition(firstX,firstY,firstZ);
 		while(volIter.isValidForRegion())
@@ -152,7 +152,7 @@ namespace PolyVox
 	{
 		//volumeData = VolumePtr(new Volume);
 		volumeData = new Volume<boost::uint8_t>();
-		VolumeIterator volIter(*volumeData);
+		VolumeIterator<boost::uint8_t> volIter(*volumeData);
 		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
 		{
 			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
@@ -248,7 +248,7 @@ namespace PolyVox
 
 		Vector3DUint32 vertlist[12];
 		uint8_t vertMaterials[12];
-		VolumeIterator volIter(*volumeData);
+		VolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
 
 		//////////////////////////////////////////////////////////////////////////
@@ -541,7 +541,7 @@ namespace PolyVox
 
 	Vector3DFloat PolyVoxSceneManager::computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const
 	{
-		VolumeIterator volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
+		VolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
 		const float posX = position.x();
 		const float posY = position.y();
@@ -695,7 +695,7 @@ namespace PolyVox
 	{
 		if(volumeData->containsPoint(Vector3DInt32(uX,uY,uZ),0))
 		{
-			VolumeIterator volIter(*volumeData);
+			VolumeIterator<boost::uint8_t> volIter(*volumeData);
 			return volIter.getVoxelAt(uX,uY,uZ);
 		}
 		else
