@@ -238,8 +238,6 @@ namespace PolyVox
 
 	void PolyVoxSceneManager::generateMeshDataForRegion(const uint16_t regionX, const uint16_t regionY, const uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const
 	{	
-		//IndexedSurfacePatch* surfacePatchResult = new IndexedSurfacePatch;
-
 		//First and last voxels in the region
 		const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
 		const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
@@ -251,7 +249,7 @@ namespace PolyVox
 		//Offset from lower block corner
 		const Vector3DFloat offset(firstX,firstY,firstZ);
 
-		Vector3DUint32 vertlist[12];
+		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
 		VolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
@@ -299,100 +297,100 @@ namespace PolyVox
 			/* Find the vertices where the surface intersects the cube */
 			if (edgeTable[iCubeIndex] & 1)
 			{
-				vertlist[0].setX(2*x + 1);
-				vertlist[0].setY(2*y);
-				vertlist[0].setZ(2*z);
+				vertlist[0].setX(x + 0.5f);
+				vertlist[0].setY(y);
+				vertlist[0].setZ(z);
 				vertMaterials[0] = v000 | v100; //Because one of these is 0, the or operation takes the max.
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
-				vertlist[1].setX(2*x + 2);
-				vertlist[1].setY(2*y + 1);
-				vertlist[1].setZ(2*z);
+				vertlist[1].setX(x + 1.0f);
+				vertlist[1].setY(y + 0.5f);
+				vertlist[1].setZ(z);
 				vertMaterials[1] = v100 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
-				vertlist[2].setX(2*x + 1);
-				vertlist[2].setY(2*y + 2);
-				vertlist[2].setZ(2*z);
+				vertlist[2].setX(x + 0.5f);
+				vertlist[2].setY(y + 1.0f);
+				vertlist[2].setZ(z);
 				vertMaterials[2] = v010 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
-				vertlist[3].setX(2*x);
-				vertlist[3].setY(2*y + 1);
-				vertlist[3].setZ(2*z);
+				vertlist[3].setX(x);
+				vertlist[3].setY(y + 0.5f);
+				vertlist[3].setZ(z);
 				vertMaterials[3] = v000 | v010;
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
-				vertlist[4].setX(2*x + 1);
-				vertlist[4].setY(2*y);
-				vertlist[4].setZ(2*z + 2);
+				vertlist[4].setX(x + 0.5f);
+				vertlist[4].setY(y);
+				vertlist[4].setZ(z + 1.0f);
 				vertMaterials[4] = v001 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
-				vertlist[5].setX(2*x + 2);
-				vertlist[5].setY(2*y + 1);
-				vertlist[5].setZ(2*z + 2);
+				vertlist[5].setX(x + 1.0f);
+				vertlist[5].setY(y + 0.5f);
+				vertlist[5].setZ(z + 1.0f);
 				vertMaterials[5] = v101 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
-				vertlist[6].setX(2*x + 1);
-				vertlist[6].setY(2*y + 2);
-				vertlist[6].setZ(2*z + 2);
+				vertlist[6].setX(x + 0.5f);
+				vertlist[6].setY(y + 1.0f);
+				vertlist[6].setZ(z + 1.0f);
 				vertMaterials[6] = v011 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
-				vertlist[7].setX(2*x);
-				vertlist[7].setY(2*y + 1);
-				vertlist[7].setZ(2*z + 2);
+				vertlist[7].setX(x);
+				vertlist[7].setY(y + 0.5f);
+				vertlist[7].setZ(z + 1.0f);
 				vertMaterials[7] = v001 | v011;
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
-				vertlist[8].setX(2*x);
-				vertlist[8].setY(2*y);
-				vertlist[8].setZ(2*z + 1);
+				vertlist[8].setX(x);
+				vertlist[8].setY(y);
+				vertlist[8].setZ(z + 0.5f);
 				vertMaterials[8] = v000 | v001;
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
-				vertlist[9].setX(2*x + 2);
-				vertlist[9].setY(2*y);
-				vertlist[9].setZ(2*z + 1);
+				vertlist[9].setX(x + 1.0f);
+				vertlist[9].setY(y);
+				vertlist[9].setZ(z + 0.5f);
 				vertMaterials[9] = v100 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
-				vertlist[10].setX(2*x + 2);
-				vertlist[10].setY(2*y + 2);
-				vertlist[10].setZ(2*z + 1);
+				vertlist[10].setX(x + 1.0f);
+				vertlist[10].setY(y + 1.0f);
+				vertlist[10].setZ(z + 0.5f);
 				vertMaterials[10] = v110 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
-				vertlist[11].setX(2*x);
-				vertlist[11].setY(2*y + 2);
-				vertlist[11].setZ(2*z + 1);
+				vertlist[11].setX(x);
+				vertlist[11].setY(y + 1.0f);
+				vertlist[11].setZ(z + 0.5f);
 				vertMaterials[11] = v010 | v011;
 			}
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 			{
 				//The three vertices forming a triangle
-				const Vector3DUint32 vertex0 = vertlist[triTable[iCubeIndex][i  ]];
-				const Vector3DUint32 vertex1 = vertlist[triTable[iCubeIndex][i+1]];
-				const Vector3DUint32 vertex2 = vertlist[triTable[iCubeIndex][i+2]];
+				const Vector3DFloat vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
+				const Vector3DFloat vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
+				const Vector3DFloat vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
 
 				//Cast to floats and divide by two.
-				const Vector3DFloat vertex0AsFloat = (static_cast<Vector3DFloat>(vertex0) / 2.0f) - offset;
-				const Vector3DFloat vertex1AsFloat = (static_cast<Vector3DFloat>(vertex1) / 2.0f) - offset;
-				const Vector3DFloat vertex2AsFloat = (static_cast<Vector3DFloat>(vertex2) / 2.0f) - offset;
+				//const Vector3DFloat vertex0AsFloat = (static_cast<Vector3DFloat>(vertex0) / 2.0f) - offset;
+				//const Vector3DFloat vertex1AsFloat = (static_cast<Vector3DFloat>(vertex1) / 2.0f) - offset;
+				//const Vector3DFloat vertex2AsFloat = (static_cast<Vector3DFloat>(vertex2) / 2.0f) - offset;
 
 				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
 				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
@@ -402,79 +400,79 @@ namespace PolyVox
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				if((material0 == material1) && (material1 == material2))
 				{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material2 + 0.1,1.0);
+					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
 					singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 				}
 				else if(material0 == material1)
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material2 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else if(material0 == material2)
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else if(material1 == material2)
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}
 				else
 				{
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 
 					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0AsFloat,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1AsFloat,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2AsFloat,material2 + 0.1,1.0);
+						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
+						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
 						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 					}
 				}

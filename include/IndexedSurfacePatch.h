@@ -26,12 +26,18 @@ namespace PolyVox
 		std::vector<SurfaceVertex> m_vecVertices;
 
 		static long int vertexIndices[POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1];
+		static boost::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
+		static boost::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
+		static boost::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
 
 		static long int noOfVerticesSubmitted;
 		static long int noOfVerticesAccepted;
 		static long int noOfTrianglesSubmitted;
 
 		long int getSizeInBytes(void);
+
+		boost::int32_t getIndexFor(const Vector3DFloat& pos);
+		void setIndexFor(const Vector3DFloat& pos, boost::int32_t newIndex);
 
 	private:
 		bool m_AllowDuplicateVertices;

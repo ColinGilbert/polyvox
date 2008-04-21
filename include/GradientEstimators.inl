@@ -22,7 +22,12 @@ namespace PolyVox
 		VoxelType voxel1nz = volIter.peekVoxel0px0py1nz() > 0 ? 1: 0;
 		VoxelType voxel1pz = volIter.peekVoxel0px0py1pz() > 0 ? 1: 0;
 
-		return Vector3DFloat(int(voxel1px) - int(voxel1nx),int(voxel1py) - int(voxel1ny),int(voxel1pz) - int(voxel1nz));
+		return Vector3DFloat
+		(
+			static_cast<float>(voxel1px) - static_cast<float>(voxel1nx),
+			static_cast<float>(voxel1py) - static_cast<float>(voxel1ny),
+			static_cast<float>(voxel1pz) - static_cast<float>(voxel1nz)
+		);
 	}
 
 	template <typename VoxelType>
@@ -114,6 +119,6 @@ namespace PolyVox
 				weights[0][2][2] * ( pVoxel1px1py1nz) + weights[2][2][2] *
 				( pVoxel1px1py1pz));
 
-			return Vector3DFloat(xGrad,yGrad,zGrad);
+			return Vector3DFloat(static_cast<float>(xGrad),static_cast<float>(yGrad),static_cast<float>(zGrad));
 	}
 }
