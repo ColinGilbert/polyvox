@@ -56,7 +56,6 @@ namespace PolyVox
 
 	
 	
-	
 
 	//bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs);
 }

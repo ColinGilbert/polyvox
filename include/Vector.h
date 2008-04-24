@@ -111,6 +111,9 @@ namespace PolyVox
     typedef Vector<3,double> Vector3DDouble;
 	typedef Vector<3,boost::int32_t> Vector3DInt32;
 	typedef Vector<3,boost::uint32_t> Vector3DUint32;
+
+
+
 }//namespace Thermite
 
 #include "Vector.inl"

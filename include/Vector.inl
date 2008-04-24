@@ -501,7 +501,7 @@ namespace PolyVox
 		}
 		for(boost::uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] /= length;
+			m_tElements[ct] /= static_cast<Type>(length);
 		}
     }
 }//namespace Thermite

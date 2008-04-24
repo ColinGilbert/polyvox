@@ -4,10 +4,10 @@ using namespace boost;
 
 namespace PolyVox
 {
-	long int IndexedSurfacePatch::noOfVerticesSubmitted = 0;
-	long int IndexedSurfacePatch::noOfVerticesAccepted = 0;
-	long int IndexedSurfacePatch::noOfTrianglesSubmitted = 0;
-	long int IndexedSurfacePatch::vertexIndices[POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1];
+	int32_t IndexedSurfacePatch::noOfVerticesSubmitted = 0;
+	int32_t IndexedSurfacePatch::noOfVerticesAccepted = 0;
+	int32_t IndexedSurfacePatch::noOfTrianglesSubmitted = 0;
+	int32_t IndexedSurfacePatch::vertexIndices[POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1];
 	int32_t IndexedSurfacePatch::vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
 	int32_t IndexedSurfacePatch::vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
 	int32_t IndexedSurfacePatch::vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
@@ -92,7 +92,7 @@ namespace PolyVox
 		}
 	}
 
-	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint16_t>& vecIndices)
+	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint32_t>& vecIndices)
 	{
 		vecVertices.resize(m_vecVertices.size());
 		std::copy(m_vecVertices.begin(), m_vecVertices.end(), vecVertices.begin());
@@ -105,14 +105,6 @@ namespace PolyVox
 			std::vector<SurfaceVertex>::iterator iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), **iterVertices);
 			vecIndices.push_back(iterVertex - vecVertices.begin());
 		}*/
-	}
-
-	long int IndexedSurfacePatch::getSizeInBytes(void)
-	{
-		long int size = sizeof(IndexedSurfacePatch);
-		size += m_vecVertices.capacity() * sizeof(m_vecVertices[0]);
-		size += m_vecTriangleIndices.capacity() * sizeof(m_vecTriangleIndices[0]);
-		return size;
 	}
 
 	boost::int32_t IndexedSurfacePatch::getIndexFor(const Vector3DFloat& pos)
@@ -162,5 +154,20 @@ namespace PolyVox
 		{
 			vertexIndicesZ[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
 		}
+	}
+
+	const std::vector<SurfaceVertex>& IndexedSurfacePatch::getVertices(void) const
+	{
+		return m_vecVertices;
+	}
+
+	std::vector<SurfaceVertex>& IndexedSurfacePatch::getVertices(void)
+	{
+		return m_vecVertices;
+	}
+
+	const std::vector<boost::uint32_t>& IndexedSurfacePatch::getIndices(void) const
+	{
+		return m_vecTriangleIndices;
 	}
 }

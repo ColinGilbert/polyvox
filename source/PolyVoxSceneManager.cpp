@@ -73,9 +73,9 @@ namespace PolyVox
 
 						generateMeshDataForRegion(regionX,regionY,regionZ, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
-						regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->m_vecVertices.size() > 0;
-						regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->m_vecVertices.size() > 0;
-						regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->m_vecVertices.size() == 0) && (regionGeometry.m_patchMultiMaterial->m_vecTriangleIndices.size() == 0));
+						regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
+						regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
+						regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
 
 						listChangedRegionGeometry.push_back(regionGeometry);
 					}
@@ -515,16 +515,16 @@ namespace PolyVox
 		//for(std::map<uint8_t, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
 		{
 
-			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->m_vecVertices.begin();
-			while(iterSurfaceVertex != singleMaterialPatch->m_vecVertices.end())
+			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
+			while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
 			{
 				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
 
-			iterSurfaceVertex = multiMaterialPatch->m_vecVertices.begin();
-			while(iterSurfaceVertex != multiMaterialPatch->m_vecVertices.end())
+			iterSurfaceVertex = multiMaterialPatch->getVertices().begin();
+			while(iterSurfaceVertex != multiMaterialPatch->getVertices().end())
 			{
 				Vector3DFloat tempNormal = computeNormal(static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);

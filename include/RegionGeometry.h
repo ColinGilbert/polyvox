@@ -38,9 +38,6 @@ namespace PolyVox
 		Vector3DInt32 m_v3dRegionPosition;
 		IndexedSurfacePatch* m_patchSingleMaterial;
 		IndexedSurfacePatch* m_patchMultiMaterial;
-
-		long int getSizeInBytes(void);
-
 	};	
 }
 

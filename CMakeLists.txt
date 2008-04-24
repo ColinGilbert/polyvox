@@ -5,7 +5,7 @@ SET(SRC_FILES
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/PolyVoxSceneManager.cpp
-        source/RegionGeometry.cpp  
+	source/RegionGeometry.cpp  
 	source/SurfaceVertex.cpp
 )
 
@@ -19,9 +19,9 @@ SET(INC_FILES
 	include/IndexedSurfacePatch.h
 	include/MarchingCubesTables.h
 	include/PolyVoxForwardDeclarations.h
-        include/PolyVoxSceneManager.h
+	include/PolyVoxSceneManager.h
 	include/RegionGeometry.h
-        include/SurfaceVertex.h
+	include/SurfaceVertex.h
 	include/TypeDef.h
 	include/Vector.h
 	include/Vector.inl
@@ -37,6 +37,8 @@ FIND_PACKAGE(Boost REQUIRED)
 #IF(NOT WIN32)
 #	SET(BOOST_LIBRARIES boost_program_options boost_filesystem)
 #ENDIF(NOT WIN32)
+
+
 
 ADD_DEFINITIONS(-DPOLYVOX_EXPORT) #Export symbols in the .dll
 
@@ -55,6 +57,9 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR}/include)
 ADD_LIBRARY(PolyVoxSceneManager SHARED ${SRC_FILES} ${INC_FILES})
 TARGET_LINK_LIBRARIES(PolyVoxSceneManager)
 SET_TARGET_PROPERTIES(PolyVoxSceneManager PROPERTIES VERSION ${THERMITE_VERSION} SOVERSION ${THERMITE_VERSION_MAJOR})
+IF(WIN32)
+	SET_TARGET_PROPERTIES(PolyVoxSceneManager PROPERTIES COMPILE_FLAGS "/wd4251") #Disable warning on STL exports
+ENDIF(WIN32)
 
 #Install
 INSTALL(TARGETS PolyVoxSceneManager
