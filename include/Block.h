@@ -23,11 +23,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_Block_H__
 
 #pragma region Headers
-#include "boost/cstdint.hpp"
-
 #include "Constants.h"
 #include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
+
+#include "boost/cstdint.hpp"
 #pragma endregion
 
 namespace PolyVox
@@ -40,7 +40,7 @@ namespace PolyVox
 
 		//Block interface
 	public:
-		Block();
+		Block(boost::uint8_t uSideLengthPower);
 		Block(const Block& rhs);
 		~Block();
 
@@ -48,13 +48,18 @@ namespace PolyVox
 
 		//bool isHomogeneous(void);
 
+		boost::uint16_t getSideLength(void);
+
 		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
 		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value);
 
 		//void fillWithValue(const VoxelType value);
 
 	private:
-		VoxelType mData[POLYVOX_NO_OF_VOXELS_IN_BLOCK];		
+		boost::uint32_t getNoOfVoxels(void);
+		boost::uint8_t m_uSideLengthPower;
+		boost::uint16_t m_uSideLength;
+		VoxelType* m_tData;		
 	};
 }
 

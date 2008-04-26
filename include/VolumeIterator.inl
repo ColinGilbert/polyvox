@@ -49,7 +49,7 @@ namespace PolyVox
 		,mYPosInBlock(0)
 		,mZPosInBlock(0)
 		,mIsValidForRegion(true)
-		,mCurrentVoxel(volume.mBlocks[0]->mData)
+		,mCurrentVoxel(volume.mBlocks[0]->m_tData)
 		//,mCurrentBlock(volume->mBlocks[0])
 		,mVoxelIndexInBlock(0)
 		,mBlockIndexInVolume(0)
@@ -172,7 +172,7 @@ namespace PolyVox
 			mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 			mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 
-		mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
+		mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 	}
 
 	template <typename VoxelType>
@@ -217,7 +217,7 @@ namespace PolyVox
 				mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 				mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 			Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
-			mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
+			mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
 			mYPosInVolume++;
@@ -230,7 +230,7 @@ namespace PolyVox
 					mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 					mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 				Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
-				mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
+				mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
 				mZPosInVolume++;
@@ -283,7 +283,7 @@ namespace PolyVox
 						mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
 						mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
 
-					mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
+					mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 				}
 			}
 		}		

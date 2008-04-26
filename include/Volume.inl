@@ -32,7 +32,7 @@ namespace PolyVox
 	{
 		for(boost::uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
-			mBlocks[i] = new Block<VoxelType>;
+			mBlocks[i] = new Block<VoxelType>(POLYVOX_BLOCK_SIDE_LENGTH_POWER);
 		}
 	}
 

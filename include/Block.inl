@@ -23,8 +23,19 @@ namespace PolyVox
 {
 
 	template <typename VoxelType>
-	Block<VoxelType>::Block()
+	Block<VoxelType>::Block(boost::uint8_t uSideLengthPower)
+		:m_tData(0)
 	{
+		//Check the block size is sensible. This corresponds to a side length of 256 voxels
+		assert(uSideLengthPower <= 8);
+
+		//Compute the side length
+		m_uSideLengthPower = uSideLengthPower;
+		m_uSideLength = 0x01 << uSideLengthPower;
+
+		//If this fails an exception will be thrown. Memory is not   
+		//allocated and there is nothing else in this class to clean up
+		m_tData = new VoxelType[getNoOfVoxels()];
 	}
 
 	template <typename VoxelType>
@@ -36,6 +47,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>::~Block()
 	{
+		delete[] m_tData;
+		m_tData = 0;
 	}
 
 	template <typename VoxelType>
@@ -46,7 +59,7 @@ namespace PolyVox
 			return *this;
 		}
 
-		memcpy(mData,rhs.mData,POLYVOX_NO_OF_VOXELS_IN_BLOCK);
+		memcpy(m_tData,rhs.m_tData,getNoOfVoxels());
 
 		return *this;
 	}
@@ -54,23 +67,35 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Block<VoxelType>::getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const
 	{
-		return mData
+		return m_tData
 			[
 				xPosition + 
-				yPosition * POLYVOX_BLOCK_SIDE_LENGTH + 
-				zPosition * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH
+				yPosition * m_uSideLength + 
+				zPosition * m_uSideLength * m_uSideLength
 			];
 	}
 
 	template <typename VoxelType>
 	void Block<VoxelType>::setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value)
 	{
-		mData
+		m_tData
 			[
 				xPosition + 
-				yPosition * POLYVOX_BLOCK_SIDE_LENGTH + 
-				zPosition * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH
+				yPosition * m_uSideLength + 
+				zPosition * m_uSideLength * m_uSideLength
 			] = value;
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t Block<VoxelType>::getSideLength(void)
+	{
+		return m_uSideLength;
+	}
+
+	template <typename VoxelType>
+	boost::uint32_t Block<VoxelType>::getNoOfVoxels(void)
+	{
+		return m_uSideLength * m_uSideLength * m_uSideLength;
 	}
 
 	/*void Block::fillWithValue(const VoxelType value)
