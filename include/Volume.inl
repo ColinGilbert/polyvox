@@ -28,11 +28,28 @@ namespace PolyVox
 {
 
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume()
+	Volume<VoxelType>::Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower)
 	{
-		for(boost::uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
+		assert(uSideLengthPower <= 16);
+
+		//Compute the volume side length
+		m_uSideLengthPower = uSideLengthPower;
+		m_uSideLength = 0x01 << uSideLengthPower;
+
+		//Compute the block side length
+		boost::uint16_t uBlockSideLength = 0x01 << uBlockSideLengthPower;
+
+		//Compute the side length in blocks
+		boost::uint16_t uSideLengthInBlocks = m_uSideLength / uBlockSideLength;
+
+		//Compute number of blocks in the volume
+		m_uNoOfBlocksInVolume = uSideLengthInBlocks * uSideLengthInBlocks * uSideLengthInBlocks;
+
+		mBlocks = new Block<VoxelType>*[m_uNoOfBlocksInVolume];
+		for(boost::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			mBlocks[i] = new Block<VoxelType>(POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+			mBlocks[i] = new Block<VoxelType>(uBlockSideLengthPower);
 		}
 	}
 
@@ -46,7 +63,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
-		for(boost::uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(boost::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			delete mBlocks[i];
 		}
@@ -67,7 +84,7 @@ namespace PolyVox
 			mBlocks[i] = SharedPtr<Block>(new Block);
 		}*/
 
-		for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			//I think this is OK... If a block is in the homogeneous array it's ref count will be greater
 			//than 1 as there will be the pointer in the volume and the pointer in the static homogeneous array.
@@ -94,9 +111,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool Volume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary)
 	{
-		return (pos.x() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.y() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary) 
-			&& (pos.z() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
+		return (pos.x() < m_uSideLength - 1 - boundary)
+			&& (pos.y() < m_uSideLength - 1 - boundary) 
+			&& (pos.z() < m_uSideLength - 1 - boundary)
 			&& (pos.x() > boundary)
 			&& (pos.y() > boundary)
 			&& (pos.z() > boundary);
@@ -105,9 +122,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool Volume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary)
 	{
-		return (pos.x() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
-			&& (pos.y() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary) 
-			&& (pos.z() < POLYVOX_VOLUME_SIDE_LENGTH - 1 - boundary)
+		return (pos.x() < m_uSideLength - 1 - boundary)
+			&& (pos.y() < m_uSideLength - 1 - boundary) 
+			&& (pos.z() < m_uSideLength - 1 - boundary)
 			&& (pos.x() > boundary)
 			&& (pos.y() > boundary)
 			&& (pos.z() > boundary);

@@ -36,7 +36,7 @@ namespace PolyVox
 
 		//Volume interface
 	public:		
-		Volume();
+		Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower);
 		~Volume();
 
 	private:
@@ -51,7 +51,11 @@ namespace PolyVox
 
 	private:
 		Block<VoxelType>* getBlock(boost::uint16_t index);
-		Block<VoxelType>* mBlocks[POLYVOX_NO_OF_BLOCKS_IN_VOLUME];
+		Block<VoxelType>** mBlocks;
+		boost::uint32_t m_uNoOfBlocksInVolume;
+
+		boost::uint16_t m_uSideLengthPower;
+		boost::uint16_t m_uSideLength;
 	};
 
 	//Some handy typedefs
