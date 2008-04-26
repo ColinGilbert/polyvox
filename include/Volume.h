@@ -36,7 +36,7 @@ namespace PolyVox
 
 		//Volume interface
 	public:		
-		Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower);
+		Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower = 5);
 		~Volume();
 
 	private:
@@ -47,15 +47,25 @@ namespace PolyVox
 		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 
+		boost::uint16_t getSideLength(void);
+		boost::uint16_t getSideLengthInBlocks(void);
+
+		boost::uint16_t getBlockSideLength(void);
+		boost::uint16_t getBlockSideLengthPower(void);
+
 		void tidy(void);
 
 	private:
 		Block<VoxelType>* getBlock(boost::uint16_t index);
 		Block<VoxelType>** mBlocks;
 		boost::uint32_t m_uNoOfBlocksInVolume;
+		boost::uint16_t m_uSideLengthInBlocks;
 
 		boost::uint16_t m_uSideLengthPower;
 		boost::uint16_t m_uSideLength;
+
+		boost::uint16_t m_uBlockSideLengthPower;
+		boost::uint16_t m_uBlockSideLength;
 	};
 
 	//Some handy typedefs

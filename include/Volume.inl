@@ -29,6 +29,7 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower)
+		:mBlocks(0)
 	{
 		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
 		assert(uSideLengthPower <= 16);
@@ -38,15 +39,21 @@ namespace PolyVox
 		m_uSideLength = 0x01 << uSideLengthPower;
 
 		//Compute the block side length
-		boost::uint16_t uBlockSideLength = 0x01 << uBlockSideLengthPower;
+		m_uBlockSideLengthPower = uBlockSideLengthPower;
+		m_uBlockSideLength = 0x01 << uBlockSideLengthPower;
 
 		//Compute the side length in blocks
-		boost::uint16_t uSideLengthInBlocks = m_uSideLength / uBlockSideLength;
+		m_uSideLengthInBlocks = m_uSideLength / m_uBlockSideLength;
 
 		//Compute number of blocks in the volume
-		m_uNoOfBlocksInVolume = uSideLengthInBlocks * uSideLengthInBlocks * uSideLengthInBlocks;
+		m_uNoOfBlocksInVolume = m_uSideLengthInBlocks * m_uSideLengthInBlocks * m_uSideLengthInBlocks;
 
 		mBlocks = new Block<VoxelType>*[m_uNoOfBlocksInVolume];
+		for(boost::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		{
+			mBlocks[i] = 0;
+		}
+
 		for(boost::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			mBlocks[i] = new Block<VoxelType>(uBlockSideLengthPower);
@@ -150,5 +157,29 @@ namespace PolyVox
 				mBlocks[ct] = homogeneousBlock;
 			}
 		}*/
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t Volume<VoxelType>::getSideLength(void)
+	{
+		return m_uSideLength;
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t Volume<VoxelType>::getSideLengthInBlocks(void)
+	{
+		return m_uSideLengthInBlocks;
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t Volume<VoxelType>::getBlockSideLength(void)
+	{
+		return m_uBlockSideLength;
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t Volume<VoxelType>::getBlockSideLengthPower(void)
+	{
+		return m_uBlockSideLengthPower;
 	}
 }

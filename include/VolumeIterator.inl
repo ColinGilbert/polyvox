@@ -30,15 +30,15 @@ namespace PolyVox
 		,mXRegionFirst(0)
 		,mYRegionFirst(0)
 		,mZRegionFirst(0)
-		,mXRegionLast(POLYVOX_VOLUME_SIDE_LENGTH-1)
-		,mYRegionLast(POLYVOX_VOLUME_SIDE_LENGTH-1)
-		,mZRegionLast(POLYVOX_VOLUME_SIDE_LENGTH-1)
+		,mXRegionLast(volume.getSideLength()-1)
+		,mYRegionLast(volume.getSideLength()-1)
+		,mZRegionLast(volume.getSideLength()-1)
 		,mXRegionFirstBlock(0)
 		,mYRegionFirstBlock(0)
 		,mZRegionFirstBlock(0)
-		,mXRegionLastBlock(POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
-		,mYRegionLastBlock(POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
-		,mZRegionLastBlock(POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS-1)
+		,mXRegionLastBlock(volume.getSideLengthInBlocks()-1)
+		,mYRegionLastBlock(volume.getSideLengthInBlocks()-1)
+		,mZRegionLastBlock(volume.getSideLengthInBlocks()-1)
 		,mXPosInVolume(0)
 		,mYPosInVolume(0)
 		,mZPosInVolume(0)
@@ -87,19 +87,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
 	{
-		const uint16_t blockX = xPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockY = yPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		const uint16_t blockZ = zPosition >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		const uint16_t blockX = xPosition >> mVolume.getBlockSideLengthPower();
+		const uint16_t blockY = yPosition >> mVolume.getBlockSideLengthPower();
+		const uint16_t blockZ = zPosition >> mVolume.getBlockSideLengthPower();
 
-		const uint16_t xOffset = xPosition - (blockX << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t yOffset = yPosition - (blockY << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-		const uint16_t zOffset = zPosition - (blockZ << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		const uint16_t xOffset = xPosition - (blockX << mVolume.getBlockSideLengthPower());
+		const uint16_t yOffset = yPosition - (blockY << mVolume.getBlockSideLengthPower());
+		const uint16_t zOffset = zPosition - (blockZ << mVolume.getBlockSideLengthPower());
 
 		const Block<VoxelType>* block = mVolume.mBlocks
 			[
 				blockX + 
-				blockY * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-				blockZ * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS
+				blockY * mVolume.getSideLengthInBlocks() + 
+				blockZ * mVolume.getSideLengthInBlocks() * mVolume.getSideLengthInBlocks()
 			];
 
 		return block->getVoxelAt(xOffset,yOffset,zOffset);
@@ -155,22 +155,22 @@ namespace PolyVox
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		mXBlock = mXPosInVolume >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		mYBlock = mYPosInVolume >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		mZBlock = mZPosInVolume >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mXBlock = mXPosInVolume >> mVolume.getBlockSideLengthPower();
+		mYBlock = mYPosInVolume >> mVolume.getBlockSideLengthPower();
+		mZBlock = mZPosInVolume >> mVolume.getBlockSideLengthPower();
 
-		mXPosInBlock = mXPosInVolume - (mXBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-		mYPosInBlock = mYPosInVolume - (mYBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-		mZPosInBlock = mZPosInVolume - (mZBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+		mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.getBlockSideLengthPower());
+		mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.getBlockSideLengthPower());
+		mZPosInBlock = mZPosInVolume - (mZBlock << mVolume.getBlockSideLengthPower());
 
 		mBlockIndexInVolume = mXBlock + 
-			mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-			mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+			mYBlock * mVolume.getSideLengthInBlocks() + 
+			mZBlock * mVolume.getSideLengthInBlocks() * mVolume.getSideLengthInBlocks();
 		Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
-			mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
-			mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
+			mYPosInBlock * mVolume.getBlockSideLength() + 
+			mZPosInBlock * mVolume.getBlockSideLength() * mVolume.getBlockSideLength();
 
 		mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 	}
@@ -194,13 +194,13 @@ namespace PolyVox
 		mYRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, yLast);
 		mZRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, zLast);*/
 
-		mXRegionFirstBlock = mXRegionFirst >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		mYRegionFirstBlock = mYRegionFirst >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		mZRegionFirstBlock = mZRegionFirst >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mXRegionFirstBlock = mXRegionFirst >> mVolume.getBlockSideLengthPower();
+		mYRegionFirstBlock = mYRegionFirst >> mVolume.getBlockSideLengthPower();
+		mZRegionFirstBlock = mZRegionFirst >> mVolume.getBlockSideLengthPower();
 
-		mXRegionLastBlock = mXRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		mYRegionLastBlock = mYRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
-		mZRegionLastBlock = mZRegionLast >> POLYVOX_BLOCK_SIDE_LENGTH_POWER;
+		mXRegionLastBlock = mXRegionLast >> mVolume.getBlockSideLengthPower();
+		mYRegionLastBlock = mYRegionLast >> mVolume.getBlockSideLengthPower();
+		mZRegionLastBlock = mZRegionLast >> mVolume.getBlockSideLengthPower();
 	}
 
 	template <typename VoxelType>
@@ -209,34 +209,34 @@ namespace PolyVox
 		mXPosInBlock++;
 		mCurrentVoxel++;
 		mXPosInVolume++;
-		if((mXPosInBlock == POLYVOX_BLOCK_SIDE_LENGTH) || (mXPosInVolume > mXRegionLast))
+		if((mXPosInBlock == mVolume.getBlockSideLength()) || (mXPosInVolume > mXRegionLast))
 		{
-			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * POLYVOX_BLOCK_SIDE_LENGTH));
-			mXPosInBlock = mXPosInVolume - (mXBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.getBlockSideLength()));
+			mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.getBlockSideLengthPower());
 			mVoxelIndexInBlock = mXPosInBlock + 
-				mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
-				mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
+				mYPosInBlock * mVolume.getBlockSideLength() + 
+				mZPosInBlock * mVolume.getBlockSideLength() * mVolume.getBlockSideLength();
 			Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
 			mYPosInVolume++;
-			mCurrentVoxel += POLYVOX_BLOCK_SIDE_LENGTH;
-			if((mYPosInBlock == POLYVOX_BLOCK_SIDE_LENGTH) || (mYPosInVolume > mYRegionLast))
+			mCurrentVoxel += mVolume.getBlockSideLength();
+			if((mYPosInBlock == mVolume.getBlockSideLength()) || (mYPosInVolume > mYRegionLast))
 			{
-				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * POLYVOX_BLOCK_SIDE_LENGTH));
-				mYPosInBlock = mYPosInVolume - (mYBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.getBlockSideLength()));
+				mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.getBlockSideLengthPower());
 				mVoxelIndexInBlock = mXPosInBlock + 
-					mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
-					mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
+					mYPosInBlock * mVolume.getBlockSideLength() + 
+					mZPosInBlock * mVolume.getBlockSideLength() * mVolume.getBlockSideLength();
 				Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
 				mZPosInVolume++;
-				mCurrentVoxel += POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
+				mCurrentVoxel += mVolume.getBlockSideLength() * mVolume.getBlockSideLength();
 
-				if((mZPosInBlock == POLYVOX_BLOCK_SIDE_LENGTH) || (mZPosInVolume > mZRegionLast))
+				if((mZPosInBlock == mVolume.getBlockSideLength()) || (mZPosInVolume > mZRegionLast))
 				{
 					//At this point we've left the current block. Find a new one...
 
@@ -246,20 +246,20 @@ namespace PolyVox
 					{
 						mXBlock = mXRegionFirstBlock;
 						mBlockIndexInVolume = mXBlock + 
-							mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-							mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+							mYBlock * mVolume.getSideLengthInBlocks() + 
+							mZBlock * mVolume.getSideLengthInBlocks() * mVolume.getSideLengthInBlocks();
 
 						++mYBlock;
-						mBlockIndexInVolume += POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+						mBlockIndexInVolume += mVolume.getSideLengthInBlocks();
 						if(mYBlock > mYRegionLastBlock)
 						{
 							mYBlock = mYRegionFirstBlock;
 							mBlockIndexInVolume = mXBlock + 
-								mYBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS + 
-								mZBlock * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+								mYBlock * mVolume.getSideLengthInBlocks() + 
+								mZBlock * mVolume.getSideLengthInBlocks() * mVolume.getSideLengthInBlocks();
 
 							++mZBlock;
-							mBlockIndexInVolume += POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS * POLYVOX_VOLUME_SIDE_LENGTH_IN_BLOCKS;
+							mBlockIndexInVolume += mVolume.getSideLengthInBlocks() * mVolume.getSideLengthInBlocks();
 							if(mZBlock > mZRegionLastBlock)
 							{
 								mIsValidForRegion = false;
@@ -271,17 +271,17 @@ namespace PolyVox
 					Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->mBlocks[mBlockIndexInVolume];					
 
-					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
-					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
-					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * POLYVOX_BLOCK_SIDE_LENGTH));					
+					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.getBlockSideLength()));					
+					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.getBlockSideLength()));					
+					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * mVolume.getBlockSideLength()));					
 
-					mXPosInBlock = mXPosInVolume - (mXBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-					mYPosInBlock = mYPosInVolume - (mYBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
-					mZPosInBlock = mZPosInVolume - (mZBlock << POLYVOX_BLOCK_SIDE_LENGTH_POWER);
+					mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.getBlockSideLengthPower());
+					mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.getBlockSideLengthPower());
+					mZPosInBlock = mZPosInVolume - (mZBlock << mVolume.getBlockSideLengthPower());
 
 					mVoxelIndexInBlock = mXPosInBlock + 
-						mYPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH + 
-						mZPosInBlock * POLYVOX_BLOCK_SIDE_LENGTH * POLYVOX_BLOCK_SIDE_LENGTH;
+						mYPosInBlock * mVolume.getBlockSideLength() + 
+						mZPosInBlock * mVolume.getBlockSideLength() * mVolume.getBlockSideLength();
 
 					mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 				}
@@ -298,9 +298,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1nz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mYPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - mVolume.getBlockSideLength() - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
 	}
@@ -308,9 +308,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny0pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mYPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
 	}
@@ -318,9 +318,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mYPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - mVolume.getBlockSideLength() + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
 	}
@@ -328,9 +328,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py1nz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - 1 - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
 	}
@@ -338,7 +338,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py0pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
 			return *(mCurrentVoxel - 1);
 		}
@@ -348,9 +348,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py1pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
 	}
@@ -358,9 +358,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py1nz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + mVolume.getBlockSideLength() - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
 	}
@@ -368,9 +368,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py0pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
 	}
@@ -378,9 +378,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py1pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != 0) && (mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel - 1 + POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - 1 + mVolume.getBlockSideLength() + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume+1);
 	}
@@ -390,9 +390,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny1nz(void) const
 	{
-		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mYPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - mVolume.getBlockSideLength() - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
 	}
@@ -400,9 +400,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny0pz(void) const
 	{
-		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mYPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
 	}
@@ -410,9 +410,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny1pz(void) const
 	{
-		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mYPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - mVolume.getBlockSideLength() + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
 	}
@@ -420,9 +420,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py1nz(void) const
 	{
-		if((mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
 	}
@@ -436,9 +436,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py1pz(void) const
 	{
-		if((mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
 	}
@@ -446,9 +446,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py1nz(void) const
 	{
-		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + mVolume.getBlockSideLength() - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
 	}
@@ -456,9 +456,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py0pz(void) const
 	{
-		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
 	}
@@ -466,9 +466,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py1pz(void) const
 	{
-		if((mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + mVolume.getBlockSideLength() + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume+1);
 	}
@@ -478,9 +478,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny1nz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mYPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - mVolume.getBlockSideLength() - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
 	}
@@ -488,9 +488,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny0pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mYPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
 	}
@@ -498,9 +498,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny1pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mYPosInVolume%mVolume.getBlockSideLength() != 0) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - mVolume.getBlockSideLength() + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
 	}
@@ -508,9 +508,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py1nz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel + 1 - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
 	}
@@ -518,7 +518,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py0pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
 			return *(mCurrentVoxel + 1);
 		}
@@ -528,9 +528,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py1pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
 	}
@@ -538,9 +538,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py1nz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != 0))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != 0))
 		{
-			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH - POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + mVolume.getBlockSideLength() - mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
 	}
@@ -548,9 +548,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py0pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
 	}
@@ -558,9 +558,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py1pz(void) const
 	{
-		if((mXPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mYPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1) && (mZPosInVolume%POLYVOX_BLOCK_SIDE_LENGTH != POLYVOX_BLOCK_SIDE_LENGTH-1))
+		if((mXPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mYPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1) && (mZPosInVolume%mVolume.getBlockSideLength() != mVolume.getBlockSideLength()-1))
 		{
-			return *(mCurrentVoxel + 1 + POLYVOX_BLOCK_SIDE_LENGTH + POLYVOX_BLOCK_SIDE_LENGTH*POLYVOX_BLOCK_SIDE_LENGTH);
+			return *(mCurrentVoxel + 1 + mVolume.getBlockSideLength() + mVolume.getBlockSideLength()*mVolume.getBlockSideLength());
 		}
 		return getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
 	}
