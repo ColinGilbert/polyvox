@@ -3,15 +3,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter)
 	{
-		//FIXME - should this test be here?
-		if((volIter.getPosX() < 1) || (volIter.getPosX() > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
-			(volIter.getPosY() < 1) || (volIter.getPosY() > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
-			(volIter.getPosZ() < 1) || (volIter.getPosZ() > POLYVOX_VOLUME_SIDE_LENGTH-2))
-		{
-			//LogManager::getSingleton().logMessage("Out of range");
-			return Vector3DFloat(0.0,0.0,0.0);
-		}
-
 		//FIXME - bitwise way of doing this?
 		VoxelType voxel1nx = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
 		VoxelType voxel1px = volIter.peekVoxel1px0py0pz() > 0 ? 1: 0;
@@ -33,15 +24,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	Vector3DFloat computeSobelGradient(const VolumeIterator<VoxelType>& volIter)
 	{
-		//FIXME - should this test be here?
-		if((volIter.getPosX() < 1) || (volIter.getPosX() > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
-			(volIter.getPosY() < 1) || (volIter.getPosY() > POLYVOX_VOLUME_SIDE_LENGTH-2) ||
-			(volIter.getPosZ() < 1) || (volIter.getPosZ() > POLYVOX_VOLUME_SIDE_LENGTH-2))
-		{
-			//LogManager::getSingleton().logMessage("Out of range");
-			return Vector3DFloat(0.0,0.0,0.0);
-		}
-
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
 

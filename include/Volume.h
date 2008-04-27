@@ -48,6 +48,7 @@ namespace PolyVox
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 
 		boost::uint16_t getSideLength(void);
+		boost::uint8_t getSideLengthPower(void);
 		boost::uint16_t getSideLengthInBlocks(void);
 
 		boost::uint16_t getBlockSideLength(void);
@@ -61,7 +62,7 @@ namespace PolyVox
 		boost::uint32_t m_uNoOfBlocksInVolume;
 		boost::uint16_t m_uSideLengthInBlocks;
 
-		boost::uint16_t m_uSideLengthPower;
+		boost::uint8_t m_uSideLengthPower;
 		boost::uint16_t m_uSideLength;
 
 		boost::uint16_t m_uBlockSideLengthPower;

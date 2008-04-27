@@ -166,6 +166,12 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	boost::uint8_t Volume<VoxelType>::getSideLengthPower(void)
+	{
+		return m_uSideLengthPower;
+	}
+
+	template <typename VoxelType>
 	boost::uint16_t Volume<VoxelType>::getSideLengthInBlocks(void)
 	{
 		return m_uSideLengthInBlocks;

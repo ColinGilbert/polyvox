@@ -117,9 +117,9 @@ namespace PolyVox
 		firstY = std::max(firstY,0);
 		firstZ = std::max(firstZ,0);
 
-		lastX = std::min(lastX,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
-		lastY = std::min(lastY,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
-		lastZ = std::min(lastZ,int(POLYVOX_VOLUME_SIDE_LENGTH-1));
+		lastX = std::min(lastX,int(volumeData->getSideLength()-1));
+		lastY = std::min(lastY,int(volumeData->getSideLength()-1));
+		lastZ = std::min(lastZ,int(volumeData->getSideLength()-1));
 
 		VolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
@@ -242,9 +242,9 @@ namespace PolyVox
 		const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
 		const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
 		const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
-		const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
-		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(POLYVOX_VOLUME_SIDE_LENGTH-2));
+		const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(volumeData->getSideLength()-2));
+		const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(volumeData->getSideLength()-2));
+		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,static_cast<uint32_t>(volumeData->getSideLength()-2));
 
 		//Offset from lower block corner
 		const Vector3DFloat offset(firstX,firstY,firstZ);
@@ -544,7 +544,7 @@ namespace PolyVox
 
 	Vector3DFloat PolyVoxSceneManager::computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const
 	{
-		VolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
+		
 
 		const float posX = position.x();
 		const float posY = position.y();
@@ -554,7 +554,17 @@ namespace PolyVox
 		const uint16_t floorY = static_cast<uint16_t>(posY);
 		const uint16_t floorZ = static_cast<uint16_t>(posZ);
 
+		//Check all corners are within the volume, allowing a boundary for gradient estimation
+		bool lowerCornerInside = volumeData->containsPoint(Vector3DInt32(floorX, floorY, floorZ),1);
+		bool upperCornerInside = volumeData->containsPoint(Vector3DInt32(floorX+1, floorY+1, floorZ+1),1);
+		if((!lowerCornerInside) || (!upperCornerInside))
+		{
+			normalGenerationMethod = SIMPLE;
+		}
+
 		Vector3DFloat result;
+
+		VolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
 
 		if(normalGenerationMethod == SOBEL)
@@ -691,7 +701,7 @@ namespace PolyVox
 
 	uint16_t PolyVoxSceneManager::getSideLength(void)
 	{
-		return POLYVOX_VOLUME_SIDE_LENGTH;
+		return volumeData->getSideLength();
 	}
 
 	uint8_t PolyVoxSceneManager::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)
