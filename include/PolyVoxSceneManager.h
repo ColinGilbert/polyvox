@@ -59,7 +59,7 @@ namespace PolyVox
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
 		void createSphereAt(Vector3DFloat centre, float radius, boost::uint8_t value, bool painting);
 		
-		void generateLevelVolume(void);
+		//void generateLevelVolume(void);
 
 		void generateMeshDataForRegion(boost::uint16_t regionX,boost:: uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 

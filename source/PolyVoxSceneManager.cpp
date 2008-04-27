@@ -149,7 +149,7 @@ namespace PolyVox
 		markRegionChanged(firstX,firstY,firstZ,lastX,lastY,lastZ);
 	}
 
-	void PolyVoxSceneManager::generateLevelVolume(void)
+	/*void PolyVoxSceneManager::generateLevelVolume(void)
 	{
 		//volumeData = VolumePtr(new Volume);
 		volumeData = new Volume<boost::uint8_t>(POLYVOX_VOLUME_SIDE_LENGTH_POWER);
@@ -234,7 +234,7 @@ namespace PolyVox
 				}
 			}
 		}
-	}
+	}*/
 
 	void PolyVoxSceneManager::generateMeshDataForRegion(const uint16_t regionX, const uint16_t regionY, const uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const
 	{	
