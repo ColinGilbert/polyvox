@@ -19,10 +19,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "GradientEstimators.h"
 #include "IndexedSurfacePatch.h"
+#include "LinearVolume.h"
 #include "MarchingCubesTables.h"
 #include "PolyVoxSceneManager.h"
 #include "RegionGeometry.h"
 #include "SurfaceVertex.h"
+#include "Utility.h"
 #include "Vector.h"
 #include "Volume.h"
 #include "VolumeIterator.h"
@@ -42,11 +44,17 @@ namespace PolyVox
 		,m_normalGenerationMethod(SOBEL)
 		,m_bHaveGeneratedMeshes(false)
 	{	
-		//sceneNodes.clear();
+		//sceneNodes.clear();`
 	}
 
 	PolyVoxSceneManager::~PolyVoxSceneManager()
 	{
+	}
+
+	void PolyVoxSceneManager::setVolumeData(Volume<boost::uint8_t>* volumeDataToSet)
+	{
+		volumeData = volumeDataToSet;
+		volSurfaceUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
 	std::list<RegionGeometry> PolyVoxSceneManager::getChangedRegionGeometry(void)
@@ -63,7 +71,8 @@ namespace PolyVox
 				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 				//for(uint16_t regionX = 3; regionX < 4; ++regionX)
 				{
-					if(surfaceUpToDate[regionX][regionY][regionZ] == false)
+					//if(surfaceUpToDate[regionX][regionY][regionZ] == false)
+					if(volSurfaceUpToDate->getVoxelAt(regionX, regionY, regionZ) == false)
 					{
 						//Generate the surface
 						RegionGeometry regionGeometry;
@@ -94,7 +103,8 @@ namespace PolyVox
 			{
 				for(uint16_t blockX = 0; blockX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
-					surfaceUpToDate[blockX][blockY][blockZ] = newUpToDateValue;
+					//surfaceUpToDate[blockX][blockY][blockZ] = newUpToDateValue;
+					volSurfaceUpToDate->setVoxelAt(blockX, blockY, blockZ, newUpToDateValue);
 				}
 			}
 		}
@@ -148,93 +158,6 @@ namespace PolyVox
 		}
 		markRegionChanged(firstX,firstY,firstZ,lastX,lastY,lastZ);
 	}
-
-	/*void PolyVoxSceneManager::generateLevelVolume(void)
-	{
-		//volumeData = VolumePtr(new Volume);
-		volumeData = new Volume<boost::uint8_t>(POLYVOX_VOLUME_SIDE_LENGTH_POWER);
-		VolumeIterator<boost::uint8_t> volIter(*volumeData);
-		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
-		{
-			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
-			{
-				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
-				{
-					volIter.setPosition(x,y,z);
-					if((x/16+y/16+z/16)%2 == 0)
-						volIter.setVoxel(4);
-					else
-						volIter.setVoxel(8);
-				}
-			}
-		}		
-
-		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
-		{
-			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
-			{
-				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
-				{
-					if(
-						(z<62)||
-						(z>193)||
-						(y<78)||
-						(y>177)||
-						(x<30)||
-						(x>225)
-						)
-					{
-						volIter.setPosition(x,y,z);
-						volIter.setVoxel(2);
-					}
-				}
-			}
-		}		
-
-		//Rooms
-		Vector3DFloat centre(128,128,128);
-		Vector3DFloat v3dSize(192,96,128);
-
-		uint16_t uHalfX = static_cast<uint16_t>(v3dSize.x() / 2);
-		uint16_t uHalfY = static_cast<uint16_t>(v3dSize.y() / 2);
-		uint16_t uHalfZ = static_cast<uint16_t>(v3dSize.z() / 2);
-
-		for(uint16_t z = static_cast<uint16_t>(centre.z()) - uHalfZ; z < static_cast<uint16_t>(centre.z()) + uHalfZ; z++)
-		{
-			for(uint16_t y = static_cast<uint16_t>(centre.y()) - uHalfY; y < static_cast<uint16_t>(centre.y()) + uHalfY; y++)
-			{
-				for(uint16_t x = static_cast<uint16_t>(centre.x()) - uHalfX; x < static_cast<uint16_t>(centre.x()) + uHalfX; x++)
-				{
-					volIter.setPosition(x,y,z);
-					volIter.setVoxel(0);
-				}
-			}
-		}
-
-		for(uint16_t z = 0; z < POLYVOX_VOLUME_SIDE_LENGTH; ++z)
-		{
-			for(uint16_t y = 0; y < POLYVOX_VOLUME_SIDE_LENGTH; ++y)
-			{
-				for(uint16_t x = 0; x < POLYVOX_VOLUME_SIDE_LENGTH; ++x)
-				{
-					if(
-						(x%64 < 8) &&
-						(y < 128) &&
-						(z>=62)&&
-						(z<=193)&&
-						(y>=78)&&
-						(y<=177)&&
-						(x>=30)&&
-						(x<=225)
-						)
-					{
-						volIter.setPosition(x,y,z);
-						volIter.setVoxel(1);
-					}
-				}
-			}
-		}
-	}*/
 
 	void PolyVoxSceneManager::generateMeshDataForRegion(const uint16_t regionX, const uint16_t regionY, const uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const
 	{	
@@ -648,7 +571,8 @@ namespace PolyVox
 			(z % POLYVOX_REGION_SIDE_LENGTH != 0) &&
 			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
 		{
-			surfaceUpToDate[x >> POLYVOX_REGION_SIDE_LENGTH_POWER][y >> POLYVOX_REGION_SIDE_LENGTH_POWER][z >> POLYVOX_REGION_SIDE_LENGTH_POWER] = false;
+			//surfaceUpToDate[x >> POLYVOX_REGION_SIDE_LENGTH_POWER][y >> POLYVOX_REGION_SIDE_LENGTH_POWER][z >> POLYVOX_REGION_SIDE_LENGTH_POWER] = false;
+			volSurfaceUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
 		}
 		else //Mark surrounding block as well
 		{
@@ -670,7 +594,8 @@ namespace PolyVox
 				{
 					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
-						surfaceUpToDate[xCt][yCt][zCt] = false;
+						//surfaceUpToDate[xCt][yCt][zCt] = false;
+						volSurfaceUpToDate->setVoxelAt(xCt,yCt,zCt,false);
 					}
 				}
 			}
@@ -693,7 +618,8 @@ namespace PolyVox
 			{
 				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
-					surfaceUpToDate[xCt][yCt][zCt] = false;
+					//surfaceUpToDate[xCt][yCt][zCt] = false;
+					volSurfaceUpToDate->setVoxelAt(xCt,yCt,zCt,false);
 				}
 			}
 		}

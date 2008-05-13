@@ -7,6 +7,7 @@ SET(SRC_FILES
 	source/PolyVoxSceneManager.cpp
 	source/RegionGeometry.cpp  
 	source/SurfaceVertex.cpp
+	source/Utility.cpp
 )
 
 #Projects headers files
@@ -16,6 +17,8 @@ SET(INC_FILES
 	include/Constants.h
 	include/GradientEstimators.h	
 	include/GradientEstimators.inl
+	include/LinearVolume.h
+	include/LinearVolume.inl
 	include/IndexedSurfacePatch.h
 	include/MarchingCubesTables.h
 	include/PolyVoxForwardDeclarations.h
@@ -23,6 +26,7 @@ SET(INC_FILES
 	include/RegionGeometry.h
 	include/SurfaceVertex.h
 	include/TypeDef.h
+	include/Utility.h
 	include/Vector.h
 	include/Vector.inl
 	include/Volume.h

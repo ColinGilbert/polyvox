@@ -8,6 +8,7 @@ namespace PolyVox
 	template <typename VoxelType> class Block;
 	class IndexedSurfacePatch;
 	class IntegrealVector3;
+	template <typename VoxelType> class LinearVolume;
 	class PolyVoxSceneManager;
 	class RegionGeometry;
 	class SurfaceVertex;

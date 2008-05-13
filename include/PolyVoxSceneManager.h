@@ -51,6 +51,7 @@ namespace PolyVox
 
 
 		//Setters
+		void setVolumeData(Volume<boost::uint8_t>* volumeDataToSet);
 		void setNormalGenerationMethod(NormalGenerationMethod method);
 		//void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
 
@@ -61,15 +62,13 @@ namespace PolyVox
 		
 		//void generateLevelVolume(void);
 
-		void generateMeshDataForRegion(boost::uint16_t regionX,boost:: uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
+		void generateMeshDataForRegion(boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
 		bool containsPoint(Vector3DFloat pos, float boundary);
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
-
 		
 
-		bool surfaceUpToDate[POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS][POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS][POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS];
-		bool regionIsHomogenous[POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS][POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS][POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS];
+		LinearVolume<bool>* volSurfaceUpToDate;
 
 		Vector3DFloat computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const;
 
@@ -85,7 +84,7 @@ namespace PolyVox
 
 		NormalGenerationMethod m_normalGenerationMethod;
 
-		
+	private:
 		Volume<boost::uint8_t>* volumeData;
 
 		bool m_bHaveGeneratedMeshes;

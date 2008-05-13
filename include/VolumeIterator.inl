@@ -186,14 +186,6 @@ namespace PolyVox
 		mYRegionLast = yLast;
 		mZRegionLast = zLast;
 
-		/*mXRegionFirst = (std::max)(0,xFirst);
-		mYRegionFirst = (std::max)(0,yFirst);
-		mZRegionFirst = (std::max)(0,zFirst);
-
-		mXRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, xLast);
-		mYRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, yLast);
-		mZRegionLast = (std::min)(POLYVOX_VOLUME_SIDE_LENGTH-1, zLast);*/
-
 		mXRegionFirstBlock = mXRegionFirst >> mVolume.getBlockSideLengthPower();
 		mYRegionFirstBlock = mYRegionFirst >> mVolume.getBlockSideLengthPower();
 		mZRegionFirstBlock = mZRegionFirst >> mVolume.getBlockSideLengthPower();
