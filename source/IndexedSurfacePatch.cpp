@@ -7,15 +7,13 @@ namespace PolyVox
 	int32_t IndexedSurfacePatch::noOfVerticesSubmitted = 0;
 	int32_t IndexedSurfacePatch::noOfVerticesAccepted = 0;
 	int32_t IndexedSurfacePatch::noOfTrianglesSubmitted = 0;
-	int32_t IndexedSurfacePatch::vertexIndices[POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1][POLYVOX_REGION_SIDE_LENGTH*2+1];
-	int32_t IndexedSurfacePatch::vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
-	int32_t IndexedSurfacePatch::vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
-	int32_t IndexedSurfacePatch::vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH][POLYVOX_REGION_SIDE_LENGTH];
+	int32_t IndexedSurfacePatch::vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+	int32_t IndexedSurfacePatch::vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+	int32_t IndexedSurfacePatch::vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 
 	IndexedSurfacePatch::IndexedSurfacePatch(bool allowDuplicateVertices)
 		:m_AllowDuplicateVertices(allowDuplicateVertices)
 	{
-		memset(vertexIndices,0xFF,sizeof(vertexIndices));
 		memset(vertexIndicesX,0xFF,sizeof(vertexIndicesX)); //0xFF is -1 as two's complement - this may not be portable...
 		memset(vertexIndicesY,0xFF,sizeof(vertexIndicesY));
 		memset(vertexIndicesZ,0xFF,sizeof(vertexIndicesZ));
@@ -31,14 +29,12 @@ namespace PolyVox
 		noOfVerticesSubmitted += 3;
 		if(!m_AllowDuplicateVertices)
 		{
-			long int index = vertexIndices[long int(v0.getPosition().x() * 2.0 +0.5)][long int(v0.getPosition().y() * 2.0 +0.5)][long int(v0.getPosition().z() * 2.0 +0.5)];
-			//int32_t index = getIndexFor(v0.getPosition());
+			int32_t index = getIndexFor(v0.getPosition());
 			if(index == -1)
 			{
 				m_vecVertices.push_back(v0);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-				vertexIndices[long int(v0.getPosition().x() * 2.0 +0.5)][long int(v0.getPosition().y() * 2.0 +0.5)][long int(v0.getPosition().z() * 2.0 +0.5)] = m_vecVertices.size()-1;
-				//setIndexFor(v0.getPosition(), m_vecVertices.size()-1);
+				setIndexFor(v0.getPosition(), m_vecVertices.size()-1);
 
 				noOfVerticesAccepted++;
 			}
@@ -47,14 +43,12 @@ namespace PolyVox
 				m_vecTriangleIndices.push_back(index);
 			}
 
-			index = vertexIndices[long int(v1.getPosition().x() * 2.0 +0.5)][long int(v1.getPosition().y() * 2.0 +0.5)][long int(v1.getPosition().z() * 2.0 +0.5)];
-			//index = getIndexFor(v1.getPosition());
+			index = getIndexFor(v1.getPosition());
 			if(index == -1)
 			{
 				m_vecVertices.push_back(v1);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-				vertexIndices[long int(v1.getPosition().x() * 2.0 +0.5)][long int(v1.getPosition().y() * 2.0 +0.5)][long int(v1.getPosition().z() * 2.0 +0.5)] = m_vecVertices.size()-1;
-				//setIndexFor(v1.getPosition(), m_vecVertices.size()-1);
+				setIndexFor(v1.getPosition(), m_vecVertices.size()-1);
 
 				noOfVerticesAccepted++;
 			}
@@ -63,14 +57,12 @@ namespace PolyVox
 				m_vecTriangleIndices.push_back(index);
 			}
 
-			index = vertexIndices[long int(v2.getPosition().x() * 2.0 +0.5)][long int(v2.getPosition().y() * 2.0 +0.5)][long int(v2.getPosition().z() * 2.0 +0.5)];
-			//index = getIndexFor(v2.getPosition());
+			index = getIndexFor(v2.getPosition());
 			if(index == -1)
 			{
 				m_vecVertices.push_back(v2);
 				m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-				vertexIndices[long int(v2.getPosition().x() * 2.0 +0.5)][long int(v2.getPosition().y() * 2.0 +0.5)][long int(v2.getPosition().z() * 2.0 +0.5)] = m_vecVertices.size()-1;
-				//setIndexFor(v2.getPosition(), m_vecVertices.size()-1);
+				setIndexFor(v2.getPosition(), m_vecVertices.size()-1);
 
 				noOfVerticesAccepted++;
 			}
@@ -109,6 +101,13 @@ namespace PolyVox
 
 	boost::int32_t IndexedSurfacePatch::getIndexFor(const Vector3DFloat& pos)
 	{
+		assert(pos.x() >= 0.0f);
+		assert(pos.y() >= 0.0f);
+		assert(pos.z() >= 0.0f);
+		assert(pos.x() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.y() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.z() <= POLYVOX_REGION_SIDE_LENGTH);
+
 		float xIntPart;
 		float xFracPart = modf(pos.x(), &xIntPart);
 		float yIntPart;
@@ -134,6 +133,15 @@ namespace PolyVox
 
 	void IndexedSurfacePatch::setIndexFor(const Vector3DFloat& pos, boost::int32_t newIndex)
 	{
+		assert(pos.x() >= 0.0f);
+		assert(pos.y() >= 0.0f);
+		assert(pos.z() >= 0.0f);
+		assert(pos.x() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.y() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.z() <= POLYVOX_REGION_SIDE_LENGTH);
+
+		assert(newIndex < 10000);
+
 		float xIntPart;
 		float xFracPart = modf(pos.x(), &xIntPart);
 		float yIntPart;
