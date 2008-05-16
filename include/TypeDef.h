@@ -1,5 +1,6 @@
+#pragma region License
 /******************************************************************************
-This file is part of a voxel plugin for OGRE
+This file is part of the PolyVox library
 Copyright (C) 2006  David Williams
 
 This program is free software; you can redistribute it and/or
@@ -16,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
+#pragma endregion
 
 //Dave, maybe make use of OgrePlatform.h instead?
 // I think use _OgreExport instead of POLYVOX_API and define OGRE_NONCLIENT_BUILD instead of POLYVOX_EXPORT?

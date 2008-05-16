@@ -1,5 +1,6 @@
+#pragma region License
 /******************************************************************************
-This file is part of a voxel plugin for OGRE
+This file is part of the PolyVox library
 Copyright (C) 2006  David Williams
 
 This program is free software; you can redistribute it and/or
@@ -16,23 +17,27 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
+#pragma endregion
 
-#include <fstream>
-#include <iostream> //FIXME - remove this...
-#include <queue>
-
+#pragma region Headers
 #include "Block.h"
-#include "VolumeIterator.h" //Maybe this shouldn't be here?
+
+#include <cassert>
+#include <cstring> //For memcpy
+#pragma endregion
 
 namespace PolyVox
 {
-
+	#pragma region Constructors/Destructors
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower)
 		:mBlocks(0)
 	{
 		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
-		assert(uSideLengthPower <= 16);
+		if(uSideLengthPower > 16)
+		{
+			throw std::invalid_argument("Block side length must be less than or equal to 65536");
+		}
 
 		//Compute the volume side length
 		m_uSideLengthPower = uSideLengthPower;
@@ -63,7 +68,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(const Volume<VoxelType>& rhs)
 	{
-		std::cout << "Warning - Copying Volume" << std::endl;
 		*this = rhs;
 	}
 
@@ -75,11 +79,12 @@ namespace PolyVox
 			delete mBlocks[i];
 		}
 	}
+	#pragma endregion
 
+	#pragma region Operators
 	template <typename VoxelType>
 	Volume<VoxelType>& Volume<VoxelType>::operator=(const Volume& rhs)
 	{
-		std::cout << "Warning - Assigning Volume" << std::endl;
 		if (this == &rhs)
 		{
 			return *this;
@@ -108,57 +113,9 @@ namespace PolyVox
 
 		return *this;
 	}
+	#pragma endregion		
 
-	template <typename VoxelType>
-	Block<VoxelType>* Volume<VoxelType>::getBlock(boost::uint16_t index)
-	{
-		return mBlocks[index];
-	}
-
-	template <typename VoxelType>
-	bool Volume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary)
-	{
-		return (pos.x() < m_uSideLength - 1 - boundary)
-			&& (pos.y() < m_uSideLength - 1 - boundary) 
-			&& (pos.z() < m_uSideLength - 1 - boundary)
-			&& (pos.x() > boundary)
-			&& (pos.y() > boundary)
-			&& (pos.z() > boundary);
-	}
-
-	template <typename VoxelType>
-	bool Volume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary)
-	{
-		return (pos.x() < m_uSideLength - 1 - boundary)
-			&& (pos.y() < m_uSideLength - 1 - boundary) 
-			&& (pos.z() < m_uSideLength - 1 - boundary)
-			&& (pos.x() > boundary)
-			&& (pos.y() > boundary)
-			&& (pos.z() > boundary);
-	}	
-
-	template <typename VoxelType>
-	void Volume<VoxelType>::tidy(void)
-	{
-		//Check for homogeneous blocks
-		/*for(uint32_t ct = 0; ct < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++ct)
-		{
-			if(mBlocks[ct]->isHomogeneous())
-			{
-				//LogManager::getSingleton().logMessage("Got homogeneous block with value " + stringConverter::tostring(mBlocks[ct]->getVoxelAt(0,0,0)));
-
-				const VoxelType homogeneousValue = mBlocks[ct]->getVoxelAt(0,0,0);
-				SharedPtr<Block>& homogeneousBlock = mHomogeneousBlocks[homogeneousValue];
-				if(homogeneousBlock.isNull())
-				{
-					homogeneousBlock = SharedPtr<Block>(new Block);
-					homogeneousBlock->fillWithValue(homogeneousValue);
-				}
-				mBlocks[ct] = homogeneousBlock;
-			}
-		}*/
-	}
-
+	#pragma region Getters
 	template <typename VoxelType>
 	boost::uint16_t Volume<VoxelType>::getSideLength(void)
 	{
@@ -166,26 +123,99 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	boost::uint8_t Volume<VoxelType>::getSideLengthPower(void)
+	VoxelType Volume<VoxelType>::getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const
 	{
-		return m_uSideLengthPower;
+		assert(uXPos < mVolume.getSideLength());
+		assert(uYPos < mVolume.getSideLength());
+		assert(uZPos < mVolume.getSideLength());
+
+		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+
+		const Block<VoxelType>* block = mBlocks
+			[
+				blockX + 
+				blockY * m_uSideLengthInBlocks + 
+				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks
+			];
+
+		return block->getVoxelAt(xOffset,yOffset,zOffset);
 	}
 
 	template <typename VoxelType>
-	boost::uint16_t Volume<VoxelType>::getSideLengthInBlocks(void)
+	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
-		return m_uSideLengthInBlocks;
+		assert(v3dPos.x() < m_uSideLength);
+		assert(v3dPos.y() < m_uSideLength);
+		assert(v3dPos.z() < m_uSideLength);
+
+		return getVoxelAt(v3dPos.x(), v3dPos.y(), v3dPos.z());
+	}
+	#pragma endregion
+
+	#pragma region Setters
+	template <typename VoxelType>
+	void Volume<VoxelType>::setVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos, VoxelType tValue)
+	{
+		assert(uXPos < mVolume.getSideLength());
+		assert(uYPos < mVolume.getSideLength());
+		assert(uZPos < mVolume.getSideLength());
+
+		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+
+		const Block<VoxelType>* block = mBlocks
+			[
+				blockX + 
+				blockY * m_uSideLengthInBlocks + 
+				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks
+			];
+
+		return block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 	}
 
 	template <typename VoxelType>
-	boost::uint16_t Volume<VoxelType>::getBlockSideLength(void)
+	void Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
-		return m_uBlockSideLength;
+		assert(v3dPos.x() < m_uSideLength);
+		assert(v3dPos.y() < m_uSideLength);
+		assert(v3dPos.z() < m_uSideLength);
+
+		setVoxelAt(v3dPos.x(), v3dPos.y(), v3dPos.z(), tValue);
+	}
+	#pragma endregion
+
+	#pragma region Other
+	template <typename VoxelType>
+	bool Volume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary) const
+	{
+		return (pos.x() <= m_uSideLength - 1 - boundary)
+			&& (pos.y() <= m_uSideLength - 1 - boundary) 
+			&& (pos.z() <= m_uSideLength - 1 - boundary)
+			&& (pos.x() >= boundary)
+			&& (pos.y() >= boundary)
+			&& (pos.z() >= boundary);
 	}
 
 	template <typename VoxelType>
-	boost::uint16_t Volume<VoxelType>::getBlockSideLengthPower(void)
+	bool Volume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const
 	{
-		return m_uBlockSideLengthPower;
+		return (pos.x() <= m_uSideLength - 1 - boundary)
+			&& (pos.y() <= m_uSideLength - 1 - boundary) 
+			&& (pos.z() <= m_uSideLength - 1 - boundary)
+			&& (pos.x() >= boundary)
+			&& (pos.y() >= boundary)
+			&& (pos.z() >= boundary);
 	}
+	#pragma endregion
 }

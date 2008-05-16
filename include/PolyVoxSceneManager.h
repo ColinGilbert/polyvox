@@ -1,5 +1,6 @@
+#pragma region License
 /******************************************************************************
-This file is part of a voxel plugin for OGRE
+This file is part of the PolyVox library
 Copyright (C) 2006  David Williams
 
 This program is free software; you can redistribute it and/or
@@ -16,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
+#pragma endregion
+
 #ifndef __PolyVox_PolyVoxSceneManager_H__
 #define __PolyVox_PolyVoxSceneManager_H__
 
@@ -49,6 +52,8 @@ namespace PolyVox
 		const std::string& getTypeName(void) const;
 		boost::uint16_t getSideLength(void);
 
+		const Volume<boost::uint8_t>* getVolumeData(void) const;
+
 
 		//Setters
 		void setVolumeData(Volume<boost::uint8_t>* volumeDataToSet);
@@ -62,15 +67,17 @@ namespace PolyVox
 		
 		//void generateLevelVolume(void);
 
-		void generateMeshDataForRegion(boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
+		void generateRoughMeshDataForRegion(boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
+		void generateSmoothMeshDataForRegion(boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
 
-		bool containsPoint(Vector3DFloat pos, float boundary);
-		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
+		//bool containsPoint(Vector3DFloat pos, float boundary);
+		//bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 		
 
 		LinearVolume<bool>* volSurfaceUpToDate;
 
 		Vector3DFloat computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const;
+		Vector3DFloat computeSmoothNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const;
 
 	public:
 		void markVoxelChanged(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z);

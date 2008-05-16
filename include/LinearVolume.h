@@ -1,6 +1,6 @@
 #pragma region License
 /******************************************************************************
-This file is part of a voxel plugin for OGRE
+This file is part of the PolyVox library
 Copyright (C) 2006  David Williams
 
 This program is free software; you can redistribute it and/or

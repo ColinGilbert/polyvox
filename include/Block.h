@@ -1,6 +1,6 @@
 #pragma region License
 /******************************************************************************
-This file is part of a voxel plugin for OGRE
+This file is part of the PolyVox library
 Copyright (C) 2006  David Williams
 
 This program is free software; you can redistribute it and/or
@@ -23,9 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_Block_H__
 
 #pragma region Headers
-#include "Constants.h"
 #include "PolyVoxForwardDeclarations.h"
-#include "TypeDef.h"
 
 #include "boost/cstdint.hpp"
 #pragma endregion
@@ -37,8 +35,6 @@ namespace PolyVox
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator<VoxelType>;
-
-		//Block interface
 	public:
 		Block(boost::uint8_t uSideLengthPower);
 		Block(const Block& rhs);
@@ -46,17 +42,12 @@ namespace PolyVox
 
 		Block& operator=(const Block& rhs);
 
-		//bool isHomogeneous(void);
+		boost::uint16_t getSideLength(void) const;
+		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
 
-		boost::uint16_t getSideLength(void);
-
-		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
-		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value);
-
-		//void fillWithValue(const VoxelType value);
+		void setVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos, VoxelType tValue);
 
 	private:
-		boost::uint32_t getNoOfVoxels(void);
 		boost::uint8_t m_uSideLengthPower;
 		boost::uint16_t m_uSideLength;
 		VoxelType* m_tData;		

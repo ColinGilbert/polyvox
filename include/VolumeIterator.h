@@ -1,5 +1,6 @@
+#pragma region License
 /******************************************************************************
-This file is part of a voxel plugin for OGRE
+This file is part of the PolyVox library
 Copyright (C) 2006  David Williams
 
 This program is free software; you can redistribute it and/or
@@ -16,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
+#pragma endregion
+
 #ifndef __VolumeIterator_H__
 #define __VolumeIterator_H__
 
@@ -37,7 +40,7 @@ namespace PolyVox
 		void setVoxel(VoxelType value);
 		VoxelType getVoxel(void);
 
-		float getAveragedVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, boost::uint16_t size) const;
+		float getAveragedVoxel(boost::uint16_t size) const;
 
 		
 
@@ -83,7 +86,7 @@ namespace PolyVox
 
 	private:
 
-		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
+		//VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
 
 		//The current volume
 		Volume<VoxelType>& mVolume;
