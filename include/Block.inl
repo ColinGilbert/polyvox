@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma region Headers
 #include <cassert>
 #include <cstring> //For memcpy
+#include <stdexcept> //for std::invalid_argument
 #pragma endregion
 
 namespace PolyVox

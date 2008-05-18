@@ -130,11 +130,11 @@ namespace PolyVox
 		assert(pos.z() <= POLYVOX_REGION_SIDE_LENGTH);
 
 		float xIntPart;
-		float xFracPart = modf(pos.x(), &xIntPart);
+		float xFracPart = std::modf(pos.x(), &xIntPart);
 		float yIntPart;
-		float yFracPart = modf(pos.y(), &yIntPart);
+		float yFracPart = std::modf(pos.y(), &yIntPart);
 		float zIntPart;
-		float zFracPart = modf(pos.z(), &zIntPart);
+		float zFracPart = std::modf(pos.z(), &zIntPart);
 
 		//Of all the fractional parts, two should be zero and one should have a value.
 		if(xFracPart > 0.000001f)
@@ -164,11 +164,11 @@ namespace PolyVox
 		assert(newIndex < 10000);
 
 		float xIntPart;
-		float xFracPart = modf(pos.x(), &xIntPart);
+		float xFracPart = std::modf(pos.x(), &xIntPart);
 		float yIntPart;
-		float yFracPart = modf(pos.y(), &yIntPart);
+		float yFracPart = std::modf(pos.y(), &yIntPart);
 		float zIntPart;
-		float zFracPart = modf(pos.z(), &zIntPart);
+		float zFracPart = std::modf(pos.z(), &zIntPart);
 
 		//Of all the fractional parts, two should be zero and one should have a value.
 		if(xFracPart > 0.000001f)

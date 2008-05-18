@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#include "block.h"
+#include "Block.h"
 #include "Volume.h"
 
 using namespace boost;
