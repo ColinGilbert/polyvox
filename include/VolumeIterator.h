@@ -38,6 +38,10 @@ namespace PolyVox
 		~VolumeIterator();		
 
 		bool operator==(const VolumeIterator& rhs);
+		bool operator<(const VolumeIterator& rhs);
+		bool operator>(const VolumeIterator& rhs);
+		bool operator<=(const VolumeIterator& rhs);
+		bool operator>=(const VolumeIterator& rhs);
 
 		float getAveragedVoxel(boost::uint16_t size) const;
 		boost::uint16_t getPosX(void) const;
@@ -83,6 +87,7 @@ namespace PolyVox
 		VoxelType peekVoxel1px1py1pz(void) const;
 
 	private:
+
 		//The current volume
 		Volume<VoxelType>& mVolume;
 

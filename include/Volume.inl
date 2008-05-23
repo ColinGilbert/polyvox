@@ -36,7 +36,7 @@ namespace PolyVox
 		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
 		if(uSideLengthPower > 16)
 		{
-			throw std::invalid_argument("Block side length must be less than or equal to 65536");
+			throw std::invalid_argument("Volume side length power must be less than or equal to 16");
 		}
 
 		//Compute the volume side length
@@ -184,73 +184,24 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	VolumeIterator<VoxelType> Volume<VoxelType>::firstVoxel(void)
+	{
+		VolumeIterator<VoxelType> iter(*this);
+		iter.setPosition(0,0,0);
+		return iter;
+	}
+
+	template <typename VoxelType>
 	void Volume<VoxelType>::idle(boost::uint32_t uAmount)
 	{
-		//Check the volume isn't locked
-		if(m_bIsLocked)
-		{
-			throw std::logic_error("Cannot perform idle tasks on a locked volume");
-		}
-	}
+	}	
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::lock(const Vector3DUint16& v3dLowerCorner, const Vector3DUint16& v3dUpperCorner)
+	VolumeIterator<VoxelType> Volume<VoxelType>::lastVoxel(void)
 	{
-		//Check the volume isn't already locked
-		if(m_bIsLocked)
-		{
-			throw std::logic_error("Cannot lock an already locked volume");
-		}
-
-		//Find the block corresponding to the lower corner
-		Vector3DUint16 v3dBlockLowerCorner
-		(
-			v3dLowerCorner.x() >> m_uBlockSideLengthPower,
-			v3dLowerCorner.y() >> m_uBlockSideLengthPower,
-			v3dLowerCorner.z() >> m_uBlockSideLengthPower
-		);
-
-		//Find the block corresponding to the upper corner
-		Vector3DUint16 v3dBlockUpperCorner
-		(
-			v3dUpperCorner.x() >> m_uBlockSideLengthPower,
-			v3dUpperCorner.y() >> m_uBlockSideLengthPower,
-			v3dUpperCorner.z() >> m_uBlockSideLengthPower
-		);
-
-		//Set all covered blocks to be potentially sharable
-		for(boost::uint16_t z = v3dBlockLowerCorner.z(); z <= v3dBlockUpperCorner.z(); ++z)
-		{
-			for(boost::uint16_t y = v3dBlockLowerCorner.y(); y <= v3dBlockUpperCorner.y(); ++y)
-			{
-				for(boost::uint16_t x = v3dBlockLowerCorner.x(); x <= v3dBlockUpperCorner.x(); ++x)
-				{
-					const boost::uint32_t uBlockIndex = 
-						blockX + 
-						blockY * m_uSideLengthInBlocks + 
-						blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks;
-					m_pIsPotentiallySharable[uBlockIndex] = true;
-				}
-			}
-		}
-
-		//Store the values so that we can verify voxels are locked before writing to them
-		m_v3dLastLockedLowerCorner = v3dLowerCorner;
-		m_v3dLastLockedUpperCorner = v3dUpperCorner;
-		m_bIsLocked = true;
-	}
-
-	template <typename VoxelType>
-	void Volume<VoxelType>::unlock(void)
-	{
-		//Check the volume isn't already locked.
-		if(!m_bIsLocked)
-		{
-			throw std::logic_error("Cannot unlock an already unlocked volume");
-		}
-
-		//Unlock it
-		m_bIsLocked = false;
+		VolumeIterator<VoxelType> iter(*this);
+		iter.setPosition(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1);
+		return iter;
 	}
 	#pragma endregion
 
@@ -267,23 +218,6 @@ namespace PolyVox
 			return pBlock;
 		}
 		return  iterResult->second;
-	}
-	#pragma endregion
-
-	#pragma region Private Implementation
-	template <typename VoxelType>
-	bool Volume<VoxelType>::isVoxelLocked(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos)
-	{
-		return
-		(
-			(uXPos >= m_v3dLastLockedLowerCorner.x()) &&
-			(uYPos >= m_v3dLastLockedLowerCorner.y()) &&
-			(uZPos >= m_v3dLastLockedLowerCorner.z()) &&
-			(uXPos <= m_v3dLastLockedUpperCorner.x()) &&
-			(uYPos <= m_v3dLastLockedUpperCorner.y()) &&
-			(uZPos <= m_v3dLastLockedUpperCorner.z()) &&
-			(m_bIsLocked)
-		);
 	}
 	#pragma endregion
 }

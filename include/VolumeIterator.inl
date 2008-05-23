@@ -31,31 +31,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	VolumeIterator<VoxelType>::VolumeIterator(Volume<VoxelType>& volume)
 		:mVolume(volume)
-		,mXRegionFirst(0)
-		,mYRegionFirst(0)
-		,mZRegionFirst(0)
-		,mXRegionLast(volume.getSideLength()-1)
-		,mYRegionLast(volume.getSideLength()-1)
-		,mZRegionLast(volume.getSideLength()-1)
-		,mXRegionFirstBlock(0)
-		,mYRegionFirstBlock(0)
-		,mZRegionFirstBlock(0)
-		,mXRegionLastBlock(volume.m_uSideLengthInBlocks-1)
-		,mYRegionLastBlock(volume.m_uSideLengthInBlocks-1)
-		,mZRegionLastBlock(volume.m_uSideLengthInBlocks-1)
-		,mXPosInVolume(0)
-		,mYPosInVolume(0)
-		,mZPosInVolume(0)
-		,mXBlock(0)
-		,mYBlock(0)
-		,mZBlock(0)
-		,mXPosInBlock(0)
-		,mYPosInBlock(0)
-		,mZPosInBlock(0)
-		,mIsValidForRegion(true)
-		,mCurrentVoxel(volume.m_pBlocks[0]->m_tData)
-		,mVoxelIndexInBlock(0)
-		,mBlockIndexInVolume(0)
 	{
 	}
 
@@ -71,11 +46,60 @@ namespace PolyVox
 	{
 		//We could just check whether the two mCurrentVoxel pointers are equal, but this may not
 		//be safe in the future if we decide to allow blocks to be shared between volumes
-		//So we really check whether the volumes and positions are the same
-		/*return
+		//So we really check whether the positions are the same.
+		//NOTE: With all iterator comparisons it is the users job to ensure they at least point
+		//to the same volume. Otherwise they are not comparible.
+		assert(&mVolume == &rhs.mVolume);
+		return
 		(
-			mVolume.
-		);*/
+			(mXPosInVolume == rhs.mXPosInVolume) &&
+			(mYPosInVolume == rhs.mYPosInVolume) &&
+			(mZPosInVolume == rhs.mZPosInVolume)
+		);
+	}
+
+	template <typename VoxelType>
+	bool VolumeIterator<VoxelType>::operator<(const VolumeIterator<VoxelType>& rhs)
+	{
+		assert(&mVolume == &rhs.mVolume);
+
+		if(mZPosInVolume < rhs.mZPosInVolume)
+			return true;
+		if(mZPosInVolume > rhs.mZPosInVolume)
+			return false;
+
+		if(mYPosInVolume < rhs.mYPosInVolume)
+			return true;
+		if(mYPosInVolume > rhs.mYPosInVolume)
+			return false;
+
+		if(mXPosInVolume < rhs.mXPosInVolume)
+			return true;
+		if(mXPosInVolume > rhs.mXPosInVolume)
+			return false;
+
+		return false;
+	}
+
+	template <typename VoxelType>
+	bool VolumeIterator<VoxelType>::operator>(const VolumeIterator<VoxelType>& rhs)
+	{
+		assert(&mVolume == &rhs.mVolume);
+		return (rhs < *this);
+	}
+
+	template <typename VoxelType>
+	bool VolumeIterator<VoxelType>::operator<=(const VolumeIterator<VoxelType>& rhs)
+	{
+		assert(&mVolume == &rhs.mVolume);
+		return (rhs > *this);
+	}
+
+	template <typename VoxelType>
+	bool VolumeIterator<VoxelType>::operator>=(const VolumeIterator<VoxelType>& rhs)
+	{
+		assert(&mVolume == &rhs.mVolume);
+		return (rhs < *this);
 	}
 	#pragma endregion
 
@@ -210,6 +234,8 @@ namespace PolyVox
 		}
 		else
 		{
+			//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
+			mVolume.m_pIsPotentiallySharable[uBlockIndex] = true;
 			*mCurrentVoxel = tValue;
 		}		
 	}

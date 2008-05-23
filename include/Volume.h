@@ -51,13 +51,11 @@ namespace PolyVox
 
 		bool containsPoint(Vector3DFloat pos, float boundary) const;
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const;
+		VolumeIterator<VoxelType> firstVoxel(void);
 		void idle(boost::uint32_t uAmount);
-		void lock(const Vector3DUint16& v3dLowerCorner, const Vector3DUint16& v3dUpperCorner);
-		void unlock(void);
+		VolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
-		bool isVoxelLocked(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos);
-
 		Block<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;
 
 		Block<VoxelType>** m_pBlocks;
@@ -74,10 +72,6 @@ namespace PolyVox
 
 		boost::uint8_t m_uBlockSideLengthPower;
 		boost::uint16_t m_uBlockSideLength;
-
-		Vector3DUint16 m_v3dLastLockedLowerCorner;
-		Vector3DUint16 m_v3dLastLockedUpperCorner;
-		bool m_bIsLocked;
 	};
 
 	//Some handy typedefs

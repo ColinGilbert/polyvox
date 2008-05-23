@@ -35,7 +35,7 @@ namespace PolyVox
 		//Check the block size is sensible. This corresponds to a side length of 256 voxels
 		if(uSideLengthPower > 8)
 		{
-			throw std::invalid_argument("Block side length must be less than or equal to eight");
+			throw std::invalid_argument("Block side length power must be less than or equal to eight");
 		}
 
 		//Compute the side length
