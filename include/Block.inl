@@ -106,11 +106,19 @@ namespace PolyVox
 		assert(uZPos < m_uSideLength);
 
 		m_tData
-			[
-				uXPos + 
-				uYPos * m_uSideLength + 
-				uZPos * m_uSideLength * m_uSideLength
-			] = tValue;
+		[
+			uXPos + 
+			uYPos * m_uSideLength + 
+			uZPos * m_uSideLength * m_uSideLength
+		] = tValue;
+	}
+	#pragma endregion
+
+	#pragma region Other
+	template <typename VoxelType>
+	void Block<VoxelType>::fill(VoxelType tValue)
+	{
+		memset(m_tData, tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 	}
 	#pragma endregion
 }

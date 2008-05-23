@@ -47,10 +47,12 @@ namespace PolyVox
 
 		void setVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos, VoxelType tValue);
 
+		void fill(VoxelType tValue);
+
 	private:
 		boost::uint8_t m_uSideLengthPower;
 		boost::uint16_t m_uSideLength;
-		VoxelType* m_tData;		
+		VoxelType* m_tData;
 	};
 }
 

@@ -22,11 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __VolumeIterator_H__
 #define __VolumeIterator_H__
 
-#include "boost/cstdint.hpp"
-
+#pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
-#include "TypeDef.h"
-#include "Vector.h"
+
+#include "boost/cstdint.hpp"
+#pragma endregion
 
 namespace PolyVox
 {
@@ -35,24 +35,22 @@ namespace PolyVox
 	{
 	public:
 		VolumeIterator(Volume<VoxelType>& volume);
-		~VolumeIterator();
+		~VolumeIterator();		
 
-		void setVoxel(VoxelType value);
-		VoxelType getVoxel(void);
+		bool operator==(const VolumeIterator& rhs);
 
 		float getAveragedVoxel(boost::uint16_t size) const;
-
-		
-
 		boost::uint16_t getPosX(void) const;
 		boost::uint16_t getPosY(void) const;
 		boost::uint16_t getPosZ(void) const;
+		VoxelType getVoxel(void) const;			
 
 		void setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos);
 		void setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast);
-		void moveForwardInRegion(void);
+		void setVoxel(VoxelType tValue);	
 
-		bool isValidForRegion(void);
+		bool isValidForRegion(void) const;
+		void moveForwardInRegion(void);		
 
 		VoxelType peekVoxel1nx1ny1nz(void) const;
 		VoxelType peekVoxel1nx1ny0pz(void) const;
@@ -85,9 +83,6 @@ namespace PolyVox
 		VoxelType peekVoxel1px1py1pz(void) const;
 
 	private:
-
-		//VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
-
 		//The current volume
 		Volume<VoxelType>& mVolume;
 

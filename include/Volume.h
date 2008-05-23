@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxForwardDeclarations.h"
 
 #include "boost/cstdint.hpp"
+
+#include <map>
 #pragma endregion
 
 namespace PolyVox
@@ -43,26 +45,39 @@ namespace PolyVox
 
 		Volume& operator=(const Volume& rhs);
 
-		boost::uint16_t getSideLength(void);
+		boost::uint16_t getSideLength(void) const;
 		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
-		void setVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos, VoxelType tValue);
-		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
-
 		bool containsPoint(Vector3DFloat pos, float boundary) const;
 		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const;
+		void idle(boost::uint32_t uAmount);
+		void lock(const Vector3DUint16& v3dLowerCorner, const Vector3DUint16& v3dUpperCorner);
+		void unlock(void);
 
 	private:
-		Block<VoxelType>** mBlocks;
+		bool isVoxelLocked(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos);
+
+		Block<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;
+
+		Block<VoxelType>** m_pBlocks;
+		bool* m_pIsShared;
+		bool* m_pIsPotentiallySharable;
+		VoxelType* m_pHomogenousValue;
+		mutable std::map<VoxelType, Block<VoxelType>*> m_pHomogenousBlocks;
+
 		boost::uint32_t m_uNoOfBlocksInVolume;
 		boost::uint16_t m_uSideLengthInBlocks;
 
 		boost::uint8_t m_uSideLengthPower;
 		boost::uint16_t m_uSideLength;
 
-		boost::uint16_t m_uBlockSideLengthPower;
+		boost::uint8_t m_uBlockSideLengthPower;
 		boost::uint16_t m_uBlockSideLength;
+
+		Vector3DUint16 m_v3dLastLockedLowerCorner;
+		Vector3DUint16 m_v3dLastLockedUpperCorner;
+		bool m_bIsLocked;
 	};
 
 	//Some handy typedefs

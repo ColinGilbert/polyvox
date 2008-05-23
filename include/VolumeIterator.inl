@@ -19,13 +19,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
+#pragma region Headers
 #include "Block.h"
+#include "Vector.h"
 #include "Volume.h"
-
-using namespace boost;
+#pragma endregion
 
 namespace PolyVox
 {
+	#pragma region Constructors/Destructors
 	template <typename VoxelType>
 	VolumeIterator<VoxelType>::VolumeIterator(Volume<VoxelType>& volume)
 		:mVolume(volume)
@@ -51,8 +53,7 @@ namespace PolyVox
 		,mYPosInBlock(0)
 		,mZPosInBlock(0)
 		,mIsValidForRegion(true)
-		,mCurrentVoxel(volume.mBlocks[0]->m_tData)
-		//,mCurrentBlock(volume->mBlocks[0])
+		,mCurrentVoxel(volume.m_pBlocks[0]->m_tData)
 		,mVoxelIndexInBlock(0)
 		,mBlockIndexInVolume(0)
 	{
@@ -61,58 +62,26 @@ namespace PolyVox
 	template <typename VoxelType>
 	VolumeIterator<VoxelType>::~VolumeIterator()
 	{
-	}	
-
-	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setVoxel(VoxelType value)
-	{
-		Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
-
-		/*if(!currentBlock.unique())
-		{
-			Block* copy(new Block(*currentBlock));
-			currentBlock = copy;
-
-			mCurrentVoxel = currentBlock->mData + mVoxelIndexInBlock;
-		}*/
-
-		*mCurrentVoxel = value;
 	}
+	#pragma endregion
 
+	#pragma region Operators
 	template <typename VoxelType>
-	VoxelType VolumeIterator<VoxelType>::getVoxel(void)
+	bool VolumeIterator<VoxelType>::operator==(const VolumeIterator<VoxelType>& rhs)
 	{
-		//return getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume);
-		return *mCurrentVoxel;
+		//We could just check whether the two mCurrentVoxel pointers are equal, but this may not
+		//be safe in the future if we decide to allow blocks to be shared between volumes
+		//So we really check whether the volumes and positions are the same
+		/*return
+		(
+			mVolume.
+		);*/
 	}
+	#pragma endregion
 
-	/*template <typename VoxelType>
-	VoxelType VolumeIterator<VoxelType>::getVoxelAt(const uint16_t xPosition, const uint16_t yPosition, const uint16_t zPosition) const
-	{
-		assert(xPosition < mVolume.getSideLength());
-		assert(yPosition < mVolume.getSideLength());
-		assert(zPosition < mVolume.getSideLength());
-
-		const uint16_t blockX = xPosition >> mVolume.m_uBlockSideLengthPower;
-		const uint16_t blockY = yPosition >> mVolume.m_uBlockSideLengthPower;
-		const uint16_t blockZ = zPosition >> mVolume.m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = xPosition - (blockX << mVolume.m_uBlockSideLengthPower);
-		const uint16_t yOffset = yPosition - (blockY << mVolume.m_uBlockSideLengthPower);
-		const uint16_t zOffset = zPosition - (blockZ << mVolume.m_uBlockSideLengthPower);
-
-		const Block<VoxelType>* block = mVolume.mBlocks
-			[
-				blockX + 
-				blockY * mVolume.m_uSideLengthInBlocks + 
-				blockZ * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks
-			];
-
-		return block->getVoxelAt(xOffset,yOffset,zOffset);
-	}*/
-
+	#pragma region Getters
 	template <typename VoxelType>
-	float VolumeIterator<VoxelType>::getAveragedVoxel(uint16_t size) const
+	float VolumeIterator<VoxelType>::getAveragedVoxel(boost::uint16_t size) const
 	{
 		assert(mXPosInVolume >= size);
 		assert(mYPosInVolume >= size);
@@ -144,25 +113,33 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint16_t VolumeIterator<VoxelType>::getPosX(void) const
+	boost::uint16_t VolumeIterator<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16_t VolumeIterator<VoxelType>::getPosY(void) const
+	boost::uint16_t VolumeIterator<VoxelType>::getPosY(void) const
 	{
 		return mYPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16_t VolumeIterator<VoxelType>::getPosZ(void) const
+	boost::uint16_t VolumeIterator<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos)
+	VoxelType VolumeIterator<VoxelType>::getVoxel(void) const
+	{
+		return *mCurrentVoxel;
+	}
+	#pragma endregion
+
+	#pragma region Setters
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -179,7 +156,7 @@ namespace PolyVox
 		mBlockIndexInVolume = mXBlock + 
 			mYBlock * mVolume.m_uSideLengthInBlocks + 
 			mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
-		Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+		Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
 			mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -189,7 +166,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast)
+	void VolumeIterator<VoxelType>::setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -209,6 +186,43 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::setVoxel(VoxelType tValue)
+	{
+		assert(mVolume.isVoxelLocked(mXPosInVolume,mYPosInVolume,mZPosInVolume));
+
+		const boost::uint32_t uBlockIndex = 
+				mXBlock + 
+				mYBlock * mVolume.m_uSideLengthInBlocks + 
+				mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
+
+		const bool bIsShared = mVolume.m_pIsShared[uBlockIndex];
+		const VoxelType tHomogenousValue = mVolume.m_pHomogenousValue[uBlockIndex];
+		if(bIsShared)
+		{
+			if(tHomogenousValue != tValue)
+			{
+				mVolume.m_pBlocks[uBlockIndex] = new Block<VoxelType>(mVolume.m_uBlockSideLengthPower);
+				mVolume.m_pIsShared[uBlockIndex] = false;
+				mVolume.m_pBlocks[uBlockIndex]->fill(tHomogenousValue);
+				mCurrentVoxel = mVolume.m_pBlocks[uBlockIndex]->m_tData + mVoxelIndexInBlock;
+				*mCurrentVoxel = tValue;
+			}
+		}
+		else
+		{
+			*mCurrentVoxel = tValue;
+		}		
+	}
+	#pragma endregion
+
+	#pragma region Other
+	template <typename VoxelType>
+	bool VolumeIterator<VoxelType>::isValidForRegion(void) const
+	{
+		return mIsValidForRegion;
+	}
+
+	template <typename VoxelType>
 	void VolumeIterator<VoxelType>::moveForwardInRegion(void)
 	{
 		mXPosInBlock++;
@@ -221,7 +235,7 @@ namespace PolyVox
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * mVolume.m_uBlockSideLength + 
 				mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-			Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+			Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
@@ -234,7 +248,7 @@ namespace PolyVox
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * mVolume.m_uBlockSideLength + 
 					mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-				Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
+				Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
@@ -273,8 +287,8 @@ namespace PolyVox
 						}
 					}
 
-					Block<VoxelType>* currentBlock = mVolume.mBlocks[mBlockIndexInVolume];
-					//mCurrentBlock = mVolume->mBlocks[mBlockIndexInVolume];					
+					Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+					//mCurrentBlock = mVolume->m_pBlocks[mBlockIndexInVolume];					
 
 					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.m_uBlockSideLength));					
 					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.m_uBlockSideLength));					
@@ -293,13 +307,9 @@ namespace PolyVox
 			}
 		}		
 	}
+	#pragma endregion
 
-	template <typename VoxelType>
-	bool VolumeIterator<VoxelType>::isValidForRegion(void)
-	{
-		return mIsValidForRegion;
-	}
-
+	#pragma region Peekers
 	template <typename VoxelType>
 	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1nz(void) const
 	{
@@ -569,4 +579,5 @@ namespace PolyVox
 		}
 		return mVolume.getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
 	}
+	#pragma endregion
 }
