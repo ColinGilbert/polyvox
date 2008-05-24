@@ -52,11 +52,11 @@ namespace PolyVox
 		const std::string& getTypeName(void) const;
 		boost::uint16_t getSideLength(void);
 
-		const Volume<boost::uint8_t>* getVolumeData(void) const;
+		const BlockVolume<boost::uint8_t>* getVolumeData(void) const;
 
 
 		//Setters
-		void setVolumeData(Volume<boost::uint8_t>* volumeDataToSet);
+		void setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet);
 		void setNormalGenerationMethod(NormalGenerationMethod method);
 		//void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
 
@@ -92,7 +92,7 @@ namespace PolyVox
 		NormalGenerationMethod m_normalGenerationMethod;
 
 	private:
-		Volume<boost::uint8_t>* volumeData;
+		BlockVolume<boost::uint8_t>* volumeData;
 
 		bool m_bHaveGeneratedMeshes;
 

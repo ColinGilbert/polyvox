@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "SurfaceVertex.h"
 #include "Utility.h"
 #include "Vector.h"
-#include "Volume.h"
+#include "BlockVolume.h"
 #include "VolumeIterator.h"
 
 using namespace boost;
@@ -53,7 +53,7 @@ namespace PolyVox
 	{
 	}
 
-	void PolyVoxSceneManager::setVolumeData(Volume<boost::uint8_t>* volumeDataToSet)
+	void PolyVoxSceneManager::setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
 		volSurfaceUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
@@ -1073,7 +1073,7 @@ namespace PolyVox
 			m_axisNode->setVisible(visible);
 	}*/
 
-	const Volume<boost::uint8_t>* PolyVoxSceneManager::getVolumeData(void) const
+	const BlockVolume<boost::uint8_t>* PolyVoxSceneManager::getVolumeData(void) const
 	{
 		return volumeData;
 	}

@@ -21,15 +21,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Block.h"
+#include "BlockVolume.h"
 #include "Vector.h"
-#include "Volume.h"
 #pragma endregion
 
 namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	VolumeIterator<VoxelType>::VolumeIterator(Volume<VoxelType>& volume)
+	VolumeIterator<VoxelType>::VolumeIterator(BlockVolume<VoxelType>& volume)
 		:mVolume(volume)
 	{
 	}

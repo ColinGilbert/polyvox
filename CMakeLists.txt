@@ -14,6 +14,8 @@ SET(SRC_FILES
 SET(INC_FILES
 	include/Block.h
 	include/Block.inl
+	include/BlockVolume.h
+	include/BlockVolume.inl
 	include/Constants.h
 	include/GradientEstimators.h	
 	include/GradientEstimators.inl
@@ -28,9 +30,7 @@ SET(INC_FILES
 	include/TypeDef.h
 	include/Utility.h
 	include/Vector.h
-	include/Vector.inl
-	include/Volume.h
-	include/Volume.inl
+	include/Vector.inl	
 	include/VolumeIterator.h
 	include/VolumeIterator.inl	
 )

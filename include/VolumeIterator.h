@@ -34,7 +34,7 @@ namespace PolyVox
 	class VolumeIterator
 	{
 	public:
-		VolumeIterator(Volume<VoxelType>& volume);
+		VolumeIterator(BlockVolume<VoxelType>& volume);
 		~VolumeIterator();		
 
 		bool operator==(const VolumeIterator& rhs);
@@ -89,7 +89,7 @@ namespace PolyVox
 	private:
 
 		//The current volume
-		Volume<VoxelType>& mVolume;
+		BlockVolume<VoxelType>& mVolume;
 
 		//The current position in the volume
 		boost::uint16_t mXPosInVolume;

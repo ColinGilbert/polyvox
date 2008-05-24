@@ -27,6 +27,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType> class Block;
+	template <typename VoxelType> class BlockVolume;
+	//Some handy typedefs
+	typedef BlockVolume<float> FloatBlockVolume;
+	typedef BlockVolume<boost::uint8_t> UInt8BlockVolume;
+	typedef BlockVolume<boost::uint16_t> UInt16BlockVolume;
 	class IndexedSurfacePatch;
 	class IntegrealVector3;
 	template <typename VoxelType> class LinearVolume;
@@ -41,12 +46,7 @@ namespace PolyVox
 	typedef Vector<3,boost::int16_t> Vector3DInt16;
 	typedef Vector<3,boost::uint16_t> Vector3DUint16;
 	typedef Vector<3,boost::int32_t> Vector3DInt32;
-	typedef Vector<3,boost::uint32_t> Vector3DUint32;
-	template <typename VoxelType> class Volume;
-	//Some handy typedefs
-	typedef Volume<float> FloatVolume;
-	typedef Volume<boost::uint8_t> UInt8Volume;
-	typedef Volume<boost::uint16_t> UInt16Volume;	
+	typedef Vector<3,boost::uint32_t> Vector3DUint32;		
 	template <typename VoxelType> class VolumeIterator;
 }
 

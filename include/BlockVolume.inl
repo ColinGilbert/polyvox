@@ -30,7 +30,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower)
+	BlockVolume<VoxelType>::BlockVolume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower)
 		:m_pBlocks(0)
 	{
 		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
@@ -68,13 +68,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(const Volume<VoxelType>& rhs)
+	BlockVolume<VoxelType>::BlockVolume(const BlockVolume<VoxelType>& rhs)
 	{
 		*this = rhs;
 	}
 
 	template <typename VoxelType>
-	Volume<VoxelType>::~Volume()
+	BlockVolume<VoxelType>::~BlockVolume()
 	{
 		for(boost::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
@@ -85,7 +85,7 @@ namespace PolyVox
 
 	#pragma region Operators
 	template <typename VoxelType>
-	Volume<VoxelType>& Volume<VoxelType>::operator=(const Volume& rhs)
+	BlockVolume<VoxelType>& BlockVolume<VoxelType>::operator=(const BlockVolume& rhs)
 	{
 		if (this == &rhs)
 		{
@@ -119,13 +119,13 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	boost::uint16_t Volume<VoxelType>::getSideLength(void) const
+	boost::uint16_t BlockVolume<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const
+	VoxelType BlockVolume<VoxelType>::getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const
 	{
 		assert(uXPos < getSideLength());
 		assert(uYPos < getSideLength());
@@ -150,7 +150,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType BlockVolume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
 		assert(v3dPos.x() < m_uSideLength);
 		assert(v3dPos.y() < m_uSideLength);
@@ -162,7 +162,7 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	bool Volume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary) const
+	bool BlockVolume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary) const
 	{
 		return (pos.x() <= m_uSideLength - 1 - boundary)
 			&& (pos.y() <= m_uSideLength - 1 - boundary) 
@@ -173,7 +173,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool Volume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const
+	bool BlockVolume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const
 	{
 		return (pos.x() <= m_uSideLength - 1 - boundary)
 			&& (pos.y() <= m_uSideLength - 1 - boundary) 
@@ -184,7 +184,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VolumeIterator<VoxelType> Volume<VoxelType>::firstVoxel(void)
+	VolumeIterator<VoxelType> BlockVolume<VoxelType>::firstVoxel(void)
 	{
 		VolumeIterator<VoxelType> iter(*this);
 		iter.setPosition(0,0,0);
@@ -192,12 +192,12 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::idle(boost::uint32_t uAmount)
+	void BlockVolume<VoxelType>::idle(boost::uint32_t uAmount)
 	{
 	}	
 
 	template <typename VoxelType>
-	VolumeIterator<VoxelType> Volume<VoxelType>::lastVoxel(void)
+	VolumeIterator<VoxelType> BlockVolume<VoxelType>::lastVoxel(void)
 	{
 		VolumeIterator<VoxelType> iter(*this);
 		iter.setPosition(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1);
@@ -207,9 +207,9 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	Block<VoxelType>* Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
+	Block<VoxelType>* BlockVolume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
 	{
-		typename std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
+		std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlocks.end())
 		{
 			Block<VoxelType>* pBlock = new Block<VoxelType>(m_uBlockSideLengthPower);

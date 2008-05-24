@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_Volume_H__
-#define __PolyVox_Volume_H__
+#ifndef __PolyVox_BlockVolume_H__
+#define __PolyVox_BlockVolume_H__
 
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
@@ -33,17 +33,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class Volume
+	class BlockVolume
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator<VoxelType>;
 
 	public:		
-		Volume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower = 5);
-		Volume(const Volume& rhs);
-		~Volume();	
+		BlockVolume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower = 5);
+		BlockVolume(const BlockVolume& rhs);
+		~BlockVolume();	
 
-		Volume& operator=(const Volume& rhs);
+		BlockVolume& operator=(const BlockVolume& rhs);
 
 		boost::uint16_t getSideLength(void) const;
 		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
@@ -75,11 +75,11 @@ namespace PolyVox
 	};
 
 	//Some handy typedefs
-	typedef Volume<float> FloatVolume;
-	typedef Volume<boost::uint8_t> UInt8Volume;
-	typedef Volume<boost::uint16_t> UInt16Volume;	
+	typedef BlockVolume<float> FloatBlockVolume;
+	typedef BlockVolume<boost::uint8_t> UInt8BlockVolume;
+	typedef BlockVolume<boost::uint16_t> UInt16BlockVolume;	
 }
 
-#include "Volume.inl"
+#include "BlockVolume.inl"
 
 #endif
