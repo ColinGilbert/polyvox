@@ -212,8 +212,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeIterator<VoxelType>::setVoxel(VoxelType tValue)
 	{
-		assert(mVolume.isVoxelLocked(mXPosInVolume,mYPosInVolume,mZPosInVolume));
-
 		const boost::uint32_t uBlockIndex = 
 				mXBlock + 
 				mYBlock * mVolume.m_uSideLengthInBlocks + 
