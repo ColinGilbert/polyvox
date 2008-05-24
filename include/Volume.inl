@@ -209,7 +209,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>* Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
 	{
-		std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
+		typename std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlocks.end())
 		{
 			Block<VoxelType>* pBlock = new Block<VoxelType>(m_uBlockSideLengthPower);
