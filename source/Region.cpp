@@ -53,4 +53,14 @@ namespace PolyVox
 			&& (pos.y() >= m_v3dLowerCorner.y() + boundary)
 			&& (pos.z() >= m_v3dLowerCorner.z() + boundary);
 	}
+
+	void Region::cropTo(const Region& other)
+	{
+		m_v3dLowerCorner.setX((std::max)(m_v3dLowerCorner.x(), other.m_v3dLowerCorner.x()));
+		m_v3dLowerCorner.setY((std::max)(m_v3dLowerCorner.y(), other.m_v3dLowerCorner.y()));
+		m_v3dLowerCorner.setZ((std::max)(m_v3dLowerCorner.z(), other.m_v3dLowerCorner.z()));
+		m_v3dUpperCorner.setX((std::min)(m_v3dUpperCorner.x(), other.m_v3dUpperCorner.x()));
+		m_v3dUpperCorner.setY((std::min)(m_v3dUpperCorner.y(), other.m_v3dUpperCorner.y()));
+		m_v3dUpperCorner.setZ((std::min)(m_v3dUpperCorner.z(), other.m_v3dUpperCorner.z()));
+	}
 }

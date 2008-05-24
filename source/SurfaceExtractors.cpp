@@ -4,36 +4,51 @@
 #include "GradientEstimators.h"
 #include "IndexedSurfacePatch.h"
 #include "MarchingCubesTables.h"
+#include "Region.h"
 #include "VolumeIterator.h"
 
 using namespace boost;
 
 namespace PolyVox
 {
-	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, uint16_t regionX, uint16_t regionY, uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
+	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
 	{	
 		//First and last voxels in the region
-		const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
-		const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
-		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
+		//const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
+		//const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
+		//const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+
+		//We don't go right to the edge
+		Region regVolume = volumeData->getEnclosingRegion();
+		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
+		region.cropTo(regVolume);
+
+		//const uint16_t firstX = (uint16_t)region.getLowerCorner().x();
+		//const uint16_t firstY = (uint16_t)region.getLowerCorner().y();
+		//const uint16_t firstZ = (uint16_t)region.getLowerCorner().z();
+		//FIXME - for this next step, define some operation to crop one region to another. We can then crop to the volume
+		//const uint16_t lastX = static_cast<uint16_t>(region.getUpperCorner().x());
+		//const uint16_t lastY = static_cast<uint16_t>(region.getUpperCorner().y());
+		//const uint16_t lastZ = static_cast<uint16_t>(region.getUpperCorner().z());
+
 
 		//Offset from lower block corner
-		const Vector3DFloat offset(firstX,firstY,firstZ);
+		const Vector3DFloat offset(region.getLowerCorner());
 
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
 		VolumeIterator<boost::uint8_t> volIter(*volumeData);
-		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
+		volIter.setValidRegion(region);
 
 		//////////////////////////////////////////////////////////////////////////
 		//Get mesh data
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
-		for(volIter.setPosition(firstX,firstY,firstZ);volIter.isValidForRegion();volIter.moveForwardInRegion())
+		for(volIter.setPosition(region.getLowerCorner().x(),region.getLowerCorner().y(),region.getLowerCorner().z());volIter.isValidForRegion();volIter.moveForwardInRegion())
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX();
@@ -410,23 +425,36 @@ namespace PolyVox
 		return result;
 	}
 
-	void generateSmoothMeshDataForRegion(BlockVolume<uint8_t>* volumeData, uint16_t regionX, uint16_t regionY, uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
+	void generateSmoothMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
 	{	
 		//First and last voxels in the region
-		const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
-		const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
-		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
+		//const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
+		//const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
+		//const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+
+		//We don't go right to the edge
+		Region regVolume = volumeData->getEnclosingRegion();
+		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
+		region.cropTo(regVolume);
+
+		//const uint16_t firstX = (uint16_t)region.getLowerCorner().x();
+		//const uint16_t firstY = (uint16_t)region.getLowerCorner().y();
+		//const uint16_t firstZ = (uint16_t)region.getLowerCorner().z();
+		//FIXME - for this next step, define some operation to crop one region to another. We can then crop to the volume
+		//const uint16_t lastX = static_cast<uint16_t>(region.getUpperCorner().x());
+		//const uint16_t lastY = static_cast<uint16_t>(region.getUpperCorner().y());
+		//const uint16_t lastZ = static_cast<uint16_t>(region.getUpperCorner().z());
 
 		//Offset from lower block corner
-		const Vector3DFloat offset(firstX,firstY,firstZ);
+		const Vector3DFloat offset(region.getLowerCorner());
 
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
 		VolumeIterator<boost::uint8_t> volIter(*volumeData);
-		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
+		volIter.setValidRegion(region);
 
 		const float threshold = 0.5f;
 
@@ -435,7 +463,7 @@ namespace PolyVox
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
-		for(volIter.setPosition(firstX,firstY,firstZ);volIter.isValidForRegion();volIter.moveForwardInRegion())
+		for(volIter.setPosition(region.getLowerCorner().x(),region.getLowerCorner().y(),region.getLowerCorner().z());volIter.isValidForRegion();volIter.moveForwardInRegion())
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX();

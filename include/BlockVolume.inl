@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Block.h"
+#include "Region.h"
 #include "Vector.h"
 
 #include <cassert>
@@ -119,6 +120,12 @@ namespace PolyVox
 	#pragma endregion		
 
 	#pragma region Getters
+	template <typename VoxelType>
+	Region BlockVolume<VoxelType>::getEnclosingRegion(void)
+	{
+		return Region(Vector3DInt32(0,0,0), Vector3DInt32(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1));
+	}
+
 	template <typename VoxelType>
 	boost::uint16_t BlockVolume<VoxelType>::getSideLength(void) const
 	{

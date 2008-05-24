@@ -42,6 +42,7 @@ namespace PolyVox
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
 		bool containsPoint(const Vector3DInt32& pos, boost::uint8_t boundary) const;
+		void cropTo(const Region& other);
 
 	private:
 		Vector3DInt32 m_v3dLowerCorner;

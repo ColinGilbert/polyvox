@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "LinearVolume.h"
 #include "MarchingCubesTables.h"
 #include "VolumeChangeTracker.h"
+#include "Region.h"
 #include "RegionGeometry.h"
 #include "SurfaceExtractors.h"
 #include "SurfaceVertex.h"
@@ -83,7 +84,16 @@ namespace PolyVox
 						regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
 						regionGeometry.m_v3dRegionPosition = Vector3DInt32(regionX, regionY, regionZ);
 
-						generateRoughMeshDataForRegion(volumeData, regionX,regionY,regionZ, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+						const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t lastX = firstX + POLYVOX_REGION_SIDE_LENGTH-1;
+						const uint16_t lastY = firstY + POLYVOX_REGION_SIDE_LENGTH-1;
+						const uint16_t lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH-1;
+
+						Region region(Vector3DInt32(firstX,firstY,firstZ),Vector3DInt32(lastX,lastY,lastZ));
+
+						generateRoughMeshDataForRegion(volumeData, region, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
 						regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
 						regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
@@ -135,7 +145,7 @@ namespace PolyVox
 		lastZ = std::min(lastZ,int(volumeData->getSideLength()-1));
 
 		VolumeIterator<boost::uint8_t> volIter(*volumeData);
-		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
+		volIter.setValidRegion(Region(Vector3DInt32(firstX,firstY,firstZ),Vector3DInt32(lastX,lastY,lastZ)));
 		volIter.setPosition(firstX,firstY,firstZ);
 		while(volIter.isValidForRegion())
 		{
