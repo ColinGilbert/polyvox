@@ -4,6 +4,7 @@ PROJECT(PolyVox)
 SET(SRC_FILES
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
+	source/Region.cpp
 	source/RegionGeometry.cpp 
 	source/SurfaceExtractors.cpp 
 	source/SurfaceVertex.cpp
@@ -26,6 +27,7 @@ SET(INC_FILES
 	include/IndexedSurfacePatch.h
 	include/MarchingCubesTables.h
 	include/PolyVoxForwardDeclarations.h
+	include/Region.h
 	include/RegionGeometry.h
 	include/SurfaceExtractors.h
 	include/SurfaceVertex.h

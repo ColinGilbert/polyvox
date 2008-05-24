@@ -49,8 +49,8 @@ namespace PolyVox
 		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
-		bool containsPoint(Vector3DFloat pos, float boundary) const;
-		bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const;
+		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
+		bool containsPoint(const Vector3DInt32& pos, boost::uint16_t boundary) const;
 		VolumeIterator<VoxelType> firstVoxel(void);
 		void idle(boost::uint32_t uAmount);
 		VolumeIterator<VoxelType> lastVoxel(void);

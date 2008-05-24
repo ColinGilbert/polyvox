@@ -163,7 +163,7 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	bool BlockVolume<VoxelType>::containsPoint(Vector3DFloat pos, float boundary) const
+	bool BlockVolume<VoxelType>::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
 		return (pos.x() <= m_uSideLength - 1 - boundary)
 			&& (pos.y() <= m_uSideLength - 1 - boundary) 
@@ -174,7 +174,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool BlockVolume<VoxelType>::containsPoint(Vector3DInt32 pos, boost::uint16_t boundary) const
+	bool BlockVolume<VoxelType>::containsPoint(const Vector3DInt32& pos, boost::uint16_t boundary) const
 	{
 		return (pos.x() <= m_uSideLength - 1 - boundary)
 			&& (pos.y() <= m_uSideLength - 1 - boundary) 

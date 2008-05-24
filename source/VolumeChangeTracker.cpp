@@ -250,24 +250,6 @@ namespace PolyVox
 		m_normalGenerationMethod = method;
 	}
 
-	/*bool VolumeChangeTracker::containsPoint(Vector3DFloat pos, float boundary)
-	{
-		return volumeData->containsPoint(pos, boundary);
-	}
-
-	bool VolumeChangeTracker::containsPoint(Vector3DInt32 pos, uint16_t boundary)
-	{
-		return volumeData->containsPoint(pos, boundary);
-	}*/
-
-	/*
-
-	void VolumeChangeTracker::setAxisVisible(bool visible)
-	{
-		if(m_axisNode)
-			m_axisNode->setVisible(visible);
-	}*/
-
 	const BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
