@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Block.h"
+#include "Vector.h"
 
 #include <cassert>
 #include <cstring> //For memcpy
@@ -209,7 +210,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>* BlockVolume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
 	{
-		std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
+		typename std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlocks.end())
 		{
 			Block<VoxelType>* pBlock = new Block<VoxelType>(m_uBlockSideLengthPower);
