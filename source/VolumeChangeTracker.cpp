@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IndexedSurfacePatch.h"
 #include "LinearVolume.h"
 #include "MarchingCubesTables.h"
-#include "PolyVoxSceneManager.h"
+#include "VolumeChangeTracker.h"
 #include "RegionGeometry.h"
 #include "SurfaceExtractors.h"
 #include "SurfaceVertex.h"
@@ -38,9 +38,9 @@ namespace PolyVox
 {
 
 	//////////////////////////////////////////////////////////////////////////
-	// PolyVoxSceneManager
+	// VolumeChangeTracker
 	//////////////////////////////////////////////////////////////////////////
-	PolyVoxSceneManager::PolyVoxSceneManager()
+	VolumeChangeTracker::VolumeChangeTracker()
 		:volumeData(0)
 		,useNormalSmoothing(false)
 		,normalSmoothingFilterSize(1)
@@ -50,17 +50,17 @@ namespace PolyVox
 		//sceneNodes.clear();`
 	}
 
-	PolyVoxSceneManager::~PolyVoxSceneManager()
+	VolumeChangeTracker::~VolumeChangeTracker()
 	{
 	}
 
-	void PolyVoxSceneManager::setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet)
+	void VolumeChangeTracker::setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
 		volSurfaceUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
-	std::list<RegionGeometry> PolyVoxSceneManager::getChangedRegionGeometry(void)
+	std::list<RegionGeometry> VolumeChangeTracker::getChangedRegionGeometry(void)
 	{
 		std::list<RegionGeometry> listChangedRegionGeometry;
 
@@ -98,7 +98,7 @@ namespace PolyVox
 		return listChangedRegionGeometry;
 	}
 
-	void PolyVoxSceneManager::setAllUpToDateFlagsTo(bool newUpToDateValue)
+	void VolumeChangeTracker::setAllUpToDateFlagsTo(bool newUpToDateValue)
 	{
 		for(uint16_t blockZ = 0; blockZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
 		{
@@ -113,7 +113,7 @@ namespace PolyVox
 		}
 	}
 
-	void PolyVoxSceneManager::createSphereAt(Vector3DFloat centre, float radius, uint8_t value, bool painting)
+	void VolumeChangeTracker::createSphereAt(Vector3DFloat centre, float radius, uint8_t value, bool painting)
 	{
 		int firstX = static_cast<int>(std::floor(centre.x() - radius));
 		int firstY = static_cast<int>(std::floor(centre.y() - radius));
@@ -162,7 +162,7 @@ namespace PolyVox
 		markRegionChanged(firstX,firstY,firstZ,lastX,lastY,lastZ);
 	}
 
-	void PolyVoxSceneManager::markVoxelChanged(uint16_t x, uint16_t y, uint16_t z)
+	void VolumeChangeTracker::markVoxelChanged(uint16_t x, uint16_t y, uint16_t z)
 	{
 		//If we are not on a boundary, just mark one region.
 		if((x % POLYVOX_REGION_SIDE_LENGTH != 0) &&
@@ -203,7 +203,7 @@ namespace PolyVox
 		}
 	}
 
-	void PolyVoxSceneManager::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
+	void VolumeChangeTracker::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
 	{
 		const uint16_t firstRegionX = firstX >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 		const uint16_t firstRegionY = firstY >> POLYVOX_REGION_SIDE_LENGTH_POWER;
@@ -226,12 +226,12 @@ namespace PolyVox
 		}
 	}
 
-	uint16_t PolyVoxSceneManager::getSideLength(void)
+	uint16_t VolumeChangeTracker::getSideLength(void)
 	{
 		return volumeData->getSideLength();
 	}
 
-	uint8_t PolyVoxSceneManager::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)
+	uint8_t VolumeChangeTracker::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
 		if(volumeData->containsPoint(Vector3DInt32(uX,uY,uZ),0))
 		{
@@ -245,30 +245,30 @@ namespace PolyVox
 		}
 	}
 
-	void PolyVoxSceneManager::setNormalGenerationMethod(NormalGenerationMethod method)
+	void VolumeChangeTracker::setNormalGenerationMethod(NormalGenerationMethod method)
 	{
 		m_normalGenerationMethod = method;
 	}
 
-	/*bool PolyVoxSceneManager::containsPoint(Vector3DFloat pos, float boundary)
+	/*bool VolumeChangeTracker::containsPoint(Vector3DFloat pos, float boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
 	}
 
-	bool PolyVoxSceneManager::containsPoint(Vector3DInt32 pos, uint16_t boundary)
+	bool VolumeChangeTracker::containsPoint(Vector3DInt32 pos, uint16_t boundary)
 	{
 		return volumeData->containsPoint(pos, boundary);
 	}*/
 
 	/*
 
-	void PolyVoxSceneManager::setAxisVisible(bool visible)
+	void VolumeChangeTracker::setAxisVisible(bool visible)
 	{
 		if(m_axisNode)
 			m_axisNode->setVisible(visible);
 	}*/
 
-	const BlockVolume<boost::uint8_t>* PolyVoxSceneManager::getVolumeData(void) const
+	const BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
 	}

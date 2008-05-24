@@ -37,7 +37,7 @@ namespace PolyVox
 	class IndexedSurfacePatch;
 	class IntegrealVector3;
 	template <typename VoxelType> class LinearVolume;
-	class PolyVoxSceneManager;
+	class VolumeChangeTracker;
 	class RegionGeometry;
 	class SurfaceVertex;
 	template <boost::uint32_t Size, typename Type> class Vector;

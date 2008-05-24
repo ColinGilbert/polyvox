@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_PolyVoxSceneManager_H__
-#define __PolyVox_PolyVoxSceneManager_H__
+#ifndef __PolyVox_VolumeChangeTracker_H__
+#define __PolyVox_VolumeChangeTracker_H__
 
 #include <list>
 
@@ -33,12 +33,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {	
 	/// Voxel scene manager
-	class POLYVOX_API PolyVoxSceneManager
+	class POLYVOX_API VolumeChangeTracker
 	{
 	public:
 		//Constructors, etc
-		PolyVoxSceneManager();
-		~PolyVoxSceneManager();
+		VolumeChangeTracker();
+		~VolumeChangeTracker();
 
 		//Getters
 		boost::uint8_t getMaterialIndexAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);

@@ -4,11 +4,11 @@ PROJECT(PolyVox)
 SET(SRC_FILES
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
-	source/PolyVoxSceneManager.cpp
 	source/RegionGeometry.cpp 
 	source/SurfaceExtractors.cpp 
 	source/SurfaceVertex.cpp
 	source/Utility.cpp
+	source/VolumeChangeTracker.cpp
 )
 
 #Projects headers files
@@ -26,14 +26,14 @@ SET(INC_FILES
 	include/IndexedSurfacePatch.h
 	include/MarchingCubesTables.h
 	include/PolyVoxForwardDeclarations.h
-	include/PolyVoxSceneManager.h
 	include/RegionGeometry.h
 	include/SurfaceExtractors.h
 	include/SurfaceVertex.h
 	include/TypeDef.h
 	include/Utility.h
 	include/Vector.h
-	include/Vector.inl	
+	include/Vector.inl
+	include/VolumeChangeTracker.h	
 	include/VolumeIterator.h
 	include/VolumeIterator.inl	
 )
