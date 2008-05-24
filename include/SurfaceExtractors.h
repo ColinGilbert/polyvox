@@ -19,23 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_GradientEstimators_H__
-#define __PolyVox_GradientEstimators_H__
+#ifndef __PolyVox_SurfaceExtractors_H__
+#define __PolyVox_SurfaceExtractors_H__
 
-#include "VolumeIterator.h"
+#pragma region Headers
+#include "PolyVoxForwardDeclarations.h"
+
+#include "boost/cstdint.hpp"
+#pragma endregion
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter);
+	void generateRoughMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch);
+	Vector3DFloat computeNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
 
-	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(VolumeIterator<VoxelType>& volIter);
-
-	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const VolumeIterator<VoxelType>& volIter);
+	void generateSmoothMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch);
+	Vector3DFloat computeSmoothNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
 }
 
-#include "GradientEstimators.inl"
-
-#endif //__PolyVox_GradientEstimators_H__
+#endif

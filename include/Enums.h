@@ -19,23 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_GradientEstimators_H__
-#define __PolyVox_GradientEstimators_H__
-
-#include "VolumeIterator.h"
+#ifndef __PolyVox_Enums_H__
+#define __PolyVox_Enums_H__
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter);
-
-	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(VolumeIterator<VoxelType>& volIter);
-
-	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const VolumeIterator<VoxelType>& volIter);
+	enum NormalGenerationMethod
+	{
+		SIMPLE,
+		CENTRAL_DIFFERENCE,
+		SOBEL
+	};
 }
 
-#include "GradientEstimators.inl"
-
-#endif //__PolyVox_GradientEstimators_H__
+#endif

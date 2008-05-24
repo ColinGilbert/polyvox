@@ -5,7 +5,8 @@ SET(SRC_FILES
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/PolyVoxSceneManager.cpp
-	source/RegionGeometry.cpp  
+	source/RegionGeometry.cpp 
+	source/SurfaceExtractors.cpp 
 	source/SurfaceVertex.cpp
 	source/Utility.cpp
 )
@@ -17,6 +18,7 @@ SET(INC_FILES
 	include/BlockVolume.h
 	include/BlockVolume.inl
 	include/Constants.h
+	include/Enums.h
 	include/GradientEstimators.h	
 	include/GradientEstimators.inl
 	include/LinearVolume.h
@@ -26,6 +28,7 @@ SET(INC_FILES
 	include/PolyVoxForwardDeclarations.h
 	include/PolyVoxSceneManager.h
 	include/RegionGeometry.h
+	include/SurfaceExtractors.h
 	include/SurfaceVertex.h
 	include/TypeDef.h
 	include/Utility.h

@@ -32,13 +32,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {	
-	enum NormalGenerationMethod
-	{
-		SIMPLE,
-		CENTRAL_DIFFERENCE,
-		SOBEL
-	};
-
 	/// Voxel scene manager
 	class POLYVOX_API PolyVoxSceneManager
 	{
@@ -67,8 +60,8 @@ namespace PolyVox
 		
 		//void generateLevelVolume(void);
 
-		void generateRoughMeshDataForRegion(boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
-		void generateSmoothMeshDataForRegion(boost::uint16_t regionX, boost::uint16_t regionY, boost::uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch) const;
+		
+		
 
 		//bool containsPoint(Vector3DFloat pos, float boundary);
 		//bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
@@ -76,8 +69,8 @@ namespace PolyVox
 
 		LinearVolume<bool>* volSurfaceUpToDate;
 
-		Vector3DFloat computeNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const;
-		Vector3DFloat computeSmoothNormal(const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod) const;
+		
+		
 
 	public:
 		void markVoxelChanged(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z);
