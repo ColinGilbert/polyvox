@@ -42,12 +42,7 @@ namespace PolyVox
 	//////////////////////////////////////////////////////////////////////////
 	VolumeChangeTracker::VolumeChangeTracker()
 		:volumeData(0)
-		,useNormalSmoothing(false)
-		,normalSmoothingFilterSize(1)
-		,m_normalGenerationMethod(SOBEL)
-		,m_bHaveGeneratedMeshes(false)
 	{	
-		//sceneNodes.clear();`
 	}
 
 	VolumeChangeTracker::~VolumeChangeTracker()
@@ -147,23 +142,25 @@ namespace PolyVox
 		return volumeData->getSideLength();
 	}
 
-	uint8_t VolumeChangeTracker::getMaterialIndexAt(uint16_t uX, uint16_t uY, uint16_t uZ)
+	Region VolumeChangeTracker::getEnclosingRegion(void)
 	{
-		if(volumeData->containsPoint(Vector3DInt32(uX,uY,uZ),0))
-		{
-			VolumeIterator<boost::uint8_t> volIter(*volumeData);
-			volIter.setPosition(uX,uY,uZ);
-			return volIter.getVoxel();
-		}
-		else
-		{
-			return 0;
-		}
+		return volumeData->getEnclosingRegion();
 	}
 
-	void VolumeChangeTracker::setNormalGenerationMethod(NormalGenerationMethod method)
+	uint8_t VolumeChangeTracker::getVoxelAt(const Vector3DUint16& pos)
 	{
-		m_normalGenerationMethod = method;
+		return getVoxelAt(pos.x(), pos.y(), pos.z());
+	}
+
+	uint8_t VolumeChangeTracker::getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ)
+	{
+		assert(ux < volumeData->getSideLength());
+		assert(uy < volumeData->getSideLength());
+		assert(uz < volumeData->getSideLength());
+
+		VolumeIterator<boost::uint8_t> volIter(*volumeData);
+		volIter.setPosition(uX,uY,uZ);
+		return volIter.getVoxel();
 	}
 
 	const BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const

@@ -23,12 +23,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_Region_H__
 
 #pragma region Headers
+#include "TypeDef.h"
 #include "Vector.h"
 #pragma endregion
 
 namespace PolyVox
 {
-	class Region
+	class POLYVOX_API Region
 	{
 	public:
 		Region();

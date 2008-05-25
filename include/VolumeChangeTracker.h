@@ -41,7 +41,9 @@ namespace PolyVox
 		~VolumeChangeTracker();
 
 		//Getters
-		boost::uint8_t getMaterialIndexAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
+		Region getEnclosingRegion(void);
+		boost::uint8_t getVoxelAt(const Vector3DUint16& pos);
+		boost::uint8_t getVoxelAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
 		const std::string& getTypeName(void) const;
 		boost::uint16_t getSideLength(void);
 
@@ -51,19 +53,11 @@ namespace PolyVox
 		//Setters
 		void setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet);
 		void setNormalGenerationMethod(NormalGenerationMethod method);
-		//void _findVisibleObjects(Camera* cam,  VisibleObjectsBoundsInfo *  visibleBounds, bool onlyShadowCasters);
 
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
 		
-		//void generateLevelVolume(void);
-
-		
-		
-
-		//bool containsPoint(Vector3DFloat pos, float boundary);
-		//bool containsPoint(Vector3DInt32 pos, boost::uint16_t boundary);
 		
 
 		LinearVolume<bool>* volSurfaceUpToDate;
@@ -77,19 +71,9 @@ namespace PolyVox
 		void setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
 
 
-		static boost::uint16_t fileNo;
-
-		bool useNormalSmoothing;
-		boost::uint16_t normalSmoothingFilterSize;
-
-		NormalGenerationMethod m_normalGenerationMethod;
 
 	private:
-		BlockVolume<boost::uint8_t>* volumeData;
-
-		bool m_bHaveGeneratedMeshes;
-
-		//std::string m_aMaterialNames[256];		
+		BlockVolume<boost::uint8_t>* volumeData;		
 	};
 }
 
