@@ -42,11 +42,10 @@ namespace PolyVox
 		~VolumeChangeTracker();
 
 		//Getters
-		std::list<RegionGeometry> getChangedRegionGeometry(void);
-		void getChangedRegions(std::list<Region>& listToFill);
-		Region getEnclosingRegion(void);		
+		void getChangedRegions(std::list<Region>& listToFill) const;
+		Region getEnclosingRegion(void) const;		
 		boost::uint16_t getSideLength(void);
-		const BlockVolume<boost::uint8_t>* getVolumeData(void) const;
+		BlockVolume<boost::uint8_t>* getVolumeData(void) const;
 		boost::uint8_t getVoxelAt(const Vector3DUint16& pos);
 		boost::uint8_t getVoxelAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
 

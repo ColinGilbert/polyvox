@@ -5,12 +5,40 @@
 #include "IndexedSurfacePatch.h"
 #include "MarchingCubesTables.h"
 #include "Region.h"
+#include "RegionGeometry.h"
+#include "VolumeChangeTracker.h"
 #include "VolumeIterator.h"
 
 using namespace boost;
 
 namespace PolyVox
 {
+	std::list<RegionGeometry> getChangedRegionGeometry(VolumeChangeTracker& volume)
+	{
+		std::list<Region> listChangedRegions;
+		volume.getChangedRegions(listChangedRegions);
+
+		std::list<RegionGeometry> listChangedRegionGeometry;
+		for(std::list<Region>::const_iterator iterChangedRegions = listChangedRegions.begin(); iterChangedRegions != listChangedRegions.end(); ++iterChangedRegions)
+		{
+			//Generate the surface
+			RegionGeometry regionGeometry;
+			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
+			regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
+			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
+
+			generateRoughMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+
+			regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
+			regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
+			regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
+
+			listChangedRegionGeometry.push_back(regionGeometry);
+		}
+
+		return listChangedRegionGeometry;
+	}
+
 	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
 	{	
 		//When generating the mesh for a region we actually look one voxel outside it in the

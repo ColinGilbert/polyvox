@@ -24,17 +24,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
+#include "TypeDef.h"
 
 #include "boost/cstdint.hpp"
+
+#include <list>
 #pragma endregion
 
 namespace PolyVox
 {
-	void generateRoughMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch);
-	Vector3DFloat computeNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API std::list<RegionGeometry> getChangedRegionGeometry(VolumeChangeTracker& volume);
 
-	void generateSmoothMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch);
-	Vector3DFloat computeSmoothNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API void generateRoughMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch);
+	POLYVOX_API Vector3DFloat computeNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
+
+	POLYVOX_API void generateSmoothMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch);
+	POLYVOX_API Vector3DFloat computeSmoothNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
 }
 
 #endif

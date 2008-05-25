@@ -45,7 +45,7 @@ namespace PolyVox
 
 		BlockVolume& operator=(const BlockVolume& rhs);
 
-		Region getEnclosingRegion(void);
+		Region getEnclosingRegion(void) const;
 		boost::uint16_t getSideLength(void) const;
 		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;

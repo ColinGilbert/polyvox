@@ -56,33 +56,9 @@ namespace PolyVox
 		volRegionUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
-	std::list<RegionGeometry> VolumeChangeTracker::getChangedRegionGeometry(void)
-	{
-		std::list<Region> listChangedRegions;
-		getChangedRegions(listChangedRegions);
+	
 
-		std::list<RegionGeometry> listChangedRegionGeometry;
-		for(std::list<Region>::const_iterator iterChangedRegions = listChangedRegions.begin(); iterChangedRegions != listChangedRegions.end(); ++iterChangedRegions)
-		{
-			//Generate the surface
-			RegionGeometry regionGeometry;
-			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
-			regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
-			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
-
-			generateRoughMeshDataForRegion(volumeData, *iterChangedRegions, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
-
-			regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
-			regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
-			regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
-
-			listChangedRegionGeometry.push_back(regionGeometry);
-		}
-
-		return listChangedRegionGeometry;
-	}
-
-	void VolumeChangeTracker::getChangedRegions(std::list<Region>& listToFill)
+	void VolumeChangeTracker::getChangedRegions(std::list<Region>& listToFill) const
 	{
 		//Clear the list
 		listToFill.clear();
@@ -127,35 +103,12 @@ namespace PolyVox
 		}
 	}
 
-	/*void VolumeChangeTracker::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
-	{
-		const uint16_t firstRegionX = firstX >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t firstRegionY = firstY >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t firstRegionZ = firstZ >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-
-		const uint16_t lastRegionX = lastX >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t lastRegionY = lastY >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t lastRegionZ = lastZ >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-
-		for(uint16_t zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
-		{
-			for(uint16_t yCt = firstRegionY; yCt <= lastRegionY; yCt++)
-			{
-				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
-				{
-					//surfaceUpToDate[xCt][yCt][zCt] = false;
-					volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
-				}
-			}
-		}
-	}*/
-
 	uint16_t VolumeChangeTracker::getSideLength(void)
 	{
 		return volumeData->getSideLength();
 	}
 
-	Region VolumeChangeTracker::getEnclosingRegion(void)
+	Region VolumeChangeTracker::getEnclosingRegion(void) const
 	{
 		return volumeData->getEnclosingRegion();
 	}
@@ -176,7 +129,7 @@ namespace PolyVox
 		return volIter.getVoxel();
 	}
 
-	const BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
+	BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
 	}

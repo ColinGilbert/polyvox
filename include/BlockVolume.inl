@@ -121,7 +121,7 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	Region BlockVolume<VoxelType>::getEnclosingRegion(void)
+	Region BlockVolume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return Region(Vector3DInt32(0,0,0), Vector3DInt32(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1));
 	}
