@@ -113,98 +113,7 @@ namespace PolyVox
 			{
 				for(uint16_t blockX = 0; blockX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
-					//surfaceUpToDate[blockX][blockY][blockZ] = newUpToDateValue;
 					volSurfaceUpToDate->setVoxelAt(blockX, blockY, blockZ, newUpToDateValue);
-				}
-			}
-		}
-	}
-
-	void VolumeChangeTracker::createSphereAt(Vector3DFloat centre, float radius, uint8_t value, bool painting)
-	{
-		int firstX = static_cast<int>(std::floor(centre.x() - radius));
-		int firstY = static_cast<int>(std::floor(centre.y() - radius));
-		int firstZ = static_cast<int>(std::floor(centre.z() - radius));
-
-		int lastX = static_cast<int>(std::ceil(centre.x() + radius));
-		int lastY = static_cast<int>(std::ceil(centre.y() + radius));
-		int lastZ = static_cast<int>(std::ceil(centre.z() + radius));
-
-		float radiusSquared = radius * radius;
-
-		//Check bounds
-		firstX = std::max(firstX,0);
-		firstY = std::max(firstY,0);
-		firstZ = std::max(firstZ,0);
-
-		lastX = std::min(lastX,int(volumeData->getSideLength()-1));
-		lastY = std::min(lastY,int(volumeData->getSideLength()-1));
-		lastZ = std::min(lastZ,int(volumeData->getSideLength()-1));
-
-		VolumeIterator<boost::uint8_t> volIter(*volumeData);
-		volIter.setValidRegion(firstX,firstY,firstZ,lastX,lastY,lastZ);
-		volIter.setPosition(firstX,firstY,firstZ);
-		while(volIter.isValidForRegion())
-		{
-			//if((volIter.getPosX()*volIter.getPosX()+volIter.getPosY()*volIter.getPosY()+volIter.getPosZ()*volIter.getPosZ()) < radiusSquared)
-			if((centre - Vector3DFloat(volIter.getPosX(),volIter.getPosY(),volIter.getPosZ())).lengthSquared() <= radiusSquared)
-			{
-				if(painting)
-				{
-					if(volIter.getVoxel() != 0)
-					{
-						volIter.setVoxel(value);
-						//volIter.setVoxelAt(volIter.getPosX(),volIter.getPosY(),volIter.getPosZ(),value);
-					}
-				}
-				else
-				{
-					volIter.setVoxel(value);
-					//volIter.setVoxelAt(volIter.getPosX(),volIter.getPosY(),volIter.getPosZ(),value);
-				}
-				//markVoxelChanged(volIter.getPosX(),volIter.getPosY(),volIter.getPosZ()); //FIXME - create a version of this function to mark larger regions at a time.
-			}
-			volIter.moveForwardInRegion();
-		}
-		markRegionChanged(firstX,firstY,firstZ,lastX,lastY,lastZ);
-	}
-
-	void VolumeChangeTracker::markVoxelChanged(uint16_t x, uint16_t y, uint16_t z)
-	{
-		//If we are not on a boundary, just mark one region.
-		if((x % POLYVOX_REGION_SIDE_LENGTH != 0) &&
-			(x % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1) &&
-			(y % POLYVOX_REGION_SIDE_LENGTH != 0) &&
-			(y % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1) &&
-			(z % POLYVOX_REGION_SIDE_LENGTH != 0) &&
-			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
-		{
-			//surfaceUpToDate[x >> POLYVOX_REGION_SIDE_LENGTH_POWER][y >> POLYVOX_REGION_SIDE_LENGTH_POWER][z >> POLYVOX_REGION_SIDE_LENGTH_POWER] = false;
-			volSurfaceUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
-		}
-		else //Mark surrounding block as well
-		{
-			const uint16_t regionX = x >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-			const uint16_t regionY = y >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-			const uint16_t regionZ = z >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-
-			const uint16_t minRegionX = (std::max)(uint16_t(0),uint16_t(regionX-1));
-			const uint16_t minRegionY = (std::max)(uint16_t(0),uint16_t(regionY-1));
-			const uint16_t minRegionZ = (std::max)(uint16_t(0),uint16_t(regionZ-1));
-
-			const uint16_t maxRegionX = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionX+1));
-			const uint16_t maxRegionY = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionY+1));
-			const uint16_t maxRegionZ = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionZ+1));
-
-			for(uint16_t zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
-			{
-				for(uint16_t yCt = minRegionY; yCt <= maxRegionY; yCt++)
-				{
-					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
-					{
-						//surfaceUpToDate[xCt][yCt][zCt] = false;
-						volSurfaceUpToDate->setVoxelAt(xCt,yCt,zCt,false);
-					}
 				}
 			}
 		}
@@ -260,5 +169,49 @@ namespace PolyVox
 	const BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
+	}
+
+	void VolumeChangeTracker::setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
+	{
+		//FIXME - rather than creating a iterator each time we should have one stored
+		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
+		iterVol.setPosition(x,y,z);
+		iterVol.setVoxel(value);
+		
+		//If we are not on a boundary, just mark one region.
+		if((x % POLYVOX_REGION_SIDE_LENGTH != 0) &&
+			(x % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1) &&
+			(y % POLYVOX_REGION_SIDE_LENGTH != 0) &&
+			(y % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1) &&
+			(z % POLYVOX_REGION_SIDE_LENGTH != 0) &&
+			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
+		{
+			volSurfaceUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
+		}
+		else //Mark surrounding regions as well
+		{
+			const uint16_t regionX = x >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionY = y >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+			const uint16_t regionZ = z >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+
+			const uint16_t minRegionX = (std::max)(uint16_t(0),uint16_t(regionX-1));
+			const uint16_t minRegionY = (std::max)(uint16_t(0),uint16_t(regionY-1));
+			const uint16_t minRegionZ = (std::max)(uint16_t(0),uint16_t(regionZ-1));
+
+			const uint16_t maxRegionX = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionX+1));
+			const uint16_t maxRegionY = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionY+1));
+			const uint16_t maxRegionZ = (std::min)(uint16_t(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1),uint16_t(regionZ+1));
+
+			for(uint16_t zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
+			{
+				for(uint16_t yCt = minRegionY; yCt <= maxRegionY; yCt++)
+				{
+					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
+					{
+						volSurfaceUpToDate->setVoxelAt(xCt,yCt,zCt,false);
+					}
+				}
+			}
+		}
 	}
 }

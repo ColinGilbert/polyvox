@@ -56,7 +56,6 @@ namespace PolyVox
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
-		void createSphereAt(Vector3DFloat centre, float radius, boost::uint8_t value, bool painting);
 		
 		//void generateLevelVolume(void);
 
@@ -73,8 +72,9 @@ namespace PolyVox
 		
 
 	public:
-		void markVoxelChanged(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z);
 		void markRegionChanged(boost::uint16_t firstX, boost::uint16_t firstY, boost::uint16_t firstZ, boost::uint16_t lastX, boost::uint16_t lastY, boost::uint16_t lastZ);
+
+		void setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
 
 
 		static boost::uint16_t fileNo;
