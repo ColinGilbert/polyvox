@@ -190,15 +190,15 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setValidRegion(const Region& region)
+	void VolumeIterator<VoxelType>::setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast)
 	{
-		mXRegionFirst = region.getLowerCorner().x();
-		mYRegionFirst = region.getLowerCorner().y();
-		mZRegionFirst = region.getLowerCorner().z();
+		mXRegionFirst = xFirst;
+		mYRegionFirst = yFirst;
+		mZRegionFirst = zFirst;
 
-		mXRegionLast = region.getUpperCorner().x();
-		mYRegionLast = region.getUpperCorner().y();
-		mZRegionLast = region.getUpperCorner().z();
+		mXRegionLast = xLast;
+		mYRegionLast = yLast;
+		mZRegionLast = zLast;
 
 		mXRegionFirstBlock = mXRegionFirst >> mVolume.m_uBlockSideLengthPower;
 		mYRegionFirstBlock = mYRegionFirst >> mVolume.m_uBlockSideLengthPower;

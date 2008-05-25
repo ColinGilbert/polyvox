@@ -50,7 +50,7 @@ namespace PolyVox
 		VoxelType getVoxel(void) const;			
 
 		void setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos);
-		void setValidRegion(const Region& region);
+		void setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast);
 		void setVoxel(VoxelType tValue);	
 
 		bool isValidForRegion(void) const;
