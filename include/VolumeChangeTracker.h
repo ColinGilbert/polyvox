@@ -55,6 +55,7 @@ namespace PolyVox
 		void setNormalGenerationMethod(NormalGenerationMethod method);
 
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
+		void getChangedRegions(std::list<Region>& listToFill);
 
 		void setAllUpToDateFlagsTo(bool newUpToDateValue);
 		
@@ -68,7 +69,8 @@ namespace PolyVox
 	public:
 		void markRegionChanged(boost::uint16_t firstX, boost::uint16_t firstY, boost::uint16_t firstZ, boost::uint16_t lastX, boost::uint16_t lastY, boost::uint16_t lastZ);
 
-		void setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
+		void setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
+		void setUnlockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
 
 
 

@@ -57,7 +57,34 @@ namespace PolyVox
 
 	std::list<RegionGeometry> VolumeChangeTracker::getChangedRegionGeometry(void)
 	{
+		std::list<Region> listChangedRegions;
+		getChangedRegions(listChangedRegions);
+
 		std::list<RegionGeometry> listChangedRegionGeometry;
+		for(std::list<Region>::const_iterator iterChangedRegions = listChangedRegions.begin(); iterChangedRegions != listChangedRegions.end(); ++iterChangedRegions)
+		{
+			//Generate the surface
+			RegionGeometry regionGeometry;
+			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
+			regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
+			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
+
+			generateRoughMeshDataForRegion(volumeData, *iterChangedRegions, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+
+			regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
+			regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
+			regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
+
+			listChangedRegionGeometry.push_back(regionGeometry);
+		}
+
+		return listChangedRegionGeometry;
+	}
+
+	void VolumeChangeTracker::getChangedRegions(std::list<Region>& listToFill)
+	{
+		//Clear the list
+		listToFill.clear();
 
 		//Regenerate meshes.
 		for(uint16_t regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
@@ -69,15 +96,8 @@ namespace PolyVox
 				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 				//for(uint16_t regionX = 3; regionX < 4; ++regionX)
 				{
-					//if(surfaceUpToDate[regionX][regionY][regionZ] == false)
 					if(volSurfaceUpToDate->getVoxelAt(regionX, regionY, regionZ) == false)
 					{
-						//Generate the surface
-						RegionGeometry regionGeometry;
-						regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
-						regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
-						regionGeometry.m_v3dRegionPosition = Vector3DInt32(regionX, regionY, regionZ);
-
 						const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
 						const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
 						const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
@@ -85,19 +105,11 @@ namespace PolyVox
 						const uint16_t lastY = firstY + POLYVOX_REGION_SIDE_LENGTH-1;
 						const uint16_t lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH-1;
 
-						generateRoughMeshDataForRegion(volumeData, Region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ)), regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
-
-						regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
-						regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
-						regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
-
-						listChangedRegionGeometry.push_back(regionGeometry);
+						listToFill.push_back(Region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ)));
 					}
 				}
 			}
 		}
-
-		return listChangedRegionGeometry;
 	}
 
 	void VolumeChangeTracker::setAllUpToDateFlagsTo(bool newUpToDateValue)
@@ -168,7 +180,7 @@ namespace PolyVox
 		return volumeData;
 	}
 
-	void VolumeChangeTracker::setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
+	void VolumeChangeTracker::setUnlockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
 	{
 		//FIXME - rather than creating a iterator each time we should have one stored
 		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
@@ -210,5 +222,13 @@ namespace PolyVox
 				}
 			}
 		}
+	}
+
+	void VolumeChangeTracker::setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
+	{
+		//FIXME - rather than creating a iterator each time we should have one stored
+		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
+		iterVol.setPosition(x,y,z);
+		iterVol.setVoxel(value);
 	}
 }
