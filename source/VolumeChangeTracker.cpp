@@ -41,7 +41,8 @@ namespace PolyVox
 	// VolumeChangeTracker
 	//////////////////////////////////////////////////////////////////////////
 	VolumeChangeTracker::VolumeChangeTracker()
-		:volumeData(0)
+		:m_bIsLocked(false)
+		,volumeData(0)
 	{	
 	}
 
@@ -52,7 +53,7 @@ namespace PolyVox
 	void VolumeChangeTracker::setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
-		volSurfaceUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
+		volRegionUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
 	std::list<RegionGeometry> VolumeChangeTracker::getChangedRegionGeometry(void)
@@ -96,7 +97,7 @@ namespace PolyVox
 				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
 				//for(uint16_t regionX = 3; regionX < 4; ++regionX)
 				{
-					if(volSurfaceUpToDate->getVoxelAt(regionX, regionY, regionZ) == false)
+					if(volRegionUpToDate->getVoxelAt(regionX, regionY, regionZ) == false)
 					{
 						const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
 						const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
@@ -112,7 +113,7 @@ namespace PolyVox
 		}
 	}
 
-	void VolumeChangeTracker::setAllUpToDateFlagsTo(bool newUpToDateValue)
+	void VolumeChangeTracker::setAllRegionsUpToDate(bool newUpToDateValue)
 	{
 		for(uint16_t blockZ = 0; blockZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
 		{
@@ -120,13 +121,13 @@ namespace PolyVox
 			{
 				for(uint16_t blockX = 0; blockX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
 				{
-					volSurfaceUpToDate->setVoxelAt(blockX, blockY, blockZ, newUpToDateValue);
+					volRegionUpToDate->setVoxelAt(blockX, blockY, blockZ, newUpToDateValue);
 				}
 			}
 		}
 	}
 
-	void VolumeChangeTracker::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
+	/*void VolumeChangeTracker::markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ)
 	{
 		const uint16_t firstRegionX = firstX >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 		const uint16_t firstRegionY = firstY >> POLYVOX_REGION_SIDE_LENGTH_POWER;
@@ -143,11 +144,11 @@ namespace PolyVox
 				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
 					//surfaceUpToDate[xCt][yCt][zCt] = false;
-					volSurfaceUpToDate->setVoxelAt(xCt,yCt,zCt,false);
+					volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
 				}
 			}
 		}
-	}
+	}*/
 
 	uint16_t VolumeChangeTracker::getSideLength(void)
 	{
@@ -166,9 +167,9 @@ namespace PolyVox
 
 	uint8_t VolumeChangeTracker::getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
-		assert(ux < volumeData->getSideLength());
-		assert(uy < volumeData->getSideLength());
-		assert(uz < volumeData->getSideLength());
+		assert(uX < volumeData->getSideLength());
+		assert(uY < volumeData->getSideLength());
+		assert(uZ < volumeData->getSideLength());
 
 		VolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setPosition(uX,uY,uZ);
@@ -180,7 +181,7 @@ namespace PolyVox
 		return volumeData;
 	}
 
-	void VolumeChangeTracker::setUnlockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
+	void VolumeChangeTracker::setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
 	{
 		//FIXME - rather than creating a iterator each time we should have one stored
 		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
@@ -195,7 +196,7 @@ namespace PolyVox
 			(z % POLYVOX_REGION_SIDE_LENGTH != 0) &&
 			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
 		{
-			volSurfaceUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
+			volRegionUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
 		}
 		else //Mark surrounding regions as well
 		{
@@ -217,7 +218,7 @@ namespace PolyVox
 				{
 					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
-						volSurfaceUpToDate->setVoxelAt(xCt,yCt,zCt,false);
+						volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
 					}
 				}
 			}
@@ -226,9 +227,51 @@ namespace PolyVox
 
 	void VolumeChangeTracker::setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
 	{
+		assert(m_bIsLocked);
+
 		//FIXME - rather than creating a iterator each time we should have one stored
 		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);
+	}
+
+	void VolumeChangeTracker::lockRegion(const Region& regToLock)
+	{
+		if(m_bIsLocked)
+		{
+			throw std::logic_error("A region is already locked. Please unlock it before locking another.");
+		}
+
+		m_regLastLocked = regToLock;
+		m_bIsLocked = true;
+	}
+
+	void VolumeChangeTracker::unlockRegion(void)
+	{
+		if(!m_bIsLocked)
+		{
+			throw std::logic_error("No region is locked. You must lock a region before you can unlock it.");
+		}
+
+		const uint16_t firstRegionX = m_regLastLocked.getLowerCorner().x() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionY = m_regLastLocked.getLowerCorner().y() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionZ = m_regLastLocked.getLowerCorner().z() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+
+		const uint16_t lastRegionX = m_regLastLocked.getUpperCorner().x() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionY = m_regLastLocked.getUpperCorner().y() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionZ = m_regLastLocked.getUpperCorner().z() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+
+		for(uint16_t zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
+		{
+			for(uint16_t yCt = firstRegionY; yCt <= lastRegionY; yCt++)
+			{
+				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
+				{
+					volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
+				}
+			}
+		}
+
+		m_bIsLocked = false;
 	}
 }

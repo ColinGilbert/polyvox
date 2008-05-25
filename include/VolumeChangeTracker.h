@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "Constants.h"
 #include "PolyVoxForwardDeclarations.h"
+#include "Region.h"
 #include "TypeDef.h"
 
 namespace PolyVox
@@ -41,41 +42,30 @@ namespace PolyVox
 		~VolumeChangeTracker();
 
 		//Getters
-		Region getEnclosingRegion(void);
-		boost::uint8_t getVoxelAt(const Vector3DUint16& pos);
-		boost::uint8_t getVoxelAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
-		const std::string& getTypeName(void) const;
-		boost::uint16_t getSideLength(void);
-
-		const BlockVolume<boost::uint8_t>* getVolumeData(void) const;
-
-
-		//Setters
-		void setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet);
-		void setNormalGenerationMethod(NormalGenerationMethod method);
-
 		std::list<RegionGeometry> getChangedRegionGeometry(void);
 		void getChangedRegions(std::list<Region>& listToFill);
+		Region getEnclosingRegion(void);		
+		boost::uint16_t getSideLength(void);
+		const BlockVolume<boost::uint8_t>* getVolumeData(void) const;
+		boost::uint8_t getVoxelAt(const Vector3DUint16& pos);
+		boost::uint8_t getVoxelAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
 
-		void setAllUpToDateFlagsTo(bool newUpToDateValue);
-		
-		
+		//Setters
+		void setAllRegionsUpToDate(bool newUpToDateValue);
+		void setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);		
+		void setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet);
+		void setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
 
-		LinearVolume<bool>* volSurfaceUpToDate;
-
-		
-		
-
-	public:
-		void markRegionChanged(boost::uint16_t firstX, boost::uint16_t firstY, boost::uint16_t firstZ, boost::uint16_t lastX, boost::uint16_t lastY, boost::uint16_t lastZ);
-
-		void setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
-		void setUnlockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
-
-
+		//Others	
+		void lockRegion(const Region& regToLock);
+		void unlockRegion(void);
+		//void markRegionChanged(boost::uint16_t firstX, boost::uint16_t firstY, boost::uint16_t firstZ, boost::uint16_t lastX, boost::uint16_t lastY, boost::uint16_t lastZ);
 
 	private:
-		BlockVolume<boost::uint8_t>* volumeData;		
+		bool m_bIsLocked;
+		Region m_regLastLocked;
+		BlockVolume<boost::uint8_t>* volumeData;
+		LinearVolume<bool>* volRegionUpToDate;
 	};
 }
 
