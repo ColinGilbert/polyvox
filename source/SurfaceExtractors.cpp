@@ -4,21 +4,27 @@
 #include "GradientEstimators.h"
 #include "IndexedSurfacePatch.h"
 #include "MarchingCubesTables.h"
+#include "Region.h"
 #include "VolumeIterator.h"
 
 using namespace boost;
 
 namespace PolyVox
 {
-	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, uint16_t regionX, uint16_t regionY, uint16_t regionZ, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
+	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
 	{	
-		//First and last voxels in the region
-		const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
-		const uint16_t lastX = (std::min)(firstX + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
-		const uint16_t lastY = (std::min)(firstY + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
-		const uint16_t lastZ = (std::min)(firstZ + POLYVOX_REGION_SIDE_LENGTH-1,volumeData->getSideLength()-2);
+		//When generating the mesh for a region we actually look one voxel outside it in the
+		// back, bottom, right direction. Protect against access violations by cropping region here
+		Region regVolume = volumeData->getEnclosingRegion();
+		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
+		region.cropTo(regVolume);
+
+		const uint16_t firstX = region.getLowerCorner().x();
+		const uint16_t firstY = region.getLowerCorner().y();
+		const uint16_t firstZ = region.getLowerCorner().z();
+		const uint16_t lastX = region.getUpperCorner().x();
+		const uint16_t lastY = region.getUpperCorner().y();
+		const uint16_t lastZ = region.getUpperCorner().z();
 
 		//Offset from lower block corner
 		const Vector3DFloat offset(firstX,firstY,firstZ);

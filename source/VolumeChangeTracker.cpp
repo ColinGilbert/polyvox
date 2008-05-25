@@ -83,7 +83,14 @@ namespace PolyVox
 						regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
 						regionGeometry.m_v3dRegionPosition = Vector3DInt32(regionX, regionY, regionZ);
 
-						generateRoughMeshDataForRegion(volumeData, regionX,regionY,regionZ, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+						const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t lastX = firstX + POLYVOX_REGION_SIDE_LENGTH-1;
+						const uint16_t lastY = firstY + POLYVOX_REGION_SIDE_LENGTH-1;
+						const uint16_t lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH-1;
+
+						generateRoughMeshDataForRegion(volumeData, Region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ)), regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
 						regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
 						regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
