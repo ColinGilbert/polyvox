@@ -160,11 +160,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BlockVolume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
-		assert(v3dPos.x() < m_uSideLength);
-		assert(v3dPos.y() < m_uSideLength);
-		assert(v3dPos.z() < m_uSideLength);
+		assert(v3dPos.getX() < m_uSideLength);
+		assert(v3dPos.getY() < m_uSideLength);
+		assert(v3dPos.getZ() < m_uSideLength);
 
-		return getVoxelAt(v3dPos.x(), v3dPos.y(), v3dPos.z());
+		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 	#pragma endregion	
 
@@ -172,23 +172,23 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool BlockVolume<VoxelType>::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
-		return (pos.x() <= m_uSideLength - 1 - boundary)
-			&& (pos.y() <= m_uSideLength - 1 - boundary) 
-			&& (pos.z() <= m_uSideLength - 1 - boundary)
-			&& (pos.x() >= boundary)
-			&& (pos.y() >= boundary)
-			&& (pos.z() >= boundary);
+		return (pos.getX() <= m_uSideLength - 1 - boundary)
+			&& (pos.getY() <= m_uSideLength - 1 - boundary) 
+			&& (pos.getZ() <= m_uSideLength - 1 - boundary)
+			&& (pos.getX() >= boundary)
+			&& (pos.getY() >= boundary)
+			&& (pos.getZ() >= boundary);
 	}
 
 	template <typename VoxelType>
 	bool BlockVolume<VoxelType>::containsPoint(const Vector3DInt32& pos, boost::uint16_t boundary) const
 	{
-		return (pos.x() <= m_uSideLength - 1 - boundary)
-			&& (pos.y() <= m_uSideLength - 1 - boundary) 
-			&& (pos.z() <= m_uSideLength - 1 - boundary)
-			&& (pos.x() >= boundary)
-			&& (pos.y() >= boundary)
-			&& (pos.z() >= boundary);
+		return (pos.getX() <= m_uSideLength - 1 - boundary)
+			&& (pos.getY() <= m_uSideLength - 1 - boundary) 
+			&& (pos.getZ() <= m_uSideLength - 1 - boundary)
+			&& (pos.getX() >= boundary)
+			&& (pos.getY() >= boundary)
+			&& (pos.getZ() >= boundary);
 	}
 
 	template <typename VoxelType>

@@ -62,20 +62,20 @@ namespace PolyVox
         Vector<Size,Type>& operator*=(const Type& rhs) throw();
         ///Division and Assignment Operator.
         Vector<Size,Type>& operator/=(const Type& rhs) throw();
-		///Element Access
-		Type operator()(boost::uint32_t index) const throw();		
 
+		///Element Access
+		Type getElement(boost::uint32_t index) const throw();
         ///Get the x component of the vector.
-        Type x(void) const throw();        
+        Type getX(void) const throw();        
         ///Get the y component of the vector.
-        Type y(void) const throw();        
+        Type getY(void) const throw();        
         ///Get the z component of the vector.
-        Type z(void) const throw();        
+        Type getZ(void) const throw();        
 		///Get the w component of the vector.
-		Type w(void) const throw();		
+		Type getW(void) const throw();		
 
 		///Element Access
-		void set(boost::uint32_t index, Type tValue) throw();
+		void setElement(boost::uint32_t index, Type tValue) throw();
 		///Set the x component of the vector.
 		void setX(Type tX) throw();
 		///Set the y component of the vector.

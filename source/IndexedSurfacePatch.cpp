@@ -122,19 +122,19 @@ namespace PolyVox
 
 	boost::int32_t IndexedSurfacePatch::getIndexFor(const Vector3DFloat& pos)
 	{
-		assert(pos.x() >= 0.0f);
-		assert(pos.y() >= 0.0f);
-		assert(pos.z() >= 0.0f);
-		assert(pos.x() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.y() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.z() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getX() >= 0.0f);
+		assert(pos.getY() >= 0.0f);
+		assert(pos.getZ() >= 0.0f);
+		assert(pos.getX() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
 
 		float xIntPart;
-		float xFracPart = std::modf(pos.x(), &xIntPart);
+		float xFracPart = std::modf(pos.getX(), &xIntPart);
 		float yIntPart;
-		float yFracPart = std::modf(pos.y(), &yIntPart);
+		float yFracPart = std::modf(pos.getY(), &yIntPart);
 		float zIntPart;
-		float zFracPart = std::modf(pos.z(), &zIntPart);
+		float zFracPart = std::modf(pos.getZ(), &zIntPart);
 
 		//Of all the fractional parts, two should be zero and one should have a value.
 		if(xFracPart > 0.000001f)
@@ -154,21 +154,21 @@ namespace PolyVox
 
 	void IndexedSurfacePatch::setIndexFor(const Vector3DFloat& pos, boost::int32_t newIndex)
 	{
-		assert(pos.x() >= 0.0f);
-		assert(pos.y() >= 0.0f);
-		assert(pos.z() >= 0.0f);
-		assert(pos.x() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.y() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.z() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getX() >= 0.0f);
+		assert(pos.getY() >= 0.0f);
+		assert(pos.getZ() >= 0.0f);
+		assert(pos.getX() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
 
 		assert(newIndex < 10000);
 
 		float xIntPart;
-		float xFracPart = std::modf(pos.x(), &xIntPart);
+		float xFracPart = std::modf(pos.getX(), &xIntPart);
 		float yIntPart;
-		float yFracPart = std::modf(pos.y(), &yIntPart);
+		float yFracPart = std::modf(pos.getY(), &yIntPart);
 		float zIntPart;
-		float zFracPart = std::modf(pos.z(), &zIntPart);
+		float zFracPart = std::modf(pos.getZ(), &zIntPart);
 
 		//Of all the fractional parts, two should be zero and one should have a value.
 		if(xFracPart > 0.000001f)

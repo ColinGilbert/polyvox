@@ -34,7 +34,7 @@ namespace PolyVox
 	The elements of the Vector are accessed via the overloaded () operator which takes
 	an index indicating the element to fetch. They are set using the set() function which
 	takes an index indicating the element to set and a new value for that element. For
-	convienience, the functions x(), setX(), y(), setY(), z(), setZ, w() and setW() 
+	convienience, the functions getX(), setX(), getY(), setY(), getZ(), setZ, w() and setW() 
 	do the same thing for the first 4 elements of the Vector. 
 
 	A variety of overloaded operators are also provided for comparison and arithmetic
@@ -125,7 +125,7 @@ namespace PolyVox
 	{
 		for(boost::uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] = static_cast<CastType>(vector(ct));
+			m_tElements[ct] = static_cast<CastType>(vector.getElement(ct));
 		}
 	}
 
@@ -268,7 +268,7 @@ namespace PolyVox
         os << "(";
 		for(boost::uint32_t ct = 0; ct < Size; ++ct)
 		{
-			os << vector(ct);
+			os << vector.getElement(ct);
 			if(ct < (Size-1))
 			{
 				os << ",";
@@ -276,7 +276,9 @@ namespace PolyVox
 		}
 		os << ")";
         return os;
-    }
+    }		
+
+    //----------------------------------- Getters ----------------------------------
 
 	/**
 	Returns the element at the given position.
@@ -284,18 +286,16 @@ namespace PolyVox
 	\return The element.
 	*/
 	template <boost::uint32_t Size, typename Type>
-		inline Type Vector<Size, Type>::operator()(boost::uint32_t index) const throw()
+		inline Type Vector<Size, Type>::getElement(boost::uint32_t index) const throw()
 	{
 		return m_tElements[index];
-	}	
-
-    //----------------------------------- Getters ----------------------------------
+	}
 
     /**
     \return A const reference to the X component of a 1, 2, 3, or 4 dimensional Vector.
     */
     template <boost::uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::x(void) const throw()
+        inline Type Vector<Size, Type>::getX(void) const throw()
     {
         return m_tElements[0];
     }	
@@ -304,7 +304,7 @@ namespace PolyVox
 	\return A const reference to the Y component of a 2, 3, or 4 dimensional Vector.
 	*/
     template <boost::uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::y(void) const throw()
+        inline Type Vector<Size, Type>::getY(void) const throw()
     {
         return m_tElements[1];
     }	
@@ -313,7 +313,7 @@ namespace PolyVox
 	\return A const reference to the Z component of a 3 or 4 dimensional Vector.
 	*/
     template <boost::uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::z(void) const throw()
+        inline Type Vector<Size, Type>::getZ(void) const throw()
     {
         return m_tElements[2];
     }	
@@ -322,7 +322,7 @@ namespace PolyVox
 	\return A const reference to the W component of a 4 dimensional Vector.
 	*/
 	template <boost::uint32_t Size, typename Type>
-		inline Type Vector<Size, Type>::w(void) const throw()
+		inline Type Vector<Size, Type>::getW(void) const throw()
 	{
 		return m_tElements[3];
 	}    
@@ -334,7 +334,7 @@ namespace PolyVox
 	\param tValue The new value for the element.
 	*/
 	template <boost::uint32_t Size, typename Type>
-		inline void Vector<Size, Type>::set(boost::uint32_t index, Type tValue) throw()
+		inline void Vector<Size, Type>::setElement(boost::uint32_t index, Type tValue) throw()
 	{
 		m_tElements[index] = tValue;
 	}
@@ -432,9 +432,9 @@ namespace PolyVox
     template <boost::uint32_t Size, typename Type>
         inline Vector<Size, Type> Vector<Size, Type>::cross(const Vector<Size, Type>& vector) const throw()
     {
-        Type i = vector.z() * this->y() - vector.y() * this->z();
-        Type j = vector.x() * this->z() - vector.z() * this->x();
-        Type k = vector.y() * this->x() - vector.x() * this->y();
+        Type i = vector.getZ() * this->getY() - vector.getY() * this->getZ();
+        Type j = vector.getX() * this->getZ() - vector.getZ() * this->getX();
+        Type k = vector.getY() * this->getX() - vector.getX() * this->getY();
         return Vector<Size, Type>(i,j,k);
     }
 

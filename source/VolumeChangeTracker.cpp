@@ -115,7 +115,7 @@ namespace PolyVox
 
 	uint8_t VolumeChangeTracker::getVoxelAt(const Vector3DUint16& pos)
 	{
-		return getVoxelAt(pos.x(), pos.y(), pos.z());
+		return getVoxelAt(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	uint8_t VolumeChangeTracker::getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ)
@@ -206,13 +206,13 @@ namespace PolyVox
 			throw std::logic_error("No region is locked. You must lock a region before you can unlock it.");
 		}
 
-		const uint16_t firstRegionX = m_regLastLocked.getLowerCorner().x() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t firstRegionY = m_regLastLocked.getLowerCorner().y() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t firstRegionZ = m_regLastLocked.getLowerCorner().z() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionX = m_regLastLocked.getLowerCorner().getX() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionY = m_regLastLocked.getLowerCorner().getY() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t firstRegionZ = m_regLastLocked.getLowerCorner().getZ() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 
-		const uint16_t lastRegionX = m_regLastLocked.getUpperCorner().x() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t lastRegionY = m_regLastLocked.getUpperCorner().y() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
-		const uint16_t lastRegionZ = m_regLastLocked.getUpperCorner().z() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionX = m_regLastLocked.getUpperCorner().getX() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionY = m_regLastLocked.getUpperCorner().getY() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
+		const uint16_t lastRegionZ = m_regLastLocked.getUpperCorner().getZ() >> POLYVOX_REGION_SIDE_LENGTH_POWER;
 
 		for(uint16_t zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
 		{

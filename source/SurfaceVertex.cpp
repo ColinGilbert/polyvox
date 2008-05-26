@@ -83,7 +83,7 @@ namespace PolyVox
 	std::string SurfaceVertex::tostring(void) const
 	{
 		std::stringstream ss;
-		ss << "SurfaceVertex: Position = (" << position.x() << "," << position.y() << "," << position.z() << "), Normal = " << normal;
+		ss << "SurfaceVertex: Position = (" << position.getX() << "," << position.getY() << "," << position.getZ() << "), Normal = " << normal;
 		return ss.str();
 	}	
 }

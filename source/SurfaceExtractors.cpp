@@ -60,7 +60,7 @@ namespace PolyVox
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
-		for(volIter.setPosition(region.getLowerCorner().x(),region.getLowerCorner().y(), region.getLowerCorner().z());volIter.isValidForRegion();volIter.moveForwardInRegion())
+		for(volIter.setPosition(region.getLowerCorner().getX(),region.getLowerCorner().getY(), region.getLowerCorner().getZ());volIter.isValidForRegion();volIter.moveForwardInRegion())
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX();
@@ -345,9 +345,9 @@ namespace PolyVox
 
 	Vector3DFloat computeNormal(BlockVolume<uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod)
 	{
-		const float posX = position.x();
-		const float posY = position.y();
-		const float posZ = position.z();
+		const float posX = position.getX();
+		const float posY = position.getY();
+		const float posZ = position.getZ();
 
 		const uint16_t floorX = static_cast<uint16_t>(posX);
 		const uint16_t floorY = static_cast<uint16_t>(posY);
@@ -460,7 +460,7 @@ namespace PolyVox
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
-		for(volIter.setPosition(region.getLowerCorner().x(),region.getLowerCorner().y(), region.getLowerCorner().z());volIter.isValidForRegion();volIter.moveForwardInRegion())
+		for(volIter.setPosition(region.getLowerCorner().getX(),region.getLowerCorner().getY(), region.getLowerCorner().getZ());volIter.isValidForRegion();volIter.moveForwardInRegion())
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX();
@@ -747,9 +747,9 @@ namespace PolyVox
 	{
 		
 
-		const float posX = position.x();
-		const float posY = position.y();
-		const float posZ = position.z();
+		const float posX = position.getX();
+		const float posY = position.getY();
+		const float posZ = position.getZ();
 
 		const uint16_t floorX = static_cast<uint16_t>(posX);
 		const uint16_t floorY = static_cast<uint16_t>(posY);

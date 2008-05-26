@@ -192,7 +192,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeIterator<VoxelType>::setValidRegion(const Region& region)
 	{
-		setValidRegion(region.getLowerCorner().x(),region.getLowerCorner().y(),region.getLowerCorner().z(),region.getUpperCorner().x(),region.getUpperCorner().y(),region.getUpperCorner().z());
+		setValidRegion(region.getLowerCorner().getX(),region.getLowerCorner().getY(),region.getLowerCorner().getZ(),region.getUpperCorner().getX(),region.getUpperCorner().getY(),region.getUpperCorner().getZ());
 	}
 
 	template <typename VoxelType>
