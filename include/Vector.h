@@ -25,21 +25,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include <iostream>
 
 #include "boost/cstdint.hpp"
-#include <boost/operators.hpp>
 
 namespace PolyVox
 {
-	//template <boost::uint32_t Size, typename Type> class Matrix; //Forward declaration
-
     ///Represents a vector in space.    
 	template <boost::uint32_t Size, typename Type>
 	class Vector
-		: boost::addable< Vector<Size,Type>          // Vector + Vector
-		, boost::subtractable< Vector<Size,Type>     // Vector - Vector
-		, boost::dividable2< Vector<Size,Type>, Type    // Vector / Type
-		, boost::multipliable2< Vector<Size,Type>, Type // Vector * Type, Type * Vector
-		, boost::equality_comparable1< Vector<Size,Type> // Vector != Vector
-		> > > > >
     {
     public:
         ///Constructor.
@@ -113,24 +104,38 @@ namespace PolyVox
     };
 
     //Non-member overloaded operators. 
-	//!Multiplication operator.
-	//template <boost::uint32_t Size,typename Type>
-		//Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Matrix<Size,Type>& rhs) throw();
-	//!Multiplication operator.
-	//template <boost::uint32_t Size,typename Type>
-	    //Vector<Size,Type> operator*(const Matrix<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();	
+	///Addition operator.
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
+	///Subtraction operator.
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
+	///Multiplication operator.
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw();
+	///Division operator.
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs) throw();
     ///Stream insertion operator.
     template <boost::uint32_t Size, typename Type>
         std::ostream& operator<<(std::ostream& os, const Vector<Size,Type>& vector) throw();
 
 	//Some handy typedefs
+	///A 3D Vector of floats.
 	typedef Vector<3,float> Vector3DFloat;
+	///A 3D Vector of doubles.
     typedef Vector<3,double> Vector3DDouble;
+	///A 3D Vector of signed 8-bit values.
 	typedef Vector<3,boost::int8_t> Vector3DInt8;
+	///A 3D Vector of unsigned 8-bit values.
 	typedef Vector<3,boost::uint8_t> Vector3DUint8;
+	///A 3D Vector of signed 16-bit values.
 	typedef Vector<3,boost::int16_t> Vector3DInt16;
+	///A 3D Vector of unsigned 16-bit values.
 	typedef Vector<3,boost::uint16_t> Vector3DUint16;
+	///A 3D Vector of signed 32-bit values.
 	typedef Vector<3,boost::int32_t> Vector3DInt32;
+	///A 3D Vector of unsigned 32-bit values.
 	typedef Vector<3,boost::uint32_t> Vector3DUint32;
 
 

@@ -383,7 +383,7 @@ namespace PolyVox
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
 			const Vector3DFloat gradCeil = computeSobelGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0);
+			result = ((gradFloor + gradCeil) * -1.0f);
 			if(result.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation
@@ -407,7 +407,7 @@ namespace PolyVox
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
 			const Vector3DFloat gradCeil = computeCentralDifferenceGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0);
+			result = ((gradFloor + gradCeil) * -1.0f);
 			if(result.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation
@@ -785,7 +785,7 @@ namespace PolyVox
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
 			const Vector3DFloat gradCeil = computeSobelGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0);
+			result = ((gradFloor + gradCeil) * -1.0f);
 			if(result.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation
@@ -809,7 +809,7 @@ namespace PolyVox
 				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
 			}
 			const Vector3DFloat gradCeil = computeSmoothCentralDifferenceGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0);
+			result = ((gradFloor + gradCeil) * -1.0f);
 			if(result.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation

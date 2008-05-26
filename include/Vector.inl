@@ -194,22 +194,7 @@ namespace PolyVox
 				return false;
 		}
 		return false;
-    }
-
-    /**
-    Subtraction operator subtracts corresponding elements of one Vector from the other.
-    \param rhs Vector to subtract
-    \return The resulting Vector.
-    */
-    template <boost::uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator-=(const Vector<Size, Type>& rhs) throw()
-    {
-		for(boost::uint32_t ct = 0; ct < Size; ++ct)
-		{
-			m_tElements[ct] -= rhs.m_tElements[ct];
-		}
-        return *this;
-    }
+    }    
 
     /**
     Addition operator adds corresponding elements of the two Vectors.
@@ -222,6 +207,21 @@ namespace PolyVox
 		for(boost::uint32_t ct = 0; ct < Size; ++ct)
 		{
 			m_tElements[ct] += rhs.m_tElements[ct];
+		}
+        return *this;
+    }
+
+	/**
+    Subtraction operator subtracts corresponding elements of one Vector from the other.
+    \param rhs Vector to subtract
+    \return The resulting Vector.
+    */
+    template <boost::uint32_t Size, typename Type>
+        inline Vector<Size, Type>& Vector<Size, Type>::operator-=(const Vector<Size, Type>& rhs) throw()
+    {
+		for(boost::uint32_t ct = 0; ct < Size; ++ct)
+		{
+			m_tElements[ct] -= rhs.m_tElements[ct];
 		}
         return *this;
     }
@@ -255,56 +255,6 @@ namespace PolyVox
 		}
         return *this;
     }
-
-	/**
-	Multiplies a Vector and a Matrix.
-	
-	NOTE: Although the Vector class does not distinguish between row and column vectors, the Vector
-	must <i>conceptually</i> be in <i>row</i> form for this operation to make sense.
-	\param lhs The Vector to be multiplied
-	\param rhs The Matrix to multiply by.
-	\return The resulting Vector
-	*/
-	/*template <boost::uint32_t Size,typename Type>
-		Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Matrix<Size,Type>& rhs) throw()
-	{
-		Type tZero = static_cast<Type>(0);
-		Vector<Size,Type> result(tZero,tZero,tZero);
-		for(boost::uint32_t colCt = 0; colCt < Size; ++colCt)
-		{
-			for(boost::uint32_t rowCt = 0; rowCt < Size; ++rowCt)
-			{
-				//result(colCt) += lhs(rowCt) * rhs(rowCt, colCt);
-				result.set(colCt, result(colCt) + (lhs(rowCt) * rhs(rowCt, colCt)));
-			}
-		}
-		return result;
-	}*/
-
-	/**
-	Multiplies a Matrix and a Vector.
-
-	NOTE: Although the Vector class does not distinguish between row and column vectors, the Vector
-	must <i>conceptually</i> be in <i>column</i> form for this operation to make sense.
-	\param lhs The Matrix to be multiplied
-	\param rhs The Vector to multiply by.
-	\return The resulting Vector
-	*/
-	/*template <boost::uint32_t Size,typename Type>
-		Vector<Size,Type> operator*(const Matrix<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
-	{
-		Type tZero = static_cast<Type>(0);
-		Vector<Size,Type> result(tZero,tZero,tZero);
-		for(boost::uint32_t rowCt = 0; rowCt < Size; ++rowCt)
-		{
-			for(boost::uint32_t colCt = 0; colCt < Size; ++colCt)
-			{
-				//result(rowCt) += lhs(rowCt,colCt) * rhs(colCt);
-				result.set(rowCt, result(rowCt) + (lhs(rowCt,colCt) * rhs(colCt)));
-			}
-		}
-		return result;
-	}*/
 
     /**
     Enables the Vector to be used intuitively with output streams such as cout.
@@ -525,4 +475,60 @@ namespace PolyVox
 			m_tElements[ct] /= static_cast<Type>(length);
 		}
     }
+
+	/**
+    Addition operator adds corresponding elements of the two Vectors.
+	\param lhs Vector to add to.
+    \param rhs Vector to add.
+    \return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result += rhs;
+		return result;
+	}
+
+	/**
+    Subtraction operator subtracts corresponding elements of one Vector from the other.
+	\param lhs Vector to subtract from.
+    \param rhs Vector to subtract.
+    \return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result -= rhs;
+		return result;
+	}
+
+	/**
+    Multiplication operator multiplies each element of the Vector by a number.
+	\param lhs the Vector to multiply.
+    \param rhs the number the Vector is multiplied by.
+    \return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result *= rhs;
+		return result;
+	}
+
+	/**
+	Division operator divides each element of the Vector by a number.
+	\param lhs the Vector to divide.
+	\param rhs the number the Vector is divided by.
+	\return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result /= rhs;
+		return result;
+	}
 }//namespace Thermite
