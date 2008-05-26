@@ -22,9 +22,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_Vector_H__
 #define __PolyVox_Vector_H__
 
-#include <iostream>
-
+#pragma region Headers
 #include "boost/cstdint.hpp"
+
+#include <iostream>
+#pragma endregion
 
 namespace PolyVox
 {

@@ -47,6 +47,7 @@ namespace PolyVox
 	Vector2DInt4 test(1,2); //Declares a 2 dimensional Vector of type int4.
 	*/
 
+	#pragma region Constructors/Destructors
     //-------------------------- Constructors, etc ---------------------------------
     /**
     Creates a Vector object and initialises it with given values.
@@ -136,9 +137,9 @@ namespace PolyVox
         Vector<Size, Type>::~Vector(void) throw()
     {
     }
+	#pragma endregion
 
-    //------------------------------- Overloaded Operators -------------------------
-
+	#pragma region Operators
     /**
     Assignment operator copies each element of first Vector to the second.
     \param rhs Vector to assign to.
@@ -212,6 +213,20 @@ namespace PolyVox
     }
 
 	/**
+    Addition operator adds corresponding elements of the two Vectors.
+	\param lhs Vector to add to.
+    \param rhs Vector to add.
+    \return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result += rhs;
+		return result;
+	}
+
+	/**
     Subtraction operator subtracts corresponding elements of one Vector from the other.
     \param rhs Vector to subtract
     \return The resulting Vector.
@@ -225,6 +240,20 @@ namespace PolyVox
 		}
         return *this;
     }
+
+	/**
+    Subtraction operator subtracts corresponding elements of one Vector from the other.
+	\param lhs Vector to subtract from.
+    \param rhs Vector to subtract.
+    \return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result -= rhs;
+		return result;
+	}
 
     /**
     Multiplication operator multiplies each element of the Vector by a number.
@@ -241,6 +270,20 @@ namespace PolyVox
         return *this;
     }
 
+	/**
+    Multiplication operator multiplies each element of the Vector by a number.
+	\param lhs the Vector to multiply.
+    \param rhs the number the Vector is multiplied by.
+    \return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result *= rhs;
+		return result;
+	}
+
     /**
 	Division operator divides each element of the Vector by a number.
 	\param rhs the number the Vector is divided by.
@@ -255,6 +298,20 @@ namespace PolyVox
 		}
         return *this;
     }
+
+	/**
+	Division operator divides each element of the Vector by a number.
+	\param lhs the Vector to divide.
+	\param rhs the number the Vector is divided by.
+	\return The resulting Vector.
+    */
+	template <boost::uint32_t Size,typename Type>
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result /= rhs;
+		return result;
+	}
 
     /**
     Enables the Vector to be used intuitively with output streams such as cout.
@@ -277,9 +334,9 @@ namespace PolyVox
 		os << ")";
         return os;
     }		
+	#pragma endregion
 
-    //----------------------------------- Getters ----------------------------------
-
+	#pragma region Getters
 	/**
 	Returns the element at the given position.
 	\param index The index of the element to return.
@@ -325,10 +382,10 @@ namespace PolyVox
 		inline Type Vector<Size, Type>::getW(void) const throw()
 	{
 		return m_tElements[3];
-	}    
+	}  
+	#pragma endregion
 
-    //----------------------------------- Setters ----------------------------------
-
+	#pragma region Setters
 	/**
 	\param index The index of the element to set.
 	\param tValue The new value for the element.
@@ -374,9 +431,9 @@ namespace PolyVox
     {
         m_tElements[3] = tW;
     }
+	#pragma endregion
 
-    //-------------------------------- Other Functions -----------------------------
-
+	#pragma region Others
 	/**
 	NOTE: This function does not make much sense on integer Vectors.
     \return Length of the Vector.
@@ -475,60 +532,5 @@ namespace PolyVox
 			m_tElements[ct] /= static_cast<Type>(length);
 		}
     }
-
-	/**
-    Addition operator adds corresponding elements of the two Vectors.
-	\param lhs Vector to add to.
-    \param rhs Vector to add.
-    \return The resulting Vector.
-    */
-	template <boost::uint32_t Size,typename Type>
-	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result += rhs;
-		return result;
-	}
-
-	/**
-    Subtraction operator subtracts corresponding elements of one Vector from the other.
-	\param lhs Vector to subtract from.
-    \param rhs Vector to subtract.
-    \return The resulting Vector.
-    */
-	template <boost::uint32_t Size,typename Type>
-	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result -= rhs;
-		return result;
-	}
-
-	/**
-    Multiplication operator multiplies each element of the Vector by a number.
-	\param lhs the Vector to multiply.
-    \param rhs the number the Vector is multiplied by.
-    \return The resulting Vector.
-    */
-	template <boost::uint32_t Size,typename Type>
-	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result *= rhs;
-		return result;
-	}
-
-	/**
-	Division operator divides each element of the Vector by a number.
-	\param lhs the Vector to divide.
-	\param rhs the number the Vector is divided by.
-	\return The resulting Vector.
-    */
-	template <boost::uint32_t Size,typename Type>
-	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result /= rhs;
-		return result;
-	}
+	#pragma endregion	
 }//namespace Thermite
