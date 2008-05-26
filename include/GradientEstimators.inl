@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter)
+	Vector3DFloat computeCentralDifferenceGradient(const BlockVolumeIterator<VoxelType>& volIter)
 	{
 		//FIXME - bitwise way of doing this?
 		VoxelType voxel1nx = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
@@ -43,7 +43,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(VolumeIterator<VoxelType>& volIter)
+	Vector3DFloat computeSmoothCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter)
 	{
 		boost::uint16_t initialX = volIter.getPosX();
 		boost::uint16_t initialY = volIter.getPosY();
@@ -74,7 +74,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const VolumeIterator<VoxelType>& volIter)
+	Vector3DFloat computeSobelGradient(const BlockVolumeIterator<VoxelType>& volIter)
 	{
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };

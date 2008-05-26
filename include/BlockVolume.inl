@@ -192,9 +192,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VolumeIterator<VoxelType> BlockVolume<VoxelType>::firstVoxel(void)
+	BlockVolumeIterator<VoxelType> BlockVolume<VoxelType>::firstVoxel(void)
 	{
-		VolumeIterator<VoxelType> iter(*this);
+		BlockVolumeIterator<VoxelType> iter(*this);
 		iter.setPosition(0,0,0);
 		return iter;
 	}
@@ -205,9 +205,9 @@ namespace PolyVox
 	}	
 
 	template <typename VoxelType>
-	VolumeIterator<VoxelType> BlockVolume<VoxelType>::lastVoxel(void)
+	BlockVolumeIterator<VoxelType> BlockVolume<VoxelType>::lastVoxel(void)
 	{
-		VolumeIterator<VoxelType> iter(*this);
+		BlockVolumeIterator<VoxelType> iter(*this);
 		iter.setPosition(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1);
 		return iter;
 	}

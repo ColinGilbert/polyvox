@@ -35,8 +35,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	class BlockVolume
 	{
-		//Make VolumeIterator a friend
-		friend class VolumeIterator<VoxelType>;
+		//Make BlockVolumeIterator a friend
+		friend class BlockVolumeIterator<VoxelType>;
 
 	public:		
 		BlockVolume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower = 5);
@@ -52,9 +52,9 @@ namespace PolyVox
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
 		bool containsPoint(const Vector3DInt32& pos, boost::uint16_t boundary) const;
-		VolumeIterator<VoxelType> firstVoxel(void);
+		BlockVolumeIterator<VoxelType> firstVoxel(void);
 		void idle(boost::uint32_t uAmount);
-		VolumeIterator<VoxelType> lastVoxel(void);
+		BlockVolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
 		Block<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;

@@ -23,6 +23,8 @@ SET(INC_FILES
 	include/Block.inl
 	include/BlockVolume.h
 	include/BlockVolume.inl
+	include/BlockVolumeIterator.h
+	include/BlockVolumeIterator.inl
 	include/Constants.h
 	include/Enums.h
 	include/GradientEstimators.h	
@@ -41,8 +43,6 @@ SET(INC_FILES
 	include/Vector.h
 	include/Vector.inl
 	include/VolumeChangeTracker.h	
-	include/VolumeIterator.h
-	include/VolumeIterator.inl	
 )
 
 FIND_PACKAGE(Boost REQUIRED)

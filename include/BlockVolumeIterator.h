@@ -31,17 +31,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class VolumeIterator
+	class BlockVolumeIterator
 	{
 	public:
-		VolumeIterator(BlockVolume<VoxelType>& volume);
-		~VolumeIterator();		
+		BlockVolumeIterator(BlockVolume<VoxelType>& volume);
+		~BlockVolumeIterator();		
 
-		bool operator==(const VolumeIterator& rhs);
-		bool operator<(const VolumeIterator& rhs);
-		bool operator>(const VolumeIterator& rhs);
-		bool operator<=(const VolumeIterator& rhs);
-		bool operator>=(const VolumeIterator& rhs);
+		bool operator==(const BlockVolumeIterator& rhs);
+		bool operator<(const BlockVolumeIterator& rhs);
+		bool operator>(const BlockVolumeIterator& rhs);
+		bool operator<=(const BlockVolumeIterator& rhs);
+		bool operator>=(const BlockVolumeIterator& rhs);
 
 		float getAveragedVoxel(boost::uint16_t size) const;
 		boost::uint16_t getPosX(void) const;
@@ -130,6 +130,6 @@ namespace PolyVox
 	};
 }
 
-#include "VolumeIterator.inl"
+#include "BlockVolumeIterator.inl"
 
 #endif

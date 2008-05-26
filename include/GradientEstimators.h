@@ -22,18 +22,18 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_GradientEstimators_H__
 #define __PolyVox_GradientEstimators_H__
 
-#include "VolumeIterator.h"
+#include "BlockVolumeIterator.h"
 
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeCentralDifferenceGradient(const BlockVolumeIterator<VoxelType>& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(VolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeSmoothCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const VolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeSobelGradient(const BlockVolumeIterator<VoxelType>& volIter);
 }
 
 #include "GradientEstimators.inl"

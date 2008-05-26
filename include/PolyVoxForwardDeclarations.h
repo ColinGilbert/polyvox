@@ -57,7 +57,7 @@ namespace PolyVox
 	//----------------------------
 
 	class VolumeChangeTracker;
-	template <typename VoxelType> class VolumeIterator;
+	template <typename VoxelType> class BlockVolumeIterator;
 }
 
 #endif

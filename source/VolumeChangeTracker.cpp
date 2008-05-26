@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "Utility.h"
 #include "Vector.h"
 #include "BlockVolume.h"
-#include "VolumeIterator.h"
+#include "BlockVolumeIterator.h"
 
 using namespace boost;
 
@@ -124,7 +124,7 @@ namespace PolyVox
 		assert(uY < volumeData->getSideLength());
 		assert(uZ < volumeData->getSideLength());
 
-		VolumeIterator<boost::uint8_t> volIter(*volumeData);
+		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setPosition(uX,uY,uZ);
 		return volIter.getVoxel();
 	}
@@ -137,7 +137,7 @@ namespace PolyVox
 	void VolumeChangeTracker::setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
 	{
 		//FIXME - rather than creating a iterator each time we should have one stored
-		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
+		BlockVolumeIterator<boost::uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);
 		
@@ -183,7 +183,7 @@ namespace PolyVox
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		VolumeIterator<boost::uint8_t> iterVol(*volumeData);
+		BlockVolumeIterator<boost::uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);
 	}

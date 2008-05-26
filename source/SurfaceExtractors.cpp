@@ -7,7 +7,7 @@
 #include "Region.h"
 #include "RegionGeometry.h"
 #include "VolumeChangeTracker.h"
-#include "VolumeIterator.h"
+#include "BlockVolumeIterator.h"
 
 using namespace boost;
 
@@ -52,7 +52,7 @@ namespace PolyVox
 
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
-		VolumeIterator<boost::uint8_t> volIter(*volumeData);
+		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(region);
 
 		//////////////////////////////////////////////////////////////////////////
@@ -363,7 +363,7 @@ namespace PolyVox
 
 		Vector3DFloat result;
 
-		VolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
+		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
 
 		if(normalGenerationMethod == SOBEL)
@@ -450,7 +450,7 @@ namespace PolyVox
 
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
-		VolumeIterator<boost::uint8_t> volIter(*volumeData);
+		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(region);
 
 		const float threshold = 0.5f;
@@ -468,7 +468,7 @@ namespace PolyVox
 			const uint16_t z = volIter.getPosZ();
 
 			//Voxels values
-			VolumeIterator<boost::uint8_t> tempVolIter(*volumeData);
+			BlockVolumeIterator<boost::uint8_t> tempVolIter(*volumeData);
 			tempVolIter.setPosition(x,y,z);
 			const float v000 = tempVolIter.getAveragedVoxel(1);
 			tempVolIter.setPosition(x+1,y,z);
@@ -765,7 +765,7 @@ namespace PolyVox
 
 		Vector3DFloat result;
 
-		VolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
+		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
 
 		if(normalGenerationMethod == SOBEL)
