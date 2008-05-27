@@ -29,6 +29,8 @@ namespace PolyVox
 
 			generateRoughMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
+			genMultiFromSingle(regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+
 			regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
 			regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
 			regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
@@ -37,6 +39,69 @@ namespace PolyVox
 		}
 
 		return listChangedRegionGeometry;
+	}
+
+	void genMultiFromSingle(IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
+	{
+		std::vector<SurfaceVertex>& vertices = singleMaterialPatch->m_vecVertices;
+		std::vector<boost::uint32_t>& indices = singleMaterialPatch->m_vecTriangleIndices;
+		if(vertices.size() == 0)
+		{
+			return;
+		}
+
+		for(boost::uint32_t ct = 0; ct < indices.size()-2; ct+=3)
+		{
+			if((vertices[indices[ct]].getMaterial() != vertices[indices[ct+1]].getMaterial()) || (vertices[indices[ct]].getMaterial() != vertices[indices[ct+2]].getMaterial()))
+			{
+				SurfaceVertex vert0 = vertices[indices[ct+0]];
+				SurfaceVertex vert1 = vertices[indices[ct+1]];
+				SurfaceVertex vert2 = vertices[indices[ct+2]];
+
+				float mat0 = vert0.getMaterial();
+				float mat1 = vert1.getMaterial();
+				float mat2 = vert2.getMaterial();
+
+				if((mat0 == mat1) && (mat1 == mat2))
+				{
+					exit(1);
+				}
+
+				vert0.setMaterial(mat0);  vert0.setAlpha(1.0);
+				vert1.setMaterial(mat0);  vert1.setAlpha(0.0);
+				vert2.setMaterial(mat0);  vert2.setAlpha(0.0);
+				multiMaterialPatch->addTriangle(vert0, vert1, vert2);
+
+				vert0.setMaterial(mat1);  vert0.setAlpha(0.0);
+				vert1.setMaterial(mat1);  vert1.setAlpha(1.0);
+				vert2.setMaterial(mat1);  vert2.setAlpha(0.0);
+				multiMaterialPatch->addTriangle(vert0, vert1, vert2);
+
+				vert0.setMaterial(mat2);  vert0.setAlpha(0.0);
+				vert1.setMaterial(mat2);  vert1.setAlpha(0.0);
+				vert2.setMaterial(mat2);  vert2.setAlpha(1.0);
+				multiMaterialPatch->addTriangle(vert0, vert1, vert2);
+
+				/*vert0.setMaterial(vertices[indices[ct+1]].getMaterial()); vert0.setAlpha(0.0);
+				vert1.setMaterial(vertices[indices[ct+1]].getMaterial()); vert1.setAlpha(1.0);
+				vert2.setMaterial(vertices[indices[ct+1]].getMaterial()); vert2.setAlpha(0.0);
+				multiMaterialPatch->addTriangle(vert0, vert1, vert2);*/
+
+				/*vert0.setMaterial(vertices[indices[ct+2]].getMaterial()); vert0.setAlpha(0.0);
+				vert1.setMaterial(vertices[indices[ct+2]].getMaterial()); vert1.setAlpha(1.0);
+				vert2.setMaterial(vertices[indices[ct+2]].getMaterial()); vert2.setAlpha(0.0);
+				multiMaterialPatch->addTriangle(vert0, vert1, vert2);*/
+
+				//multiMaterialPatch->addTriangle(vert0Alpha0, vert1Alpha1, vert2Alpha0);
+				//multiMaterialPatch->addTriangle(vert0Alpha0, vert1Alpha0, vert2Alpha1);
+
+				/*SurfaceVertex v0 = vertices[indices[ct+0]]; v0.setMaterial(2.1); v0.setAlpha(1.0);
+				SurfaceVertex v1 = vertices[indices[ct+1]]; v1.setMaterial(2.1); v1.setAlpha(1.0);
+				SurfaceVertex v2 = vertices[indices[ct+2]]; v2.setMaterial(2.1); v2.setAlpha(1.0);
+
+				multiMaterialPatch->addTriangle(v0,v1,v2);*/
+			}
+		}
 	}
 
 	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
@@ -199,114 +264,10 @@ namespace PolyVox
 
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
-				if((material0 == material1) && (material1 == material2))
-				{
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
-					singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-				}
-				else if(material0 == material1)
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1f,0.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				else if(material0 == material2)
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1f,1.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1f,0.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				else if(material1 == material2)
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1f,1.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1f,0.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				else
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1f,0.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1f,0.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1f,0.0f);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				//If there not all the same, we need one triangle for each unique material.
-				//We'll also need some vertices with low alphas for blending.
-				/*else 
-				{
-				SurfaceVertex surfaceVertex0Alpha0(vertex0,0.0);
-				SurfaceVertex surfaceVertex1Alpha0(vertex1,0.0);
-				SurfaceVertex surfaceVertex2Alpha0(vertex2,0.0);
-
-				if(material0 == material1)
-				{
-				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-				surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-				}
-				else if(material1 == material2)
-				{
-				surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
-				}
-				else if(material2 == material0)
-				{
-				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-				surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-				}
-				else
-				{
-				surfacePatchMapResult[material0]->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha0, surfaceVertex2Alpha0);
-				surfacePatchMapResult[material1]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha1, surfaceVertex2Alpha0);
-				surfacePatchMapResult[material2]->addTriangle(surfaceVertex0Alpha0, surfaceVertex1Alpha0, surfaceVertex2Alpha1);
-				}
-				}*/
+				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
+				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 			}//For each triangle
 		}//For each cell
 
