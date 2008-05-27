@@ -61,7 +61,7 @@ namespace PolyVox
 		boost::int32_t getIndexFor(const Vector3DFloat& pos);
 		void setIndexFor(const Vector3DFloat& pos, boost::int32_t newIndex);
 
-	private:
+	public:
 		bool m_AllowDuplicateVertices;
 	};	
 

@@ -50,6 +50,7 @@ namespace PolyVox
 			return;
 		}
 
+		singleMaterialPatch->m_AllowDuplicateVertices = true;
 		for(boost::uint32_t ct = 0; ct < indices.size()-2; ct+=3)
 		{
 			if((vertices[indices[ct]].getMaterial() != vertices[indices[ct+1]].getMaterial()) || (vertices[indices[ct]].getMaterial() != vertices[indices[ct+2]].getMaterial()))
@@ -62,46 +63,33 @@ namespace PolyVox
 				float mat1 = vert1.getMaterial();
 				float mat2 = vert2.getMaterial();
 
-				if((mat0 == mat1) && (mat1 == mat2))
-				{
-					exit(1);
-				}
+				vert0.setMaterial(0.0f);  vert0.setAlpha(1.0);
+				vert1.setMaterial(0.0f);  vert1.setAlpha(1.0);
+				vert2.setMaterial(0.0f);  vert2.setAlpha(1.0);
+				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
 
 				vert0.setMaterial(mat0);  vert0.setAlpha(1.0);
 				vert1.setMaterial(mat0);  vert1.setAlpha(0.0);
 				vert2.setMaterial(mat0);  vert2.setAlpha(0.0);
-				multiMaterialPatch->addTriangle(vert0, vert1, vert2);
+				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
 
 				vert0.setMaterial(mat1);  vert0.setAlpha(0.0);
 				vert1.setMaterial(mat1);  vert1.setAlpha(1.0);
 				vert2.setMaterial(mat1);  vert2.setAlpha(0.0);
-				multiMaterialPatch->addTriangle(vert0, vert1, vert2);
+				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
 
 				vert0.setMaterial(mat2);  vert0.setAlpha(0.0);
 				vert1.setMaterial(mat2);  vert1.setAlpha(0.0);
 				vert2.setMaterial(mat2);  vert2.setAlpha(1.0);
-				multiMaterialPatch->addTriangle(vert0, vert1, vert2);
+				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
 
-				/*vert0.setMaterial(vertices[indices[ct+1]].getMaterial()); vert0.setAlpha(0.0);
-				vert1.setMaterial(vertices[indices[ct+1]].getMaterial()); vert1.setAlpha(1.0);
-				vert2.setMaterial(vertices[indices[ct+1]].getMaterial()); vert2.setAlpha(0.0);
-				multiMaterialPatch->addTriangle(vert0, vert1, vert2);*/
-
-				/*vert0.setMaterial(vertices[indices[ct+2]].getMaterial()); vert0.setAlpha(0.0);
-				vert1.setMaterial(vertices[indices[ct+2]].getMaterial()); vert1.setAlpha(1.0);
-				vert2.setMaterial(vertices[indices[ct+2]].getMaterial()); vert2.setAlpha(0.0);
-				multiMaterialPatch->addTriangle(vert0, vert1, vert2);*/
-
-				//multiMaterialPatch->addTriangle(vert0Alpha0, vert1Alpha1, vert2Alpha0);
-				//multiMaterialPatch->addTriangle(vert0Alpha0, vert1Alpha0, vert2Alpha1);
-
-				/*SurfaceVertex v0 = vertices[indices[ct+0]]; v0.setMaterial(2.1); v0.setAlpha(1.0);
-				SurfaceVertex v1 = vertices[indices[ct+1]]; v1.setMaterial(2.1); v1.setAlpha(1.0);
-				SurfaceVertex v2 = vertices[indices[ct+2]]; v2.setMaterial(2.1); v2.setAlpha(1.0);
-
-				multiMaterialPatch->addTriangle(v0,v1,v2);*/
+				//Cause the original one to become degenerate...
+				indices[ct+0] = 0;
+				indices[ct+1] = 0;
+				indices[ct+2] = 0;
 			}
 		}
+		singleMaterialPatch->m_AllowDuplicateVertices = false;
 	}
 
 	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
