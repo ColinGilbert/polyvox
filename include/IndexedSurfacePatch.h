@@ -47,6 +47,7 @@ namespace PolyVox
 	   const std::vector<boost::uint32_t>& getIndices(void) const;
 
 	   unsigned short getNoNonUniformTrianges(void);
+	   unsigned short getNoUniformTrianges(void);
 	
 	public:		
 		std::vector<boost::uint32_t> m_vecTriangleIndices;
