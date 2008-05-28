@@ -199,4 +199,21 @@ namespace PolyVox
 	{
 		return m_vecTriangleIndices;
 	}
+
+	unsigned short IndexedSurfacePatch::getNoNonUniformTrianges(void)
+	{
+		unsigned short result = 0;
+		for(int i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
+		{
+			if((m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+1]].getMaterial())
+			&& (m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+2]].getMaterial()))
+			{
+			}
+			else
+			{
+				result++;
+			}
+		}
+		return result;
+	}
 }

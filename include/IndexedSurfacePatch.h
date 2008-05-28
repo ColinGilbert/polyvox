@@ -45,6 +45,8 @@ namespace PolyVox
 	   const std::vector<SurfaceVertex>& getVertices(void) const;
 	   std::vector<SurfaceVertex>& getVertices(void); //FIXME - non const version should be removed.
 	   const std::vector<boost::uint32_t>& getIndices(void) const;
+
+	   unsigned short getNoNonUniformTrianges(void);
 	
 	public:		
 		std::vector<boost::uint32_t> m_vecTriangleIndices;
