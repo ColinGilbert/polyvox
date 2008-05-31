@@ -35,11 +35,9 @@ namespace PolyVox
 
 		bool m_bIsEmpty;
 		bool m_bContainsSingleMaterialPatch;
-		bool m_bContainsMultiMaterialPatch;
 
 		Vector3DInt32 m_v3dRegionPosition;
 		IndexedSurfacePatch* m_patchSingleMaterial;
-		IndexedSurfacePatch* m_patchMultiMaterial;
 	};	
 }
 

@@ -24,16 +24,14 @@ namespace PolyVox
 			//Generate the surface
 			RegionGeometry regionGeometry;
 			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
-			regionGeometry.m_patchMultiMaterial = new IndexedSurfacePatch(true);
 			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
 
-			generateRoughMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
+			generateRoughMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 
 			//genMultiFromSingle(regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
 			regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
-			regionGeometry.m_bContainsMultiMaterialPatch = regionGeometry.m_patchMultiMaterial->getVertices().size() > 0;
-			regionGeometry.m_bIsEmpty = ((regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) && (regionGeometry.m_patchMultiMaterial->getIndices().size() == 0));
+			regionGeometry.m_bIsEmpty = (regionGeometry.m_patchSingleMaterial->getVertices().size() == 0);
 
 			listChangedRegionGeometry.push_back(regionGeometry);
 		}
@@ -41,58 +39,7 @@ namespace PolyVox
 		return listChangedRegionGeometry;
 	}
 
-	void genMultiFromSingle(IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
-	{
-		std::vector<SurfaceVertex>& vertices = singleMaterialPatch->m_vecVertices;
-		std::vector<boost::uint32_t>& indices = singleMaterialPatch->m_vecTriangleIndices;
-		if(vertices.size() == 0)
-		{
-			return;
-		}
-
-		singleMaterialPatch->m_AllowDuplicateVertices = true;
-		for(boost::uint32_t ct = 0; ct < indices.size()-2; ct+=3)
-		{
-			if((vertices[indices[ct]].getMaterial() != vertices[indices[ct+1]].getMaterial()) || (vertices[indices[ct]].getMaterial() != vertices[indices[ct+2]].getMaterial()))
-			{
-				SurfaceVertex vert0 = vertices[indices[ct+0]];
-				SurfaceVertex vert1 = vertices[indices[ct+1]];
-				SurfaceVertex vert2 = vertices[indices[ct+2]];
-
-				float mat0 = vert0.getMaterial();
-				float mat1 = vert1.getMaterial();
-				float mat2 = vert2.getMaterial();
-
-				vert0.setMaterial(0.0f);  vert0.setAlpha(1.0);
-				vert1.setMaterial(0.0f);  vert1.setAlpha(1.0);
-				vert2.setMaterial(0.0f);  vert2.setAlpha(1.0);
-				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
-
-				vert0.setMaterial(mat0);  vert0.setAlpha(1.0);
-				vert1.setMaterial(mat0);  vert1.setAlpha(0.0);
-				vert2.setMaterial(mat0);  vert2.setAlpha(0.0);
-				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
-
-				vert0.setMaterial(mat1);  vert0.setAlpha(0.0);
-				vert1.setMaterial(mat1);  vert1.setAlpha(1.0);
-				vert2.setMaterial(mat1);  vert2.setAlpha(0.0);
-				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
-
-				vert0.setMaterial(mat2);  vert0.setAlpha(0.0);
-				vert1.setMaterial(mat2);  vert1.setAlpha(0.0);
-				vert2.setMaterial(mat2);  vert2.setAlpha(1.0);
-				singleMaterialPatch->addTriangle(vert0, vert1, vert2);
-
-				//Cause the original one to become degenerate...
-				indices[ct+0] = 0;
-				indices[ct+1] = 0;
-				indices[ct+2] = 0;
-			}
-		}
-		singleMaterialPatch->m_AllowDuplicateVertices = false;
-	}
-
-	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
+	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
@@ -272,24 +219,7 @@ namespace PolyVox
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
-
-			iterSurfaceVertex = multiMaterialPatch->getVertices().begin();
-			while(iterSurfaceVertex != multiMaterialPatch->getVertices().end())
-			{
-				Vector3DFloat tempNormal = computeNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
-				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
-				++iterSurfaceVertex;
-			}
-
-			uint16_t noOfRemovedVertices = 0;
-			//do
-			{
-				//noOfRemovedVertices = iterPatch->second.decimate();
-			}
-			//while(noOfRemovedVertices > 10); //We don't worry about the last few vertices - it's not worth the overhead of calling the function.
 		}
-
-		//return singleMaterialPatch;
 	}
 
 	Vector3DFloat computeNormal(BlockVolume<uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod)
@@ -386,7 +316,7 @@ namespace PolyVox
 		return result;
 	}
 
-	void generateSmoothMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch, IndexedSurfacePatch* multiMaterialPatch)
+	void generateSmoothMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
@@ -586,85 +516,11 @@ namespace PolyVox
 				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
-				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
-				/*if((material0 == material1) && (material1 == material2))
-				{*/
-					SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-					SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-					SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
-					singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-				/*}
-				else if(material0 == material1)
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				else if(material0 == material2)
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,1.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				else if(material1 == material2)
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,1.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}
-				else
-				{
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1,1.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material0 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material0 + 0.1,0.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material1 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1,1.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material1 + 0.1,0.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-
-					{
-						SurfaceVertex surfaceVertex0Alpha1(vertex0,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex1Alpha1(vertex1,material2 + 0.1,0.0);
-						SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1,1.0);
-						multiMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-					}
-				}*/				
+				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
+				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+					
 			}//For each triangle
 		}//For each cell
 
@@ -676,14 +532,6 @@ namespace PolyVox
 
 			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
 			while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
-			{
-				Vector3DFloat tempNormal = computeSmoothNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
-				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
-				++iterSurfaceVertex;
-			}
-
-			iterSurfaceVertex = multiMaterialPatch->getVertices().begin();
-			while(iterSurfaceVertex != multiMaterialPatch->getVertices().end())
 			{
 				Vector3DFloat tempNormal = computeSmoothNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
