@@ -65,22 +65,22 @@ namespace PolyVox
 
 		//Regenerate meshes.
 		for(uint16_t regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
-		//for(uint16_t regionZ = 6; regionZ < 7; ++regionZ)
+		//for(uint16_t regionZ = 0; regionZ < 1; ++regionZ)
 		{		
 			for(uint16_t regionY = 0; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
-			//for(uint16_t regionY = 6; regionY < 7; ++regionY)
+			//for(uint16_t regionY = 0; regionY < 2; ++regionY)
 			{
 				for(uint16_t regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
-				//for(uint16_t regionX = 3; regionX < 4; ++regionX)
+				//for(uint16_t regionX = 0; regionX < 2; ++regionX)
 				{
 					if(volRegionUpToDate->getVoxelAt(regionX, regionY, regionZ) == false)
 					{
 						const uint16_t firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
 						const uint16_t firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
 						const uint16_t firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
-						const uint16_t lastX = firstX + POLYVOX_REGION_SIDE_LENGTH-1;
-						const uint16_t lastY = firstY + POLYVOX_REGION_SIDE_LENGTH-1;
-						const uint16_t lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH-1;
+						const uint16_t lastX = firstX + POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t lastY = firstY + POLYVOX_REGION_SIDE_LENGTH;
+						const uint16_t lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH;
 
 						listToFill.push_back(Region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ)));
 					}

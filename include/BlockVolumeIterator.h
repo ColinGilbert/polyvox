@@ -55,7 +55,8 @@ namespace PolyVox
 		void setVoxel(VoxelType tValue);	
 
 		bool isValidForRegion(void) const;
-		void moveForwardInRegion(void);		
+		void moveForwardInRegionFast(void);		
+		bool moveForwardInRegionXYZ(void);	
 
 		VoxelType peekVoxel1nx1ny1nz(void) const;
 		VoxelType peekVoxel1nx1ny0pz(void) const;

@@ -253,7 +253,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::moveForwardInRegion(void)
+	void BlockVolumeIterator<VoxelType>::moveForwardInRegionFast(void)
 	{
 		mXPosInBlock++;
 		mCurrentVoxel++;
@@ -336,6 +336,59 @@ namespace PolyVox
 				}
 			}
 		}		
+	}
+
+	template <typename VoxelType>
+	bool BlockVolumeIterator<VoxelType>::moveForwardInRegionXYZ(void)
+	{
+		if(mXPosInVolume < mXRegionLast)
+		{
+			++mXPosInVolume;
+			if(mXPosInVolume % mVolume.m_uBlockSideLength != 0)
+			{
+				//No need to compute new block.
+				++mVoxelIndexInBlock;
+				++mCurrentVoxel;
+			}
+			else
+			{
+				//A more complex situation. Just call setPosition().
+				setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			}
+		}
+		else
+		{
+			mXPosInVolume = mXRegionFirst;
+			if(mYPosInVolume < mYRegionLast)
+			{
+				++mYPosInVolume;
+				//In the case of 'X' we used a trick to avoid calling this evey time. It's hard to use the same
+				//trick here because the x position has been reset and so is likely to be in a different block.
+				setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			}
+			else
+			{
+				mYPosInVolume = mYRegionFirst;
+				if(mZPosInVolume < mZRegionLast)
+				{
+					++mZPosInVolume;
+					//In the case of 'X' we used a trick to avoid calling this evey time. It's hard to use the same
+					//trick here because the x position has been reset and so is likely to be in a different block.
+					setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+				}
+				else
+				{
+					//We've hit the end of the region. Reset x and y positions to where they were.
+					mXPosInVolume = mXRegionLast;
+					mYPosInVolume = mYRegionLast;
+
+					//Return false to indicate we failed to move forward.
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 	#pragma endregion
 
