@@ -62,11 +62,15 @@ namespace PolyVox
 		memset(vertexIndicesY,0xFF,sizeof(vertexIndicesY));
 		memset(vertexIndicesZ,0xFF,sizeof(vertexIndicesZ));
 
+		//Cell bitmasks
+		boost::uint8_t bitmask[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		memset(bitmask, 0x00, sizeof(bitmask));
+
 		std::vector<boost::uint32_t> vecTriangleIndices;
 		std::vector<SurfaceVertex> vecVertices;
 
 		//////////////////////////////////////////////////////////////////////////
-		//Get mesh data
+		// Compute bitmasks
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
@@ -101,6 +105,30 @@ namespace PolyVox
 			if (v111 == 0) iCubeIndex |= 64;
 			if (v011 == 0) iCubeIndex |= 128;
 
+			//Save the bitmask
+			bitmask[x][y][z] = iCubeIndex;
+			
+		}//For each cell
+
+		//////////////////////////////////////////////////////////////////////////
+		//Get mesh data
+		//////////////////////////////////////////////////////////////////////////
+
+		//Iterate over each cell in the region
+		volIter.setPosition(region.getLowerCorner().getX(),region.getLowerCorner().getY(), region.getLowerCorner().getZ());
+		volIter.setValidRegion(region);
+		while(volIter.moveForwardInRegionXYZ())
+		{		
+			//Current position
+			const uint16_t x = volIter.getPosX() - offset.getX();
+			const uint16_t y = volIter.getPosY() - offset.getY();
+			const uint16_t z = volIter.getPosZ() - offset.getZ();
+
+			const uint8_t v000 = volIter.getVoxel();
+
+			//Determine the index into the edge table which tells us which vertices are inside of the surface
+			uint8_t iCubeIndex = bitmask[x][y][z];
+
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
 			{
@@ -115,7 +143,7 @@ namespace PolyVox
 					vertlist[0].setX(x + 0.5f);
 					vertlist[0].setY(y);
 					vertlist[0].setZ(z);
-					vertMaterials[0] = v000 | v100; //Because one of these is 0, the or operation takes the max.
+					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
 					vecVertices.push_back(surfaceVertex);
 					vertexIndicesX[x][y][z] = vecVertices.size()-1;
@@ -142,7 +170,7 @@ namespace PolyVox
 					vertlist[3].setX(x);
 					vertlist[3].setY(y + 0.5f);
 					vertlist[3].setZ(z);
-					vertMaterials[3] = v000 | v010;
+					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
 					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
 					vecVertices.push_back(surfaceVertex);
 					vertexIndicesY[x][y][z] = vecVertices.size()-1;
@@ -183,7 +211,7 @@ namespace PolyVox
 					vertlist[8].setX(x);
 					vertlist[8].setY(y);
 					vertlist[8].setZ(z + 0.5f);
-					vertMaterials[8] = v000 | v001;
+					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
 					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
 					vecVertices.push_back(surfaceVertex);
 					vertexIndicesZ[x][y][z] = vecVertices.size()-1;
@@ -241,27 +269,8 @@ namespace PolyVox
 			const uint16_t y = volIter.getPosY() - offset.getY();
 			const uint16_t z = volIter.getPosZ() - offset.getZ();
 
-			//Voxels values
-			const uint8_t v000 = volIter.getVoxel();
-			const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-			const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-			const uint8_t v110 = volIter.peekVoxel1px1py0pz();
-			const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-			const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-			const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-			const uint8_t v111 = volIter.peekVoxel1px1py1pz();
-
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
-
-			if (v000 == 0) iCubeIndex |= 1;
-			if (v100 == 0) iCubeIndex |= 2;
-			if (v110 == 0) iCubeIndex |= 4;
-			if (v010 == 0) iCubeIndex |= 8;
-			if (v001 == 0) iCubeIndex |= 16;
-			if (v101 == 0) iCubeIndex |= 32;
-			if (v111 == 0) iCubeIndex |= 64;
-			if (v011 == 0) iCubeIndex |= 128;
+			uint8_t iCubeIndex = bitmask[x][y][z];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
