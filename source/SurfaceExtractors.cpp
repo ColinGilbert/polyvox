@@ -41,6 +41,9 @@ namespace PolyVox
 
 	void generateExperimentalMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
+		singleMaterialPatch->m_vecVertices.clear();
+		singleMaterialPatch->m_vecTriangleIndices.clear();
+
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
@@ -50,10 +53,51 @@ namespace PolyVox
 		//Offset from region corner
 		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
-		Vector3DFloat vertlist[12];
-		uint8_t vertMaterials[12];
+		
 		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);		
 
+		
+
+		//std::vector<boost::uint32_t> vecTriangleIndices;
+		//std::vector<SurfaceVertex> vecVertices;
+
+		/*Region regTwoSlice(region);
+		Vector3DInt32 upperCorner = regTwoSlice.getUpperCorner();
+		upperCorner.setZ(regTwoSlice.getLowerCorner().getZ() + 1);
+		regTwoSlice.setUpperCorner(upperCorner);
+
+		generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset);
+
+		regTwoSlice.setLowerCorner(regTwoSlice.getLowerCorner() + Vector3DInt32(0,0,1));
+		regTwoSlice.setUpperCorner(regTwoSlice.getUpperCorner() + Vector3DInt32(0,0,1));
+
+		generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset);*/
+
+		for(boost::uint32_t uSlice = 0; ((uSlice <= 15) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
+		{
+			Vector3DInt32 lowerCorner = Vector3DInt32(region.getLowerCorner().getX(), region.getLowerCorner().getY(), region.getLowerCorner().getZ() + uSlice);
+			Vector3DInt32 upperCorner = Vector3DInt32(region.getUpperCorner().getX(), region.getUpperCorner().getY(), region.getLowerCorner().getZ() + uSlice + 1);
+			Region regTwoSlice(lowerCorner, upperCorner);
+			generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset);
+		}
+
+		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
+
+		//singleMaterialPatch->m_vecVertices = vecVertices;
+		//singleMaterialPatch->m_vecTriangleIndices = vecTriangleIndices;
+
+
+		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
+		while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
+		{
+			Vector3DFloat tempNormal = computeNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
+			const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
+			++iterSurfaceVertex;
+		}
+	}
+
+	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset)
+	{
 		//For edge indices
 		boost::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 		boost::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
@@ -66,17 +110,15 @@ namespace PolyVox
 		boost::uint8_t bitmask[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 		memset(bitmask, 0x00, sizeof(bitmask));
 
-		std::vector<boost::uint32_t> vecTriangleIndices;
-		std::vector<SurfaceVertex> vecVertices;
-
 		//////////////////////////////////////////////////////////////////////////
 		// Compute bitmasks
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
-		volIter.setPosition(region.getLowerCorner().getX(),region.getLowerCorner().getY(), region.getLowerCorner().getZ());
-		volIter.setValidRegion(region);
-		while(volIter.moveForwardInRegionXYZ())
+		volIter.setPosition(regTwoSlice.getLowerCorner().getX(),regTwoSlice.getLowerCorner().getY(), regTwoSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regTwoSlice);
+		do
+		//while(volIter.moveForwardInRegionXYZ())
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX() - offset.getX();
@@ -108,16 +150,20 @@ namespace PolyVox
 			//Save the bitmask
 			bitmask[x][y][z] = iCubeIndex;
 			
-		}//For each cell
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
 
 		//////////////////////////////////////////////////////////////////////////
 		//Get mesh data
 		//////////////////////////////////////////////////////////////////////////
 
+		Vector3DFloat vertlist[12];
+		uint8_t vertMaterials[12];
+
 		//Iterate over each cell in the region
-		volIter.setPosition(region.getLowerCorner().getX(),region.getLowerCorner().getY(), region.getLowerCorner().getZ());
-		volIter.setValidRegion(region);
-		while(volIter.moveForwardInRegionXYZ())
+		volIter.setPosition(regTwoSlice.getLowerCorner().getX(),regTwoSlice.getLowerCorner().getY(), regTwoSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regTwoSlice);
+		//while(volIter.moveForwardInRegionXYZ())
+		do
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX() - offset.getX();
@@ -138,131 +184,52 @@ namespace PolyVox
 			/* Find the vertices where the surface intersects the cube */
 			if (edgeTable[iCubeIndex] & 1)
 			{
-				if((x + offset.getX()) != region.getUpperCorner().getX())
+				if((x + offset.getX()) != regTwoSlice.getUpperCorner().getX())
 				{
 					vertlist[0].setX(x + 0.5f);
 					vertlist[0].setY(y);
 					vertlist[0].setZ(z);
 					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
-					vecVertices.push_back(surfaceVertex);
-					vertexIndicesX[x][y][z] = vecVertices.size()-1;
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesX[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
-			/*if (edgeTable[iCubeIndex] & 2)
-			{
-				vertlist[1].setX(x + 1.0f);
-				vertlist[1].setY(y + 0.5f);
-				vertlist[1].setZ(z);
-				vertMaterials[1] = v100 | v110;
-			}*/
-			/*if (edgeTable[iCubeIndex] & 4)
-			{
-				vertlist[2].setX(x + 0.5f);
-				vertlist[2].setY(y + 1.0f);
-				vertlist[2].setZ(z);
-				vertMaterials[2] = v010 | v110;
-			}*/
 			if (edgeTable[iCubeIndex] & 8)
 			{
-				if((y + offset.getY()) != region.getUpperCorner().getY())
+				if((y + offset.getY()) != regTwoSlice.getUpperCorner().getY())
 				{
 					vertlist[3].setX(x);
 					vertlist[3].setY(y + 0.5f);
 					vertlist[3].setZ(z);
 					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
 					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
-					vecVertices.push_back(surfaceVertex);
-					vertexIndicesY[x][y][z] = vecVertices.size()-1;
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesY[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
-			/*if (edgeTable[iCubeIndex] & 16)
-			{
-				vertlist[4].setX(x + 0.5f);
-				vertlist[4].setY(y);
-				vertlist[4].setZ(z + 1.0f);
-				vertMaterials[4] = v001 | v101;
-			}*/
-			/*if (edgeTable[iCubeIndex] & 32)
-			{
-				vertlist[5].setX(x + 1.0f);
-				vertlist[5].setY(y + 0.5f);
-				vertlist[5].setZ(z + 1.0f);
-				vertMaterials[5] = v101 | v111;
-			}*/
-			/*if (edgeTable[iCubeIndex] & 64)
-			{
-				vertlist[6].setX(x + 0.5f);
-				vertlist[6].setY(y + 1.0f);
-				vertlist[6].setZ(z + 1.0f);
-				vertMaterials[6] = v011 | v111;
-			}*/
-			/*if (edgeTable[iCubeIndex] & 128)
-			{
-				vertlist[7].setX(x);
-				vertlist[7].setY(y + 0.5f);
-				vertlist[7].setZ(z + 1.0f);
-				vertMaterials[7] = v001 | v011;
-			}*/
 			if (edgeTable[iCubeIndex] & 256)
 			{
-				if((z + offset.getZ()) != region.getUpperCorner().getZ())
+				if((z + offset.getZ()) != regTwoSlice.getUpperCorner().getZ())
 				{
 					vertlist[8].setX(x);
 					vertlist[8].setY(y);
 					vertlist[8].setZ(z + 0.5f);
 					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
 					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
-					vecVertices.push_back(surfaceVertex);
-					vertexIndicesZ[x][y][z] = vecVertices.size()-1;
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesZ[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
-			/*if (edgeTable[iCubeIndex] & 512)
-			{
-				vertlist[9].setX(x + 1.0f);
-				vertlist[9].setY(y);
-				vertlist[9].setZ(z + 0.5f);
-				vertMaterials[9] = v100 | v101;
-			}*/
-			/*if (edgeTable[iCubeIndex] & 1024)
-			{
-				vertlist[10].setX(x + 1.0f);
-				vertlist[10].setY(y + 1.0f);
-				vertlist[10].setZ(z + 0.5f);
-				vertMaterials[10] = v110 | v111;
-			}*/
-			/*if (edgeTable[iCubeIndex] & 2048)
-			{
-				vertlist[11].setX(x);
-				vertlist[11].setY(y + 1.0f);
-				vertlist[11].setZ(z + 0.5f);
-				vertMaterials[11] = v010 | v011;
-			}*/
-
-			/*for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
-			{
-				//The three vertices forming a triangle
-				const Vector3DFloat vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
-				const Vector3DFloat vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
-				const Vector3DFloat vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
-
-				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
-				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
-				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
-
-				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
-				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-			}*///For each triangle
-		}//For each cell
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
 
 		boost::uint32_t indlist[12];
 		//Iterate over each cell in the region
-		region.setUpperCorner(region.getUpperCorner() - Vector3DInt32(1,1,1));
-		volIter.setPosition(region.getLowerCorner().getX(),region.getLowerCorner().getY(), region.getLowerCorner().getZ());
-		volIter.setValidRegion(region);
-		while(volIter.moveForwardInRegionXYZ())
+		regTwoSlice.setUpperCorner(regTwoSlice.getUpperCorner() - Vector3DInt32(1,1,1));
+		volIter.setPosition(regTwoSlice.getLowerCorner().getX(),regTwoSlice.getLowerCorner().getY(), regTwoSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regTwoSlice);
+		//while(volIter.moveForwardInRegionXYZ())
+		do
 		{		
 			//Current position
 			const uint16_t x = volIter.getPosX() - offset.getX();
@@ -283,109 +250,61 @@ namespace PolyVox
 			{
 				indlist[0] = vertexIndicesX[x][y][z];
 				assert(indlist[0] != -1);
-				/*vertlist[0].setX(x + 0.5f);
-				vertlist[0].setY(y);
-				vertlist[0].setZ(z);
-				vertMaterials[0] = v000 | v100;*/ //Because one of these is 0, the or operation takes the max.
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
 				indlist[1] = vertexIndicesY[x+1][y][z];
 				assert(indlist[1] != -1);
-				/*vertlist[1].setX(x + 1.0f);
-				vertlist[1].setY(y + 0.5f);
-				vertlist[1].setZ(z);
-				vertMaterials[1] = v100 | v110;*/
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
 				indlist[2] = vertexIndicesX[x][y+1][z];
 				assert(indlist[2] != -1);
-				/*vertlist[2].setX(x + 0.5f);
-				vertlist[2].setY(y + 1.0f);
-				vertlist[2].setZ(z);
-				vertMaterials[2] = v010 | v110;*/
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
 				indlist[3] = vertexIndicesY[x][y][z];
 				assert(indlist[3] != -1);
-				/*vertlist[3].setX(x);
-				vertlist[3].setY(y + 0.5f);
-				vertlist[3].setZ(z);
-				vertMaterials[3] = v000 | v010;*/
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
 				indlist[4] = vertexIndicesX[x][y][z+1];
 				assert(indlist[4] != -1);
-				/*vertlist[4].setX(x + 0.5f);
-				vertlist[4].setY(y);
-				vertlist[4].setZ(z + 1.0f);
-				vertMaterials[4] = v001 | v101;*/
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
 				indlist[5] = vertexIndicesY[x+1][y][z+1];
 				assert(indlist[5] != -1);
-				/*vertlist[5].setX(x + 1.0f);
-				vertlist[5].setY(y + 0.5f);
-				vertlist[5].setZ(z + 1.0f);
-				vertMaterials[5] = v101 | v111;*/
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
 				indlist[6] = vertexIndicesX[x][y+1][z+1];
 				assert(indlist[6] != -1);
-				/*vertlist[6].setX(x + 0.5f);
-				vertlist[6].setY(y + 1.0f);
-				vertlist[6].setZ(z + 1.0f);
-				vertMaterials[6] = v011 | v111;*/
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
 				indlist[7] = vertexIndicesY[x][y][z+1];
 				assert(indlist[7] != -1);
-				/*vertlist[7].setX(x);
-				vertlist[7].setY(y + 0.5f);
-				vertlist[7].setZ(z + 1.0f);
-				vertMaterials[7] = v001 | v011;*/
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
 				indlist[8] = vertexIndicesZ[x][y][z];
 				assert(indlist[8] != -1);
-				/*vertlist[8].setX(x);
-				vertlist[8].setY(y);
-				vertlist[8].setZ(z + 0.5f);
-				vertMaterials[8] = v000 | v001;*/
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
 				indlist[9] = vertexIndicesZ[x+1][y][z];
 				assert(indlist[9] != -1);
-				/*vertlist[9].setX(x + 1.0f);
-				vertlist[9].setY(y);
-				vertlist[9].setZ(z + 0.5f);
-				vertMaterials[9] = v100 | v101;*/
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
 				indlist[10] = vertexIndicesZ[x+1][y+1][z];
 				assert(indlist[10] != -1);
-				/*vertlist[10].setX(x + 1.0f);
-				vertlist[10].setY(y + 1.0f);
-				vertlist[10].setZ(z + 0.5f);
-				vertMaterials[10] = v110 | v111;*/
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
 				indlist[11] = vertexIndicesZ[x][y+1][z];
 				assert(indlist[11] != -1);
-				/*vertlist[11].setX(x);
-				vertlist[11].setY(y + 1.0f);
-				vertlist[11].setZ(z + 0.5f);
-				vertMaterials[11] = v010 | v011;*/
 			}
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
@@ -394,43 +313,11 @@ namespace PolyVox
 				boost::uint32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
 				boost::uint32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
 
-				vecTriangleIndices.push_back(ind0);
-				vecTriangleIndices.push_back(ind1);
-				vecTriangleIndices.push_back(ind2);
-
-				//The three vertices forming a triangle
-				/*const Vector3DFloat vertex0 = vertlist[triTable[iCubeIndex][i  ]] - offset;
-				const Vector3DFloat vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
-				const Vector3DFloat vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
-
-				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
-				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
-				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
-
-				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
-				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);*/
+				singleMaterialPatch->m_vecTriangleIndices.push_back(ind0);
+				singleMaterialPatch->m_vecTriangleIndices.push_back(ind1);
+				singleMaterialPatch->m_vecTriangleIndices.push_back(ind2);
 			}//For each triangle
-		}//For each cell
-
-		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
-
-		singleMaterialPatch->m_vecVertices = vecVertices;
-		singleMaterialPatch->m_vecTriangleIndices = vecTriangleIndices;
-
-
-		//for(std::map<uint8_t, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
-		{
-
-			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
-			while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
-			{
-				Vector3DFloat tempNormal = computeNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
-				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
-				++iterSurfaceVertex;
-			}
-		}
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
 
 	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
