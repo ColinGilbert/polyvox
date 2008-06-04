@@ -56,23 +56,6 @@ namespace PolyVox
 		
 		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);		
 
-		
-
-		//std::vector<boost::uint32_t> vecTriangleIndices;
-		//std::vector<SurfaceVertex> vecVertices;
-
-		/*Region regTwoSlice(region);
-		Vector3DInt32 upperCorner = regTwoSlice.getUpperCorner();
-		upperCorner.setZ(regTwoSlice.getLowerCorner().getZ() + 1);
-		regTwoSlice.setUpperCorner(upperCorner);
-
-		generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset);
-
-		regTwoSlice.setLowerCorner(regTwoSlice.getLowerCorner() + Vector3DInt32(0,0,1));
-		regTwoSlice.setUpperCorner(regTwoSlice.getUpperCorner() + Vector3DInt32(0,0,1));
-
-		generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset);*/
-
 		for(boost::uint32_t uSlice = 0; ((uSlice <= 15) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
 		{
 			Vector3DInt32 lowerCorner = Vector3DInt32(region.getLowerCorner().getX(), region.getLowerCorner().getY(), region.getLowerCorner().getZ() + uSlice);
@@ -80,11 +63,6 @@ namespace PolyVox
 			Region regTwoSlice(lowerCorner, upperCorner);
 			generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset);
 		}
-
-		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
-
-		//singleMaterialPatch->m_vecVertices = vecVertices;
-		//singleMaterialPatch->m_vecTriangleIndices = vecTriangleIndices;
 
 
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
@@ -107,16 +85,21 @@ namespace PolyVox
 		memset(vertexIndicesZ,0xFF,sizeof(vertexIndicesZ));
 
 		//Cell bitmasks
-		boost::uint8_t bitmask[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::uint8_t bitmask[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][2];
 		memset(bitmask, 0x00, sizeof(bitmask));
+
+		Region regFirstSlice(regTwoSlice);
+		regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(0,0,1));
+		Region regSecondSlice(regTwoSlice);
+		regSecondSlice.setLowerCorner(regSecondSlice.getLowerCorner() + Vector3DInt32(0,0,1));
 
 		//////////////////////////////////////////////////////////////////////////
 		// Compute bitmasks
 		//////////////////////////////////////////////////////////////////////////
 
 		//Iterate over each cell in the region
-		volIter.setPosition(regTwoSlice.getLowerCorner().getX(),regTwoSlice.getLowerCorner().getY(), regTwoSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regTwoSlice);
+		volIter.setPosition(regFirstSlice.getLowerCorner().getX(),regFirstSlice.getLowerCorner().getY(), regFirstSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regFirstSlice);
 		do
 		//while(volIter.moveForwardInRegionXYZ())
 		{		
@@ -148,7 +131,45 @@ namespace PolyVox
 			if (v011 == 0) iCubeIndex |= 128;
 
 			//Save the bitmask
-			bitmask[x][y][z] = iCubeIndex;
+			bitmask[x][y][0] = iCubeIndex;
+			
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
+
+		//Iterate over each cell in the region
+		volIter.setPosition(regSecondSlice.getLowerCorner().getX(),regSecondSlice.getLowerCorner().getY(), regSecondSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regSecondSlice);
+		do
+		//while(volIter.moveForwardInRegionXYZ())
+		{		
+			//Current position
+			const uint16_t x = volIter.getPosX() - offset.getX();
+			const uint16_t y = volIter.getPosY() - offset.getY();
+			const uint16_t z = volIter.getPosZ() - offset.getZ();
+
+			//Voxels values
+			const uint8_t v000 = volIter.getVoxel();
+			const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+			const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+			const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+			const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+			const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+			const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+			const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+
+			//Determine the index into the edge table which tells us which vertices are inside of the surface
+			uint8_t iCubeIndex = 0;
+
+			if (v000 == 0) iCubeIndex |= 1;
+			if (v100 == 0) iCubeIndex |= 2;
+			if (v110 == 0) iCubeIndex |= 4;
+			if (v010 == 0) iCubeIndex |= 8;
+			if (v001 == 0) iCubeIndex |= 16;
+			if (v101 == 0) iCubeIndex |= 32;
+			if (v111 == 0) iCubeIndex |= 64;
+			if (v011 == 0) iCubeIndex |= 128;
+
+			//Save the bitmask
+			bitmask[x][y][1] = iCubeIndex;
 			
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 
@@ -160,8 +181,8 @@ namespace PolyVox
 		uint8_t vertMaterials[12];
 
 		//Iterate over each cell in the region
-		volIter.setPosition(regTwoSlice.getLowerCorner().getX(),regTwoSlice.getLowerCorner().getY(), regTwoSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regTwoSlice);
+		volIter.setPosition(regFirstSlice.getLowerCorner().getX(),regFirstSlice.getLowerCorner().getY(), regFirstSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regFirstSlice);
 		//while(volIter.moveForwardInRegionXYZ())
 		do
 		{		
@@ -173,7 +194,7 @@ namespace PolyVox
 			const uint8_t v000 = volIter.getVoxel();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask[x][y][z];
+			uint8_t iCubeIndex = bitmask[x][y][0];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
@@ -223,6 +244,74 @@ namespace PolyVox
 			}
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 
+		//Iterate over each cell in the region
+		volIter.setPosition(regSecondSlice.getLowerCorner().getX(),regSecondSlice.getLowerCorner().getY(), regSecondSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regSecondSlice);
+		//while(volIter.moveForwardInRegionXYZ())
+		do
+		{		
+			//Current position
+			const uint16_t x = volIter.getPosX() - offset.getX();
+			const uint16_t y = volIter.getPosY() - offset.getY();
+			const uint16_t z = volIter.getPosZ() - offset.getZ();
+
+			const uint8_t v000 = volIter.getVoxel();
+
+			//Determine the index into the edge table which tells us which vertices are inside of the surface
+			uint8_t iCubeIndex = bitmask[x][y][1];
+
+			/* Cube is entirely in/out of the surface */
+			if (edgeTable[iCubeIndex] == 0)
+			{
+				continue;
+			}
+
+			/* Find the vertices where the surface intersects the cube */
+			if (edgeTable[iCubeIndex] & 1)
+			{
+				if((x + offset.getX()) != regTwoSlice.getUpperCorner().getX())
+				{
+					vertlist[0].setX(x + 0.5f);
+					vertlist[0].setY(y);
+					vertlist[0].setZ(z);
+					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
+					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesX[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+				}
+			}
+			if (edgeTable[iCubeIndex] & 8)
+			{
+				if((y + offset.getY()) != regTwoSlice.getUpperCorner().getY())
+				{
+					vertlist[3].setX(x);
+					vertlist[3].setY(y + 0.5f);
+					vertlist[3].setZ(z);
+					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
+					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesY[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+				}
+			}
+			if (edgeTable[iCubeIndex] & 256)
+			{
+				if((z + offset.getZ()) != regTwoSlice.getUpperCorner().getZ())
+				{
+					vertlist[8].setX(x);
+					vertlist[8].setY(y);
+					vertlist[8].setZ(z + 0.5f);
+					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
+					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesZ[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+				}
+			}
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
+
+		//////////////////////////////////////////////////////////////
+		// Set the indices
+		//////////////////////////////////////////////////////////////
+
 		boost::uint32_t indlist[12];
 		//Iterate over each cell in the region
 		regTwoSlice.setUpperCorner(regTwoSlice.getUpperCorner() - Vector3DInt32(1,1,1));
@@ -237,7 +326,7 @@ namespace PolyVox
 			const uint16_t z = volIter.getPosZ() - offset.getZ();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask[x][y][z];
+			uint8_t iCubeIndex = bitmask[x][y][0];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
