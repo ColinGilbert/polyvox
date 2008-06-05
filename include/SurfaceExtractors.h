@@ -37,7 +37,7 @@ namespace PolyVox
 	POLYVOX_API std::list<RegionGeometry> getChangedRegionGeometry(VolumeChangeTracker& volume);
 
 	POLYVOX_API void generateExperimentalMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	POLYVOX_API void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset);
+	POLYVOX_API void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, boost::uint8_t bitmask0[][POLYVOX_REGION_SIDE_LENGTH+1], boost::uint8_t bitmask1[][POLYVOX_REGION_SIDE_LENGTH+1]);
 	POLYVOX_API void computeBitmaskForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, boost::uint8_t bitmask[][POLYVOX_REGION_SIDE_LENGTH+1]);
 
 	POLYVOX_API void generateRoughMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
