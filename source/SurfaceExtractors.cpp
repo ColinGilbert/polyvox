@@ -96,12 +96,18 @@ namespace PolyVox
 	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t bitmask0[][POLYVOX_REGION_SIDE_LENGTH+1], uint8_t bitmask1[][POLYVOX_REGION_SIDE_LENGTH+1])
 	{
 		//For edge indices
-		boost::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		memset(vertexIndicesX,0xFF,sizeof(vertexIndicesX)); //0xFF is -1 as two's complement - this may not be portable...
-		memset(vertexIndicesY,0xFF,sizeof(vertexIndicesY));
-		memset(vertexIndicesZ,0xFF,sizeof(vertexIndicesZ));		
+		boost::int32_t vertexIndicesX0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesY0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesZ0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesX1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesY1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesZ1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		memset(vertexIndicesX0,0xFF,sizeof(vertexIndicesX0)); //0xFF is -1 as two's complement - this may not be portable...
+		memset(vertexIndicesY0,0xFF,sizeof(vertexIndicesY0));
+		memset(vertexIndicesZ0,0xFF,sizeof(vertexIndicesZ0));	
+		memset(vertexIndicesX1,0xFF,sizeof(vertexIndicesX1)); //0xFF is -1 as two's complement - this may not be portable...
+		memset(vertexIndicesY1,0xFF,sizeof(vertexIndicesY1));
+		memset(vertexIndicesZ1,0xFF,sizeof(vertexIndicesZ1));
 
 		Region regFirstSlice(regTwoSlice);
 		regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(0,0,1));
@@ -149,7 +155,7 @@ namespace PolyVox
 					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesX[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+					vertexIndicesX0[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 8)
@@ -162,7 +168,7 @@ namespace PolyVox
 					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
 					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesY[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+					vertexIndicesY0[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 256)
@@ -175,7 +181,7 @@ namespace PolyVox
 					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
 					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesZ[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+					vertexIndicesZ0[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
@@ -213,7 +219,7 @@ namespace PolyVox
 					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesX[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+					vertexIndicesX1[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 8)
@@ -226,7 +232,7 @@ namespace PolyVox
 					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
 					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesY[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+					vertexIndicesY1[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 256)
@@ -239,7 +245,7 @@ namespace PolyVox
 					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
 					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesZ[x][y][z] = singleMaterialPatch->m_vecVertices.size()-1;
+					vertexIndicesZ1[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
 			}
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
@@ -274,62 +280,62 @@ namespace PolyVox
 			/* Find the vertices where the surface intersects the cube */
 			if (edgeTable[iCubeIndex] & 1)
 			{
-				indlist[0] = vertexIndicesX[x][y][z];
+				indlist[0] = vertexIndicesX0[x][y];
 				assert(indlist[0] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
-				indlist[1] = vertexIndicesY[x+1][y][z];
+				indlist[1] = vertexIndicesY0[x+1][y];
 				assert(indlist[1] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
-				indlist[2] = vertexIndicesX[x][y+1][z];
+				indlist[2] = vertexIndicesX0[x][y+1];
 				assert(indlist[2] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
-				indlist[3] = vertexIndicesY[x][y][z];
+				indlist[3] = vertexIndicesY0[x][y];
 				assert(indlist[3] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
-				indlist[4] = vertexIndicesX[x][y][z+1];
+				indlist[4] = vertexIndicesX1[x][y];
 				assert(indlist[4] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
-				indlist[5] = vertexIndicesY[x+1][y][z+1];
+				indlist[5] = vertexIndicesY1[x+1][y];
 				assert(indlist[5] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
-				indlist[6] = vertexIndicesX[x][y+1][z+1];
+				indlist[6] = vertexIndicesX1[x][y+1];
 				assert(indlist[6] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
-				indlist[7] = vertexIndicesY[x][y][z+1];
+				indlist[7] = vertexIndicesY1[x][y];
 				assert(indlist[7] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
-				indlist[8] = vertexIndicesZ[x][y][z];
+				indlist[8] = vertexIndicesZ0[x][y];
 				assert(indlist[8] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
-				indlist[9] = vertexIndicesZ[x+1][y][z];
+				indlist[9] = vertexIndicesZ0[x+1][y];
 				assert(indlist[9] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
-				indlist[10] = vertexIndicesZ[x+1][y+1][z];
+				indlist[10] = vertexIndicesZ0[x+1][y+1];
 				assert(indlist[10] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
-				indlist[11] = vertexIndicesZ[x][y+1][z];
+				indlist[11] = vertexIndicesZ0[x][y+1];
 				assert(indlist[11] != -1);
 			}
 
@@ -386,6 +392,10 @@ namespace PolyVox
 			
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
+
+	/*void generateVerticesForSlice()
+	{
+	}*/
 
 	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
