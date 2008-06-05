@@ -44,6 +44,20 @@ namespace PolyVox
 		singleMaterialPatch->m_vecVertices.clear();
 		singleMaterialPatch->m_vecTriangleIndices.clear();
 
+		//For edge indices
+		boost::int32_t vertexIndicesX0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesY0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesZ0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesX1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesY1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		boost::int32_t vertexIndicesZ1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		memset(vertexIndicesX0,0xFF,sizeof(vertexIndicesX0)); //0xFF is -1 as two's complement - this may not be portable...
+		memset(vertexIndicesY0,0xFF,sizeof(vertexIndicesY0));
+		memset(vertexIndicesZ0,0xFF,sizeof(vertexIndicesZ0));	
+		memset(vertexIndicesX1,0xFF,sizeof(vertexIndicesX1)); //0xFF is -1 as two's complement - this may not be portable...
+		memset(vertexIndicesY1,0xFF,sizeof(vertexIndicesY1));
+		memset(vertexIndicesZ1,0xFF,sizeof(vertexIndicesZ1));
+
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
@@ -58,6 +72,9 @@ namespace PolyVox
 		boost::uint8_t bitmask1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 		memset(bitmask0, 0x00, sizeof(bitmask0));
 		memset(bitmask1, 0x00, sizeof(bitmask1));
+
+		Vector3DFloat vertlist[12];
+		uint8_t vertMaterials[12];
 
 		Region regFirstSlice(region);
 		regFirstSlice.setUpperCorner(Vector3DInt32(regFirstSlice.getUpperCorner().getX(),regFirstSlice.getUpperCorner().getY(),regFirstSlice.getLowerCorner().getZ()));
@@ -77,7 +94,7 @@ namespace PolyVox
 
 			computeBitmaskForSlice(volIter, regSecondSlice, offset, bitmask1);
 
-			generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset, bitmask0, bitmask1);
+			generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset, bitmask0, bitmask1, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, vertlist, vertMaterials);
 
 			memcpy(bitmask0, bitmask1, sizeof(bitmask0));
 			memset(bitmask1, 0, sizeof(bitmask1));
@@ -93,22 +110,8 @@ namespace PolyVox
 		}
 	}
 
-	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t bitmask0[][POLYVOX_REGION_SIDE_LENGTH+1], uint8_t bitmask1[][POLYVOX_REGION_SIDE_LENGTH+1])
+	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t bitmask0[][POLYVOX_REGION_SIDE_LENGTH+1], uint8_t bitmask1[][POLYVOX_REGION_SIDE_LENGTH+1], boost::int32_t vertexIndicesX0[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesY0[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesZ0[][POLYVOX_REGION_SIDE_LENGTH+1], boost::int32_t vertexIndicesX1[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesY1[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesZ1[][POLYVOX_REGION_SIDE_LENGTH+1], Vector3DFloat vertlist[], uint8_t vertMaterials[])
 	{
-		//For edge indices
-		boost::int32_t vertexIndicesX0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesY0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesZ0[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesX1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesY1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		boost::int32_t vertexIndicesZ1[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		memset(vertexIndicesX0,0xFF,sizeof(vertexIndicesX0)); //0xFF is -1 as two's complement - this may not be portable...
-		memset(vertexIndicesY0,0xFF,sizeof(vertexIndicesY0));
-		memset(vertexIndicesZ0,0xFF,sizeof(vertexIndicesZ0));	
-		memset(vertexIndicesX1,0xFF,sizeof(vertexIndicesX1)); //0xFF is -1 as two's complement - this may not be portable...
-		memset(vertexIndicesY1,0xFF,sizeof(vertexIndicesY1));
-		memset(vertexIndicesZ1,0xFF,sizeof(vertexIndicesZ1));
-
 		Region regFirstSlice(regTwoSlice);
 		regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(0,0,1));
 		Region regSecondSlice(regTwoSlice);
@@ -119,142 +122,8 @@ namespace PolyVox
 		//Generate vertices
 		//////////////////////////////////////////////////////////////////////////
 
-		Vector3DFloat vertlist[12];
-		uint8_t vertMaterials[12];
-
 		generateVerticesForSlice(volIter,regFirstSlice, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, regTwoSlice.getUpperCorner(), vertlist, vertMaterials);
 		generateVerticesForSlice(volIter,regSecondSlice, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, regTwoSlice.getUpperCorner(), vertlist, vertMaterials);
-
-#ifdef BLAH
-		//Iterate over each cell in the region
-		volIter.setPosition(regFirstSlice.getLowerCorner().getX(),regFirstSlice.getLowerCorner().getY(), regFirstSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regFirstSlice);
-		//while(volIter.moveForwardInRegionXYZ())
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
-
-			const uint8_t v000 = volIter.getVoxel();
-
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask0[x][y];
-
-			/* Cube is entirely in/out of the surface */
-			if (edgeTable[iCubeIndex] == 0)
-			{
-				continue;
-			}
-
-			/* Find the vertices where the surface intersects the cube */
-			if (edgeTable[iCubeIndex] & 1)
-			{
-				if((x + offset.getX()) != regTwoSlice.getUpperCorner().getX())
-				{
-					vertlist[0].setX(x + 0.5f);
-					vertlist[0].setY(y);
-					vertlist[0].setZ(z);
-					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
-					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesX0[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
-				}
-			}
-			if (edgeTable[iCubeIndex] & 8)
-			{
-				if((y + offset.getY()) != regTwoSlice.getUpperCorner().getY())
-				{
-					vertlist[3].setX(x);
-					vertlist[3].setY(y + 0.5f);
-					vertlist[3].setZ(z);
-					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
-					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesY0[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
-				}
-			}
-			if (edgeTable[iCubeIndex] & 256)
-			{
-				if((z + offset.getZ()) != regTwoSlice.getUpperCorner().getZ())
-				{
-					vertlist[8].setX(x);
-					vertlist[8].setY(y);
-					vertlist[8].setZ(z + 0.5f);
-					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
-					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesZ0[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
-				}
-			}
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
-
-		//Iterate over each cell in the region
-		volIter.setPosition(regSecondSlice.getLowerCorner().getX(),regSecondSlice.getLowerCorner().getY(), regSecondSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regSecondSlice);
-		//while(volIter.moveForwardInRegionXYZ())
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
-
-			const uint8_t v000 = volIter.getVoxel();
-
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask1[x][y];
-
-			/* Cube is entirely in/out of the surface */
-			if (edgeTable[iCubeIndex] == 0)
-			{
-				continue;
-			}
-
-			/* Find the vertices where the surface intersects the cube */
-			if (edgeTable[iCubeIndex] & 1)
-			{
-				if((x + offset.getX()) != regTwoSlice.getUpperCorner().getX())
-				{
-					vertlist[0].setX(x + 0.5f);
-					vertlist[0].setY(y);
-					vertlist[0].setZ(z);
-					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
-					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesX1[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
-				}
-			}
-			if (edgeTable[iCubeIndex] & 8)
-			{
-				if((y + offset.getY()) != regTwoSlice.getUpperCorner().getY())
-				{
-					vertlist[3].setX(x);
-					vertlist[3].setY(y + 0.5f);
-					vertlist[3].setZ(z);
-					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
-					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesY1[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
-				}
-			}
-			if (edgeTable[iCubeIndex] & 256)
-			{
-				if((z + offset.getZ()) != regTwoSlice.getUpperCorner().getZ())
-				{
-					vertlist[8].setX(x);
-					vertlist[8].setY(y);
-					vertlist[8].setZ(z + 0.5f);
-					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
-					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesZ1[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
-				}
-			}
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
-#endif
-
 
 		//////////////////////////////////////////////////////////////
 		// Set the indices
@@ -400,9 +269,6 @@ namespace PolyVox
 
 	void generateVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t bitmask[][POLYVOX_REGION_SIDE_LENGTH+1], IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesY[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesZ[][POLYVOX_REGION_SIDE_LENGTH+1], const Vector3DInt32& upperCorner, Vector3DFloat vertlist[], uint8_t vertMaterials[])
 	{
-		//Vector3DFloat vertlist[12];
-		//uint8_t vertMaterials[12];
-
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
 		volIter.setValidRegion(regSlice);
