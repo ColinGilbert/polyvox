@@ -122,6 +122,10 @@ namespace PolyVox
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
 
+		generateVerticesForSlice(volIter,regFirstSlice, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, regTwoSlice.getUpperCorner(), vertlist, vertMaterials);
+		generateVerticesForSlice(volIter,regSecondSlice, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, regTwoSlice.getUpperCorner(), vertlist, vertMaterials);
+
+#ifdef BLAH
 		//Iterate over each cell in the region
 		volIter.setPosition(regFirstSlice.getLowerCorner().getX(),regFirstSlice.getLowerCorner().getY(), regFirstSlice.getLowerCorner().getZ());
 		volIter.setValidRegion(regFirstSlice);
@@ -249,6 +253,7 @@ namespace PolyVox
 				}
 			}
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
+#endif
 
 
 		//////////////////////////////////////////////////////////////
@@ -393,9 +398,75 @@ namespace PolyVox
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
 
-	/*void generateVerticesForSlice()
+	void generateVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t bitmask[][POLYVOX_REGION_SIDE_LENGTH+1], IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesY[][POLYVOX_REGION_SIDE_LENGTH+1],boost::int32_t vertexIndicesZ[][POLYVOX_REGION_SIDE_LENGTH+1], const Vector3DInt32& upperCorner, Vector3DFloat vertlist[], uint8_t vertMaterials[])
 	{
-	}*/
+		//Vector3DFloat vertlist[12];
+		//uint8_t vertMaterials[12];
+
+		//Iterate over each cell in the region
+		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regSlice);
+		//while(volIter.moveForwardInRegionXYZ())
+		do
+		{		
+			//Current position
+			const uint16_t x = volIter.getPosX() - offset.getX();
+			const uint16_t y = volIter.getPosY() - offset.getY();
+			const uint16_t z = volIter.getPosZ() - offset.getZ();
+
+			const uint8_t v000 = volIter.getVoxel();
+
+			//Determine the index into the edge table which tells us which vertices are inside of the surface
+			uint8_t iCubeIndex = bitmask[x][y];
+
+			/* Cube is entirely in/out of the surface */
+			if (edgeTable[iCubeIndex] == 0)
+			{
+				continue;
+			}
+
+			/* Find the vertices where the surface intersects the cube */
+			if (edgeTable[iCubeIndex] & 1)
+			{
+				if((x + offset.getX()) != upperCorner.getX())
+				{
+					vertlist[0].setX(x + 0.5f);
+					vertlist[0].setY(y);
+					vertlist[0].setZ(z);
+					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
+					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesX[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
+				}
+			}
+			if (edgeTable[iCubeIndex] & 8)
+			{
+				if((y + offset.getY()) != upperCorner.getY())
+				{
+					vertlist[3].setX(x);
+					vertlist[3].setY(y + 0.5f);
+					vertlist[3].setZ(z);
+					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
+					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesY[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
+				}
+			}
+			if (edgeTable[iCubeIndex] & 256)
+			{
+				if((z + offset.getZ()) != upperCorner.getZ())
+				{
+					vertlist[8].setX(x);
+					vertlist[8].setY(y);
+					vertlist[8].setZ(z + 0.5f);
+					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
+					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
+					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
+					vertexIndicesZ[x][y] = singleMaterialPatch->m_vecVertices.size()-1;
+				}
+			}
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
+	}
 
 	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
