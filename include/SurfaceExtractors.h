@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_SurfaceExtractors_H__
 
 #pragma region Headers
+#include "Constants.h"
 #include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
 
@@ -37,6 +38,7 @@ namespace PolyVox
 
 	POLYVOX_API void generateExperimentalMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 	POLYVOX_API void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset);
+	POLYVOX_API void computeBitmaskForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, boost::uint8_t bitmask[][POLYVOX_REGION_SIDE_LENGTH+1]);
 
 	POLYVOX_API void generateRoughMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 	POLYVOX_API Vector3DFloat computeNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
