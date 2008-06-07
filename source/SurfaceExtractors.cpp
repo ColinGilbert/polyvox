@@ -58,12 +58,6 @@ namespace PolyVox
 		boost::int32_t* vertexIndicesX1 = new boost::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 		boost::int32_t* vertexIndicesY1 = new boost::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 		boost::int32_t* vertexIndicesZ1 = new boost::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		memset(vertexIndicesX0,0xFF,sizeof(vertexIndicesX0)); //0xFF is -1 as two's complement - this may not be portable...
-		memset(vertexIndicesY0,0xFF,sizeof(vertexIndicesY0));
-		memset(vertexIndicesZ0,0xFF,sizeof(vertexIndicesZ0));	
-		memset(vertexIndicesX1,0xFF,sizeof(vertexIndicesX1)); //0xFF is -1 as two's complement - this may not be portable...
-		memset(vertexIndicesY1,0xFF,sizeof(vertexIndicesY1));
-		memset(vertexIndicesZ1,0xFF,sizeof(vertexIndicesZ1));
 
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
@@ -75,12 +69,9 @@ namespace PolyVox
 		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
 		//Cell bitmasks
-		//boost::uint8_t bitmask0[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 		boost::uint8_t* bitmask0 = new boost::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		//boost::uint8_t bitmask1[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 		boost::uint8_t* bitmask1 = new boost::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		memset(bitmask0, 0x00, sizeof(bitmask0));
-		memset(bitmask1, 0x00, sizeof(bitmask1));
+
 
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
@@ -103,9 +94,6 @@ namespace PolyVox
 			Vector3DInt32 upperCorner = Vector3DInt32(region.getUpperCorner().getX(), region.getUpperCorner().getY(), region.getLowerCorner().getZ() + uSlice + 1);
 			Region regTwoSlice(lowerCorner, upperCorner);
 
-			//Region regSecondSlice(regTwoSlice);
-			//regSecondSlice.setLowerCorner(regSecondSlice.getLowerCorner() + Vector3DInt32(0,0,1));
-
 			Region regSecondSlice(regFirstSlice);
 			regSecondSlice.setLowerCorner(regSecondSlice.getLowerCorner() + Vector3DInt32(0,0,1));
 			regSecondSlice.setUpperCorner(regSecondSlice.getUpperCorner() + Vector3DInt32(0,0,1));
@@ -119,33 +107,16 @@ namespace PolyVox
 
 			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 			{
-				generateExperimentalMeshDataForRegionSlice(volIter, regTwoSlice, singleMaterialPatch, offset, bitmask0, bitmask1, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, vertlist, vertMaterials);
+				generateExperimentalMeshDataForRegionSlice(volIter, regFirstSlice, singleMaterialPatch, offset, bitmask0, bitmask1, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);
 			}
 
-			//memcpy(bitmask0, bitmask1, (POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1));
-			/*boost::uint8_t* temp = bitmask0;
-			bitmask0 = bitmask1;
-			bitmask1 = temp;*/
-
-			//boost::uint32_t temp = uNoOfNonEmptyCellsForSlice0;
-			//uNoOfNonEmptyCellsForSlice0 = uNoOfNonEmptyCellsForSlice1;
-			//uNoOfNonEmptyCellsForSlice1 = temp;
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
 
 			std::swap(bitmask0, bitmask1);
-			memset(bitmask1, 0, (POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1));
 
-			//memcpy(vertexIndicesX0, vertexIndicesX1, sizeof(vertexIndicesX0));
 			std::swap(vertexIndicesX0, vertexIndicesX1);
-			memset(vertexIndicesX1, 0, sizeof(vertexIndicesX1));
-
-			//memcpy(vertexIndicesY0, vertexIndicesY1, sizeof(vertexIndicesY0));
 			std::swap(vertexIndicesY0, vertexIndicesY1);
-			memset(vertexIndicesY1, 0, sizeof(vertexIndicesY1));
-
-			//memcpy(vertexIndicesZ0, vertexIndicesZ1, sizeof(vertexIndicesZ0));
 			std::swap(vertexIndicesZ0, vertexIndicesZ1);
-			memset(vertexIndicesZ1, 0, sizeof(vertexIndicesZ1));
 
 			regFirstSlice = regSecondSlice;
 		}
@@ -169,12 +140,10 @@ namespace PolyVox
 		}
 	}
 
-	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, Region regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[], Vector3DFloat vertlist[], uint8_t vertMaterials[])
+	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[])
 	{
 		Region regFirstSlice(regTwoSlice);
-		regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(0,0,1));
-		Region regSecondSlice(regTwoSlice);
-		regSecondSlice.setLowerCorner(regSecondSlice.getLowerCorner() + Vector3DInt32(0,0,1));
+		//regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(0,0,1));
 
 
 		
