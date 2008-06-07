@@ -84,7 +84,7 @@ namespace PolyVox
 		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
-		boost::uint32_t uNoOfNonEmptyCellsForSlice0 = computeExperimentalBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
+		boost::uint32_t uNoOfNonEmptyCellsForSlice0 = computeInitialExperimentalBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
@@ -96,7 +96,7 @@ namespace PolyVox
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,1));
 
-			boost::uint32_t uNoOfNonEmptyCellsForSlice1 = computeExperimentalBitmaskForSlice(volIter, regSlice1, offset, bitmask1);
+			boost::uint32_t uNoOfNonEmptyCellsForSlice1 = computeExperimentalBitmaskForSliceFromPrevious(volIter, regSlice1, offset, bitmask1, bitmask0);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -134,6 +134,132 @@ namespace PolyVox
 			const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 			++iterSurfaceVertex;
 		}
+	}
+
+	boost::uint32_t computeInitialExperimentalBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
+	{
+		boost::uint32_t uNoOfNonEmptyCells = 0;
+
+		//Iterate over each cell in the region
+		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regSlice);
+		do
+		{		
+			//Current position
+			const uint16_t x = volIter.getPosX() - offset.getX();
+			const uint16_t y = volIter.getPosY() - offset.getY();
+
+			//Voxels values
+			const uint8_t v000 = volIter.getVoxel();
+			const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+			const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+			const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+			const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+			const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+			const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+			const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+
+			//Determine the index into the edge table which tells us which vertices are inside of the surface
+			uint8_t iCubeIndex = 0;
+
+			if (v000 == 0) iCubeIndex |= 1;
+			if (v100 == 0) iCubeIndex |= 2;
+			if (v110 == 0) iCubeIndex |= 4;
+			if (v010 == 0) iCubeIndex |= 8;
+			if (v001 == 0) iCubeIndex |= 16;
+			if (v101 == 0) iCubeIndex |= 32;
+			if (v111 == 0) iCubeIndex |= 64;
+			if (v011 == 0) iCubeIndex |= 128;
+
+			//Save the bitmask
+			bitmask[getIndex(x,y)] = iCubeIndex;
+
+			if(edgeTable[iCubeIndex] != 0)
+			{
+				++uNoOfNonEmptyCells;
+			}
+			
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
+
+		return uNoOfNonEmptyCells;
+	}
+
+	boost::uint32_t computeExperimentalBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	{
+		boost::uint32_t uNoOfNonEmptyCells = 0;
+
+		//Iterate over each cell in the region
+		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regSlice);
+		do
+		{		
+			//Current position
+			const uint16_t x = volIter.getPosX() - offset.getX();
+			const uint16_t y = volIter.getPosY() - offset.getY();
+
+			//Determine the index into the edge table which tells us which vertices are inside of the surface
+			uint8_t iCubeIndex = 0;
+
+			if((x==0) && (y==0))
+			{
+				//Voxels values
+				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
+				iCubeIndex = iPreviousCubeIndex >> 4;
+
+				if (v001 == 0) iCubeIndex |= 16;
+				if (v101 == 0) iCubeIndex |= 32;
+				if (v111 == 0) iCubeIndex |= 64;
+				if (v011 == 0) iCubeIndex |= 128;
+			}
+			else if(y==0)
+			{
+				//Voxels values
+				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
+				iCubeIndex = iPreviousCubeIndex >> 4;
+
+				if (v001 == 0) iCubeIndex |= 16;
+				if (v101 == 0) iCubeIndex |= 32;
+				if (v111 == 0) iCubeIndex |= 64;
+				if (v011 == 0) iCubeIndex |= 128;
+			}
+			else
+			{
+				//Voxels values
+				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
+				iCubeIndex = iPreviousCubeIndex >> 4;
+
+				if (v001 == 0) iCubeIndex |= 16;
+				if (v101 == 0) iCubeIndex |= 32;
+				if (v111 == 0) iCubeIndex |= 64;
+				if (v011 == 0) iCubeIndex |= 128;
+			}
+
+			//Save the bitmask
+			bitmask[getIndex(x,y)] = iCubeIndex;
+
+			if(edgeTable[iCubeIndex] != 0)
+			{
+				++uNoOfNonEmptyCells;
+			}
+			
+		}while(volIter.moveForwardInRegionXYZ());//For each cell
+
+		return uNoOfNonEmptyCells;
 	}
 
 	void generateExperimentalIndicesForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[])
@@ -234,55 +360,6 @@ namespace PolyVox
 				singleMaterialPatch->m_vecTriangleIndices.push_back(ind2);
 			}//For each triangle
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
-	}
-
-	boost::uint32_t computeExperimentalBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
-	{
-		boost::uint32_t uNoOfNonEmptyCells = 0;
-
-		//Iterate over each cell in the region
-		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regSlice);
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
-
-			//Voxels values
-			const uint8_t v000 = volIter.getVoxel();
-			const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-			const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-			const uint8_t v110 = volIter.peekVoxel1px1py0pz();
-			const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-			const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-			const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-			const uint8_t v111 = volIter.peekVoxel1px1py1pz();
-
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
-
-			if (v000 == 0) iCubeIndex |= 1;
-			if (v100 == 0) iCubeIndex |= 2;
-			if (v110 == 0) iCubeIndex |= 4;
-			if (v010 == 0) iCubeIndex |= 8;
-			if (v001 == 0) iCubeIndex |= 16;
-			if (v101 == 0) iCubeIndex |= 32;
-			if (v111 == 0) iCubeIndex |= 64;
-			if (v011 == 0) iCubeIndex |= 128;
-
-			//Save the bitmask
-			bitmask[getIndex(x,y)] = iCubeIndex;
-
-			if(edgeTable[iCubeIndex] != 0)
-			{
-				++uNoOfNonEmptyCells;
-			}
-			
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
-
-		return uNoOfNonEmptyCells;
 	}
 
 	void generateExperimentalVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], Vector3DFloat vertlist[], uint8_t vertMaterials[])
