@@ -38,13 +38,13 @@ namespace PolyVox
 
 	boost::uint32_t getIndex(boost::uint32_t x, boost::uint32_t y);
 
-	POLYVOX_API void generateExperimentalMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	POLYVOX_API boost::uint32_t computeInitialExperimentalBitmaskForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask);
-	POLYVOX_API boost::uint32_t computeExperimentalBitmaskForSliceFromPrevious(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask, boost::uint8_t *previousBitmask);
-	POLYVOX_API void generateExperimentalIndicesForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, boost::uint8_t* bitmask0, boost::uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[]);
-	POLYVOX_API void generateExperimentalVerticesForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, boost::uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], Vector3DFloat vertlist[], boost::uint8_t vertMaterials[]);
-
 	POLYVOX_API void generateRoughMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API boost::uint32_t computeInitialRoughBitmaskForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask);
+	POLYVOX_API boost::uint32_t computeRoughBitmaskForSliceFromPrevious(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask, boost::uint8_t *previousBitmask);
+	POLYVOX_API void generateRoughIndicesForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, boost::uint8_t* bitmask0, boost::uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[]);
+	POLYVOX_API void generateRoughVerticesForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, boost::uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], Vector3DFloat vertlist[], boost::uint8_t vertMaterials[]);
+
+	POLYVOX_API void generateReferenceMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 	POLYVOX_API Vector3DFloat computeNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
 
 	POLYVOX_API void generateSmoothMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
