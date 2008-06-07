@@ -202,12 +202,12 @@ namespace PolyVox
 
 			if((x==0) && (y==0))
 			{
-				//Voxels values
 				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
 				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
 				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
 				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
+				//z
 				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
@@ -218,72 +218,73 @@ namespace PolyVox
 			}
 			else if((x>0) && y==0)
 			{
-				//Voxels values
 				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
 				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
+				//z
 				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
+				//x
 				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
-				uint8_t bit6 = iPreviousCubeIndexX & 64;
-				uint8_t bit7 = bit6 << 1;
+				uint8_t srcBit6 = iPreviousCubeIndexX & 64;
+				uint8_t destBit7 = srcBit6 << 1;
 				
-				uint8_t bit5 = iPreviousCubeIndexX & 32;
-				uint8_t bit4 = bit5 >> 1;
+				uint8_t srcBit5 = iPreviousCubeIndexX & 32;
+				uint8_t destBit4 = srcBit5 >> 1;
 
-				iCubeIndex |= bit4;
+				iCubeIndex |= destBit4;
 				if (v101 == 0) iCubeIndex |= 32;
 				if (v111 == 0) iCubeIndex |= 64;
-				iCubeIndex |= bit7;
+				iCubeIndex |= destBit7;
 			}
 			else if((x==0) && (y>0))
 			{
-				//Voxels values
 				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
 
-				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
-				iCubeIndex = iPreviousCubeIndex >> 4;
+				//z
+				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
+				//y
 				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
-				uint8_t bit7 = iPreviousCubeIndexY & 128;
-				uint8_t bit4 = bit7 >> 3;
+				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+				uint8_t destBit4 = srcBit7 >> 3;
 				
-				uint8_t bit6 = iPreviousCubeIndexY & 64;
-				uint8_t bit5 = bit6 >> 1;
+				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
+				uint8_t destBit5 = srcBit6 >> 1;
 
-				iCubeIndex |= bit4;
-				iCubeIndex |= bit5;
+				iCubeIndex |= destBit4;
+				iCubeIndex |= destBit5;
 				if (v111 == 0) iCubeIndex |= 64;
 				if (v011 == 0) iCubeIndex |= 128;
 			}
 			else
 			{
-				//Voxels values
 				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
-				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
-				iCubeIndex = iPreviousCubeIndex >> 4;
-
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
-				uint8_t bit7 = iPreviousCubeIndexY & 128;
-				uint8_t bit4 = bit7 >> 3;
-				
-				uint8_t bit6 = iPreviousCubeIndexY & 64;
-				uint8_t bit5 = bit6 >> 1;
-
+				//z
 				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
-				uint8_t bit6XXX = iPreviousCubeIndexX & 64;
-				uint8_t bit7XXX = bit6XXX << 1;
+				//y
+				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+				uint8_t destBit4 = srcBit7 >> 3;
+				
+				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
+				uint8_t destBit5 = srcBit6 >> 1;
 
-				iCubeIndex |= bit4;
-				iCubeIndex |= bit5;
+				//x
+				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				srcBit6 = iPreviousCubeIndexX & 64;
+				uint8_t destBit7 = srcBit6 << 1;
+
+				iCubeIndex |= destBit4;
+				iCubeIndex |= destBit5;
 				if (v111 == 0) iCubeIndex |= 64;
-				iCubeIndex |= bit7XXX;
+				iCubeIndex |= destBit7;
 			}
 
 			//Save the bitmask
