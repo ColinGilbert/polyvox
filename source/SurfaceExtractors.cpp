@@ -208,15 +208,36 @@ namespace PolyVox
 				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
 				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
-				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
-				iCubeIndex = iPreviousCubeIndex >> 4;
+				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				if (v001 == 0) iCubeIndex |= 16;
 				if (v101 == 0) iCubeIndex |= 32;
 				if (v111 == 0) iCubeIndex |= 64;
 				if (v011 == 0) iCubeIndex |= 128;
 			}
-			else if(y==0)
+			else if((x>0) && y==0)
+			{
+				//Voxels values
+				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8_t bit6 = iPreviousCubeIndexX & 64;
+				uint8_t bit7 = bit6 << 1;
+				
+				uint8_t bit5 = iPreviousCubeIndexX & 32;
+				uint8_t bit4 = bit5 >> 1;
+
+				iCubeIndex |= bit4;
+				if (v101 == 0) iCubeIndex |= 32;
+				if (v111 == 0) iCubeIndex |= 64;
+				iCubeIndex |= bit7;
+			}
+			else if((x==0) && (y>0))
 			{
 				//Voxels values
 				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
