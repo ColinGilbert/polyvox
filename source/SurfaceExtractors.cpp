@@ -59,66 +59,62 @@ namespace PolyVox
 		boost::int32_t* vertexIndicesY1 = new boost::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 		boost::int32_t* vertexIndicesZ1 = new boost::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 
+		//Cell bitmasks
+		boost::uint8_t* bitmask0 = new boost::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		boost::uint8_t* bitmask1 = new boost::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
 		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
 		region.cropTo(regVolume);
 
-		//Offset from region corner
+		//Offset from volume corner
 		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
-		//Cell bitmasks
-		boost::uint8_t* bitmask0 = new boost::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		boost::uint8_t* bitmask1 = new boost::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-
-
+		//Temporary space use to store the vertices
 		Vector3DFloat vertlist[12];
 		uint8_t vertMaterials[12];
 
-		Region regFirstSlice(region);
-		regFirstSlice.setUpperCorner(Vector3DInt32(regFirstSlice.getUpperCorner().getX(),regFirstSlice.getUpperCorner().getY(),regFirstSlice.getLowerCorner().getZ()));
+		//Create a region corresponding to the first slice
+		Region regSlice0(region);
+		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
 		
+		//Iterator to access the volume data
 		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);		
 
-		boost::uint32_t uNoOfNonEmptyCellsForSlice0 = computeBitmaskForSlice(volIter, regFirstSlice, offset, bitmask0);		
-
+		//Compute bitmask for initial slice
+		boost::uint32_t uNoOfNonEmptyCellsForSlice0 = computeExperimentalBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
-			generateVerticesForSlice(volIter,regFirstSlice, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, /*regTwoSlice.getUpperCorner(),*/ vertlist, vertMaterials);
+			//If there were some non-empty cells then generate initial slice vertices for them
+			generateExperimentalVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, /*regTwoSlice.getUpperCorner(),*/ vertlist, vertMaterials);
 		}
 
-		for(boost::uint32_t uSlice = 0; ((uSlice <= 15) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
+		for(boost::uint32_t uSlice = 0; ((uSlice <= POLYVOX_REGION_SIDE_LENGTH-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
 		{
-			Vector3DInt32 lowerCorner = Vector3DInt32(region.getLowerCorner().getX(), region.getLowerCorner().getY(), region.getLowerCorner().getZ() + uSlice);
-			Vector3DInt32 upperCorner = Vector3DInt32(region.getUpperCorner().getX(), region.getUpperCorner().getY(), region.getLowerCorner().getZ() + uSlice + 1);
-			Region regTwoSlice(lowerCorner, upperCorner);
+			Region regSlice1(regSlice0);
+			regSlice1.shift(Vector3DInt32(0,0,1));
 
-			Region regSecondSlice(regFirstSlice);
-			regSecondSlice.setLowerCorner(regSecondSlice.getLowerCorner() + Vector3DInt32(0,0,1));
-			regSecondSlice.setUpperCorner(regSecondSlice.getUpperCorner() + Vector3DInt32(0,0,1));
-
-			boost::uint32_t uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(volIter, regSecondSlice, offset, bitmask1);
+			boost::uint32_t uNoOfNonEmptyCellsForSlice1 = computeExperimentalBitmaskForSlice(volIter, regSlice1, offset, bitmask1);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
-				generateVerticesForSlice(volIter,regSecondSlice, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, /*regTwoSlice.getUpperCorner(),*/ vertlist, vertMaterials);				
+				generateExperimentalVerticesForSlice(volIter,regSlice1, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, vertlist, vertMaterials);				
 			}
 
 			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 			{
-				generateExperimentalMeshDataForRegionSlice(volIter, regFirstSlice, singleMaterialPatch, offset, bitmask0, bitmask1, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);
+				generateExperimentalIndicesForSlice(volIter, regSlice0, singleMaterialPatch, offset, bitmask0, bitmask1, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);
 			}
 
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-
 			std::swap(bitmask0, bitmask1);
-
 			std::swap(vertexIndicesX0, vertexIndicesX1);
 			std::swap(vertexIndicesY0, vertexIndicesY1);
 			std::swap(vertexIndicesZ0, vertexIndicesZ1);
 
-			regFirstSlice = regSecondSlice;
+			regSlice0 = regSlice1;
 		}
 
 		delete[] bitmask0;
@@ -140,24 +136,15 @@ namespace PolyVox
 		}
 	}
 
-	void generateExperimentalMeshDataForRegionSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regTwoSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[])
+	void generateExperimentalIndicesForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[])
 	{
-		Region regFirstSlice(regTwoSlice);
-		//regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(0,0,1));
-
-
-		
-
-		//////////////////////////////////////////////////////////////
-		// Set the indices
-		//////////////////////////////////////////////////////////////
-
 		boost::uint32_t indlist[12];
-		//Iterate over each cell in the region
-		regFirstSlice.setUpperCorner(regFirstSlice.getUpperCorner() - Vector3DInt32(1,1,0));
-		volIter.setPosition(regFirstSlice.getLowerCorner().getX(),regFirstSlice.getLowerCorner().getY(), regFirstSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regFirstSlice);
-		//while(volIter.moveForwardInRegionXYZ())
+
+		Region regCroppedSlice(regSlice);		
+		regCroppedSlice.setUpperCorner(regCroppedSlice.getUpperCorner() - Vector3DInt32(1,1,0));
+
+		volIter.setPosition(regCroppedSlice.getLowerCorner().getX(),regCroppedSlice.getLowerCorner().getY(), regCroppedSlice.getLowerCorner().getZ());
+		volIter.setValidRegion(regCroppedSlice);
 		do
 		{		
 			//Current position
@@ -249,7 +236,7 @@ namespace PolyVox
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
 
-	boost::uint32_t computeBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
+	boost::uint32_t computeExperimentalBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
 	{
 		boost::uint32_t uNoOfNonEmptyCells = 0;
 
@@ -298,7 +285,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], /*const Vector3DInt32& upperCorner,*/ Vector3DFloat vertlist[], uint8_t vertMaterials[])
+	void generateExperimentalVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], Vector3DFloat vertlist[], uint8_t vertMaterials[])
 	{
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
