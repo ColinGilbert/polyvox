@@ -248,8 +248,15 @@ namespace PolyVox
 				uint8_t iPreviousCubeIndex = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndex >> 4;
 
-				if (v001 == 0) iCubeIndex |= 16;
-				if (v101 == 0) iCubeIndex |= 32;
+				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8_t bit7 = iPreviousCubeIndexY & 128;
+				uint8_t bit4 = bit7 >> 3;
+				
+				uint8_t bit6 = iPreviousCubeIndexY & 64;
+				uint8_t bit5 = bit6 >> 1;
+
+				iCubeIndex |= bit4;
+				iCubeIndex |= bit5;
 				if (v111 == 0) iCubeIndex |= 64;
 				if (v011 == 0) iCubeIndex |= 128;
 			}
