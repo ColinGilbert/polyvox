@@ -163,6 +163,12 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
+	void BlockVolumeIterator<VoxelType>::setPosition(const Vector3DInt16& v3dNewPos)
+	{
+		setPosition(v3dNewPos.getX(), v3dNewPos.getY(), v3dNewPos.getZ());
+	}
+
+	template <typename VoxelType>
 	void BlockVolumeIterator<VoxelType>::setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos)
 	{
 		mXPosInVolume = xPos;

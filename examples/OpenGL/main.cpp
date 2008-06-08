@@ -1,14 +1,45 @@
-/*
-When creating your project, uncheck OWL,
-uncheck Class Library, select Static
-instead of Dynamic and change the target
-model to Console from GUI.
-Also link glut.lib to your project once its done.
-*/
+#include "BlockVolume.h"
+#include "BlockVolumeIterator.h"
+#include "Utility.h"
 
 #include <windows.h>   // Standard Header For Most Programs
 #include <gl/gl.h>     // The GL Header File
 #include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
+
+//Some namespaces we need
+using namespace boost;
+using namespace PolyVox;
+using namespace std;
+
+//Global variables are easier for demonstration purposes, especially
+//as I'm not sure if I can pass variables to the GLUT functions.
+const uint16_t g_uVolumeSideLength = 128;
+BlockVolume<uint8_t> g_volData(logBase2(g_uVolumeSideLength)); //Creates a volume 128x128x128
+
+void createSphereInVolume(void)
+{
+	//Create an iterator to access data in the volume
+	BlockVolumeIterator<uint8_t> volIter(g_volData); 
+
+	//A region corresponding to the whole volume
+	const Region& regWholeVolume = g_volData.getEnclosingRegion(); 
+
+	//This iterator will iterate over the whole volume
+	volIter.setValidRegion(regWholeVolume); 
+
+	//Start at the begining
+	volIter.setPosition(static_cast<Vector3DInt16>(regWholeVolume.getLowerCorner()));
+	do
+	{
+		//Get our current position
+		const uint16_t uX = volIter.getPosX();
+		const uint16_t uY = volIter.getPosY();
+		const uint16_t uZ = volIter.getPosZ();
+
+		//The centre of the volume
+		const uint16_t uVolCenterX = g_uVolumeSideLength / 2;
+	}while (volIter.isValidForRegion()); //In our case this covers the whole volume
+}
 
 void init ( GLvoid )     // Create Some Everyday Functions
 {
@@ -26,18 +57,12 @@ void display ( void )   // Create The Display Function
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
-	glTranslatef(-1.5f,0.0f,-6.0f);						// Move Left 1.5 Units And Into The Screen 6.0
-	glBegin(GL_TRIANGLES);								// Drawing Using Triangles
-		glVertex3f( 0.0f, 1.0f, 0.0f);					// Top
-		glVertex3f(-1.0f,-1.0f, 0.0f);					// Bottom Left
-		glVertex3f( 1.0f,-1.0f, 0.0f);					// Bottom Right
-	glEnd();											// Finished Drawing The Triangle
-	glTranslatef(3.0f,0.0f,0.0f);						// Move Right 3 Units
+	glTranslatef(0.0f,0.0f,-200.0f);					// Move Right 3 Units
 	glBegin(GL_QUADS);									// Draw A Quad
-		glVertex3f(-1.0f, 1.0f, 0.0f);					// Top Left
-		glVertex3f( 1.0f, 1.0f, 0.0f);					// Top Right
-		glVertex3f( 1.0f,-1.0f, 0.0f);					// Bottom Right
-		glVertex3f(-1.0f,-1.0f, 0.0f);					// Bottom Left
+		glVertex3f(0.0f, 0.0f, 0.0f);					// Top Left
+		glVertex3f( 128.0f, 0.0f, 0.0f);					// Top Right
+		glVertex3f( 128.0f, 128.0f, 0.0f);					// Bottom Right
+		glVertex3f(0.0f, 128.0f, 0.0f);					// Bottom Left
 	glEnd();
 
 

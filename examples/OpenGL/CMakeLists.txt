@@ -16,6 +16,7 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 #SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
+FIND_PACKAGE(Boost REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
 
 IF (WIN32)
@@ -24,10 +25,12 @@ IF (WIN32)
 	#This means glut.h and glut32.lib go in the 'include' and 'lib' folders within  Microsoft Visual Studio 8\VC\PlatformSDK\ 
 	#Also, glut32.dll goes in C:\Windows\System. Using C:\Windows\System32 doesn't seem to work
 	
-	#Tell CMake the paths
-	INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
+	#Tell CMake the paths for OpenGL and for PolyVox ()which is just relative to our current location
+	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../include")
+	#No idea  why we have to look three levels up for build and only two for include. They should be the same level?!
+	LINK_DIRECTORIES("../../../build")
 
 	#Build
 	ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
-	TARGET_LINK_LIBRARIES(OpenGLExample glut32.lib ${OPENGL_gl_LIBRARY})
+	TARGET_LINK_LIBRARIES(OpenGLExample glut32.lib ${OPENGL_gl_LIBRARY} debug PolyVox_d.lib optimized PolyVox.lib)
 ENDIF (WIN32)
