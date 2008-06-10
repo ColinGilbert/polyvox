@@ -33,6 +33,9 @@ namespace PolyVox
 	Vector3DFloat computeSmoothCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter);
 
 	template <typename VoxelType>
+	Vector3DFloat computeDecimatedCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter);
+
+	template <typename VoxelType>
 	Vector3DFloat computeSobelGradient(const BlockVolumeIterator<VoxelType>& volIter);
 }
 

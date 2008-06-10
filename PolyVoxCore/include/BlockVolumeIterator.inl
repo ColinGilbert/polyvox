@@ -137,6 +137,21 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	VoxelType BlockVolumeIterator<VoxelType>::getMaxedVoxel(void) const
+	{		
+		VoxelType tValue = getVoxel();
+		tValue = (std::max)(tValue, peekVoxel1px0py0pz());
+		tValue = (std::max)(tValue, peekVoxel0px1py0pz());
+		tValue = (std::max)(tValue, peekVoxel1px1py0pz());
+		tValue = (std::max)(tValue, peekVoxel0px0py1pz());
+		tValue = (std::max)(tValue, peekVoxel1px0py1pz());
+		tValue = (std::max)(tValue, peekVoxel0px1py1pz());
+		tValue = (std::max)(tValue, peekVoxel1px1py1pz());
+		return tValue;
+
+	}
+
+	template <typename VoxelType>
 	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
