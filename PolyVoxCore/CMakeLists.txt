@@ -14,6 +14,7 @@ SET(SRC_FILES
 	source/Region.cpp
 	source/RegionGeometry.cpp 
 	source/SurfaceExtractors.cpp 
+	source/SurfaceExtractorsDecimated.cpp
 	source/SurfaceVertex.cpp
 	source/Utility.cpp
 	source/VolumeChangeTracker.cpp
@@ -39,6 +40,7 @@ SET(INC_FILES
 	include/Region.h
 	include/RegionGeometry.h
 	include/SurfaceExtractors.h
+	include/SurfaceExtractorsDecimated.h
 	include/SurfaceVertex.h
 	include/TypeDef.h
 	include/Utility.h
