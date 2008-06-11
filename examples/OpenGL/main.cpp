@@ -1,5 +1,7 @@
 #include "BlockVolume.h"
 #include "BlockVolumeIterator.h"
+#include "IndexedSurfacePatch.h"
+#include "SurfaceExtractors.h"
 #include "Utility.h"
 
 #include <windows.h>   // Standard Header For Most Programs
@@ -12,9 +14,10 @@ using namespace PolyVox;
 using namespace std;
 
 //Global variables are easier for demonstration purposes, especially
-//as I'm not sure if I can pass variables to the GLUT functions.
+//as I'm not sure how/if I can pass variables to the GLUT functions.
 const uint16_t g_uVolumeSideLength = 128;
 BlockVolume<uint8_t> g_volData(logBase2(g_uVolumeSideLength)); //Creates a volume 128x128x128
+IndexedSurfacePatch* g_ispRegionSurfaces[8][8][8];
 
 void createSphereInVolume(void)
 {
@@ -31,14 +34,21 @@ void createSphereInVolume(void)
 	volIter.setPosition(static_cast<Vector3DInt16>(regWholeVolume.getLowerCorner()));
 	do
 	{
-		//Get our current position
-		const uint16_t uX = volIter.getPosX();
-		const uint16_t uY = volIter.getPosY();
-		const uint16_t uZ = volIter.getPosZ();
+		Vector3DFloat v3dPos(volIter.getPosX(), volIter.getPosY(), volIter.getPosZ());
+		Vector3DFloat v3dVolCenter(g_uVolumeSideLength / 2, g_uVolumeSideLength / 2, g_uVolumeSideLength / 2);
+		
+		float fDistToCenter = (v3dPos - v3dVolCenter).length();
 
-		//The centre of the volume
-		const uint16_t uVolCenterX = g_uVolumeSideLength / 2;
-	}while (volIter.isValidForRegion()); //In our case this covers the whole volume
+		if(fDistToCenter <= 50.0f)
+		{
+			volIter.setVoxel(static_cast<uint8_t>(fDistToCenter));
+		}
+		else
+		{
+			volIter.setVoxel(0);
+		}
+
+	}while (volIter.moveForwardInRegionXYZ()); //In our case this covers the whole volume
 }
 
 void init ( GLvoid )     // Create Some Everyday Functions
@@ -57,12 +67,26 @@ void display ( void )   // Create The Display Function
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 	glLoadIdentity();									// Reset The Current Modelview Matrix
-	glTranslatef(0.0f,0.0f,-200.0f);					// Move Right 3 Units
-	glBegin(GL_QUADS);									// Draw A Quad
-		glVertex3f(0.0f, 0.0f, 0.0f);					// Top Left
-		glVertex3f( 128.0f, 0.0f, 0.0f);					// Top Right
-		glVertex3f( 128.0f, 128.0f, 0.0f);					// Bottom Right
-		glVertex3f(0.0f, 128.0f, 0.0f);					// Bottom Left
+	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-200.0f);
+
+	glBegin(GL_TRIANGLES);
+	for(uint16_t z = 0; z < 8; ++z)
+	{
+		for(uint16_t y = 0; y < 8; ++y)
+		{
+			for(uint16_t x = 0; x < 8; ++x)
+			{
+				const vector<SurfaceVertex>& vertices = g_ispRegionSurfaces[x][y][z]->getVertices();
+				const vector<uint32_t>& indices = g_ispRegionSurfaces[x][y][z]->getIndices();
+				for(vector<uint32_t>::const_iterator indexIter = indices.begin(); indexIter != indices.end(); ++indexIter)
+				{
+					const SurfaceVertex& vertex = vertices[*indexIter];
+					const Vector3DFloat& vertexPos = vertex.getPosition();
+					glVertex3f(vertexPos.getX() + (x*16), vertexPos.getY() + (y*16), vertexPos.getZ() + (z*16));
+				}
+			}
+		}
+	}
 	glEnd();
 
 
@@ -110,16 +134,41 @@ void arrow_keys ( int a_keys, int x, int y )  // Create Special Function (requir
 
 void main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
 {
+	createSphereInVolume();
+
+	for(uint16_t z = 0; z < 8; ++z)
+	{
+		for(uint16_t y = 0; y < 8; ++y)
+		{
+			for(uint16_t x = 0; x < 8; ++x)
+			{
+				g_ispRegionSurfaces[x][y][z] = new IndexedSurfacePatch(false);
+				generateReferenceMeshDataForRegion(&g_volData, Region(Vector3DInt32(x * 16, y * 16, z * 16), Vector3DInt32((x+1) * 16, (y+1) * 16, (z+1) * 16)), g_ispRegionSurfaces[x][y][z]);
+			}
+		}
+	}
+
   glutInit            ( &argc, argv ); // Erm Just Write It =)
   init ();
   glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
   glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
   glutCreateWindow    ( "NeHe's OpenGL Framework" ); // Window Title (argv[0] for current directory as title)
-  glutFullScreen      ( );          // Put Into Full Screen
+  //glutFullScreen      ( );          // Put Into Full Screen
   glutDisplayFunc     ( display );  // Matching Earlier Functions To Their Counterparts
   glutReshapeFunc     ( reshape );
   glutKeyboardFunc    ( keyboard );
   glutSpecialFunc     ( arrow_keys );
   glutMainLoop        ( );          // Initialize The Main Loop
+
+  for(uint16_t z = 0; z < 8; ++z)
+	{
+		for(uint16_t y = 0; y < 8; ++y)
+		{
+			for(uint16_t x = 0; x < 8; ++x)
+			{
+				delete g_ispRegionSurfaces[x][y][z];
+			}
+		}
+	}
 }
 
