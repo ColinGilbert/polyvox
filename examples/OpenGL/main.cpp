@@ -16,8 +16,14 @@ using namespace std;
 //Global variables are easier for demonstration purposes, especially
 //as I'm not sure how/if I can pass variables to the GLUT functions.
 const uint16_t g_uVolumeSideLength = 128;
-BlockVolume<uint8_t> g_volData(logBase2(g_uVolumeSideLength)); //Creates a volume 128x128x128
-IndexedSurfacePatch* g_ispRegionSurfaces[8][8][8];
+const uint16_t g_uRegionSideLength = 16;
+const uint16_t g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
+
+//Creates a volume 128x128x128
+BlockVolume<uint8_t> g_volData(logBase2(g_uVolumeSideLength));
+
+//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
+IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
 void createSphereInVolume(void)
 {
@@ -70,19 +76,21 @@ void display ( void )   // Create The Display Function
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-200.0f);
 
 	glBegin(GL_TRIANGLES);
-	for(uint16_t z = 0; z < 8; ++z)
+	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16_t y = 0; y < 8; ++y)
+		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16_t x = 0; x < 8; ++x)
+			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				const vector<SurfaceVertex>& vertices = g_ispRegionSurfaces[x][y][z]->getVertices();
-				const vector<uint32_t>& indices = g_ispRegionSurfaces[x][y][z]->getIndices();
-				for(vector<uint32_t>::const_iterator indexIter = indices.begin(); indexIter != indices.end(); ++indexIter)
+				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
+				const vector<uint32_t>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
+				for(vector<uint32_t>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
 				{
-					const SurfaceVertex& vertex = vertices[*indexIter];
-					const Vector3DFloat& vertexPos = vertex.getPosition();
-					glVertex3f(vertexPos.getX() + (x*16), vertexPos.getY() + (y*16), vertexPos.getZ() + (z*16));
+					const SurfaceVertex& vertex = vecVertices[*iterIndex];
+					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
+					const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
+					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + v3dRegionOffset;
+					glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
 				}
 			}
 		}
@@ -136,14 +144,17 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 {
 	createSphereInVolume();
 
-	for(uint16_t z = 0; z < 8; ++z)
+	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16_t y = 0; y < 8; ++y)
+		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16_t x = 0; x < 8; ++x)
+			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				g_ispRegionSurfaces[x][y][z] = new IndexedSurfacePatch(false);
-				generateReferenceMeshDataForRegion(&g_volData, Region(Vector3DInt32(x * 16, y * 16, z * 16), Vector3DInt32((x+1) * 16, (y+1) * 16, (z+1) * 16)), g_ispRegionSurfaces[x][y][z]);
+				g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ] = new IndexedSurfacePatch(false);
+				IndexedSurfacePatch* ispCurrent = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
+				Vector3DInt32 regLowerCorner(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
+				Vector3DInt32 regUpperCorner((uRegionX + 1) * g_uRegionSideLength, (uRegionY + 1) * g_uRegionSideLength, (uRegionZ + 1) * g_uRegionSideLength);
+				generateReferenceMeshDataForRegion(&g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
 			}
 		}
 	}
@@ -152,7 +163,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
   init ();
   glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
   glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
-  glutCreateWindow    ( "NeHe's OpenGL Framework" ); // Window Title (argv[0] for current directory as title)
+  glutCreateWindow    ( "PolyVox OpenGL Example" ); // Window Title (argv[0] for current directory as title)
   //glutFullScreen      ( );          // Put Into Full Screen
   glutDisplayFunc     ( display );  // Matching Earlier Functions To Their Counterparts
   glutReshapeFunc     ( reshape );
@@ -160,13 +171,13 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
   glutSpecialFunc     ( arrow_keys );
   glutMainLoop        ( );          // Initialize The Main Loop
 
-  for(uint16_t z = 0; z < 8; ++z)
+  for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16_t y = 0; y < 8; ++y)
+		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16_t x = 0; x < 8; ++x)
+			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				delete g_ispRegionSurfaces[x][y][z];
+				delete g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
 			}
 		}
 	}
