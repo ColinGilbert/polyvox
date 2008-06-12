@@ -44,7 +44,7 @@ namespace PolyVox
 		bool operator>=(const BlockVolumeIterator& rhs);
 
 		float getAveragedVoxel(boost::uint16_t size) const;
-		VoxelType getMaxedVoxel(boost::uint8_t level) const;
+		VoxelType getMaxedVoxel(boost::uint8_t uLevel) const;
 		boost::uint16_t getPosX(void) const;
 		boost::uint16_t getPosY(void) const;
 		boost::uint16_t getPosZ(void) const;
