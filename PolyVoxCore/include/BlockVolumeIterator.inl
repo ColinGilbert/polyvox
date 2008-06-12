@@ -137,18 +137,26 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::getMaxedVoxel(void) const
+	VoxelType BlockVolumeIterator<VoxelType>::getMaxedVoxel(boost::uint8_t level) const
 	{		
-		VoxelType tValue = getVoxel();
-		tValue = (std::max)(tValue, peekVoxel1px0py0pz());
-		tValue = (std::max)(tValue, peekVoxel0px1py0pz());
-		tValue = (std::max)(tValue, peekVoxel1px1py0pz());
-		tValue = (std::max)(tValue, peekVoxel0px0py1pz());
-		tValue = (std::max)(tValue, peekVoxel1px0py1pz());
-		tValue = (std::max)(tValue, peekVoxel0px1py1pz());
-		tValue = (std::max)(tValue, peekVoxel1px1py1pz());
-		return tValue;
-
+		if(level == 0)
+		{
+			return getVoxel();
+		}
+		else if(level == 1)
+		{
+			VoxelType tValue = getVoxel();
+			tValue = (std::max)(tValue, peekVoxel1px0py0pz());
+			tValue = (std::max)(tValue, peekVoxel0px1py0pz());
+			tValue = (std::max)(tValue, peekVoxel1px1py0pz());
+			tValue = (std::max)(tValue, peekVoxel0px0py1pz());
+			tValue = (std::max)(tValue, peekVoxel1px0py1pz());
+			tValue = (std::max)(tValue, peekVoxel0px1py1pz());
+			tValue = (std::max)(tValue, peekVoxel1px1py1pz());
+			return tValue;
+		}
+		assert(false);
+		return 0;
 	}
 
 	template <typename VoxelType>

@@ -36,9 +36,9 @@ namespace PolyVox
 {
 	boost::uint32_t getDecimatedIndex(boost::uint32_t x, boost::uint32_t y);
 
-	POLYVOX_API void generateDecimatedMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	POLYVOX_API boost::uint32_t computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask);
-	POLYVOX_API boost::uint32_t computeDecimatedBitmaskForSliceFromPrevious(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask, boost::uint8_t *previousBitmask);
+	POLYVOX_API void generateDecimatedMeshDataForRegion(BlockVolume<boost::uint8_t>* volumeData, boost::uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API boost::uint32_t computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, boost::uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask);
+	POLYVOX_API boost::uint32_t computeDecimatedBitmaskForSliceFromPrevious(BlockVolumeIterator<boost::uint8_t>& volIter, boost::uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, boost::uint8_t *bitmask, boost::uint8_t *previousBitmask);
 	POLYVOX_API void generateDecimatedIndicesForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, boost::uint8_t* bitmask0, boost::uint8_t* bitmask1, boost::int32_t vertexIndicesX0[],boost::int32_t vertexIndicesY0[],boost::int32_t vertexIndicesZ0[], boost::int32_t vertexIndicesX1[],boost::int32_t vertexIndicesY1[],boost::int32_t vertexIndicesZ1[]);
 	POLYVOX_API void generateDecimatedVerticesForSlice(BlockVolumeIterator<boost::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, boost::uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[]);
 
