@@ -32,28 +32,20 @@ namespace PolyVox
 		assert(uInput != 0);
 		assert(isPowerOf2(uInput));
 
-		boost::uint8_t result = 0;
-		uInput = uInput >> 1;
-		while(uInput)
+		boost::uint32_t uResult = 0;
+		while( (uInput >> uResult) != 0)
 		{
-			uInput = uInput >> 1;
-			++result;
+			++uResult;
 		}
-		return result;
+		return static_cast<boost::uint8_t>(uResult-1);
 	}
+
 
 	bool isPowerOf2(boost::uint32_t uInput)
 	{
-		boost::uint8_t uNonZeroBits = 0;
-		boost::uint32_t uMask = 0x00000001;
-		for(boost::uint8_t ct = 0; ct < 32; ++ct)
-		{
-			if(uInput & uMask)
-			{
-				++uNonZeroBits;
-			}
-			uMask = uMask << 1;
-		}
-		return uNonZeroBits == 1 ? true : false;
+		if(uInput == 0)
+			return false;
+		else
+			return ((uInput & (uInput-1)) == 0);
 	}
 }
