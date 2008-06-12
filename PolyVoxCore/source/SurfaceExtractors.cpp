@@ -29,7 +29,7 @@ namespace PolyVox
 			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
 			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
 
-			generateRoughMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			generateDecimatedMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 
 			//genMultiFromSingle(regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
@@ -73,10 +73,6 @@ namespace PolyVox
 		//Offset from volume corner
 		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
-		//Temporary space use to store the vertices
-		Vector3DFloat vertlist[12];
-		uint8_t vertMaterials[12];
-
 		//Create a region corresponding to the first slice
 		Region regSlice0(region);
 		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
@@ -89,7 +85,7 @@ namespace PolyVox
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
-			generateRoughVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, /*regTwoSlice.getUpperCorner(),*/ vertlist, vertMaterials);
+			generateRoughVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0);
 		}
 
 		for(boost::uint32_t uSlice = 0; ((uSlice <= POLYVOX_REGION_SIDE_LENGTH-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
@@ -101,7 +97,7 @@ namespace PolyVox
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
-				generateRoughVerticesForSlice(volIter,regSlice1, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, vertlist, vertMaterials);				
+				generateRoughVerticesForSlice(volIter,regSlice1, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);				
 			}
 
 			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
@@ -403,7 +399,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateRoughVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], Vector3DFloat vertlist[], uint8_t vertMaterials[])
+	void generateRoughVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[])
 	{
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
@@ -432,11 +428,10 @@ namespace PolyVox
 			{
 				if((x + offset.getX()) != regSlice.getUpperCorner().getX())
 				{
-					vertlist[0].setX(x + 0.5f);
-					vertlist[0].setY(y);
-					vertlist[0].setZ(z);
-					vertMaterials[0] = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
-					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
+					const Vector3DFloat v3dPosition(x + 0.5f, y, z);
+					const Vector3DFloat v3dNormal(1.0f, 0.0f, 0.0f);
+					const uint8_t uMaterial = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
+					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesX[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -445,11 +440,10 @@ namespace PolyVox
 			{
 				if((y + offset.getY()) != regSlice.getUpperCorner().getY())
 				{
-					vertlist[3].setX(x);
-					vertlist[3].setY(y + 0.5f);
-					vertlist[3].setZ(z);
-					vertMaterials[3] = v000 | volIter.peekVoxel0px1py0pz();
-					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
+					const Vector3DFloat v3dPosition(x, y + 0.5f, z);
+					const Vector3DFloat v3dNormal(0.0f, 1.0f, 0.0f);
+					const uint8_t uMaterial = v000 | volIter.peekVoxel0px1py0pz();
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesY[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -458,11 +452,10 @@ namespace PolyVox
 			{
 				//if((z + offset.getZ()) != upperCorner.getZ())
 				{
-					vertlist[8].setX(x);
-					vertlist[8].setY(y);
-					vertlist[8].setZ(z + 0.5f);
-					vertMaterials[8] = v000 | volIter.peekVoxel0px0py1pz();
-					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
+					const Vector3DFloat v3dPosition(x, y, z + 0.5f);
+					const Vector3DFloat v3dNormal(0.0f, 0.0f, 1.0f);
+					const uint8_t uMaterial = v000 | volIter.peekVoxel0px0py1pz();
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesZ[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
 				}

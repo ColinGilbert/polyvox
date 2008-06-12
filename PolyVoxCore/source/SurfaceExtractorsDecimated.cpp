@@ -46,10 +46,6 @@ namespace PolyVox
 		//Offset from volume corner
 		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
-		//Temporary space use to store the vertices
-		Vector3DFloat vertlist[12];
-		uint8_t vertMaterials[12];
-
 		//Create a region corresponding to the first slice
 		Region regSlice0(region);
 		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
@@ -62,7 +58,7 @@ namespace PolyVox
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
-			generateDecimatedVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, /*regTwoSlice.getUpperCorner(),*/ vertlist, vertMaterials);
+			generateDecimatedVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0);
 		}
 
 		for(boost::uint32_t uSlice = 0; ((uSlice <= POLYVOX_REGION_SIDE_LENGTH-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); uSlice += 2)
@@ -74,7 +70,7 @@ namespace PolyVox
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
-				generateDecimatedVerticesForSlice(volIter,regSlice1, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1, vertlist, vertMaterials);				
+				generateDecimatedVerticesForSlice(volIter,regSlice1, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);				
 			}
 
 			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
@@ -101,13 +97,13 @@ namespace PolyVox
 		delete[] vertexIndicesZ1;
 
 
-		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
+		/*std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
 		while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
 		{
 			Vector3DFloat tempNormal = computeDecimatedNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
 			const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 			++iterSurfaceVertex;
-		}
+		}*/
 	}
 
 	boost::uint32_t computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
@@ -118,9 +114,9 @@ namespace PolyVox
 		//volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
 		//volIter.setValidRegion(regSlice);
 		//do
-		for(uint16_t y = regSlice.getLowerCorner().getY(); y < regSlice.getUpperCorner().getY(); y += 2)
+		for(uint16_t y = regSlice.getLowerCorner().getY(); y <= regSlice.getUpperCorner().getY(); y += 2)
 		{
-			for(uint16_t x = regSlice.getLowerCorner().getX(); x < regSlice.getUpperCorner().getX(); x += 2)
+			for(uint16_t x = regSlice.getLowerCorner().getX(); x <= regSlice.getUpperCorner().getX(); x += 2)
 		{		
 			//Current position
 			//const uint16_t x = volIter.getPosX() - offset.getX();
@@ -291,9 +287,9 @@ namespace PolyVox
 		//volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
 		//volIter.setValidRegion(regSlice);
 		//do
-		for(uint16_t y = regSlice.getLowerCorner().getY(); y < regSlice.getUpperCorner().getY(); y += 2)
+		for(uint16_t y = regSlice.getLowerCorner().getY(); y <= regSlice.getUpperCorner().getY()+1; y += 2)
 		{
-			for(uint16_t x = regSlice.getLowerCorner().getX(); x < regSlice.getUpperCorner().getX(); x += 2)
+			for(uint16_t x = regSlice.getLowerCorner().getX(); x <= regSlice.getUpperCorner().getX()+1; x += 2)
 		{	
 			//Current position
 			//const uint16_t x = volIter.getPosX() - offset.getX();
@@ -413,16 +409,16 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateDecimatedVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[], Vector3DFloat vertlist[], uint8_t vertMaterials[])
+	void generateDecimatedVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,boost::int32_t vertexIndicesX[],boost::int32_t vertexIndicesY[],boost::int32_t vertexIndicesZ[])
 	{
 		//Iterate over each cell in the region
 		//volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
 		//volIter.setValidRegion(regSlice);
 		//while(volIter.moveForwardInRegionXYZ())
 		//do
-		for(uint16_t y = regSlice.getLowerCorner().getY(); y < regSlice.getUpperCorner().getY(); y += 2)
+		for(uint16_t y = regSlice.getLowerCorner().getY(); y < regSlice.getUpperCorner().getY()+1; y += 2)
 		{
-			for(uint16_t x = regSlice.getLowerCorner().getX(); x < regSlice.getUpperCorner().getX(); x += 2)
+			for(uint16_t x = regSlice.getLowerCorner().getX(); x < regSlice.getUpperCorner().getX()+1; x += 2)
 		{		
 			//Current position
 			//const uint16_t x = volIter.getPosX() - offset.getX();
@@ -446,12 +442,11 @@ namespace PolyVox
 			{
 				if((x) != regSlice.getUpperCorner().getX())
 				{
-					vertlist[0].setX(x - offset.getX() + 0.5f * 2.0f);
-					vertlist[0].setY(y - offset.getY());
-					vertlist[0].setZ(z - offset.getZ());
+					const Vector3DFloat v3dPosition(x - offset.getX() + 0.5f * 2.0f, y - offset.getY(), z - offset.getZ());
+					const Vector3DFloat v3dNormal(1.0,0.0,0.0);
 					volIter.setPosition(x+2,y,z);
-					vertMaterials[0] = v000 | volIter.getMaxedVoxel(); //Because one of these is 0, the or operation takes the max.
-					SurfaceVertex surfaceVertex(vertlist[0],vertMaterials[0], 1.0);
+					const uint8_t uMaterial = v000 | volIter.getMaxedVoxel(); //Because one of these is 0, the or operation takes the max.
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesX[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -460,12 +455,11 @@ namespace PolyVox
 			{
 				if((y) != regSlice.getUpperCorner().getY())
 				{
-					vertlist[3].setX(x - offset.getX());
-					vertlist[3].setY(y - offset.getY() + 0.5f * 2.0f);
-					vertlist[3].setZ(z - offset.getZ());
+					const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY() + 0.5f * 2.0f, z - offset.getZ());
+					const Vector3DFloat v3dNormal(0.0,1.0,0.0);
 					volIter.setPosition(x,y+2,z);
-					vertMaterials[3] = v000 | volIter.getMaxedVoxel();
-					SurfaceVertex surfaceVertex(vertlist[3],vertMaterials[3], 1.0);
+					const uint8_t uMaterial = v000 | volIter.getMaxedVoxel(); //Because one of these is 0, the or operation takes the max.
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesY[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -474,12 +468,11 @@ namespace PolyVox
 			{
 				//if((z + offset.getZ()) != upperCorner.getZ())
 				{
-					vertlist[8].setX(x - offset.getX());
-					vertlist[8].setY(y - offset.getY());
-					vertlist[8].setZ(z - offset.getZ() + 0.5f * 2.0f);
+					const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY(), z - offset.getZ() + 0.5f * 2.0f);
+					const Vector3DFloat v3dNormal(0.0,0.0,1.0);
 					volIter.setPosition(x,y,z+2);
-					vertMaterials[8] = v000 | volIter.getMaxedVoxel();
-					SurfaceVertex surfaceVertex(vertlist[8],vertMaterials[8], 1.0);
+					const uint8_t uMaterial = v000 | volIter.getMaxedVoxel(); //Because one of these is 0, the or operation takes the max.
+					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesZ[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -498,9 +491,9 @@ namespace PolyVox
 		//volIter.setPosition(regCroppedSlice.getLowerCorner().getX(),regCroppedSlice.getLowerCorner().getY(), regCroppedSlice.getLowerCorner().getZ());
 		//volIter.setValidRegion(regCroppedSlice);
 		//do
-		for(uint16_t y = regCroppedSlice.getLowerCorner().getY() - offset.getY(); y < regCroppedSlice.getUpperCorner().getY() - offset.getY(); y += 2)
+		for(uint16_t y = regCroppedSlice.getLowerCorner().getY() - offset.getY(); y <= regCroppedSlice.getUpperCorner().getY() - offset.getY(); y += 2)
 		{
-			for(uint16_t x = regCroppedSlice.getLowerCorner().getX() - offset.getX(); x < regCroppedSlice.getUpperCorner().getX() - offset.getX(); x += 2)
+			for(uint16_t x = regCroppedSlice.getLowerCorner().getX() - offset.getX(); x <= regCroppedSlice.getUpperCorner().getX() - offset.getX(); x += 2)
 		{		
 			//Current position
 			//const uint16_t x = volIter.getPosX() - offset.getX();

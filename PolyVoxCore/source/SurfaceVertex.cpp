@@ -38,9 +38,11 @@ namespace PolyVox
 		
 	}
 
-	SurfaceVertex::SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet)
+	SurfaceVertex::SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet, float alphaToSet)
 		:position(positionToSet)
 		,normal(normalToSet)
+		,material(materialToSet)
+		,alpha(alphaToSet)
 	{
 	}
 

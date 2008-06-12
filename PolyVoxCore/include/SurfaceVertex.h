@@ -32,7 +32,7 @@ namespace PolyVox
 	public:	
 		SurfaceVertex();
 		SurfaceVertex(Vector3DFloat positionToSet, float materialToSet, float alphaToSet);
-		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet);	
+		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet, float alphaToSet);	
 
 		friend bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
 		friend bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
