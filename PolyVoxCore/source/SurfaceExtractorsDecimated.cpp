@@ -39,10 +39,10 @@ namespace PolyVox
 
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 
-		//When generating the mesh for a region we actually look one voxel outside it in the
+		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
-		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(uLevel+uStepSize,uLevel+uStepSize,uLevel+uStepSize));
+		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*uStepSize-1,2*uStepSize-1,2*uStepSize-1));
 		region.cropTo(regVolume);
 
 		//Offset from volume corner

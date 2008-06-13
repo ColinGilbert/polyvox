@@ -64,7 +64,7 @@ namespace PolyVox
 		listToFill.clear();
 
 		//Regenerate meshes.
-		for(uint16_t regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS-1; ++regionZ)
+		for(uint16_t regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
 		//for(uint16_t regionZ = 0; regionZ < 1; ++regionZ)
 		{		
 			for(uint16_t regionY = 0; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
