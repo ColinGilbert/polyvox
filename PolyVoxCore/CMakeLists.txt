@@ -9,10 +9,12 @@ SET(POLYVOX_VERSION "${POLYVOX_VERSION_MAJOR}.${POLYVOX_VERSION_MINOR}.${POLYVOX
 
 #Projects source files
 SET(SRC_FILES
+	source/GradientEstimators.cpp
 	source/IndexedSurfacePatch.cpp
 	source/MarchingCubesTables.cpp
 	source/Region.cpp
 	source/RegionGeometry.cpp 
+	source/SurfaceAdjusters.cpp
 	source/SurfaceExtractors.cpp 
 	source/SurfaceExtractorsDecimated.cpp
 	source/SurfaceVertex.cpp
@@ -39,6 +41,7 @@ SET(INC_FILES
 	include/PolyVoxForwardDeclarations.h
 	include/Region.h
 	include/RegionGeometry.h
+	include/SurfaceAdjusters.h
 	include/SurfaceExtractors.h
 	include/SurfaceExtractorsDecimated.h
 	include/SurfaceVertex.h

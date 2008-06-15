@@ -36,9 +36,9 @@ namespace PolyVox
 
 		return Vector3DFloat
 		(
-			static_cast<float>(voxel1px) - static_cast<float>(voxel1nx),
-			static_cast<float>(voxel1py) - static_cast<float>(voxel1ny),
-			static_cast<float>(voxel1pz) - static_cast<float>(voxel1nz)
+			static_cast<float>(voxel1nx) - static_cast<float>(voxel1px),
+			static_cast<float>(voxel1ny) - static_cast<float>(voxel1py),
+			static_cast<float>(voxel1nz) - static_cast<float>(voxel1pz)
 		);
 	}
 
@@ -61,9 +61,9 @@ namespace PolyVox
 
 		return Vector3DFloat
 		(
-			static_cast<float>(voxel1px) - static_cast<float>(voxel1nx),
-			static_cast<float>(voxel1py) - static_cast<float>(voxel1ny),
-			static_cast<float>(voxel1pz) - static_cast<float>(voxel1nz)
+			static_cast<float>(voxel1nx) - static_cast<float>(voxel1px),
+			static_cast<float>(voxel1ny) - static_cast<float>(voxel1py),
+			static_cast<float>(voxel1nz) - static_cast<float>(voxel1pz)
 		);
 	}
 
@@ -134,50 +134,50 @@ namespace PolyVox
 			const VoxelType pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz() > 0 ? 1: 0;
 			const VoxelType pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz() > 0 ? 1: 0;
 
+			const int xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+				pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
+				weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
+				pVoxel1nx0py1pz - weights[0][2][0] * pVoxel1nx1py1nz -
+				weights[1][2][0] * pVoxel1nx1py0pz - weights[2][2][0] *
+				pVoxel1nx1py1pz + weights[0][0][2] * pVoxel1px1ny1nz +
+				weights[1][0][2] * pVoxel1px1ny0pz + weights[2][0][2] *
+				pVoxel1px1ny1pz + weights[0][1][2] * pVoxel1px0py1nz +
+				weights[1][1][2] * pVoxel1px0py0pz + weights[2][1][2] *
+				pVoxel1px0py1pz + weights[0][2][2] * pVoxel1px1py1nz +
+				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+				pVoxel1px1py1pz);
 
+			const int yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+				pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
+				weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
+				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz -
+				weights[1][0][1] * pVoxel0px1ny0pz - weights[2][0][1] *
+				pVoxel0px1ny1pz + weights[0][2][1] * pVoxel0px1py1nz +
+				weights[1][2][1] * pVoxel0px1py0pz + weights[2][2][1] *
+				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz -
+				weights[1][0][2] * pVoxel1px1ny0pz - weights[2][0][2] *
+				pVoxel1px1ny1pz + weights[0][2][2] * pVoxel1px1py1nz +
+				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+				pVoxel1px1py1pz);
 
-			const int xGrad(- weights[0][0][0] * ( pVoxel1nx1ny1nz) -
-				weights[1][0][0] * ( pVoxel1nx1ny0pz) - weights[2][0][0] *
-				( pVoxel1nx1ny1pz) - weights[0][1][0] * ( pVoxel1nx0py1nz) -
-				weights[1][1][0] * ( pVoxel1nx0py0pz) - weights[2][1][0] *
-				( pVoxel1nx0py1pz) - weights[0][2][0] * ( pVoxel1nx1py1nz) -
-				weights[1][2][0] * ( pVoxel1nx1py0pz) - weights[2][2][0] *
-				( pVoxel1nx1py1pz) + weights[0][0][2] * ( pVoxel1px1ny1nz) +
-				weights[1][0][2] * ( pVoxel1px1ny0pz) + weights[2][0][2] *
-				( pVoxel1px1ny1pz) + weights[0][1][2] * ( pVoxel1px0py1nz) +
-				weights[1][1][2] * ( pVoxel1px0py0pz) + weights[2][1][2] *
-				( pVoxel1px0py1pz) + weights[0][2][2] * ( pVoxel1px1py1nz) +
-				weights[1][2][2] * ( pVoxel1px1py0pz) + weights[2][2][2] *
-				( pVoxel1px1py1pz));
+			const int zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
+				weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
+				pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
+				weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
+				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz +
+				weights[2][0][1] * pVoxel0px1ny1pz - weights[0][1][1] *
+				pVoxel0px0py1nz + weights[2][1][1] * pVoxel0px0py1pz -
+				weights[0][2][1] * pVoxel0px1py1nz + weights[2][2][1] *
+				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz +
+				weights[2][0][2] * pVoxel1px1ny1pz - weights[0][1][2] *
+				pVoxel1px0py1nz + weights[2][1][2] * pVoxel1px0py1pz -
+				weights[0][2][2] * pVoxel1px1py1nz + weights[2][2][2] *
+				pVoxel1px1py1pz);
 
-			const int yGrad(- weights[0][0][0] * ( pVoxel1nx1ny1nz) -
-				weights[1][0][0] * ( pVoxel1nx1ny0pz) - weights[2][0][0] *
-				( pVoxel1nx1ny1pz) + weights[0][2][0] * ( pVoxel1nx1py1nz) +
-				weights[1][2][0] * ( pVoxel1nx1py0pz) + weights[2][2][0] *
-				( pVoxel1nx1py1pz) - weights[0][0][1] * ( pVoxel0px1ny1nz) -
-				weights[1][0][1] * ( pVoxel0px1ny0pz) - weights[2][0][1] *
-				( pVoxel0px1ny1pz) + weights[0][2][1] * ( pVoxel0px1py1nz) +
-				weights[1][2][1] * ( pVoxel0px1py0pz) + weights[2][2][1] *
-				( pVoxel0px1py1pz) - weights[0][0][2] * ( pVoxel1px1ny1nz) -
-				weights[1][0][2] * ( pVoxel1px1ny0pz) - weights[2][0][2] *
-				( pVoxel1px1ny1pz) + weights[0][2][2] * ( pVoxel1px1py1nz) +
-				weights[1][2][2] * ( pVoxel1px1py0pz) + weights[2][2][2] *
-				( pVoxel1px1py1pz));
-
-			const int zGrad(- weights[0][0][0] * ( pVoxel1nx1ny1nz) +
-				weights[2][0][0] * ( pVoxel1nx1ny1pz) - weights[0][1][0] *
-				( pVoxel1nx0py1nz) + weights[2][1][0] * ( pVoxel1nx0py1pz) -
-				weights[0][2][0] * ( pVoxel1nx1py1nz) + weights[2][2][0] *
-				( pVoxel1nx1py1pz) - weights[0][0][1] * ( pVoxel0px1ny1nz) +
-				weights[2][0][1] * ( pVoxel0px1ny1pz) - weights[0][1][1] *
-				( pVoxel0px0py1nz) + weights[2][1][1] * ( pVoxel0px0py1pz) -
-				weights[0][2][1] * ( pVoxel0px1py1nz) + weights[2][2][1] *
-				( pVoxel0px1py1pz) - weights[0][0][2] * ( pVoxel1px1ny1nz) +
-				weights[2][0][2] * ( pVoxel1px1ny1pz) - weights[0][1][2] *
-				( pVoxel1px0py1nz) + weights[2][1][2] * ( pVoxel1px0py1pz) -
-				weights[0][2][2] * ( pVoxel1px1py1nz) + weights[2][2][2] *
-				( pVoxel1px1py1pz));
-
-			return Vector3DFloat(static_cast<float>(xGrad),static_cast<float>(yGrad),static_cast<float>(zGrad));
+			//Note: The above actually give gradients going from low density to high density.
+			//For our normals we want the the other way around, so we switch the components as we return them.
+			return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
 	}
 }

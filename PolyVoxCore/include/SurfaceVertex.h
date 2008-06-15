@@ -45,6 +45,7 @@ namespace PolyVox
 		void setAlpha(float alphaToSet);	
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
+		void setPosition(const Vector3DFloat& positionToSet);
 
 		std::string tostring(void) const;
 

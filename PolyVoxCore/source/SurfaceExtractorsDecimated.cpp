@@ -434,10 +434,11 @@ namespace PolyVox
 				{
 					if(x != regSlice.getUpperCorner().getX())
 					{
+						volIter.setPosition(x + uStepSize,y,z);
+						const uint8_t v100 = volIter.getMaxedVoxel(uLevel);
 						const Vector3DFloat v3dPosition(x - offset.getX() + 0.5f * uStepSize, y - offset.getY(), z - offset.getZ());
-						const Vector3DFloat v3dNormal(1.0,0.0,0.0);
-						volIter.setPosition(x+uStepSize,y,z);
-						const uint8_t uMaterial = v000 | volIter.getMaxedVoxel(uLevel); //Because one of these is 0, the or operation takes the max.
+						const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
+						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 						singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 						vertexIndicesX[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -447,10 +448,11 @@ namespace PolyVox
 				{
 					if(y != regSlice.getUpperCorner().getY())
 					{
+						volIter.setPosition(x,y + uStepSize,z);
+						const uint8_t v010 = volIter.getMaxedVoxel(uLevel);
 						const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY() + 0.5f * uStepSize, z - offset.getZ());
-						const Vector3DFloat v3dNormal(0.0,1.0,0.0);
-						volIter.setPosition(x,y+uStepSize,z);
-						const uint8_t uMaterial = v000 | volIter.getMaxedVoxel(uLevel); //Because one of these is 0, the or operation takes the max.
+						const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
+						const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 						singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 						vertexIndicesY[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -460,10 +462,11 @@ namespace PolyVox
 				{
 					//if(z != regSlice.getUpperCorner.getZ())
 					{
+						volIter.setPosition(x,y,z + uStepSize);
+						const uint8_t v001 = volIter.getMaxedVoxel(uLevel);
 						const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY(), z - offset.getZ() + 0.5f * uStepSize);
-						const Vector3DFloat v3dNormal(0.0,0.0,1.0);
-						volIter.setPosition(x,y,z+uStepSize);
-						const uint8_t uMaterial = v000 | volIter.getMaxedVoxel(uLevel); //Because one of these is 0, the or operation takes the max.
+						const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
+						const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
 						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 						singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 						vertexIndicesZ[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;

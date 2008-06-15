@@ -1,5 +1,4 @@
 #include "SurfaceExtractors.h"
-#include "SurfaceExtractorsDecimated.h"
 
 #include "BlockVolume.h"
 #include "GradientEstimators.h"
@@ -7,6 +6,8 @@
 #include "MarchingCubesTables.h"
 #include "Region.h"
 #include "RegionGeometry.h"
+#include "SurfaceAdjusters.h"
+#include "SurfaceExtractorsDecimated.h"
 #include "VolumeChangeTracker.h"
 #include "BlockVolumeIterator.h"
 
@@ -30,6 +31,10 @@ namespace PolyVox
 			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
 
 			generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+
+			computeNormalsForVertices(volume.getVolumeData(), regionGeometry, CENTRAL_DIFFERENCE);
+
+			//smoothRegionGeometry(volume.getVolumeData(), regionGeometry);
 
 			//genMultiFromSingle(regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
 
@@ -122,15 +127,6 @@ namespace PolyVox
 		delete[] vertexIndicesY1;
 		delete[] vertexIndicesZ0;
 		delete[] vertexIndicesZ1;
-
-
-		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
-		while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
-		{
-			Vector3DFloat tempNormal = computeNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
-			const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
-			++iterSurfaceVertex;
-		}
 	}
 
 	boost::uint32_t computeInitialRoughBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
@@ -428,9 +424,10 @@ namespace PolyVox
 			{
 				if((x + offset.getX()) != regSlice.getUpperCorner().getX())
 				{
+					const uint8_t v100 = volIter.peekVoxel1px0py0pz();
 					const Vector3DFloat v3dPosition(x + 0.5f, y, z);
-					const Vector3DFloat v3dNormal(1.0f, 0.0f, 0.0f);
-					const uint8_t uMaterial = v000 | volIter.peekVoxel1px0py0pz(); //Because one of these is 0, the or operation takes the max.
+					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f, 0.0f, 0.0f);					
+					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesX[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -440,9 +437,10 @@ namespace PolyVox
 			{
 				if((y + offset.getY()) != regSlice.getUpperCorner().getY())
 				{
+					const uint8_t v010 = volIter.peekVoxel0px1py0pz();
 					const Vector3DFloat v3dPosition(x, y + 0.5f, z);
-					const Vector3DFloat v3dNormal(0.0f, 1.0f, 0.0f);
-					const uint8_t uMaterial = v000 | volIter.peekVoxel0px1py0pz();
+					const Vector3DFloat v3dNormal(0.0f, v000 > v010 ? 1.0f : -1.0f, 0.0f);
+					const uint8_t uMaterial = v000 | v010;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesY[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -452,9 +450,10 @@ namespace PolyVox
 			{
 				//if((z + offset.getZ()) != upperCorner.getZ())
 				{
+					const uint8_t v001 = volIter.peekVoxel0px0py1pz();
 					const Vector3DFloat v3dPosition(x, y, z + 0.5f);
-					const Vector3DFloat v3dNormal(0.0f, 0.0f, 1.0f);
-					const uint8_t uMaterial = v000 | volIter.peekVoxel0px0py1pz();
+					const Vector3DFloat v3dNormal(0.0f, 0.0f, v000 > v001 ? 1.0f : -1.0f);
+					const uint8_t uMaterial = v000 | v001;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesZ[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -736,7 +735,7 @@ namespace PolyVox
 
 
 		//for(std::map<uint8_t, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
-		{
+		/*{
 
 			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
 			while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
@@ -745,101 +744,7 @@ namespace PolyVox
 				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
 				++iterSurfaceVertex;
 			}
-		}
-	}
-
-	Vector3DFloat computeNormal(BlockVolume<uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod)
-	{
-		const float posX = position.getX();
-		const float posY = position.getY();
-		const float posZ = position.getZ();
-
-		const uint16_t floorX = static_cast<uint16_t>(posX);
-		const uint16_t floorY = static_cast<uint16_t>(posY);
-		const uint16_t floorZ = static_cast<uint16_t>(posZ);
-
-		//Check all corners are within the volume, allowing a boundary for gradient estimation
-		bool lowerCornerInside = volumeData->containsPoint(Vector3DInt32(floorX, floorY, floorZ),1);
-		bool upperCornerInside = volumeData->containsPoint(Vector3DInt32(floorX+1, floorY+1, floorZ+1),1);
-		if((!lowerCornerInside) || (!upperCornerInside))
-		{
-			normalGenerationMethod = SIMPLE;
-		}
-
-		Vector3DFloat result;
-
-		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
-
-
-		if(normalGenerationMethod == SOBEL)
-		{
-			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const Vector3DFloat gradFloor = computeSobelGradient(volIter);
-			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			}
-			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY+1.0),static_cast<uint16_t>(posZ));
-			}
-			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
-			}
-			const Vector3DFloat gradCeil = computeSobelGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0f);
-			if(result.lengthSquared() < 0.0001)
-			{
-				//Operation failed - fall back on simple gradient estimation
-				normalGenerationMethod = SIMPLE;
-			}
-		}
-		if(normalGenerationMethod == CENTRAL_DIFFERENCE)
-		{
-			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const Vector3DFloat gradFloor = computeCentralDifferenceGradient(volIter);
-			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16_t>(posX+1.0),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			}
-			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY+1.0),static_cast<uint16_t>(posZ));
-			}
-			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ+1.0));					
-			}
-			const Vector3DFloat gradCeil = computeCentralDifferenceGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0f);
-			if(result.lengthSquared() < 0.0001)
-			{
-				//Operation failed - fall back on simple gradient estimation
-				normalGenerationMethod = SIMPLE;
-			}
-		}
-		if(normalGenerationMethod == SIMPLE)
-		{
-			volIter.setPosition(static_cast<uint16_t>(posX),static_cast<uint16_t>(posY),static_cast<uint16_t>(posZ));
-			const uint8_t uFloor = volIter.getVoxel() > 0 ? 1 : 0;
-			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-			{					
-				uint8_t uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-				result = Vector3DFloat(static_cast<float>(uFloor - uCeil),0.0,0.0);
-			}
-			else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-			{
-				uint8_t uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-				result = Vector3DFloat(0.0,static_cast<float>(uFloor - uCeil),0.0);
-			}
-			else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-			{
-				uint8_t uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-				result = Vector3DFloat(0.0, 0.0,static_cast<float>(uFloor - uCeil));					
-			}
-		}
-		return result;
+		}*/
 	}
 
 	void generateSmoothMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)

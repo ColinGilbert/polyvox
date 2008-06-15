@@ -1,0 +1,27 @@
+For Version 0.1
+===============
+Implement Memory Pool
+Clean up normal code - make normal generation a seperate pass.
+Implement mesh smoothing.
+Refine interface to mesh generateion - flags structure?
+Refine interface to volumes and iterators.
+Implement block volume tidy() funtion.
+Remove hard-coded region size.
+Remove boost dependancy?
+Seperate namespaces - PolyVoxCore, PolyVoxUtil, PolyVoxImpl
+Move getChangedRegionGeometry() out of PolyVon and into Thermite?
+Remove/refactor IndexedSurfacePatch? Incorporate into RegionGeometry?
+Change vertex format to ints?
+Check licensing, #regions, etc.
+Decimated version of marching cubes should use less memory.
+Unit test - compare output to reference implementation
+Sort awkward use of 'offset' in decimated marching cubes.
+Add API docs
+Add manual
+Finish OpenGL sample.
+
+For Version 0.2
+===============
+Detect detatched regions.
+Handle mesh generation for detatched regions.
+Generate ambient lighting from volume?

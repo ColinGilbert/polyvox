@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "BlockVolumeIterator.h"
 
+#include <vector>
+
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -37,6 +39,9 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	Vector3DFloat computeSobelGradient(const BlockVolumeIterator<VoxelType>& volIter);
+
+	POLYVOX_API void computeNormalsForVertices(BlockVolume<boost::uint8_t>* volumeData, RegionGeometry& regGeom, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API Vector3DFloat computeNormal(BlockVolume<boost::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
 }
 
 #include "GradientEstimators.inl"

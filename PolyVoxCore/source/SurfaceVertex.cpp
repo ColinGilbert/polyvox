@@ -79,8 +79,12 @@ namespace PolyVox
 	void SurfaceVertex::setNormal(const Vector3DFloat& normalToSet)
 	{
 		normal = normalToSet;
-		normal.normalise();
-	}		
+	}	
+
+	void SurfaceVertex::setPosition(const Vector3DFloat& positionToSet)
+	{
+		position = positionToSet;
+	}
 
 	std::string SurfaceVertex::tostring(void) const
 	{
