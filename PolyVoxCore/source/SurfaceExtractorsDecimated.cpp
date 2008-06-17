@@ -144,7 +144,7 @@ namespace PolyVox
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
 					const uint8_t v011 = volIter.getMaxedVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(1);		
+					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);		
 
 					if (v000 == 0) iCubeIndex |= 1;
 					if (v100 == 0) iCubeIndex |= 2;
