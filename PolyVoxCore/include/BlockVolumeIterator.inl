@@ -105,38 +105,6 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	float BlockVolumeIterator<VoxelType>::getAveragedVoxel(boost::uint16_t size) const
-	{
-		assert(mXPosInVolume >= size);
-		assert(mYPosInVolume >= size);
-		assert(mZPosInVolume >= size);
-		assert(mXPosInVolume < mVolume.getSideLength() - (size + 1));
-		assert(mYPosInVolume < mVolume.getSideLength() - (size + 1));
-		assert(mZPosInVolume < mVolume.getSideLength() - (size + 1));
-
-		float sum = 0.0;
-		for(uint16_t z = mZPosInVolume-size; z <= mZPosInVolume+size; ++z)
-		{
-			for(uint16_t y = mYPosInVolume-size; y <= mYPosInVolume+size; ++y)
-			{
-				for(uint16_t x = mXPosInVolume-size; x <= mXPosInVolume+size; ++x)
-				{
-					if(mVolume.getVoxelAt(x,y,z) != 0)
-					{
-						sum += 1.0;
-					}
-				}
-			}
-		}
-
-		uint16_t kernelSideLength = size * 2 + 1;
-		uint16_t kernelVolume = kernelSideLength * kernelSideLength * kernelSideLength;
-
-		sum /= static_cast<float>(kernelVolume);
-		return sum;
-	}
-
-	template <typename VoxelType>
 	VoxelType BlockVolumeIterator<VoxelType>::getMaxedVoxel(boost::uint8_t uLevel) const
 	{		
 		if(uLevel == 0)
@@ -190,6 +158,12 @@ namespace PolyVox
 	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
+	}
+
+	template <typename VoxelType>
+	const BlockVolume<VoxelType>& BlockVolumeIterator<VoxelType>::getVolume(void) const
+	{
+		return mVolume;
 	}
 
 	template <typename VoxelType>

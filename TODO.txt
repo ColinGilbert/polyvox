@@ -25,3 +25,6 @@ For Version 0.2
 Detect detatched regions.
 Handle mesh generation for detatched regions.
 Generate ambient lighting from volume?
+Utility function for closing outside surfaces?
+Consider how seperate surface should be generated for a single region.
+Consider transparent materials like glass.

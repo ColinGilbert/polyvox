@@ -19,6 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
+#include "SurfaceAdjusters.h"
+
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -76,25 +78,25 @@ namespace PolyVox
 
 		//FIXME - bitwise way of doing this?
 		volIter.setPosition(initialX-1, initialY, initialZ);
-		float voxel1nx = volIter.getAveragedVoxel(1);
+		float voxel1nx = computeSmoothedVoxel(volIter);
 		volIter.setPosition(initialX+1, initialY, initialZ);
-		float voxel1px = volIter.getAveragedVoxel(1);
+		float voxel1px = computeSmoothedVoxel(volIter);
 
 		volIter.setPosition(initialX, initialY-1, initialZ);
-		float voxel1ny = volIter.getAveragedVoxel(1);
+		float voxel1ny = computeSmoothedVoxel(volIter);
 		volIter.setPosition(initialX, initialY+1, initialZ);
-		float voxel1py = volIter.getAveragedVoxel(1);
+		float voxel1py = computeSmoothedVoxel(volIter);
 
 		volIter.setPosition(initialX, initialY, initialZ-1);
-		float voxel1nz = volIter.getAveragedVoxel(1);
+		float voxel1nz = computeSmoothedVoxel(volIter);
 		volIter.setPosition(initialX, initialY, initialZ+1);
-		float voxel1pz = volIter.getAveragedVoxel(1);
+		float voxel1pz = computeSmoothedVoxel(volIter);
 
 		return Vector3DFloat
 		(
-			voxel1px - voxel1nx,
-			voxel1py - voxel1ny,
-			voxel1pz - voxel1nz
+			voxel1nx - voxel1px,
+			voxel1ny - voxel1py,
+			voxel1nz - voxel1pz
 		);
 	}
 

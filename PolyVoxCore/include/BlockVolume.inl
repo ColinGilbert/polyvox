@@ -139,13 +139,13 @@ namespace PolyVox
 		assert(uYPos < getSideLength());
 		assert(uZPos < getSideLength());
 
-		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+		const boost::uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const boost::uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const boost::uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+		const boost::uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const boost::uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const boost::uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
 		const Block<VoxelType>* block = m_pBlocks
 			[
