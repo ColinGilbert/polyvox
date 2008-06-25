@@ -19,37 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_Region_H__
-#define __PolyVox_Region_H__
+#ifndef __PolyVox_CStdInt_H__
+#define __PolyVox_CStdInt_H__
 
-#pragma region Headers
-#include "TypeDef.h"
-#include "Vector.h"
-#pragma endregion
-
-namespace PolyVox
+//Adding things to the std namespace in not actually allowed, but Microsoft
+//have still not added <cstdint> to thier standard library. 
+namespace std
 {
-	class POLYVOX_API Region
-	{
-	public:
-		Region();
-		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);
-
-		const Vector3DInt32& getLowerCorner(void) const;
-		const Vector3DInt32& getUpperCorner(void) const;
-
-		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
-		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
-
-		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
-		bool containsPoint(const Vector3DInt32& pos, std::uint8_t boundary) const;
-		void cropTo(const Region& other);
-		void shift(const Vector3DInt32& amount);
-
-	private:
-		Vector3DInt32 m_v3dLowerCorner;
-		Vector3DInt32 m_v3dUpperCorner;
-	};
+	typedef char int8_t;
+	typedef short int16_t;
+	typedef long int32_t;
+	typedef unsigned char uint8_t;
+	typedef unsigned short uint16_t;
+	typedef unsigned long uint32_t;
 }
 
 #endif

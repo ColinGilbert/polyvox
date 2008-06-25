@@ -29,7 +29,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	Block<VoxelType>::Block(boost::uint8_t uSideLengthPower)
+	Block<VoxelType>::Block(std::uint8_t uSideLengthPower)
 		:m_tData(0)
 	{
 		//Check the block size is sensible. This corresponds to a side length of 256 voxels
@@ -76,13 +76,13 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	boost::uint16_t Block<VoxelType>::getSideLength(void) const
+	std::uint16_t Block<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const
+	VoxelType Block<VoxelType>::getVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos) const
 	{
 		assert(uXPos < m_uSideLength);
 		assert(uYPos < m_uSideLength);
@@ -99,7 +99,7 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void Block<VoxelType>::setVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos, VoxelType tValue)
+	void Block<VoxelType>::setVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos, VoxelType tValue)
 	{
 		assert(uXPos < m_uSideLength);
 		assert(uYPos < m_uSideLength);

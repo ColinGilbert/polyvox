@@ -3,13 +3,13 @@
 #include "RegionGeometry.h"
 #include "SurfaceVertex.h"
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 
-using namespace boost;
+using namespace std;
 
 namespace PolyVox
 {
-	POLYVOX_API void computeNormalsForVertices(BlockVolume<boost::uint8_t>* volumeData, RegionGeometry& regGeom, NormalGenerationMethod normalGenerationMethod)
+	POLYVOX_API void computeNormalsForVertices(BlockVolume<std::uint8_t>* volumeData, RegionGeometry& regGeom, NormalGenerationMethod normalGenerationMethod)
 	{
 		std::vector<SurfaceVertex>& vecVertices = regGeom.m_patchSingleMaterial->m_vecVertices;
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -18,7 +18,7 @@ namespace PolyVox
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);
+			BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,1);
@@ -98,7 +98,7 @@ namespace PolyVox
 
 		Vector3DFloat result;
 
-		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
+		BlockVolumeIterator<std::uint8_t> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
 
 
 		if(normalGenerationMethod == SOBEL)

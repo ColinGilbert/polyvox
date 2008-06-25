@@ -27,12 +27,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 #pragma endregion
 
 namespace PolyVox
 {
-	POLYVOX_API void smoothRegionGeometry(BlockVolume<boost::uint8_t>* volumeData, RegionGeometry& regGeom);
+	POLYVOX_API void smoothRegionGeometry(BlockVolume<std::uint8_t>* volumeData, RegionGeometry& regGeom);
 }
 
 #endif

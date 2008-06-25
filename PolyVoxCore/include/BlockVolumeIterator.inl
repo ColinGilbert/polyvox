@@ -105,25 +105,25 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosX(void) const
+	std::uint16_t BlockVolumeIterator<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
 	}
 
 	template <typename VoxelType>
-	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosY(void) const
+	std::uint16_t BlockVolumeIterator<VoxelType>::getPosY(void) const
 	{
 		return mYPosInVolume;
 	}
 
 	template <typename VoxelType>
-	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosZ(void) const
+	std::uint16_t BlockVolumeIterator<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::getSubSampledVoxel(boost::uint8_t uLevel) const
+	VoxelType BlockVolumeIterator<VoxelType>::getSubSampledVoxel(std::uint8_t uLevel) const
 	{		
 		if(uLevel == 0)
 		{
@@ -143,14 +143,14 @@ namespace PolyVox
 		}
 		else
 		{
-			const boost::uint8_t uSize = 1 << uLevel;
+			const std::uint8_t uSize = 1 << uLevel;
 
 			VoxelType tValue = 0;
-			for(boost::uint8_t z = 0; z < uSize; ++z)
+			for(std::uint8_t z = 0; z < uSize; ++z)
 			{
-				for(boost::uint8_t y = 0; y < uSize; ++y)
+				for(std::uint8_t y = 0; y < uSize; ++y)
 				{
-					for(boost::uint8_t x = 0; x < uSize; ++x)
+					for(std::uint8_t x = 0; x < uSize; ++x)
 					{
 						tValue = (std::max)(tValue, mVolume.getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
 					}
@@ -181,7 +181,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos)
+	void BlockVolumeIterator<VoxelType>::setPosition(std::uint16_t xPos, std::uint16_t yPos, std::uint16_t zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -214,7 +214,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast)
+	void BlockVolumeIterator<VoxelType>::setValidRegion(std::uint16_t xFirst, std::uint16_t yFirst, std::uint16_t zFirst, std::uint16_t xLast, std::uint16_t yLast, std::uint16_t zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -236,7 +236,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void BlockVolumeIterator<VoxelType>::setVoxel(VoxelType tValue)
 	{
-		const boost::uint32_t uBlockIndex = 
+		const std::uint32_t uBlockIndex = 
 				mXBlock + 
 				mYBlock * mVolume.m_uSideLengthInBlocks + 
 				mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;

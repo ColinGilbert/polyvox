@@ -11,12 +11,12 @@
 
 namespace PolyVox
 {
-	void smoothRegionGeometry(BlockVolume<boost::uint8_t>* volumeData, RegionGeometry& regGeom)
+	void smoothRegionGeometry(BlockVolume<std::uint8_t>* volumeData, RegionGeometry& regGeom)
 	{
-		const boost::uint8_t uSmoothingFactor = 2;
+		const std::uint8_t uSmoothingFactor = 2;
 		const float fThreshold = 0.5f;
 
-		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);
+		BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
 
 		std::vector<SurfaceVertex>& vecVertices = regGeom.m_patchSingleMaterial->m_vecVertices;
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();

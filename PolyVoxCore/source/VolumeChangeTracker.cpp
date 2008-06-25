@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BlockVolume.h"
 #include "BlockVolumeIterator.h"
 
-using namespace boost;
+using namespace std;
 
 namespace PolyVox
 {
@@ -50,7 +50,7 @@ namespace PolyVox
 	{
 	}
 
-	void VolumeChangeTracker::setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet)
+	void VolumeChangeTracker::setVolumeData(BlockVolume<std::uint8_t>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
 		volRegionUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
@@ -124,20 +124,20 @@ namespace PolyVox
 		assert(uY < volumeData->getSideLength());
 		assert(uZ < volumeData->getSideLength());
 
-		BlockVolumeIterator<boost::uint8_t> volIter(*volumeData);
+		BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
 		volIter.setPosition(uX,uY,uZ);
 		return volIter.getVoxel();
 	}
 
-	BlockVolume<boost::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
+	BlockVolume<std::uint8_t>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
 	}
 
-	void VolumeChangeTracker::setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
+	void VolumeChangeTracker::setVoxelAt(std::uint16_t x, std::uint16_t y, std::uint16_t z, std::uint8_t value)
 	{
 		//FIXME - rather than creating a iterator each time we should have one stored
-		BlockVolumeIterator<boost::uint8_t> iterVol(*volumeData);
+		BlockVolumeIterator<std::uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);
 		
@@ -178,12 +178,12 @@ namespace PolyVox
 		}
 	}
 
-	void VolumeChangeTracker::setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value)
+	void VolumeChangeTracker::setLockedVoxelAt(std::uint16_t x, std::uint16_t y, std::uint16_t z, std::uint8_t value)
 	{
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		BlockVolumeIterator<boost::uint8_t> iterVol(*volumeData);
+		BlockVolumeIterator<std::uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);
 	}

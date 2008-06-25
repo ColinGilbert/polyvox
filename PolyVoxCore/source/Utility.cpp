@@ -27,21 +27,21 @@ namespace PolyVox
 {
 	//Note: this function only works for inputs which are a power of two and not zero
 	//If this is not the case then the output is undefined.
-	boost::uint8_t logBase2(boost::uint32_t uInput)
+	std::uint8_t logBase2(std::uint32_t uInput)
 	{
 		assert(uInput != 0);
 		assert(isPowerOf2(uInput));
 
-		boost::uint32_t uResult = 0;
+		std::uint32_t uResult = 0;
 		while( (uInput >> uResult) != 0)
 		{
 			++uResult;
 		}
-		return static_cast<boost::uint8_t>(uResult-1);
+		return static_cast<std::uint8_t>(uResult-1);
 	}
 
 
-	bool isPowerOf2(boost::uint32_t uInput)
+	bool isPowerOf2(std::uint32_t uInput)
 	{
 		if(uInput == 0)
 			return false;

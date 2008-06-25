@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 #pragma endregion
 
 namespace PolyVox
@@ -43,17 +43,17 @@ namespace PolyVox
 		bool operator<=(const BlockVolumeIterator& rhs);
 		bool operator>=(const BlockVolumeIterator& rhs);
 
-		boost::uint16_t getPosX(void) const;
-		boost::uint16_t getPosY(void) const;
-		boost::uint16_t getPosZ(void) const;
-		VoxelType getSubSampledVoxel(boost::uint8_t uLevel) const;
+		std::uint16_t getPosX(void) const;
+		std::uint16_t getPosY(void) const;
+		std::uint16_t getPosZ(void) const;
+		VoxelType getSubSampledVoxel(std::uint8_t uLevel) const;
 		const BlockVolume<VoxelType>& getVolume(void) const;
 		VoxelType getVoxel(void) const;			
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
-		void setPosition(boost::uint16_t xPos, boost::uint16_t yPos, boost::uint16_t zPos);
+		void setPosition(std::uint16_t xPos, std::uint16_t yPos, std::uint16_t zPos);
 		void setValidRegion(const Region& region);
-		void setValidRegion(boost::uint16_t xFirst, boost::uint16_t yFirst, boost::uint16_t zFirst, boost::uint16_t xLast, boost::uint16_t yLast, boost::uint16_t zLast);
+		void setValidRegion(std::uint16_t xFirst, std::uint16_t yFirst, std::uint16_t zFirst, std::uint16_t xLast, std::uint16_t yLast, std::uint16_t zLast);
 		void setVoxel(VoxelType tValue);	
 
 		bool isValidForRegion(void) const;
@@ -96,38 +96,38 @@ namespace PolyVox
 		BlockVolume<VoxelType>& mVolume;
 
 		//The current position in the volume
-		boost::uint16_t mXPosInVolume;
-		boost::uint16_t mYPosInVolume;
-		boost::uint16_t mZPosInVolume;
+		std::uint16_t mXPosInVolume;
+		std::uint16_t mYPosInVolume;
+		std::uint16_t mZPosInVolume;
 
 		//The position of the current block
-		boost::uint16_t mXBlock;
-		boost::uint16_t mYBlock;
-		boost::uint16_t mZBlock;
+		std::uint16_t mXBlock;
+		std::uint16_t mYBlock;
+		std::uint16_t mZBlock;
 
 		//The offset into the current block
-		boost::uint16_t mXPosInBlock;
-		boost::uint16_t mYPosInBlock;
-		boost::uint16_t mZPosInBlock;
+		std::uint16_t mXPosInBlock;
+		std::uint16_t mYPosInBlock;
+		std::uint16_t mZPosInBlock;
 
 		//Other current position information
 		VoxelType* mCurrentVoxel;
-		boost::uint32_t mBlockIndexInVolume;
-		boost::uint32_t mVoxelIndexInBlock;
+		std::uint32_t mBlockIndexInVolume;
+		std::uint32_t mVoxelIndexInBlock;
 
-		boost::uint16_t mXRegionFirst;
-		boost::uint16_t mYRegionFirst;
-		boost::uint16_t mZRegionFirst;
-		boost::uint16_t mXRegionLast;
-		boost::uint16_t mYRegionLast;
-		boost::uint16_t mZRegionLast;
+		std::uint16_t mXRegionFirst;
+		std::uint16_t mYRegionFirst;
+		std::uint16_t mZRegionFirst;
+		std::uint16_t mXRegionLast;
+		std::uint16_t mYRegionLast;
+		std::uint16_t mZRegionLast;
 
-		boost::uint16_t mXRegionFirstBlock;
-		boost::uint16_t mYRegionFirstBlock;
-		boost::uint16_t mZRegionFirstBlock;
-		boost::uint16_t mXRegionLastBlock;
-		boost::uint16_t mYRegionLastBlock;
-		boost::uint16_t mZRegionLastBlock;
+		std::uint16_t mXRegionFirstBlock;
+		std::uint16_t mYRegionFirstBlock;
+		std::uint16_t mZRegionFirstBlock;
+		std::uint16_t mXRegionLastBlock;
+		std::uint16_t mYRegionLastBlock;
+		std::uint16_t mZRegionLastBlock;
 
 		bool mIsValidForRegion;
 	};

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxForwardDeclarations.h"
 #include "TypeDef.h"
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 #pragma endregion
 
 namespace PolyVox
@@ -36,7 +36,7 @@ namespace PolyVox
 	class LinearVolume
 	{
 	public:
-		LinearVolume(boost::uint8_t uSideLengthPower);
+		LinearVolume(std::uint8_t uSideLengthPower);
 		LinearVolume(const LinearVolume& rhs);
 		~LinearVolume();
 
@@ -44,17 +44,17 @@ namespace PolyVox
 
 		//bool isHomogeneous(void);
 
-		boost::uint16_t getSideLength(void);
+		std::uint16_t getSideLength(void);
 
-		VoxelType getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const;
-		void setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value);
+		VoxelType getVoxelAt(const std::uint16_t xPosition, const std::uint16_t yPosition, const std::uint16_t zPosition) const;
+		void setVoxelAt(const std::uint16_t xPosition, const std::uint16_t yPosition, const std::uint16_t zPosition, const VoxelType value);
 
 		//void fillWithValue(const VoxelType value);
 
 	private:
-		boost::uint32_t getNoOfVoxels(void);
-		boost::uint8_t m_uSideLengthPower;
-		boost::uint16_t m_uSideLength;
+		std::uint32_t getNoOfVoxels(void);
+		std::uint8_t m_uSideLengthPower;
+		std::uint16_t m_uSideLength;
 		VoxelType* m_tData;		
 	};
 }

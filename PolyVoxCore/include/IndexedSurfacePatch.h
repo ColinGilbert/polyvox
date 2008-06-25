@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <vector>
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 
 #include "Constants.h"
 #include "PolyVoxForwardDeclarations.h"
@@ -40,29 +40,29 @@ namespace PolyVox
 	   ~IndexedSurfacePatch();	   
 
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);
-	   void fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<boost::uint32_t>& vecIndices);
+	   void fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<std::uint32_t>& vecIndices);
 
 	   const std::vector<SurfaceVertex>& getVertices(void) const;
 	   std::vector<SurfaceVertex>& getVertices(void); //FIXME - non const version should be removed.
-	   const std::vector<boost::uint32_t>& getIndices(void) const;
+	   const std::vector<std::uint32_t>& getIndices(void) const;
 
 	   unsigned short getNoNonUniformTrianges(void);
 	   unsigned short getNoUniformTrianges(void);
 	
 	public:		
-		std::vector<boost::uint32_t> m_vecTriangleIndices;
+		std::vector<std::uint32_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
 
-		static boost::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static boost::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static boost::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 
-		static boost::int32_t noOfVerticesSubmitted;
-		static boost::int32_t noOfVerticesAccepted;
-		static boost::int32_t noOfTrianglesSubmitted;
+		static std::int32_t noOfVerticesSubmitted;
+		static std::int32_t noOfVerticesAccepted;
+		static std::int32_t noOfTrianglesSubmitted;
 
-		boost::int32_t getIndexFor(const Vector3DFloat& pos);
-		void setIndexFor(const Vector3DFloat& pos, boost::int32_t newIndex);
+		std::int32_t getIndexFor(const Vector3DFloat& pos);
+		void setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex);
 
 	public:
 		bool m_AllowDuplicateVertices;

@@ -44,7 +44,7 @@ namespace PolyVox
 			&& (pos.getZ() >= m_v3dLowerCorner.getZ() + boundary);
 	}
 
-	bool Region::containsPoint(const Vector3DInt32& pos, boost::uint8_t boundary) const
+	bool Region::containsPoint(const Vector3DInt32& pos, std::uint8_t boundary) const
 	{
 		return (pos.getX() <= m_v3dUpperCorner.getX() - boundary)
 			&& (pos.getY() <= m_v3dUpperCorner.getY() - boundary) 

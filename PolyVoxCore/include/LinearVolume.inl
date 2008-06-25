@@ -25,7 +25,7 @@ namespace PolyVox
 {
 
 	template <typename VoxelType>
-	LinearVolume<VoxelType>::LinearVolume(boost::uint8_t uSideLengthPower)
+	LinearVolume<VoxelType>::LinearVolume(std::uint8_t uSideLengthPower)
 		:m_tData(0)
 	{
 		//Check the block size is sensible. This corresponds to a side length of 256 voxels
@@ -67,7 +67,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType LinearVolume<VoxelType>::getVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition) const
+	VoxelType LinearVolume<VoxelType>::getVoxelAt(const std::uint16_t xPosition, const std::uint16_t yPosition, const std::uint16_t zPosition) const
 	{
 		return m_tData
 			[
@@ -78,7 +78,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LinearVolume<VoxelType>::setVoxelAt(const boost::uint16_t xPosition, const boost::uint16_t yPosition, const boost::uint16_t zPosition, const VoxelType value)
+	void LinearVolume<VoxelType>::setVoxelAt(const std::uint16_t xPosition, const std::uint16_t yPosition, const std::uint16_t zPosition, const VoxelType value)
 	{
 		m_tData
 			[
@@ -89,13 +89,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	boost::uint16_t LinearVolume<VoxelType>::getSideLength(void)
+	std::uint16_t LinearVolume<VoxelType>::getSideLength(void)
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	boost::uint32_t LinearVolume<VoxelType>::getNoOfVoxels(void)
+	std::uint32_t LinearVolume<VoxelType>::getNoOfVoxels(void)
 	{
 		return m_uSideLength * m_uSideLength * m_uSideLength;
 	}

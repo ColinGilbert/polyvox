@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "IndexedSurfacePatch.h"
 
-using namespace boost;
+using namespace std;
 
 namespace PolyVox
 {
@@ -120,7 +120,7 @@ namespace PolyVox
 		}*/
 	}
 
-	boost::int32_t IndexedSurfacePatch::getIndexFor(const Vector3DFloat& pos)
+	std::int32_t IndexedSurfacePatch::getIndexFor(const Vector3DFloat& pos)
 	{
 		assert(pos.getX() >= 0.0f);
 		assert(pos.getY() >= 0.0f);
@@ -152,7 +152,7 @@ namespace PolyVox
 		while(true);
 	}
 
-	void IndexedSurfacePatch::setIndexFor(const Vector3DFloat& pos, boost::int32_t newIndex)
+	void IndexedSurfacePatch::setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex)
 	{
 		assert(pos.getX() >= 0.0f);
 		assert(pos.getY() >= 0.0f);
@@ -195,7 +195,7 @@ namespace PolyVox
 		return m_vecVertices;
 	}
 
-	const std::vector<boost::uint32_t>& IndexedSurfacePatch::getIndices(void) const
+	const std::vector<std::uint32_t>& IndexedSurfacePatch::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}

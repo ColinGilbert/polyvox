@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 
 #include "Constants.h"
 #include "PolyVoxForwardDeclarations.h"
@@ -44,26 +44,26 @@ namespace PolyVox
 		//Getters
 		void getChangedRegions(std::list<Region>& listToFill) const;
 		Region getEnclosingRegion(void) const;		
-		boost::uint16_t getSideLength(void);
-		BlockVolume<boost::uint8_t>* getVolumeData(void) const;
-		boost::uint8_t getVoxelAt(const Vector3DUint16& pos);
-		boost::uint8_t getVoxelAt(boost::uint16_t uX, boost::uint16_t uY, boost::uint16_t uZ);
+		std::uint16_t getSideLength(void);
+		BlockVolume<std::uint8_t>* getVolumeData(void) const;
+		std::uint8_t getVoxelAt(const Vector3DUint16& pos);
+		std::uint8_t getVoxelAt(std::uint16_t uX, std::uint16_t uY, std::uint16_t uZ);
 
 		//Setters
 		void setAllRegionsUpToDate(bool newUpToDateValue);
-		void setLockedVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);		
-		void setVolumeData(BlockVolume<boost::uint8_t>* volumeDataToSet);
-		void setVoxelAt(boost::uint16_t x, boost::uint16_t y, boost::uint16_t z, boost::uint8_t value);
+		void setLockedVoxelAt(std::uint16_t x, std::uint16_t y, std::uint16_t z, std::uint8_t value);		
+		void setVolumeData(BlockVolume<std::uint8_t>* volumeDataToSet);
+		void setVoxelAt(std::uint16_t x, std::uint16_t y, std::uint16_t z, std::uint8_t value);
 
 		//Others	
 		void lockRegion(const Region& regToLock);
 		void unlockRegion(void);
-		//void markRegionChanged(boost::uint16_t firstX, boost::uint16_t firstY, boost::uint16_t firstZ, boost::uint16_t lastX, boost::uint16_t lastY, boost::uint16_t lastZ);
+		//void markRegionChanged(std::uint16_t firstX, std::uint16_t firstY, std::uint16_t firstZ, std::uint16_t lastX, std::uint16_t lastY, std::uint16_t lastZ);
 
 	private:
 		bool m_bIsLocked;
 		Region m_regLastLocked;
-		BlockVolume<boost::uint8_t>* volumeData;
+		BlockVolume<std::uint8_t>* volumeData;
 		LinearVolume<bool>* volRegionUpToDate;
 	};
 }

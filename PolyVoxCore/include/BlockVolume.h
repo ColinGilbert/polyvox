@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 
 #include <map>
 #pragma endregion
@@ -39,21 +39,21 @@ namespace PolyVox
 		friend class BlockVolumeIterator<VoxelType>;
 
 	public:		
-		BlockVolume(boost::uint8_t uSideLengthPower, boost::uint8_t uBlockSideLengthPower = 5);
+		BlockVolume(std::uint8_t uSideLengthPower, std::uint8_t uBlockSideLengthPower = 5);
 		BlockVolume(const BlockVolume& rhs);
 		~BlockVolume();	
 
 		BlockVolume& operator=(const BlockVolume& rhs);
 
 		Region getEnclosingRegion(void) const;
-		boost::uint16_t getSideLength(void) const;
-		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
+		std::uint16_t getSideLength(void) const;
+		VoxelType getVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
-		bool containsPoint(const Vector3DInt32& pos, boost::uint16_t boundary) const;
+		bool containsPoint(const Vector3DInt32& pos, std::uint16_t boundary) const;
 		BlockVolumeIterator<VoxelType> firstVoxel(void);
-		void idle(boost::uint32_t uAmount);
+		void idle(std::uint32_t uAmount);
 		BlockVolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
@@ -65,20 +65,20 @@ namespace PolyVox
 		VoxelType* m_pHomogenousValue;
 		mutable std::map<VoxelType, Block<VoxelType>*> m_pHomogenousBlocks;
 
-		boost::uint32_t m_uNoOfBlocksInVolume;
-		boost::uint16_t m_uSideLengthInBlocks;
+		std::uint32_t m_uNoOfBlocksInVolume;
+		std::uint16_t m_uSideLengthInBlocks;
 
-		boost::uint8_t m_uSideLengthPower;
-		boost::uint16_t m_uSideLength;
+		std::uint8_t m_uSideLengthPower;
+		std::uint16_t m_uSideLength;
 
-		boost::uint8_t m_uBlockSideLengthPower;
-		boost::uint16_t m_uBlockSideLength;
+		std::uint8_t m_uBlockSideLengthPower;
+		std::uint16_t m_uBlockSideLength;
 	};
 
 	//Some handy typedefs
 	typedef BlockVolume<float> FloatBlockVolume;
-	typedef BlockVolume<boost::uint8_t> UInt8BlockVolume;
-	typedef BlockVolume<boost::uint16_t> UInt16BlockVolume;	
+	typedef BlockVolume<std::uint8_t> UInt8BlockVolume;
+	typedef BlockVolume<std::uint16_t> UInt16BlockVolume;	
 }
 
 #include "BlockVolume.inl"

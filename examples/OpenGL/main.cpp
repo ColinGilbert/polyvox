@@ -9,7 +9,7 @@
 #include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
 
 //Some namespaces we need
-using namespace boost;
+using namespace std;
 using namespace PolyVox;
 using namespace std;
 

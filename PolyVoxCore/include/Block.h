@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
 
-#include "boost/cstdint.hpp"
+#include "PolyVoxCStdInt.h"
 #pragma endregion
 
 namespace PolyVox
@@ -36,22 +36,22 @@ namespace PolyVox
 		//Make BlockVolumeIterator a friend
 		friend class BlockVolumeIterator<VoxelType>;
 	public:
-		Block(boost::uint8_t uSideLengthPower);
+		Block(std::uint8_t uSideLengthPower);
 		Block(const Block& rhs);
 		~Block();
 
 		Block& operator=(const Block& rhs);
 
-		boost::uint16_t getSideLength(void) const;
-		VoxelType getVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos) const;
+		std::uint16_t getSideLength(void) const;
+		VoxelType getVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos) const;
 
-		void setVoxelAt(boost::uint16_t uXPos, boost::uint16_t uYPos, boost::uint16_t uZPos, VoxelType tValue);
+		void setVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos, VoxelType tValue);
 
 		void fill(VoxelType tValue);
 
 	private:
-		boost::uint8_t m_uSideLengthPower;
-		boost::uint16_t m_uSideLength;
+		std::uint8_t m_uSideLengthPower;
+		std::uint16_t m_uSideLength;
 		VoxelType* m_tData;
 	};
 }
