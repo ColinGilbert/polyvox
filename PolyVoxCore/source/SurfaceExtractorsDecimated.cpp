@@ -129,22 +129,22 @@ namespace PolyVox
 				if((x==regSlice.getLowerCorner().getX()) && (y==regSlice.getLowerCorner().getY()))
 				{
 					volIter.setPosition(x,y,regSlice.getLowerCorner().getZ());
-					const uint8_t v000 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v000 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y,regSlice.getLowerCorner().getZ());
-					const uint8_t v100 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v100 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ());
-					const uint8_t v010 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v010 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ());
-					const uint8_t v110 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v110 = volIter.getSubSampledVoxel(uLevel);
 
 					volIter.setPosition(x,y,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v001 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v001 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v101 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v101 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v011 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v011 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);		
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);		
 
 					if (v000 == 0) iCubeIndex |= 1;
 					if (v100 == 0) iCubeIndex |= 2;
@@ -158,14 +158,14 @@ namespace PolyVox
 				else if((x>regSlice.getLowerCorner().getX()) && y==regSlice.getLowerCorner().getY())
 				{
 					volIter.setPosition(x+uStepSize,y,regSlice.getLowerCorner().getZ());
-					const uint8_t v100 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v100 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ());
-					const uint8_t v110 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v110 = volIter.getSubSampledVoxel(uLevel);
 
 					volIter.setPosition(x+uStepSize,y,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v101 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v101 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);
 
 					//x
 					uint8_t iPreviousCubeIndexX = bitmask[getDecimatedIndex(x- offset.getX()-uStepSize,y- offset.getY())];
@@ -193,14 +193,14 @@ namespace PolyVox
 				else if((x==regSlice.getLowerCorner().getX()) && (y>regSlice.getLowerCorner().getY()))
 				{
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ());
-					const uint8_t v010 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v010 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ());
-					const uint8_t v110 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v110 = volIter.getSubSampledVoxel(uLevel);
 
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v011 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v011 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);
 
 					//y
 					uint8_t iPreviousCubeIndexY = bitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY()-uStepSize)];
@@ -228,10 +228,10 @@ namespace PolyVox
 				else
 				{
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ());
-					const uint8_t v110 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v110 = volIter.getSubSampledVoxel(uLevel);
 
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);
 
 					//y
 					uint8_t iPreviousCubeIndexY = bitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY()-uStepSize)];
@@ -298,13 +298,13 @@ namespace PolyVox
 				if((x==regSlice.getLowerCorner().getX()) && (y==regSlice.getLowerCorner().getY()))
 				{
 					volIter.setPosition(x,y,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v001 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v001 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v101 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v101 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v011 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v011 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);	
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);	
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY())];
@@ -318,9 +318,9 @@ namespace PolyVox
 				else if((x>regSlice.getLowerCorner().getX()) && y==regSlice.getLowerCorner().getY())
 				{
 					volIter.setPosition(x+uStepSize,y,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v101 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v101 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);	
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);	
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY())];
@@ -342,9 +342,9 @@ namespace PolyVox
 				else if((x==regSlice.getLowerCorner().getX()) && (y>regSlice.getLowerCorner().getY()))
 				{
 					volIter.setPosition(x,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v011 = volIter.getMaxedVoxel(uLevel);
+					const uint8_t v011 = volIter.getSubSampledVoxel(uLevel);
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);	
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);	
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY())];
@@ -366,7 +366,7 @@ namespace PolyVox
 				else
 				{
 					volIter.setPosition(x+uStepSize,y+uStepSize,regSlice.getLowerCorner().getZ()+uStepSize);
-					const uint8_t v111 = volIter.getMaxedVoxel(uLevel);	
+					const uint8_t v111 = volIter.getSubSampledVoxel(uLevel);	
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY())];
@@ -418,7 +418,7 @@ namespace PolyVox
 				const uint16_t z = regSlice.getLowerCorner().getZ();
 
 				volIter.setPosition(x,y,z);
-				const uint8_t v000 = volIter.getMaxedVoxel(uLevel);
+				const uint8_t v000 = volIter.getSubSampledVoxel(uLevel);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = bitmask[getDecimatedIndex(x - offset.getX(),y - offset.getY())];
@@ -435,7 +435,7 @@ namespace PolyVox
 					if(x != regSlice.getUpperCorner().getX())
 					{
 						volIter.setPosition(x + uStepSize,y,z);
-						const uint8_t v100 = volIter.getMaxedVoxel(uLevel);
+						const uint8_t v100 = volIter.getSubSampledVoxel(uLevel);
 						const Vector3DFloat v3dPosition(x - offset.getX() + 0.5f * uStepSize, y - offset.getY(), z - offset.getZ());
 						const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
 						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
@@ -449,7 +449,7 @@ namespace PolyVox
 					if(y != regSlice.getUpperCorner().getY())
 					{
 						volIter.setPosition(x,y + uStepSize,z);
-						const uint8_t v010 = volIter.getMaxedVoxel(uLevel);
+						const uint8_t v010 = volIter.getSubSampledVoxel(uLevel);
 						const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY() + 0.5f * uStepSize, z - offset.getZ());
 						const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
 						const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
@@ -463,7 +463,7 @@ namespace PolyVox
 					//if(z != regSlice.getUpperCorner.getZ())
 					{
 						volIter.setPosition(x,y,z + uStepSize);
-						const uint8_t v001 = volIter.getMaxedVoxel(uLevel);
+						const uint8_t v001 = volIter.getSubSampledVoxel(uLevel);
 						const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY(), z - offset.getZ() + 0.5f * uStepSize);
 						const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
 						const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
@@ -606,21 +606,21 @@ namespace PolyVox
 		//while(volIter.moveForwardInRegionXYZ())
 		//{		
 			volIter.setPosition(x,y,z);
-			const uint8_t v000 = volIter.getMaxedVoxel(1);
+			const uint8_t v000 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x+2,y,z);
-			const uint8_t v100 = volIter.getMaxedVoxel(1);
+			const uint8_t v100 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x,y+2,z);
-			const uint8_t v010 = volIter.getMaxedVoxel(1);
+			const uint8_t v010 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x+2,y+2,z);
-			const uint8_t v110 = volIter.getMaxedVoxel(1);
+			const uint8_t v110 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x,y,z+2);
-			const uint8_t v001 = volIter.getMaxedVoxel(1);
+			const uint8_t v001 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x+2,y,z+2);
-			const uint8_t v101 = volIter.getMaxedVoxel(1);
+			const uint8_t v101 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x,y+2,z+2);
-			const uint8_t v011 = volIter.getMaxedVoxel(1);
+			const uint8_t v011 = volIter.getSubSampledVoxel(1);
 			volIter.setPosition(x+2,y+2,z+2);
-			const uint8_t v111 = volIter.getMaxedVoxel(1);
+			const uint8_t v111 = volIter.getSubSampledVoxel(1);
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
 			uint8_t iCubeIndex = 0;

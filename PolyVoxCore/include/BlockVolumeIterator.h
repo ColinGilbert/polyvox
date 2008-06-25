@@ -43,10 +43,10 @@ namespace PolyVox
 		bool operator<=(const BlockVolumeIterator& rhs);
 		bool operator>=(const BlockVolumeIterator& rhs);
 
-		VoxelType getMaxedVoxel(boost::uint8_t uLevel) const;
 		boost::uint16_t getPosX(void) const;
 		boost::uint16_t getPosY(void) const;
 		boost::uint16_t getPosZ(void) const;
+		VoxelType getSubSampledVoxel(boost::uint8_t uLevel) const;
 		const BlockVolume<VoxelType>& getVolume(void) const;
 		VoxelType getVoxel(void) const;			
 

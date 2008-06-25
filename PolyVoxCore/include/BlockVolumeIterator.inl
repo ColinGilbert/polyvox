@@ -105,7 +105,25 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::getMaxedVoxel(boost::uint8_t uLevel) const
+	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosX(void) const
+	{
+		return mXPosInVolume;
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosY(void) const
+	{
+		return mYPosInVolume;
+	}
+
+	template <typename VoxelType>
+	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosZ(void) const
+	{
+		return mZPosInVolume;
+	}
+
+	template <typename VoxelType>
+	VoxelType BlockVolumeIterator<VoxelType>::getSubSampledVoxel(boost::uint8_t uLevel) const
 	{		
 		if(uLevel == 0)
 		{
@@ -140,24 +158,6 @@ namespace PolyVox
 			}
 			return tValue;
 		}
-	}
-
-	template <typename VoxelType>
-	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosX(void) const
-	{
-		return mXPosInVolume;
-	}
-
-	template <typename VoxelType>
-	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosY(void) const
-	{
-		return mYPosInVolume;
-	}
-
-	template <typename VoxelType>
-	boost::uint16_t BlockVolumeIterator<VoxelType>::getPosZ(void) const
-	{
-		return mZPosInVolume;
 	}
 
 	template <typename VoxelType>

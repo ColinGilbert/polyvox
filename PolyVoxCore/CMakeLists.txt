@@ -20,6 +20,7 @@ SET(SRC_FILES
 	source/SurfaceVertex.cpp
 	source/Utility.cpp
 	source/VolumeChangeTracker.cpp
+	source/VoxelFilters.cpp
 )
 
 #Projects headers files
@@ -50,6 +51,7 @@ SET(INC_FILES
 	include/Vector.h
 	include/Vector.inl
 	include/VolumeChangeTracker.h	
+	include/VoxelFilters.h
 )
 
 FIND_PACKAGE(Boost REQUIRED)
