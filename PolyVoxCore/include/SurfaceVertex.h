@@ -31,18 +31,13 @@ namespace PolyVox
 	{
 	public:	
 		SurfaceVertex();
-		SurfaceVertex(Vector3DFloat positionToSet, float materialToSet, float alphaToSet);
-		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet, float alphaToSet);	
+		SurfaceVertex(Vector3DFloat positionToSet, float materialToSet);
+		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet);	
 
-		friend bool operator==(const SurfaceVertex& lhs, const SurfaceVertex& rhs);
-		friend bool operator < (const SurfaceVertex& lhs, const SurfaceVertex& rhs);
-
-		float getAlpha(void) const;
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
-
-		void setAlpha(float alphaToSet);	
+	
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
 		void setPosition(const Vector3DFloat& positionToSet);
@@ -53,7 +48,6 @@ namespace PolyVox
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material;
-		float alpha;
 			
 	};
 

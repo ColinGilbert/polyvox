@@ -439,7 +439,7 @@ namespace PolyVox
 						const Vector3DFloat v3dPosition(x - offset.getX() + 0.5f * uStepSize, y - offset.getY(), z - offset.getZ());
 						const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
 						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
-						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
+						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 						singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 						vertexIndicesX[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
 					}
@@ -453,7 +453,7 @@ namespace PolyVox
 						const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY() + 0.5f * uStepSize, z - offset.getZ());
 						const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
 						const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
-						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
+						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 						singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 						vertexIndicesY[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
 					}
@@ -467,7 +467,7 @@ namespace PolyVox
 						const Vector3DFloat v3dPosition(x - offset.getX(), y - offset.getY(), z - offset.getZ() + 0.5f * uStepSize);
 						const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
 						const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
-						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
+						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 						singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 						vertexIndicesZ[getDecimatedIndex(x - offset.getX(),y - offset.getY())] = singleMaterialPatch->m_vecVertices.size()-1;
 					}
@@ -768,11 +768,11 @@ namespace PolyVox
 
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
-				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f);
 				surfaceVertex0Alpha1.setNormal(normal0);
-				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f);
 				surfaceVertex1Alpha1.setNormal(normal1);
-				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f);
 				surfaceVertex2Alpha1.setNormal(normal2);
 				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 			}//For each triangle

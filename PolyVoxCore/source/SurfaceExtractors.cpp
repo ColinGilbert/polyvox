@@ -30,14 +30,14 @@ namespace PolyVox
 			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
 			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
 
-			generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			//generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 
-			//generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 		
 			//for(int ct = 0; ct < 2; ct++)
 			Vector3DInt32 temp = regionGeometry.m_v3dRegionPosition;
 			//temp /= 16;
-			if(temp.getY() % 32 == 0)
+			/*if(temp.getY() % 32 == 0)
 			{
 				//smoothRegionGeometry(volume.getVolumeData(), regionGeometry);
 				generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
@@ -46,7 +46,7 @@ namespace PolyVox
 			{
 				generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 				//adjustDecimatedGeometry(volume.getVolumeData(), regionGeometry, 1);
-			}
+			}*/
 
 			//computeNormalsForVertices(volume.getVolumeData(), regionGeometry, CENTRAL_DIFFERENCE);
 
@@ -442,7 +442,7 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(x + 0.5f, y, z);
 					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f, 0.0f, 0.0f);					
 					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
-					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
+					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesX[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -455,7 +455,7 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(x, y + 0.5f, z);
 					const Vector3DFloat v3dNormal(0.0f, v000 > v010 ? 1.0f : -1.0f, 0.0f);
 					const uint8_t uMaterial = v000 | v010;
-					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesY[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -468,7 +468,7 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(x, y, z + 0.5f);
 					const Vector3DFloat v3dNormal(0.0f, 0.0f, v000 > v001 ? 1.0f : -1.0f);
 					const uint8_t uMaterial = v000 | v001;
-					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial, 1.0);
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesZ[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
 				}
@@ -589,6 +589,7 @@ namespace PolyVox
 		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
 		Vector3DFloat vertlist[12];
+		Vector3DFloat normlist[12];
 		uint8_t vertMaterials[12];
 		BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
 		volIter.setValidRegion(region);
@@ -640,6 +641,9 @@ namespace PolyVox
 				vertlist[0].setX(x + 0.5f);
 				vertlist[0].setY(y);
 				vertlist[0].setZ(z);
+				normlist[0].setX(v000 > v100 ? 1.0f : -1.0f);
+				normlist[0].setY(0.0f);
+				normlist[0].setZ(0.0f);
 				vertMaterials[0] = v000 | v100; //Because one of these is 0, the or operation takes the max.
 			}
 			if (edgeTable[iCubeIndex] & 2)
@@ -647,6 +651,9 @@ namespace PolyVox
 				vertlist[1].setX(x + 1.0f);
 				vertlist[1].setY(y + 0.5f);
 				vertlist[1].setZ(z);
+				normlist[1].setX(0.0f);
+				normlist[1].setY(v100 > v110 ? 1.0f : -1.0f);
+				normlist[1].setZ(0.0f);
 				vertMaterials[1] = v100 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 4)
@@ -654,6 +661,9 @@ namespace PolyVox
 				vertlist[2].setX(x + 0.5f);
 				vertlist[2].setY(y + 1.0f);
 				vertlist[2].setZ(z);
+				normlist[2].setX(v010 > v110 ? 1.0f : -1.0f);
+				normlist[2].setY(0.0f);
+				normlist[2].setZ(0.0f);
 				vertMaterials[2] = v010 | v110;
 			}
 			if (edgeTable[iCubeIndex] & 8)
@@ -661,6 +671,9 @@ namespace PolyVox
 				vertlist[3].setX(x);
 				vertlist[3].setY(y + 0.5f);
 				vertlist[3].setZ(z);
+				normlist[3].setX(0.0f);
+				normlist[3].setY(v000 > v010 ? 1.0f : -1.0f);
+				normlist[3].setZ(0.0f);
 				vertMaterials[3] = v000 | v010;
 			}
 			if (edgeTable[iCubeIndex] & 16)
@@ -668,6 +681,9 @@ namespace PolyVox
 				vertlist[4].setX(x + 0.5f);
 				vertlist[4].setY(y);
 				vertlist[4].setZ(z + 1.0f);
+				normlist[4].setX(v001 > v101 ? 1.0f : -1.0f);
+				normlist[4].setY(0.0f);
+				normlist[4].setZ(0.0f);
 				vertMaterials[4] = v001 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 32)
@@ -675,6 +691,9 @@ namespace PolyVox
 				vertlist[5].setX(x + 1.0f);
 				vertlist[5].setY(y + 0.5f);
 				vertlist[5].setZ(z + 1.0f);
+				normlist[5].setX(0.0f);
+				normlist[5].setY(v101 > v111 ? 1.0f : -1.0f);
+				normlist[5].setZ(0.0f);
 				vertMaterials[5] = v101 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 64)
@@ -682,6 +701,9 @@ namespace PolyVox
 				vertlist[6].setX(x + 0.5f);
 				vertlist[6].setY(y + 1.0f);
 				vertlist[6].setZ(z + 1.0f);
+				normlist[6].setX(v011 > v111 ? 1.0f : -1.0f);
+				normlist[6].setY(0.0f);
+				normlist[6].setZ(0.0f);
 				vertMaterials[6] = v011 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 128)
@@ -689,6 +711,9 @@ namespace PolyVox
 				vertlist[7].setX(x);
 				vertlist[7].setY(y + 0.5f);
 				vertlist[7].setZ(z + 1.0f);
+				normlist[7].setX(0.0f);
+				normlist[7].setY(v001 > v011 ? 1.0f : -1.0f);
+				normlist[7].setZ(0.0f);
 				vertMaterials[7] = v001 | v011;
 			}
 			if (edgeTable[iCubeIndex] & 256)
@@ -696,6 +721,9 @@ namespace PolyVox
 				vertlist[8].setX(x);
 				vertlist[8].setY(y);
 				vertlist[8].setZ(z + 0.5f);
+				normlist[8].setX(0.0f);
+				normlist[8].setY(0.0f);
+				normlist[8].setZ(v000 > v001 ? 1.0f : -1.0f);
 				vertMaterials[8] = v000 | v001;
 			}
 			if (edgeTable[iCubeIndex] & 512)
@@ -703,6 +731,9 @@ namespace PolyVox
 				vertlist[9].setX(x + 1.0f);
 				vertlist[9].setY(y);
 				vertlist[9].setZ(z + 0.5f);
+				normlist[9].setX(0.0f);
+				normlist[9].setY(0.0f);
+				normlist[9].setZ(v100 > v101 ? 1.0f : -1.0f);
 				vertMaterials[9] = v100 | v101;
 			}
 			if (edgeTable[iCubeIndex] & 1024)
@@ -710,6 +741,9 @@ namespace PolyVox
 				vertlist[10].setX(x + 1.0f);
 				vertlist[10].setY(y + 1.0f);
 				vertlist[10].setZ(z + 0.5f);
+				normlist[10].setX(0.0f);
+				normlist[10].setY(0.0f);
+				normlist[10].setZ(v110 > v111 ? 1.0f : -1.0f);
 				vertMaterials[10] = v110 | v111;
 			}
 			if (edgeTable[iCubeIndex] & 2048)
@@ -717,6 +751,9 @@ namespace PolyVox
 				vertlist[11].setX(x);
 				vertlist[11].setY(y + 1.0f);
 				vertlist[11].setZ(z + 0.5f);
+				normlist[11].setX(0.0f);
+				normlist[11].setY(0.0f);
+				normlist[11].setZ(v010 > v011 ? 1.0f : -1.0f);
 				vertMaterials[11] = v010 | v011;
 			}
 
@@ -727,6 +764,10 @@ namespace PolyVox
 				const Vector3DFloat vertex1 = vertlist[triTable[iCubeIndex][i+1]] - offset;
 				const Vector3DFloat vertex2 = vertlist[triTable[iCubeIndex][i+2]] - offset;
 
+				const Vector3DFloat normal0 = normlist[triTable[iCubeIndex][i  ]];
+				const Vector3DFloat normal1 = normlist[triTable[iCubeIndex][i+1]];
+				const Vector3DFloat normal2 = normlist[triTable[iCubeIndex][i+2]];
+
 				//Cast to floats and divide by two.
 				//const Vector3DFloat vertex0AsFloat = (static_cast<Vector3DFloat>(vertex0) / 2.0f) - offset;
 				//const Vector3DFloat vertex1AsFloat = (static_cast<Vector3DFloat>(vertex1) / 2.0f) - offset;
@@ -736,11 +777,10 @@ namespace PolyVox
 				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
 				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
-
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
-				SurfaceVertex surfaceVertex0Alpha1(vertex0,material0 + 0.1f,1.0f);
-				SurfaceVertex surfaceVertex1Alpha1(vertex1,material1 + 0.1f,1.0f);
-				SurfaceVertex surfaceVertex2Alpha1(vertex2,material2 + 0.1f,1.0f);
+				SurfaceVertex surfaceVertex0Alpha1(vertex0, normal0, material0 + 0.1f);
+				SurfaceVertex surfaceVertex1Alpha1(vertex1, normal1, material1 + 0.1f);
+				SurfaceVertex surfaceVertex2Alpha1(vertex2, normal2, material2 + 0.1f);
 				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 			}//For each triangle
 		}//For each cell
