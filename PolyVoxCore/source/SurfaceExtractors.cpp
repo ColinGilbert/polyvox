@@ -37,9 +37,15 @@ namespace PolyVox
 			//for(int ct = 0; ct < 2; ct++)
 			Vector3DInt32 temp = regionGeometry.m_v3dRegionPosition;
 			//temp /= 16;
-			if(temp.getX() % 32 == 0)
+			if(temp.getY() % 32 == 0)
 			{
-				smoothRegionGeometry(volume.getVolumeData(), regionGeometry);
+				//smoothRegionGeometry(volume.getVolumeData(), regionGeometry);
+				generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			}
+			else
+			{
+				generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+				//adjustDecimatedGeometry(volume.getVolumeData(), regionGeometry, 1);
 			}
 
 			//computeNormalsForVertices(volume.getVolumeData(), regionGeometry, CENTRAL_DIFFERENCE);

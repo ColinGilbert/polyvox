@@ -9,6 +9,8 @@
 
 #include <vector>
 
+using namespace std;
+
 namespace PolyVox
 {
 	void smoothRegionGeometry(BlockVolume<std::uint8_t>* volumeData, RegionGeometry& regGeom)
@@ -71,6 +73,78 @@ namespace PolyVox
 					iterSurfaceVertex->setNormal(fInterGrad); //This is actually the gradient for the previous position, but it won't have moved much.
 				} //if(lowerCornerInside && upperCornerInside)
 			} //for(int ct = 0; ct < uSmoothingFactor; ++ct)
+			++iterSurfaceVertex;
+		} //while(iterSurfaceVertex != vecVertices.end())
+	}
+
+	void adjustDecimatedGeometry(BlockVolume<std::uint8_t>* volumeData, RegionGeometry& regGeom, uint8_t val)
+	{
+		BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
+
+		std::vector<SurfaceVertex>& vecVertices = regGeom.m_patchSingleMaterial->m_vecVertices;
+		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
+		while(iterSurfaceVertex != vecVertices.end())
+		{
+			Vector3DFloat v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
+			Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
+
+			BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
+
+			//Check all corners are within the volume, allowing a boundary for gradient estimation
+			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,1);
+			bool upperCornerInside = volumeData->containsPoint(v3dFloor+Vector3DInt32(1,1,1),1);
+
+			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
+			{				
+				//volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
+				//const uint8_t uFloor = volIter.getVoxel();
+				if(((v3dPos.getX() - v3dFloor.getX()) < 0.001) && ((v3dPos.getY() - v3dFloor.getY()) < 0.001) && ((v3dPos.getZ() - v3dFloor.getZ()) < 0.001))
+				//int x = v3dPos.getX();
+				//if(x % 2 != 0)
+				//if((iterSurfaceVertex->getNormal().getX() > 0.5f) || (iterSurfaceVertex->getNormal().getX() < -0.5f))
+				{	
+					//exit(0);
+					//volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
+					//const uint8_t uCeil = volIter.getVoxel();
+					//if(uFloor == uCeil) //In this case they must both be zero
+					{						
+						//if(iterSurfaceVertex->getNormal().getX() > 0)
+						{
+							iterSurfaceVertex->setPosition(iterSurfaceVertex->getPosition() - iterSurfaceVertex->getNormal() * 0.5f);
+							v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
+							v3dFloor = static_cast<Vector3DInt32>(v3dPos);
+
+							volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
+							const uint8_t uFloor = volIter.getVoxel();
+
+							uint8_t uCeil;
+							if((iterSurfaceVertex->getNormal().getX() > 0.5f) || (iterSurfaceVertex->getNormal().getX() < -0.5f))
+							{
+								volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
+								uCeil = volIter.getVoxel();
+							}
+							if((iterSurfaceVertex->getNormal().getY() > 0.5f) || (iterSurfaceVertex->getNormal().getY() < -0.5f))
+							{
+								volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,1,0)));
+								uCeil = volIter.getVoxel();
+							}
+							if((iterSurfaceVertex->getNormal().getZ() > 0.5f) || (iterSurfaceVertex->getNormal().getZ() < -0.5f))
+							{
+								volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,0,1)));
+								uCeil = volIter.getVoxel();
+							}
+
+							if(uFloor == uCeil)
+							{
+								//NOTE: The normal should actually be multiplied by 1.0f. This works 
+								//for the simple cube but causes depth fighting on more complex shapes.
+								iterSurfaceVertex->setPosition(iterSurfaceVertex->getPosition() - iterSurfaceVertex->getNormal() * 0.5f);
+							}
+						}
+					}
+				}
+			}
+
 			++iterSurfaceVertex;
 		} //while(iterSurfaceVertex != vecVertices.end())
 	}
