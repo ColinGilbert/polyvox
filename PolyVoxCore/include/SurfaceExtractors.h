@@ -45,6 +45,9 @@ namespace PolyVox
 	POLYVOX_API void generateRoughVerticesForSlice(BlockVolumeIterator<std::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, std::uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,std::int32_t vertexIndicesX[],std::int32_t vertexIndicesY[],std::int32_t vertexIndicesZ[]);
 
 	POLYVOX_API void generateReferenceMeshDataForRegion(BlockVolume<std::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+
+	std::int32_t getIndexFor(const Vector3DFloat& pos, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1]);
+	void setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1]);
 }
 
 #endif

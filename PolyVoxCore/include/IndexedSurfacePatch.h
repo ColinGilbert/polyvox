@@ -36,7 +36,7 @@ namespace PolyVox
 	class POLYVOX_API IndexedSurfacePatch
 	{
 	public:
-	   IndexedSurfacePatch(bool allowDuplicateVertices);
+	   IndexedSurfacePatch();
 	   ~IndexedSurfacePatch();	   
 
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);
@@ -52,20 +52,6 @@ namespace PolyVox
 	public:		
 		std::vector<std::uint32_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
-
-		static std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-
-		static std::int32_t noOfVerticesSubmitted;
-		static std::int32_t noOfVerticesAccepted;
-		static std::int32_t noOfTrianglesSubmitted;
-
-		std::int32_t getIndexFor(const Vector3DFloat& pos);
-		void setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex);
-
-	public:
-		bool m_AllowDuplicateVertices;
 	};	
 
 }

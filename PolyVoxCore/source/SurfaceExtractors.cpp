@@ -27,12 +27,12 @@ namespace PolyVox
 		{
 			//Generate the surface
 			RegionGeometry regionGeometry;
-			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch(false);
+			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch();
 			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
 
-			//generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 
-			generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			//generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 		
 			//for(int ct = 0; ct < 2; ct++)
 			Vector3DInt32 temp = regionGeometry.m_v3dRegionPosition;
@@ -578,6 +578,14 @@ namespace PolyVox
 
 	void generateReferenceMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
+		static std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+
+		memset(vertexIndicesX,0xFF,sizeof(vertexIndicesX)); //0xFF is -1 as two's complement - this may not be portable...
+		memset(vertexIndicesY,0xFF,sizeof(vertexIndicesY));
+		memset(vertexIndicesZ,0xFF,sizeof(vertexIndicesZ));
+
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
@@ -778,26 +786,113 @@ namespace PolyVox
 				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
-				SurfaceVertex surfaceVertex0Alpha1(vertex0, normal0, material0 + 0.1f);
-				SurfaceVertex surfaceVertex1Alpha1(vertex1, normal1, material1 + 0.1f);
-				SurfaceVertex surfaceVertex2Alpha1(vertex2, normal2, material2 + 0.1f);
-				singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+				SurfaceVertex v0(vertex0, normal0, material0 + 0.1f);
+				SurfaceVertex v1(vertex1, normal1, material1 + 0.1f);
+				SurfaceVertex v2(vertex2, normal2, material2 + 0.1f);
+
+				//singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
+
+				int32_t index = getIndexFor(v0.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				if(index == -1)
+				{
+					singleMaterialPatch->m_vecVertices.push_back(v0);
+					singleMaterialPatch->m_vecTriangleIndices.push_back(singleMaterialPatch->m_vecVertices.size()-1);
+					setIndexFor(v0.getPosition(), singleMaterialPatch->m_vecVertices.size()-1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				}
+				else
+				{
+					singleMaterialPatch->m_vecTriangleIndices.push_back(index);
+				}
+
+				index = getIndexFor(v1.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				if(index == -1)
+				{
+					singleMaterialPatch->m_vecVertices.push_back(v1);
+					singleMaterialPatch->m_vecTriangleIndices.push_back(singleMaterialPatch->m_vecVertices.size()-1);
+					setIndexFor(v1.getPosition(), singleMaterialPatch->m_vecVertices.size()-1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				}
+				else
+				{
+					singleMaterialPatch->m_vecTriangleIndices.push_back(index);
+				}
+
+				index = getIndexFor(v2.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				if(index == -1)
+				{
+					singleMaterialPatch->m_vecVertices.push_back(v2);
+					singleMaterialPatch->m_vecTriangleIndices.push_back(singleMaterialPatch->m_vecVertices.size()-1);
+					setIndexFor(v2.getPosition(), singleMaterialPatch->m_vecVertices.size()-1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				}
+				else
+				{
+					singleMaterialPatch->m_vecTriangleIndices.push_back(index);
+				}
 			}//For each triangle
 		}//For each cell
+	}
 
-		//FIXME - can it happen that we have no vertices or triangles? Should exit early?
+	std::int32_t getIndexFor(const Vector3DFloat& pos, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
+	{
+		assert(pos.getX() >= 0.0f);
+		assert(pos.getY() >= 0.0f);
+		assert(pos.getZ() >= 0.0f);
+		assert(pos.getX() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
 
+		float xIntPart;
+		float xFracPart = std::modf(pos.getX(), &xIntPart);
+		float yIntPart;
+		float yFracPart = std::modf(pos.getY(), &yIntPart);
+		float zIntPart;
+		float zFracPart = std::modf(pos.getZ(), &zIntPart);
 
-		//for(std::map<uint8_t, IndexedSurfacePatch*>::iterator iterPatch = surfacePatchMapResult.begin(); iterPatch != surfacePatchMapResult.end(); ++iterPatch)
-		/*{
+		//Of all the fractional parts, two should be zero and one should have a value.
+		if(xFracPart > 0.000001f)
+		{
+			return vertexIndicesX[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)];
+		}
+		if(yFracPart > 0.000001f)
+		{
+			return vertexIndicesY[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)];
+		}
+		if(zFracPart > 0.000001f)
+		{
+			return vertexIndicesZ[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)];
+		}
+		while(true);
+	}
 
-			std::vector<SurfaceVertex>::iterator iterSurfaceVertex = singleMaterialPatch->getVertices().begin();
-			while(iterSurfaceVertex != singleMaterialPatch->getVertices().end())
-			{
-				Vector3DFloat tempNormal = computeNormal(volumeData, static_cast<Vector3DFloat>(iterSurfaceVertex->getPosition() + offset), CENTRAL_DIFFERENCE);
-				const_cast<SurfaceVertex&>(*iterSurfaceVertex).setNormal(tempNormal);
-				++iterSurfaceVertex;
-			}
-		}*/
+	void setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
+	{
+		assert(pos.getX() >= 0.0f);
+		assert(pos.getY() >= 0.0f);
+		assert(pos.getZ() >= 0.0f);
+		assert(pos.getX() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
+		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
+
+		assert(newIndex < 10000);
+
+		float xIntPart;
+		float xFracPart = std::modf(pos.getX(), &xIntPart);
+		float yIntPart;
+		float yFracPart = std::modf(pos.getY(), &yIntPart);
+		float zIntPart;
+		float zFracPart = std::modf(pos.getZ(), &zIntPart);
+
+		//Of all the fractional parts, two should be zero and one should have a value.
+		if(xFracPart > 0.000001f)
+		{
+			vertexIndicesX[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
+		}
+		if(yFracPart > 0.000001f)
+		{
+			vertexIndicesY[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
+		}
+		if(zFracPart > 0.000001f)
+		{
+			vertexIndicesZ[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
+		}
 	}
 }
