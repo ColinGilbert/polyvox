@@ -4,7 +4,7 @@
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(BlockVolumeIterator<std::uint8_t>& volIter)
+	float computeSmoothedVoxel(BlockVolumeIterator<uint8>& volIter)
 	{
 		assert(volIter.getPosX() >= 1);
 		assert(volIter.getPosY() >= 1);

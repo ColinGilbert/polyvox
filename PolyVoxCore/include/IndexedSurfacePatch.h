@@ -40,17 +40,17 @@ namespace PolyVox
 	   ~IndexedSurfacePatch();	   
 
 	   void addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2);
-	   void fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<std::uint32_t>& vecIndices);
+	   void fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint32>& vecIndices);
 
 	   const std::vector<SurfaceVertex>& getVertices(void) const;
 	   std::vector<SurfaceVertex>& getVertices(void); //FIXME - non const version should be removed.
-	   const std::vector<std::uint32_t>& getIndices(void) const;
+	   const std::vector<uint32>& getIndices(void) const;
 
 	   unsigned short getNoNonUniformTrianges(void);
 	   unsigned short getNoUniformTrianges(void);
 	
 	public:		
-		std::vector<std::uint32_t> m_vecTriangleIndices;
+		std::vector<uint32> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
 	};	
 

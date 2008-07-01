@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_ForwardDeclarations_H__
 
 #include "Enums.h"
-
 #include "PolyVoxCStdInt.h"
 
 namespace PolyVox
@@ -33,8 +32,8 @@ namespace PolyVox
 	//---------- BlockVolume ----------
 	template <typename VoxelType> class BlockVolume;
 	typedef BlockVolume<float> FloatBlockVolume;
-	typedef BlockVolume<std::uint8_t> UInt8BlockVolume;
-	typedef BlockVolume<std::uint16_t> UInt16BlockVolume;
+	typedef BlockVolume<uint8> UInt8BlockVolume;
+	typedef BlockVolume<uint16> UInt16BlockVolume;
 	//---------------------------------
 
 	class IndexedSurfacePatch;
@@ -45,15 +44,15 @@ namespace PolyVox
 	class SurfaceVertex;
 
 	//---------- Vector ----------
-	template <std::uint32_t Size, typename Type> class Vector;
+	template <uint32 Size, typename Type> class Vector;
 	typedef Vector<3,float> Vector3DFloat;
     typedef Vector<3,double> Vector3DDouble;
-	typedef Vector<3,std::int8_t> Vector3DInt8;
-	typedef Vector<3,std::uint8_t> Vector3DUint8;
-	typedef Vector<3,std::int16_t> Vector3DInt16;
-	typedef Vector<3,std::uint16_t> Vector3DUint16;
-	typedef Vector<3,std::int32_t> Vector3DInt32;
-	typedef Vector<3,std::uint32_t> Vector3DUint32;
+	typedef Vector<3,int8> Vector3DInt8;
+	typedef Vector<3,uint8> Vector3DUint8;
+	typedef Vector<3,int16> Vector3DInt16;
+	typedef Vector<3,uint16> Vector3DUint16;
+	typedef Vector<3,int32> Vector3DInt32;
+	typedef Vector<3,uint32> Vector3DUint32;
 	//----------------------------
 
 	class VolumeChangeTracker;

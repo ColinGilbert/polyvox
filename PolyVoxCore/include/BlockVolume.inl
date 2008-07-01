@@ -32,7 +32,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	BlockVolume<VoxelType>::BlockVolume(std::uint8_t uSideLengthPower, std::uint8_t uBlockSideLengthPower)
+	BlockVolume<VoxelType>::BlockVolume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower)
 		:m_pBlocks(0)
 	{
 		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
@@ -60,7 +60,7 @@ namespace PolyVox
 		m_pIsShared = new bool[m_uNoOfBlocksInVolume];
 		m_pIsPotentiallySharable = new bool[m_uNoOfBlocksInVolume];
 		m_pHomogenousValue = new VoxelType[m_uNoOfBlocksInVolume];
-		for(std::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i] = getHomogenousBlock(0); //new Block<VoxelType>(uBlockSideLengthPower);
 			m_pIsShared[i] = true;
@@ -78,7 +78,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BlockVolume<VoxelType>::~BlockVolume()
 	{
-		for(std::uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			delete m_pBlocks[i];
 		}
@@ -94,13 +94,13 @@ namespace PolyVox
 			return *this;
 		}
 
-		/*for(uint16_t i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
+		/*for(uint16 i = 0; i < POLYVOX_NO_OF_BLOCKS_IN_VOLUME; ++i)
 		{
 			//FIXME - Add checking...
 			m_pBlocks[i] = SharedPtr<Block>(new Block);
 		}*/
 
-		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			//I think this is OK... If a block is in the homogeneous array it's ref count will be greater
 			//than 1 as there will be the pointer in the volume and the pointer in the static homogeneous array.
@@ -127,25 +127,25 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	std::uint16_t BlockVolume<VoxelType>::getSideLength(void) const
+	uint16 BlockVolume<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolume<VoxelType>::getVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos) const
+	VoxelType BlockVolume<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
 	{
 		assert(uXPos < getSideLength());
 		assert(uYPos < getSideLength());
 		assert(uZPos < getSideLength());
 
-		const std::uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const std::uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const std::uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+		const uint16 blockX = uXPos >> m_uBlockSideLengthPower;
+		const uint16 blockY = uYPos >> m_uBlockSideLengthPower;
+		const uint16 blockZ = uZPos >> m_uBlockSideLengthPower;
 
-		const std::uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const std::uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const std::uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+		const uint16 xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16 yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16 zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
 		const Block<VoxelType>* block = m_pBlocks
 			[
@@ -181,7 +181,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool BlockVolume<VoxelType>::containsPoint(const Vector3DInt32& pos, std::uint16_t boundary) const
+	bool BlockVolume<VoxelType>::containsPoint(const Vector3DInt32& pos, uint16 boundary) const
 	{
 		return (pos.getX() <= m_uSideLength - 1 - boundary)
 			&& (pos.getY() <= m_uSideLength - 1 - boundary) 
@@ -200,7 +200,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolume<VoxelType>::idle(std::uint32_t uAmount)
+	void BlockVolume<VoxelType>::idle(uint32 uAmount)
 	{
 	}	
 

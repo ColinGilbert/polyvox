@@ -24,14 +24,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 //Adding things to the std namespace in not actually allowed, but Microsoft
 //have still not added <cstdint> to thier standard library. 
-namespace std
+namespace PolyVox
 {
-	typedef char int8_t;
-	typedef short int16_t;
-	typedef long int32_t;
-	typedef unsigned char uint8_t;
-	typedef unsigned short uint16_t;
-	typedef unsigned long uint32_t;
+	typedef char int8;
+	typedef short int16;
+	typedef long int32;
+	typedef unsigned char uint8;
+	typedef unsigned short uint16;
+	typedef unsigned long uint32;
 }
+
 
 #endif

@@ -36,22 +36,22 @@ namespace PolyVox
 		//Make BlockVolumeIterator a friend
 		friend class BlockVolumeIterator<VoxelType>;
 	public:
-		Block(std::uint8_t uSideLengthPower);
+		Block(uint8 uSideLengthPower);
 		Block(const Block& rhs);
 		~Block();
 
 		Block& operator=(const Block& rhs);
 
-		std::uint16_t getSideLength(void) const;
-		VoxelType getVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos) const;
+		uint16 getSideLength(void) const;
+		VoxelType getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const;
 
-		void setVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos, VoxelType tValue);
+		void setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue);
 
 		void fill(VoxelType tValue);
 
 	private:
-		std::uint8_t m_uSideLengthPower;
-		std::uint16_t m_uSideLength;
+		uint8 m_uSideLengthPower;
+		uint16 m_uSideLength;
 		VoxelType* m_tData;
 	};
 }

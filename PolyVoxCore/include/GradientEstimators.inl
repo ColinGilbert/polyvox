@@ -47,9 +47,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	Vector3DFloat computeDecimatedCentralDifferenceGradient(const BlockVolumeIterator<VoxelType>& volIter)
 	{
-		const uint16_t x = volIter.getPosX();
-		const uint16_t y = volIter.getPosY();
-		const uint16_t z = volIter.getPosZ();
+		const uint16 x = volIter.getPosX();
+		const uint16 y = volIter.getPosY();
+		const uint16 z = volIter.getPosZ();
 
 		//FIXME - bitwise way of doing this?
 		VoxelType voxel1nx = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
@@ -72,9 +72,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	Vector3DFloat computeSmoothCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter)
 	{
-		std::uint16_t initialX = volIter.getPosX();
-		std::uint16_t initialY = volIter.getPosY();
-		std::uint16_t initialZ = volIter.getPosZ();
+		uint16 initialX = volIter.getPosX();
+		uint16 initialY = volIter.getPosY();
+		uint16 initialZ = volIter.getPosZ();
 
 		//FIXME - bitwise way of doing this?
 		volIter.setPosition(initialX-1, initialY, initialZ);

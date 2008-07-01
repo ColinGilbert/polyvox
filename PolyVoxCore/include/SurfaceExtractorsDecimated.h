@@ -34,17 +34,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	std::uint32_t getDecimatedIndex(std::uint32_t x, std::uint32_t y);
+	uint32 getDecimatedIndex(uint32 x, uint32 y);
 
-	POLYVOX_API void generateDecimatedMeshDataForRegion(BlockVolume<std::uint8_t>* volumeData, std::uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	POLYVOX_API std::uint32_t computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<std::uint8_t>& volIter, std::uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, std::uint8_t *bitmask);
-	POLYVOX_API std::uint32_t computeDecimatedBitmaskForSliceFromPrevious(BlockVolumeIterator<std::uint8_t>& volIter, std::uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, std::uint8_t *bitmask, std::uint8_t *previousBitmask);
-	POLYVOX_API void generateDecimatedIndicesForSlice(BlockVolumeIterator<std::uint8_t>& volIter, std::uint8_t uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, std::uint8_t* bitmask0, std::uint8_t* bitmask1, std::int32_t vertexIndicesX0[],std::int32_t vertexIndicesY0[],std::int32_t vertexIndicesZ0[], std::int32_t vertexIndicesX1[],std::int32_t vertexIndicesY1[],std::int32_t vertexIndicesZ1[]);
-	POLYVOX_API void generateDecimatedVerticesForSlice(BlockVolumeIterator<std::uint8_t>& volIter, std::uint8_t uLevel, Region& regSlice, const Vector3DFloat& offset, std::uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,std::int32_t vertexIndicesX[],std::int32_t vertexIndicesY[],std::int32_t vertexIndicesZ[]);
+	POLYVOX_API void generateDecimatedMeshDataForRegion(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API uint32 computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask);
+	POLYVOX_API uint32 computeDecimatedBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask, uint8 *previousBitmask);
+	POLYVOX_API void generateDecimatedIndicesForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[]);
+	POLYVOX_API void generateDecimatedVerticesForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[]);
 
-	POLYVOX_API void generateDecimatedMeshDataForRegionSlow(BlockVolume<std::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API void generateDecimatedMeshDataForRegionSlow(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 
-	POLYVOX_API Vector3DFloat computeDecimatedNormal(BlockVolume<std::uint8_t>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API Vector3DFloat computeDecimatedNormal(BlockVolume<uint8>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod);
 }
 
 #endif

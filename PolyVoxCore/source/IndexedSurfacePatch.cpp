@@ -43,7 +43,7 @@ namespace PolyVox
 		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
 	}
 
-	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint32_t>& vecIndices)
+	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint32>& vecIndices)
 	{
 		vecVertices.resize(m_vecVertices.size());
 		std::copy(m_vecVertices.begin(), m_vecVertices.end(), vecVertices.begin());
@@ -68,7 +68,7 @@ namespace PolyVox
 		return m_vecVertices;
 	}
 
-	const std::vector<std::uint32_t>& IndexedSurfacePatch::getIndices(void) const
+	const std::vector<uint32>& IndexedSurfacePatch::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}

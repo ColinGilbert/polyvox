@@ -24,12 +24,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "TypeDef.h"
 
-#include "PolyVoxCStdInt.h"
+#include "PolyVoxForwardDeclarations.h"
 
 namespace PolyVox
 {
-	POLYVOX_API std::uint8_t logBase2(std::uint32_t uInput);
-	POLYVOX_API bool isPowerOf2(std::uint32_t uInput);
+	POLYVOX_API uint8 logBase2(uint32 uInput);
+	POLYVOX_API bool isPowerOf2(uint32 uInput);
 
 	template <typename Type>
         Type trilinearlyInterpolate(

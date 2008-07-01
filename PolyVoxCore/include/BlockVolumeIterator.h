@@ -43,17 +43,17 @@ namespace PolyVox
 		bool operator<=(const BlockVolumeIterator& rhs);
 		bool operator>=(const BlockVolumeIterator& rhs);
 
-		std::uint16_t getPosX(void) const;
-		std::uint16_t getPosY(void) const;
-		std::uint16_t getPosZ(void) const;
-		VoxelType getSubSampledVoxel(std::uint8_t uLevel) const;
+		uint16 getPosX(void) const;
+		uint16 getPosY(void) const;
+		uint16 getPosZ(void) const;
+		VoxelType getSubSampledVoxel(uint8 uLevel) const;
 		const BlockVolume<VoxelType>& getVolume(void) const;
 		VoxelType getVoxel(void) const;			
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
-		void setPosition(std::uint16_t xPos, std::uint16_t yPos, std::uint16_t zPos);
+		void setPosition(uint16 xPos, uint16 yPos, uint16 zPos);
 		void setValidRegion(const Region& region);
-		void setValidRegion(std::uint16_t xFirst, std::uint16_t yFirst, std::uint16_t zFirst, std::uint16_t xLast, std::uint16_t yLast, std::uint16_t zLast);
+		void setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast);
 		void setVoxel(VoxelType tValue);	
 
 		bool isValidForRegion(void) const;
@@ -96,38 +96,38 @@ namespace PolyVox
 		BlockVolume<VoxelType>& mVolume;
 
 		//The current position in the volume
-		std::uint16_t mXPosInVolume;
-		std::uint16_t mYPosInVolume;
-		std::uint16_t mZPosInVolume;
+		uint16 mXPosInVolume;
+		uint16 mYPosInVolume;
+		uint16 mZPosInVolume;
 
 		//The position of the current block
-		std::uint16_t mXBlock;
-		std::uint16_t mYBlock;
-		std::uint16_t mZBlock;
+		uint16 mXBlock;
+		uint16 mYBlock;
+		uint16 mZBlock;
 
 		//The offset into the current block
-		std::uint16_t mXPosInBlock;
-		std::uint16_t mYPosInBlock;
-		std::uint16_t mZPosInBlock;
+		uint16 mXPosInBlock;
+		uint16 mYPosInBlock;
+		uint16 mZPosInBlock;
 
 		//Other current position information
 		VoxelType* mCurrentVoxel;
-		std::uint32_t mBlockIndexInVolume;
-		std::uint32_t mVoxelIndexInBlock;
+		uint32 mBlockIndexInVolume;
+		uint32 mVoxelIndexInBlock;
 
-		std::uint16_t mXRegionFirst;
-		std::uint16_t mYRegionFirst;
-		std::uint16_t mZRegionFirst;
-		std::uint16_t mXRegionLast;
-		std::uint16_t mYRegionLast;
-		std::uint16_t mZRegionLast;
+		uint16 mXRegionFirst;
+		uint16 mYRegionFirst;
+		uint16 mZRegionFirst;
+		uint16 mXRegionLast;
+		uint16 mYRegionLast;
+		uint16 mZRegionLast;
 
-		std::uint16_t mXRegionFirstBlock;
-		std::uint16_t mYRegionFirstBlock;
-		std::uint16_t mZRegionFirstBlock;
-		std::uint16_t mXRegionLastBlock;
-		std::uint16_t mYRegionLastBlock;
-		std::uint16_t mZRegionLastBlock;
+		uint16 mXRegionFirstBlock;
+		uint16 mYRegionFirstBlock;
+		uint16 mZRegionFirstBlock;
+		uint16 mXRegionLastBlock;
+		uint16 mYRegionLastBlock;
+		uint16 mZRegionLastBlock;
 
 		bool mIsValidForRegion;
 	};

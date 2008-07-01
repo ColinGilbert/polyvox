@@ -7,7 +7,6 @@ Refine interface to mesh generateion - flags structure?
 Refine interface to volumes and iterators.
 Implement block volume tidy() funtion.
 Remove hard-coded region size.
-Remove boost dependancy?
 Seperate namespaces - PolyVoxCore, PolyVoxUtil, PolyVoxImpl
 Move getChangedRegionGeometry() out of PolyVon and into Thermite?
 Remove/refactor IndexedSurfacePatch? Incorporate into RegionGeometry?

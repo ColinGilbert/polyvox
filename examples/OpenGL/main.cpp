@@ -15,12 +15,12 @@ using namespace std;
 
 //Global variables are easier for demonstration purposes, especially
 //as I'm not sure how/if I can pass variables to the GLUT functions.
-const uint16_t g_uVolumeSideLength = 128;
-const uint16_t g_uRegionSideLength = 16;
-const uint16_t g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
+const uint16 g_uVolumeSideLength = 128;
+const uint16 g_uRegionSideLength = 16;
+const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
 //Creates a volume 128x128x128
-BlockVolume<uint8_t> g_volData(logBase2(g_uVolumeSideLength));
+BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
@@ -28,7 +28,7 @@ IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolume
 void createSphereInVolume(void)
 {
 	//Create an iterator to access data in the volume
-	BlockVolumeIterator<uint8_t> volIter(g_volData); 
+	BlockVolumeIterator<uint8> volIter(g_volData); 
 
 	//A region corresponding to the whole volume
 	const Region& regWholeVolume = g_volData.getEnclosingRegion(); 
@@ -47,7 +47,7 @@ void createSphereInVolume(void)
 
 		if(fDistToCenter <= 50.0f)
 		{
-			volIter.setVoxel(static_cast<uint8_t>(fDistToCenter));
+			volIter.setVoxel(static_cast<uint8>(fDistToCenter));
 		}
 		else
 		{
@@ -76,15 +76,15 @@ void display ( void )   // Create The Display Function
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-200.0f);
 
 	glBegin(GL_TRIANGLES);
-	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
-				const vector<uint32_t>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
-				for(vector<uint32_t>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
+				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
+				for(vector<uint32>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
 				{
 					const SurfaceVertex& vertex = vecVertices[*iterIndex];
 					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
@@ -144,11 +144,11 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 {
 	createSphereInVolume();
 
-	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ] = new IndexedSurfacePatch();
 				IndexedSurfacePatch* ispCurrent = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
@@ -171,11 +171,11 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
   glutSpecialFunc     ( arrow_keys );
   glutMainLoop        ( );          // Initialize The Main Loop
 
-  for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+  for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				delete g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
 			}

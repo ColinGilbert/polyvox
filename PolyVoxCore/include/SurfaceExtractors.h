@@ -36,18 +36,18 @@ namespace PolyVox
 {
 	POLYVOX_API std::list<RegionGeometry> getChangedRegionGeometry(VolumeChangeTracker& volume);
 
-	std::uint32_t getIndex(std::uint32_t x, std::uint32_t y);
+	uint32 getIndex(uint32 x, uint32 y);
 
-	POLYVOX_API void generateRoughMeshDataForRegion(BlockVolume<std::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	POLYVOX_API std::uint32_t computeInitialRoughBitmaskForSlice(BlockVolumeIterator<std::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, std::uint8_t *bitmask);
-	POLYVOX_API std::uint32_t computeRoughBitmaskForSliceFromPrevious(BlockVolumeIterator<std::uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, std::uint8_t *bitmask, std::uint8_t *previousBitmask);
-	POLYVOX_API void generateRoughIndicesForSlice(BlockVolumeIterator<std::uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, std::uint8_t* bitmask0, std::uint8_t* bitmask1, std::int32_t vertexIndicesX0[],std::int32_t vertexIndicesY0[],std::int32_t vertexIndicesZ0[], std::int32_t vertexIndicesX1[],std::int32_t vertexIndicesY1[],std::int32_t vertexIndicesZ1[]);
-	POLYVOX_API void generateRoughVerticesForSlice(BlockVolumeIterator<std::uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, std::uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,std::int32_t vertexIndicesX[],std::int32_t vertexIndicesY[],std::int32_t vertexIndicesZ[]);
+	POLYVOX_API void generateRoughMeshDataForRegion(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API uint32 computeInitialRoughBitmaskForSlice(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask);
+	POLYVOX_API uint32 computeRoughBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask, uint8 *previousBitmask);
+	POLYVOX_API void generateRoughIndicesForSlice(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[]);
+	POLYVOX_API void generateRoughVerticesForSlice(BlockVolumeIterator<uint8>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[]);
 
-	POLYVOX_API void generateReferenceMeshDataForRegion(BlockVolume<std::uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API void generateReferenceMeshDataForRegion(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 
-	std::int32_t getIndexFor(const Vector3DFloat& pos, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1]);
-	void setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1]);
+	int32 getIndexFor(const Vector3DFloat& pos, int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1]);
+	void setIndexFor(const Vector3DFloat& pos, int32 newIndex, int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1]);
 }
 
 #endif

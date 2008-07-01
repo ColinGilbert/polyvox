@@ -105,25 +105,25 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	std::uint16_t BlockVolumeIterator<VoxelType>::getPosX(void) const
+	uint16 BlockVolumeIterator<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
 	}
 
 	template <typename VoxelType>
-	std::uint16_t BlockVolumeIterator<VoxelType>::getPosY(void) const
+	uint16 BlockVolumeIterator<VoxelType>::getPosY(void) const
 	{
 		return mYPosInVolume;
 	}
 
 	template <typename VoxelType>
-	std::uint16_t BlockVolumeIterator<VoxelType>::getPosZ(void) const
+	uint16 BlockVolumeIterator<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::getSubSampledVoxel(std::uint8_t uLevel) const
+	VoxelType BlockVolumeIterator<VoxelType>::getSubSampledVoxel(uint8 uLevel) const
 	{		
 		if(uLevel == 0)
 		{
@@ -143,14 +143,14 @@ namespace PolyVox
 		}
 		else
 		{
-			const std::uint8_t uSize = 1 << uLevel;
+			const uint8 uSize = 1 << uLevel;
 
 			VoxelType tValue = 0;
-			for(std::uint8_t z = 0; z < uSize; ++z)
+			for(uint8 z = 0; z < uSize; ++z)
 			{
-				for(std::uint8_t y = 0; y < uSize; ++y)
+				for(uint8 y = 0; y < uSize; ++y)
 				{
-					for(std::uint8_t x = 0; x < uSize; ++x)
+					for(uint8 x = 0; x < uSize; ++x)
 					{
 						tValue = (std::max)(tValue, mVolume.getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
 					}
@@ -181,7 +181,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setPosition(std::uint16_t xPos, std::uint16_t yPos, std::uint16_t zPos)
+	void BlockVolumeIterator<VoxelType>::setPosition(uint16 xPos, uint16 yPos, uint16 zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -214,7 +214,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setValidRegion(std::uint16_t xFirst, std::uint16_t yFirst, std::uint16_t zFirst, std::uint16_t xLast, std::uint16_t yLast, std::uint16_t zLast)
+	void BlockVolumeIterator<VoxelType>::setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -236,7 +236,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void BlockVolumeIterator<VoxelType>::setVoxel(VoxelType tValue)
 	{
-		const std::uint32_t uBlockIndex = 
+		const uint32 uBlockIndex = 
 				mXBlock + 
 				mYBlock * mVolume.m_uSideLengthInBlocks + 
 				mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
@@ -278,7 +278,7 @@ namespace PolyVox
 		mXPosInVolume++;
 		if((mXPosInBlock == mVolume.m_uBlockSideLength) || (mXPosInVolume > mXRegionLast))
 		{
-			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.m_uBlockSideLength));
+			mXPosInVolume = (std::max)(mXRegionFirst,uint16(mXBlock * mVolume.m_uBlockSideLength));
 			mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.m_uBlockSideLengthPower);
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -291,7 +291,7 @@ namespace PolyVox
 			mCurrentVoxel += mVolume.m_uBlockSideLength;
 			if((mYPosInBlock == mVolume.m_uBlockSideLength) || (mYPosInVolume > mYRegionLast))
 			{
-				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.m_uBlockSideLength));
+				mYPosInVolume = (std::max)(mYRegionFirst,uint16(mYBlock * mVolume.m_uBlockSideLength));
 				mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.m_uBlockSideLengthPower);
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -338,9 +338,9 @@ namespace PolyVox
 					Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->m_pBlocks[mBlockIndexInVolume];					
 
-					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.m_uBlockSideLength));					
-					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.m_uBlockSideLength));					
-					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * mVolume.m_uBlockSideLength));					
+					mXPosInVolume = (std::max)(mXRegionFirst,uint16(mXBlock * mVolume.m_uBlockSideLength));					
+					mYPosInVolume = (std::max)(mYRegionFirst,uint16(mYBlock * mVolume.m_uBlockSideLength));					
+					mZPosInVolume = (std::max)(mZRegionFirst,uint16(mZBlock * mVolume.m_uBlockSideLength));					
 
 					mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.m_uBlockSideLengthPower);
 					mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.m_uBlockSideLengthPower);

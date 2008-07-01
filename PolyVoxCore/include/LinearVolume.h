@@ -36,7 +36,7 @@ namespace PolyVox
 	class LinearVolume
 	{
 	public:
-		LinearVolume(std::uint8_t uSideLengthPower);
+		LinearVolume(uint8 uSideLengthPower);
 		LinearVolume(const LinearVolume& rhs);
 		~LinearVolume();
 
@@ -44,17 +44,17 @@ namespace PolyVox
 
 		//bool isHomogeneous(void);
 
-		std::uint16_t getSideLength(void);
+		uint16 getSideLength(void);
 
-		VoxelType getVoxelAt(const std::uint16_t xPosition, const std::uint16_t yPosition, const std::uint16_t zPosition) const;
-		void setVoxelAt(const std::uint16_t xPosition, const std::uint16_t yPosition, const std::uint16_t zPosition, const VoxelType value);
+		VoxelType getVoxelAt(const uint16 xPosition, const uint16 yPosition, const uint16 zPosition) const;
+		void setVoxelAt(const uint16 xPosition, const uint16 yPosition, const uint16 zPosition, const VoxelType value);
 
 		//void fillWithValue(const VoxelType value);
 
 	private:
-		std::uint32_t getNoOfVoxels(void);
-		std::uint8_t m_uSideLengthPower;
-		std::uint16_t m_uSideLength;
+		uint32 getNoOfVoxels(void);
+		uint8 m_uSideLengthPower;
+		uint16 m_uSideLength;
 		VoxelType* m_tData;		
 	};
 }

@@ -44,26 +44,26 @@ namespace PolyVox
 		//Getters
 		void getChangedRegions(std::list<Region>& listToFill) const;
 		Region getEnclosingRegion(void) const;		
-		std::uint16_t getSideLength(void);
-		BlockVolume<std::uint8_t>* getVolumeData(void) const;
-		std::uint8_t getVoxelAt(const Vector3DUint16& pos);
-		std::uint8_t getVoxelAt(std::uint16_t uX, std::uint16_t uY, std::uint16_t uZ);
+		uint16 getSideLength(void);
+		BlockVolume<uint8>* getVolumeData(void) const;
+		uint8 getVoxelAt(const Vector3DUint16& pos);
+		uint8 getVoxelAt(uint16 uX, uint16 uY, uint16 uZ);
 
 		//Setters
 		void setAllRegionsUpToDate(bool newUpToDateValue);
-		void setLockedVoxelAt(std::uint16_t x, std::uint16_t y, std::uint16_t z, std::uint8_t value);		
-		void setVolumeData(BlockVolume<std::uint8_t>* volumeDataToSet);
-		void setVoxelAt(std::uint16_t x, std::uint16_t y, std::uint16_t z, std::uint8_t value);
+		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);		
+		void setVolumeData(BlockVolume<uint8>* volumeDataToSet);
+		void setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
 
 		//Others	
 		void lockRegion(const Region& regToLock);
 		void unlockRegion(void);
-		//void markRegionChanged(std::uint16_t firstX, std::uint16_t firstY, std::uint16_t firstZ, std::uint16_t lastX, std::uint16_t lastY, std::uint16_t lastZ);
+		//void markRegionChanged(uint16 firstX, uint16 firstY, uint16 firstZ, uint16 lastX, uint16 lastY, uint16 lastZ);
 
 	private:
 		bool m_bIsLocked;
 		Region m_regLastLocked;
-		BlockVolume<std::uint8_t>* volumeData;
+		BlockVolume<uint8>* volumeData;
 		LinearVolume<bool>* volRegionUpToDate;
 	};
 }

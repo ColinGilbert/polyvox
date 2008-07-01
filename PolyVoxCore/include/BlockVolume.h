@@ -39,21 +39,21 @@ namespace PolyVox
 		friend class BlockVolumeIterator<VoxelType>;
 
 	public:		
-		BlockVolume(std::uint8_t uSideLengthPower, std::uint8_t uBlockSideLengthPower = 5);
+		BlockVolume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower = 5);
 		BlockVolume(const BlockVolume& rhs);
 		~BlockVolume();	
 
 		BlockVolume& operator=(const BlockVolume& rhs);
 
 		Region getEnclosingRegion(void) const;
-		std::uint16_t getSideLength(void) const;
-		VoxelType getVoxelAt(std::uint16_t uXPos, std::uint16_t uYPos, std::uint16_t uZPos) const;
+		uint16 getSideLength(void) const;
+		VoxelType getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
-		bool containsPoint(const Vector3DInt32& pos, std::uint16_t boundary) const;
+		bool containsPoint(const Vector3DInt32& pos, uint16 boundary) const;
 		BlockVolumeIterator<VoxelType> firstVoxel(void);
-		void idle(std::uint32_t uAmount);
+		void idle(uint32 uAmount);
 		BlockVolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
@@ -65,20 +65,20 @@ namespace PolyVox
 		VoxelType* m_pHomogenousValue;
 		mutable std::map<VoxelType, Block<VoxelType>*> m_pHomogenousBlocks;
 
-		std::uint32_t m_uNoOfBlocksInVolume;
-		std::uint16_t m_uSideLengthInBlocks;
+		uint32 m_uNoOfBlocksInVolume;
+		uint16 m_uSideLengthInBlocks;
 
-		std::uint8_t m_uSideLengthPower;
-		std::uint16_t m_uSideLength;
+		uint8 m_uSideLengthPower;
+		uint16 m_uSideLength;
 
-		std::uint8_t m_uBlockSideLengthPower;
-		std::uint16_t m_uBlockSideLength;
+		uint8 m_uBlockSideLengthPower;
+		uint16 m_uBlockSideLength;
 	};
 
 	//Some handy typedefs
 	typedef BlockVolume<float> FloatBlockVolume;
-	typedef BlockVolume<std::uint8_t> UInt8BlockVolume;
-	typedef BlockVolume<std::uint16_t> UInt16BlockVolume;	
+	typedef BlockVolume<uint8> UInt8BlockVolume;
+	typedef BlockVolume<uint16> UInt16BlockVolume;	
 }
 
 #include "BlockVolume.inl"

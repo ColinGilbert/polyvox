@@ -42,7 +42,7 @@ namespace PolyVox
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
-		bool containsPoint(const Vector3DInt32& pos, std::uint8_t boundary) const;
+		bool containsPoint(const Vector3DInt32& pos, uint8 boundary) const;
 		void cropTo(const Region& other);
 		void shift(const Vector3DInt32& amount);
 

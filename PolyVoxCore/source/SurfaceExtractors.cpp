@@ -30,9 +30,9 @@ namespace PolyVox
 			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch();
 			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
 
-			generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			//generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 
-			//generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
+			generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
 		
 			//for(int ct = 0; ct < 2; ct++)
 			Vector3DInt32 temp = regionGeometry.m_v3dRegionPosition;
@@ -61,27 +61,27 @@ namespace PolyVox
 		return listChangedRegionGeometry;
 	}
 
-	std::uint32_t getIndex(std::uint32_t x, std::uint32_t y)
+	uint32 getIndex(uint32 x, uint32 y)
 	{
 		return x + (y * (POLYVOX_REGION_SIDE_LENGTH+1));
 	}
 
-	void generateRoughMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void generateRoughMeshDataForRegion(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		singleMaterialPatch->m_vecVertices.clear();
 		singleMaterialPatch->m_vecTriangleIndices.clear();
 
 		//For edge indices
-		std::int32_t* vertexIndicesX0 = new std::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		std::int32_t* vertexIndicesY0 = new std::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		std::int32_t* vertexIndicesZ0 = new std::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		std::int32_t* vertexIndicesX1 = new std::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		std::int32_t* vertexIndicesY1 = new std::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		std::int32_t* vertexIndicesZ1 = new std::int32_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesX0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesY0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesZ0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesX1 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesY1 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesZ1 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 
 		//Cell bitmasks
-		std::uint8_t* bitmask0 = new std::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		std::uint8_t* bitmask1 = new std::uint8_t[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		uint8* bitmask0 = new uint8[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		uint8* bitmask1 = new uint8[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
 
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
@@ -97,22 +97,22 @@ namespace PolyVox
 		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
 		
 		//Iterator to access the volume data
-		BlockVolumeIterator<std::uint8_t> volIter(*volumeData);		
+		BlockVolumeIterator<uint8> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
-		std::uint32_t uNoOfNonEmptyCellsForSlice0 = computeInitialRoughBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
+		uint32 uNoOfNonEmptyCellsForSlice0 = computeInitialRoughBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
 			generateRoughVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0);
 		}
 
-		for(std::uint32_t uSlice = 0; ((uSlice <= POLYVOX_REGION_SIDE_LENGTH-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
+		for(uint32 uSlice = 0; ((uSlice <= POLYVOX_REGION_SIDE_LENGTH-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
 		{
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,1));
 
-			std::uint32_t uNoOfNonEmptyCellsForSlice1 = computeRoughBitmaskForSliceFromPrevious(volIter, regSlice1, offset, bitmask1, bitmask0);
+			uint32 uNoOfNonEmptyCellsForSlice1 = computeRoughBitmaskForSliceFromPrevious(volIter, regSlice1, offset, bitmask1, bitmask0);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -143,9 +143,9 @@ namespace PolyVox
 		delete[] vertexIndicesZ1;
 	}
 
-	std::uint32_t computeInitialRoughBitmaskForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
+	uint32 computeInitialRoughBitmaskForSlice(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask)
 	{
-		std::uint32_t uNoOfNonEmptyCells = 0;
+		uint32 uNoOfNonEmptyCells = 0;
 
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
@@ -153,23 +153,23 @@ namespace PolyVox
 		do
 		{		
 			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
+			const uint16 x = volIter.getPosX() - offset.getX();
+			const uint16 y = volIter.getPosY() - offset.getY();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
+			uint8 iCubeIndex = 0;
 
 			if((x==0) && (y==0))
 			{
-				const uint8_t v000 = volIter.getVoxel();
-				const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-				const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+				const uint8 v000 = volIter.getVoxel();
+				const uint8 v100 = volIter.peekVoxel1px0py0pz();
+				const uint8 v010 = volIter.peekVoxel0px1py0pz();
+				const uint8 v110 = volIter.peekVoxel1px1py0pz();
 
-				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				const uint8 v001 = volIter.peekVoxel0px0py1pz();
+				const uint8 v101 = volIter.peekVoxel1px0py1pz();
+				const uint8 v011 = volIter.peekVoxel0px1py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				if (v000 == 0) iCubeIndex |= 1;
 				if (v100 == 0) iCubeIndex |= 2;
@@ -182,25 +182,25 @@ namespace PolyVox
 			}
 			else if((x>0) && y==0)
 			{
-				const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+				const uint8 v100 = volIter.peekVoxel1px0py0pz();
+				const uint8 v110 = volIter.peekVoxel1px1py0pz();
 
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				const uint8 v101 = volIter.peekVoxel1px0py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
-				uint8_t srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 srcBit6 = iPreviousCubeIndexX & 64;
+				uint8 destBit7 = srcBit6 << 1;
 				
-				uint8_t srcBit5 = iPreviousCubeIndexX & 32;
-				uint8_t destBit4 = srcBit5 >> 1;
+				uint8 srcBit5 = iPreviousCubeIndexX & 32;
+				uint8 destBit4 = srcBit5 >> 1;
 
-				uint8_t srcBit2 = iPreviousCubeIndexX & 4;
-				uint8_t destBit3 = srcBit2 << 1;
+				uint8 srcBit2 = iPreviousCubeIndexX & 4;
+				uint8 destBit3 = srcBit2 << 1;
 				
-				uint8_t srcBit1 = iPreviousCubeIndexX & 2;
-				uint8_t destBit0 = srcBit1 >> 1;
+				uint8 srcBit1 = iPreviousCubeIndexX & 2;
+				uint8 destBit0 = srcBit1 >> 1;
 
 				iCubeIndex |= destBit0;
 				if (v100 == 0) iCubeIndex |= 2;
@@ -213,25 +213,25 @@ namespace PolyVox
 			}
 			else if((x==0) && (y>0))
 			{
-				const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+				const uint8 v010 = volIter.peekVoxel0px1py0pz();
+				const uint8 v110 = volIter.peekVoxel1px1py0pz();
 
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+				const uint8 v011 = volIter.peekVoxel0px1py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 srcBit7 = iPreviousCubeIndexY & 128;
+				uint8 destBit4 = srcBit7 >> 3;
 				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
+				uint8 srcBit6 = iPreviousCubeIndexY & 64;
+				uint8 destBit5 = srcBit6 >> 1;
 
-				uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-				uint8_t destBit0 = srcBit3 >> 3;
+				uint8 srcBit3 = iPreviousCubeIndexY & 8;
+				uint8 destBit0 = srcBit3 >> 3;
 				
-				uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-				uint8_t destBit1 = srcBit2 >> 1;
+				uint8 srcBit2 = iPreviousCubeIndexY & 4;
+				uint8 destBit1 = srcBit2 >> 1;
 
 				iCubeIndex |= destBit0;
 				iCubeIndex |= destBit1;
@@ -244,31 +244,31 @@ namespace PolyVox
 			}
 			else
 			{
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+				const uint8 v110 = volIter.peekVoxel1px1py0pz();
 
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 srcBit7 = iPreviousCubeIndexY & 128;
+				uint8 destBit4 = srcBit7 >> 3;
 				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
+				uint8 srcBit6 = iPreviousCubeIndexY & 64;
+				uint8 destBit5 = srcBit6 >> 1;
 
-				uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-				uint8_t destBit0 = srcBit3 >> 3;
+				uint8 srcBit3 = iPreviousCubeIndexY & 8;
+				uint8 destBit0 = srcBit3 >> 3;
 				
-				uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-				uint8_t destBit1 = srcBit2 >> 1;
+				uint8 srcBit2 = iPreviousCubeIndexY & 4;
+				uint8 destBit1 = srcBit2 >> 1;
 
 				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
 				srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
+				uint8 destBit7 = srcBit6 << 1;
 
 				srcBit2 = iPreviousCubeIndexX & 4;
-				uint8_t destBit3 = srcBit2 << 1;
+				uint8 destBit3 = srcBit2 << 1;
 
 				iCubeIndex |= destBit0;
 				iCubeIndex |= destBit1;
@@ -293,9 +293,9 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	std::uint32_t computeRoughBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	uint32 computeRoughBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, uint8* previousBitmask)
 	{
-		std::uint32_t uNoOfNonEmptyCells = 0;
+		uint32 uNoOfNonEmptyCells = 0;
 
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
@@ -303,21 +303,21 @@ namespace PolyVox
 		do
 		{		
 			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
+			const uint16 x = volIter.getPosX() - offset.getX();
+			const uint16 y = volIter.getPosY() - offset.getY();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
+			uint8 iCubeIndex = 0;
 
 			if((x==0) && (y==0))
 			{
-				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				const uint8 v001 = volIter.peekVoxel0px0py1pz();
+				const uint8 v101 = volIter.peekVoxel1px0py1pz();
+				const uint8 v011 = volIter.peekVoxel0px1py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				if (v001 == 0) iCubeIndex |= 16;
@@ -327,20 +327,20 @@ namespace PolyVox
 			}
 			else if((x>0) && y==0)
 			{
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				const uint8 v101 = volIter.peekVoxel1px0py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
-				uint8_t srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 srcBit6 = iPreviousCubeIndexX & 64;
+				uint8 destBit7 = srcBit6 << 1;
 				
-				uint8_t srcBit5 = iPreviousCubeIndexX & 32;
-				uint8_t destBit4 = srcBit5 >> 1;
+				uint8 srcBit5 = iPreviousCubeIndexX & 32;
+				uint8 destBit4 = srcBit5 >> 1;
 
 				iCubeIndex |= destBit4;
 				if (v101 == 0) iCubeIndex |= 32;
@@ -349,20 +349,20 @@ namespace PolyVox
 			}
 			else if((x==0) && (y>0))
 			{
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+				const uint8 v011 = volIter.peekVoxel0px1py1pz();
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 srcBit7 = iPreviousCubeIndexY & 128;
+				uint8 destBit4 = srcBit7 >> 3;
 				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
+				uint8 srcBit6 = iPreviousCubeIndexY & 64;
+				uint8 destBit5 = srcBit6 >> 1;
 
 				iCubeIndex |= destBit4;
 				iCubeIndex |= destBit5;
@@ -371,24 +371,24 @@ namespace PolyVox
 			}
 			else
 			{
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 srcBit7 = iPreviousCubeIndexY & 128;
+				uint8 destBit4 = srcBit7 >> 3;
 				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
+				uint8 srcBit6 = iPreviousCubeIndexY & 64;
+				uint8 destBit5 = srcBit6 >> 1;
 
 				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
 				srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
+				uint8 destBit7 = srcBit6 << 1;
 
 				iCubeIndex |= destBit4;
 				iCubeIndex |= destBit5;
@@ -409,7 +409,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateRoughVerticesForSlice(BlockVolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,std::int32_t vertexIndicesX[],std::int32_t vertexIndicesY[],std::int32_t vertexIndicesZ[])
+	void generateRoughVerticesForSlice(BlockVolumeIterator<uint8>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[])
 	{
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
@@ -418,14 +418,14 @@ namespace PolyVox
 		do
 		{		
 			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
+			const uint16 x = volIter.getPosX() - offset.getX();
+			const uint16 y = volIter.getPosY() - offset.getY();
+			const uint16 z = volIter.getPosZ() - offset.getZ();
 
-			const uint8_t v000 = volIter.getVoxel();
+			const uint8 v000 = volIter.getVoxel();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask[getIndex(x,y)];
+			uint8 iCubeIndex = bitmask[getIndex(x,y)];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
@@ -438,10 +438,10 @@ namespace PolyVox
 			{
 				if((x + offset.getX()) != regSlice.getUpperCorner().getX())
 				{
-					const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+					const uint8 v100 = volIter.peekVoxel1px0py0pz();
 					const Vector3DFloat v3dPosition(x + 0.5f, y, z);
 					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f, 0.0f, 0.0f);					
-					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
+					const uint8 uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesX[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -451,10 +451,10 @@ namespace PolyVox
 			{
 				if((y + offset.getY()) != regSlice.getUpperCorner().getY())
 				{
-					const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+					const uint8 v010 = volIter.peekVoxel0px1py0pz();
 					const Vector3DFloat v3dPosition(x, y + 0.5f, z);
 					const Vector3DFloat v3dNormal(0.0f, v000 > v010 ? 1.0f : -1.0f, 0.0f);
-					const uint8_t uMaterial = v000 | v010;
+					const uint8 uMaterial = v000 | v010;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesY[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -464,10 +464,10 @@ namespace PolyVox
 			{
 				//if((z + offset.getZ()) != upperCorner.getZ())
 				{
-					const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+					const uint8 v001 = volIter.peekVoxel0px0py1pz();
 					const Vector3DFloat v3dPosition(x, y, z + 0.5f);
 					const Vector3DFloat v3dNormal(0.0f, 0.0f, v000 > v001 ? 1.0f : -1.0f);
-					const uint8_t uMaterial = v000 | v001;
+					const uint8 uMaterial = v000 | v001;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
 					vertexIndicesZ[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
@@ -476,9 +476,9 @@ namespace PolyVox
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
 
-	void generateRoughIndicesForSlice(BlockVolumeIterator<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, std::int32_t vertexIndicesX0[],std::int32_t vertexIndicesY0[],std::int32_t vertexIndicesZ0[], std::int32_t vertexIndicesX1[],std::int32_t vertexIndicesY1[],std::int32_t vertexIndicesZ1[])
+	void generateRoughIndicesForSlice(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[])
 	{
-		std::uint32_t indlist[12];
+		uint32 indlist[12];
 
 		Region regCroppedSlice(regSlice);		
 		regCroppedSlice.setUpperCorner(regCroppedSlice.getUpperCorner() - Vector3DInt32(1,1,0));
@@ -488,12 +488,12 @@ namespace PolyVox
 		do
 		{		
 			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
+			const uint16 x = volIter.getPosX() - offset.getX();
+			const uint16 y = volIter.getPosY() - offset.getY();
+			const uint16 z = volIter.getPosZ() - offset.getZ();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask0[getIndex(x,y)];
+			uint8 iCubeIndex = bitmask0[getIndex(x,y)];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
@@ -565,9 +565,9 @@ namespace PolyVox
 
 			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 			{
-				std::uint32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
-				std::uint32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
-				std::uint32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
+				uint32 ind0 = indlist[triTable[iCubeIndex][i  ]];
+				uint32 ind1 = indlist[triTable[iCubeIndex][i+1]];
+				uint32 ind2 = indlist[triTable[iCubeIndex][i+2]];
 
 				singleMaterialPatch->m_vecTriangleIndices.push_back(ind0);
 				singleMaterialPatch->m_vecTriangleIndices.push_back(ind1);
@@ -576,11 +576,11 @@ namespace PolyVox
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
 
-	void generateReferenceMeshDataForRegion(BlockVolume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void generateReferenceMeshDataForRegion(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
-		static std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 
 		memset(vertexIndicesX,0xFF,sizeof(vertexIndicesX)); //0xFF is -1 as two's complement - this may not be portable...
 		memset(vertexIndicesY,0xFF,sizeof(vertexIndicesY));
@@ -598,8 +598,8 @@ namespace PolyVox
 
 		Vector3DFloat vertlist[12];
 		Vector3DFloat normlist[12];
-		uint8_t vertMaterials[12];
-		BlockVolumeIterator<std::uint8_t> volIter(*volumeData);
+		uint8 vertMaterials[12];
+		BlockVolumeIterator<uint8> volIter(*volumeData);
 		volIter.setValidRegion(region);
 
 		//////////////////////////////////////////////////////////////////////////
@@ -611,22 +611,22 @@ namespace PolyVox
 		while(volIter.moveForwardInRegionXYZ())
 		{		
 			//Current position
-			const uint16_t x = volIter.getPosX();
-			const uint16_t y = volIter.getPosY();
-			const uint16_t z = volIter.getPosZ();
+			const uint16 x = volIter.getPosX();
+			const uint16 y = volIter.getPosY();
+			const uint16 z = volIter.getPosZ();
 
 			//Voxels values
-			const uint8_t v000 = volIter.getVoxel();
-			const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-			const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-			const uint8_t v110 = volIter.peekVoxel1px1py0pz();
-			const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-			const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-			const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-			const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+			const uint8 v000 = volIter.getVoxel();
+			const uint8 v100 = volIter.peekVoxel1px0py0pz();
+			const uint8 v010 = volIter.peekVoxel0px1py0pz();
+			const uint8 v110 = volIter.peekVoxel1px1py0pz();
+			const uint8 v001 = volIter.peekVoxel0px0py1pz();
+			const uint8 v101 = volIter.peekVoxel1px0py1pz();
+			const uint8 v011 = volIter.peekVoxel0px1py1pz();
+			const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
+			uint8 iCubeIndex = 0;
 
 			if (v000 == 0) iCubeIndex |= 1;
 			if (v100 == 0) iCubeIndex |= 2;
@@ -781,9 +781,9 @@ namespace PolyVox
 				//const Vector3DFloat vertex1AsFloat = (static_cast<Vector3DFloat>(vertex1) / 2.0f) - offset;
 				//const Vector3DFloat vertex2AsFloat = (static_cast<Vector3DFloat>(vertex2) / 2.0f) - offset;
 
-				const uint8_t material0 = vertMaterials[triTable[iCubeIndex][i  ]];
-				const uint8_t material1 = vertMaterials[triTable[iCubeIndex][i+1]];
-				const uint8_t material2 = vertMaterials[triTable[iCubeIndex][i+2]];
+				const uint8 material0 = vertMaterials[triTable[iCubeIndex][i  ]];
+				const uint8 material1 = vertMaterials[triTable[iCubeIndex][i+1]];
+				const uint8 material2 = vertMaterials[triTable[iCubeIndex][i+2]];
 
 				//If all the materials are the same, we just need one triangle for that material with all the alphas set high.
 				SurfaceVertex v0(vertex0, normal0, material0 + 0.1f);
@@ -792,7 +792,7 @@ namespace PolyVox
 
 				//singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
 
-				int32_t index = getIndexFor(v0.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				int32 index = getIndexFor(v0.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				if(index == -1)
 				{
 					singleMaterialPatch->m_vecVertices.push_back(v0);
@@ -831,7 +831,7 @@ namespace PolyVox
 		}//For each cell
 	}
 
-	std::int32_t getIndexFor(const Vector3DFloat& pos, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
+	int32 getIndexFor(const Vector3DFloat& pos, int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
 	{
 		assert(pos.getX() >= 0.0f);
 		assert(pos.getY() >= 0.0f);
@@ -850,20 +850,20 @@ namespace PolyVox
 		//Of all the fractional parts, two should be zero and one should have a value.
 		if(xFracPart > 0.000001f)
 		{
-			return vertexIndicesX[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)];
+			return vertexIndicesX[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)];
 		}
 		if(yFracPart > 0.000001f)
 		{
-			return vertexIndicesY[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)];
+			return vertexIndicesY[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)];
 		}
 		if(zFracPart > 0.000001f)
 		{
-			return vertexIndicesZ[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)];
+			return vertexIndicesZ[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)];
 		}
 		while(true);
 	}
 
-	void setIndexFor(const Vector3DFloat& pos, std::int32_t newIndex, std::int32_t vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], std::int32_t vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
+	void setIndexFor(const Vector3DFloat& pos, int32 newIndex, int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
 	{
 		assert(pos.getX() >= 0.0f);
 		assert(pos.getY() >= 0.0f);
@@ -884,15 +884,15 @@ namespace PolyVox
 		//Of all the fractional parts, two should be zero and one should have a value.
 		if(xFracPart > 0.000001f)
 		{
-			vertexIndicesX[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
+			vertexIndicesX[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)] = newIndex;
 		}
 		if(yFracPart > 0.000001f)
 		{
-			vertexIndicesY[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
+			vertexIndicesY[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)] = newIndex;
 		}
 		if(zFracPart > 0.000001f)
 		{
-			vertexIndicesZ[static_cast<uint16_t>(xIntPart)][static_cast<uint16_t>(yIntPart)][static_cast<uint16_t>(zIntPart)] = newIndex;
+			vertexIndicesZ[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)] = newIndex;
 		}
 	}
 }
