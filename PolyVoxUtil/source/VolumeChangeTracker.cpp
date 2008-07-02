@@ -19,18 +19,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#include "GradientEstimators.h"
-#include "IndexedSurfacePatch.h"
-#include "LinearVolume.h"
-#include "MarchingCubesTables.h"
 #include "VolumeChangeTracker.h"
-#include "RegionGeometry.h"
-#include "SurfaceExtractors.h"
-#include "SurfaceVertex.h"
-#include "Utility.h"
-#include "Vector.h"
-#include "BlockVolume.h"
-#include "BlockVolumeIterator.h"
+
+#include "../../PolyVoxCore/include/GradientEstimators.h"
+#include "../../PolyVoxCore/include/IndexedSurfacePatch.h"
+#include "../../PolyVoxCore/include/LinearVolume.h"
+#include "../../PolyVoxCore/include/MarchingCubesTables.h"
+#include "../../PolyVoxCore/include/RegionGeometry.h"
+#include "../../PolyVoxCore/include/SurfaceExtractors.h"
+#include "../../PolyVoxCore/include/SurfaceVertex.h"
+#include "../../PolyVoxCore/include/Utility.h"
+#include "../../PolyVoxCore/include/Vector.h"
+#include "../../PolyVoxCore/include/BlockVolume.h"
+#include "../../PolyVoxCore/include/BlockVolumeIterator.h"
 
 using namespace std;
 

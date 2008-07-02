@@ -24,12 +24,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 
-#include "PolyVoxCStdInt.h"
-
-#include "Constants.h"
-#include "PolyVoxForwardDeclarations.h"
-#include "Region.h"
-#include "TypeDef.h"
+#include "../../PolyVoxCore/include/Constants.h"
+#include "../../PolyVoxCore/include/PolyVoxForwardDeclarations.h"
+#include "../../PolyVoxCore/include/Region.h"
+#include "../../PolyVoxCore/include/TypeDef.h"
 
 namespace PolyVox
 {	

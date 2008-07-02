@@ -19,7 +19,6 @@ SET(SRC_FILES
 	source/SurfaceExtractorsDecimated.cpp
 	source/SurfaceVertex.cpp
 	source/Utility.cpp
-	source/VolumeChangeTracker.cpp
 	source/VoxelFilters.cpp
 )
 
@@ -51,7 +50,6 @@ SET(INC_FILES
 	include/Utility.h
 	include/Vector.h
 	include/Vector.inl
-	include/VolumeChangeTracker.h	
 	include/VoxelFilters.h
 )
 

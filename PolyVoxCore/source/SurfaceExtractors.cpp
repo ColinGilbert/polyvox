@@ -8,7 +8,6 @@
 #include "RegionGeometry.h"
 #include "SurfaceAdjusters.h"
 #include "SurfaceExtractorsDecimated.h"
-#include "VolumeChangeTracker.h"
 #include "BlockVolumeIterator.h"
 
 #include <algorithm>
@@ -17,50 +16,6 @@ using namespace std;
 
 namespace PolyVox
 {
-	std::list<RegionGeometry> getChangedRegionGeometry(VolumeChangeTracker& volume)
-	{
-		std::list<Region> listChangedRegions;
-		volume.getChangedRegions(listChangedRegions);
-
-		std::list<RegionGeometry> listChangedRegionGeometry;
-		for(std::list<Region>::const_iterator iterChangedRegions = listChangedRegions.begin(); iterChangedRegions != listChangedRegions.end(); ++iterChangedRegions)
-		{
-			//Generate the surface
-			RegionGeometry regionGeometry;
-			regionGeometry.m_patchSingleMaterial = new IndexedSurfacePatch();
-			regionGeometry.m_v3dRegionPosition = iterChangedRegions->getLowerCorner();
-
-			//generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
-
-			generateReferenceMeshDataForRegion(volume.getVolumeData(), *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
-		
-			//for(int ct = 0; ct < 2; ct++)
-			Vector3DInt32 temp = regionGeometry.m_v3dRegionPosition;
-			//temp /= 16;
-			/*if(temp.getY() % 32 == 0)
-			{
-				//smoothRegionGeometry(volume.getVolumeData(), regionGeometry);
-				generateDecimatedMeshDataForRegion(volume.getVolumeData(), 0, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
-			}
-			else
-			{
-				generateDecimatedMeshDataForRegion(volume.getVolumeData(), 1, *iterChangedRegions, regionGeometry.m_patchSingleMaterial);
-				//adjustDecimatedGeometry(volume.getVolumeData(), regionGeometry, 1);
-			}*/
-
-			//computeNormalsForVertices(volume.getVolumeData(), regionGeometry, CENTRAL_DIFFERENCE);
-
-			//genMultiFromSingle(regionGeometry.m_patchSingleMaterial, regionGeometry.m_patchMultiMaterial);
-
-			regionGeometry.m_bContainsSingleMaterialPatch = regionGeometry.m_patchSingleMaterial->getVertices().size() > 0;
-			regionGeometry.m_bIsEmpty = (regionGeometry.m_patchSingleMaterial->getVertices().size() == 0) || (regionGeometry.m_patchSingleMaterial->getIndices().size() == 0);
-
-			listChangedRegionGeometry.push_back(regionGeometry);
-		}
-
-		return listChangedRegionGeometry;
-	}
-
 	uint32 getIndex(uint32 x, uint32 y)
 	{
 		return x + (y * (POLYVOX_REGION_SIDE_LENGTH+1));

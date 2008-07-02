@@ -55,7 +55,6 @@ namespace PolyVox
 	typedef Vector<3,uint32> Vector3DUint32;
 	//----------------------------
 
-	class VolumeChangeTracker;
 	template <typename VoxelType> class BlockVolumeIterator;
 }
 

@@ -6,8 +6,9 @@
 #include "MarchingCubesTables.h"
 #include "Region.h"
 #include "RegionGeometry.h"
-#include "VolumeChangeTracker.h"
 #include "BlockVolumeIterator.h"
+
+#include "../../PolyVoxUtil/include/VolumeChangeTracker.h"
 
 #include <algorithm>
 
