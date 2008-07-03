@@ -26,9 +26,9 @@ IF (WIN32)
 	#Also, glut32.dll goes in C:\Windows\System. Using C:\Windows\System32 doesn't seem to work
 	
 	#Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../PolyVoxCore/include")
+	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/include")
 	#No idea  why we have to look three levels up for build and only two for include. They should be the same level?!
-	LINK_DIRECTORIES("../../../build/PolyVoxCore")
+	LINK_DIRECTORIES("../../../build/library")
 
 	#Build
 	ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})

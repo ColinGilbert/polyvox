@@ -1,8 +1,8 @@
-#include "BlockVolume.h"
-#include "BlockVolumeIterator.h"
-#include "IndexedSurfacePatch.h"
-#include "SurfaceExtractors.h"
-#include "Utility.h"
+#include "PolyVoxCore/BlockVolume.h"
+#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/IndexedSurfacePatch.h"
+#include "PolyVoxCore/SurfaceExtractors.h"
+#include "PolyVoxCore/Utility.h"
 
 #include <windows.h>   // Standard Header For Most Programs
 #include <gl/gl.h>     // The GL Header File
