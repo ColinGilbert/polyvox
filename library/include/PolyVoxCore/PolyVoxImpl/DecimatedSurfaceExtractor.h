@@ -19,24 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_SurfaceExtractorsDecimated_H__
-#define __PolyVox_SurfaceExtractorsDecimated_H__
+#ifndef __PolyVoxImpl_DecimatedSurfaceExtractor_H__
+#define __PolyVoxImpl_DecimatedSurfaceExtractor_H__
 
 #pragma region Headers
-#include "Constants.h"
-#include "PolyVoxForwardDeclarations.h"
-#include "TypeDef.h"
+#include "PolyVoxCore/Constants.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/TypeDef.h"
 
-#include "PolyVoxCStdInt.h"
-
-#include <list>
+#include "PolyVoxCore/PolyVoxCStdInt.h"
 #pragma endregion
 
 namespace PolyVox
 {
 	uint32 getDecimatedIndex(uint32 x, uint32 y);
 
-	POLYVOX_API void generateDecimatedMeshDataForRegion(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	POLYVOX_API void generateDecimatedMeshDataForRegionImpl(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
 	POLYVOX_API uint32 computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask);
 	POLYVOX_API uint32 computeDecimatedBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask, uint8 *previousBitmask);
 	POLYVOX_API void generateDecimatedIndicesForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[]);

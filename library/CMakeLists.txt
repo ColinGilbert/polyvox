@@ -16,7 +16,6 @@ SET(CORE_SRC_FILES
 	source/PolyVoxCore/RegionGeometry.cpp 
 	source/PolyVoxCore/SurfaceAdjusters.cpp
 	source/PolyVoxCore/SurfaceExtractors.cpp 
-	source/PolyVoxCore/SurfaceExtractorsDecimated.cpp
 	source/PolyVoxCore/SurfaceVertex.cpp
 	source/PolyVoxCore/Utility.cpp
 	source/PolyVoxCore/VoxelFilters.cpp
@@ -44,13 +43,24 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/RegionGeometry.h
 	include/PolyVoxCore/SurfaceAdjusters.h
 	include/PolyVoxCore/SurfaceExtractors.h
-	include/PolyVoxCore/SurfaceExtractorsDecimated.h
 	include/PolyVoxCore/SurfaceVertex.h
 	include/PolyVoxCore/TypeDef.h
 	include/PolyVoxCore/Utility.h
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/VoxelFilters.h
+)
+
+SET(IMPL_SRC_FILES
+	source/PolyVoxCore/PolyVoxImpl/DecimatedSurfaceExtractor.cpp
+	source/PolyVoxCore/PolyVoxImpl/FastSurfaceExtractor.cpp
+	source/PolyVoxCore/PolyVoxImpl/ReferenceSurfaceExtractor.cpp
+)
+
+SET(IMPL_INC_FILES
+	include/PolyVoxCore/PolyVoxImpl/DecimatedSurfaceExtractor.h
+	include/PolyVoxCore/PolyVoxImpl/FastSurfaceExtractor.h
+	include/PolyVoxCore/PolyVoxImpl/ReferenceSurfaceExtractor.h
 )
 
 #Projects source files
@@ -70,17 +80,20 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
-SOURCE_GROUP("CoreSources" FILES ${CORE_SRC_FILES})
-SOURCE_GROUP("CoreHeaders" FILES ${CORE_INC_FILES})
+SOURCE_GROUP("Sources" FILES ${CORE_SRC_FILES})
+SOURCE_GROUP("Headers" FILES ${CORE_INC_FILES})
 
-SOURCE_GROUP("UtilSources" FILES ${UTIL_SRC_FILES})
-SOURCE_GROUP("UtilHeaders" FILES ${UTIL_INC_FILES})
+SOURCE_GROUP("Sources\\PolyVoxImpl" FILES ${IMPL_SRC_FILES})
+SOURCE_GROUP("Headers\\PolyVoxImpl" FILES ${IMPL_INC_FILES})
+
+SOURCE_GROUP("Sources" FILES ${UTIL_SRC_FILES})
+SOURCE_GROUP("Headers" FILES ${UTIL_INC_FILES})
 
 #Tell CMake the paths
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #Build
-ADD_LIBRARY(PolyVoxCore SHARED ${CORE_SRC_FILES} ${CORE_INC_FILES})
+ADD_LIBRARY(PolyVoxCore SHARED ${CORE_SRC_FILES} ${CORE_INC_FILES} ${IMPL_SRC_FILES} ${IMPL_INC_FILES})
 SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 IF(WIN32)
 	SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES COMPILE_FLAGS "/wd4251") #Disable warning on STL exports
