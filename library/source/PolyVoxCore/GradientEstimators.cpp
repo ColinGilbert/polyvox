@@ -10,7 +10,7 @@ namespace PolyVox
 {
 	POLYVOX_API void computeNormalsForVertices(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
 	{
-		std::vector<SurfaceVertex>& vecVertices = isp.m_vecVertices;
+		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{

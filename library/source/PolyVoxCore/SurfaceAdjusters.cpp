@@ -19,7 +19,7 @@ namespace PolyVox
 
 		BlockVolumeIterator<uint8> volIter(*volumeData);
 
-		std::vector<SurfaceVertex>& vecVertices = isp.m_vecVertices;
+		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
@@ -80,7 +80,7 @@ namespace PolyVox
 	{
 		BlockVolumeIterator<uint8> volIter(*volumeData);
 
-		std::vector<SurfaceVertex>& vecVertices = isp.m_vecVertices;
+		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{

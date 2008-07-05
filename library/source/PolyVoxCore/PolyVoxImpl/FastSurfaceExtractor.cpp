@@ -31,8 +31,7 @@ namespace PolyVox
 
 	void extractFastSurfaceImpl(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
-		singleMaterialPatch->m_vecVertices.clear();
-		singleMaterialPatch->m_vecTriangleIndices.clear();
+		singleMaterialPatch->clear();
 
 		//For edge indices
 		int32* vertexIndicesX0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
@@ -411,8 +410,8 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f, 0.0f, 0.0f);					
 					const uint8 uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesX[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
+					uint32 uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
+					vertexIndicesX[getIndex(x,y)] = uLastVertexIndex;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 8)
@@ -424,8 +423,8 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(0.0f, v000 > v010 ? 1.0f : -1.0f, 0.0f);
 					const uint8 uMaterial = v000 | v010;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesY[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
+					uint32 uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
+					vertexIndicesY[getIndex(x,y)] = uLastVertexIndex;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 256)
@@ -437,8 +436,8 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(0.0f, 0.0f, v000 > v001 ? 1.0f : -1.0f);
 					const uint8 uMaterial = v000 | v001;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					singleMaterialPatch->m_vecVertices.push_back(surfaceVertex);
-					vertexIndicesZ[getIndex(x,y)] = singleMaterialPatch->m_vecVertices.size()-1;
+					uint32 uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
+					vertexIndicesZ[getIndex(x,y)] = uLastVertexIndex;
 				}
 			}
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
@@ -537,9 +536,7 @@ namespace PolyVox
 				uint32 ind1 = indlist[triTable[iCubeIndex][i+1]];
 				uint32 ind2 = indlist[triTable[iCubeIndex][i+2]];
 
-				singleMaterialPatch->m_vecTriangleIndices.push_back(ind0);
-				singleMaterialPatch->m_vecTriangleIndices.push_back(ind1);
-				singleMaterialPatch->m_vecTriangleIndices.push_back(ind2);
+				singleMaterialPatch->addTriangle(ind0, ind1, ind2);
 			}//For each triangle
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}

@@ -245,43 +245,28 @@ namespace PolyVox
 				SurfaceVertex v1(vertex1, normal1, material1 + 0.1f);
 				SurfaceVertex v2(vertex2, normal2, material2 + 0.1f);
 
-				//singleMaterialPatch->addTriangle(surfaceVertex0Alpha1, surfaceVertex1Alpha1, surfaceVertex2Alpha1);
-
-				int32 index = getIndexFor(v0.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
-				if(index == -1)
+				int32 index0 = getIndexFor(v0.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				if(index0 == -1)
 				{
-					singleMaterialPatch->m_vecVertices.push_back(v0);
-					singleMaterialPatch->m_vecTriangleIndices.push_back(singleMaterialPatch->m_vecVertices.size()-1);
-					setIndexFor(v0.getPosition(), singleMaterialPatch->m_vecVertices.size()-1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
-				}
-				else
-				{
-					singleMaterialPatch->m_vecTriangleIndices.push_back(index);
+					index0 = singleMaterialPatch->addVertex(v0);
+					setIndexFor(v0.getPosition(), index0, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				}
 
-				index = getIndexFor(v1.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
-				if(index == -1)
+				int32 index1 = getIndexFor(v1.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				if(index1 == -1)
 				{
-					singleMaterialPatch->m_vecVertices.push_back(v1);
-					singleMaterialPatch->m_vecTriangleIndices.push_back(singleMaterialPatch->m_vecVertices.size()-1);
-					setIndexFor(v1.getPosition(), singleMaterialPatch->m_vecVertices.size()-1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
-				}
-				else
-				{
-					singleMaterialPatch->m_vecTriangleIndices.push_back(index);
+					index1 = singleMaterialPatch->addVertex(v1);
+					setIndexFor(v1.getPosition(), index1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				}
 
-				index = getIndexFor(v2.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
-				if(index == -1)
+				int32 index2 = getIndexFor(v2.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				if(index2 == -1)
 				{
-					singleMaterialPatch->m_vecVertices.push_back(v2);
-					singleMaterialPatch->m_vecTriangleIndices.push_back(singleMaterialPatch->m_vecVertices.size()-1);
-					setIndexFor(v2.getPosition(), singleMaterialPatch->m_vecVertices.size()-1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+					index2 = singleMaterialPatch->addVertex(v2);
+					setIndexFor(v2.getPosition(), index2, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				}
-				else
-				{
-					singleMaterialPatch->m_vecTriangleIndices.push_back(index);
-				}
+
+				singleMaterialPatch->addTriangle(index0, index1, index2);
 			}//For each triangle
 		}//For each cell
 	}

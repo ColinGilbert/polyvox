@@ -33,65 +33,20 @@ namespace PolyVox
 	{
 	}
 
-	void IndexedSurfacePatch::addTriangle(const SurfaceVertex& v0,const SurfaceVertex& v1,const SurfaceVertex& v2)
-	{		
-		m_vecVertices.push_back(v0);
-		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-		m_vecVertices.push_back(v1);
-		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-		m_vecVertices.push_back(v2);
-		m_vecTriangleIndices.push_back(m_vecVertices.size()-1);
-	}
-
-	void IndexedSurfacePatch::fillVertexAndIndexData(std::vector<SurfaceVertex>& vecVertices, std::vector<uint32>& vecIndices)
-	{
-		vecVertices.resize(m_vecVertices.size());
-		std::copy(m_vecVertices.begin(), m_vecVertices.end(), vecVertices.begin());
-
-		vecIndices.resize(m_vecTriangleIndices.size());
-		std::copy(m_vecTriangleIndices.begin(), m_vecTriangleIndices.end(), vecIndices.begin());
-
-		/*for(std::vector<SurfaceVertexIterator>::iterator iterVertices = m_vecTriangleIndices.begin(); iterVertices != m_vecTriangleIndices.end(); ++iterVertices)
-		{		
-			std::vector<SurfaceVertex>::iterator iterVertex = lower_bound(vecVertices.begin(), vecVertices.end(), **iterVertices);
-			vecIndices.push_back(iterVertex - vecVertices.begin());
-		}*/
-	}
-
-	const std::vector<SurfaceVertex>& IndexedSurfacePatch::getVertices(void) const
-	{
-		return m_vecVertices;
-	}
-
-	std::vector<SurfaceVertex>& IndexedSurfacePatch::getVertices(void)
-	{
-		return m_vecVertices;
-	}
-
 	const std::vector<uint32>& IndexedSurfacePatch::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}
 
-	const uint32 IndexedSurfacePatch::getNoOfIndices(void) const
+	uint32 IndexedSurfacePatch::getNoOfIndices(void) const
 	{
 		return m_vecTriangleIndices.size();
-	}
+	}	
 
-	const uint32 IndexedSurfacePatch::getNoOfVertices(void) const
+	uint32 IndexedSurfacePatch::getNoOfNonUniformTrianges(void) const
 	{
-		return m_vecVertices.size();
-	}
-
-	const bool IndexedSurfacePatch::isEmpty(void) const
-	{
-		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
-	}
-
-	unsigned short IndexedSurfacePatch::getNoNonUniformTrianges(void)
-	{
-		unsigned short result = 0;
-		for(int i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
+		uint32 result = 0;
+		for(uint32 i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
 		{
 			if((m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+1]].getMaterial())
 			&& (m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+2]].getMaterial()))
@@ -105,10 +60,10 @@ namespace PolyVox
 		return result;
 	}
 
-	unsigned short IndexedSurfacePatch::getNoUniformTrianges(void)
+	uint32 IndexedSurfacePatch::getNoOfUniformTrianges(void) const
 	{
-		unsigned short result = 0;
-		for(int i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
+		uint32 result = 0;
+		for(uint32 i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
 		{
 			if((m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+1]].getMaterial())
 			&& (m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+2]].getMaterial()))
@@ -118,4 +73,45 @@ namespace PolyVox
 		}
 		return result;
 	}
+
+	uint32 IndexedSurfacePatch::getNoOfVertices(void) const
+	{
+		return m_vecVertices.size();
+	}
+
+	std::vector<SurfaceVertex>& IndexedSurfacePatch::getRawVertexData(void)
+	{
+		return m_vecVertices;
+	}
+
+	const std::vector<SurfaceVertex>& IndexedSurfacePatch::getVertices(void) const
+	{
+		return m_vecVertices;
+	}		
+
+	void IndexedSurfacePatch::addTriangle(uint32 index0, uint32 index1, uint32 index2)
+	{
+		m_vecTriangleIndices.push_back(index0);
+		m_vecTriangleIndices.push_back(index1);
+		m_vecTriangleIndices.push_back(index2);
+	}
+
+	uint32 IndexedSurfacePatch::addVertex(const SurfaceVertex& vertex)
+	{
+		m_vecVertices.push_back(vertex);
+		return m_vecVertices.size() - 1;
+	}
+
+	void IndexedSurfacePatch::clear(void)
+	{
+		m_vecVertices.clear();
+		m_vecTriangleIndices.clear();
+	}
+
+	const bool IndexedSurfacePatch::isEmpty(void) const
+	{
+		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
+	}
+
+	
 }
