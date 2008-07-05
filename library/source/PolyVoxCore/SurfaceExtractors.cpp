@@ -5,7 +5,6 @@
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/MarchingCubesTables.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/RegionGeometry.h"
 #include "PolyVoxCore/SurfaceAdjusters.h"
 #include "PolyVoxCore/BlockVolumeIterator.h"
 
@@ -19,18 +18,20 @@ using namespace std;
 
 namespace PolyVox
 {
-	void generateReferenceMeshDataForRegion(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractSurface(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{
-		generateReferenceMeshDataForRegion(volumeData, region, singleMaterialPatch);
+		if(uLevel == 0)
+		{
+			extractFastSurfaceImpl(volumeData, region, singleMaterialPatch);
+		}
+		else
+		{
+			extractDecimatedSurfaceImpl(volumeData, uLevel, region, singleMaterialPatch);
+		}
 	}
 
-	void generateRoughMeshDataForRegion(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractReferenceSurface(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{
-		generateRoughMeshDataForRegionImpl(volumeData, region, singleMaterialPatch);
-	}
-
-	void generateDecimatedMeshDataForRegion(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
-	{
-		generateDecimatedMeshDataForRegionImpl(volumeData, uLevel, region, singleMaterialPatch);
+		extractReferenceSurfaceImpl(volumeData, region, singleMaterialPatch);
 	}
 }

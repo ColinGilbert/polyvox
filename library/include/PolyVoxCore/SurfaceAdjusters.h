@@ -32,8 +32,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	POLYVOX_API void smoothRegionGeometry(BlockVolume<uint8>* volumeData, RegionGeometry& regGeom);
-	POLYVOX_API void adjustDecimatedGeometry(BlockVolume<uint8>* volumeData, RegionGeometry& regGeom, uint8 val);
+	POLYVOX_API void smoothRegionGeometry(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp);
+	POLYVOX_API void adjustDecimatedGeometry(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, uint8 val);
 }
 
 #endif

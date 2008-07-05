@@ -26,7 +26,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/MarchingCubesTables.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/RegionGeometry.h"
 #include "PolyVoxCore/BlockVolumeIterator.h"
 
 #include <algorithm>
@@ -40,7 +39,7 @@ namespace PolyVox
 		return x + (y * (POLYVOX_REGION_SIDE_LENGTH+1));
 	}
 
-	void generateDecimatedMeshDataForRegionImpl(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractDecimatedSurfaceImpl(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		singleMaterialPatch->m_vecVertices.clear();
 		singleMaterialPatch->m_vecTriangleIndices.clear();

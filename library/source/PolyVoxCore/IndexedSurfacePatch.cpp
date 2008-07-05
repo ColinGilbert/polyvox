@@ -73,6 +73,21 @@ namespace PolyVox
 		return m_vecTriangleIndices;
 	}
 
+	const uint32 IndexedSurfacePatch::getNoOfIndices(void) const
+	{
+		return m_vecTriangleIndices.size();
+	}
+
+	const uint32 IndexedSurfacePatch::getNoOfVertices(void) const
+	{
+		return m_vecVertices.size();
+	}
+
+	const bool IndexedSurfacePatch::isEmpty(void) const
+	{
+		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
+	}
+
 	unsigned short IndexedSurfacePatch::getNoNonUniformTrianges(void)
 	{
 		unsigned short result = 0;

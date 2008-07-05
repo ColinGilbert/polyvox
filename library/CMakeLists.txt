@@ -13,7 +13,6 @@ SET(CORE_SRC_FILES
 	source/PolyVoxCore/IndexedSurfacePatch.cpp
 	source/PolyVoxCore/MarchingCubesTables.cpp
 	source/PolyVoxCore/Region.cpp
-	source/PolyVoxCore/RegionGeometry.cpp 
 	source/PolyVoxCore/SurfaceAdjusters.cpp
 	source/PolyVoxCore/SurfaceExtractors.cpp 
 	source/PolyVoxCore/SurfaceVertex.cpp
@@ -40,7 +39,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/PolyVoxCStdInt.h
 	include/PolyVoxCore/Region.h
-	include/PolyVoxCore/RegionGeometry.h
 	include/PolyVoxCore/SurfaceAdjusters.h
 	include/PolyVoxCore/SurfaceExtractors.h
 	include/PolyVoxCore/SurfaceVertex.h

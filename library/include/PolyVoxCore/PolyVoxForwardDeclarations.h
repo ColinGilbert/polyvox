@@ -40,7 +40,6 @@ namespace PolyVox
 	class IntegrealVector3;
 	template <typename VoxelType> class LinearVolume;
 	class Region;
-	class RegionGeometry;
 	class SurfaceVertex;
 
 	//---------- Vector ----------

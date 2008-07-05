@@ -1,6 +1,5 @@
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/RegionGeometry.h"
 #include "PolyVoxCore/SurfaceVertex.h"
 
 #include "PolyVoxCore/PolyVoxCStdInt.h"
@@ -9,13 +8,13 @@ using namespace std;
 
 namespace PolyVox
 {
-	POLYVOX_API void computeNormalsForVertices(BlockVolume<uint8>* volumeData, RegionGeometry& regGeom, NormalGenerationMethod normalGenerationMethod)
+	POLYVOX_API void computeNormalsForVertices(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
 	{
-		std::vector<SurfaceVertex>& vecVertices = regGeom.m_patchSingleMaterial->m_vecVertices;
+		std::vector<SurfaceVertex>& vecVertices = isp.m_vecVertices;
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
-			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
+			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
 			BlockVolumeIterator<uint8> volIter(*volumeData);

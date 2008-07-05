@@ -154,7 +154,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				IndexedSurfacePatch* ispCurrent = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
 				Vector3DInt32 regLowerCorner(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
 				Vector3DInt32 regUpperCorner((uRegionX + 1) * g_uRegionSideLength, (uRegionY + 1) * g_uRegionSideLength, (uRegionZ + 1) * g_uRegionSideLength);
-				generateReferenceMeshDataForRegion(&g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
+				extractReferenceSurface(&g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
 			}
 		}
 	}

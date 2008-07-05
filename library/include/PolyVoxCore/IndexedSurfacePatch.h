@@ -46,8 +46,16 @@ namespace PolyVox
 	   std::vector<SurfaceVertex>& getVertices(void); //FIXME - non const version should be removed.
 	   const std::vector<uint32>& getIndices(void) const;
 
+	   const uint32 getNoOfIndices(void) const;
+	   const uint32 getNoOfVertices(void) const;
+
+	   const bool isEmpty(void) const;
+
+
 	   unsigned short getNoNonUniformTrianges(void);
 	   unsigned short getNoUniformTrianges(void);
+
+	   Vector3DInt32 m_v3dRegionPosition;
 	
 	public:		
 		std::vector<uint32> m_vecTriangleIndices;

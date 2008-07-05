@@ -3,7 +3,6 @@
 #include "PolyVoxCore/BlockVolumeIterator.h"
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/RegionGeometry.h"
 #include "PolyVoxCore/Utility.h"
 #include "PolyVoxCore/VoxelFilters.h"
 
@@ -13,20 +12,20 @@ using namespace std;
 
 namespace PolyVox
 {
-	void smoothRegionGeometry(BlockVolume<uint8>* volumeData, RegionGeometry& regGeom)
+	void smoothRegionGeometry(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp)
 	{
 		const uint8 uSmoothingFactor = 2;
 		const float fThreshold = 0.5f;
 
 		BlockVolumeIterator<uint8> volIter(*volumeData);
 
-		std::vector<SurfaceVertex>& vecVertices = regGeom.m_patchSingleMaterial->m_vecVertices;
+		std::vector<SurfaceVertex>& vecVertices = isp.m_vecVertices;
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
 			for(int ct = 0; ct < uSmoothingFactor; ++ct)
 			{
-				const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
+				const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 				const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 				const Vector3DFloat& v3dRem = v3dPos - static_cast<Vector3DFloat>(v3dFloor);			
 
@@ -77,15 +76,15 @@ namespace PolyVox
 		} //while(iterSurfaceVertex != vecVertices.end())
 	}
 
-	void adjustDecimatedGeometry(BlockVolume<uint8>* volumeData, RegionGeometry& regGeom, uint8 val)
+	void adjustDecimatedGeometry(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, uint8 val)
 	{
 		BlockVolumeIterator<uint8> volIter(*volumeData);
 
-		std::vector<SurfaceVertex>& vecVertices = regGeom.m_patchSingleMaterial->m_vecVertices;
+		std::vector<SurfaceVertex>& vecVertices = isp.m_vecVertices;
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
-			Vector3DFloat v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
+			Vector3DFloat v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 			Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
 			BlockVolumeIterator<uint8> volIter(*volumeData);
@@ -111,7 +110,7 @@ namespace PolyVox
 						//if(iterSurfaceVertex->getNormal().getX() > 0)
 						{
 							iterSurfaceVertex->setPosition(iterSurfaceVertex->getPosition() - iterSurfaceVertex->getNormal() * 0.5f);
-							v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(regGeom.m_v3dRegionPosition);
+							v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 							v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
 							volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
