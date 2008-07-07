@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Block.h"
+#include "BlockVolumeIterator.h"
 #include "Region.h"
 #include "Vector.h"
 
@@ -203,6 +204,28 @@ namespace PolyVox
 	void BlockVolume<VoxelType>::idle(uint32 uAmount)
 	{
 	}	
+
+	template <typename VoxelType>
+	bool BlockVolume<VoxelType>::isRegionHomogenous(const Region& region)
+	{
+		BlockVolumeIterator<VoxelType> iter(*this);
+		iter.setValidRegion(region);
+		iter.setPosition(static_cast<Vector3DInt16>(region.getLowerCorner()));
+
+		VoxelType tFirst = iter.getVoxel();
+		iter.moveForwardInRegionXYZ();
+
+		do
+		{
+			VoxelType tCurrent = iter.getVoxel();
+			if(tCurrent != tFirst)
+			{
+				return false;
+			}
+		}while(iter.moveForwardInRegionXYZ());
+
+		return true;
+	}
 
 	template <typename VoxelType>
 	BlockVolumeIterator<VoxelType> BlockVolume<VoxelType>::lastVoxel(void)

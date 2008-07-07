@@ -54,6 +54,7 @@ namespace PolyVox
 		bool containsPoint(const Vector3DInt32& pos, uint16 boundary) const;
 		BlockVolumeIterator<VoxelType> firstVoxel(void);
 		void idle(uint32 uAmount);
+		bool isRegionHomogenous(const Region& region);
 		BlockVolumeIterator<VoxelType> lastVoxel(void);
 
 	private:

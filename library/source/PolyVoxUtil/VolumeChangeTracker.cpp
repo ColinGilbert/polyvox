@@ -56,8 +56,8 @@ namespace PolyVox
 		volRegionUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
-	
 
+	//Return changed regions - cropped to volume
 	void VolumeChangeTracker::getChangedRegions(std::list<Region>& listToFill) const
 	{
 		//Clear the list
@@ -82,7 +82,10 @@ namespace PolyVox
 						const uint16 lastY = firstY + POLYVOX_REGION_SIDE_LENGTH;
 						const uint16 lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH;
 
-						listToFill.push_back(Region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ)));
+						Region region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ));
+						region.cropTo(volumeData->getEnclosingRegion());
+
+						listToFill.push_back(region);
 					}
 				}
 			}
