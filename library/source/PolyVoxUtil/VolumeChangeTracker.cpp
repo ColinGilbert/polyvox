@@ -36,6 +36,7 @@ using namespace std;
 
 namespace PolyVox
 {
+	int32 VolumeChangeTracker::m_iCurrentTime = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// VolumeChangeTracker
@@ -54,6 +55,7 @@ namespace PolyVox
 	{
 		volumeData = volumeDataToSet;
 		volRegionUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
+		volRegionLastModified = new LinearVolume<int32>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
 
@@ -106,6 +108,26 @@ namespace PolyVox
 		}
 	}
 
+	void VolumeChangeTracker::setAllRegionsModified(void)
+	{
+		for(uint16 blockZ = 0; blockZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
+		{
+			for(uint16 blockY = 0; blockY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
+			{
+				for(uint16 blockX = 0; blockX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
+				{
+					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_iCurrentTime);
+					++m_iCurrentTime;
+				}
+			}
+		}
+	}
+
+	int32 VolumeChangeTracker::getCurrentTime(void) const
+	{
+		return m_iCurrentTime;
+	}
+
 	uint16 VolumeChangeTracker::getSideLength(void)
 	{
 		return volumeData->getSideLength();
@@ -114,6 +136,11 @@ namespace PolyVox
 	Region VolumeChangeTracker::getEnclosingRegion(void) const
 	{
 		return volumeData->getEnclosingRegion();
+	}
+
+	int32 VolumeChangeTracker::getLastModifiedTimeForRegion(uint16 uX, uint16 uY, uint16 uZ)
+	{
+		return volRegionLastModified->getVoxelAt(uX, uY, uZ);
 	}
 
 	uint8 VolumeChangeTracker::getVoxelAt(const Vector3DUint16& pos)
@@ -153,6 +180,7 @@ namespace PolyVox
 			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
 		{
 			volRegionUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
+			volRegionLastModified->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, m_iCurrentTime);
 		}
 		else //Mark surrounding regions as well
 		{
@@ -175,10 +203,12 @@ namespace PolyVox
 					for(uint16 xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
 						volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
+						volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
 					}
 				}
 			}
 		}
+		++m_iCurrentTime;
 	}
 
 	void VolumeChangeTracker::setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value)
@@ -224,10 +254,12 @@ namespace PolyVox
 				for(uint16 xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
 					volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
+					volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
 				}
 			}
 		}
 
+		++m_iCurrentTime;
 		m_bIsLocked = false;
 	}
 }

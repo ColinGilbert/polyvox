@@ -53,6 +53,8 @@ namespace PolyVox
 	   const bool isEmpty(void) const;
 
 	   Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
+
+	   int32 m_iTimeStamp;
 	
 	private:		
 		std::vector<uint32> m_vecTriangleIndices;

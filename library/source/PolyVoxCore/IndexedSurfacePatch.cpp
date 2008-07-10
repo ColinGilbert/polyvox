@@ -27,6 +27,7 @@ namespace PolyVox
 {
 	IndexedSurfacePatch::IndexedSurfacePatch()
 	{
+		m_iTimeStamp = -1;
 	}
 
 	IndexedSurfacePatch::~IndexedSurfacePatch()	  

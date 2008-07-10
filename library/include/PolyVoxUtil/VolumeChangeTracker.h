@@ -41,13 +41,16 @@ namespace PolyVox
 
 		//Getters
 		void getChangedRegions(std::list<Region>& listToFill) const;
+		int32 getCurrentTime(void) const;
 		Region getEnclosingRegion(void) const;		
+		int32 getLastModifiedTimeForRegion(uint16 uX, uint16 uY, uint16 uZ);
 		uint16 getSideLength(void);
 		BlockVolume<uint8>* getVolumeData(void) const;
 		uint8 getVoxelAt(const Vector3DUint16& pos);
 		uint8 getVoxelAt(uint16 uX, uint16 uY, uint16 uZ);
 
 		//Setters
+		void setAllRegionsModified(void);
 		void setAllRegionsUpToDate(bool newUpToDateValue);
 		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);		
 		void setVolumeData(BlockVolume<uint8>* volumeDataToSet);
@@ -63,6 +66,9 @@ namespace PolyVox
 		Region m_regLastLocked;
 		BlockVolume<uint8>* volumeData;
 		LinearVolume<bool>* volRegionUpToDate;
+		LinearVolume<int32>* volRegionLastModified;
+
+		static int32 m_iCurrentTime;
 	};
 }
 

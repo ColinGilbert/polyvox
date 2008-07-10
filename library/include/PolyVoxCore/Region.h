@@ -45,6 +45,8 @@ namespace PolyVox
 		bool containsPoint(const Vector3DInt32& pos, uint8 boundary) const;
 		void cropTo(const Region& other);
 		void shift(const Vector3DInt32& amount);
+		void shiftLowerCorner(const Vector3DInt32& amount);
+		void shiftUpperCorner(const Vector3DInt32& amount);
 
 	private:
 		Vector3DInt32 m_v3dLowerCorner;

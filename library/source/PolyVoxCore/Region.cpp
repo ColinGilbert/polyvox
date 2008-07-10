@@ -69,4 +69,14 @@ namespace PolyVox
 		m_v3dLowerCorner += amount;
 		m_v3dUpperCorner += amount;
 	}
+
+	void Region::shiftLowerCorner(const Vector3DInt32& amount)
+	{
+		m_v3dLowerCorner += amount;
+	}
+
+	void Region::shiftUpperCorner(const Vector3DInt32& amount)
+	{
+		m_v3dUpperCorner += amount;
+	}
 }
