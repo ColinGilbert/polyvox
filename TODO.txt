@@ -19,6 +19,7 @@ Use of LinearVolume instead of arrays.
 Add API docs
 Add manual
 Finish OpenGL sample.
+VolumeChangeTracker can be more conservitive regarding when neighbouring regions are modified.
 
 For Version 2.0
 ===============

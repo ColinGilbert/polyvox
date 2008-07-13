@@ -37,7 +37,7 @@ namespace PolyVox
 	bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
 		return (pos.getX() <= m_v3dUpperCorner.getX() - boundary)
-			&& (pos.getY() <= m_v3dUpperCorner.getY() - boundary) 
+			&& (pos.getY() <= m_v3dUpperCorner.getY() - boundary)
 			&& (pos.getZ() <= m_v3dUpperCorner.getZ() - boundary)
 			&& (pos.getX() >= m_v3dLowerCorner.getX() + boundary)
 			&& (pos.getY() >= m_v3dLowerCorner.getY() + boundary)

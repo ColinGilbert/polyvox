@@ -54,58 +54,7 @@ namespace PolyVox
 	void VolumeChangeTracker::setVolumeData(BlockVolume<uint8>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
-		volRegionUpToDate = new LinearVolume<bool>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 		volRegionLastModified = new LinearVolume<int32>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
-	}
-
-
-	//Return changed regions - cropped to volume
-	void VolumeChangeTracker::getChangedRegions(std::list<Region>& listToFill) const
-	{
-		//Clear the list
-		listToFill.clear();
-
-		//Regenerate meshes.
-		for(uint16 regionZ = 0; regionZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionZ)
-		//for(uint16 regionZ = 0; regionZ < 1; ++regionZ)
-		{		
-			for(uint16 regionY = 0; regionY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionY)
-			//for(uint16 regionY = 0; regionY < 2; ++regionY)
-			{
-				for(uint16 regionX = 0; regionX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++regionX)
-				//for(uint16 regionX = 0; regionX < 2; ++regionX)
-				{
-					if(volRegionUpToDate->getVoxelAt(regionX, regionY, regionZ) == false)
-					{
-						const uint16 firstX = regionX * POLYVOX_REGION_SIDE_LENGTH;
-						const uint16 firstY = regionY * POLYVOX_REGION_SIDE_LENGTH;
-						const uint16 firstZ = regionZ * POLYVOX_REGION_SIDE_LENGTH;
-						const uint16 lastX = firstX + POLYVOX_REGION_SIDE_LENGTH;
-						const uint16 lastY = firstY + POLYVOX_REGION_SIDE_LENGTH;
-						const uint16 lastZ = firstZ + POLYVOX_REGION_SIDE_LENGTH;
-
-						Region region(Vector3DInt32(firstX, firstY, firstZ), Vector3DInt32(lastX, lastY, lastZ));
-						region.cropTo(volumeData->getEnclosingRegion());
-
-						listToFill.push_back(region);
-					}
-				}
-			}
-		}
-	}
-
-	void VolumeChangeTracker::setAllRegionsUpToDate(bool newUpToDateValue)
-	{
-		for(uint16 blockZ = 0; blockZ < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockZ)
-		{
-			for(uint16 blockY = 0; blockY < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockY)
-			{
-				for(uint16 blockX = 0; blockX < POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS; ++blockX)
-				{
-					volRegionUpToDate->setVoxelAt(blockX, blockY, blockZ, newUpToDateValue);
-				}
-			}
-		}
 	}
 
 	void VolumeChangeTracker::setAllRegionsModified(void)
@@ -164,8 +113,10 @@ namespace PolyVox
 		return volumeData;
 	}
 
+	//NOTE - Document the fact that the time stamp is incremented at the start, not the end.
 	void VolumeChangeTracker::setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value)
 	{
+		++m_iCurrentTime;
 		//FIXME - rather than creating a iterator each time we should have one stored
 		BlockVolumeIterator<uint8> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
@@ -179,7 +130,6 @@ namespace PolyVox
 			(z % POLYVOX_REGION_SIDE_LENGTH != 0) &&
 			(z % POLYVOX_REGION_SIDE_LENGTH != POLYVOX_REGION_SIDE_LENGTH-1))
 		{
-			volRegionUpToDate->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, false);
 			volRegionLastModified->setVoxelAt(x >> POLYVOX_REGION_SIDE_LENGTH_POWER, y >> POLYVOX_REGION_SIDE_LENGTH_POWER, z >> POLYVOX_REGION_SIDE_LENGTH_POWER, m_iCurrentTime);
 		}
 		else //Mark surrounding regions as well
@@ -202,13 +152,12 @@ namespace PolyVox
 				{
 					for(uint16 xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
-						volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
 						volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
 					}
 				}
 			}
 		}
-		++m_iCurrentTime;
+		//++m_iCurrentTime;
 	}
 
 	void VolumeChangeTracker::setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value)
@@ -234,6 +183,7 @@ namespace PolyVox
 
 	void VolumeChangeTracker::unlockRegion(void)
 	{
+		++m_iCurrentTime;
 		if(!m_bIsLocked)
 		{
 			throw std::logic_error("No region is locked. You must lock a region before you can unlock it.");
@@ -253,13 +203,12 @@ namespace PolyVox
 			{
 				for(uint16 xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
-					volRegionUpToDate->setVoxelAt(xCt,yCt,zCt,false);
 					volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
 				}
 			}
 		}
 
-		++m_iCurrentTime;
+		//++m_iCurrentTime;
 		m_bIsLocked = false;
 	}
 }

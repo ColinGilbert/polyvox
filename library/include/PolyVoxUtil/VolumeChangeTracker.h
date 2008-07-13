@@ -40,7 +40,6 @@ namespace PolyVox
 		~VolumeChangeTracker();
 
 		//Getters
-		void getChangedRegions(std::list<Region>& listToFill) const;
 		int32 getCurrentTime(void) const;
 		Region getEnclosingRegion(void) const;		
 		int32 getLastModifiedTimeForRegion(uint16 uX, uint16 uY, uint16 uZ);
@@ -51,7 +50,6 @@ namespace PolyVox
 
 		//Setters
 		void setAllRegionsModified(void);
-		void setAllRegionsUpToDate(bool newUpToDateValue);
 		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);		
 		void setVolumeData(BlockVolume<uint8>* volumeDataToSet);
 		void setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
@@ -65,7 +63,6 @@ namespace PolyVox
 		bool m_bIsLocked;
 		Region m_regLastLocked;
 		BlockVolume<uint8>* volumeData;
-		LinearVolume<bool>* volRegionUpToDate;
 		LinearVolume<int32>* volRegionLastModified;
 
 		static int32 m_iCurrentTime;
