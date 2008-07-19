@@ -63,11 +63,13 @@ SET(IMPL_INC_FILES
 
 #Projects source files
 SET(UTIL_SRC_FILES
+	source/PolyVoxUtil/Serialization.cpp
 	source/PolyVoxUtil/VolumeChangeTracker.cpp
 )
 
 #Projects headers files
 SET(UTIL_INC_FILES
+	include/PolyVoxUtil/Serialization.h
 	include/PolyVoxUtil/VolumeChangeTracker.h	
 )
 
