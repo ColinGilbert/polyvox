@@ -6,5 +6,3 @@ PROJECT(PolyVox)
 #ADD_SUBDIRECTORY(PolyVoxUtil)
 ADD_SUBDIRECTORY(library)
 ADD_SUBDIRECTORY(examples/OpenGL)
-
-ADD_DEPENDENCIES(OpenGLExample PolyVoxCore)

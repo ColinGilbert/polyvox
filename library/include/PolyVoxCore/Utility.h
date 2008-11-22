@@ -26,6 +26,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxForwardDeclarations.h"
 
+#include <cassert>
+
 namespace PolyVox
 {
 	POLYVOX_API uint8 logBase2(uint32 uInput);

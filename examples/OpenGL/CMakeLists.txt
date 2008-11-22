@@ -16,9 +16,9 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 #SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
-FIND_PACKAGE(OpenGL REQUIRED)
-
 IF (WIN32)
+	FIND_PACKAGE(OpenGL REQUIRED)
+
 	#NOTE:  In Windows I haven't had much luck getting the FindGLUT script to work correctly. 
 	#The easiest solution has been  to install GLUT alongside OpenGL, which is already in the system path.
 	#This means glut.h and glut32.lib go in the 'include' and 'lib' folders within  Microsoft Visual Studio 8\VC\PlatformSDK\ 
@@ -32,11 +32,13 @@ IF (WIN32)
 	#Build
 	ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
 	TARGET_LINK_LIBRARIES(OpenGLExample glut32.lib ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d.lib optimized PolyVoxCore.lib)
-ENDIF (WIN32)
 
-#Install
-INSTALL(TARGETS OpenGLExample
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
-)
+	#Install
+	INSTALL(TARGETS OpenGLExample
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+	)
+	
+	ADD_DEPENDENCIES(OpenGLExample PolyVoxCore)
+ENDIF (WIN32)

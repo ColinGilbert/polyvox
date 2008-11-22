@@ -1,0 +1,23 @@
+# Find PolyVox includes and library
+#
+# This module defines
+#  PolyVox_INCLUDE_DIRS
+#  PolyVox_LIBRARIES, the libraries to link against to use OGRE.
+#  PolyVox_LIBRARY_DIRS, the location of the libraries
+#  PolyVox_FOUND, If false, do not try to use OGRE
+#
+# Copyright © 2008, Matt Williams
+#
+# Redistribution and use is allowed according to the terms of the BSD license.
+# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+
+include(FindPackageMessage)
+
+set(PREFIX "@CMAKE_INSTALL_PREFIX@")
+set(PolyVox_LIBRARY_DIRS "${PREFIX}/lib")
+set(PolyVox_INCLUDE_DIRS "${PREFIX}/include/PolyVoxCore" "${PREFIX}/include/PolyVoxUtil")
+set(PolyVox_LIBRARIES "PolyVoxUtil" "PolyVoxCore")
+
+message(STATUS "Found PolyVox")
+message(STATUS "  libraries : '${PolyVox_LIBRARIES}' from ${PolyVox_LIBRARY_DIRS}")
+message(STATUS "  includes  : ${PolyVox_INCLUDE_DIRS}")
