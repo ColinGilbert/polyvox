@@ -33,6 +33,9 @@ namespace PolyVox
 {	
 	POLYVOX_API BlockVolume<uint8>* loadVolumeRaw(std::istream& stream);
 	POLYVOX_API void saveVolumeRaw(std::ostream& stream, BlockVolume<uint8>& volume);
+
+	POLYVOX_API BlockVolume<uint8>* loadVolumeRle(std::istream& stream);
+	POLYVOX_API void saveVolumeRle(std::ostream& stream, BlockVolume<uint8>& volume);
 }
 
 #endif
