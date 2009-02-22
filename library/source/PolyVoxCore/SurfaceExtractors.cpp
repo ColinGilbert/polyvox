@@ -28,10 +28,14 @@ namespace PolyVox
 		{
 			extractDecimatedSurfaceImpl(volumeData, uLevel, region, singleMaterialPatch);
 		}
+
+		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
 	}
 
 	void extractReferenceSurface(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{
 		extractReferenceSurfaceImpl(volumeData, region, singleMaterialPatch);
+
+		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
 	}
 }
