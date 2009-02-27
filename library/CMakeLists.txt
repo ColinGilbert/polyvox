@@ -131,7 +131,7 @@ INSTALL(FILES ${UTIL_INC_FILES} DESTINATION include/PolyVoxUtil)
 if(WIN32)
 	set(CONFIG_FILE_DIR "CMake")
 else(WIN32)
-	set(CONFIG_FILE_DIR "lib/PolyVox/CMake")
+	set(CONFIG_FILE_DIR "share/PolyVox/cmake")
 endif(WIN32)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/PolyVoxConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/PolyVoxConfig.cmake)
