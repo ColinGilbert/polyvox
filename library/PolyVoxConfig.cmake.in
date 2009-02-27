@@ -6,7 +6,7 @@
 #  PolyVox_LIBRARY_DIRS, the location of the libraries
 #  PolyVox_FOUND, If false, do not try to use OGRE
 #
-# Copyright © 2008, Matt Williams
+# Copyright Â© 2008, Matt Williams
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
@@ -15,7 +15,7 @@ include(FindPackageMessage)
 
 set(PREFIX "@CMAKE_INSTALL_PREFIX@")
 set(PolyVox_LIBRARY_DIRS "${PREFIX}/lib")
-set(PolyVox_INCLUDE_DIRS "${PREFIX}/include/PolyVoxCore" "${PREFIX}/include/PolyVoxUtil" "${PREFIX}/include)
+set(PolyVox_INCLUDE_DIRS "${PREFIX}/include/PolyVoxCore" "${PREFIX}/include/PolyVoxUtil" "${PREFIX}/include")
 set(PolyVox_LIBRARIES "PolyVoxUtil" "PolyVoxCore")
 
 message(STATUS "Found PolyVox")
