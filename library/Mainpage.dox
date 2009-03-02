@@ -1,0 +1,11 @@
+/**
+\mainpage PolyVox Framework
+
+The PolyVox documentation.
+
+\par
+\author David Williams
+
+\namespace PolyVox
+\brief Main namespace
+*/
