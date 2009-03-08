@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "BlockVolume.h"
 #include "Vector.h"
 #include "Region.h"
+
+#include <limits>
 #pragma endregion
 
 namespace PolyVox
@@ -133,27 +135,27 @@ namespace PolyVox
 		else if(uLevel == 1)
 		{
 			VoxelType tValue = getVoxel();
-			tValue = (std::max)(tValue, peekVoxel1px0py0pz());
-			tValue = (std::max)(tValue, peekVoxel0px1py0pz());
-			tValue = (std::max)(tValue, peekVoxel1px1py0pz());
-			tValue = (std::max)(tValue, peekVoxel0px0py1pz());
-			tValue = (std::max)(tValue, peekVoxel1px0py1pz());
-			tValue = (std::max)(tValue, peekVoxel0px1py1pz());
-			tValue = (std::max)(tValue, peekVoxel1px1py1pz());
+			tValue = (std::min)(tValue, peekVoxel1px0py0pz());
+			tValue = (std::min)(tValue, peekVoxel0px1py0pz());
+			tValue = (std::min)(tValue, peekVoxel1px1py0pz());
+			tValue = (std::min)(tValue, peekVoxel0px0py1pz());
+			tValue = (std::min)(tValue, peekVoxel1px0py1pz());
+			tValue = (std::min)(tValue, peekVoxel0px1py1pz());
+			tValue = (std::min)(tValue, peekVoxel1px1py1pz());
 			return tValue;
 		}
 		else
 		{
 			const uint8 uSize = 1 << uLevel;
 
-			VoxelType tValue = 0;
+			VoxelType tValue = std::numeric_limits<VoxelType>::max();
 			for(uint8 z = 0; z < uSize; ++z)
 			{
 				for(uint8 y = 0; y < uSize; ++y)
 				{
 					for(uint8 x = 0; x < uSize; ++x)
 					{
-						tValue = (std::max)(tValue, mVolume.getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
+						tValue = (std::min)(tValue, mVolume.getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
 					}
 				}
 			}
