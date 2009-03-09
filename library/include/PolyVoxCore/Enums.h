@@ -26,9 +26,11 @@ namespace PolyVox
 {
 	enum NormalGenerationMethod
 	{
-		SIMPLE,
+		SIMPLE, //Fastest
 		CENTRAL_DIFFERENCE,
-		SOBEL
+		SOBEL,
+		CENTRAL_DIFFERENCE_SMOOTHED,
+		SOBEL_SMOOTHED //Smoothest
 	};
 }
 

@@ -182,4 +182,121 @@ namespace PolyVox
 			//For our normals we want the the other way around, so we switch the components as we return them.
 			return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
 	}
+
+	template <typename VoxelType>
+	Vector3DFloat computeSmoothSobelGradient(BlockVolumeIterator<VoxelType>& volIter)
+	{
+		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
+			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
+
+			uint16 initialX = volIter.getPosX();
+			uint16 initialY = volIter.getPosY();
+			uint16 initialZ = volIter.getPosZ();
+
+			volIter.setPosition(initialX-1, initialY-1, initialZ-1);	const float pVoxel1nx1ny1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY-1, initialZ );		const float pVoxel1nx1ny0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY-1, initialZ+1);	const float pVoxel1nx1ny1pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY  , initialZ-1);	const float pVoxel1nx0py1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY  , initialZ );		const float pVoxel1nx0py0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY  , initialZ+1);	const float pVoxel1nx0py1pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY+1, initialZ-1);	const float pVoxel1nx1py1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY+1, initialZ );		const float pVoxel1nx1py0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX-1, initialY+1, initialZ+1);	const float pVoxel1nx1py1pz = computeSmoothedVoxel(volIter);
+
+			volIter.setPosition(initialX  , initialY-1, initialZ-1);	const float pVoxel0px1ny1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY-1, initialZ );		const float pVoxel0px1ny0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY-1, initialZ+1);	const float pVoxel0px1ny1pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY  , initialZ-1);	const float pVoxel0px0py1nz = computeSmoothedVoxel(volIter);
+			//volIter.setPosition(initialX  , initialY  , initialZ );		const float pVoxel0px0py0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY  , initialZ+1);	const float pVoxel0px0py1pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY+1, initialZ-1);	const float pVoxel0px1py1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY+1, initialZ );		const float pVoxel0px1py0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX  , initialY+1, initialZ+1);	const float pVoxel0px1py1pz = computeSmoothedVoxel(volIter);
+
+			volIter.setPosition(initialX+1, initialY-1, initialZ-1);	const float pVoxel1px1ny1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY-1, initialZ );		const float pVoxel1px1ny0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY-1, initialZ+1);	const float pVoxel1px1ny1pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY  , initialZ-1);	const float pVoxel1px0py1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY  , initialZ );		const float pVoxel1px0py0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY  , initialZ+1);	const float pVoxel1px0py1pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY+1, initialZ-1);	const float pVoxel1px1py1nz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY+1, initialZ );		const float pVoxel1px1py0pz = computeSmoothedVoxel(volIter);
+			volIter.setPosition(initialX+1, initialY+1, initialZ+1);	const float pVoxel1px1py1pz = computeSmoothedVoxel(volIter);
+
+			/*const VoxelType pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz() > 0 ? 1: 0;
+
+			const VoxelType pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz() > 0 ? 1: 0;
+			//const VoxelType pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz() > 0 ? 1: 0;
+
+			const VoxelType pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz() > 0 ? 1: 0;
+			const VoxelType pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz() > 0 ? 1: 0;*/
+
+			const float xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+				pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
+				weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
+				pVoxel1nx0py1pz - weights[0][2][0] * pVoxel1nx1py1nz -
+				weights[1][2][0] * pVoxel1nx1py0pz - weights[2][2][0] *
+				pVoxel1nx1py1pz + weights[0][0][2] * pVoxel1px1ny1nz +
+				weights[1][0][2] * pVoxel1px1ny0pz + weights[2][0][2] *
+				pVoxel1px1ny1pz + weights[0][1][2] * pVoxel1px0py1nz +
+				weights[1][1][2] * pVoxel1px0py0pz + weights[2][1][2] *
+				pVoxel1px0py1pz + weights[0][2][2] * pVoxel1px1py1nz +
+				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+				pVoxel1px1py1pz);
+
+			const float yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+				pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
+				weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
+				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz -
+				weights[1][0][1] * pVoxel0px1ny0pz - weights[2][0][1] *
+				pVoxel0px1ny1pz + weights[0][2][1] * pVoxel0px1py1nz +
+				weights[1][2][1] * pVoxel0px1py0pz + weights[2][2][1] *
+				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz -
+				weights[1][0][2] * pVoxel1px1ny0pz - weights[2][0][2] *
+				pVoxel1px1ny1pz + weights[0][2][2] * pVoxel1px1py1nz +
+				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+				pVoxel1px1py1pz);
+
+			const float zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
+				weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
+				pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
+				weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
+				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz +
+				weights[2][0][1] * pVoxel0px1ny1pz - weights[0][1][1] *
+				pVoxel0px0py1nz + weights[2][1][1] * pVoxel0px0py1pz -
+				weights[0][2][1] * pVoxel0px1py1nz + weights[2][2][1] *
+				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz +
+				weights[2][0][2] * pVoxel1px1ny1pz - weights[0][1][2] *
+				pVoxel1px0py1nz + weights[2][1][2] * pVoxel1px0py1pz -
+				weights[0][2][2] * pVoxel1px1py1nz + weights[2][2][2] *
+				pVoxel1px1py1pz);
+
+			//Note: The above actually give gradients going from low density to high density.
+			//For our normals we want the the other way around, so we switch the components as we return them.
+			return Vector3DFloat(-xGrad,-yGrad,-zGrad);
+	}
 }

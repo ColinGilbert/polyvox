@@ -20,51 +20,13 @@ namespace PolyVox
 			BlockVolumeIterator<uint8> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
-			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,1);
-			bool upperCornerInside = volumeData->containsPoint(v3dFloor+Vector3DInt32(1,1,1),1);
+			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,2);
+			bool upperCornerInside = volumeData->containsPoint(v3dFloor+Vector3DInt32(1,1,1),2);
 
 			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
 			{
-				Vector3DFloat v3dGradient; //To store the result
-
-				if(normalGenerationMethod == SOBEL)
-				{
-					volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
-					const Vector3DFloat gradFloor = computeSobelGradient(volIter);
-					if((v3dPos.getX() - v3dFloor.getX()) > 0.001)
-					{			
-						volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
-					}
-					if((v3dPos.getY() - v3dFloor.getY()) > 0.001)
-					{			
-						volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,1,0)));
-					}
-					if((v3dPos.getZ() - v3dFloor.getZ()) > 0.001)
-					{			
-						volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,0,1)));					
-					}
-					const Vector3DFloat gradCeil = computeSobelGradient(volIter);
-					v3dGradient = (gradFloor + gradCeil);				
-				}
-				if(normalGenerationMethod == CENTRAL_DIFFERENCE)
-				{
-					volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
-					const Vector3DFloat gradFloor = computeCentralDifferenceGradient(volIter);
-					if((v3dPos.getX() - v3dFloor.getX()) > 0.001)
-					{			
-						volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
-					}
-					if((v3dPos.getY() - v3dFloor.getY()) > 0.001)
-					{			
-						volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,1,0)));
-					}
-					if((v3dPos.getZ() - v3dFloor.getZ()) > 0.001)
-					{			
-						volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,0,1)));					
-					}
-					const Vector3DFloat gradCeil = computeCentralDifferenceGradient(volIter);
-					v3dGradient = (gradFloor + gradCeil);
-				}
+				Vector3DFloat v3dGradient = computeNormal(volumeData, v3dPos, normalGenerationMethod);
+				
 				if(v3dGradient.lengthSquared() > 0.0001)
 				{
 					//If we got a normal of significant length then update it.
@@ -77,97 +39,89 @@ namespace PolyVox
 		}
 	}
 
-	Vector3DFloat computeNormal(BlockVolume<uint8>* volumeData, const Vector3DFloat& position, NormalGenerationMethod normalGenerationMethod)
+	Vector3DFloat computeNormal(BlockVolume<uint8>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
 	{
-		const float posX = position.getX();
-		const float posY = position.getY();
-		const float posZ = position.getZ();
+		Vector3DFloat v3dGradient; //To store the result
 
-		const uint16 floorX = static_cast<uint16>(posX);
-		const uint16 floorY = static_cast<uint16>(posY);
-		const uint16 floorZ = static_cast<uint16>(posZ);
+		BlockVolumeIterator<uint8> volIter(*volumeData);
 
-		//Check all corners are within the volume, allowing a boundary for gradient estimation
-		bool lowerCornerInside = volumeData->containsPoint(Vector3DInt32(floorX, floorY, floorZ),1);
-		bool upperCornerInside = volumeData->containsPoint(Vector3DInt32(floorX+1, floorY+1, floorZ+1),1);
-		if((!lowerCornerInside) || (!upperCornerInside))
-		{
-			normalGenerationMethod = SIMPLE;
-		}
+			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-		Vector3DFloat result;
-
-		BlockVolumeIterator<uint8> volIter(*volumeData); //FIXME - save this somewhere - could be expensive to create?
-
-
-		if(normalGenerationMethod == SOBEL)
-		{
-			volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY),static_cast<uint16>(posZ));
-			const Vector3DFloat gradFloor = computeSobelGradient(volIter);
-			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16>(posX+1.0),static_cast<uint16>(posY),static_cast<uint16>(posZ));
+			volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
+			Vector3DFloat gradFloor;
+			switch(normalGenerationMethod)
+			{
+			case SOBEL_SMOOTHED:
+				gradFloor = computeSmoothSobelGradient(volIter);
+				break;
+			case CENTRAL_DIFFERENCE_SMOOTHED:
+				gradFloor = computeSmoothCentralDifferenceGradient(volIter);
+				break;
+			case SOBEL:
+				gradFloor = computeSobelGradient(volIter);
+				break;
+			case CENTRAL_DIFFERENCE:
+				gradFloor = computeCentralDifferenceGradient(volIter);
+				break;
 			}
-			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
+
+			if((v3dPos.getX() - v3dFloor.getX()) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY+1.0),static_cast<uint16>(posZ));
+				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
 			}
-			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
+			if((v3dPos.getY() - v3dFloor.getY()) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY),static_cast<uint16>(posZ+1.0));					
+				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,1,0)));
 			}
-			const Vector3DFloat gradCeil = computeSobelGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0f);
-			if(result.lengthSquared() < 0.0001)
+			if((v3dPos.getZ() - v3dFloor.getZ()) > 0.25) //The result should be 0.0 or 0.5
+			{			
+				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,0,1)));					
+			}
+
+			Vector3DFloat gradCeil;
+			switch(normalGenerationMethod)
+			{
+			case SOBEL_SMOOTHED:
+				gradCeil = computeSmoothSobelGradient(volIter);
+				break;
+			case CENTRAL_DIFFERENCE_SMOOTHED:
+				gradCeil = computeSmoothCentralDifferenceGradient(volIter);
+				break;
+			case SOBEL:
+				gradCeil = computeSobelGradient(volIter);
+				break;
+			case CENTRAL_DIFFERENCE:
+				gradCeil = computeCentralDifferenceGradient(volIter);
+				break;
+			}
+
+			v3dGradient = (gradFloor + gradCeil);
+			if(v3dGradient.lengthSquared() < 0.0001)
 			{
 				//Operation failed - fall back on simple gradient estimation
 				normalGenerationMethod = SIMPLE;
 			}
-		}
-		if(normalGenerationMethod == CENTRAL_DIFFERENCE)
-		{
-			volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY),static_cast<uint16>(posZ));
-			const Vector3DFloat gradFloor = computeCentralDifferenceGradient(volIter);
-			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16>(posX+1.0),static_cast<uint16>(posY),static_cast<uint16>(posZ));
-			}
-			if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY+1.0),static_cast<uint16>(posZ));
-			}
-			if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-			{			
-				volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY),static_cast<uint16>(posZ+1.0));					
-			}
-			const Vector3DFloat gradCeil = computeCentralDifferenceGradient(volIter);
-			result = ((gradFloor + gradCeil) * -1.0f);
-			if(result.lengthSquared() < 0.0001)
+
+			if(normalGenerationMethod == SIMPLE)
 			{
-				//Operation failed - fall back on simple gradient estimation
-				normalGenerationMethod = SIMPLE;
+				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
+				const uint8 uFloor = volIter.getVoxel() > 0 ? 1 : 0;
+				if((v3dPos.getX() - v3dFloor.getX()) > 0.25) //The result should be 0.0 or 0.5
+				{					
+					uint8 uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
+					v3dGradient = Vector3DFloat(static_cast<float>(uFloor - uCeil),0.0,0.0);
+				}
+				else if((v3dPos.getY() - v3dFloor.getY()) > 0.25) //The result should be 0.0 or 0.5
+				{
+					uint8 uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
+					v3dGradient = Vector3DFloat(0.0,static_cast<float>(uFloor - uCeil),0.0);
+				}
+				else if((v3dPos.getZ() - v3dFloor.getZ()) > 0.25) //The result should be 0.0 or 0.5
+				{
+					uint8 uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
+					v3dGradient = Vector3DFloat(0.0, 0.0,static_cast<float>(uFloor - uCeil));					
+				}
 			}
-		}
-		if(normalGenerationMethod == SIMPLE)
-		{
-			volIter.setPosition(static_cast<uint16>(posX),static_cast<uint16>(posY),static_cast<uint16>(posZ));
-			const uint8 uFloor = volIter.getVoxel() > 0 ? 1 : 0;
-			if((posX - floorX) > 0.25) //The result should be 0.0 or 0.5
-			{					
-				uint8 uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
-				result = Vector3DFloat(static_cast<float>(uFloor - uCeil),0.0,0.0);
-			}
-			else if((posY - floorY) > 0.25) //The result should be 0.0 or 0.5
-			{
-				uint8 uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
-				result = Vector3DFloat(0.0,static_cast<float>(uFloor - uCeil),0.0);
-			}
-			else if((posZ - floorZ) > 0.25) //The result should be 0.0 or 0.5
-			{
-				uint8 uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
-				result = Vector3DFloat(0.0, 0.0,static_cast<float>(uFloor - uCeil));					
-			}
-		}
-		return result;
+			return v3dGradient;
 	}
 }
