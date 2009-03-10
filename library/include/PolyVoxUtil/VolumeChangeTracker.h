@@ -63,7 +63,10 @@ namespace PolyVox
 		bool m_bIsLocked;
 		Region m_regLastLocked;
 		BlockVolume<uint8>* volumeData;
-		LinearVolume<int32>* volRegionLastModified;
+
+		//It's not what the block class was designed for, but it 
+		//provides a handy way of storing a 3D grid of values.
+		Block<int32>* volRegionLastModified;
 
 		static int32 m_iCurrentTime;
 	};

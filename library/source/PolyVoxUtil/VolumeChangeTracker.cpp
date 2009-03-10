@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/LinearVolume.h"
 #include "PolyVoxCore/MarchingCubesTables.h"
 #include "PolyVoxCore/SurfaceExtractors.h"
 #include "PolyVoxCore/SurfaceVertex.h"
@@ -54,7 +53,7 @@ namespace PolyVox
 	void VolumeChangeTracker::setVolumeData(BlockVolume<uint8>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
-		volRegionLastModified = new LinearVolume<int32>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
+		volRegionLastModified = new Block<int32>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
 	}
 
 	void VolumeChangeTracker::setAllRegionsModified(void)

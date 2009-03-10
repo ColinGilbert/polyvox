@@ -32,8 +32,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Enums.h
 	include/PolyVoxCore/GradientEstimators.h	
 	include/PolyVoxCore/GradientEstimators.inl
-	include/PolyVoxCore/LinearVolume.h
-	include/PolyVoxCore/LinearVolume.inl
 	include/PolyVoxCore/IndexedSurfacePatch.h
 	include/PolyVoxCore/MarchingCubesTables.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h

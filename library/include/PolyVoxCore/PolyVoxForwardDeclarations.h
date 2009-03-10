@@ -38,7 +38,6 @@ namespace PolyVox
 
 	class IndexedSurfacePatch;
 	class IntegrealVector3;
-	template <typename VoxelType> class LinearVolume;
 	class Region;
 	class SurfaceVertex;
 
