@@ -117,9 +117,11 @@ namespace PolyVox
 	{
 		++m_iCurrentTime;
 		//FIXME - rather than creating a iterator each time we should have one stored
-		BlockVolumeIterator<uint8> iterVol(*volumeData);
-		iterVol.setPosition(x,y,z);
-		iterVol.setVoxel(value);
+		//BlockVolumeIterator<uint8> iterVol(*volumeData);
+		/*iterVol.setPosition(x,y,z);
+		iterVol.setVoxel(value);*/
+
+		volumeData->setVoxelAt(x,y,z,value);
 		
 		//If we are not on a boundary, just mark one region.
 		if((x % POLYVOX_REGION_SIDE_LENGTH != 0) &&
@@ -164,9 +166,10 @@ namespace PolyVox
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		BlockVolumeIterator<uint8> iterVol(*volumeData);
+		/*BlockVolumeIterator<uint8> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
-		iterVol.setVoxel(value);
+		iterVol.setVoxel(value);*/
+		volumeData->setVoxelAt(x,y,z,value);
 	}
 
 	void VolumeChangeTracker::lockRegion(const Region& regToLock)

@@ -53,8 +53,7 @@ namespace PolyVox
 		void setPosition(const Vector3DInt16& v3dNewPos);
 		void setPosition(uint16 xPos, uint16 yPos, uint16 zPos);
 		void setValidRegion(const Region& region);
-		void setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast);
-		void setVoxel(VoxelType tValue);	
+		void setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast);	
 
 		bool isValidForRegion(void) const;
 		void moveForwardInRegionFast(void);		

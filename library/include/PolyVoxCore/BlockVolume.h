@@ -50,6 +50,9 @@ namespace PolyVox
 		VoxelType getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
+		void setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue);
+		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
 		bool containsPoint(const Vector3DInt32& pos, uint16 boundary) const;
 		BlockVolumeIterator<VoxelType> firstVoxel(void);

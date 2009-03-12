@@ -235,35 +235,6 @@ namespace PolyVox
 		mYRegionLastBlock = mYRegionLast >> mVolume.m_uBlockSideLengthPower;
 		mZRegionLastBlock = mZRegionLast >> mVolume.m_uBlockSideLengthPower;
 	}
-
-	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setVoxel(VoxelType tValue)
-	{
-		const uint32 uBlockIndex = 
-				mXBlock + 
-				mYBlock * mVolume.m_uSideLengthInBlocks + 
-				mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
-
-		const bool bIsShared = mVolume.m_pIsShared[uBlockIndex];
-		const VoxelType tHomogenousValue = mVolume.m_pHomogenousValue[uBlockIndex];
-		if(bIsShared)
-		{
-			if(tHomogenousValue != tValue)
-			{
-				mVolume.m_pBlocks[uBlockIndex] = new Block<VoxelType>(mVolume.m_uBlockSideLengthPower);
-				mVolume.m_pIsShared[uBlockIndex] = false;
-				mVolume.m_pBlocks[uBlockIndex]->fill(tHomogenousValue);
-				mCurrentVoxel = mVolume.m_pBlocks[uBlockIndex]->m_tData + mVoxelIndexInBlock;
-				*mCurrentVoxel = tValue;
-			}
-		}
-		else
-		{
-			//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
-			mVolume.m_pIsPotentiallySharable[uBlockIndex] = true;
-			*mCurrentVoxel = tValue;
-		}		
-	}
 	#pragma endregion
 
 	#pragma region Other

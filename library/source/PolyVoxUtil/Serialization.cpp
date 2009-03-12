@@ -28,7 +28,6 @@ namespace PolyVox
 		uint16 volumeDepth = 0x0001 << volumeDepthPower;
 
 		//Read data
-		BlockVolumeIterator<uint8> volIter(*volume);
 		for(uint16 z = 0; z < volumeDepth; ++z)
 		{
 			for(uint16 y = 0; y < volumeHeight; ++y)
@@ -38,8 +37,7 @@ namespace PolyVox
 					uint8 value = 0;
 					stream.read(reinterpret_cast<char*>(&value), sizeof(value));
 			
-					volIter.setPosition(x,y,z);
-					volIter.setVoxel(value);
+					volume->setVoxelAt(x,y,z,value);
 				}
 			}
 		}
@@ -98,7 +96,6 @@ namespace PolyVox
 		uint16 volumeDepth = 0x0001 << volumeDepthPower;
 
 		//Read data
-		BlockVolumeIterator<uint8> volIter(*volume);
 		bool firstTime = true;
 		uint32 runLength = 0;
 		uint8 value = 0;
@@ -110,10 +107,9 @@ namespace PolyVox
 			{
 				for(uint16 x = 0; x < volumeWidth; ++x)
 				{	
-					volIter.setPosition(x,y,z);
 					if(runLength != 0)
 					{
-						volIter.setVoxel(value);
+						volume->setVoxelAt(x,y,z,value);
 						runLength--;
 					}
 					else
@@ -121,7 +117,7 @@ namespace PolyVox
 						stream.read(reinterpret_cast<char*>(&value), sizeof(value));
 						stream.read(reinterpret_cast<char*>(&runLength), sizeof(runLength));
 
-						volIter.setVoxel(value);
+						volume->setVoxelAt(x,y,z,value);
 						runLength--;
 					}
 				}

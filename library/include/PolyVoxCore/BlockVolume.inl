@@ -169,6 +169,50 @@ namespace PolyVox
 	}
 	#pragma endregion	
 
+	#pragma region Setters
+	template <typename VoxelType>
+	void BlockVolume<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
+	{
+		const uint16 blockX = uXPos >> m_uBlockSideLengthPower;
+		const uint16 blockY = uYPos >> m_uBlockSideLengthPower;
+		const uint16 blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16 xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16 yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16 zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+
+		const uint32 uBlockIndex = 
+				blockX + 
+				blockY * m_uSideLengthInBlocks + 
+				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks;
+
+		const bool bIsShared = m_pIsShared[uBlockIndex];
+		const VoxelType tHomogenousValue = m_pHomogenousValue[uBlockIndex];
+		if(bIsShared)
+		{
+			if(tHomogenousValue != tValue)
+			{
+				m_pBlocks[uBlockIndex] = new Block<VoxelType>(m_uBlockSideLengthPower);
+				m_pIsShared[uBlockIndex] = false;
+				m_pBlocks[uBlockIndex]->fill(tHomogenousValue);
+				m_pBlocks[uBlockIndex]->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+			}
+		}
+		else
+		{
+			//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
+			m_pIsPotentiallySharable[uBlockIndex] = true;
+			m_pBlocks[uBlockIndex]->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+		}		
+	}
+
+	template <typename VoxelType>
+	void BlockVolume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	{
+		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
+	}
+	#pragma endregion
+
 	#pragma region Other
 	template <typename VoxelType>
 	bool BlockVolume<VoxelType>::containsPoint(const Vector3DFloat& pos, float boundary) const
