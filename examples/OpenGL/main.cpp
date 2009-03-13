@@ -15,8 +15,6 @@
 #include <iostream>
 
 
-
-
 //Some namespaces we need
 using namespace std;
 using namespace PolyVox;
@@ -26,7 +24,7 @@ using namespace std;
 //as I'm not sure how/if I can pass variables to the GLUT functions.
 //Global variables are denoted by the 'g_' prefix
 const uint16 g_uVolumeSideLength = 128;
-const uint16 g_uRegionSideLength = 32;
+const uint16 g_uRegionSideLength = 16;
 const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
 //Creates a volume 128x128x128
@@ -34,7 +32,8 @@ BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-GLuint buffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+GLuint indexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+GLuint vertexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
 void createSphereInVolume(float fRadius, uint8 uValue)
 {
@@ -94,12 +93,15 @@ void display ( void )   // Create The Display Function
 
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
 
-				glBindBuffer(GL_ARRAY_BUFFER, buffers[uRegionX][uRegionY][uRegionZ]);
+				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[uRegionX][uRegionY][uRegionZ]);
 				glVertexPointer(3, GL_FLOAT, 0, 0);
+
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[uRegionX][uRegionY][uRegionZ]);
 
 				glEnableClientState(GL_VERTEX_ARRAY);
 
-				glDrawArrays(GL_TRIANGLES, 0, vecIndices.size());
+				int s = vecIndices.size();
+				glDrawElements(GL_TRIANGLE_STRIP, s, GL_UNSIGNED_INT, 0);
 
 				glDisableClientState(GL_VERTEX_ARRAY); 
 			}
@@ -217,18 +219,27 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
 
-				glGenBuffers(1, &(buffers[uRegionX][uRegionY][uRegionZ]));
-				glBindBuffer(GL_ARRAY_BUFFER, buffers[uRegionX][uRegionY][uRegionZ]);
-				glBufferData(GL_ARRAY_BUFFER, vecIndices.size() * sizeof(GLfloat) * 3, 0, GL_STATIC_DRAW);
+				glGenBuffers(1, &(indexBuffers[uRegionX][uRegionY][uRegionZ]));
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[uRegionX][uRegionY][uRegionZ]);
+				int s = vecIndices.size() * sizeof(GLint);
+				if(s != 0)
+				{
+					GLvoid* blah = (GLvoid*)(&(vecIndices[0]));				
+					glBufferData(GL_ELEMENT_ARRAY_BUFFER, s, blah, GL_STATIC_DRAW);
+				}
+
+				glGenBuffers(1, &(vertexBuffers[uRegionX][uRegionY][uRegionZ]));
+				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[uRegionX][uRegionY][uRegionZ]);
+				glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 3, 0, GL_STATIC_DRAW);
 				GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
 
-				for(vector<uint32>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
+				for(vector<SurfaceVertex>::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
 				{
-					const SurfaceVertex& vertex = vecVertices[*iterIndex];
+					const SurfaceVertex& vertex = *iterVertex;
 					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
 					const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
 					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + v3dRegionOffset;
-					//glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
+
 					*ptr = v3dFinalVertexPos.getX();
 					ptr++;
 					*ptr = v3dFinalVertexPos.getY();
