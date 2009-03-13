@@ -35,7 +35,6 @@ BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 GLuint buffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-GLfloat* data[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
 void createSphereInVolume(float fRadius, uint8 uValue)
 {
@@ -92,7 +91,6 @@ void display ( void )   // Create The Display Function
 		{
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				GLfloat* current = data[uRegionX][uRegionY][uRegionZ];
 
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
 
@@ -219,8 +217,10 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
 
-				data[uRegionX][uRegionY][uRegionZ] = new GLfloat[vecIndices.size() * 3];
-				GLfloat* current = data[uRegionX][uRegionY][uRegionZ];
+				glGenBuffers(1, &(buffers[uRegionX][uRegionY][uRegionZ]));
+				glBindBuffer(GL_ARRAY_BUFFER, buffers[uRegionX][uRegionY][uRegionZ]);
+				glBufferData(GL_ARRAY_BUFFER, vecIndices.size() * sizeof(GLfloat) * 3, 0, GL_STATIC_DRAW);
+				GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
 
 				for(vector<uint32>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
 				{
@@ -229,20 +229,15 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 					const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
 					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + v3dRegionOffset;
 					//glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
-					*current = v3dFinalVertexPos.getX();
-					current++;
-					*current = v3dFinalVertexPos.getY();
-					current++;
-					*current = v3dFinalVertexPos.getZ();
-					current++;
+					*ptr = v3dFinalVertexPos.getX();
+					ptr++;
+					*ptr = v3dFinalVertexPos.getY();
+					ptr++;
+					*ptr = v3dFinalVertexPos.getZ();
+					ptr++;
 				}
 
-				glGenBuffers(1, &(buffers[uRegionX][uRegionY][uRegionZ]));
-
-				glBindBuffer(GL_ARRAY_BUFFER, buffers[uRegionX][uRegionY][uRegionZ]);
-				glBufferData(GL_ARRAY_BUFFER, vecIndices.size() * sizeof(GLfloat) * 3, data[uRegionX][uRegionY][uRegionZ], GL_STATIC_DRAW);
-				
-				delete data[uRegionX][uRegionY][uRegionZ];
+				glUnmapBuffer(GL_ARRAY_BUFFER);
 
 			}
 		}
