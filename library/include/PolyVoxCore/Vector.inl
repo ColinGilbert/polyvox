@@ -398,6 +398,50 @@ namespace PolyVox
 	}
 
 	/**
+    Sets several elements of a vector at once.
+    \param x x component to set.
+    \param y y component to set.
+    */
+    template <uint32 Size,typename Type>
+        inline void Vector<Size,Type>::setElements(Type x, Type y) throw()
+    {
+		m_tElements[0] = x;
+		m_tElements[1] = y;
+
+    }
+
+	/**
+	Sets several elements of a vector at once.
+	\param x x component to set.
+	\param y y component to set.
+	\param z z component to set.
+	*/
+	template <uint32 Size,typename Type>
+		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z) throw()
+	{
+		m_tElements[0] = x;
+		m_tElements[1] = y;
+		m_tElements[2] = z;
+
+	}
+
+	/**
+	Sets several elements of a vector at once.
+	\param x x component to set.
+	\param y y component to set.
+	\param z z component to set.
+	\param w w component to set.
+	*/
+	template <uint32 Size,typename Type>
+		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z, Type w) throw()
+	{
+		m_tElements[0] = x;
+		m_tElements[1] = y;
+		m_tElements[2] = z;
+		m_tElements[3] = w;
+	}
+
+	/**
 	\param tX The new value for the X component of a 1, 2, 3, or 4 dimensional Vector.
 	*/
     template <uint32 Size, typename Type>

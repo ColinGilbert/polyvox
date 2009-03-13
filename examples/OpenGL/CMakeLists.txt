@@ -3,10 +3,19 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(OpenGLExample)
 
 #Projects source files
-SET(SRC_FILES main.cpp)
+SET(SRC_FILES
+	glew/glew.c
+	main.cpp
+	)
 
-#Projects headers files
-#SET(INC_FILES)
+#Projects headers files	
+SET(INC_FILES
+	glew/glew.h
+	glew/glxew.h
+	glew/wglew.h
+	)
+
+ADD_DEFINITIONS(-DGLEW_STATIC)
 
 #Appends "_d" to the generated library when in debug mode
 SET(CMAKE_DEBUG_POSTFIX "_d")

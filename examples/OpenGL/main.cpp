@@ -4,8 +4,18 @@
 #include "PolyVoxCore/Utility.h"
 
 #include <windows.h>   // Standard Header For Most Programs
-#include <gl/gl.h>     // The GL Header File
+
+#ifdef WIN32
+	#include "glew/glew.h"
+#else
+	#include <gl/gl.h>     // The GL Header File
+#endif
 #include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
+
+#include <iostream>
+
+
+
 
 //Some namespaces we need
 using namespace std;
@@ -16,7 +26,7 @@ using namespace std;
 //as I'm not sure how/if I can pass variables to the GLUT functions.
 //Global variables are denoted by the 'g_' prefix
 const uint16 g_uVolumeSideLength = 128;
-const uint16 g_uRegionSideLength = 16;
+const uint16 g_uRegionSideLength = 32;
 const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
 //Creates a volume 128x128x128
@@ -24,8 +34,10 @@ BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+GLuint buffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+GLfloat* data[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
-void createSphereInVolume(void)
+void createSphereInVolume(float fRadius, uint8 uValue)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(g_volData.getSideLength() / 2, g_volData.getSideLength() / 2, g_volData.getSideLength() / 2);
@@ -42,11 +54,11 @@ void createSphereInVolume(void)
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
-				//If the current voxel is less than 50 units from the center,
+				//If the current voxel is less than 'radius' units from the center
 				//then we make it solid, otherwise we make it empty space.
-				if(fDistToCenter <= 50.0f)
+				if(fDistToCenter <= fRadius)
 				{
-					g_volData.setVoxelAt(x,y,z, static_cast<uint8>(fDistToCenter));
+					g_volData.setVoxelAt(x,y,z, uValue);
 				}
 				else
 				{
@@ -74,27 +86,37 @@ void display ( void )   // Create The Display Function
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-200.0f);
 
-	glBegin(GL_TRIANGLES);
 	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
 		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
+				GLfloat* current = data[uRegionX][uRegionY][uRegionZ];
+
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
-				for(vector<uint32>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
-				{
-					const SurfaceVertex& vertex = vecVertices[*iterIndex];
-					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
-					const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
-					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + v3dRegionOffset;
-					glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
-				}
+
+				glBindBuffer(GL_ARRAY_BUFFER, buffers[uRegionX][uRegionY][uRegionZ]);
+				glVertexPointer(3, GL_FLOAT, 0, 0);
+
+				glEnableClientState(GL_VERTEX_ARRAY);
+
+				glDrawArrays(GL_TRIANGLES, 0, vecIndices.size());
+
+				glDisableClientState(GL_VERTEX_ARRAY); 
 			}
 		}
 	}
-	glEnd();
+
+	GLenum errCode;
+	const GLubyte *errString;
+
+	if ((errCode = glGetError()) != GL_NO_ERROR)
+	{
+		errString = gluErrorString(errCode);
+		cout << "OpenGL Error: " << errString << endl;
+	}
+
 
 
 	glutSwapBuffers ( );
@@ -141,8 +163,29 @@ void arrow_keys ( int a_keys, int x, int y )  // Create Special Function (requir
 
 void main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
 {
+	glutInit ( &argc, argv ); // Erm Just Write It =)
+	init ();
+	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
+	glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
+	glutCreateWindow    ( "PolyVox OpenGL Example" ); // Window Title (argv[0] for current directory as title)
+	//glutFullScreen      ( );          // Put Into Full Screen
+	glutDisplayFunc     ( display );  // Matching Earlier Functions To Their Counterparts
+	glutReshapeFunc     ( reshape );
+	glutKeyboardFunc    ( keyboard );
+	glutSpecialFunc     ( arrow_keys );
+
+#ifdef WIN32
+	//If we are on Windows we will need GLEW to access recent OpenGL functionality
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+	  /* Problem: glewInit failed, something is seriously wrong. */
+	  cout << "Error: " << glewGetErrorString(err) << endl;
+	}
+#endif
+
 	//Make our volume contain a sphere in the center.
-	createSphereInVolume();
+	createSphereInVolume(50.0f, 1);
 
 	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 	//This three-level for loop iterates over each region.
@@ -157,7 +200,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				IndexedSurfacePatch* ispCurrent = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
 
 				//Compute the extents of the current region
-				//FIXME - This is a little coplex? PolyVox could
+				//FIXME - This is a little complex? PolyVox could
 				//provide more functions for dealing with regions?
 				uint16 regionStartX = uRegionX * g_uRegionSideLength;
 				uint16 regionStartY = uRegionY * g_uRegionSideLength;
@@ -172,20 +215,40 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 				//Extract the surface for this region
 				extractReferenceSurface(&g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
+
+				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
+				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
+
+				data[uRegionX][uRegionY][uRegionZ] = new GLfloat[vecIndices.size() * 3];
+				GLfloat* current = data[uRegionX][uRegionY][uRegionZ];
+
+				for(vector<uint32>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
+				{
+					const SurfaceVertex& vertex = vecVertices[*iterIndex];
+					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
+					const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
+					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + v3dRegionOffset;
+					//glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
+					*current = v3dFinalVertexPos.getX();
+					current++;
+					*current = v3dFinalVertexPos.getY();
+					current++;
+					*current = v3dFinalVertexPos.getZ();
+					current++;
+				}
+
+				glGenBuffers(1, &(buffers[uRegionX][uRegionY][uRegionZ]));
+
+				glBindBuffer(GL_ARRAY_BUFFER, buffers[uRegionX][uRegionY][uRegionZ]);
+				glBufferData(GL_ARRAY_BUFFER, vecIndices.size() * sizeof(GLfloat) * 3, data[uRegionX][uRegionY][uRegionZ], GL_STATIC_DRAW);
+				
+				delete data[uRegionX][uRegionY][uRegionZ];
+
 			}
 		}
 	}
 
-	glutInit            ( &argc, argv ); // Erm Just Write It =)
-	init ();
-	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
-	glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
-	glutCreateWindow    ( "PolyVox OpenGL Example" ); // Window Title (argv[0] for current directory as title)
-	//glutFullScreen      ( );          // Put Into Full Screen
-	glutDisplayFunc     ( display );  // Matching Earlier Functions To Their Counterparts
-	glutReshapeFunc     ( reshape );
-	glutKeyboardFunc    ( keyboard );
-	glutSpecialFunc     ( arrow_keys );
+	
 	glutMainLoop        ( );          // Initialize The Main Loop
 
 	//Delete all the surface patches we created.

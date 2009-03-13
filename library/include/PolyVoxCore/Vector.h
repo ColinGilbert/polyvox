@@ -65,7 +65,7 @@ namespace PolyVox
         ///Division and Assignment Operator.
         Vector<Size,Type>& operator/=(const Type& rhs) throw();
 
-		///Element Access
+		///Element Access.
 		Type getElement(uint32 index) const throw();
         ///Get the x component of the vector.
         Type getX(void) const throw();        
@@ -76,8 +76,14 @@ namespace PolyVox
 		///Get the w component of the vector.
 		Type getW(void) const throw();		
 
-		///Element Access
+		///Element Access.
 		void setElement(uint32 index, Type tValue) throw();
+		///Element Access.
+        void setElements(Type x, Type y) throw();
+		///Element Access.
+		void setElements(Type x, Type y, Type z) throw();
+		///Element Access.
+		void setElements(Type x, Type y, Type z, Type w) throw();
 		///Set the x component of the vector.
 		void setX(Type tX) throw();
 		///Set the y component of the vector.
