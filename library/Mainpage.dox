@@ -1,11 +1,28 @@
 /**
 \mainpage PolyVox Framework
 
-The PolyVox documentation.
+The PolyVox documentation.\n
 
-\par
+For a brief introduction, see the \ref tutorial.
+
+
 \author David Williams
 
 \namespace PolyVox
 \brief Main namespace
+*/
+
+/**
+\page tutorial Tutorial
+
+This is a basic tutorial covering the essentials of using PolyVox.
+
+\code
+#include <Block.h>
+
+int main(int argc, char *argv[])
+{
+	//blah blah
+}
+\endcode
 */
