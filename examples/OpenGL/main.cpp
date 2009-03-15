@@ -60,7 +60,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 
 	glGenBuffers(1, &result.vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, result.vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 6, 0, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 9, 0, GL_STATIC_DRAW);
 	GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
 
 	for(vector<SurfaceVertex>::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
@@ -75,6 +75,13 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 		*ptr = v3dFinalVertexPos.getY();
 		ptr++;
 		*ptr = v3dFinalVertexPos.getZ();
+		ptr++;
+
+		*ptr = vertex.getNormal().getX();
+		ptr++;
+		*ptr = vertex.getNormal().getY();
+		ptr++;
+		*ptr = vertex.getNormal().getZ();
 		ptr++;
 
 		GLfloat red = 1.0f;
@@ -177,6 +184,23 @@ void init ( GLvoid )     // Create Some Everyday Functions
 	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
 	glEnable ( GL_COLOR_MATERIAL );
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	glEnable(GL_LIGHTING);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_LIGHT0);
+	
+	// Create light components
+	/*GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+	GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat position[] = { -1.5f, 1.0f, -4.0f, 0.0f };
+
+	// Assign created components to GL_LIGHT0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);*/
+
 }
 
 void display ( void )   // Create The Display Function
@@ -192,17 +216,20 @@ void display ( void )   // Create The Display Function
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
-				glVertexPointer(3, GL_FLOAT, 24, 0);
-				glColorPointer(3, GL_FLOAT, 24, (GLvoid*)12);
+				glVertexPointer(3, GL_FLOAT, 36, 0);
+				glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
+				glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].indexBuffer);
 
 				glEnableClientState(GL_VERTEX_ARRAY);
+				glEnableClientState(GL_NORMAL_ARRAY);
 				glEnableClientState(GL_COLOR_ARRAY);
 
 				glDrawElements(GL_TRIANGLE_STRIP, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].noOfIndices, GL_UNSIGNED_INT, 0);
 
 				glDisableClientState(GL_COLOR_ARRAY);
+				glDisableClientState(GL_NORMAL_ARRAY);
 				glDisableClientState(GL_VERTEX_ARRAY); 
 			}
 		}
@@ -264,7 +291,6 @@ default:
 void main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
 {
 	glutInit ( &argc, argv ); // Erm Just Write It =)
-	init ();
 	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
 	glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
 	glutCreateWindow    ( "PolyVox OpenGL Example" ); // Window Title (argv[0] for current directory as title)
@@ -336,6 +362,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 		}
 	}
 
+	init ();
 
 	glutMainLoop        ( );          // Initialize The Main Loop
 }
