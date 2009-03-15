@@ -39,6 +39,8 @@ int g_yRotation = 0.0f;
 int g_xOld = 0;
 int g_yOld = 0;
 
+int g_frameCounter = 0;
+
 //Creates a volume 128x128x128
 BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
@@ -180,6 +182,13 @@ void createCube(Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8 uV
 	}
 }
 
+void timerFunc(int value)
+{
+	cout << "FPS = " << g_frameCounter << endl;
+	g_frameCounter = 0;
+	glutTimerFunc(1000, timerFunc, 0);
+}
+
 void init ( GLvoid )     // Create Some Everyday Functions
 {
 	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
@@ -195,19 +204,6 @@ void init ( GLvoid )     // Create Some Everyday Functions
 	glEnable(GL_LIGHT0);
 
 	glShadeModel(GL_SMOOTH);
-	
-	// Create light components
-	/*GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
-	GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
-	GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
-	GLfloat position[] = { -1.5f, 1.0f, -4.0f, 0.0f };
-
-	// Assign created components to GL_LIGHT0
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);*/
-
 }
 
 void display ( void )   // Create The Display Function
@@ -261,6 +257,7 @@ void display ( void )   // Create The Display Function
 
 
 
+	g_frameCounter++;
 	glutSwapBuffers ( );
 	// Swap The Buffers To Not Be Left With A Clear Screen
 }
@@ -332,6 +329,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	glutReshapeFunc     ( reshape );
 	glutKeyboardFunc    ( keyboard );
 	glutSpecialFunc     ( arrow_keys );
+	glutTimerFunc(1000, timerFunc, 0);
 	glutIdleFunc(idle);
 
 #ifdef WIN32
