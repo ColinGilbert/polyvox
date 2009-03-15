@@ -35,7 +35,7 @@ IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolume
 GLuint indexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 GLuint vertexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
-void createSphereInVolume(float fRadius, uint8 uValue)
+void createSphere(float fRadius, uint8 uValue)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(g_volData.getSideLength() / 2, g_volData.getSideLength() / 2, g_volData.getSideLength() / 2);
@@ -58,10 +58,21 @@ void createSphereInVolume(float fRadius, uint8 uValue)
 				{
 					g_volData.setVoxelAt(x,y,z, uValue);
 				}
-				else
-				{
-					g_volData.setVoxelAt(x,y,z, 0);
-				}
+			}
+		}
+	}
+}
+
+void createCube(Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8 uValue)
+{
+	//This three-level for loop iterates over every voxel between the specified corners
+	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
+	{
+		for (int y = lowerCorner.getY(); y <= upperCorner.getY(); y++)
+		{
+			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
+			{
+				g_volData.setVoxelAt(x,y,z, uValue);
 			}
 		}
 	}
@@ -94,15 +105,18 @@ void display ( void )   // Create The Display Function
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
 
 				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[uRegionX][uRegionY][uRegionZ]);
-				glVertexPointer(3, GL_FLOAT, 0, 0);
+				glVertexPointer(3, GL_FLOAT, 24, 0);
+				glColorPointer(3, GL_FLOAT, 24, (GLvoid*)12);
 
 				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[uRegionX][uRegionY][uRegionZ]);
 
 				glEnableClientState(GL_VERTEX_ARRAY);
+				glEnableClientState(GL_COLOR_ARRAY);
 
 				int s = vecIndices.size();
 				glDrawElements(GL_TRIANGLE_STRIP, s, GL_UNSIGNED_INT, 0);
 
+				glDisableClientState(GL_COLOR_ARRAY);
 				glDisableClientState(GL_VERTEX_ARRAY); 
 			}
 		}
@@ -185,7 +199,21 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 #endif
 
 	//Make our volume contain a sphere in the center.
-	createSphereInVolume(50.0f, 1);
+	uint16 minPos = 0;
+	uint16 midPos = g_volData.getSideLength() / 2;
+	uint16 maxPos = g_volData.getSideLength() - 1;
+	createCube(Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
+
+	createSphere(50.0f, 5);
+	createSphere(40.0f, 4);
+	createSphere(30.0f, 3);
+	createSphere(20.0f, 2);
+	createSphere(10.0f, 1);	
+
+	createCube(Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos, midPos, midPos), 0);
+	createCube(Vector3DUint16(midPos, midPos, minPos), Vector3DUint16(maxPos, maxPos, midPos), 0);
+	createCube(Vector3DUint16(midPos, minPos, midPos), Vector3DUint16(maxPos, midPos, maxPos), 0);
+	createCube(Vector3DUint16(minPos, midPos, midPos), Vector3DUint16(midPos, maxPos, maxPos), 0);
 
 	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 	//This three-level for loop iterates over each region.
@@ -230,7 +258,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 				glGenBuffers(1, &(vertexBuffers[uRegionX][uRegionY][uRegionZ]));
 				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[uRegionX][uRegionY][uRegionZ]);
-				glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 3, 0, GL_STATIC_DRAW);
+				glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 6, 0, GL_STATIC_DRAW);
 				GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
 
 				for(vector<SurfaceVertex>::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
@@ -245,6 +273,48 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 					*ptr = v3dFinalVertexPos.getY();
 					ptr++;
 					*ptr = v3dFinalVertexPos.getZ();
+					ptr++;
+
+					GLfloat red = 1.0f;
+					GLfloat green = 0.0f;
+					GLfloat blue = 0.0f;
+
+					uint8 material = vertex.getMaterial() + 0.5;
+
+					switch(material)
+					{
+					case 1:
+						red = 1.0;
+						green = 0.0;
+						blue = 0.0;
+						break;
+					case 2:
+						red = 0.0;
+						green = 1.0;
+						blue = 0.0;
+						break;
+					case 3:
+						red = 0.0;
+						green = 0.0;
+						blue = 1.0;
+						break;
+					case 4:
+						red = 1.0;
+						green = 1.0;
+						blue = 0.0;
+						break;
+					case 5:
+						red = 1.0;
+						green = 0.0;
+						blue = 1.0;
+						break;
+					}
+
+					*ptr = red;
+					ptr++;
+					*ptr = green;
+					ptr++;
+					*ptr = blue;
 					ptr++;
 				}
 
