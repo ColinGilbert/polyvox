@@ -22,6 +22,7 @@ using namespace std;
 
 struct OpenGLSurfacePatch
 {
+	GLulong noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
 };
@@ -37,9 +38,6 @@ const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideL
 BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
-IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-//GLuint indexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-//GLuint vertexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
 OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
@@ -57,6 +55,8 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 		GLvoid* blah = (GLvoid*)(&(vecIndices[0]));				
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, s, blah, GL_STATIC_DRAW);
 	}
+
+	result.noOfIndices = vecIndices.size();
 
 	glGenBuffers(1, &result.vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, result.vertexBuffer);
@@ -191,9 +191,6 @@ void display ( void )   // Create The Display Function
 		{
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-
-				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
-
 				glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
 				glVertexPointer(3, GL_FLOAT, 24, 0);
 				glColorPointer(3, GL_FLOAT, 24, (GLvoid*)12);
@@ -203,8 +200,7 @@ void display ( void )   // Create The Display Function
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glEnableClientState(GL_COLOR_ARRAY);
 
-				int s = vecIndices.size();
-				glDrawElements(GL_TRIANGLE_STRIP, s, GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLE_STRIP, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].noOfIndices, GL_UNSIGNED_INT, 0);
 
 				glDisableClientState(GL_COLOR_ARRAY);
 				glDisableClientState(GL_VERTEX_ARRAY); 
@@ -314,8 +310,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
-				g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ] = new IndexedSurfacePatch();
-				IndexedSurfacePatch* ispCurrent = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
+				IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
 
 				//Compute the extents of the current region
 				//FIXME - This is a little complex? PolyVox could
@@ -336,23 +331,12 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 				g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
 
+				delete ispCurrent;
 			}
 		}
 	}
 
 
 	glutMainLoop        ( );          // Initialize The Main Loop
-
-	//Delete all the surface patches we created.
-	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
-	{
-		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
-		{
-			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
-			{
-				delete g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ];
-			}
-		}
-	}
 }
 
