@@ -34,6 +34,11 @@ const uint16 g_uVolumeSideLength = 128;
 const uint16 g_uRegionSideLength = 16;
 const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
+int g_xRotation = 0.0f;
+int g_yRotation = 0.0f;
+int g_xOld = 0;
+int g_yOld = 0;
+
 //Creates a volume 128x128x128
 BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
@@ -188,6 +193,8 @@ void init ( GLvoid )     // Create Some Everyday Functions
 	glEnable(GL_LIGHTING);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_LIGHT0);
+
+	glShadeModel(GL_SMOOTH);
 	
 	// Create light components
 	/*GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -206,8 +213,16 @@ void init ( GLvoid )     // Create Some Everyday Functions
 void display ( void )   // Create The Display Function
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
+
+	glMatrixMode   ( GL_MODELVIEW );  // Select The Model View Matrix
 	glLoadIdentity();									// Reset The Current Modelview Matrix
-	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-200.0f);
+	
+	glTranslatef(0.0f, 0.0f, -100.0f);	
+
+	glRotatef(g_xRotation, 1.0f, 0.0f, 0.0f);
+	glRotatef(g_yRotation, 0.0f, 1.0f, 0.0f);
+
+	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
 
 	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
@@ -226,7 +241,7 @@ void display ( void )   // Create The Display Function
 				glEnableClientState(GL_NORMAL_ARRAY);
 				glEnableClientState(GL_COLOR_ARRAY);
 
-				glDrawElements(GL_TRIANGLE_STRIP, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].noOfIndices, GL_UNSIGNED_INT, 0);
+				glDrawElements(GL_TRIANGLES, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].noOfIndices, GL_UNSIGNED_INT, 0);
 
 				glDisableClientState(GL_COLOR_ARRAY);
 				glDisableClientState(GL_NORMAL_ARRAY);
@@ -249,6 +264,12 @@ void display ( void )   // Create The Display Function
 	glutSwapBuffers ( );
 	// Swap The Buffers To Not Be Left With A Clear Screen
 }
+
+void idle()
+{
+	glutPostRedisplay();
+}
+
 
 void reshape ( int w, int h )   // Create The Reshape Function (the viewport)
 {
@@ -274,6 +295,18 @@ default:        // Now Wrap It Up
 	}
 }
 
+void motion(int x, int y)
+{
+	glMatrixMode(GL_MODELVIEW);
+	int xDiff = x - g_xOld;
+	int yDiff = y - g_yOld;
+	g_xOld = x;
+	g_yOld = y;
+	g_xRotation += xDiff;
+	g_yRotation += yDiff;
+}
+
+
 void arrow_keys ( int a_keys, int x, int y )  // Create Special Function (required for arrow keys)
 {
 	switch ( a_keys ) {
@@ -294,11 +327,12 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
 	glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
 	glutCreateWindow    ( "PolyVox OpenGL Example" ); // Window Title (argv[0] for current directory as title)
-	//glutFullScreen      ( );          // Put Into Full Screen
+	glutMotionFunc(motion);
 	glutDisplayFunc     ( display );  // Matching Earlier Functions To Their Counterparts
 	glutReshapeFunc     ( reshape );
 	glutKeyboardFunc    ( keyboard );
 	glutSpecialFunc     ( arrow_keys );
+	glutIdleFunc(idle);
 
 #ifdef WIN32
 	//If we are on Windows we will need GLEW to access recent OpenGL functionality
@@ -322,10 +356,10 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	createSphere(20.0f, 2);
 	createSphere(10.0f, 1);	
 
-	createCube(Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos, midPos, midPos), 0);
-	createCube(Vector3DUint16(midPos, midPos, minPos), Vector3DUint16(maxPos, maxPos, midPos), 0);
-	createCube(Vector3DUint16(midPos, minPos, midPos), Vector3DUint16(maxPos, midPos, maxPos), 0);
-	createCube(Vector3DUint16(minPos, midPos, midPos), Vector3DUint16(midPos, maxPos, maxPos), 0);
+	createCube(Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
+	createCube(Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
+	createCube(Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
+	createCube(Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
 	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 	//This three-level for loop iterates over each region.
