@@ -6,9 +6,9 @@
 #include <windows.h>   // Standard Header For Most Programs
 
 #ifdef WIN32
-	#include "glew/glew.h"
+#include "glew/glew.h"
 #else
-	#include <gl/gl.h>     // The GL Header File
+#include <gl/gl.h>     // The GL Header File
 #endif
 #include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
 
@@ -19,6 +19,12 @@
 using namespace std;
 using namespace PolyVox;
 using namespace std;
+
+struct OpenGLSurfacePatch
+{
+	GLuint indexBuffer;
+	GLuint vertexBuffer;
+};
 
 //Global variables are easier for demonstration purposes, especially
 //as I'm not sure how/if I can pass variables to the GLUT functions.
@@ -32,8 +38,92 @@ BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 IndexedSurfacePatch* g_ispRegionSurfaces[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-GLuint indexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-GLuint vertexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+//GLuint indexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+//GLuint vertexBuffers[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+
+OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
+{
+	OpenGLSurfacePatch result;
+
+	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
+	const vector<uint32>& vecIndices = isp.getIndices();
+
+	glGenBuffers(1, &result.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, result.indexBuffer);
+	int s = vecIndices.size() * sizeof(GLint);
+	if(s != 0)
+	{
+		GLvoid* blah = (GLvoid*)(&(vecIndices[0]));				
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, s, blah, GL_STATIC_DRAW);
+	}
+
+	glGenBuffers(1, &result.vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, result.vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 6, 0, GL_STATIC_DRAW);
+	GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
+
+	for(vector<SurfaceVertex>::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
+	{
+		const SurfaceVertex& vertex = *iterVertex;
+		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
+		//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
+		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
+
+		*ptr = v3dFinalVertexPos.getX();
+		ptr++;
+		*ptr = v3dFinalVertexPos.getY();
+		ptr++;
+		*ptr = v3dFinalVertexPos.getZ();
+		ptr++;
+
+		GLfloat red = 1.0f;
+		GLfloat green = 0.0f;
+		GLfloat blue = 0.0f;
+
+		uint8 material = vertex.getMaterial() + 0.5;
+
+		switch(material)
+		{
+		case 1:
+			red = 1.0;
+			green = 0.0;
+			blue = 0.0;
+			break;
+		case 2:
+			red = 0.0;
+			green = 1.0;
+			blue = 0.0;
+			break;
+		case 3:
+			red = 0.0;
+			green = 0.0;
+			blue = 1.0;
+			break;
+		case 4:
+			red = 1.0;
+			green = 1.0;
+			blue = 0.0;
+			break;
+		case 5:
+			red = 1.0;
+			green = 0.0;
+			blue = 1.0;
+			break;
+		}
+
+		*ptr = red;
+		ptr++;
+		*ptr = green;
+		ptr++;
+		*ptr = blue;
+		ptr++;
+	}
+
+	glUnmapBuffer(GL_ARRAY_BUFFER);
+
+	return result;
+}
 
 void createSphere(float fRadius, uint8 uValue)
 {
@@ -104,11 +194,11 @@ void display ( void )   // Create The Display Function
 
 				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
 
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[uRegionX][uRegionY][uRegionZ]);
+				glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
 				glVertexPointer(3, GL_FLOAT, 24, 0);
 				glColorPointer(3, GL_FLOAT, 24, (GLvoid*)12);
 
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[uRegionX][uRegionY][uRegionZ]);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].indexBuffer);
 
 				glEnableClientState(GL_VERTEX_ARRAY);
 				glEnableClientState(GL_COLOR_ARRAY);
@@ -153,25 +243,25 @@ void reshape ( int w, int h )   // Create The Reshape Function (the viewport)
 void keyboard ( unsigned char key, int x, int y )  // Create Keyboard Function
 {
 	switch ( key ) {
-	case 27:        // When Escape Is Pressed...
-		exit ( 0 );   // Exit The Program
-		break;        // Ready For Next Case
-	default:        // Now Wrap It Up
-		break;
+case 27:        // When Escape Is Pressed...
+	exit ( 0 );   // Exit The Program
+	break;        // Ready For Next Case
+default:        // Now Wrap It Up
+	break;
 	}
 }
 
 void arrow_keys ( int a_keys, int x, int y )  // Create Special Function (required for arrow keys)
 {
 	switch ( a_keys ) {
-	case GLUT_KEY_UP:     // When Up Arrow Is Pressed...
-		glutFullScreen ( ); // Go Into Full Screen Mode
-		break;
-	case GLUT_KEY_DOWN:               // When Down Arrow Is Pressed...
-		glutReshapeWindow ( 500, 500 ); // Go Into A 500 By 500 Window
-		break;
-	default:
-		break;
+case GLUT_KEY_UP:     // When Up Arrow Is Pressed...
+	glutFullScreen ( ); // Go Into Full Screen Mode
+	break;
+case GLUT_KEY_DOWN:               // When Down Arrow Is Pressed...
+	glutReshapeWindow ( 500, 500 ); // Go Into A 500 By 500 Window
+	break;
+default:
+	break;
 	}
 }
 
@@ -193,8 +283,8 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
-	  /* Problem: glewInit failed, something is seriously wrong. */
-	  cout << "Error: " << glewGetErrorString(err) << endl;
+		/* Problem: glewInit failed, something is seriously wrong. */
+		cout << "Error: " << glewGetErrorString(err) << endl;
 	}
 #endif
 
@@ -244,87 +334,13 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				//Extract the surface for this region
 				extractReferenceSurface(&g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
 
-				const vector<SurfaceVertex>& vecVertices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getVertices();
-				const vector<uint32>& vecIndices = g_ispRegionSurfaces[uRegionX][uRegionY][uRegionZ]->getIndices();
-
-				glGenBuffers(1, &(indexBuffers[uRegionX][uRegionY][uRegionZ]));
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[uRegionX][uRegionY][uRegionZ]);
-				int s = vecIndices.size() * sizeof(GLint);
-				if(s != 0)
-				{
-					GLvoid* blah = (GLvoid*)(&(vecIndices[0]));				
-					glBufferData(GL_ELEMENT_ARRAY_BUFFER, s, blah, GL_STATIC_DRAW);
-				}
-
-				glGenBuffers(1, &(vertexBuffers[uRegionX][uRegionY][uRegionZ]));
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffers[uRegionX][uRegionY][uRegionZ]);
-				glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 6, 0, GL_STATIC_DRAW);
-				GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
-
-				for(vector<SurfaceVertex>::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
-				{
-					const SurfaceVertex& vertex = *iterVertex;
-					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
-					const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
-					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + v3dRegionOffset;
-
-					*ptr = v3dFinalVertexPos.getX();
-					ptr++;
-					*ptr = v3dFinalVertexPos.getY();
-					ptr++;
-					*ptr = v3dFinalVertexPos.getZ();
-					ptr++;
-
-					GLfloat red = 1.0f;
-					GLfloat green = 0.0f;
-					GLfloat blue = 0.0f;
-
-					uint8 material = vertex.getMaterial() + 0.5;
-
-					switch(material)
-					{
-					case 1:
-						red = 1.0;
-						green = 0.0;
-						blue = 0.0;
-						break;
-					case 2:
-						red = 0.0;
-						green = 1.0;
-						blue = 0.0;
-						break;
-					case 3:
-						red = 0.0;
-						green = 0.0;
-						blue = 1.0;
-						break;
-					case 4:
-						red = 1.0;
-						green = 1.0;
-						blue = 0.0;
-						break;
-					case 5:
-						red = 1.0;
-						green = 0.0;
-						blue = 1.0;
-						break;
-					}
-
-					*ptr = red;
-					ptr++;
-					*ptr = green;
-					ptr++;
-					*ptr = blue;
-					ptr++;
-				}
-
-				glUnmapBuffer(GL_ARRAY_BUFFER);
+				g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
 
 			}
 		}
 	}
 
-	
+
 	glutMainLoop        ( );          // Initialize The Main Loop
 
 	//Delete all the surface patches we created.
