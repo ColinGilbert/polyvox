@@ -5,18 +5,18 @@
 
 #include <windows.h>   // Standard Header For Most Programs
 
-//#define USE_OPENGL_IMMEDIATE_MODE
+//#define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 
-#ifdef USE_OPENGL_IMMEDIATE_MODE
-	#include <gl/gl.h>
-	#include <gl/glut.h>
-#else
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 	#ifdef WIN32
 		#include "glew/glew.h"
 	#else
 		#include <gl/gl.h>     // The GL Header File
 	#endif
-	#include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
+	#include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header]
+#else
+	#include <gl/gl.h>
+	#include <gl/glut.h>
 #endif
 
 #include <iostream>
@@ -27,17 +27,19 @@ using namespace std;
 using namespace PolyVox;
 using namespace std;
 
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 struct OpenGLSurfacePatch
 {
 	GLulong noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
 };
+#endif
 
 //Global variables are easier for demonstration purposes, especially
 //as I'm not sure how/if I can pass variables to the GLUT functions.
 //Global variables are denoted by the 'g_' prefix
-const uint16 g_uVolumeSideLength = 128;
+const uint16 g_uVolumeSideLength = 256;
 const uint16 g_uRegionSideLength = 16;
 const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
@@ -52,9 +54,13 @@ int g_frameCounter = 0;
 BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
-OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-IndexedSurfacePatch* g_indexedSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
+	OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+#else
+	IndexedSurfacePatch* g_indexedSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+#endif
 
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 {
 	OpenGLSurfacePatch result;
@@ -146,6 +152,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 
 	return result;
 }
+#endif
 
 void createSphere(float fRadius, uint8 uValue)
 {
@@ -237,7 +244,8 @@ void display ( void )   // Create The Display Function
 		{
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				/*glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
+				glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
 				glVertexPointer(3, GL_FLOAT, 36, 0);
 				glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
 				glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
@@ -252,8 +260,9 @@ void display ( void )   // Create The Display Function
 
 				glDisableClientState(GL_COLOR_ARRAY);
 				glDisableClientState(GL_NORMAL_ARRAY);
-				glDisableClientState(GL_VERTEX_ARRAY); */
-
+				glDisableClientState(GL_VERTEX_ARRAY);
+				
+#else		
 				IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
 
 				const vector<SurfaceVertex>& vecVertices = ispCurrent->getVertices();
@@ -311,6 +320,7 @@ void display ( void )   // Create The Display Function
 					
 				}
 				glEnd();
+#endif
 			}
 		}
 	}
@@ -401,6 +411,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	glutTimerFunc(1000, timerFunc, 0);
 	glutIdleFunc(idle);
 
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 #ifdef WIN32
 	//If we are on Windows we will need GLEW to access recent OpenGL functionality
 	GLenum err = glewInit();
@@ -409,6 +420,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 		/* Problem: glewInit failed, something is seriously wrong. */
 		cout << "Error: " << glewGetErrorString(err) << endl;
 	}
+#endif
 #endif
 
 	//Make our volume contain a sphere in the center.
@@ -437,8 +449,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
-				g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = new IndexedSurfacePatch();
-				IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
+				IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
 
 				//Compute the extents of the current region
 				//FIXME - This is a little complex? PolyVox could
@@ -457,7 +468,11 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				//Extract the surface for this region
 				extractReferenceSurface(&g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
 
+#ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 				g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
+#else
+				g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = ispCurrent;
+#endif
 
 				//delete ispCurrent;
 			}
