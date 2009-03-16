@@ -5,12 +5,19 @@
 
 #include <windows.h>   // Standard Header For Most Programs
 
-#ifdef WIN32
-#include "glew/glew.h"
+//#define USE_OPENGL_IMMEDIATE_MODE
+
+#ifdef USE_OPENGL_IMMEDIATE_MODE
+	#include <gl/gl.h>
+	#include <gl/glut.h>
 #else
-#include <gl/gl.h>     // The GL Header File
+	#ifdef WIN32
+		#include "glew/glew.h"
+	#else
+		#include <gl/gl.h>     // The GL Header File
+	#endif
+	#include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
 #endif
-#include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header
 
 #include <iostream>
 
@@ -46,6 +53,7 @@ BlockVolume<uint8> g_volData(logBase2(g_uVolumeSideLength));
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+IndexedSurfacePatch* g_indexedSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
 
 OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 {
@@ -91,7 +99,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 		*ptr = vertex.getNormal().getZ();
 		ptr++;
 
-		GLfloat red = 1.0f;
+		GLfloat red = 0.0f;
 		GLfloat green = 0.0f;
 		GLfloat blue = 0.0f;
 
@@ -213,11 +221,14 @@ void display ( void )   // Create The Display Function
 	glMatrixMode   ( GL_MODELVIEW );  // Select The Model View Matrix
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 	
+	//Moves the camera back so we can see the volume
 	glTranslatef(0.0f, 0.0f, -100.0f);	
 
+	//Rotate the volume by the required amount
 	glRotatef(g_xRotation, 1.0f, 0.0f, 0.0f);
 	glRotatef(g_yRotation, 0.0f, 1.0f, 0.0f);
 
+	//Centre the volume on the origin
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
 
 	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
@@ -226,7 +237,7 @@ void display ( void )   // Create The Display Function
 		{
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
-				glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
+				/*glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
 				glVertexPointer(3, GL_FLOAT, 36, 0);
 				glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
 				glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
@@ -241,7 +252,65 @@ void display ( void )   // Create The Display Function
 
 				glDisableClientState(GL_COLOR_ARRAY);
 				glDisableClientState(GL_NORMAL_ARRAY);
-				glDisableClientState(GL_VERTEX_ARRAY); 
+				glDisableClientState(GL_VERTEX_ARRAY); */
+
+				IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
+
+				const vector<SurfaceVertex>& vecVertices = ispCurrent->getVertices();
+				const vector<uint32>& vecIndices = ispCurrent->getIndices();
+
+				glBegin(GL_TRIANGLES);
+				for(vector<uint32>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
+				{
+					const SurfaceVertex& vertex = vecVertices[*iterIndex];
+					const Vector3DFloat& v3dVertexPos = vertex.getPosition();
+					//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
+					const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(ispCurrent->m_v3dRegionPosition);
+
+					
+					
+
+					GLfloat red = 0.0f;
+					GLfloat green = 0.0f;
+					GLfloat blue = 0.0f;
+
+					uint8 material = vertex.getMaterial() + 0.5;
+
+					switch(material)
+					{
+					case 1:
+						red = 1.0;
+						green = 0.0;
+						blue = 0.0;
+						break;
+					case 2:
+						red = 0.0;
+						green = 1.0;
+						blue = 0.0;
+						break;
+					case 3:
+						red = 0.0;
+						green = 0.0;
+						blue = 1.0;
+						break;
+					case 4:
+						red = 1.0;
+						green = 1.0;
+						blue = 0.0;
+						break;
+					case 5:
+						red = 1.0;
+						green = 0.0;
+						blue = 1.0;
+						break;
+					}
+
+					glColor3f(red, green, blue);
+					glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
+					glNormal3f(vertex.getNormal().getX(), vertex.getNormal().getY(), vertex.getNormal().getZ());
+					
+				}
+				glEnd();
 			}
 		}
 	}
@@ -368,7 +437,8 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
-				IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
+				g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = new IndexedSurfacePatch();
+				IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
 
 				//Compute the extents of the current region
 				//FIXME - This is a little complex? PolyVox could
@@ -389,7 +459,7 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 				g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
 
-				delete ispCurrent;
+				//delete ispCurrent;
 			}
 		}
 	}
