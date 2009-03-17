@@ -459,9 +459,9 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				uint16 regionStartY = uRegionY * g_uRegionSideLength;
 				uint16 regionStartZ = uRegionZ * g_uRegionSideLength;
 
-				uint16 regionEndX = regionStartX + g_uRegionSideLength;
-				uint16 regionEndY = regionStartY + g_uRegionSideLength;
-				uint16 regionEndZ = regionStartZ + g_uRegionSideLength;
+				uint16 regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+				uint16 regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+				uint16 regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
 
 				Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
 				Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
