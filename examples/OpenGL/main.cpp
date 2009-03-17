@@ -315,8 +315,9 @@ void display ( void )   // Create The Display Function
 					}
 
 					glColor3f(red, green, blue);
-					glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
 					glNormal3f(vertex.getNormal().getX(), vertex.getNormal().getY(), vertex.getNormal().getZ());
+					glVertex3f(v3dFinalVertexPos.getX(), v3dFinalVertexPos.getY(), v3dFinalVertexPos.getZ());
+					
 					
 				}
 				glEnd();
