@@ -6,6 +6,7 @@ PROJECT(OpenGLExample)
 SET(SRC_FILES
 	glew/glew.c
 	main.cpp
+	shapes.cpp
 	)
 
 #Projects headers files	
@@ -13,6 +14,7 @@ SET(INC_FILES
 	glew/glew.h
 	glew/glxew.h
 	glew/wglew.h
+	shapes.h
 	)
 
 ADD_DEFINITIONS(-DGLEW_STATIC)

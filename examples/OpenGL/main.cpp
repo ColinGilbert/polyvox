@@ -3,9 +3,11 @@
 #include "PolyVoxCore/SurfaceExtractors.h"
 #include "PolyVoxCore/Utility.h"
 
+#include "Shapes.h"
+
 #include <windows.h>   // Standard Header For Most Programs
 
-//#define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
+#define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 
 #ifdef USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 	#ifdef WIN32
@@ -154,48 +156,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 }
 #endif
 
-void createSphere(float fRadius, uint8 uValue)
-{
-	//This vector hold the position of the center of the volume
-	Vector3DFloat v3dVolCenter(g_volData.getSideLength() / 2, g_volData.getSideLength() / 2, g_volData.getSideLength() / 2);
 
-	//This three-level for loop iterates over every voxel in the volume
-	for (int z = 0; z < g_volData.getSideLength(); z++)
-	{
-		for (int y = 0; y < g_volData.getSideLength(); y++)
-		{
-			for (int x = 0; x < g_volData.getSideLength(); x++)
-			{
-				//Store our current position as a vector...
-				Vector3DFloat v3dCurrentPos(x,y,z);	
-				//And compute how far the current position is from the center of the volume
-				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
-
-				//If the current voxel is less than 'radius' units from the center
-				//then we make it solid, otherwise we make it empty space.
-				if(fDistToCenter <= fRadius)
-				{
-					g_volData.setVoxelAt(x,y,z, uValue);
-				}
-			}
-		}
-	}
-}
-
-void createCube(Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8 uValue)
-{
-	//This three-level for loop iterates over every voxel between the specified corners
-	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
-	{
-		for (int y = lowerCorner.getY(); y <= upperCorner.getY(); y++)
-		{
-			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
-			{
-				g_volData.setVoxelAt(x,y,z, uValue);
-			}
-		}
-	}
-}
 
 void timerFunc(int value)
 {
@@ -428,18 +389,18 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	uint16 minPos = 0;
 	uint16 midPos = g_volData.getSideLength() / 2;
 	uint16 maxPos = g_volData.getSideLength() - 1;
-	createCube(Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
+	createCubeInVolume(g_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
-	createSphere(50.0f, 5);
-	createSphere(40.0f, 4);
-	createSphere(30.0f, 3);
-	createSphere(20.0f, 2);
-	createSphere(10.0f, 1);	
+	createSphereInVolume(g_volData, 50.0f, 5);
+	createSphereInVolume(g_volData, 40.0f, 4);
+	createSphereInVolume(g_volData, 30.0f, 3);
+	createSphereInVolume(g_volData, 20.0f, 2);
+	createSphereInVolume(g_volData, 10.0f, 1);	
 
-	createCube(Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
-	createCube(Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
-	createCube(Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
-	createCube(Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
+	createCubeInVolume(g_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
+	createCubeInVolume(g_volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
+	createCubeInVolume(g_volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
+	createCubeInVolume(g_volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
 	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 	//This three-level for loop iterates over each region.
@@ -484,4 +445,3 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 	glutMainLoop        ( );          // Initialize The Main Loop
 }
-
