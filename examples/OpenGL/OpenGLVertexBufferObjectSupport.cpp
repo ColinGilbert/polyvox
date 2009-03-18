@@ -6,20 +6,27 @@
 using namespace PolyVox;
 using namespace std;
 
-OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
+OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 {
+	//Represents our filled in OpenGL vertex and index buffer objects.
 	OpenGLSurfacePatch result;
 
+	//Convienient access to the vertices and indices
 	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
 	const vector<uint32>& vecIndices = isp.getIndices();
 
-	glGenBuffers(1, &result.indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, result.indexBuffer);
-	int s = vecIndices.size() * sizeof(GLint);
-	if(s != 0)
+	//If we have any indices...
+	if(!vecIndices.empty())
 	{
-		GLvoid* blah = (GLvoid*)(&(vecIndices[0]));				
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, s, blah, GL_STATIC_DRAW);
+		//Create an OpenGL index buffer
+		glGenBuffers(1, &result.indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, result.indexBuffer);
+
+		//Get a pointer to the first index
+		GLvoid* pIndices = (GLvoid*)(&(vecIndices[0]));		
+
+		//Fill the OpenGL index buffer with our data. 
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32), pIndices, GL_STATIC_DRAW);
 	}
 
 	result.noOfIndices = vecIndices.size();

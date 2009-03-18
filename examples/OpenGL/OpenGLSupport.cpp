@@ -9,30 +9,34 @@ OpenGLColour convertMaterialIDToColour(PolyVox::uint8 materialID)
 	switch(materialID)
 	{
 	case 1:
-		colour.red = 1.0;
-		colour.green = 0.0;
-		colour.blue = 0.0;
+		colour.red = 1.0f;
+		colour.green = 0.0f;
+		colour.blue = 0.0f;
 		break;
 	case 2:
-		colour.red = 0.0;
-		colour.green = 1.0;
-		colour.blue = 0.0;
+		colour.red = 0.0f;
+		colour.green = 1.0f;
+		colour.blue = 0.0f;
 		break;
 	case 3:
-		colour.red = 0.0;
-		colour.green = 0.0;
-		colour.blue = 1.0;
+		colour.red = 0.0f;
+		colour.green = 0.0f;
+		colour.blue = 1.0f;
 		break;
 	case 4:
-		colour.red = 1.0;
-		colour.green = 1.0;
-		colour.blue = 0.0;
+		colour.red = 1.0f;
+		colour.green = 1.0f;
+		colour.blue = 0.0f;
 		break;
 	case 5:
-		colour.red = 1.0;
-		colour.green = 0.0;
-		colour.blue = 1.0;
+		colour.red = 1.0f;
+		colour.green = 0.0f;
+		colour.blue = 1.0f;
 		break;
+	default:
+		colour.red = 1.0f;
+		colour.green = 1.0f;
+		colour.blue = 1.0f;
 	}
 
 	return colour;

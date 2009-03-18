@@ -12,7 +12,7 @@ struct OpenGLSurfacePatch
 	GLuint vertexBuffer;
 };
 
-OpenGLSurfacePatch BuildOpenGLSurfacePatch(PolyVox::IndexedSurfacePatch& isp);
+OpenGLSurfacePatch BuildOpenGLSurfacePatch(const PolyVox::IndexedSurfacePatch& isp);
 void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch);
 
 #endif //__OpenGLExample_OpenGLVertexBufferObjectSupport_H__
