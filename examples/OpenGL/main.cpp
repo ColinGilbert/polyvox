@@ -12,9 +12,9 @@
 #define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 
 #ifdef WIN32
-	#include "glew/glew.h"
+#include "glew/glew.h"
 #else
-	#include <gl/gl.h>     // The GL Header File
+#include <gl/gl.h>     // The GL Header File
 #endif
 #include <gl/glut.h>   // The GL Utility Toolkit (Glut) Header]
 
@@ -78,7 +78,7 @@ void display ( void )   // Create The Display Function
 
 	glMatrixMode   ( GL_MODELVIEW );  // Select The Model View Matrix
 	glLoadIdentity();									// Reset The Current Modelview Matrix
-	
+
 	//Moves the camera back so we can see the volume
 	glTranslatef(0.0f, 0.0f, -100.0f);	
 
@@ -101,9 +101,9 @@ void display ( void )   // Create The Display Function
 				}
 				else
 				{
-				IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
-				renderRegionImmediateMode(*ispCurrent);
-				
+					IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
+					renderRegionImmediateMode(*ispCurrent);
+
 				}
 			}
 		}
@@ -183,7 +183,7 @@ default:
 
 void main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
 {
-	g_bUseOpenGLVertexBufferObjects = false;
+	g_bUseOpenGLVertexBufferObjects = true;
 	glutInit ( &argc, argv ); // Erm Just Write It =)
 	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
 	glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size
@@ -199,13 +199,13 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	if(g_bUseOpenGLVertexBufferObjects)
 	{
 #ifdef WIN32
-	//If we are on Windows we will need GLEW to access recent OpenGL functionality
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		cout << "Error: " << glewGetErrorString(err) << endl;
-	}
+		//If we are on Windows we will need GLEW to access recent OpenGL functionality
+		GLenum err = glewInit();
+		if (GLEW_OK != err)
+		{
+			/* Problem: glewInit failed, something is seriously wrong. */
+			cout << "Error: " << glewGetErrorString(err) << endl;
+		}
 #endif
 	}
 
@@ -257,11 +257,11 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 				if(g_bUseOpenGLVertexBufferObjects)
 				{
-				g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
+					g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
 				}
 				else
 				{
-				g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = ispCurrent;
+					g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = ispCurrent;
 				}
 				//delete ispCurrent;
 			}

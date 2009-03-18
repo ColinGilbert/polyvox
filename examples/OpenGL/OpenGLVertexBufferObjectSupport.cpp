@@ -1,3 +1,4 @@
+#include "OpenGLSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"
 
 #include "PolyVoxCore/IndexedSurfacePatch.h"
@@ -49,46 +50,15 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 		*ptr = vertex.getNormal().getZ();
 		ptr++;
 
-		GLfloat red = 0.0f;
-		GLfloat green = 0.0f;
-		GLfloat blue = 0.0f;
-
 		uint8 material = vertex.getMaterial() + 0.5;
 
-		switch(material)
-		{
-		case 1:
-			red = 1.0;
-			green = 0.0;
-			blue = 0.0;
-			break;
-		case 2:
-			red = 0.0;
-			green = 1.0;
-			blue = 0.0;
-			break;
-		case 3:
-			red = 0.0;
-			green = 0.0;
-			blue = 1.0;
-			break;
-		case 4:
-			red = 1.0;
-			green = 1.0;
-			blue = 0.0;
-			break;
-		case 5:
-			red = 1.0;
-			green = 0.0;
-			blue = 1.0;
-			break;
-		}
+		OpenGLColour colour = convertMaterialIDToColour(material);
 
-		*ptr = red;
+		*ptr = colour.red;
 		ptr++;
-		*ptr = green;
+		*ptr = colour.green;
 		ptr++;
-		*ptr = blue;
+		*ptr = colour.blue;
 		ptr++;
 	}
 
