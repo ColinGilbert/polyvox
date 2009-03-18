@@ -5,7 +5,7 @@
 using namespace PolyVox;
 using namespace std;
 
-void renderRegion(PolyVox::IndexedSurfacePatch& isp)
+void renderRegionImmediateMode(PolyVox::IndexedSurfacePatch& isp)
 {
 	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
 				const vector<uint32>& vecIndices = isp.getIndices();

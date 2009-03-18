@@ -5,6 +5,6 @@
 
 #include "glew/glew.h"
 
-void renderRegion(PolyVox::IndexedSurfacePatch& isp);
+void renderRegionImmediateMode(PolyVox::IndexedSurfacePatch& isp);
 
 #endif //__OpenGLExample_OpenGLImmediateModeSupport_H__

@@ -97,27 +97,12 @@ void display ( void )   // Create The Display Function
 			{
 				if(g_bUseOpenGLVertexBufferObjects)
 				{
-				glBindBuffer(GL_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].vertexBuffer);
-				glVertexPointer(3, GL_FLOAT, 36, 0);
-				glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
-				glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
-
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].indexBuffer);
-
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glEnableClientState(GL_NORMAL_ARRAY);
-				glEnableClientState(GL_COLOR_ARRAY);
-
-				glDrawElements(GL_TRIANGLES, g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ].noOfIndices, GL_UNSIGNED_INT, 0);
-
-				glDisableClientState(GL_COLOR_ARRAY);
-				glDisableClientState(GL_NORMAL_ARRAY);
-				glDisableClientState(GL_VERTEX_ARRAY);
+					renderRegionVertexBufferObject(g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ]);
 				}
 				else
 				{
 				IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
-				renderRegion(*ispCurrent);
+				renderRegionImmediateMode(*ispCurrent);
 				
 				}
 			}
@@ -198,7 +183,7 @@ default:
 
 void main ( int argc, char** argv )   // Create Main Function For Bringing It All Together
 {
-	g_bUseOpenGLVertexBufferObjects = true;
+	g_bUseOpenGLVertexBufferObjects = false;
 	glutInit ( &argc, argv ); // Erm Just Write It =)
 	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE ); // Display Mode
 	glutInitWindowSize  ( 500, 500 ); // If glutFullScreen wasn't called this is the window size

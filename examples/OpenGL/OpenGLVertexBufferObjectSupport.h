@@ -13,5 +13,6 @@ struct OpenGLSurfacePatch
 };
 
 OpenGLSurfacePatch BuildOpenGLSurfacePatch(PolyVox::IndexedSurfacePatch& isp);
+void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch);
 
 #endif //__OpenGLExample_OpenGLVertexBufferObjectSupport_H__

@@ -96,3 +96,23 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(IndexedSurfacePatch& isp)
 
 	return result;
 }
+
+void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch)
+{
+	glBindBuffer(GL_ARRAY_BUFFER, openGLSurfacePatch.vertexBuffer);
+	glVertexPointer(3, GL_FLOAT, 36, 0);
+	glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
+	glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openGLSurfacePatch.indexBuffer);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	glDrawElements(GL_TRIANGLES, openGLSurfacePatch.noOfIndices, GL_UNSIGNED_INT, 0);
+
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+}
