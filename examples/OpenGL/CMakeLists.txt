@@ -6,7 +6,10 @@ PROJECT(OpenGLExample)
 SET(SRC_FILES
 	glew/glew.c
 	main.cpp
-	shapes.cpp
+	OpenGLImmediateModeSupport.cpp
+	OpenGLSupport.cpp
+	OpenGLVertexBufferObjectSupport.cpp
+	Shapes.cpp
 	)
 
 #Projects headers files	
@@ -14,7 +17,10 @@ SET(INC_FILES
 	glew/glew.h
 	glew/glxew.h
 	glew/wglew.h
-	shapes.h
+	OpenGLImmediateModeSupport.h
+	OpenGLSupport.h
+	OpenGLVertexBufferObjectSupport.h
+	Shapes.h
 	)
 
 ADD_DEFINITIONS(-DGLEW_STATIC)
