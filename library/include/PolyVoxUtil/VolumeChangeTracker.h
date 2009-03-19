@@ -36,7 +36,7 @@ namespace PolyVox
 	{
 	public:
 		//Constructors, etc
-		VolumeChangeTracker();
+		VolumeChangeTracker(Volume<uint8>* volumeDataToSet, uint16 regionSideLength);
 		~VolumeChangeTracker();
 
 		//Getters
@@ -50,8 +50,7 @@ namespace PolyVox
 
 		//Setters
 		void setAllRegionsModified(void);
-		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);		
-		void setVolumeData(Volume<uint8>* volumeDataToSet);
+		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
 		void setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
 
 		//Others	
@@ -63,6 +62,11 @@ namespace PolyVox
 		bool m_bIsLocked;
 		Region m_regLastLocked;
 		Volume<uint8>* volumeData;
+
+		uint16 m_uRegionSideLength;
+		uint8 m_uRegionSideLengthPower;
+		uint16 m_uVolumeSideLengthInRegions;
+
 
 		//It's not what the block class was designed for, but it 
 		//provides a handy way of storing a 3D grid of values.
