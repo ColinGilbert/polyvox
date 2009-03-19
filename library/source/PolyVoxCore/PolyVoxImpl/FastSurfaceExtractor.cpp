@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxCore/PolyVoxImpl/FastSurfaceExtractor.h"
 
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/VolumeIterator.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/MarchingCubesTables.h"
 #include "PolyVoxCore/SurfaceVertex.h"
@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 
-	void extractFastSurfaceImpl(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractFastSurfaceImpl(Volume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		singleMaterialPatch->clear();
 
@@ -59,7 +59,7 @@ namespace PolyVox
 		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
 		
 		//Iterator to access the volume data
-		BlockVolumeIterator<uint8> volIter(*volumeData);		
+		VolumeIterator<uint8> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
 		uint32 uNoOfNonEmptyCellsForSlice0 = computeInitialRoughBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
@@ -110,7 +110,7 @@ namespace PolyVox
 		return x + (y * (POLYVOX_REGION_SIDE_LENGTH+1));
 	}
 
-	uint32 computeInitialRoughBitmaskForSlice(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask)
+	uint32 computeInitialRoughBitmaskForSlice(VolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask)
 	{
 		uint32 uNoOfNonEmptyCells = 0;
 
@@ -260,7 +260,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	uint32 computeRoughBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, uint8* previousBitmask)
+	uint32 computeRoughBitmaskForSliceFromPrevious(VolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, uint8* previousBitmask)
 	{
 		uint32 uNoOfNonEmptyCells = 0;
 
@@ -376,7 +376,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateRoughVerticesForSlice(BlockVolumeIterator<uint8>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[])
+	void generateRoughVerticesForSlice(VolumeIterator<uint8>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[])
 	{
 		//Iterate over each cell in the region
 		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
@@ -443,7 +443,7 @@ namespace PolyVox
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
 	}
 
-	void generateRoughIndicesForSlice(BlockVolumeIterator<uint8>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[])
+	void generateRoughIndicesForSlice(VolumeIterator<uint8>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[])
 	{
 		uint32 indlist[12];
 

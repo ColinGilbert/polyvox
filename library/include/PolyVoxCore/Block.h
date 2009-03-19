@@ -33,8 +33,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	class Block
 	{
-		//Make BlockVolumeIterator a friend
-		friend class BlockVolumeIterator<VoxelType>;
+		//Make VolumeIterator a friend
+		friend class VolumeIterator<VoxelType>;
 	public:
 		Block(uint8 uSideLengthPower);
 		Block(const Block& rhs);

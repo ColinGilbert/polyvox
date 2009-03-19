@@ -31,23 +31,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class BlockVolumeIterator
+	class VolumeIterator
 	{
 	public:
-		BlockVolumeIterator(BlockVolume<VoxelType>& volume);
-		~BlockVolumeIterator();		
+		VolumeIterator(Volume<VoxelType>& volume);
+		~VolumeIterator();		
 
-		bool operator==(const BlockVolumeIterator& rhs);
-		bool operator<(const BlockVolumeIterator& rhs);
-		bool operator>(const BlockVolumeIterator& rhs);
-		bool operator<=(const BlockVolumeIterator& rhs);
-		bool operator>=(const BlockVolumeIterator& rhs);
+		bool operator==(const VolumeIterator& rhs);
+		bool operator<(const VolumeIterator& rhs);
+		bool operator>(const VolumeIterator& rhs);
+		bool operator<=(const VolumeIterator& rhs);
+		bool operator>=(const VolumeIterator& rhs);
 
 		uint16 getPosX(void) const;
 		uint16 getPosY(void) const;
 		uint16 getPosZ(void) const;
 		VoxelType getSubSampledVoxel(uint8 uLevel) const;
-		const BlockVolume<VoxelType>& getVolume(void) const;
+		const Volume<VoxelType>& getVolume(void) const;
 		VoxelType getVoxel(void) const;			
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
@@ -92,7 +92,7 @@ namespace PolyVox
 	private:
 
 		//The current volume
-		BlockVolume<VoxelType>& mVolume;
+		Volume<VoxelType>& mVolume;
 
 		//The current position in the volume
 		uint16 mXPosInVolume;
@@ -132,6 +132,6 @@ namespace PolyVox
 	};
 }
 
-#include "BlockVolumeIterator.inl"
+#include "VolumeIterator.inl"
 
 #endif

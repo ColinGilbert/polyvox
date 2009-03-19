@@ -22,28 +22,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_GradientEstimators_H__
 #define __PolyVox_GradientEstimators_H__
 
-#include "BlockVolumeIterator.h"
+#include "VolumeIterator.h"
 
 #include <vector>
 
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const BlockVolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeSmoothCentralDifferenceGradient(VolumeIterator<VoxelType>& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeDecimatedCentralDifferenceGradient(BlockVolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeDecimatedCentralDifferenceGradient(VolumeIterator<VoxelType>& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const BlockVolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeSobelGradient(const VolumeIterator<VoxelType>& volIter);
 	template <typename VoxelType>
-	Vector3DFloat computeSmoothSobelGradient(BlockVolumeIterator<VoxelType>& volIter);
+	Vector3DFloat computeSmoothSobelGradient(VolumeIterator<VoxelType>& volIter);
 
-	POLYVOX_API void computeNormalsForVertices(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod);
-	POLYVOX_API Vector3DFloat computeNormal(BlockVolume<uint8>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API void computeNormalsForVertices(Volume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API Vector3DFloat computeNormal(Volume<uint8>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod);
 }
 
 #include "GradientEstimators.inl"

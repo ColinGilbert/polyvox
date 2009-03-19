@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Block.h"
-#include "BlockVolumeIterator.h"
+#include "VolumeIterator.h"
 #include "Region.h"
 #include "Vector.h"
 
@@ -33,7 +33,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	BlockVolume<VoxelType>::BlockVolume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower)
+	Volume<VoxelType>::Volume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower)
 		:m_pBlocks(0)
 	{
 		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
@@ -71,13 +71,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	BlockVolume<VoxelType>::BlockVolume(const BlockVolume<VoxelType>& rhs)
+	Volume<VoxelType>::Volume(const Volume<VoxelType>& rhs)
 	{
 		*this = rhs;
 	}
 
 	template <typename VoxelType>
-	BlockVolume<VoxelType>::~BlockVolume()
+	Volume<VoxelType>::~Volume()
 	{
 		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
@@ -88,7 +88,7 @@ namespace PolyVox
 
 	#pragma region Operators
 	template <typename VoxelType>
-	BlockVolume<VoxelType>& BlockVolume<VoxelType>::operator=(const BlockVolume& rhs)
+	Volume<VoxelType>& Volume<VoxelType>::operator=(const Volume& rhs)
 	{
 		if (this == &rhs)
 		{
@@ -122,19 +122,19 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	Region BlockVolume<VoxelType>::getEnclosingRegion(void) const
+	Region Volume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return Region(Vector3DInt32(0,0,0), Vector3DInt32(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1));
 	}
 
 	template <typename VoxelType>
-	uint16 BlockVolume<VoxelType>::getSideLength(void) const
+	uint16 Volume<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolume<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
 	{
 		assert(uXPos < getSideLength());
 		assert(uYPos < getSideLength());
@@ -159,7 +159,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
 		assert(v3dPos.getX() < m_uSideLength);
 		assert(v3dPos.getY() < m_uSideLength);
@@ -171,7 +171,7 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void BlockVolume<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
+	void Volume<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
 	{
 		const uint16 blockX = uXPos >> m_uBlockSideLengthPower;
 		const uint16 blockY = uYPos >> m_uBlockSideLengthPower;
@@ -207,7 +207,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	void Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
@@ -215,7 +215,7 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	bool BlockVolume<VoxelType>::containsPoint(const Vector3DFloat& pos, float boundary) const
+	bool Volume<VoxelType>::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
 		return (pos.getX() <= m_uSideLength - 1 - boundary)
 			&& (pos.getY() <= m_uSideLength - 1 - boundary) 
@@ -226,7 +226,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool BlockVolume<VoxelType>::containsPoint(const Vector3DInt32& pos, uint16 boundary) const
+	bool Volume<VoxelType>::containsPoint(const Vector3DInt32& pos, uint16 boundary) const
 	{
 		return (pos.getX() <= m_uSideLength - 1 - boundary)
 			&& (pos.getY() <= m_uSideLength - 1 - boundary) 
@@ -237,22 +237,22 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	BlockVolumeIterator<VoxelType> BlockVolume<VoxelType>::firstVoxel(void)
+	VolumeIterator<VoxelType> Volume<VoxelType>::firstVoxel(void)
 	{
-		BlockVolumeIterator<VoxelType> iter(*this);
+		VolumeIterator<VoxelType> iter(*this);
 		iter.setPosition(0,0,0);
 		return iter;
 	}
 
 	template <typename VoxelType>
-	void BlockVolume<VoxelType>::idle(uint32 uAmount)
+	void Volume<VoxelType>::idle(uint32 uAmount)
 	{
 	}	
 
 	template <typename VoxelType>
-	bool BlockVolume<VoxelType>::isRegionHomogenous(const Region& region)
+	bool Volume<VoxelType>::isRegionHomogenous(const Region& region)
 	{
-		BlockVolumeIterator<VoxelType> iter(*this);
+		VolumeIterator<VoxelType> iter(*this);
 		iter.setValidRegion(region);
 		iter.setPosition(static_cast<Vector3DInt16>(region.getLowerCorner()));
 
@@ -272,9 +272,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	BlockVolumeIterator<VoxelType> BlockVolume<VoxelType>::lastVoxel(void)
+	VolumeIterator<VoxelType> Volume<VoxelType>::lastVoxel(void)
 	{
-		BlockVolumeIterator<VoxelType> iter(*this);
+		VolumeIterator<VoxelType> iter(*this);
 		iter.setPosition(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1);
 		return iter;
 	}
@@ -282,7 +282,7 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	Block<VoxelType>* BlockVolume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
+	Block<VoxelType>* Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
 	{
 		typename std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlocks.end())

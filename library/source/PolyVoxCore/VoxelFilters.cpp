@@ -1,10 +1,10 @@
 #include "PolyVoxCore/VoxelFilters.h"
 
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/VolumeIterator.h"
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(BlockVolumeIterator<uint8>& volIter)
+	float computeSmoothedVoxel(VolumeIterator<uint8>& volIter)
 	{
 		assert(volIter.getPosX() >= 1);
 		assert(volIter.getPosY() >= 1);

@@ -21,12 +21,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxCore/PolyVoxImpl/DecimatedSurfaceExtractor.h"
 
-#include "PolyVoxCore/BlockVolume.h"
+#include "PolyVoxCore/Volume.h"
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/MarchingCubesTables.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/VolumeIterator.h"
 
 #include <algorithm>
 
@@ -39,7 +39,7 @@ namespace PolyVox
 		return x + (y * (POLYVOX_REGION_SIDE_LENGTH+1));
 	}
 
-	void extractDecimatedSurfaceImpl(BlockVolume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractDecimatedSurfaceImpl(Volume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		singleMaterialPatch->clear();
 
@@ -73,7 +73,7 @@ namespace PolyVox
 		regSlice0.setUpperCorner(v3dUpperCorner);
 		
 		//Iterator to access the volume data
-		BlockVolumeIterator<uint8> volIter(*volumeData);		
+		VolumeIterator<uint8> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
 		uint32 uNoOfNonEmptyCellsForSlice0 = computeInitialDecimatedBitmaskForSlice(volIter, uLevel, regSlice0, offset, bitmask0);		
@@ -128,7 +128,7 @@ namespace PolyVox
 		}*/
 	}
 
-	uint32 computeInitialDecimatedBitmaskForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel,  const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask)
+	uint32 computeInitialDecimatedBitmaskForSlice(VolumeIterator<uint8>& volIter, uint8 uLevel,  const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask)
 	{
 		const uint8 uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32 uNoOfNonEmptyCells = 0;
@@ -297,7 +297,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	uint32 computeDecimatedBitmaskForSliceFromPrevious(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, uint8* previousBitmask)
+	uint32 computeDecimatedBitmaskForSliceFromPrevious(VolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, uint8* previousBitmask)
 	{
 		const uint8 uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32 uNoOfNonEmptyCells = 0;
@@ -423,7 +423,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateDecimatedVerticesForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[])
+	void generateDecimatedVerticesForSlice(VolumeIterator<uint8>& volIter, uint8 uLevel, Region& regSlice, const Vector3DFloat& offset, uint8* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32 vertexIndicesX[],int32 vertexIndicesY[],int32 vertexIndicesZ[])
 	{
 		const uint8 uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 
@@ -494,7 +494,7 @@ namespace PolyVox
 		}
 	}
 
-	void generateDecimatedIndicesForSlice(BlockVolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[])
+	void generateDecimatedIndicesForSlice(VolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8* bitmask0, uint8* bitmask1, int32 vertexIndicesX0[],int32 vertexIndicesY0[],int32 vertexIndicesZ0[], int32 vertexIndicesX1[],int32 vertexIndicesY1[],int32 vertexIndicesZ1[])
 	{
 		const uint8 uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32 indlist[12];

@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxCore/SurfaceVertex.h"
 #include "PolyVoxCore/Utility.h"
 #include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/BlockVolume.h"
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/Volume.h"
+#include "PolyVoxCore/VolumeIterator.h"
 
 using namespace std;
 
@@ -50,7 +50,7 @@ namespace PolyVox
 	{
 	}
 
-	void VolumeChangeTracker::setVolumeData(BlockVolume<uint8>* volumeDataToSet)
+	void VolumeChangeTracker::setVolumeData(Volume<uint8>* volumeDataToSet)
 	{
 		volumeData = volumeDataToSet;
 		volRegionLastModified = new Block<int32>(PolyVox::logBase2(POLYVOX_VOLUME_SIDE_LENGTH_IN_REGIONS));
@@ -102,12 +102,12 @@ namespace PolyVox
 		assert(uY < volumeData->getSideLength());
 		assert(uZ < volumeData->getSideLength());
 
-		BlockVolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8> volIter(*volumeData);
 		volIter.setPosition(uX,uY,uZ);
 		return volIter.getVoxel();
 	}
 
-	BlockVolume<uint8>* VolumeChangeTracker::getVolumeData(void) const
+	Volume<uint8>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
 	}
@@ -117,7 +117,7 @@ namespace PolyVox
 	{
 		++m_iCurrentTime;
 		//FIXME - rather than creating a iterator each time we should have one stored
-		//BlockVolumeIterator<uint8> iterVol(*volumeData);
+		//VolumeIterator<uint8> iterVol(*volumeData);
 		/*iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 
@@ -166,7 +166,7 @@ namespace PolyVox
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		/*BlockVolumeIterator<uint8> iterVol(*volumeData);
+		/*VolumeIterator<uint8> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 		volumeData->setVoxelAt(x,y,z,value);

@@ -8,7 +8,7 @@ using namespace std;
 
 namespace PolyVox
 {
-	POLYVOX_API void computeNormalsForVertices(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
+	POLYVOX_API void computeNormalsForVertices(Volume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
 	{
 		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -17,7 +17,7 @@ namespace PolyVox
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			BlockVolumeIterator<uint8> volIter(*volumeData);
+			VolumeIterator<uint8> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,2);
@@ -39,11 +39,11 @@ namespace PolyVox
 		}
 	}
 
-	Vector3DFloat computeNormal(BlockVolume<uint8>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
+	Vector3DFloat computeNormal(Volume<uint8>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
 	{
 		Vector3DFloat v3dGradient; //To store the result
 
-		BlockVolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8> volIter(*volumeData);
 
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 

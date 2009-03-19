@@ -29,11 +29,11 @@ namespace PolyVox
 {
 	template <typename VoxelType> class Block;
 
-	//---------- BlockVolume ----------
-	template <typename VoxelType> class BlockVolume;
-	typedef BlockVolume<float> FloatBlockVolume;
-	typedef BlockVolume<uint8> UInt8BlockVolume;
-	typedef BlockVolume<uint16> UInt16BlockVolume;
+	//---------- Volume ----------
+	template <typename VoxelType> class Volume;
+	typedef Volume<float> FloatVolume;
+	typedef Volume<uint8> UInt8Volume;
+	typedef Volume<uint16> UInt16Volume;
 	//---------------------------------
 
 	class IndexedSurfacePatch;
@@ -53,7 +53,7 @@ namespace PolyVox
 	typedef Vector<3,uint32> Vector3DUint32;
 	//----------------------------
 
-	template <typename VoxelType> class BlockVolumeIterator;
+	template <typename VoxelType> class VolumeIterator;
 }
 
 #endif

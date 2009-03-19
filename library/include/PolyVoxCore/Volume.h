@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_BlockVolume_H__
-#define __PolyVox_BlockVolume_H__
+#ifndef __PolyVox_Volume_H__
+#define __PolyVox_Volume_H__
 
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
@@ -33,17 +33,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class BlockVolume
+	class Volume
 	{
-		//Make BlockVolumeIterator a friend
-		friend class BlockVolumeIterator<VoxelType>;
+		//Make VolumeIterator a friend
+		friend class VolumeIterator<VoxelType>;
 
 	public:		
-		BlockVolume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower = 5);
-		BlockVolume(const BlockVolume& rhs);
-		~BlockVolume();	
+		Volume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower = 5);
+		Volume(const Volume& rhs);
+		~Volume();	
 
-		BlockVolume& operator=(const BlockVolume& rhs);
+		Volume& operator=(const Volume& rhs);
 
 		Region getEnclosingRegion(void) const;
 		uint16 getSideLength(void) const;
@@ -55,10 +55,10 @@ namespace PolyVox
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
 		bool containsPoint(const Vector3DInt32& pos, uint16 boundary) const;
-		BlockVolumeIterator<VoxelType> firstVoxel(void);
+		VolumeIterator<VoxelType> firstVoxel(void);
 		void idle(uint32 uAmount);
 		bool isRegionHomogenous(const Region& region);
-		BlockVolumeIterator<VoxelType> lastVoxel(void);
+		VolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
 		Block<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;
@@ -80,11 +80,11 @@ namespace PolyVox
 	};
 
 	//Some handy typedefs
-	typedef BlockVolume<float> FloatBlockVolume;
-	typedef BlockVolume<uint8> UInt8BlockVolume;
-	typedef BlockVolume<uint16> UInt16BlockVolume;	
+	typedef Volume<float> FloatVolume;
+	typedef Volume<uint8> UInt8Volume;
+	typedef Volume<uint16> UInt16Volume;	
 }
 
-#include "BlockVolume.inl"
+#include "Volume.inl"
 
 #endif

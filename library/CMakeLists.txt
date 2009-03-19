@@ -24,10 +24,6 @@ SET(CORE_SRC_FILES
 SET(CORE_INC_FILES
 	include/PolyVoxCore/Block.h
 	include/PolyVoxCore/Block.inl
-	include/PolyVoxCore/BlockVolume.h
-	include/PolyVoxCore/BlockVolume.inl
-	include/PolyVoxCore/BlockVolumeIterator.h
-	include/PolyVoxCore/BlockVolumeIterator.inl
 	include/PolyVoxCore/Constants.h
 	include/PolyVoxCore/Enums.h
 	include/PolyVoxCore/GradientEstimators.h	
@@ -44,6 +40,10 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Utility.h
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
+	include/PolyVoxCore/Volume.h
+	include/PolyVoxCore/Volume.inl
+	include/PolyVoxCore/VolumeIterator.h
+	include/PolyVoxCore/VolumeIterator.inl
 	include/PolyVoxCore/VoxelFilters.h
 )
 

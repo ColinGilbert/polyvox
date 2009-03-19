@@ -44,14 +44,14 @@ namespace PolyVox
 		Region getEnclosingRegion(void) const;		
 		int32 getLastModifiedTimeForRegion(uint16 uX, uint16 uY, uint16 uZ);
 		uint16 getSideLength(void);
-		BlockVolume<uint8>* getVolumeData(void) const;
+		Volume<uint8>* getVolumeData(void) const;
 		uint8 getVoxelAt(const Vector3DUint16& pos);
 		uint8 getVoxelAt(uint16 uX, uint16 uY, uint16 uZ);
 
 		//Setters
 		void setAllRegionsModified(void);
 		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);		
-		void setVolumeData(BlockVolume<uint8>* volumeDataToSet);
+		void setVolumeData(Volume<uint8>* volumeDataToSet);
 		void setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
 
 		//Others	
@@ -62,7 +62,7 @@ namespace PolyVox
 	private:
 		bool m_bIsLocked;
 		Region m_regLastLocked;
-		BlockVolume<uint8>* volumeData;
+		Volume<uint8>* volumeData;
 
 		//It's not what the block class was designed for, but it 
 		//provides a handy way of storing a 3D grid of values.

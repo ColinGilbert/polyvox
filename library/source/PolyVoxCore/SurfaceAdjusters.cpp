@@ -1,6 +1,6 @@
 #include "PolyVoxCore/SurfaceAdjusters.h"
 
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/VolumeIterator.h"
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/Utility.h"
@@ -12,12 +12,12 @@ using namespace std;
 
 namespace PolyVox
 {
-	void smoothRegionGeometry(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp)
+	void smoothRegionGeometry(Volume<uint8>* volumeData, IndexedSurfacePatch& isp)
 	{
 		const uint8 uSmoothingFactor = 2;
 		const float fThreshold = 0.5f;
 
-		BlockVolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8> volIter(*volumeData);
 
 		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -76,9 +76,9 @@ namespace PolyVox
 		} //while(iterSurfaceVertex != vecVertices.end())
 	}
 
-	void adjustDecimatedGeometry(BlockVolume<uint8>* volumeData, IndexedSurfacePatch& isp, uint8 val)
+	void adjustDecimatedGeometry(Volume<uint8>* volumeData, IndexedSurfacePatch& isp, uint8 val)
 	{
-		BlockVolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8> volIter(*volumeData);
 
 		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -87,7 +87,7 @@ namespace PolyVox
 			Vector3DFloat v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 			Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			BlockVolumeIterator<uint8> volIter(*volumeData);
+			VolumeIterator<uint8> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,1);

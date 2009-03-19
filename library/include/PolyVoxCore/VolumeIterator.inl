@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Block.h"
-#include "BlockVolume.h"
+#include "Volume.h"
 #include "Vector.h"
 #include "Region.h"
 
@@ -32,20 +32,20 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	BlockVolumeIterator<VoxelType>::BlockVolumeIterator(BlockVolume<VoxelType>& volume)
+	VolumeIterator<VoxelType>::VolumeIterator(Volume<VoxelType>& volume)
 		:mVolume(volume)
 	{
 	}
 
 	template <typename VoxelType>
-	BlockVolumeIterator<VoxelType>::~BlockVolumeIterator()
+	VolumeIterator<VoxelType>::~VolumeIterator()
 	{
 	}
 	#pragma endregion
 
 	#pragma region Operators
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::operator==(const BlockVolumeIterator<VoxelType>& rhs)
+	bool VolumeIterator<VoxelType>::operator==(const VolumeIterator<VoxelType>& rhs)
 	{
 		//We could just check whether the two mCurrentVoxel pointers are equal, but this may not
 		//be safe in the future if we decide to allow blocks to be shared between volumes
@@ -62,7 +62,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::operator<(const BlockVolumeIterator<VoxelType>& rhs)
+	bool VolumeIterator<VoxelType>::operator<(const VolumeIterator<VoxelType>& rhs)
 	{
 		assert(&mVolume == &rhs.mVolume);
 
@@ -85,21 +85,21 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::operator>(const BlockVolumeIterator<VoxelType>& rhs)
+	bool VolumeIterator<VoxelType>::operator>(const VolumeIterator<VoxelType>& rhs)
 	{
 		assert(&mVolume == &rhs.mVolume);
 		return (rhs < *this);
 	}
 
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::operator<=(const BlockVolumeIterator<VoxelType>& rhs)
+	bool VolumeIterator<VoxelType>::operator<=(const VolumeIterator<VoxelType>& rhs)
 	{
 		assert(&mVolume == &rhs.mVolume);
 		return (rhs > *this);
 	}
 
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::operator>=(const BlockVolumeIterator<VoxelType>& rhs)
+	bool VolumeIterator<VoxelType>::operator>=(const VolumeIterator<VoxelType>& rhs)
 	{
 		assert(&mVolume == &rhs.mVolume);
 		return (rhs < *this);
@@ -108,25 +108,25 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	uint16 BlockVolumeIterator<VoxelType>::getPosX(void) const
+	uint16 VolumeIterator<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16 BlockVolumeIterator<VoxelType>::getPosY(void) const
+	uint16 VolumeIterator<VoxelType>::getPosY(void) const
 	{
 		return mYPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16 BlockVolumeIterator<VoxelType>::getPosZ(void) const
+	uint16 VolumeIterator<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::getSubSampledVoxel(uint8 uLevel) const
+	VoxelType VolumeIterator<VoxelType>::getSubSampledVoxel(uint8 uLevel) const
 	{		
 		if(uLevel == 0)
 		{
@@ -164,13 +164,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	const BlockVolume<VoxelType>& BlockVolumeIterator<VoxelType>::getVolume(void) const
+	const Volume<VoxelType>& VolumeIterator<VoxelType>::getVolume(void) const
 	{
 		return mVolume;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::getVoxel(void) const
+	VoxelType VolumeIterator<VoxelType>::getVoxel(void) const
 	{
 		return *mCurrentVoxel;
 	}
@@ -178,13 +178,13 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setPosition(const Vector3DInt16& v3dNewPos)
+	void VolumeIterator<VoxelType>::setPosition(const Vector3DInt16& v3dNewPos)
 	{
 		setPosition(v3dNewPos.getX(), v3dNewPos.getY(), v3dNewPos.getZ());
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setPosition(uint16 xPos, uint16 yPos, uint16 zPos)
+	void VolumeIterator<VoxelType>::setPosition(uint16 xPos, uint16 yPos, uint16 zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -211,13 +211,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setValidRegion(const Region& region)
+	void VolumeIterator<VoxelType>::setValidRegion(const Region& region)
 	{
 		setValidRegion(region.getLowerCorner().getX(),region.getLowerCorner().getY(),region.getLowerCorner().getZ(),region.getUpperCorner().getX(),region.getUpperCorner().getY(),region.getUpperCorner().getZ());
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast)
+	void VolumeIterator<VoxelType>::setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -239,13 +239,13 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::isValidForRegion(void) const
+	bool VolumeIterator<VoxelType>::isValidForRegion(void) const
 	{
 		return mIsValidForRegion;
 	}
 
 	template <typename VoxelType>
-	void BlockVolumeIterator<VoxelType>::moveForwardInRegionFast(void)
+	void VolumeIterator<VoxelType>::moveForwardInRegionFast(void)
 	{
 		mXPosInBlock++;
 		mCurrentVoxel++;
@@ -331,7 +331,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool BlockVolumeIterator<VoxelType>::moveForwardInRegionXYZ(void)
+	bool VolumeIterator<VoxelType>::moveForwardInRegionXYZ(void)
 	{
 		if(mXPosInVolume < mXRegionLast)
 		{
@@ -386,7 +386,7 @@ namespace PolyVox
 
 	#pragma region Peekers
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx1ny1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1nz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mYPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -396,7 +396,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx1ny0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny0pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mYPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -406,7 +406,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx1ny1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1ny1pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mYPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -416,7 +416,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx0py1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py1nz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -426,7 +426,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx0py0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py0pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -436,7 +436,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx0py1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx0py1pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -446,7 +446,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx1py1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py1nz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -456,7 +456,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx1py0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py0pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -466,7 +466,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1nx1py1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1nx1py1pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != 0) && (mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -478,7 +478,7 @@ namespace PolyVox
 	//////////////////////////////////////////////////////////////////////////
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px1ny1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny1nz(void) const
 	{
 		if((mYPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -488,7 +488,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px1ny0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny0pz(void) const
 	{
 		if((mYPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -498,7 +498,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px1ny1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1ny1pz(void) const
 	{
 		if((mYPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -508,7 +508,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px0py1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py1nz(void) const
 	{
 		if((mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -518,13 +518,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px0py0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py0pz(void) const
 	{
 			return *mCurrentVoxel;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px0py1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px0py1pz(void) const
 	{
 		if((mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -534,7 +534,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px1py1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py1nz(void) const
 	{
 		if((mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -544,7 +544,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px1py0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py0pz(void) const
 	{
 		if((mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -554,7 +554,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel0px1py1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel0px1py1pz(void) const
 	{
 		if((mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -566,7 +566,7 @@ namespace PolyVox
 	//////////////////////////////////////////////////////////////////////////
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px1ny1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny1nz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mYPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -576,7 +576,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px1ny0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny0pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mYPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -586,7 +586,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px1ny1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1ny1pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mYPosInVolume%mVolume.m_uBlockSideLength != 0) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -596,7 +596,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px0py1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py1nz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -606,7 +606,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px0py0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py0pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -616,7 +616,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px0py1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px0py1pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -626,7 +626,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px1py1nz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py1nz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != 0))
 		{
@@ -636,7 +636,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px1py0pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py0pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{
@@ -646,7 +646,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockVolumeIterator<VoxelType>::peekVoxel1px1py1pz(void) const
+	VoxelType VolumeIterator<VoxelType>::peekVoxel1px1py1pz(void) const
 	{
 		if((mXPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mYPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1) && (mZPosInVolume%mVolume.m_uBlockSideLength != mVolume.m_uBlockSideLength-1))
 		{

@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxCore/PolyVoxImpl/ReferenceSurfaceExtractor.h"
 
-#include "PolyVoxCore/BlockVolume.h"
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/Volume.h"
+#include "PolyVoxCore/VolumeIterator.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/MarchingCubesTables.h"
 #include "PolyVoxCore/Region.h"
@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	void extractReferenceSurfaceImpl(BlockVolume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractReferenceSurfaceImpl(Volume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		static int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 		static int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
@@ -54,7 +54,7 @@ namespace PolyVox
 		Vector3DFloat vertlist[12];
 		Vector3DFloat normlist[12];
 		uint8 vertMaterials[12];
-		BlockVolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8> volIter(*volumeData);
 		volIter.setValidRegion(region);
 
 		//////////////////////////////////////////////////////////////////////////

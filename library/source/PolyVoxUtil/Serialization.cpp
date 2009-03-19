@@ -1,7 +1,7 @@
 #include "PolyVoxUtil/Serialization.h"
 
-#include "PolyVoxCore/BlockVolume.h"
-#include "PolyVoxCore/BlockVolumeIterator.h"
+#include "PolyVoxCore/Volume.h"
+#include "PolyVoxCore/VolumeIterator.h"
 #include "PolyVoxCore/Utility.h"
 
 using namespace std;
@@ -10,7 +10,7 @@ namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	BlockVolume<uint8>* loadVolumeRaw(istream& stream)
+	Volume<uint8>* loadVolumeRaw(istream& stream)
 	{
 		//Read volume dimensions
 		uint8 volumeWidthPower = 0;
@@ -21,7 +21,7 @@ namespace PolyVox
 		stream.read(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 		
 		//FIXME - need to support non cubic volumes
-		BlockVolume<uint8>* volume = new BlockVolume<uint8>(volumeWidthPower);
+		Volume<uint8>* volume = new Volume<uint8>(volumeWidthPower);
 
 		uint16 volumeWidth = 0x0001 << volumeWidthPower;
 		uint16 volumeHeight = 0x0001 << volumeHeightPower;
@@ -45,7 +45,7 @@ namespace PolyVox
 		return volume;
 	}
 
-	void saveVolumeRaw(std::ostream& stream, BlockVolume<uint8>& volume)
+	void saveVolumeRaw(std::ostream& stream, Volume<uint8>& volume)
 	{
 		//Write volume dimensions
 		uint16 volumeWidth = volume.getSideLength();
@@ -61,7 +61,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		BlockVolumeIterator<uint8> volIter(volume);
+		VolumeIterator<uint8> volIter(volume);
 		for(uint16 z = 0; z < volumeDepth; ++z)
 		{
 			for(uint16 y = 0; y < volumeHeight; ++y)
@@ -78,7 +78,7 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	BlockVolume<uint8>* loadVolumeRle(istream& stream)
+	Volume<uint8>* loadVolumeRle(istream& stream)
 	{
 		//Read volume dimensions
 		uint8 volumeWidthPower = 0;
@@ -89,7 +89,7 @@ namespace PolyVox
 		stream.read(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 		
 		//FIXME - need to support non cubic volumes
-		BlockVolume<uint8>* volume = new BlockVolume<uint8>(volumeWidthPower);
+		Volume<uint8>* volume = new Volume<uint8>(volumeWidthPower);
 
 		uint16 volumeWidth = 0x0001 << volumeWidthPower;
 		uint16 volumeHeight = 0x0001 << volumeHeightPower;
@@ -127,7 +127,7 @@ namespace PolyVox
 		return volume;
 	}
 
-	void saveVolumeRle(std::ostream& stream, BlockVolume<uint8>& volume)
+	void saveVolumeRle(std::ostream& stream, Volume<uint8>& volume)
 	{
 		//Write volume dimensions
 		uint16 volumeWidth = volume.getSideLength();
@@ -143,7 +143,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		BlockVolumeIterator<uint8> volIter(volume);
+		VolumeIterator<uint8> volIter(volume);
 		uint8 current = 0;
 		uint32 runLength = 0;
 		bool firstTime = true;
