@@ -9,7 +9,7 @@
 
 #include <windows.h>   // Standard Header For Most Programs
 
-#define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
+//#define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
 
 #ifdef WIN32
 #include "glew/glew.h"
