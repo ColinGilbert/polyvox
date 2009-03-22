@@ -47,6 +47,7 @@ namespace PolyVox
 		void shift(const Vector3DInt32& amount);
 		void shiftLowerCorner(const Vector3DInt32& amount);
 		void shiftUpperCorner(const Vector3DInt32& amount);
+		Vector3DInt32 dimensions(void);
 
 	private:
 		Vector3DInt32 m_v3dLowerCorner;

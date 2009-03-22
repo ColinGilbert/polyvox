@@ -79,4 +79,9 @@ namespace PolyVox
 	{
 		m_v3dUpperCorner += amount;
 	}
+
+	Vector3DInt32 Region::dimensions(void)
+	{
+		return m_v3dUpperCorner - m_v3dLowerCorner;
+	}
 }

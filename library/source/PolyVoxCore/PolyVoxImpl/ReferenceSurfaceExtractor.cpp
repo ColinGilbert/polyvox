@@ -33,13 +33,18 @@ namespace PolyVox
 {
 	void extractReferenceSurfaceImpl(Volume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
-		static int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		/*static int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
 		static int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
-		static int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];
+		static int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1];*/
 
-		memset(vertexIndicesX,0xFF,sizeof(vertexIndicesX)); //0xFF is -1 as two's complement - this may not be portable...
-		memset(vertexIndicesY,0xFF,sizeof(vertexIndicesY));
-		memset(vertexIndicesZ,0xFF,sizeof(vertexIndicesZ));
+		Vector3DInt32 regionDimensions = region.dimensions() + Vector3DInt32(1,1,1);
+		std::vector<int32> vertexIndicesX(regionDimensions.getX() * regionDimensions.getY() * regionDimensions.getZ());
+		std::vector<int32> vertexIndicesY(regionDimensions.getX() * regionDimensions.getY() * regionDimensions.getZ());
+		std::vector<int32> vertexIndicesZ(regionDimensions.getX() * regionDimensions.getY() * regionDimensions.getZ());
+
+		memset(&vertexIndicesX[0],0xFF,sizeof(vertexIndicesX[0]) * vertexIndicesX.size()); //0xFF is -1 as two's complement - this may not be portable...
+		memset(&vertexIndicesY[0],0xFF,sizeof(vertexIndicesY[0]) * vertexIndicesY.size()); //FIXME - can we just use sizeof(vertexIndicesY)?
+		memset(&vertexIndicesZ[0],0xFF,sizeof(vertexIndicesZ[0]) * vertexIndicesZ.size());
 
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
@@ -245,25 +250,25 @@ namespace PolyVox
 				SurfaceVertex v1(vertex1, normal1, material1 + 0.1f);
 				SurfaceVertex v2(vertex2, normal2, material2 + 0.1f);
 
-				int32 index0 = getIndexFor(v0.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				int32 index0 = getIndexFor(v0.getPosition(), regionDimensions, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				if(index0 == -1)
 				{
 					index0 = singleMaterialPatch->addVertex(v0);
-					setIndexFor(v0.getPosition(), index0, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+					setIndexFor(v0.getPosition(), regionDimensions, index0, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				}
 
-				int32 index1 = getIndexFor(v1.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				int32 index1 = getIndexFor(v1.getPosition(), regionDimensions, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				if(index1 == -1)
 				{
 					index1 = singleMaterialPatch->addVertex(v1);
-					setIndexFor(v1.getPosition(), index1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+					setIndexFor(v1.getPosition(), regionDimensions, index1, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				}
 
-				int32 index2 = getIndexFor(v2.getPosition(), vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+				int32 index2 = getIndexFor(v2.getPosition(), regionDimensions, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				if(index2 == -1)
 				{
 					index2 = singleMaterialPatch->addVertex(v2);
-					setIndexFor(v2.getPosition(), index2, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
+					setIndexFor(v2.getPosition(), regionDimensions, index2, vertexIndicesX, vertexIndicesY, vertexIndicesZ);
 				}
 
 				singleMaterialPatch->addTriangle(index0, index1, index2);
@@ -271,7 +276,7 @@ namespace PolyVox
 		}//For each cell
 	}
 
-	int32 getIndexFor(const Vector3DFloat& pos, int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
+	int32 getIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, const std::vector<int32>& vertexIndicesX, const std::vector<int32>& vertexIndicesY, const std::vector<int32>& vertexIndicesZ)
 	{
 		assert(pos.getX() >= 0.0f);
 		assert(pos.getY() >= 0.0f);
@@ -280,30 +285,33 @@ namespace PolyVox
 		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
 		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
 
-		float xIntPart;
-		float xFracPart = std::modf(pos.getX(), &xIntPart);
-		float yIntPart;
-		float yFracPart = std::modf(pos.getY(), &yIntPart);
-		float zIntPart;
-		float zFracPart = std::modf(pos.getZ(), &zIntPart);
+		float xIntPartAsFloat;
+		float xFracPart = std::modf(pos.getX(), &xIntPartAsFloat);
+		float yIntPartAsFloat;
+		float yFracPart = std::modf(pos.getY(), &yIntPartAsFloat);
+		float zIntPartAsFloat;
+		float zFracPart = std::modf(pos.getZ(), &zIntPartAsFloat);
 
-		//Of all the fractional parts, two should be zero and one should have a value.
-		if(xFracPart > 0.000001f)
+		uint16 xIntPart = static_cast<uint16>(xIntPartAsFloat);
+		uint16 yIntPart = static_cast<uint16>(yIntPartAsFloat);
+		uint16 zIntPart = static_cast<uint16>(zIntPartAsFloat);
+
+		//Of all the fractional parts, two should be zero and one should be 0.5.
+		if(xFracPart > 0.25f)
 		{
-			return vertexIndicesX[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)];
+			return vertexIndicesX[xIntPart + yIntPart * regionDimensions.getX() + zIntPart * regionDimensions.getX() * regionDimensions.getY()];
 		}
-		if(yFracPart > 0.000001f)
+		if(yFracPart > 0.25f)
 		{
-			return vertexIndicesY[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)];
+			return vertexIndicesY[xIntPart + yIntPart * regionDimensions.getX() + zIntPart * regionDimensions.getX() * regionDimensions.getY()];
 		}
-		if(zFracPart > 0.000001f)
+		if(zFracPart > 0.25f)
 		{
-			return vertexIndicesZ[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)];
+			return vertexIndicesZ[xIntPart + yIntPart * regionDimensions.getX() + zIntPart * regionDimensions.getX() * regionDimensions.getY()];
 		}
-		while(true);
 	}
 
-	void setIndexFor(const Vector3DFloat& pos, int32 newIndex, int32 vertexIndicesX[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesY[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1], int32 vertexIndicesZ[POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1][POLYVOX_REGION_SIDE_LENGTH+1])
+	void setIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, int32 newIndex, std::vector<int32>& vertexIndicesX, std::vector<int32>& vertexIndicesY, std::vector<int32>& vertexIndicesZ)
 	{
 		assert(pos.getX() >= 0.0f);
 		assert(pos.getY() >= 0.0f);
@@ -312,27 +320,29 @@ namespace PolyVox
 		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
 		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
 
-		assert(newIndex < 10000);
+		float xIntPartAsFloat;
+		float xFracPart = std::modf(pos.getX(), &xIntPartAsFloat);
+		float yIntPartAsFloat;
+		float yFracPart = std::modf(pos.getY(), &yIntPartAsFloat);
+		float zIntPartAsFloat;
+		float zFracPart = std::modf(pos.getZ(), &zIntPartAsFloat);
 
-		float xIntPart;
-		float xFracPart = std::modf(pos.getX(), &xIntPart);
-		float yIntPart;
-		float yFracPart = std::modf(pos.getY(), &yIntPart);
-		float zIntPart;
-		float zFracPart = std::modf(pos.getZ(), &zIntPart);
+		uint16 xIntPart = static_cast<uint16>(xIntPartAsFloat);
+		uint16 yIntPart = static_cast<uint16>(yIntPartAsFloat);
+		uint16 zIntPart = static_cast<uint16>(zIntPartAsFloat);
 
-		//Of all the fractional parts, two should be zero and one should have a value.
-		if(xFracPart > 0.000001f)
+		//Of all the fractional parts, two should be zero and one should be 0.5.
+		if(xFracPart > 0.25f)
 		{
-			vertexIndicesX[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)] = newIndex;
+			vertexIndicesX[xIntPart + yIntPart * regionDimensions.getX() + zIntPart * regionDimensions.getX() * regionDimensions.getY()] = newIndex;
 		}
-		if(yFracPart > 0.000001f)
+		if(yFracPart > 0.25f)
 		{
-			vertexIndicesY[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)] = newIndex;
+			vertexIndicesY[xIntPart + yIntPart * regionDimensions.getX() + zIntPart * regionDimensions.getX() * regionDimensions.getY()] = newIndex;
 		}
-		if(zFracPart > 0.000001f)
+		if(zFracPart > 0.25f)
 		{
-			vertexIndicesZ[static_cast<uint16>(xIntPart)][static_cast<uint16>(yIntPart)][static_cast<uint16>(zIntPart)] = newIndex;
+			vertexIndicesZ[xIntPart + yIntPart * regionDimensions.getX() + zIntPart * regionDimensions.getX() * regionDimensions.getY()] = newIndex;
 		}
 	}
 }
