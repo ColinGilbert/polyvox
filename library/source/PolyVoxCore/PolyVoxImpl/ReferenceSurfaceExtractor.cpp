@@ -278,13 +278,6 @@ namespace PolyVox
 
 	int32 getIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, const std::vector<int32>& vertexIndicesX, const std::vector<int32>& vertexIndicesY, const std::vector<int32>& vertexIndicesZ)
 	{
-		assert(pos.getX() >= 0.0f);
-		assert(pos.getY() >= 0.0f);
-		assert(pos.getZ() >= 0.0f);
-		assert(pos.getX() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
-
 		float xIntPartAsFloat;
 		float xFracPart = std::modf(pos.getX(), &xIntPartAsFloat);
 		float yIntPartAsFloat;
@@ -313,13 +306,6 @@ namespace PolyVox
 
 	void setIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, int32 newIndex, std::vector<int32>& vertexIndicesX, std::vector<int32>& vertexIndicesY, std::vector<int32>& vertexIndicesZ)
 	{
-		assert(pos.getX() >= 0.0f);
-		assert(pos.getY() >= 0.0f);
-		assert(pos.getZ() >= 0.0f);
-		assert(pos.getX() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.getY() <= POLYVOX_REGION_SIDE_LENGTH);
-		assert(pos.getZ() <= POLYVOX_REGION_SIDE_LENGTH);
-
 		float xIntPartAsFloat;
 		float xFracPart = std::modf(pos.getX(), &xIntPartAsFloat);
 		float yIntPartAsFloat;

@@ -64,6 +64,16 @@ namespace PolyVox
 		m_v3dUpperCorner.setZ((std::min)(m_v3dUpperCorner.getZ(), other.m_v3dUpperCorner.getZ()));
 	}
 
+	int32 Region::depth(void) const
+	{
+		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ();
+	}
+
+	int32 Region::height(void) const
+	{
+		return m_v3dUpperCorner.getY() - m_v3dLowerCorner.getY();
+	}
+
 	void Region::shift(const Vector3DInt32& amount)
 	{
 		m_v3dLowerCorner += amount;
@@ -83,5 +93,10 @@ namespace PolyVox
 	Vector3DInt32 Region::dimensions(void)
 	{
 		return m_v3dUpperCorner - m_v3dLowerCorner;
+	}
+
+	int32 Region::width(void) const
+	{
+		return m_v3dUpperCorner.getX() - m_v3dLowerCorner.getX();
 	}
 }

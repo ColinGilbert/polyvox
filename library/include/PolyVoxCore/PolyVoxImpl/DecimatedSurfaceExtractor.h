@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	uint32 getDecimatedIndex(uint32 x, uint32 y);
+	uint32 getDecimatedIndex(uint32 x, uint32 y, uint32 regionWidth);
 
 	void extractDecimatedSurfaceImpl(Volume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
 	uint32 computeInitialDecimatedBitmaskForSlice(VolumeIterator<uint8>& volIter, uint8 uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8 *bitmask);
