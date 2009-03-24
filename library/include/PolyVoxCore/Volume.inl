@@ -33,22 +33,35 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower)
+	Volume<VoxelType>::Volume(uint16 uSideLength, uint16 uBlockSideLength)
 		:m_pBlocks(0)
 	{
-		//Check the volume size is sensible. This corresponds to a side length of 65536 voxels
-		if(uSideLengthPower > 16)
+		//Debug mode validation
+		assert(isPowerOf2(uSideLength));
+		assert(isPowerOf2(uBlockSideLength));
+		assert(uBlockSideLength <= uSideLength);
+
+		//Release mode validation
+		if(!isPowerOf2(uSideLength))
 		{
-			throw std::invalid_argument("Volume side length power must be less than or equal to 16");
+			throw std::invalid_argument("Volume side length must be a power of two.");
+		}
+		if(!isPowerOf2(uBlockSideLength))
+		{
+			throw std::invalid_argument("Block side length must be a power of two.");
+		}
+		if(uBlockSideLength > uSideLength)
+		{
+			throw std::invalid_argument("Block side length cannot be less than volume side length.");
 		}
 
 		//Compute the volume side length
-		m_uSideLengthPower = uSideLengthPower;
-		m_uSideLength = 0x01 << uSideLengthPower;
+		m_uSideLength = uSideLength;
+		m_uSideLengthPower = logBase2(m_uSideLength);
 
 		//Compute the block side length
-		m_uBlockSideLengthPower = uBlockSideLengthPower;
-		m_uBlockSideLength = 0x01 << uBlockSideLengthPower;
+		m_uBlockSideLength = uBlockSideLength;
+		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
 		//Compute the side length in blocks
 		m_uSideLengthInBlocks = m_uSideLength / m_uBlockSideLength;
@@ -63,7 +76,7 @@ namespace PolyVox
 		m_pHomogenousValue = new VoxelType[m_uNoOfBlocksInVolume];
 		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i] = getHomogenousBlock(0); //new Block<VoxelType>(uBlockSideLengthPower);
+			m_pBlocks[i] = getHomogenousBlock(0);
 			m_pIsShared[i] = true;
 			m_pIsPotentiallySharable[i] = false;
 			m_pHomogenousValue[i] = 0;

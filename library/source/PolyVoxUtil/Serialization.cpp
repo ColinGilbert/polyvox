@@ -19,13 +19,13 @@ namespace PolyVox
 		stream.read(reinterpret_cast<char*>(&volumeWidthPower), sizeof(volumeWidthPower));
 		stream.read(reinterpret_cast<char*>(&volumeHeightPower), sizeof(volumeHeightPower));
 		stream.read(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
-		
-		//FIXME - need to support non cubic volumes
-		Volume<uint8>* volume = new Volume<uint8>(volumeWidthPower);
 
 		uint16 volumeWidth = 0x0001 << volumeWidthPower;
 		uint16 volumeHeight = 0x0001 << volumeHeightPower;
 		uint16 volumeDepth = 0x0001 << volumeDepthPower;
+
+		//FIXME - need to support non cubic volumes
+		Volume<uint8>* volume = new Volume<uint8>(volumeWidth);
 
 		//Read data
 		for(uint16 z = 0; z < volumeDepth; ++z)
@@ -87,13 +87,13 @@ namespace PolyVox
 		stream.read(reinterpret_cast<char*>(&volumeWidthPower), sizeof(volumeWidthPower));
 		stream.read(reinterpret_cast<char*>(&volumeHeightPower), sizeof(volumeHeightPower));
 		stream.read(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
-		
-		//FIXME - need to support non cubic volumes
-		Volume<uint8>* volume = new Volume<uint8>(volumeWidthPower);
 
 		uint16 volumeWidth = 0x0001 << volumeWidthPower;
 		uint16 volumeHeight = 0x0001 << volumeHeightPower;
 		uint16 volumeDepth = 0x0001 << volumeDepthPower;
+
+		//FIXME - need to support non cubic volumes
+		Volume<uint8>* volume = new Volume<uint8>(volumeWidth);
 
 		//Read data
 		bool firstTime = true;

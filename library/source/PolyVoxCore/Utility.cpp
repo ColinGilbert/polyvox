@@ -30,11 +30,11 @@ namespace PolyVox
 	//If this is not the case then the output is undefined.
 	uint8 logBase2(uint32 uInput)
 	{
-		//Debug mode error handling
+		//Debug mode validation
 		assert(uInput != 0);
 		assert(isPowerOf2(uInput));
 
-		//Release mode error handling
+		//Release mode validation
 		if(uInput == 0)
 		{
 			throw std::invalid_argument("Cannot compute the log of zero.");

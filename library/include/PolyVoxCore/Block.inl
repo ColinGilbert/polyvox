@@ -34,10 +34,10 @@ namespace PolyVox
 	Block<VoxelType>::Block(uint8 uSideLength)
 		:m_tData(0)
 	{
-		//Debug mode error handling
+		//Debug mode validation
 		assert(isPowerOf2(uSideLength));
 
-		//Release mode error handling
+		//Release mode validation
 		if(!isPowerOf2(uSideLength))
 		{
 			throw std::invalid_argument("Block side length must be a power of two.");

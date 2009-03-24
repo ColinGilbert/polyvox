@@ -39,7 +39,7 @@ namespace PolyVox
 		friend class VolumeIterator<VoxelType>;
 
 	public:		
-		Volume(uint8 uSideLengthPower, uint8 uBlockSideLengthPower = 5);
+		Volume(uint16 uSideLength, uint16 uBlockSideLength = 64);
 		Volume(const Volume& rhs);
 		~Volume();	
 

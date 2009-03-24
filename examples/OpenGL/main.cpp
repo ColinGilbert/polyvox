@@ -42,7 +42,7 @@ int g_frameCounter = 0;
 bool g_bUseOpenGLVertexBufferObjects;
 
 //Creates a volume 128x128x128
-Volume<uint8> g_volData(logBase2(g_uVolumeSideLength));
+Volume<uint8> g_volData(g_uVolumeSideLength);
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
