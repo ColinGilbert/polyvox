@@ -48,7 +48,6 @@ namespace PolyVox
 		//FIXME - Instead of region.width()+2 we used to use POLYVOX_REGION_SIDE_LENGTH+1
 		//Normally POLYVOX_REGION_SIDE_LENGTH is the same as region.width() (often 32) but at the
 		//edges of the volume it is 1 smaller. Need to think what values really belong here.
-		Vector3DInt32 regionDimensions = region.dimensions();
 		int32* vertexIndicesX0 = new int32[(region.width()+2) * (region.height()+2)];
 		int32* vertexIndicesY0 = new int32[(region.width()+2) * (region.height()+2)];
 		int32* vertexIndicesZ0 = new int32[(region.width()+2) * (region.height()+2)];

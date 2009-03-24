@@ -34,16 +34,16 @@ namespace PolyVox
 		singleMaterialPatch->clear();
 
 		//For edge indices
-		int32* vertexIndicesX0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		int32* vertexIndicesY0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		int32* vertexIndicesZ0 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		int32* vertexIndicesX1 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		int32* vertexIndicesY1 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		int32* vertexIndicesZ1 = new int32[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		int32* vertexIndicesX0 = new int32[(region.width()+2) * (region.height()+2)];
+		int32* vertexIndicesY0 = new int32[(region.width()+2) * (region.height()+2)];
+		int32* vertexIndicesZ0 = new int32[(region.width()+2) * (region.height()+2)];
+		int32* vertexIndicesX1 = new int32[(region.width()+2) * (region.height()+2)];
+		int32* vertexIndicesY1 = new int32[(region.width()+2) * (region.height()+2)];
+		int32* vertexIndicesZ1 = new int32[(region.width()+2) * (region.height()+2)];
 
 		//Cell bitmasks
-		uint8* bitmask0 = new uint8[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
-		uint8* bitmask1 = new uint8[(POLYVOX_REGION_SIDE_LENGTH+1) * (POLYVOX_REGION_SIDE_LENGTH+1)];
+		uint8* bitmask0 = new uint8[(region.width()+2) * (region.height()+2)];
+		uint8* bitmask1 = new uint8[(region.width()+2) * (region.height()+2)];
 
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
@@ -69,7 +69,7 @@ namespace PolyVox
 			generateRoughVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0);
 		}
 
-		for(uint32 uSlice = 0; ((uSlice <= POLYVOX_REGION_SIDE_LENGTH-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
+		for(uint32 uSlice = 0; ((uSlice <= region.depth()-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
 		{
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,1));
@@ -105,9 +105,9 @@ namespace PolyVox
 		delete[] vertexIndicesZ1;
 	}
 
-	uint32 getIndex(uint32 x, uint32 y)
+	uint32 getIndex(uint32 x, uint32 y, uint32 regionWidth)
 	{
-		return x + (y * (POLYVOX_REGION_SIDE_LENGTH+1));
+		return x + (y * (regionWidth+1));
 	}
 
 	uint32 computeInitialRoughBitmaskForSlice(VolumeIterator<uint8>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8* bitmask)
@@ -156,7 +156,7 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//x
-				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
 				uint8 srcBit6 = iPreviousCubeIndexX & 64;
 				uint8 destBit7 = srcBit6 << 1;
 				
@@ -187,7 +187,7 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 				//y
-				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
 				uint8 srcBit7 = iPreviousCubeIndexY & 128;
 				uint8 destBit4 = srcBit7 >> 3;
 				
@@ -216,7 +216,7 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 				//y
-				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
 				uint8 srcBit7 = iPreviousCubeIndexY & 128;
 				uint8 destBit4 = srcBit7 >> 3;
 				
@@ -230,7 +230,7 @@ namespace PolyVox
 				uint8 destBit1 = srcBit2 >> 1;
 
 				//x
-				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
 				srcBit6 = iPreviousCubeIndexX & 64;
 				uint8 destBit7 = srcBit6 << 1;
 
@@ -248,7 +248,7 @@ namespace PolyVox
 			}
 
 			//Save the bitmask
-			bitmask[getIndex(x,y)] = iCubeIndex;
+			bitmask[getIndex(x,y, regSlice.width()+1)] = iCubeIndex;
 
 			if(edgeTable[iCubeIndex] != 0)
 			{
@@ -284,7 +284,7 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//z
-				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				if (v001 == 0) iCubeIndex |= 16;
@@ -298,11 +298,11 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//z
-				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				//x
-				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
 				uint8 srcBit6 = iPreviousCubeIndexX & 64;
 				uint8 destBit7 = srcBit6 << 1;
 				
@@ -320,11 +320,11 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();
 
 				//z
-				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				//y
-				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
 				uint8 srcBit7 = iPreviousCubeIndexY & 128;
 				uint8 destBit4 = srcBit7 >> 3;
 				
@@ -341,11 +341,11 @@ namespace PolyVox
 				const uint8 v111 = volIter.peekVoxel1px1py1pz();			
 
 				//z
-				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y)];
+				uint8 iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
 				iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 				//y
-				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1)];
+				uint8 iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
 				uint8 srcBit7 = iPreviousCubeIndexY & 128;
 				uint8 destBit4 = srcBit7 >> 3;
 				
@@ -353,7 +353,7 @@ namespace PolyVox
 				uint8 destBit5 = srcBit6 >> 1;
 
 				//x
-				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y)];
+				uint8 iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
 				srcBit6 = iPreviousCubeIndexX & 64;
 				uint8 destBit7 = srcBit6 << 1;
 
@@ -364,7 +364,7 @@ namespace PolyVox
 			}
 
 			//Save the bitmask
-			bitmask[getIndex(x,y)] = iCubeIndex;
+			bitmask[getIndex(x,y, regSlice.width()+1)] = iCubeIndex;
 
 			if(edgeTable[iCubeIndex] != 0)
 			{
@@ -392,7 +392,7 @@ namespace PolyVox
 			const uint8 v000 = volIter.getVoxel();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8 iCubeIndex = bitmask[getIndex(x,y)];
+			uint8 iCubeIndex = bitmask[getIndex(x,y, regSlice.width()+1)];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
@@ -411,7 +411,7 @@ namespace PolyVox
 					const uint8 uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32 uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-					vertexIndicesX[getIndex(x,y)] = uLastVertexIndex;
+					vertexIndicesX[getIndex(x,y, regSlice.width()+1)] = uLastVertexIndex;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 8)
@@ -424,7 +424,7 @@ namespace PolyVox
 					const uint8 uMaterial = v000 | v010;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32 uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-					vertexIndicesY[getIndex(x,y)] = uLastVertexIndex;
+					vertexIndicesY[getIndex(x,y, regSlice.width()+1)] = uLastVertexIndex;
 				}
 			}
 			if (edgeTable[iCubeIndex] & 256)
@@ -437,7 +437,7 @@ namespace PolyVox
 					const uint8 uMaterial = v000 | v001;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32 uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-					vertexIndicesZ[getIndex(x,y)] = uLastVertexIndex;
+					vertexIndicesZ[getIndex(x,y, regSlice.width()+1)] = uLastVertexIndex;
 				}
 			}
 		}while(volIter.moveForwardInRegionXYZ());//For each cell
@@ -460,7 +460,7 @@ namespace PolyVox
 			const uint16 z = volIter.getPosZ() - offset.getZ();
 
 			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8 iCubeIndex = bitmask0[getIndex(x,y)];
+			uint8 iCubeIndex = bitmask0[getIndex(x,y, regSlice.width()+1)];
 
 			/* Cube is entirely in/out of the surface */
 			if (edgeTable[iCubeIndex] == 0)
@@ -471,62 +471,62 @@ namespace PolyVox
 			/* Find the vertices where the surface intersects the cube */
 			if (edgeTable[iCubeIndex] & 1)
 			{
-				indlist[0] = vertexIndicesX0[getIndex(x,y)];
+				indlist[0] = vertexIndicesX0[getIndex(x,y, regSlice.width()+1)];
 				assert(indlist[0] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 2)
 			{
-				indlist[1] = vertexIndicesY0[getIndex(x+1,y)];
+				indlist[1] = vertexIndicesY0[getIndex(x+1,y, regSlice.width()+1)];
 				assert(indlist[1] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 4)
 			{
-				indlist[2] = vertexIndicesX0[getIndex(x,y+1)];
+				indlist[2] = vertexIndicesX0[getIndex(x,y+1, regSlice.width()+1)];
 				assert(indlist[2] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 8)
 			{
-				indlist[3] = vertexIndicesY0[getIndex(x,y)];
+				indlist[3] = vertexIndicesY0[getIndex(x,y, regSlice.width()+1)];
 				assert(indlist[3] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 16)
 			{
-				indlist[4] = vertexIndicesX1[getIndex(x,y)];
+				indlist[4] = vertexIndicesX1[getIndex(x,y, regSlice.width()+1)];
 				assert(indlist[4] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 32)
 			{
-				indlist[5] = vertexIndicesY1[getIndex(x+1,y)];
+				indlist[5] = vertexIndicesY1[getIndex(x+1,y, regSlice.width()+1)];
 				assert(indlist[5] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 64)
 			{
-				indlist[6] = vertexIndicesX1[getIndex(x,y+1)];
+				indlist[6] = vertexIndicesX1[getIndex(x,y+1, regSlice.width()+1)];
 				assert(indlist[6] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 128)
 			{
-				indlist[7] = vertexIndicesY1[getIndex(x,y)];
+				indlist[7] = vertexIndicesY1[getIndex(x,y, regSlice.width()+1)];
 				assert(indlist[7] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 256)
 			{
-				indlist[8] = vertexIndicesZ0[getIndex(x,y)];
+				indlist[8] = vertexIndicesZ0[getIndex(x,y, regSlice.width()+1)];
 				assert(indlist[8] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 512)
 			{
-				indlist[9] = vertexIndicesZ0[getIndex(x+1,y)];
+				indlist[9] = vertexIndicesZ0[getIndex(x+1,y, regSlice.width()+1)];
 				assert(indlist[9] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 1024)
 			{
-				indlist[10] = vertexIndicesZ0[getIndex(x+1,y+1)];
+				indlist[10] = vertexIndicesZ0[getIndex(x+1,y+1, regSlice.width()+1)];
 				assert(indlist[10] != -1);
 			}
 			if (edgeTable[iCubeIndex] & 2048)
 			{
-				indlist[11] = vertexIndicesZ0[getIndex(x,y+1)];
+				indlist[11] = vertexIndicesZ0[getIndex(x,y+1, regSlice.width()+1)];
 				assert(indlist[11] != -1);
 			}
 
