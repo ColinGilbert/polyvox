@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma endregion
 
 #pragma region Headers
+#include "Utility.h"
+
 #include <cassert>
 #include <cstring> //For memcpy
 #include <stdexcept> //for std::invalid_argument
@@ -29,18 +31,21 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	Block<VoxelType>::Block(uint8 uSideLengthPower)
+	Block<VoxelType>::Block(uint8 uSideLength)
 		:m_tData(0)
 	{
-		//Check the block size is sensible. This corresponds to a side length of 256 voxels
-		if(uSideLengthPower > 8)
+		//Debug mode error handling
+		assert(isPowerOf2(uSideLength));
+
+		//Release mode error handling
+		if(!isPowerOf2(uSideLength))
 		{
-			throw std::invalid_argument("Block side length power must be less than or equal to eight");
+			throw std::invalid_argument("Block side length must be a power of two.");
 		}
 
-		//Compute the side length
-		m_uSideLengthPower = uSideLengthPower;
-		m_uSideLength = 0x01 << uSideLengthPower;
+		//Compute the side length		
+		m_uSideLength = uSideLength;
+		m_uSideLengthPower = logBase2(uSideLength);
 
 		//If this fails an exception will be thrown. Memory is not   
 		//allocated and there is nothing else in this class to clean up
@@ -95,6 +100,12 @@ namespace PolyVox
 				uZPos * m_uSideLength * m_uSideLength
 			];
 	}
+
+	template <typename VoxelType>
+	VoxelType Block<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	{
+		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
 	#pragma endregion
 
 	#pragma region Setters
@@ -111,6 +122,12 @@ namespace PolyVox
 			uYPos * m_uSideLength + 
 			uZPos * m_uSideLength * m_uSideLength
 		] = tValue;
+	}
+
+	template <typename VoxelType>
+	void Block<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	{
+		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 	#pragma endregion
 

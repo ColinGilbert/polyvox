@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxCore/Utility.h"
 
 #include <cassert>
+#include <stdexcept>
 
 namespace PolyVox
 {
@@ -29,8 +30,19 @@ namespace PolyVox
 	//If this is not the case then the output is undefined.
 	uint8 logBase2(uint32 uInput)
 	{
+		//Debug mode error handling
 		assert(uInput != 0);
 		assert(isPowerOf2(uInput));
+
+		//Release mode error handling
+		if(uInput == 0)
+		{
+			throw std::invalid_argument("Cannot compute the log of zero.");
+		}
+		if(!isPowerOf2(uInput))
+		{
+			throw std::invalid_argument("Input must be a power of two in order to compute the log.");
+		}
 
 		uint32 uResult = 0;
 		while( (uInput >> uResult) != 0)

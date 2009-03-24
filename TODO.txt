@@ -30,3 +30,12 @@ Utility function for closing outside surfaces?
 Consider how seperate surface should be generated for a single region.
 Consider transparent materials like glass.
 Allow writing meshes into volumes?
+
+Documentation
+=============
+Define the following terms:
+-Voxel
+-Cell
+-Volume
+-Region
+-Block

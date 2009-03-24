@@ -192,7 +192,7 @@ namespace PolyVox
 		{
 			if(tHomogenousValue != tValue)
 			{
-				m_pBlocks[uBlockIndex] = new Block<VoxelType>(m_uBlockSideLengthPower);
+				m_pBlocks[uBlockIndex] = new Block<VoxelType>(m_uBlockSideLength);
 				m_pIsShared[uBlockIndex] = false;
 				m_pBlocks[uBlockIndex]->fill(tHomogenousValue);
 				m_pBlocks[uBlockIndex]->setVoxelAt(xOffset,yOffset,zOffset, tValue);
@@ -287,7 +287,7 @@ namespace PolyVox
 		typename std::map<VoxelType, Block<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlocks.end())
 		{
-			Block<VoxelType>* pBlock = new Block<VoxelType>(m_uBlockSideLengthPower);
+			Block<VoxelType>* pBlock = new Block<VoxelType>(m_uBlockSideLength);
 			pBlock->fill(tHomogenousValue);
 			m_pHomogenousBlocks.insert(std::make_pair(tHomogenousValue, pBlock));
 			return pBlock;
