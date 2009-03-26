@@ -7,9 +7,24 @@
 #include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
+#include "OpenGLWidget.h"
+
 #include <windows.h>   // Standard Header For Most Programs
 
-//#define USE_OPENGL_VERTEX_BUFFERS_OBJECTS
+#include <QApplication>
+
+
+int main(int argc, char *argv[])
+ {
+     QApplication app(argc, argv);
+
+     OpenGLWidget openGLWidget(0);
+
+     openGLWidget.show();
+     return app.exec();
+ } 
+
+#ifdef USING_GLUT
 
 #ifdef WIN32
 #include "glew/glew.h"
@@ -272,3 +287,5 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 	glutMainLoop        ( );          // Initialize The Main Loop
 }
+
+#endif //USING_GLUT

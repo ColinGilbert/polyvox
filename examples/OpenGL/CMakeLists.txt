@@ -9,6 +9,7 @@ SET(SRC_FILES
 	OpenGLImmediateModeSupport.cpp
 	OpenGLSupport.cpp
 	OpenGLVertexBufferObjectSupport.cpp
+	OpenGLWidget.cpp
 	Shapes.cpp
 	)
 
@@ -20,6 +21,7 @@ SET(INC_FILES
 	OpenGLImmediateModeSupport.h
 	OpenGLSupport.h
 	OpenGLVertexBufferObjectSupport.h
+	OpenGLWidget.h
 	Shapes.h
 	)
 
@@ -33,6 +35,11 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 #SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
+FIND_PACKAGE(Qt4)
+SET(QT_USE_QTGUI 1)
+SET(QT_USE_QTOPENGL 1)
+INCLUDE(${QT_USE_FILE})
+
 IF (WIN32)
 	FIND_PACKAGE(OpenGL REQUIRED)
 
@@ -43,12 +50,11 @@ IF (WIN32)
 	
 	#Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
 	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/include")
-	#No idea  why we have to look three levels up for build and only two for include. They should be the same level?!
-	LINK_DIRECTORIES("../../../build/library")
+	LINK_DIRECTORIES("../../library")
 
 	#Build
 	ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
-	TARGET_LINK_LIBRARIES(OpenGLExample glut32.lib ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d.lib optimized PolyVoxCore.lib)
+	TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d.lib optimized PolyVoxCore.lib)
 
 	#Install
 	INSTALL(TARGETS OpenGLExample
