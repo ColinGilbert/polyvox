@@ -31,7 +31,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	Block<VoxelType>::Block(uint8 uSideLength)
+	BlockData<VoxelType>::BlockData(uint8 uSideLength)
 		:m_tData(0)
 	{
 		//Debug mode validation
@@ -40,7 +40,7 @@ namespace PolyVox
 		//Release mode validation
 		if(!isPowerOf2(uSideLength))
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			throw std::invalid_argument("BlockData side length must be a power of two.");
 		}
 
 		//Compute the side length		
@@ -53,13 +53,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>::Block(const Block<VoxelType>& rhs)
+	BlockData<VoxelType>::BlockData(const BlockData<VoxelType>& rhs)
 	{
 		*this = rhs;
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>::~Block()
+	BlockData<VoxelType>::~BlockData()
 	{
 		delete[] m_tData;
 		m_tData = 0;
@@ -68,26 +68,30 @@ namespace PolyVox
 
 	#pragma region Operators
 	template <typename VoxelType>
-	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
+	BlockData<VoxelType>& BlockData<VoxelType>::operator=(const BlockData<VoxelType>& rhs)
 	{
 		if (this == &rhs)
 		{
 			return *this;
 		}
+
+		m_uSideLength = rhs.m_uSideLength;
+		m_uSideLengthPower = rhs.m_uSideLengthPower;
 		memcpy(m_tData, rhs.m_tData, m_uSideLength * m_uSideLength * m_uSideLength);
+
 		return *this;
 	}
 	#pragma endregion
 
 	#pragma region Getters
 	template <typename VoxelType>
-	uint16 Block<VoxelType>::getSideLength(void) const
+	uint16 BlockData<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
+	VoxelType BlockData<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
 	{
 		assert(uXPos < m_uSideLength);
 		assert(uYPos < m_uSideLength);
@@ -102,7 +106,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType BlockData<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
@@ -110,7 +114,7 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void Block<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
+	void BlockData<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
 	{
 		assert(uXPos < m_uSideLength);
 		assert(uYPos < m_uSideLength);
@@ -125,7 +129,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	void BlockData<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
@@ -133,7 +137,7 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	void Block<VoxelType>::fill(VoxelType tValue)
+	void BlockData<VoxelType>::fill(VoxelType tValue)
 	{
 		memset(m_tData, tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 	}

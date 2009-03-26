@@ -30,8 +30,8 @@ namespace PolyVox
 				const Vector3DFloat& v3dRem = v3dPos - static_cast<Vector3DFloat>(v3dFloor);			
 
 				//Check all corners are within the volume, allowing a boundary for gradient estimation
-				bool lowerCornerInside = volumeData->containsPoint(v3dFloor,2);
-				bool upperCornerInside = volumeData->containsPoint(v3dFloor+Vector3DInt32(1,1,1),2);
+				bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
+				bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt32(1,1,1),2);
 
 				if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
 				{
@@ -90,8 +90,8 @@ namespace PolyVox
 			VolumeIterator<uint8> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
-			bool lowerCornerInside = volumeData->containsPoint(v3dFloor,1);
-			bool upperCornerInside = volumeData->containsPoint(v3dFloor+Vector3DInt32(1,1,1),1);
+			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,1);
+			bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt32(1,1,1),1);
 
 			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
 			{				

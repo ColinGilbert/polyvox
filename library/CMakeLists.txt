@@ -17,8 +17,8 @@ SET(CORE_SRC_FILES
 
 #Projects headers files
 SET(CORE_INC_FILES
-	include/PolyVoxCore/Block.h
-	include/PolyVoxCore/Block.inl
+	include/PolyVoxCore/BlockData.h
+	include/PolyVoxCore/BlockData.inl
 	include/PolyVoxCore/Constants.h
 	include/PolyVoxCore/Enums.h
 	include/PolyVoxCore/GradientEstimators.h	

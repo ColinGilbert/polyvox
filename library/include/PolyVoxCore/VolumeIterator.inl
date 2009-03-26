@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma endregion
 
 #pragma region Headers
-#include "Block.h"
+#include "BlockData.h"
 #include "Volume.h"
 #include "Vector.h"
 #include "Region.h"
@@ -201,7 +201,7 @@ namespace PolyVox
 		mBlockIndexInVolume = mXBlock + 
 			mYBlock * mVolume.m_uSideLengthInBlocks + 
 			mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
-		Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+		BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume].m_pBlockData;
 
 		mVoxelIndexInBlock = mXPosInBlock + 
 			mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -257,7 +257,7 @@ namespace PolyVox
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * mVolume.m_uBlockSideLength + 
 				mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-			Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+			BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
@@ -270,7 +270,7 @@ namespace PolyVox
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * mVolume.m_uBlockSideLength + 
 					mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-				Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+				BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
@@ -309,7 +309,7 @@ namespace PolyVox
 						}
 					}
 
-					Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+					BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->m_pBlocks[mBlockIndexInVolume];					
 
 					mXPosInVolume = (std::max)(mXRegionFirst,uint16(mXBlock * mVolume.m_uBlockSideLength));					

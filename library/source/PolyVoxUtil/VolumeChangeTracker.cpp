@@ -49,7 +49,7 @@ namespace PolyVox
 		m_uVolumeSideLengthInRegions = volumeData->getSideLength() / m_uRegionSideLength;
 		m_uRegionSideLengthPower = PolyVox::logBase2(m_uRegionSideLength);
 
-		volRegionLastModified = new Block<int32>(m_uRegionSideLength);
+		volRegionLastModified = new BlockData<int32>(m_uRegionSideLength);
 	}
 
 	VolumeChangeTracker::~VolumeChangeTracker()

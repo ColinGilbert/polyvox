@@ -33,6 +33,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
+	class Block
+	{
+	public:
+		BlockData<VoxelType>* m_pBlockData;
+		VoxelType m_pHomogenousValue;
+		bool m_pIsShared;
+		bool m_pIsPotentiallySharable;
+	};
+
+	template <typename VoxelType>
 	class Volume
 	{
 		//Make VolumeIterator a friend
@@ -53,21 +63,20 @@ namespace PolyVox
 		void setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
-		bool containsPoint(const Vector3DInt32& pos, uint16 boundary) const;
 		VolumeIterator<VoxelType> firstVoxel(void);
 		void idle(uint32 uAmount);
 		bool isRegionHomogenous(const Region& region);
 		VolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
-		Block<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;
+		BlockData<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;
 
-		Block<VoxelType>** m_pBlocks;
-		bool* m_pIsShared;
-		bool* m_pIsPotentiallySharable;
-		VoxelType* m_pHomogenousValue;
-		mutable std::map<VoxelType, Block<VoxelType>*> m_pHomogenousBlocks;
+		//Block<VoxelType>** m_pBlocks;
+		//bool* m_pIsShared;
+		//bool* m_pIsPotentiallySharable;
+		//VoxelType* m_pHomogenousValue;
+		Block<VoxelType>* m_pBlocks;
+		mutable std::map<VoxelType, BlockData<VoxelType>*> m_pHomogenousBlocks;
 
 		uint32 m_uNoOfBlocksInVolume;
 		uint16 m_uSideLengthInBlocks;

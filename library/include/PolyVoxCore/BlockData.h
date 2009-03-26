@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_Block_H__
-#define __PolyVox_Block_H__
+#ifndef __PolyVox_BlockData_H__
+#define __PolyVox_BlockData_H__
 
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
@@ -31,16 +31,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class Block
+	class BlockData
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator<VoxelType>;
 	public:
-		Block(uint8 uSideLength);
-		Block(const Block& rhs);
-		~Block();
+		BlockData(uint8 uSideLength);
+		BlockData(const BlockData& rhs);
+		~BlockData();
 
-		Block& operator=(const Block& rhs);
+		BlockData& operator=(const BlockData& rhs);
 
 		uint16 getSideLength(void) const;
 		VoxelType getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const;
@@ -52,12 +52,12 @@ namespace PolyVox
 		void fill(VoxelType tValue);
 
 	private:
-		uint8 m_uSideLengthPower;
 		uint16 m_uSideLength;
+		uint8 m_uSideLengthPower;		
 		VoxelType* m_tData;
 	};
 }
 
-#include "Block.inl"
+#include "BlockData.inl"
 
 #endif

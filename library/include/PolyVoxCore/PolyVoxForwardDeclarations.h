@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	template <typename VoxelType> class Block;
+	template <typename VoxelType> class BlockData;
 
 	//---------- Volume ----------
 	template <typename VoxelType> class Volume;
