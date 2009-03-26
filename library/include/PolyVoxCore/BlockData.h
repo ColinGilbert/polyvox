@@ -50,10 +50,11 @@ namespace PolyVox
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void fill(VoxelType tValue);
+		bool isHomogeneous(void);
 
 	private:
 		uint16 m_uSideLength;
-		uint8 m_uSideLengthPower;		
+		uint8 m_uSideLengthPower;	
 		VoxelType* m_tData;
 	};
 }

@@ -71,23 +71,23 @@ namespace PolyVox
 
 		//Create the blocks
 		/*m_pBlocks = new Block<VoxelType>*[m_uNoOfBlocksInVolume];
-		m_pIsShared = new bool[m_uNoOfBlocksInVolume];
-		m_pIsPotentiallySharable = new bool[m_uNoOfBlocksInVolume];
+		m_bIsShared = new bool[m_uNoOfBlocksInVolume];
+		m_bIsPotentiallySharable = new bool[m_uNoOfBlocksInVolume];
 		m_pHomogenousValue = new VoxelType[m_uNoOfBlocksInVolume];
 		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i] = getHomogenousBlock(0);
-			m_pIsShared[i] = true;
-			m_pIsPotentiallySharable[i] = false;
+			m_bIsShared[i] = true;
+			m_bIsPotentiallySharable[i] = false;
 			m_pHomogenousValue[i] = 0;
 		}*/
 
 		m_pBlocks = new Block<VoxelType>[m_uNoOfBlocksInVolume];
 		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i].m_pBlockData = getHomogenousBlock(0);
-			m_pBlocks[i].m_pIsShared = true;
-			m_pBlocks[i].m_pIsPotentiallySharable = false;
+			m_pBlocks[i].m_pBlockData = getHomogenousBlockData(0);
+			m_pBlocks[i].m_bIsShared = true;
+			m_pBlocks[i].m_bIsPotentiallySharable = false;
 			m_pBlocks[i].m_pHomogenousValue = 0;
 		}
 	}
@@ -103,15 +103,15 @@ namespace PolyVox
 	{
 		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			if(m_pBlocks[i].m_pIsShared == false)
+			if(m_pBlocks[i].m_bIsShared == false)
 			{
 				delete m_pBlocks[i].m_pBlockData;
 				m_pBlocks[i].m_pBlockData = 0;
 			}
 		}
 		delete[] m_pBlocks;
-		/*delete[] m_pIsShared;
-		delete[] m_pIsPotentiallySharable;
+		/*delete[] m_bIsShared;
+		delete[] m_bIsPotentiallySharable;
 		delete[] m_pHomogenousValue;*/
 	}
 	#pragma endregion
@@ -190,14 +190,14 @@ namespace PolyVox
 				blockY * m_uSideLengthInBlocks + 
 				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks;
 
-		const bool bIsShared = m_pBlocks[uBlockIndex].m_pIsShared;
+		const bool bIsShared = m_pBlocks[uBlockIndex].m_bIsShared;
 		if(bIsShared)
 		{
 			const VoxelType tHomogenousValue = m_pBlocks[uBlockIndex].m_pHomogenousValue;
 			if(tHomogenousValue != tValue)
 			{
 				m_pBlocks[uBlockIndex].m_pBlockData = new BlockData<VoxelType>(m_uBlockSideLength);
-				m_pBlocks[uBlockIndex].m_pIsShared = false;
+				m_pBlocks[uBlockIndex].m_bIsShared = false;
 				m_pBlocks[uBlockIndex].m_pBlockData->fill(tHomogenousValue);
 				m_pBlocks[uBlockIndex].m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 			}
@@ -207,7 +207,7 @@ namespace PolyVox
 			m_pBlocks[uBlockIndex].m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 			//There is a chance that setting this voxel makes the block homogenous and therefore shareable. But checking
 			//this will take some time, so for now just set a flag.
-			m_pBlocks[uBlockIndex].m_pIsPotentiallySharable = true;
+			m_pBlocks[uBlockIndex].m_bIsPotentiallySharable = true;
 		}		
 	}
 
@@ -230,6 +230,34 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::idle(uint32 uAmount)
 	{
+		//This function performs two roles. Firstly, it examines all of the blocks which are marked as
+		//'potentially sharable' to determine whether they really are sharable or not. For those which
+		//are sharable, it adjusts the pointer and deletes tho old data. Secondly, it determines which
+		//homogeneous regions are not actually being used (by thier reference count) and frees them.
+
+		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		{
+			Block block = m_pBlocks[i];
+			if(block.m_bIsPotentiallySharable)
+			{
+				bool isSharable = block.m_pBlockData->isHomogeneous();
+				if(isSharable)
+				{
+					VoxelType homogeneousValue = block.m_pBlockData->getVoxelAt(0,0,0);
+					delete block.m_pBlockData;
+
+					block.m_pBlockData = getHomogenousBlockData(homogeneousValue);
+					block.m_pHomogenousValue = homogeneousValue;
+					block.m_bIsShared = true;
+				}
+
+				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
+				block.m_bIsPotentiallySharable = false;
+			}
+		}
+
+		//Note - this second step should probably happen immediatly, rather than in this function. 
+		//Use of a shared pointer system would allow this.
 	}	
 
 	template <typename VoxelType>
@@ -265,17 +293,23 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	BlockData<VoxelType>* Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
+	BlockData<VoxelType>* Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
 	{
-		typename std::map<VoxelType, BlockData<VoxelType>*>::iterator iterResult = m_pHomogenousBlocks.find(tHomogenousValue);
-		if(iterResult == m_pHomogenousBlocks.end())
+		typename std::map<VoxelType, ReferenceCountedBlockData<VoxelType> >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
+		if(iterResult == m_pHomogenousBlockData.end())
 		{
-			BlockData<VoxelType>* pBlock = new BlockData<VoxelType>(m_uBlockSideLength);
-			pBlock->fill(tHomogenousValue);
-			m_pHomogenousBlocks.insert(std::make_pair(tHomogenousValue, pBlock));
-			return pBlock;
+			ReferenceCountedBlockData<VoxelType> referenceCountedBlockData;
+			referenceCountedBlockData.m_pBlockData = new BlockData<VoxelType>(m_uBlockSideLength);
+			referenceCountedBlockData.m_uReferenceCount++;
+			referenceCountedBlockData.m_pBlockData->fill(tHomogenousValue);
+			m_pHomogenousBlockData.insert(std::make_pair(tHomogenousValue, referenceCountedBlockData));
+			return referenceCountedBlockData.m_pBlockData;
 		}
-		return iterResult->second;
+		else
+		{
+			iterResult->second.m_uReferenceCount++;
+			return iterResult->second.m_pBlockData;
+		}
 	}
 	#pragma endregion
 }

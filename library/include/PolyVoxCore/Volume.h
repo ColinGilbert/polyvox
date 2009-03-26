@@ -38,8 +38,18 @@ namespace PolyVox
 	public:
 		BlockData<VoxelType>* m_pBlockData;
 		VoxelType m_pHomogenousValue;
-		bool m_pIsShared;
-		bool m_pIsPotentiallySharable;
+		bool m_bIsShared;
+		bool m_bIsPotentiallySharable;
+	};
+
+	template <typename VoxelType>
+	class ReferenceCountedBlockData
+	{
+	public:
+		ReferenceCountedBlockData() : m_pBlockData(0), m_uReferenceCount(0) {}
+
+		BlockData<VoxelType>* m_pBlockData;
+		uint32 m_uReferenceCount;
 	};
 
 	template <typename VoxelType>
@@ -69,14 +79,10 @@ namespace PolyVox
 		VolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
-		BlockData<VoxelType>* getHomogenousBlock(VoxelType tHomogenousValue) const;
+		BlockData<VoxelType>* getHomogenousBlockData(VoxelType tHomogenousValue) const;
 
-		//Block<VoxelType>** m_pBlocks;
-		//bool* m_pIsShared;
-		//bool* m_pIsPotentiallySharable;
-		//VoxelType* m_pHomogenousValue;
 		Block<VoxelType>* m_pBlocks;
-		mutable std::map<VoxelType, BlockData<VoxelType>*> m_pHomogenousBlocks;
+		mutable std::map<VoxelType, ReferenceCountedBlockData<VoxelType> > m_pHomogenousBlockData;
 
 		uint32 m_uNoOfBlocksInVolume;
 		uint16 m_uSideLengthInBlocks;

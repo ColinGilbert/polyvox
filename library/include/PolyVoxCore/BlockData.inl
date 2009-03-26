@@ -141,5 +141,23 @@ namespace PolyVox
 	{
 		memset(m_tData, tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 	}
+
+	template <typename VoxelType>
+	bool BlockData<VoxelType>::isHomogeneous(void)
+	{
+		VoxelType currentVoxel = m_tData;
+		VoxelType firstVal = *currentVoxel;
+
+		uint32 uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		for(uint32 ct = 1; ct < uNoOfVoxels; ++ct)
+		{
+			++currentVoxel;
+			if(*currentVoxel != firstVoxel)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 	#pragma endregion
 }
