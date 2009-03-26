@@ -39,3 +39,12 @@ Define the following terms:
 -Volume
 -Region
 -Block
+
+Packaging
+=========
+Create components for the NSIS installer (Library, bindings, examples, documentation) - Half done
+Add License
+Add images for installer (and icons)
+Set LZMA compression
+Find a way to include both debug and release builds?
+The .lib files should be part of the 'development' configuration?

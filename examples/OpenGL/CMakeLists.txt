@@ -55,7 +55,8 @@ IF (WIN32)
 		RUNTIME DESTINATION bin
 		LIBRARY DESTINATION lib
 		ARCHIVE DESTINATION lib
+		COMPONENT example
 	)
 	
-	ADD_DEPENDENCIES(OpenGLExample PolyVoxCore)
+	ADD_DEPENDENCIES(OpenGLExample PolyVoxCore) #This shouldn't be needed
 ENDIF (WIN32)
