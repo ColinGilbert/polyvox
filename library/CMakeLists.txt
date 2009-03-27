@@ -140,16 +140,17 @@ endif()
 
 find_package(SWIG)
 if(SWIG_FOUND)
-	INCLUDE(${SWIG_USE_FILE})
+	include(${SWIG_USE_FILE})
 	
-	FIND_PACKAGE(PythonLibs)
-	INCLUDE_DIRECTORIES(${PYTHON_INCLUDE_PATH})
+	find_package(PythonLibs)
+	include_directories(${PYTHON_INCLUDE_PATH})
 
-	SET(CMAKE_SWIG_FLAGS "")
-	SET_SOURCE_FILES_PROPERTIES(bindings/Enums.i PROPERTIES CPLUSPLUS ON)
+	set(CMAKE_SWIG_FLAGS "")
+	set_source_files_properties(bindings/PolyVoxCore.i PROPERTIES CPLUSPLUS ON)
 	
-	SWIG_ADD_MODULE(Enums python bindings/Enums.i)
-	SWIG_LINK_LIBRARIES(Enums ${PYTHON_LIBRARIES})
+	swig_add_module(PolyVoxCore python bindings/PolyVoxCore.i)
+	swig_link_libraries(PolyVoxCore ${PYTHON_LIBRARIES})
+	message(STATUS "${SWIG_MODULE_PolyVoxCore_REAL_NAME}")
+	set_target_properties(${SWIG_MODULE_PolyVoxCore_REAL_NAME} PROPERTIES SUFFIX ".pyd")
 	
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/Enums.py DESTINATION lib COMPONENT python)
 endif()
