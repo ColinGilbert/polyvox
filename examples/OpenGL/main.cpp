@@ -13,14 +13,41 @@
 
 #include <QApplication>
 
+//Some namespaces we need
+using namespace std;
+using namespace PolyVox;
+using namespace std;
 
 int main(int argc, char *argv[])
  {
+	Volume<uint8> volData(g_uVolumeSideLength);
+
+	//Make our volume contain a sphere in the center.
+	uint16 minPos = 0;
+	uint16 midPos = volData.getSideLength() / 2;
+	uint16 maxPos = volData.getSideLength() - 1;
+	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
+
+	createSphereInVolume(volData, 50.0f, 5);
+	createSphereInVolume(volData, 40.0f, 4);
+	createSphereInVolume(volData, 30.0f, 3);
+	createSphereInVolume(volData, 20.0f, 2);
+	createSphereInVolume(volData, 10.0f, 1);	
+
+	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
+	createCubeInVolume(volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
+	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
+	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
+
      QApplication app(argc, argv);
 
      OpenGLWidget openGLWidget(0);
+	 
 
      openGLWidget.show();
+
+	 openGLWidget.setVolume(&volData);
+
      return app.exec();
  } 
 

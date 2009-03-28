@@ -8,62 +8,15 @@ using namespace std;
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
 {
-	g_bUseOpenGLVertexBufferObjects = true;
+	
 
-	m_volData = new Volume<uint8>(g_uVolumeSideLength);
-
-	//Make our volume contain a sphere in the center.
-	uint16 minPos = 0;
-	uint16 midPos = m_volData->getSideLength() / 2;
-	uint16 maxPos = m_volData->getSideLength() - 1;
-	createCubeInVolume(*m_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
-
-	createSphereInVolume(*m_volData, 50.0f, 5);
-	createSphereInVolume(*m_volData, 40.0f, 4);
-	createSphereInVolume(*m_volData, 30.0f, 3);
-	createSphereInVolume(*m_volData, 20.0f, 2);
-	createSphereInVolume(*m_volData, 10.0f, 1);	
-
-	createCubeInVolume(*m_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
-	createCubeInVolume(*m_volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
-	createCubeInVolume(*m_volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
-	createCubeInVolume(*m_volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
-
+	
 	
 }
 
 void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
 {
-}
-
-void OpenGLWidget::initializeGL()
-{
-	if(g_bUseOpenGLVertexBufferObjects)
-	{
-#ifdef WIN32
-		//If we are on Windows we will need GLEW to access recent OpenGL functionality
-		GLenum err = glewInit();
-		if (GLEW_OK != err)
-		{
-			/* Problem: glewInit failed, something is seriously wrong. */
-			cout << "Error: " << glewGetErrorString(err) << endl;
-		}
-#endif
-	}
-
-	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
-	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
-	glClearDepth(1.0f);									// Depth Buffer Setup
-	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
-	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-	glEnable ( GL_COLOR_MATERIAL );
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-	glEnable(GL_LIGHTING);
-	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-	glEnable(GL_LIGHT0);
-
-	glShadeModel(GL_SMOOTH);
+	m_volData = volData;
 
 	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 	//This three-level for loop iterates over each region.
@@ -111,6 +64,37 @@ void OpenGLWidget::initializeGL()
 			}
 		}
 	}
+}
+
+void OpenGLWidget::initializeGL()
+{
+	g_bUseOpenGLVertexBufferObjects = true;
+	if(g_bUseOpenGLVertexBufferObjects)
+	{
+#ifdef WIN32
+		//If we are on Windows we will need GLEW to access recent OpenGL functionality
+		GLenum err = glewInit();
+		if (GLEW_OK != err)
+		{
+			/* Problem: glewInit failed, something is seriously wrong. */
+			cout << "Error: " << glewGetErrorString(err) << endl;
+		}
+#endif
+	}
+
+	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
+	glClearDepth(1.0f);									// Depth Buffer Setup
+	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+	glEnable ( GL_COLOR_MATERIAL );
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	glEnable(GL_LIGHTING);
+	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_LIGHT0);
+
+	glShadeModel(GL_SMOOTH);
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
