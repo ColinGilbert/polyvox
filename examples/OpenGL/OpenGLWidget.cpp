@@ -10,28 +10,30 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 	g_bUseOpenGLVertexBufferObjects = true;
 
-	
-
-	g_volData = new Volume<uint8>(g_uVolumeSideLength);
+	m_volData = new Volume<uint8>(g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
 	uint16 minPos = 0;
-	uint16 midPos = g_volData->getSideLength() / 2;
-	uint16 maxPos = g_volData->getSideLength() - 1;
-	createCubeInVolume(*g_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
+	uint16 midPos = m_volData->getSideLength() / 2;
+	uint16 maxPos = m_volData->getSideLength() - 1;
+	createCubeInVolume(*m_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
-	createSphereInVolume(*g_volData, 50.0f, 5);
-	createSphereInVolume(*g_volData, 40.0f, 4);
-	createSphereInVolume(*g_volData, 30.0f, 3);
-	createSphereInVolume(*g_volData, 20.0f, 2);
-	createSphereInVolume(*g_volData, 10.0f, 1);	
+	createSphereInVolume(*m_volData, 50.0f, 5);
+	createSphereInVolume(*m_volData, 40.0f, 4);
+	createSphereInVolume(*m_volData, 30.0f, 3);
+	createSphereInVolume(*m_volData, 20.0f, 2);
+	createSphereInVolume(*m_volData, 10.0f, 1);	
 
-	createCubeInVolume(*g_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
-	createCubeInVolume(*g_volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
-	createCubeInVolume(*g_volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
-	createCubeInVolume(*g_volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
+	createCubeInVolume(*m_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
+	createCubeInVolume(*m_volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
+	createCubeInVolume(*m_volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
+	createCubeInVolume(*m_volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
 	
+}
+
+void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
+{
 }
 
 void OpenGLWidget::initializeGL()
@@ -89,16 +91,21 @@ void OpenGLWidget::initializeGL()
 				Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 				//Extract the surface for this region
-				extractReferenceSurface(g_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
+				extractReferenceSurface(m_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
 
 
+				Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 				if(g_bUseOpenGLVertexBufferObjects)
 				{
-					g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
+					//g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
+					OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*ispCurrent);					
+					m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
 				}
 				else
 				{
-					g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = ispCurrent;
+					//g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = ispCurrent;
+					//m_volIndexedSurfacePatches->setVoxelAt(uRegionX,uRegionY,uRegionZ,ispCurrent);
+					m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, ispCurrent));
 				}
 				//delete ispCurrent;
 			}
@@ -142,13 +149,14 @@ void OpenGLWidget::paintGL()
 		{
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
+				Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 				if(g_bUseOpenGLVertexBufferObjects)
 				{
-					renderRegionVertexBufferObject(g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ]);
+					renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos]);
 				}
 				else
 				{
-					IndexedSurfacePatch* ispCurrent = g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ];
+					IndexedSurfacePatch* ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
 					renderRegionImmediateMode(*ispCurrent);
 
 				}

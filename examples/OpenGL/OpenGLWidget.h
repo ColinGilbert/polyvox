@@ -28,6 +28,8 @@ class OpenGLWidget : public QGLWidget
  public:
      OpenGLWidget(QWidget *parent);
 
+	 void setVolume(PolyVox::Volume<PolyVox::uint8>* volData);
+
  protected:
      void initializeGL();
      void resizeGL(int w, int h);
@@ -38,11 +40,11 @@ class OpenGLWidget : public QGLWidget
 	 bool g_bUseOpenGLVertexBufferObjects;
 
 	 //Creates a volume 128x128x128
-	PolyVox::Volume<PolyVox::uint8>* g_volData;
+	PolyVox::Volume<PolyVox::uint8>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
-	OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
-	PolyVox::IndexedSurfacePatch* g_indexedSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
+	std::map<PolyVox::Vector3DUint8, OpenGLSurfacePatch> m_mapOpenGLSurfacePatches;
+	std::map<PolyVox::Vector3DUint8, PolyVox::IndexedSurfacePatch*> m_mapIndexedSurfacePatches;
  };
 
 #endif //__PolyVox_OpenGLWidget_H__
