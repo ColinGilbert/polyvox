@@ -3,4 +3,4 @@
 #include "PolyVoxCore/Enums.h"
 %}
 
-enum NormalGenerationMethod;
+%include "PolyVoxCore/Enums.h"
