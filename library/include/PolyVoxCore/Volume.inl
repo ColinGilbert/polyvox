@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <cassert>
 #include <cstring> //For memcpy
+#include <stdexcept> //For invalid_argument
 #pragma endregion
 
 namespace PolyVox
