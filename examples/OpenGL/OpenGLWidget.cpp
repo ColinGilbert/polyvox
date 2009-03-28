@@ -16,51 +16,55 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 
 void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
 {
+	//First we free anything from the previous volume (if there was one).
+	m_mapOpenGLSurfacePatches.clear();
+	m_mapIndexedSurfacePatches.clear();
 	m_volData = volData;
 
-	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
-	//This three-level for loop iterates over each region.
-	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+	//If we have any volume data then generate the new surface patches.
+	if(m_volData != 0)
 	{
-		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
+		//This three-level for loop iterates over each region.
+		for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 		{
-			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 			{
-				//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
-				IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
-
-				//Compute the extents of the current region
-				//FIXME - This is a little complex? PolyVox could
-				//provide more functions for dealing with regions?
-				uint16 regionStartX = uRegionX * g_uRegionSideLength;
-				uint16 regionStartY = uRegionY * g_uRegionSideLength;
-				uint16 regionStartZ = uRegionZ * g_uRegionSideLength;
-
-				uint16 regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-				uint16 regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-				uint16 regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-
-				Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
-				Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
-
-				//Extract the surface for this region
-				extractReferenceSurface(m_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
-
-
-				Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-				if(g_bUseOpenGLVertexBufferObjects)
+				for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 				{
-					//g_openGLSurfacePatches[uRegionX][uRegionY][uRegionZ] = BuildOpenGLSurfacePatch(*ispCurrent);
-					OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*ispCurrent);					
-					m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
+					//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
+					IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
+
+					//Compute the extents of the current region
+					//FIXME - This is a little complex? PolyVox could
+					//provide more functions for dealing with regions?
+					uint16 regionStartX = uRegionX * g_uRegionSideLength;
+					uint16 regionStartY = uRegionY * g_uRegionSideLength;
+					uint16 regionStartZ = uRegionZ * g_uRegionSideLength;
+
+					uint16 regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+					uint16 regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+					uint16 regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+
+					Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
+					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
+
+					//Extract the surface for this region
+					extractReferenceSurface(m_volData, Region(regLowerCorner, regUpperCorner), ispCurrent);
+
+
+					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
+					if(m_bUseOpenGLVertexBufferObjects)
+					{
+						OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*ispCurrent);					
+						m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
+					}
+					else
+					{
+						m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, ispCurrent));
+					}
+					//delete ispCurrent;
 				}
-				else
-				{
-					//g_indexedSurfacePatches[uRegionX][uRegionY][uRegionZ] = ispCurrent;
-					//m_volIndexedSurfacePatches->setVoxelAt(uRegionX,uRegionY,uRegionZ,ispCurrent);
-					m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, ispCurrent));
-				}
-				//delete ispCurrent;
 			}
 		}
 	}
@@ -68,8 +72,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
 
 void OpenGLWidget::initializeGL()
 {
-	g_bUseOpenGLVertexBufferObjects = true;
-	if(g_bUseOpenGLVertexBufferObjects)
+	m_bUseOpenGLVertexBufferObjects = true;
+	if(m_bUseOpenGLVertexBufferObjects)
 	{
 #ifdef WIN32
 		//If we are on Windows we will need GLEW to access recent OpenGL functionality
@@ -134,7 +138,7 @@ void OpenGLWidget::paintGL()
 			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-				if(g_bUseOpenGLVertexBufferObjects)
+				if(m_bUseOpenGLVertexBufferObjects)
 				{
 					renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos]);
 				}

@@ -37,7 +37,7 @@ class OpenGLWidget : public QGLWidget
 
  private:
 
-	 bool g_bUseOpenGLVertexBufferObjects;
+	 bool m_bUseOpenGLVertexBufferObjects;
 
 	 //Creates a volume 128x128x128
 	PolyVox::Volume<PolyVox::uint8>* m_volData;
