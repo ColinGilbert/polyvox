@@ -9,7 +9,9 @@
 
 #include "OpenGLWidget.h"
 
+#ifdef WIN32
 #include <windows.h>   // Standard Header For Most Programs
+#endif
 
 #include <QApplication>
 

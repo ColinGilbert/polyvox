@@ -40,7 +40,7 @@ SET(QT_USE_QTGUI 1)
 SET(QT_USE_QTOPENGL 1)
 INCLUDE(${QT_USE_FILE})
 
-IF (WIN32)
+#IF (WIN32)
 	FIND_PACKAGE(OpenGL REQUIRED)
 
 	#NOTE:  In Windows I haven't had much luck getting the FindGLUT script to work correctly. 
@@ -65,4 +65,4 @@ IF (WIN32)
 	)
 	
 	ADD_DEPENDENCIES(OpenGLExample PolyVoxCore) #This shouldn't be needed
-ENDIF (WIN32)
+#ENDIF (WIN32)

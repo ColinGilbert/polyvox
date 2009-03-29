@@ -4,7 +4,7 @@
 #ifdef WIN32
 #include "glew/glew.h"
 #else
-#include <gl/gl.h>     // The GL Header File
+#include <GL/gl.h>     // The GL Header File
 #endif
 
 #include <QGLWidget>
