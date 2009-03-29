@@ -18,7 +18,7 @@
 #include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
-const PolyVox::uint16 g_uVolumeSideLength = 256;
+const PolyVox::uint16 g_uVolumeSideLength = 128;
 const PolyVox::uint16 g_uRegionSideLength = 16;
 const PolyVox::uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 

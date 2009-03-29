@@ -122,6 +122,9 @@ INSTALL(TARGETS PolyVoxUtil
 
 INSTALL(FILES ${UTIL_INC_FILES} DESTINATION include/PolyVoxUtil COMPONENT development)
 
+#Copy the boost files which we a re using to mimic C++0x
+INSTALL(DIRECTORY include/boost DESTINATION include COMPONENT development)
+
 #Set up PolyVoxConfig.cmake
 if(WIN32)
 	set(CONFIG_FILE_DIR "CMake")

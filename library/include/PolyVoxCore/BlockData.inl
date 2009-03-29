@@ -154,7 +154,7 @@ namespace PolyVox
 		for(uint32 ct = 1; ct < uNoOfVoxels; ++ct)
 		{
 			++currentVoxel;
-			if(*currentVoxel != firstVoxel)
+			if(*currentVoxel != firstVal)
 			{
 				return false;
 			}

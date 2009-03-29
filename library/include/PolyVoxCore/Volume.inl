@@ -102,7 +102,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
-		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		/*for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			if(m_pBlocks[i].m_bIsShared == false)
 			{
@@ -110,7 +110,7 @@ namespace PolyVox
 				m_pBlocks[i].m_pBlockData = 0;
 			}
 		}
-		delete[] m_pBlocks;
+		delete[] m_pBlocks;*/
 		/*delete[] m_bIsShared;
 		delete[] m_bIsPotentiallySharable;
 		delete[] m_pHomogenousValue;*/
@@ -153,7 +153,7 @@ namespace PolyVox
 		const uint16 yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16 zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		const BlockData<VoxelType>* block = m_pBlocks
+		const boost::shared_ptr< BlockData<VoxelType> > block = m_pBlocks
 			[
 				blockX + 
 				blockY * m_uSideLengthInBlocks + 
@@ -197,7 +197,8 @@ namespace PolyVox
 			const VoxelType tHomogenousValue = m_pBlocks[uBlockIndex].m_pHomogenousValue;
 			if(tHomogenousValue != tValue)
 			{
-				m_pBlocks[uBlockIndex].m_pBlockData = new BlockData<VoxelType>(m_uBlockSideLength);
+				boost::shared_ptr< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
+				m_pBlocks[uBlockIndex].m_pBlockData = temp;
 				m_pBlocks[uBlockIndex].m_bIsShared = false;
 				m_pBlocks[uBlockIndex].m_pBlockData->fill(tHomogenousValue);
 				m_pBlocks[uBlockIndex].m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
@@ -238,7 +239,7 @@ namespace PolyVox
 
 		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			Block block = m_pBlocks[i];
+			Block<VoxelType> block = m_pBlocks[i];
 			if(block.m_bIsPotentiallySharable)
 			{
 				bool isSharable = block.m_pBlockData->isHomogeneous();
@@ -294,22 +295,24 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	BlockData<VoxelType>* Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
+	boost::shared_ptr< BlockData<VoxelType> > Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
 	{
-		typename std::map<VoxelType, ReferenceCountedBlockData<VoxelType> >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
+		typename std::map<VoxelType, boost::weak_ptr< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlockData.end())
 		{
-			ReferenceCountedBlockData<VoxelType> referenceCountedBlockData;
-			referenceCountedBlockData.m_pBlockData = new BlockData<VoxelType>(m_uBlockSideLength);
-			referenceCountedBlockData.m_uReferenceCount++;
-			referenceCountedBlockData.m_pBlockData->fill(tHomogenousValue);
-			m_pHomogenousBlockData.insert(std::make_pair(tHomogenousValue, referenceCountedBlockData));
-			return referenceCountedBlockData.m_pBlockData;
+			Block<VoxelType> block;
+			boost::shared_ptr< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
+			block.m_pBlockData = temp;
+			//block.m_uReferenceCount++;
+			block.m_pBlockData->fill(tHomogenousValue);
+			m_pHomogenousBlockData.insert(std::make_pair(tHomogenousValue, temp));
+			return block.m_pBlockData;
 		}
 		else
 		{
-			iterResult->second.m_uReferenceCount++;
-			return iterResult->second.m_pBlockData;
+			//iterResult->second.m_uReferenceCount++;
+			boost::shared_ptr< BlockData<VoxelType> > result(iterResult->second);
+			return result;
 		}
 	}
 	#pragma endregion
