@@ -1,11 +1,7 @@
 #ifndef __PolyVox_OpenGLWidget_H__
 #define __PolyVox_OpenGLWidget_H__
 
-#ifdef WIN32
 #include "glew/glew.h"
-#else
-#include <GL/gl.h>     // The GL Header File
-#endif
 
 #include <QGLWidget>
 
