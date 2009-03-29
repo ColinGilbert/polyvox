@@ -7,5 +7,5 @@
 %include "Enums.i"
 %include "PolyVoxCStdInt.i"
 %include "Utility.i"
-%include "PolyVoxForwardDeclarations.i"
-//%include "Vector.i"
+//%include "PolyVoxForwardDeclarations.i" //Shouldn't be needed
+%include "Vector.i"
