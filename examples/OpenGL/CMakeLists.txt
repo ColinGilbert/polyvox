@@ -49,6 +49,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/include")
+LINK_DIRECTORIES("../../library")
 
 #Build
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
