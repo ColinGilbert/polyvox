@@ -108,25 +108,25 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	uint16 VolumeIterator<VoxelType>::getPosX(void) const
+	uint16_t VolumeIterator<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16 VolumeIterator<VoxelType>::getPosY(void) const
+	uint16_t VolumeIterator<VoxelType>::getPosY(void) const
 	{
 		return mYPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16 VolumeIterator<VoxelType>::getPosZ(void) const
+	uint16_t VolumeIterator<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
 	}
 
 	template <typename VoxelType>
-	VoxelType VolumeIterator<VoxelType>::getSubSampledVoxel(uint8 uLevel) const
+	VoxelType VolumeIterator<VoxelType>::getSubSampledVoxel(uint8_t uLevel) const
 	{		
 		if(uLevel == 0)
 		{
@@ -146,14 +146,14 @@ namespace PolyVox
 		}
 		else
 		{
-			const uint8 uSize = 1 << uLevel;
+			const uint8_t uSize = 1 << uLevel;
 
 			VoxelType tValue = std::numeric_limits<VoxelType>::max();
-			for(uint8 z = 0; z < uSize; ++z)
+			for(uint8_t z = 0; z < uSize; ++z)
 			{
-				for(uint8 y = 0; y < uSize; ++y)
+				for(uint8_t y = 0; y < uSize; ++y)
 				{
-					for(uint8 x = 0; x < uSize; ++x)
+					for(uint8_t x = 0; x < uSize; ++x)
 					{
 						tValue = (std::min)(tValue, mVolume.getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
 					}
@@ -184,7 +184,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setPosition(uint16 xPos, uint16 yPos, uint16 zPos)
+	void VolumeIterator<VoxelType>::setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
@@ -217,7 +217,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast)
+	void VolumeIterator<VoxelType>::setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast)
 	{
 		mXRegionFirst = xFirst;
 		mYRegionFirst = yFirst;
@@ -252,7 +252,7 @@ namespace PolyVox
 		mXPosInVolume++;
 		if((mXPosInBlock == mVolume.m_uBlockSideLength) || (mXPosInVolume > mXRegionLast))
 		{
-			mXPosInVolume = (std::max)(mXRegionFirst,uint16(mXBlock * mVolume.m_uBlockSideLength));
+			mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.m_uBlockSideLength));
 			mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.m_uBlockSideLengthPower);
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -265,7 +265,7 @@ namespace PolyVox
 			mCurrentVoxel += mVolume.m_uBlockSideLength;
 			if((mYPosInBlock == mVolume.m_uBlockSideLength) || (mYPosInVolume > mYRegionLast))
 			{
-				mYPosInVolume = (std::max)(mYRegionFirst,uint16(mYBlock * mVolume.m_uBlockSideLength));
+				mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.m_uBlockSideLength));
 				mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.m_uBlockSideLengthPower);
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -312,9 +312,9 @@ namespace PolyVox
 					BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->m_pBlocks[mBlockIndexInVolume];					
 
-					mXPosInVolume = (std::max)(mXRegionFirst,uint16(mXBlock * mVolume.m_uBlockSideLength));					
-					mYPosInVolume = (std::max)(mYRegionFirst,uint16(mYBlock * mVolume.m_uBlockSideLength));					
-					mZPosInVolume = (std::max)(mZRegionFirst,uint16(mZBlock * mVolume.m_uBlockSideLength));					
+					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.m_uBlockSideLength));					
+					mYPosInVolume = (std::max)(mYRegionFirst,uint16_t(mYBlock * mVolume.m_uBlockSideLength));					
+					mZPosInVolume = (std::max)(mZRegionFirst,uint16_t(mZBlock * mVolume.m_uBlockSideLength));					
 
 					mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.m_uBlockSideLengthPower);
 					mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.m_uBlockSideLengthPower);

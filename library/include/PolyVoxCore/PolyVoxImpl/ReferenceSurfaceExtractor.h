@@ -35,11 +35,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	///A simple version of the surface extractor optimised for readability rather than speed.
-	void extractReferenceSurfaceImpl(Volume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch); //FIXME - should pass variables by reference?
+	void extractReferenceSurfaceImpl(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch); //FIXME - should pass variables by reference?
 	///Determines whether a vertex already exists for a given edge, and if so returns it's index.
-	int32 getIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, const std::vector<int32>& vertexIndicesX, const std::vector<int32>& vertexIndicesY, const std::vector<int32>& vertexIndicesZ);
+	int32_t getIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, const std::vector<int32_t>& vertexIndicesX, const std::vector<int32_t>& vertexIndicesY, const std::vector<int32_t>& vertexIndicesZ);
 	///Sets the index of an existing vertex for a given edge.
-	void setIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, int32 newIndex, std::vector<int32>& vertexIndicesX, std::vector<int32>& vertexIndicesY, std::vector<int32>& vertexIndicesZ);
+	void setIndexFor(const Vector3DFloat& pos, const Vector3DInt32& regionDimensions, int32_t newIndex, std::vector<int32_t>& vertexIndicesX, std::vector<int32_t>& vertexIndicesY, std::vector<int32_t>& vertexIndicesZ);
 }
 
 #endif

@@ -36,25 +36,25 @@ namespace PolyVox
 		//Make VolumeIterator a friend
 		friend class VolumeIterator<VoxelType>;
 	public:
-		BlockData(uint8 uSideLength);
+		BlockData(uint8_t uSideLength);
 		BlockData(const BlockData& rhs);
 		~BlockData();
 
 		BlockData& operator=(const BlockData& rhs);
 
-		uint16 getSideLength(void) const;
-		VoxelType getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const;
+		uint16_t getSideLength(void) const;
+		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
-		void setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue);
+		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void fill(VoxelType tValue);
 		bool isHomogeneous(void);
 
 	private:
-		uint16 m_uSideLength;
-		uint8 m_uSideLengthPower;	
+		uint16_t m_uSideLength;
+		uint8_t m_uSideLengthPower;	
 		VoxelType* m_tData;
 	};
 }

@@ -14,9 +14,9 @@
 #include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
-const PolyVox::uint16 g_uVolumeSideLength = 128;
-const PolyVox::uint16 g_uRegionSideLength = 16;
-const PolyVox::uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
+const PolyVox::uint16_t g_uVolumeSideLength = 128;
+const PolyVox::uint16_t g_uRegionSideLength = 16;
+const PolyVox::uint16_t g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
 class OpenGLWidget : public QGLWidget
  {
@@ -24,7 +24,7 @@ class OpenGLWidget : public QGLWidget
  public:
      OpenGLWidget(QWidget *parent);
 
-	 void setVolume(PolyVox::Volume<PolyVox::uint8>* volData);
+	 void setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData);
 
  protected:
      void initializeGL();
@@ -36,7 +36,7 @@ class OpenGLWidget : public QGLWidget
 	 bool m_bUseOpenGLVertexBufferObjects;
 
 	 //Creates a volume 128x128x128
-	PolyVox::Volume<PolyVox::uint8>* m_volData;
+	PolyVox::Volume<PolyVox::uint8_t>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 	std::map<PolyVox::Vector3DUint8, OpenGLSurfacePatch> m_mapOpenGLSurfacePatches;

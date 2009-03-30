@@ -14,7 +14,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 	
 }
 
-void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
+void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 {
 	//First we free anything from the previous volume (if there was one).
 	m_mapOpenGLSurfacePatches.clear();
@@ -26,11 +26,11 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
 	{
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
-		for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+		for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 		{
-			for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+			for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 			{
-				for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+				for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 				{
 					//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
 					IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
@@ -38,13 +38,13 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8>* volData)
 					//Compute the extents of the current region
 					//FIXME - This is a little complex? PolyVox could
 					//provide more functions for dealing with regions?
-					uint16 regionStartX = uRegionX * g_uRegionSideLength;
-					uint16 regionStartY = uRegionY * g_uRegionSideLength;
-					uint16 regionStartZ = uRegionZ * g_uRegionSideLength;
+					uint16_t regionStartX = uRegionX * g_uRegionSideLength;
+					uint16_t regionStartY = uRegionY * g_uRegionSideLength;
+					uint16_t regionStartZ = uRegionZ * g_uRegionSideLength;
 
-					uint16 regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-					uint16 regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-					uint16 regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+					uint16_t regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+					uint16_t regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+					uint16_t regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
 
 					Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
 					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
@@ -131,11 +131,11 @@ void OpenGLWidget::paintGL()
 	//Centre the volume on the origin
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
 
-	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 				if(m_bUseOpenGLVertexBufferObjects)

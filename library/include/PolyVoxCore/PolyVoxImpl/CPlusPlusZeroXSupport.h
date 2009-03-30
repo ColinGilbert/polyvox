@@ -28,12 +28,12 @@
 //temporary work around until it's properly supported by C++ anyway...
 namespace PolyVox
 {
-	typedef POLYVOX_STD_NAMESPACE::int8_t int8;
-	typedef POLYVOX_STD_NAMESPACE::int16_t int16;
-	typedef POLYVOX_STD_NAMESPACE::int32_t int32;
-	typedef POLYVOX_STD_NAMESPACE::uint8_t uint8;
-	typedef POLYVOX_STD_NAMESPACE::uint16_t uint16;
-	typedef POLYVOX_STD_NAMESPACE::uint32_t uint32;
+	typedef POLYVOX_STD_NAMESPACE::int8_t int8_t;
+	typedef POLYVOX_STD_NAMESPACE::int16_t int16_t;
+	typedef POLYVOX_STD_NAMESPACE::int32_t int32_t;
+	typedef POLYVOX_STD_NAMESPACE::uint8_t uint8_t;
+	typedef POLYVOX_STD_NAMESPACE::uint16_t uint16_t;
+	typedef POLYVOX_STD_NAMESPACE::uint32_t uint32_t;
 }
 
 #endif

@@ -18,7 +18,7 @@ using namespace std;
 
 namespace PolyVox
 {
-	void extractSurface(Volume<uint8>* volumeData, uint8 uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractSurface(Volume<uint8_t>* volumeData, uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{
 		if(uLevel == 0)
 		{
@@ -32,7 +32,7 @@ namespace PolyVox
 		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
 	}
 
-	void extractReferenceSurface(Volume<uint8>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void extractReferenceSurface(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{
 		extractReferenceSurfaceImpl(volumeData, region, singleMaterialPatch);
 

@@ -43,17 +43,17 @@ namespace PolyVox
 		bool operator<=(const VolumeIterator& rhs);
 		bool operator>=(const VolumeIterator& rhs);
 
-		uint16 getPosX(void) const;
-		uint16 getPosY(void) const;
-		uint16 getPosZ(void) const;
-		VoxelType getSubSampledVoxel(uint8 uLevel) const;
+		uint16_t getPosX(void) const;
+		uint16_t getPosY(void) const;
+		uint16_t getPosZ(void) const;
+		VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 		const Volume<VoxelType>& getVolume(void) const;
 		VoxelType getVoxel(void) const;			
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
-		void setPosition(uint16 xPos, uint16 yPos, uint16 zPos);
+		void setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos);
 		void setValidRegion(const Region& region);
-		void setValidRegion(uint16 xFirst, uint16 yFirst, uint16 zFirst, uint16 xLast, uint16 yLast, uint16 zLast);	
+		void setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast);	
 
 		bool isValidForRegion(void) const;
 		void moveForwardInRegionFast(void);		
@@ -95,38 +95,38 @@ namespace PolyVox
 		Volume<VoxelType>& mVolume;
 
 		//The current position in the volume
-		uint16 mXPosInVolume;
-		uint16 mYPosInVolume;
-		uint16 mZPosInVolume;
+		uint16_t mXPosInVolume;
+		uint16_t mYPosInVolume;
+		uint16_t mZPosInVolume;
 
 		//The position of the current block
-		uint16 mXBlock;
-		uint16 mYBlock;
-		uint16 mZBlock;
+		uint16_t mXBlock;
+		uint16_t mYBlock;
+		uint16_t mZBlock;
 
 		//The offset into the current block
-		uint16 mXPosInBlock;
-		uint16 mYPosInBlock;
-		uint16 mZPosInBlock;
+		uint16_t mXPosInBlock;
+		uint16_t mYPosInBlock;
+		uint16_t mZPosInBlock;
 
 		//Other current position information
 		VoxelType* mCurrentVoxel;
-		uint32 mBlockIndexInVolume;
-		uint32 mVoxelIndexInBlock;
+		uint32_t mBlockIndexInVolume;
+		uint32_t mVoxelIndexInBlock;
 
-		uint16 mXRegionFirst;
-		uint16 mYRegionFirst;
-		uint16 mZRegionFirst;
-		uint16 mXRegionLast;
-		uint16 mYRegionLast;
-		uint16 mZRegionLast;
+		uint16_t mXRegionFirst;
+		uint16_t mYRegionFirst;
+		uint16_t mZRegionFirst;
+		uint16_t mXRegionLast;
+		uint16_t mYRegionLast;
+		uint16_t mZRegionLast;
 
-		uint16 mXRegionFirstBlock;
-		uint16 mYRegionFirstBlock;
-		uint16 mZRegionFirstBlock;
-		uint16 mXRegionLastBlock;
-		uint16 mYRegionLastBlock;
-		uint16 mZRegionLastBlock;
+		uint16_t mXRegionFirstBlock;
+		uint16_t mYRegionFirstBlock;
+		uint16_t mZRegionFirstBlock;
+		uint16_t mXRegionLastBlock;
+		uint16_t mYRegionLastBlock;
+		uint16_t mZRegionLastBlock;
 
 		bool mIsValidForRegion;
 	};

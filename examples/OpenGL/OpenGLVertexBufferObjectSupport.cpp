@@ -13,7 +13,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 
 	//Convienient access to the vertices and indices
 	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
-	const vector<uint32>& vecIndices = isp.getIndices();
+	const vector<uint32_t>& vecIndices = isp.getIndices();
 
 	//If we have any indices...
 	if(!vecIndices.empty())
@@ -26,7 +26,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 		GLvoid* pIndices = (GLvoid*)(&(vecIndices[0]));		
 
 		//Fill the OpenGL index buffer with our data. 
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32), pIndices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), pIndices, GL_STATIC_DRAW);
 	}
 
 	result.noOfIndices = vecIndices.size();
@@ -57,7 +57,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 		*ptr = vertex.getNormal().getZ();
 		ptr++;
 
-		uint8 material = vertex.getMaterial() + 0.5;
+		uint8_t material = vertex.getMaterial() + 0.5;
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
 

@@ -44,7 +44,7 @@ namespace PolyVox
 			&& (pos.getZ() >= m_v3dLowerCorner.getZ() + boundary);
 	}
 
-	bool Region::containsPoint(const Vector3DInt32& pos, uint8 boundary) const
+	bool Region::containsPoint(const Vector3DInt32& pos, uint8_t boundary) const
 	{
 		return (pos.getX() <= m_v3dUpperCorner.getX() - boundary)
 			&& (pos.getY() <= m_v3dUpperCorner.getY() - boundary) 
@@ -64,12 +64,12 @@ namespace PolyVox
 		m_v3dUpperCorner.setZ((std::min)(m_v3dUpperCorner.getZ(), other.m_v3dUpperCorner.getZ()));
 	}
 
-	int32 Region::depth(void) const
+	int32_t Region::depth(void) const
 	{
 		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ();
 	}
 
-	int32 Region::height(void) const
+	int32_t Region::height(void) const
 	{
 		return m_v3dUpperCorner.getY() - m_v3dLowerCorner.getY();
 	}
@@ -95,7 +95,7 @@ namespace PolyVox
 		return m_v3dUpperCorner - m_v3dLowerCorner;
 	}
 
-	int32 Region::width(void) const
+	int32_t Region::width(void) const
 	{
 		return m_v3dUpperCorner.getX() - m_v3dLowerCorner.getX();
 	}

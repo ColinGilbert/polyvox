@@ -12,12 +12,12 @@ using namespace std;
 
 namespace PolyVox
 {
-	void smoothRegionGeometry(Volume<uint8>* volumeData, IndexedSurfacePatch& isp)
+	void smoothRegionGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp)
 	{
-		const uint8 uSmoothingFactor = 2;
+		const uint8_t uSmoothingFactor = 2;
 		const float fThreshold = 0.5f;
 
-		VolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8_t> volIter(*volumeData);
 
 		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -76,9 +76,9 @@ namespace PolyVox
 		} //while(iterSurfaceVertex != vecVertices.end())
 	}
 
-	void adjustDecimatedGeometry(Volume<uint8>* volumeData, IndexedSurfacePatch& isp, uint8 val)
+	void adjustDecimatedGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp, uint8_t val)
 	{
-		VolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8_t> volIter(*volumeData);
 
 		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -87,7 +87,7 @@ namespace PolyVox
 			Vector3DFloat v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 			Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			VolumeIterator<uint8> volIter(*volumeData);
+			VolumeIterator<uint8_t> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,1);
@@ -96,7 +96,7 @@ namespace PolyVox
 			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
 			{				
 				//volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
-				//const uint8 uFloor = volIter.getVoxel();
+				//const uint8_t uFloor = volIter.getVoxel();
 				if(((v3dPos.getX() - v3dFloor.getX()) < 0.001) && ((v3dPos.getY() - v3dFloor.getY()) < 0.001) && ((v3dPos.getZ() - v3dFloor.getZ()) < 0.001))
 				//int x = v3dPos.getX();
 				//if(x % 2 != 0)
@@ -104,7 +104,7 @@ namespace PolyVox
 				{	
 					//exit(0);
 					//volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
-					//const uint8 uCeil = volIter.getVoxel();
+					//const uint8_t uCeil = volIter.getVoxel();
 					//if(uFloor == uCeil) //In this case they must both be zero
 					{						
 						//if(iterSurfaceVertex->getNormal().getX() > 0)
@@ -114,9 +114,9 @@ namespace PolyVox
 							v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
 							volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
-							const uint8 uFloor = volIter.getVoxel();
+							const uint8_t uFloor = volIter.getVoxel();
 
-							uint8 uCeil;
+							uint8_t uCeil;
 							if((iterSurfaceVertex->getNormal().getX() > 0.5f) || (iterSurfaceVertex->getNormal().getX() < -0.5f))
 							{
 								volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));

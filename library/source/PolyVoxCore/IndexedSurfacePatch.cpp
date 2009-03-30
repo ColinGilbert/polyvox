@@ -34,20 +34,20 @@ namespace PolyVox
 	{
 	}
 
-	const std::vector<uint32>& IndexedSurfacePatch::getIndices(void) const
+	const std::vector<uint32_t>& IndexedSurfacePatch::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}
 
-	uint32 IndexedSurfacePatch::getNoOfIndices(void) const
+	uint32_t IndexedSurfacePatch::getNoOfIndices(void) const
 	{
 		return m_vecTriangleIndices.size();
 	}	
 
-	uint32 IndexedSurfacePatch::getNoOfNonUniformTrianges(void) const
+	uint32_t IndexedSurfacePatch::getNoOfNonUniformTrianges(void) const
 	{
-		uint32 result = 0;
-		for(uint32 i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
+		uint32_t result = 0;
+		for(uint32_t i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
 		{
 			if((m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+1]].getMaterial())
 			&& (m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+2]].getMaterial()))
@@ -61,10 +61,10 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32 IndexedSurfacePatch::getNoOfUniformTrianges(void) const
+	uint32_t IndexedSurfacePatch::getNoOfUniformTrianges(void) const
 	{
-		uint32 result = 0;
-		for(uint32 i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
+		uint32_t result = 0;
+		for(uint32_t i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
 		{
 			if((m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+1]].getMaterial())
 			&& (m_vecVertices[m_vecTriangleIndices[i]].getMaterial() == m_vecVertices[m_vecTriangleIndices[i+2]].getMaterial()))
@@ -75,7 +75,7 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32 IndexedSurfacePatch::getNoOfVertices(void) const
+	uint32_t IndexedSurfacePatch::getNoOfVertices(void) const
 	{
 		return m_vecVertices.size();
 	}
@@ -90,14 +90,14 @@ namespace PolyVox
 		return m_vecVertices;
 	}		
 
-	void IndexedSurfacePatch::addTriangle(uint32 index0, uint32 index1, uint32 index2)
+	void IndexedSurfacePatch::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
 		m_vecTriangleIndices.push_back(index2);
 	}
 
-	uint32 IndexedSurfacePatch::addVertex(const SurfaceVertex& vertex)
+	uint32_t IndexedSurfacePatch::addVertex(const SurfaceVertex& vertex)
 	{
 		m_vecVertices.push_back(vertex);
 		return m_vecVertices.size() - 1;

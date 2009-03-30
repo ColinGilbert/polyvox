@@ -31,11 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {	
-	POLYVOX_API Volume<uint8>* loadVolumeRaw(std::istream& stream);
-	POLYVOX_API void saveVolumeRaw(std::ostream& stream, Volume<uint8>& volume);
+	POLYVOX_API Volume<uint8_t>* loadVolumeRaw(std::istream& stream);
+	POLYVOX_API void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume);
 
-	POLYVOX_API Volume<uint8>* loadVolumeRle(std::istream& stream);
-	POLYVOX_API void saveVolumeRle(std::ostream& stream, Volume<uint8>& volume);
+	POLYVOX_API Volume<uint8_t>* loadVolumeRle(std::istream& stream);
+	POLYVOX_API void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume);
 }
 
 #endif

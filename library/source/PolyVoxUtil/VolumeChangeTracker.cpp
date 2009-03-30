@@ -35,12 +35,12 @@ using namespace std;
 
 namespace PolyVox
 {
-	int32 VolumeChangeTracker::m_iCurrentTime = 0;
+	int32_t VolumeChangeTracker::m_iCurrentTime = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// VolumeChangeTracker
 	//////////////////////////////////////////////////////////////////////////
-	VolumeChangeTracker::VolumeChangeTracker(Volume<uint8>* volumeDataToSet, uint16 regionSideLength)
+	VolumeChangeTracker::VolumeChangeTracker(Volume<uint8_t>* volumeDataToSet, uint16_t regionSideLength)
 		:m_bIsLocked(false)
 		,volumeData(0)
 		,m_uRegionSideLength(regionSideLength)
@@ -49,7 +49,7 @@ namespace PolyVox
 		m_uVolumeSideLengthInRegions = volumeData->getSideLength() / m_uRegionSideLength;
 		m_uRegionSideLengthPower = PolyVox::logBase2(m_uRegionSideLength);
 
-		volRegionLastModified = new BlockData<int32>(m_uRegionSideLength);
+		volRegionLastModified = new BlockData<int32_t>(m_uRegionSideLength);
 	}
 
 	VolumeChangeTracker::~VolumeChangeTracker()
@@ -58,11 +58,11 @@ namespace PolyVox
 
 	void VolumeChangeTracker::setAllRegionsModified(void)
 	{
-		for(uint16 blockZ = 0; blockZ < m_uVolumeSideLengthInRegions; ++blockZ)
+		for(uint16_t blockZ = 0; blockZ < m_uVolumeSideLengthInRegions; ++blockZ)
 		{
-			for(uint16 blockY = 0; blockY < m_uVolumeSideLengthInRegions; ++blockY)
+			for(uint16_t blockY = 0; blockY < m_uVolumeSideLengthInRegions; ++blockY)
 			{
-				for(uint16 blockX = 0; blockX < m_uVolumeSideLengthInRegions; ++blockX)
+				for(uint16_t blockX = 0; blockX < m_uVolumeSideLengthInRegions; ++blockX)
 				{
 					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_iCurrentTime);
 					++m_iCurrentTime;
@@ -71,12 +71,12 @@ namespace PolyVox
 		}
 	}
 
-	int32 VolumeChangeTracker::getCurrentTime(void) const
+	int32_t VolumeChangeTracker::getCurrentTime(void) const
 	{
 		return m_iCurrentTime;
 	}
 
-	uint16 VolumeChangeTracker::getSideLength(void)
+	uint16_t VolumeChangeTracker::getSideLength(void)
 	{
 		return volumeData->getSideLength();
 	}
@@ -86,38 +86,38 @@ namespace PolyVox
 		return volumeData->getEnclosingRegion();
 	}
 
-	int32 VolumeChangeTracker::getLastModifiedTimeForRegion(uint16 uX, uint16 uY, uint16 uZ)
+	int32_t VolumeChangeTracker::getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
 		return volRegionLastModified->getVoxelAt(uX, uY, uZ);
 	}
 
-	uint8 VolumeChangeTracker::getVoxelAt(const Vector3DUint16& pos)
+	uint8_t VolumeChangeTracker::getVoxelAt(const Vector3DUint16& pos)
 	{
 		return getVoxelAt(pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	uint8 VolumeChangeTracker::getVoxelAt(uint16 uX, uint16 uY, uint16 uZ)
+	uint8_t VolumeChangeTracker::getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
 		assert(uX < volumeData->getSideLength());
 		assert(uY < volumeData->getSideLength());
 		assert(uZ < volumeData->getSideLength());
 
-		VolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8_t> volIter(*volumeData);
 		volIter.setPosition(uX,uY,uZ);
 		return volIter.getVoxel();
 	}
 
-	Volume<uint8>* VolumeChangeTracker::getVolumeData(void) const
+	Volume<uint8_t>* VolumeChangeTracker::getVolumeData(void) const
 	{
 		return volumeData;
 	}
 
 	//NOTE - Document the fact that the time stamp is incremented at the start, not the end.
-	void VolumeChangeTracker::setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value)
+	void VolumeChangeTracker::setVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value)
 	{
 		++m_iCurrentTime;
 		//FIXME - rather than creating a iterator each time we should have one stored
-		//VolumeIterator<uint8> iterVol(*volumeData);
+		//VolumeIterator<uint8_t> iterVol(*volumeData);
 		/*iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 
@@ -135,23 +135,23 @@ namespace PolyVox
 		}
 		else //Mark surrounding regions as well
 		{
-			const uint16 regionX = x >> m_uRegionSideLengthPower;
-			const uint16 regionY = y >> m_uRegionSideLengthPower;
-			const uint16 regionZ = z >> m_uRegionSideLengthPower;
+			const uint16_t regionX = x >> m_uRegionSideLengthPower;
+			const uint16_t regionY = y >> m_uRegionSideLengthPower;
+			const uint16_t regionZ = z >> m_uRegionSideLengthPower;
 
-			const uint16 minRegionX = (std::max)(uint16(0),uint16(regionX-1));
-			const uint16 minRegionY = (std::max)(uint16(0),uint16(regionY-1));
-			const uint16 minRegionZ = (std::max)(uint16(0),uint16(regionZ-1));
+			const uint16_t minRegionX = (std::max)(uint16_t(0),uint16_t(regionX-1));
+			const uint16_t minRegionY = (std::max)(uint16_t(0),uint16_t(regionY-1));
+			const uint16_t minRegionZ = (std::max)(uint16_t(0),uint16_t(regionZ-1));
 
-			const uint16 maxRegionX = (std::min)(uint16(m_uVolumeSideLengthInRegions-1),uint16(regionX+1));
-			const uint16 maxRegionY = (std::min)(uint16(m_uVolumeSideLengthInRegions-1),uint16(regionY+1));
-			const uint16 maxRegionZ = (std::min)(uint16(m_uVolumeSideLengthInRegions-1),uint16(regionZ+1));
+			const uint16_t maxRegionX = (std::min)(uint16_t(m_uVolumeSideLengthInRegions-1),uint16_t(regionX+1));
+			const uint16_t maxRegionY = (std::min)(uint16_t(m_uVolumeSideLengthInRegions-1),uint16_t(regionY+1));
+			const uint16_t maxRegionZ = (std::min)(uint16_t(m_uVolumeSideLengthInRegions-1),uint16_t(regionZ+1));
 
-			for(uint16 zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
+			for(uint16_t zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
 			{
-				for(uint16 yCt = minRegionY; yCt <= maxRegionY; yCt++)
+				for(uint16_t yCt = minRegionY; yCt <= maxRegionY; yCt++)
 				{
-					for(uint16 xCt = minRegionX; xCt <= maxRegionX; xCt++)
+					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
 						volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
 					}
@@ -161,12 +161,12 @@ namespace PolyVox
 		//++m_iCurrentTime;
 	}
 
-	void VolumeChangeTracker::setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value)
+	void VolumeChangeTracker::setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value)
 	{
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		/*VolumeIterator<uint8> iterVol(*volumeData);
+		/*VolumeIterator<uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 		volumeData->setVoxelAt(x,y,z,value);
@@ -191,19 +191,19 @@ namespace PolyVox
 			throw std::logic_error("No region is locked. You must lock a region before you can unlock it.");
 		}
 
-		const uint16 firstRegionX = m_regLastLocked.getLowerCorner().getX() >> m_uRegionSideLengthPower;
-		const uint16 firstRegionY = m_regLastLocked.getLowerCorner().getY() >> m_uRegionSideLengthPower;
-		const uint16 firstRegionZ = m_regLastLocked.getLowerCorner().getZ() >> m_uRegionSideLengthPower;
+		const uint16_t firstRegionX = m_regLastLocked.getLowerCorner().getX() >> m_uRegionSideLengthPower;
+		const uint16_t firstRegionY = m_regLastLocked.getLowerCorner().getY() >> m_uRegionSideLengthPower;
+		const uint16_t firstRegionZ = m_regLastLocked.getLowerCorner().getZ() >> m_uRegionSideLengthPower;
 
-		const uint16 lastRegionX = m_regLastLocked.getUpperCorner().getX() >> m_uRegionSideLengthPower;
-		const uint16 lastRegionY = m_regLastLocked.getUpperCorner().getY() >> m_uRegionSideLengthPower;
-		const uint16 lastRegionZ = m_regLastLocked.getUpperCorner().getZ() >> m_uRegionSideLengthPower;
+		const uint16_t lastRegionX = m_regLastLocked.getUpperCorner().getX() >> m_uRegionSideLengthPower;
+		const uint16_t lastRegionY = m_regLastLocked.getUpperCorner().getY() >> m_uRegionSideLengthPower;
+		const uint16_t lastRegionZ = m_regLastLocked.getUpperCorner().getZ() >> m_uRegionSideLengthPower;
 
-		for(uint16 zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
+		for(uint16_t zCt = firstRegionZ; zCt <= lastRegionZ; zCt++)
 		{
-			for(uint16 yCt = firstRegionY; yCt <= lastRegionY; yCt++)
+			for(uint16_t yCt = firstRegionY; yCt <= lastRegionY; yCt++)
 			{
-				for(uint16 xCt = firstRegionX; xCt <= lastRegionX; xCt++)
+				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
 					volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
 				}

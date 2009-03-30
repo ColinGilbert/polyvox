@@ -3,7 +3,7 @@
 
 #include "PolyVoxCore/Volume.h"
 
-void createSphereInVolume(PolyVox::Volume<PolyVox::uint8>& volData, float fRadius, PolyVox::uint8 uValue);
-void createCubeInVolume(PolyVox::Volume<PolyVox::uint8>& volData, PolyVox::Vector3DUint16 lowerCorner, PolyVox::Vector3DUint16 upperCorner, PolyVox::uint8 uValue);
+void createSphereInVolume(PolyVox::Volume<PolyVox::uint8_t>& volData, float fRadius, PolyVox::uint8_t uValue);
+void createCubeInVolume(PolyVox::Volume<PolyVox::uint8_t>& volData, PolyVox::Vector3DUint16 lowerCorner, PolyVox::Vector3DUint16 upperCorner, PolyVox::uint8_t uValue);
 
 #endif //__OpenGLExample_Shapes_H__

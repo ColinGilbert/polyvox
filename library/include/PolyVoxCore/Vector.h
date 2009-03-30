@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
     ///Represents a vector in space.    
-	template <uint32 Size, typename Type>
+	template <uint32_t Size, typename Type>
 	class Vector
     {
     public:
@@ -66,7 +66,7 @@ namespace PolyVox
         Vector<Size,Type>& operator/=(const Type& rhs) throw();
 
 		///Element Access.
-		Type getElement(uint32 index) const throw();
+		Type getElement(uint32_t index) const throw();
         ///Get the x component of the vector.
         Type getX(void) const throw();        
         ///Get the y component of the vector.
@@ -77,7 +77,7 @@ namespace PolyVox
 		Type getW(void) const throw();		
 
 		///Element Access.
-		void setElement(uint32 index, Type tValue) throw();
+		void setElement(uint32_t index, Type tValue) throw();
 		///Element Access.
         void setElements(Type x, Type y) throw();
 		///Element Access.
@@ -113,19 +113,19 @@ namespace PolyVox
 
     //Non-member overloaded operators. 
 	///Addition operator.
-	template <uint32 Size,typename Type>
+	template <uint32_t Size,typename Type>
 	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
 	///Subtraction operator.
-	template <uint32 Size,typename Type>
+	template <uint32_t Size,typename Type>
 	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
 	///Multiplication operator.
-	template <uint32 Size,typename Type>
+	template <uint32_t Size,typename Type>
 	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw();
 	///Division operator.
-	template <uint32 Size,typename Type>
+	template <uint32_t Size,typename Type>
 	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs) throw();
     ///Stream insertion operator.
-    template <uint32 Size, typename Type>
+    template <uint32_t Size, typename Type>
         std::ostream& operator<<(std::ostream& os, const Vector<Size,Type>& vector) throw();
 
 	//Some handy typedefs
@@ -134,17 +134,17 @@ namespace PolyVox
 	///A 3D Vector of doubles.
     typedef Vector<3,double> Vector3DDouble;
 	///A 3D Vector of signed 8-bit values.
-	typedef Vector<3,int8> Vector3DInt8;
+	typedef Vector<3,int8_t> Vector3DInt8;
 	///A 3D Vector of unsigned 8-bit values.
-	typedef Vector<3,uint8> Vector3DUint8;
+	typedef Vector<3,uint8_t> Vector3DUint8;
 	///A 3D Vector of signed 16-bit values.
-	typedef Vector<3,int16> Vector3DInt16;
+	typedef Vector<3,int16_t> Vector3DInt16;
 	///A 3D Vector of unsigned 16-bit values.
-	typedef Vector<3,uint16> Vector3DUint16;
+	typedef Vector<3,uint16_t> Vector3DUint16;
 	///A 3D Vector of signed 32-bit values.
-	typedef Vector<3,int32> Vector3DInt32;
+	typedef Vector<3,int32_t> Vector3DInt32;
 	///A 3D Vector of unsigned 32-bit values.
-	typedef Vector<3,uint32> Vector3DUint32;
+	typedef Vector<3,uint32_t> Vector3DUint32;
 
 
 

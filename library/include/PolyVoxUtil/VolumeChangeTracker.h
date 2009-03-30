@@ -36,43 +36,43 @@ namespace PolyVox
 	{
 	public:
 		//Constructors, etc
-		VolumeChangeTracker(Volume<uint8>* volumeDataToSet, uint16 regionSideLength);
+		VolumeChangeTracker(Volume<uint8_t>* volumeDataToSet, uint16_t regionSideLength);
 		~VolumeChangeTracker();
 
 		//Getters
-		int32 getCurrentTime(void) const;
+		int32_t getCurrentTime(void) const;
 		Region getEnclosingRegion(void) const;		
-		int32 getLastModifiedTimeForRegion(uint16 uX, uint16 uY, uint16 uZ);
-		uint16 getSideLength(void);
-		Volume<uint8>* getVolumeData(void) const;
-		uint8 getVoxelAt(const Vector3DUint16& pos);
-		uint8 getVoxelAt(uint16 uX, uint16 uY, uint16 uZ);
+		int32_t getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ);
+		uint16_t getSideLength(void);
+		Volume<uint8_t>* getVolumeData(void) const;
+		uint8_t getVoxelAt(const Vector3DUint16& pos);
+		uint8_t getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ);
 
 		//Setters
 		void setAllRegionsModified(void);
-		void setLockedVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
-		void setVoxelAt(uint16 x, uint16 y, uint16 z, uint8 value);
+		void setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value);
+		void setVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value);
 
 		//Others	
 		void lockRegion(const Region& regToLock);
 		void unlockRegion(void);
-		//void markRegionChanged(uint16 firstX, uint16 firstY, uint16 firstZ, uint16 lastX, uint16 lastY, uint16 lastZ);
+		//void markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ);
 
 	private:
 		bool m_bIsLocked;
 		Region m_regLastLocked;
-		Volume<uint8>* volumeData;
+		Volume<uint8_t>* volumeData;
 
-		uint16 m_uRegionSideLength;
-		uint8 m_uRegionSideLengthPower;
-		uint16 m_uVolumeSideLengthInRegions;
+		uint16_t m_uRegionSideLength;
+		uint8_t m_uRegionSideLengthPower;
+		uint16_t m_uVolumeSideLengthInRegions;
 
 
 		//It's not what the block class was designed for, but it 
 		//provides a handy way of storing a 3D grid of values.
-		BlockData<int32>* volRegionLastModified;
+		BlockData<int32_t>* volRegionLastModified;
 
-		static int32 m_iCurrentTime;
+		static int32_t m_iCurrentTime;
 	};
 }
 

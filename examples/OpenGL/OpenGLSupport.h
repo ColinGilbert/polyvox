@@ -12,6 +12,6 @@ struct OpenGLColour
 	GLfloat blue;
 };
 
-OpenGLColour convertMaterialIDToColour(PolyVox::uint8 materialID);
+OpenGLColour convertMaterialIDToColour(PolyVox::uint8_t materialID);
 
 #endif //__OpenGLExample_OpenGLSupport_H__

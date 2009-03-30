@@ -22,12 +22,12 @@ using namespace std;
 
 int main(int argc, char *argv[])
  {
-	Volume<uint8> volData(g_uVolumeSideLength);
+	Volume<uint8_t> volData(g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
-	uint16 minPos = 0;
-	uint16 midPos = volData.getSideLength() / 2;
-	uint16 maxPos = volData.getSideLength() - 1;
+	uint16_t minPos = 0;
+	uint16_t midPos = volData.getSideLength() / 2;
+	uint16_t maxPos = volData.getSideLength() - 1;
 	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
 	createSphereInVolume(volData, 50.0f, 5);
@@ -72,9 +72,9 @@ using namespace std;
 //Global variables are easier for demonstration purposes, especially
 //as I'm not sure how/if I can pass variables to the GLUT functions.
 //Global variables are denoted by the 'g_' prefix
-const uint16 g_uVolumeSideLength = 256;
-const uint16 g_uRegionSideLength = 16;
-const uint16 g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
+const uint16_t g_uVolumeSideLength = 256;
+const uint16_t g_uRegionSideLength = 16;
+const uint16_t g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
 int g_xRotation = 0.0f;
 int g_yRotation = 0.0f;
@@ -86,7 +86,7 @@ int g_frameCounter = 0;
 bool g_bUseOpenGLVertexBufferObjects;
 
 //Creates a volume 128x128x128
-Volume<uint8> g_volData(g_uVolumeSideLength);
+Volume<uint8_t> g_volData(g_uVolumeSideLength);
 
 //Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 OpenGLSurfacePatch g_openGLSurfacePatches[g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions][g_uVolumeSideLengthInRegions];
@@ -133,11 +133,11 @@ void display ( void )   // Create The Display Function
 	//Centre the volume on the origin
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
 
-	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				if(g_bUseOpenGLVertexBufferObjects)
 				{
@@ -254,9 +254,9 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 	}
 
 	//Make our volume contain a sphere in the center.
-	uint16 minPos = 0;
-	uint16 midPos = g_volData.getSideLength() / 2;
-	uint16 maxPos = g_volData.getSideLength() - 1;
+	uint16_t minPos = 0;
+	uint16_t midPos = g_volData.getSideLength() / 2;
+	uint16_t maxPos = g_volData.getSideLength() - 1;
 	createCubeInVolume(g_volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
 	createSphereInVolume(g_volData, 50.0f, 5);
@@ -272,11 +272,11 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 
 	//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 	//This three-level for loop iterates over each region.
-	for(uint16 uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
+	for(uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
 	{
-		for(uint16 uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
+		for(uint16_t uRegionY = 0; uRegionY < g_uVolumeSideLengthInRegions; ++uRegionY)
 		{
-			for(uint16 uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
+			for(uint16_t uRegionX = 0; uRegionX < g_uVolumeSideLengthInRegions; ++uRegionX)
 			{
 				//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
 				IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
@@ -284,13 +284,13 @@ void main ( int argc, char** argv )   // Create Main Function For Bringing It Al
 				//Compute the extents of the current region
 				//FIXME - This is a little complex? PolyVox could
 				//provide more functions for dealing with regions?
-				uint16 regionStartX = uRegionX * g_uRegionSideLength;
-				uint16 regionStartY = uRegionY * g_uRegionSideLength;
-				uint16 regionStartZ = uRegionZ * g_uRegionSideLength;
+				uint16_t regionStartX = uRegionX * g_uRegionSideLength;
+				uint16_t regionStartY = uRegionY * g_uRegionSideLength;
+				uint16_t regionStartZ = uRegionZ * g_uRegionSideLength;
 
-				uint16 regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-				uint16 regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
-				uint16 regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+				uint16_t regionEndX = regionStartX + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+				uint16_t regionEndY = regionStartY + g_uRegionSideLength + 1; //Why do we need the '+1' here?
+				uint16_t regionEndZ = regionStartZ + g_uRegionSideLength + 1; //Why do we need the '+1' here?
 
 				Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
 				Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);

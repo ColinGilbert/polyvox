@@ -2,7 +2,7 @@
 
 using namespace PolyVox;
 
-OpenGLColour convertMaterialIDToColour(PolyVox::uint8 materialID)
+OpenGLColour convertMaterialIDToColour(PolyVox::uint8_t materialID)
 {
 	OpenGLColour colour;
 

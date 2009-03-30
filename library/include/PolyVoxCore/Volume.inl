@@ -34,7 +34,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(uint16 uSideLength, uint16 uBlockSideLength)
+	Volume<VoxelType>::Volume(uint16_t uSideLength, uint16_t uBlockSideLength)
 		:m_pBlocks(0)
 	{
 		//Debug mode validation
@@ -75,7 +75,7 @@ namespace PolyVox
 		m_bIsShared = new bool[m_uNoOfBlocksInVolume];
 		m_bIsPotentiallySharable = new bool[m_uNoOfBlocksInVolume];
 		m_pHomogenousValue = new VoxelType[m_uNoOfBlocksInVolume];
-		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i] = getHomogenousBlock(0);
 			m_bIsShared[i] = true;
@@ -84,7 +84,7 @@ namespace PolyVox
 		}*/
 
 		m_pBlocks = new Block<VoxelType>[m_uNoOfBlocksInVolume];
-		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].m_pBlockData = getHomogenousBlockData(0);
 			m_pBlocks[i].m_bIsShared = true;
@@ -102,7 +102,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
-		/*for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		/*for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			if(m_pBlocks[i].m_bIsShared == false)
 			{
@@ -133,25 +133,25 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint16 Volume<VoxelType>::getSideLength(void) const
+	uint16_t Volume<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
 		assert(uXPos < getSideLength());
 		assert(uYPos < getSideLength());
 		assert(uZPos < getSideLength());
 
-		const uint16 blockX = uXPos >> m_uBlockSideLengthPower;
-		const uint16 blockY = uYPos >> m_uBlockSideLengthPower;
-		const uint16 blockZ = uZPos >> m_uBlockSideLengthPower;
+		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
-		const uint16 xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16 yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16 zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
 		const POLYVOX_SHARED_PTR< BlockData<VoxelType> > block = m_pBlocks
 			[
@@ -176,17 +176,17 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void Volume<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
+	void Volume<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
-		const uint16 blockX = uXPos >> m_uBlockSideLengthPower;
-		const uint16 blockY = uYPos >> m_uBlockSideLengthPower;
-		const uint16 blockZ = uZPos >> m_uBlockSideLengthPower;
+		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
-		const uint16 xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16 yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16 zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		const uint32 uBlockIndex = 
+		const uint32_t uBlockIndex = 
 				blockX + 
 				blockY * m_uSideLengthInBlocks + 
 				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks;
@@ -230,14 +230,14 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::idle(uint32 uAmount)
+	void Volume<VoxelType>::idle(uint32_t uAmount)
 	{
 		//This function performs two roles. Firstly, it examines all of the blocks which are marked as
 		//'potentially sharable' to determine whether they really are sharable or not. For those which
 		//are sharable, it adjusts the pointer and deletes tho old data. Secondly, it determines which
 		//homogeneous regions are not actually being used (by thier reference count) and frees them.
 
-		for(uint32 i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			Block<VoxelType> block = m_pBlocks[i];
 			if(block.m_bIsPotentiallySharable)

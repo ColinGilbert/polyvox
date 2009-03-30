@@ -33,7 +33,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	BlockData<VoxelType>::BlockData(uint8 uSideLength)
+	BlockData<VoxelType>::BlockData(uint8_t uSideLength)
 		:m_tData(0)
 	{
 		//Debug mode validation
@@ -87,13 +87,13 @@ namespace PolyVox
 
 	#pragma region Getters
 	template <typename VoxelType>
-	uint16 BlockData<VoxelType>::getSideLength(void) const
+	uint16_t BlockData<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
 	}
 
 	template <typename VoxelType>
-	VoxelType BlockData<VoxelType>::getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const
+	VoxelType BlockData<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
 		assert(uXPos < m_uSideLength);
 		assert(uYPos < m_uSideLength);
@@ -116,7 +116,7 @@ namespace PolyVox
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void BlockData<VoxelType>::setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue)
+	void BlockData<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
 		assert(uXPos < m_uSideLength);
 		assert(uYPos < m_uSideLength);
@@ -150,8 +150,8 @@ namespace PolyVox
 		VoxelType currentVoxel = m_tData;
 		VoxelType firstVal = *currentVoxel;
 
-		uint32 uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		for(uint32 ct = 1; ct < uNoOfVoxels; ++ct)
+		uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
 		{
 			++currentVoxel;
 			if(*currentVoxel != firstVal)

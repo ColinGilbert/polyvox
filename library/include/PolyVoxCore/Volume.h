@@ -49,22 +49,22 @@ namespace PolyVox
 		friend class VolumeIterator<VoxelType>;
 
 	public:		
-		Volume(uint16 uSideLength, uint16 uBlockSideLength = 64);
+		Volume(uint16_t uSideLength, uint16_t uBlockSideLength = 64);
 		Volume(const Volume& rhs);
 		~Volume();	
 
 		Volume& operator=(const Volume& rhs);
 
 		Region getEnclosingRegion(void) const;
-		uint16 getSideLength(void) const;
-		VoxelType getVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos) const;
+		uint16_t getSideLength(void) const;
+		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
-		void setVoxelAt(uint16 uXPos, uint16 uYPos, uint16 uZPos, VoxelType tValue);
+		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		VolumeIterator<VoxelType> firstVoxel(void);
-		void idle(uint32 uAmount);
+		void idle(uint32_t uAmount);
 		bool isRegionHomogenous(const Region& region);
 		VolumeIterator<VoxelType> lastVoxel(void);
 
@@ -74,20 +74,20 @@ namespace PolyVox
 		Block<VoxelType>* m_pBlocks;
 		mutable std::map<VoxelType, POLYVOX_WEAK_PTR< BlockData<VoxelType> > > m_pHomogenousBlockData;
 
-		uint32 m_uNoOfBlocksInVolume;
-		uint16 m_uSideLengthInBlocks;
+		uint32_t m_uNoOfBlocksInVolume;
+		uint16_t m_uSideLengthInBlocks;
 
-		uint8 m_uSideLengthPower;
-		uint16 m_uSideLength;
+		uint8_t m_uSideLengthPower;
+		uint16_t m_uSideLength;
 
-		uint8 m_uBlockSideLengthPower;
-		uint16 m_uBlockSideLength;
+		uint8_t m_uBlockSideLengthPower;
+		uint16_t m_uBlockSideLength;
 	};
 
 	//Some handy typedefs
 	typedef Volume<float> FloatVolume;
-	typedef Volume<uint8> UInt8Volume;
-	typedef Volume<uint16> UInt16Volume;	
+	typedef Volume<uint8_t> UInt8Volume;
+	typedef Volume<uint16_t> UInt16Volume;	
 }
 
 #include "Volume.inl"

@@ -2,7 +2,7 @@
 
 using namespace PolyVox;
 
-void createSphereInVolume(Volume<uint8>& volData, float fRadius, uint8 uValue)
+void createSphereInVolume(Volume<uint8_t>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getSideLength() / 2, volData.getSideLength() / 2, volData.getSideLength() / 2);
@@ -30,7 +30,7 @@ void createSphereInVolume(Volume<uint8>& volData, float fRadius, uint8 uValue)
 	}
 }
 
-void createCubeInVolume(Volume<uint8>& volData, Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8 uValue)
+void createCubeInVolume(Volume<uint8_t>& volData, Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8_t uValue)
 {
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)

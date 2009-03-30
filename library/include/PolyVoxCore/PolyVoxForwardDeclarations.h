@@ -32,8 +32,8 @@ namespace PolyVox
 	//---------- Volume ----------
 	template <typename VoxelType> class Volume;
 	typedef Volume<float> FloatVolume;
-	typedef Volume<uint8> UInt8Volume;
-	typedef Volume<uint16> UInt16Volume;
+	typedef Volume<uint8_t> UInt8Volume;
+	typedef Volume<uint16_t> UInt16Volume;
 	//---------------------------------
 
 	class IndexedSurfacePatch;
@@ -42,15 +42,15 @@ namespace PolyVox
 	class SurfaceVertex;
 
 	//---------- Vector ----------
-	template <uint32 Size, typename Type> class Vector;
+	template <uint32_t Size, typename Type> class Vector;
 	typedef Vector<3,float> Vector3DFloat;
     typedef Vector<3,double> Vector3DDouble;
-	typedef Vector<3,int8> Vector3DInt8;
-	typedef Vector<3,uint8> Vector3DUint8;
-	typedef Vector<3,int16> Vector3DInt16;
-	typedef Vector<3,uint16> Vector3DUint16;
-	typedef Vector<3,int32> Vector3DInt32;
-	typedef Vector<3,uint32> Vector3DUint32;
+	typedef Vector<3,int8_t> Vector3DInt8;
+	typedef Vector<3,uint8_t> Vector3DUint8;
+	typedef Vector<3,int16_t> Vector3DInt16;
+	typedef Vector<3,uint16_t> Vector3DUint16;
+	typedef Vector<3,int32_t> Vector3DInt32;
+	typedef Vector<3,uint32_t> Vector3DUint32;
 	//----------------------------
 
 	template <typename VoxelType> class VolumeIterator;

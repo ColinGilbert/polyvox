@@ -10,31 +10,31 @@ namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8>* loadVolumeRaw(istream& stream)
+	Volume<uint8_t>* loadVolumeRaw(istream& stream)
 	{
 		//Read volume dimensions
-		uint8 volumeWidthPower = 0;
-		uint8 volumeHeightPower = 0;
-		uint8 volumeDepthPower = 0;
+		uint8_t volumeWidthPower = 0;
+		uint8_t volumeHeightPower = 0;
+		uint8_t volumeDepthPower = 0;
 		stream.read(reinterpret_cast<char*>(&volumeWidthPower), sizeof(volumeWidthPower));
 		stream.read(reinterpret_cast<char*>(&volumeHeightPower), sizeof(volumeHeightPower));
 		stream.read(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
-		uint16 volumeWidth = 0x0001 << volumeWidthPower;
-		uint16 volumeHeight = 0x0001 << volumeHeightPower;
-		uint16 volumeDepth = 0x0001 << volumeDepthPower;
+		uint16_t volumeWidth = 0x0001 << volumeWidthPower;
+		uint16_t volumeHeight = 0x0001 << volumeHeightPower;
+		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		Volume<uint8>* volume = new Volume<uint8>(volumeWidth);
+		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth);
 
 		//Read data
-		for(uint16 z = 0; z < volumeDepth; ++z)
+		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
-			for(uint16 y = 0; y < volumeHeight; ++y)
+			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
-				for(uint16 x = 0; x < volumeWidth; ++x)
+				for(uint16_t x = 0; x < volumeWidth; ++x)
 				{
-					uint8 value = 0;
+					uint8_t value = 0;
 					stream.read(reinterpret_cast<char*>(&value), sizeof(value));
 			
 					volume->setVoxelAt(x,y,z,value);
@@ -45,31 +45,31 @@ namespace PolyVox
 		return volume;
 	}
 
-	void saveVolumeRaw(std::ostream& stream, Volume<uint8>& volume)
+	void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume)
 	{
 		//Write volume dimensions
-		uint16 volumeWidth = volume.getSideLength();
-		uint16 volumeHeight = volume.getSideLength();
-		uint16 volumeDepth  = volume.getSideLength();
+		uint16_t volumeWidth = volume.getSideLength();
+		uint16_t volumeHeight = volume.getSideLength();
+		uint16_t volumeDepth  = volume.getSideLength();
 
-		uint8 volumeWidthPower = logBase2(volumeWidth);
-		uint8 volumeHeightPower = logBase2(volumeHeight);
-		uint8 volumeDepthPower = logBase2(volumeDepth);
+		uint8_t volumeWidthPower = logBase2(volumeWidth);
+		uint8_t volumeHeightPower = logBase2(volumeHeight);
+		uint8_t volumeDepthPower = logBase2(volumeDepth);
 
 		stream.write(reinterpret_cast<char*>(&volumeWidthPower), sizeof(volumeWidthPower));
 		stream.write(reinterpret_cast<char*>(&volumeHeightPower), sizeof(volumeHeightPower));
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		VolumeIterator<uint8> volIter(volume);
-		for(uint16 z = 0; z < volumeDepth; ++z)
+		VolumeIterator<uint8_t> volIter(volume);
+		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
-			for(uint16 y = 0; y < volumeHeight; ++y)
+			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
-				for(uint16 x = 0; x < volumeWidth; ++x)
+				for(uint16_t x = 0; x < volumeWidth; ++x)
 				{
 					volIter.setPosition(x,y,z);
-					uint8 value = volIter.getVoxel();
+					uint8_t value = volIter.getVoxel();
 					stream.write(reinterpret_cast<char*>(&value), sizeof(value));
 				}
 			}
@@ -78,34 +78,34 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8>* loadVolumeRle(istream& stream)
+	Volume<uint8_t>* loadVolumeRle(istream& stream)
 	{
 		//Read volume dimensions
-		uint8 volumeWidthPower = 0;
-		uint8 volumeHeightPower = 0;
-		uint8 volumeDepthPower = 0;
+		uint8_t volumeWidthPower = 0;
+		uint8_t volumeHeightPower = 0;
+		uint8_t volumeDepthPower = 0;
 		stream.read(reinterpret_cast<char*>(&volumeWidthPower), sizeof(volumeWidthPower));
 		stream.read(reinterpret_cast<char*>(&volumeHeightPower), sizeof(volumeHeightPower));
 		stream.read(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
-		uint16 volumeWidth = 0x0001 << volumeWidthPower;
-		uint16 volumeHeight = 0x0001 << volumeHeightPower;
-		uint16 volumeDepth = 0x0001 << volumeDepthPower;
+		uint16_t volumeWidth = 0x0001 << volumeWidthPower;
+		uint16_t volumeHeight = 0x0001 << volumeHeightPower;
+		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		Volume<uint8>* volume = new Volume<uint8>(volumeWidth);
+		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth);
 
 		//Read data
 		bool firstTime = true;
-		uint32 runLength = 0;
-		uint8 value = 0;
+		uint32_t runLength = 0;
+		uint8_t value = 0;
 		stream.read(reinterpret_cast<char*>(&value), sizeof(value));
 		stream.read(reinterpret_cast<char*>(&runLength), sizeof(runLength));
-		for(uint16 z = 0; z < volumeDepth; ++z)
+		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
-			for(uint16 y = 0; y < volumeHeight; ++y)
+			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
-				for(uint16 x = 0; x < volumeWidth; ++x)
+				for(uint16_t x = 0; x < volumeWidth; ++x)
 				{	
 					if(runLength != 0)
 					{
@@ -127,34 +127,34 @@ namespace PolyVox
 		return volume;
 	}
 
-	void saveVolumeRle(std::ostream& stream, Volume<uint8>& volume)
+	void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume)
 	{
 		//Write volume dimensions
-		uint16 volumeWidth = volume.getSideLength();
-		uint16 volumeHeight = volume.getSideLength();
-		uint16 volumeDepth  = volume.getSideLength();
+		uint16_t volumeWidth = volume.getSideLength();
+		uint16_t volumeHeight = volume.getSideLength();
+		uint16_t volumeDepth  = volume.getSideLength();
 
-		uint8 volumeWidthPower = logBase2(volumeWidth);
-		uint8 volumeHeightPower = logBase2(volumeHeight);
-		uint8 volumeDepthPower = logBase2(volumeDepth);
+		uint8_t volumeWidthPower = logBase2(volumeWidth);
+		uint8_t volumeHeightPower = logBase2(volumeHeight);
+		uint8_t volumeDepthPower = logBase2(volumeDepth);
 
 		stream.write(reinterpret_cast<char*>(&volumeWidthPower), sizeof(volumeWidthPower));
 		stream.write(reinterpret_cast<char*>(&volumeHeightPower), sizeof(volumeHeightPower));
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		VolumeIterator<uint8> volIter(volume);
-		uint8 current = 0;
-		uint32 runLength = 0;
+		VolumeIterator<uint8_t> volIter(volume);
+		uint8_t current = 0;
+		uint32_t runLength = 0;
 		bool firstTime = true;
-		for(uint16 z = 0; z < volumeDepth; ++z)
+		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
-			for(uint16 y = 0; y < volumeHeight; ++y)
+			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
-				for(uint16 x = 0; x < volumeWidth; ++x)
+				for(uint16_t x = 0; x < volumeWidth; ++x)
 				{		
 					volIter.setPosition(x,y,z);
-					uint8 value = volIter.getVoxel();
+					uint8_t value = volIter.getVoxel();
 					if(firstTime)
 					{
 						current = value;

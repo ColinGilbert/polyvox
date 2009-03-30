@@ -6,7 +6,7 @@ using namespace std;
 
 namespace PolyVox
 {
-	POLYVOX_API void computeNormalsForVertices(Volume<uint8>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
+	POLYVOX_API void computeNormalsForVertices(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
 	{
 		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -15,7 +15,7 @@ namespace PolyVox
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			VolumeIterator<uint8> volIter(*volumeData);
+			VolumeIterator<uint8_t> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
@@ -37,11 +37,11 @@ namespace PolyVox
 		}
 	}
 
-	Vector3DFloat computeNormal(Volume<uint8>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
+	Vector3DFloat computeNormal(Volume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
 	{
 		Vector3DFloat v3dGradient; //To store the result
 
-		VolumeIterator<uint8> volIter(*volumeData);
+		VolumeIterator<uint8_t> volIter(*volumeData);
 
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
@@ -103,20 +103,20 @@ namespace PolyVox
 			if(normalGenerationMethod == SIMPLE)
 			{
 				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
-				const uint8 uFloor = volIter.getVoxel() > 0 ? 1 : 0;
+				const uint8_t uFloor = volIter.getVoxel() > 0 ? 1 : 0;
 				if((v3dPos.getX() - v3dFloor.getX()) > 0.25) //The result should be 0.0 or 0.5
 				{					
-					uint8 uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
+					uint8_t uCeil = volIter.peekVoxel1px0py0pz() > 0 ? 1 : 0;
 					v3dGradient = Vector3DFloat(static_cast<float>(uFloor - uCeil),0.0,0.0);
 				}
 				else if((v3dPos.getY() - v3dFloor.getY()) > 0.25) //The result should be 0.0 or 0.5
 				{
-					uint8 uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
+					uint8_t uCeil = volIter.peekVoxel0px1py0pz() > 0 ? 1 : 0;
 					v3dGradient = Vector3DFloat(0.0,static_cast<float>(uFloor - uCeil),0.0);
 				}
 				else if((v3dPos.getZ() - v3dFloor.getZ()) > 0.25) //The result should be 0.0 or 0.5
 				{
-					uint8 uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
+					uint8_t uCeil = volIter.peekVoxel0px0py1pz() > 0 ? 1 : 0;
 					v3dGradient = Vector3DFloat(0.0, 0.0,static_cast<float>(uFloor - uCeil));					
 				}
 			}

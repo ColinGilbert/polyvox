@@ -39,25 +39,25 @@ namespace PolyVox
 	   IndexedSurfacePatch();
 	   ~IndexedSurfacePatch();	   
 
-	   const std::vector<uint32>& getIndices(void) const;
-	   uint32 getNoOfIndices(void) const;
-	   uint32 getNoOfNonUniformTrianges(void) const;
-	   uint32 getNoOfUniformTrianges(void) const;
-	   uint32 getNoOfVertices(void) const;	   
+	   const std::vector<uint32_t>& getIndices(void) const;
+	   uint32_t getNoOfIndices(void) const;
+	   uint32_t getNoOfNonUniformTrianges(void) const;
+	   uint32_t getNoOfUniformTrianges(void) const;
+	   uint32_t getNoOfVertices(void) const;	   
 	   std::vector<SurfaceVertex>& getRawVertexData(void); //FIXME - this shoudl be removed
 	   const std::vector<SurfaceVertex>& getVertices(void) const;
 
-	   void addTriangle(uint32 index0, uint32 index1, uint32 index2);
-	   uint32 addVertex(const SurfaceVertex& vertex);
+	   void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
+	   uint32_t addVertex(const SurfaceVertex& vertex);
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
 	   Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
 
-	   int32 m_iTimeStamp;
+	   int32_t m_iTimeStamp;
 	
 	private:		
-		std::vector<uint32> m_vecTriangleIndices;
+		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
 	};	
 
