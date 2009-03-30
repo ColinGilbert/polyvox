@@ -22,7 +22,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
  {
-	Volume<uint8_t> volData(g_uVolumeSideLength);
+	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
 	PolyVox::uint16_t minPos = 0;
