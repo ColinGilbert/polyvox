@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxCore/TypeDef.h"
 
-#include "PolyVoxCore/PolyVoxCStdInt.h"
+#include "CPlusPlusZeroXSupport.h"
 #pragma endregion
 
 #include <vector>

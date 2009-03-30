@@ -2,8 +2,6 @@
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/SurfaceVertex.h"
 
-#include "PolyVoxCore/PolyVoxCStdInt.h"
-
 using namespace std;
 
 namespace PolyVox

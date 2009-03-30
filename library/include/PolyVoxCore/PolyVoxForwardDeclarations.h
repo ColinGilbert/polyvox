@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_ForwardDeclarations_H__
 
 #include "Enums.h"
-#include "PolyVoxCStdInt.h"
+#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 
 namespace PolyVox
 {

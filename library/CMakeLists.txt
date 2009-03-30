@@ -26,7 +26,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/IndexedSurfacePatch.h
 	include/PolyVoxCore/MarchingCubesTables.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
-	include/PolyVoxCore/PolyVoxCStdInt.h
 	include/PolyVoxCore/Region.h
 	include/PolyVoxCore/SurfaceAdjusters.h
 	include/PolyVoxCore/SurfaceExtractors.h
