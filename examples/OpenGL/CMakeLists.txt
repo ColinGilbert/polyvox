@@ -49,11 +49,10 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/include")
-LINK_DIRECTORIES("../../library")
 
 #Build
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
-TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d.lib optimized PolyVoxCore.lib)
+TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d optimized PolyVoxCore)
 
 #Install
 INSTALL(TARGETS OpenGLExample
@@ -62,5 +61,3 @@ INSTALL(TARGETS OpenGLExample
 	ARCHIVE DESTINATION lib
 	COMPONENT example
 )
-
-ADD_DEPENDENCIES(OpenGLExample PolyVoxCore) #This shouldn't be needed?

@@ -169,7 +169,7 @@ namespace PolyVox
 		bool equal = true;
         for(uint32 ct = 0; ct < Size; ++ct)
 		{
-			if(m_tElements[ct] != rhs(ct))
+			if(m_tElements[ct] != rhs.getElement(ct))
 			{
 				equal = false;
 				break;
