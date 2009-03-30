@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
 	Volume<uint8_t> volData(g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
-	uint16_t minPos = 0;
-	uint16_t midPos = volData.getSideLength() / 2;
-	uint16_t maxPos = volData.getSideLength() - 1;
+	PolyVox::uint16_t minPos = 0;
+	PolyVox::uint16_t midPos = volData.getSideLength() / 2;
+	PolyVox::uint16_t maxPos = volData.getSideLength() - 1;
 	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
 	createSphereInVolume(volData, 50.0f, 5);
