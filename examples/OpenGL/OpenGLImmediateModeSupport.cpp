@@ -9,10 +9,10 @@ using namespace std;
 void renderRegionImmediateMode(PolyVox::IndexedSurfacePatch& isp)
 {
 	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
-	const vector<uint32_t>& vecIndices = isp.getIndices();
+	const vector<PolyVox::uint32_t>& vecIndices = isp.getIndices();
 
 	glBegin(GL_TRIANGLES);
-	for(vector<uint32_t>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
+	for(vector<PolyVox::uint32_t>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
 	{
 		const SurfaceVertex& vertex = vecVertices[*iterIndex];
 		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
@@ -22,7 +22,7 @@ void renderRegionImmediateMode(PolyVox::IndexedSurfacePatch& isp)
 
 
 
-		uint8_t material = vertex.getMaterial() + 0.5;
+		PolyVox::uint8_t material = vertex.getMaterial() + 0.5;
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
 
