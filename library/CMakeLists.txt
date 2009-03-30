@@ -49,6 +49,7 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
+	include/PolyVoxCore/PolyVoxImpl/CPlusPlusZeroXSupport.h
 	include/PolyVoxCore/PolyVoxImpl/DecimatedSurfaceExtractor.h
 	include/PolyVoxCore/PolyVoxImpl/FastSurfaceExtractor.h
 	include/PolyVoxCore/PolyVoxImpl/ReferenceSurfaceExtractor.h
@@ -101,7 +102,8 @@ INSTALL(TARGETS PolyVoxCore
 	COMPONENT library
 )
 
-INSTALL(FILES ${CORE_INC_FILES} DESTINATION include/PolyVoxCore COMPONENT development)
+#Install the core header files, including the ones in the PolyVoxImpl subfolder.
+INSTALL(DIRECTORY include/PolyVoxCore DESTINATION include COMPONENT development PATTERN "*.svn*" EXCLUDE)
 
 #Util
 #Build
@@ -120,10 +122,11 @@ INSTALL(TARGETS PolyVoxUtil
 	COMPONENT library
 )
 
-INSTALL(FILES ${UTIL_INC_FILES} DESTINATION include/PolyVoxUtil COMPONENT development)
+#Install the util header files.
+INSTALL(DIRECTORY include/PolyVoxUtil DESTINATION include COMPONENT development PATTERN "*.svn*" EXCLUDE)
 
 #Copy the boost files which we a re using to mimic C++0x
-INSTALL(DIRECTORY include/boost DESTINATION include COMPONENT development)
+INSTALL(DIRECTORY include/boost DESTINATION include COMPONENT development PATTERN "*.svn*" EXCLUDE)
 
 #Set up PolyVoxConfig.cmake
 if(WIN32)

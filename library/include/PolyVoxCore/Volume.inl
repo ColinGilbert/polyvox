@@ -153,7 +153,7 @@ namespace PolyVox
 		const uint16 yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16 zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		const boost::shared_ptr< BlockData<VoxelType> > block = m_pBlocks
+		const POLYVOX_SHARED_PTR< BlockData<VoxelType> > block = m_pBlocks
 			[
 				blockX + 
 				blockY * m_uSideLengthInBlocks + 
@@ -197,7 +197,7 @@ namespace PolyVox
 			const VoxelType tHomogenousValue = m_pBlocks[uBlockIndex].m_pHomogenousValue;
 			if(tHomogenousValue != tValue)
 			{
-				boost::shared_ptr< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
+				POLYVOX_SHARED_PTR< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
 				m_pBlocks[uBlockIndex].m_pBlockData = temp;
 				m_pBlocks[uBlockIndex].m_bIsShared = false;
 				m_pBlocks[uBlockIndex].m_pBlockData->fill(tHomogenousValue);
@@ -295,13 +295,13 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	boost::shared_ptr< BlockData<VoxelType> > Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
+	POLYVOX_SHARED_PTR< BlockData<VoxelType> > Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
 	{
-		typename std::map<VoxelType, boost::weak_ptr< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
+		typename std::map<VoxelType, POLYVOX_WEAK_PTR< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlockData.end())
 		{
 			Block<VoxelType> block;
-			boost::shared_ptr< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
+			POLYVOX_SHARED_PTR< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
 			block.m_pBlockData = temp;
 			//block.m_uReferenceCount++;
 			block.m_pBlockData->fill(tHomogenousValue);
@@ -311,7 +311,7 @@ namespace PolyVox
 		else
 		{
 			//iterResult->second.m_uReferenceCount++;
-			boost::shared_ptr< BlockData<VoxelType> > result(iterResult->second);
+			POLYVOX_SHARED_PTR< BlockData<VoxelType> > result(iterResult->second);
 			return result;
 		}
 	}

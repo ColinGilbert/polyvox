@@ -27,8 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxCStdInt.h"
 
-#include "boost/shared_ptr.hpp"
-#include "boost/weak_ptr.hpp"
+#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 
 #include <map>
 #pragma endregion
@@ -39,7 +38,7 @@ namespace PolyVox
 	class Block
 	{
 	public:
-		boost::shared_ptr< BlockData<VoxelType> > m_pBlockData;
+		POLYVOX_SHARED_PTR< BlockData<VoxelType> > m_pBlockData;
 		VoxelType m_pHomogenousValue;
 		bool m_bIsShared;
 		bool m_bIsPotentiallySharable;
@@ -72,10 +71,10 @@ namespace PolyVox
 		VolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
-		boost::shared_ptr< BlockData<VoxelType> > getHomogenousBlockData(VoxelType tHomogenousValue) const;
+		POLYVOX_SHARED_PTR< BlockData<VoxelType> > getHomogenousBlockData(VoxelType tHomogenousValue) const;
 
 		Block<VoxelType>* m_pBlocks;
-		mutable std::map<VoxelType, boost::weak_ptr< BlockData<VoxelType> > > m_pHomogenousBlockData;
+		mutable std::map<VoxelType, POLYVOX_WEAK_PTR< BlockData<VoxelType> > > m_pHomogenousBlockData;
 
 		uint32 m_uNoOfBlocksInVolume;
 		uint16 m_uSideLengthInBlocks;
