@@ -22,9 +22,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_Utility_H__
 #define __PolyVox_Utility_H__
 
+#include "CPlusPlusZeroXSupport.h"
 #include "TypeDef.h"
-
-#include "PolyVoxForwardDeclarations.h"
 
 #include <cassert>
 

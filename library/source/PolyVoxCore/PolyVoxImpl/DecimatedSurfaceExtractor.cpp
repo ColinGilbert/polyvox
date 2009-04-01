@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxCore/Volume.h"
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/MarchingCubesTables.h"
+#include "PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/VolumeIterator.h"
 

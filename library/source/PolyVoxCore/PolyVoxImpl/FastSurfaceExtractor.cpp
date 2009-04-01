@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxCore/VolumeIterator.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/MarchingCubesTables.h"
+#include "PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h"
 #include "PolyVoxCore/SurfaceVertex.h"
 
 namespace PolyVox

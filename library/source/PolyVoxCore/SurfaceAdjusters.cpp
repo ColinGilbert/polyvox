@@ -3,7 +3,7 @@
 #include "PolyVoxCore/VolumeIterator.h"
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/Utility.h"
+#include "PolyVoxCore/PolyVoxImpl/Utility.h"
 #include "PolyVoxCore/VoxelFilters.h"
 
 #include <vector>

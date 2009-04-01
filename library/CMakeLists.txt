@@ -6,32 +6,24 @@ PROJECT(PolyVoxCore)
 SET(CORE_SRC_FILES
 	source/PolyVoxCore/GradientEstimators.cpp
 	source/PolyVoxCore/IndexedSurfacePatch.cpp
-	source/PolyVoxCore/MarchingCubesTables.cpp
 	source/PolyVoxCore/Region.cpp
 	source/PolyVoxCore/SurfaceAdjusters.cpp
 	source/PolyVoxCore/SurfaceExtractors.cpp 
 	source/PolyVoxCore/SurfaceVertex.cpp
-	source/PolyVoxCore/Utility.cpp
 	source/PolyVoxCore/VoxelFilters.cpp
 )
 
 #Projects headers files
 SET(CORE_INC_FILES
-	include/PolyVoxCore/BlockData.h
-	include/PolyVoxCore/BlockData.inl
-	include/PolyVoxCore/Constants.h
 	include/PolyVoxCore/Enums.h
 	include/PolyVoxCore/GradientEstimators.h	
 	include/PolyVoxCore/GradientEstimators.inl
 	include/PolyVoxCore/IndexedSurfacePatch.h
-	include/PolyVoxCore/MarchingCubesTables.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Region.h
 	include/PolyVoxCore/SurfaceAdjusters.h
 	include/PolyVoxCore/SurfaceExtractors.h
 	include/PolyVoxCore/SurfaceVertex.h
-	include/PolyVoxCore/TypeDef.h
-	include/PolyVoxCore/Utility.h
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/Volume.h
@@ -44,14 +36,21 @@ SET(CORE_INC_FILES
 SET(IMPL_SRC_FILES
 	source/PolyVoxCore/PolyVoxImpl/DecimatedSurfaceExtractor.cpp
 	source/PolyVoxCore/PolyVoxImpl/FastSurfaceExtractor.cpp
+	source/PolyVoxCore/PolyVoxImpl/MarchingCubesTables.cpp
 	source/PolyVoxCore/PolyVoxImpl/ReferenceSurfaceExtractor.cpp
+	source/PolyVoxCore/PolyVoxImpl/Utility.cpp
 )
 
 SET(IMPL_INC_FILES
+	include/PolyVoxCore/PolyVoxImpl/BlockData.h
+	include/PolyVoxCore/PolyVoxImpl/BlockData.inl
 	include/PolyVoxCore/PolyVoxImpl/CPlusPlusZeroXSupport.h
 	include/PolyVoxCore/PolyVoxImpl/DecimatedSurfaceExtractor.h
 	include/PolyVoxCore/PolyVoxImpl/FastSurfaceExtractor.h
+	include/PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h
 	include/PolyVoxCore/PolyVoxImpl/ReferenceSurfaceExtractor.h
+	include/PolyVoxCore/PolyVoxImpl/TypeDef.h
+	include/PolyVoxCore/PolyVoxImpl/Utility.h
 )
 
 #Projects source files

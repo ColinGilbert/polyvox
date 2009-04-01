@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/index.html
 
-#include "PolyVoxCore/MarchingCubesTables.h"
+#include "PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h"
 
 namespace PolyVox
 {

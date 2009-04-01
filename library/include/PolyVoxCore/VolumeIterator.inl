@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #pragma endregion
 
 #pragma region Headers
-#include "BlockData.h"
+#include "PolyVoxImpl/BlockData.h"
 #include "Volume.h"
 #include "Vector.h"
 #include "Region.h"

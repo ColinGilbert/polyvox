@@ -22,7 +22,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_SurfaceVertex_H__
 #define __PolyVox_SurfaceVertex_H__
 
-#include "TypeDef.h"
+#include "PolyVoxImpl/TypeDef.h"
 #include "Vector.h"
 
 namespace PolyVox

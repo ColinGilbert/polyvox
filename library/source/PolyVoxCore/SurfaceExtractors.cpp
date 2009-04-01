@@ -3,7 +3,7 @@
 #include "PolyVoxCore/Volume.h"
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/MarchingCubesTables.h"
+#include "PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/SurfaceAdjusters.h"
 #include "PolyVoxCore/VolumeIterator.h"

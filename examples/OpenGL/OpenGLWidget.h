@@ -8,7 +8,7 @@
 #include "PolyVoxCore/Volume.h"
 #include "PolyVoxCore/IndexedSurfacePatch.h"
 #include "PolyVoxCore/SurfaceExtractors.h"
-#include "PolyVoxCore/Utility.h"
+#include "PolyVoxCore/PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"

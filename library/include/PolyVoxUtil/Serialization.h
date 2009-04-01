@@ -22,10 +22,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #ifndef __PolyVox_Serialization_H__
 #define __PolyVox_Serialization_H__
 
-#include "PolyVoxCore/Constants.h"
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/TypeDef.h"
+#include "PolyVoxCore/PolyVoxImpl/TypeDef.h"
 
 #include <iostream>
 

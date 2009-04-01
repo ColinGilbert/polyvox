@@ -23,9 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVoxImpl_DecimatedSurfaceExtractor_H__
 
 #pragma region Headers
-#include "PolyVoxCore/Constants.h"
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/TypeDef.h"
+#include "PolyVoxCore/PolyVoxImpl/TypeDef.h"
 
 #include "CPlusPlusZeroXSupport.h"
 #pragma endregion

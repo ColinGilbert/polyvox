@@ -2,7 +2,7 @@
 
 #include "PolyVoxCore/Volume.h"
 #include "PolyVoxCore/VolumeIterator.h"
-#include "PolyVoxCore/Utility.h"
+#include "PolyVoxCore/PolyVoxImpl/Utility.h"
 
 using namespace std;
 
