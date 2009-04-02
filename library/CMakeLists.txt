@@ -15,7 +15,6 @@ SET(CORE_SRC_FILES
 
 #Projects headers files
 SET(CORE_INC_FILES
-	include/PolyVoxCore/Enums.h
 	include/PolyVoxCore/GradientEstimators.h	
 	include/PolyVoxCore/GradientEstimators.inl
 	include/PolyVoxCore/IndexedSurfacePatch.h
@@ -42,6 +41,8 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
+	include/PolyVoxCore/PolyVoxImpl/Block.h
+	include/PolyVoxCore/PolyVoxImpl/Block.inl
 	include/PolyVoxCore/PolyVoxImpl/BlockData.h
 	include/PolyVoxCore/PolyVoxImpl/BlockData.inl
 	include/PolyVoxCore/PolyVoxImpl/CPlusPlusZeroXSupport.h

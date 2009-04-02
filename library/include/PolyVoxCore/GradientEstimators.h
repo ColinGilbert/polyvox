@@ -28,6 +28,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
+	enum NormalGenerationMethod
+	{
+		SIMPLE, ///<Fastest
+		CENTRAL_DIFFERENCE,
+		SOBEL,
+		CENTRAL_DIFFERENCE_SMOOTHED,
+		SOBEL_SMOOTHED ///<Smoothest
+	};
+
 	template <typename VoxelType>
 	Vector3DFloat computeCentralDifferenceGradient(const VolumeIterator<VoxelType>& volIter);
 

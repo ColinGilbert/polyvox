@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_Volume_H__
 
 #pragma region Headers
+#include "PolyVoxCore/PolyVoxImpl/Block.h"
 #include "PolyVoxForwardDeclarations.h"
 
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
@@ -32,16 +33,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	class Block
-	{
-	public:
-		POLYVOX_SHARED_PTR< BlockData<VoxelType> > m_pBlockData;
-		VoxelType m_pHomogenousValue;
-		bool m_bIsShared;
-		bool m_bIsPotentiallySharable;
-	};
-
 	template <typename VoxelType>
 	class Volume
 	{
@@ -63,10 +54,8 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		VolumeIterator<VoxelType> firstVoxel(void);
 		void idle(uint32_t uAmount);
 		bool isRegionHomogenous(const Region& region);
-		VolumeIterator<VoxelType> lastVoxel(void);
 
 	private:
 		POLYVOX_SHARED_PTR< BlockData<VoxelType> > getHomogenousBlockData(VoxelType tHomogenousValue) const;

@@ -19,19 +19,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_Enums_H__
-#define __PolyVox_Enums_H__
+#ifndef __PolyVox_Block_H__
+#define __PolyVox_Block_H__
+
+#pragma region Headers
+#include "PolyVoxForwardDeclarations.h"
+
+#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
+#pragma endregion
 
 namespace PolyVox
 {
-	enum NormalGenerationMethod
+	template <typename VoxelType>
+	class Block
 	{
-		SIMPLE, ///<Fastest
-		CENTRAL_DIFFERENCE,
-		SOBEL,
-		CENTRAL_DIFFERENCE_SMOOTHED,
-		SOBEL_SMOOTHED ///<Smoothest
+	public:
+		POLYVOX_SHARED_PTR< BlockData<VoxelType> > m_pBlockData;
+		VoxelType m_pHomogenousValue;
+		bool m_bIsShared;
+		bool m_bIsPotentiallySharable;
 	};
 }
+
+#include "Block.inl"
 
 #endif

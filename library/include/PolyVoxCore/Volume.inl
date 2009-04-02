@@ -222,14 +222,6 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	VolumeIterator<VoxelType> Volume<VoxelType>::firstVoxel(void)
-	{
-		VolumeIterator<VoxelType> iter(*this);
-		iter.setPosition(0,0,0);
-		return iter;
-	}
-
-	template <typename VoxelType>
 	void Volume<VoxelType>::idle(uint32_t uAmount)
 	{
 		//This function performs two roles. Firstly, it examines all of the blocks which are marked as
@@ -282,14 +274,6 @@ namespace PolyVox
 		}while(iter.moveForwardInRegionXYZ());
 
 		return true;
-	}
-
-	template <typename VoxelType>
-	VolumeIterator<VoxelType> Volume<VoxelType>::lastVoxel(void)
-	{
-		VolumeIterator<VoxelType> iter(*this);
-		iter.setPosition(m_uSideLength-1,m_uSideLength-1,m_uSideLength-1);
-		return iter;
 	}
 	#pragma endregion
 
