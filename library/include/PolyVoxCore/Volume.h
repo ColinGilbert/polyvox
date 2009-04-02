@@ -41,10 +41,10 @@ namespace PolyVox
 
 	public:		
 		Volume(uint16_t uSideLength, uint16_t uBlockSideLength = 64);
-		Volume(const Volume& rhs);
+		//Volume(const Volume& rhs);
 		~Volume();	
 
-		Volume& operator=(const Volume& rhs);
+		//Volume& operator=(const Volume& rhs);
 
 		Region getEnclosingRegion(void) const;
 		uint16_t getSideLength(void) const;

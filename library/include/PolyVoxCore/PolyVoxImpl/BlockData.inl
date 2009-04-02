@@ -33,7 +33,7 @@ namespace PolyVox
 {
 	#pragma region Constructors/Destructors
 	template <typename VoxelType>
-	BlockData<VoxelType>::BlockData(uint8_t uSideLength)
+	BlockData<VoxelType>::BlockData(uint16_t uSideLength)
 		:m_tData(0)
 	{
 		//Debug mode validation

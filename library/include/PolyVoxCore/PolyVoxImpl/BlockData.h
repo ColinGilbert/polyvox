@@ -36,7 +36,7 @@ namespace PolyVox
 		//Make VolumeIterator a friend
 		friend class VolumeIterator<VoxelType>;
 	public:
-		BlockData(uint8_t uSideLength);
+		BlockData(uint16_t uSideLength);
 		BlockData(const BlockData& rhs);
 		~BlockData();
 
