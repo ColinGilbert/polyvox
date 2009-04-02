@@ -36,7 +36,6 @@ namespace PolyVox
 	//---------------------------------
 
 	class IndexedSurfacePatch;
-	class IntegrealVector3;
 	class Region;
 	class SurfaceVertex;
 

@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVoxImpl_ReferenceSurfaceExtractor_H__
 
 #pragma region Headers
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/PolyVoxImpl/TypeDef.h"
+#include "../PolyVoxForwardDeclarations.h"
+#include "TypeDef.h"
 
 #include "CPlusPlusZeroXSupport.h"
 #pragma endregion
