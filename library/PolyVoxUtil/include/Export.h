@@ -19,22 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_Serialization_H__
-#define __PolyVox_Serialization_H__
+#ifndef __PolyVoxUtil_Export_H__
+#define __PolyVoxUtil_Export_H__
 
-#include "../PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "../PolyVoxCore/Region.h"
-#include "../PolyVoxCore/PolyVoxImpl/TypeDef.h"
-
-#include <iostream>
-
-namespace PolyVox
-{	
-	POLYVOX_API Volume<uint8_t>* loadVolumeRaw(std::istream& stream);
-	POLYVOX_API void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume);
-
-	POLYVOX_API Volume<uint8_t>* loadVolumeRle(std::istream& stream);
-	POLYVOX_API void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume);
-}
+#ifdef WIN32
+	#ifdef POLYVOXUTIL_EXPORT
+		#define POLYVOXUTIL_API __declspec(dllexport)
+	#else
+		#define POLYVOXUTIL_API __declspec(dllimport)
+	#endif
+#else
+	#define POLYVOXUTIL_API __attribute__ ((visibility("default")))
+#endif
 
 #endif

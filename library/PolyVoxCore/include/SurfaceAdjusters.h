@@ -19,42 +19,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_SurfaceVertex_H__
-#define __PolyVox_SurfaceVertex_H__
+#ifndef __PolyVox_SurfaceAdjusters_H__
+#define __PolyVox_SurfaceAdjusters_H__
 
+#pragma region Headers
+#include "PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
-#include "Vector.h"
+
+#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
+#pragma endregion
 
 namespace PolyVox
-{	
-	class POLYVOX_API SurfaceVertex
-	{
-	public:	
-		SurfaceVertex();
-		SurfaceVertex(Vector3DFloat positionToSet, float materialToSet);
-		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet);	
-
-		float getMaterial(void) const;
-		const Vector3DFloat& getNormal(void) const;
-		const Vector3DFloat& getPosition(void) const;	
-	
-		void setMaterial(float materialToSet);
-		void setNormal(const Vector3DFloat& normalToSet);
-		void setPosition(const Vector3DFloat& positionToSet);
-
-		std::string tostring(void) const;
-
-	private:		
-		Vector3DFloat position;
-		Vector3DFloat normal;
-		float material;
-			
-	};
-
-	
-	
-
-	//bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs);
+{
+	POLYVOXCORE_API void smoothRegionGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp);
+	POLYVOXCORE_API void adjustDecimatedGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp, uint8_t val);
 }
 
 #endif

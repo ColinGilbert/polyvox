@@ -56,8 +56,8 @@ namespace PolyVox
 		void setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast);	
 
 		bool isValidForRegion(void) const;
-		void moveForwardInRegionFast(void);		
-		bool moveForwardInRegionXYZ(void);	
+		bool moveForwardInRegionXYZ(void);
+		void moveForwardInRegionXYZFast(void);			
 
 		VoxelType peekVoxel1nx1ny1nz(void) const;
 		VoxelType peekVoxel1nx1ny0pz(void) const;

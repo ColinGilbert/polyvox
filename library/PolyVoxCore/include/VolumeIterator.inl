@@ -245,7 +245,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeIterator<VoxelType>::moveForwardInRegionFast(void)
+	void VolumeIterator<VoxelType>::moveForwardInRegionXYZFast(void)
 	{
 		mXPosInBlock++;
 		mCurrentVoxel++;

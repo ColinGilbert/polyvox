@@ -21,8 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "Utility.h"
-#include "../Vector.h"
-#include "../Volume.h"
+#include "Vector.h"
+#include "Volume.h"
 
 #include <cassert>
 #include <cstring> //For memcpy

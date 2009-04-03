@@ -19,20 +19,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_SurfaceAdjusters_H__
-#define __PolyVox_SurfaceAdjusters_H__
+#ifndef __PolyVox_TypeDef_H__
+#define __PolyVox_TypeDef_H__
 
-#pragma region Headers
-#include "PolyVoxForwardDeclarations.h"
-#include "PolyVoxImpl/TypeDef.h"
-
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
-#pragma endregion
-
-namespace PolyVox
-{
-	POLYVOX_API void smoothRegionGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp);
-	POLYVOX_API void adjustDecimatedGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp, uint8_t val);
-}
+#ifdef WIN32
+	#ifdef POLYVOXCORE_EXPORT
+		#define POLYVOXCORE_API __declspec(dllexport)
+	#else
+		#define POLYVOXCORE_API __declspec(dllimport)
+	#endif
+#else
+	#define POLYVOXCORE_API __attribute__ ((visibility("default")))
+#endif
 
 #endif

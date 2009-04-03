@@ -1,7 +1,7 @@
 #include "OpenGLSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"
 
-#include "PolyVoxCore/IndexedSurfacePatch.h"
+#include "IndexedSurfacePatch.h"
 
 using namespace PolyVox;
 using namespace std;

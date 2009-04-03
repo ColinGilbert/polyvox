@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #pragma region Headers
 #include "PolyVoxImpl/BlockData.h"
+#include "Log.h"
 #include "VolumeIterator.h"
 #include "Region.h"
 #include "Vector.h"
@@ -37,6 +38,7 @@ namespace PolyVox
 	Volume<VoxelType>::Volume(uint16_t uSideLength, uint16_t uBlockSideLength)
 		:m_pBlocks(0)
 	{
+		logImpl("In volume constructor");
 		//Debug mode validation
 		assert(isPowerOf2(uSideLength));
 		assert(isPowerOf2(uBlockSideLength));
@@ -163,11 +165,6 @@ namespace PolyVox
 		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		/*const uint32_t uBlockIndex = 
-				blockX + 
-				blockY * m_uSideLengthInBlocks + 
-				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks;*/
-
 		Block<VoxelType>& block = m_pBlocks
 			[
 				blockX + 
@@ -175,7 +172,6 @@ namespace PolyVox
 				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks
 			];
 
-		//const bool bIsShared = m_pBlocks[uBlockIndex].m_bIsShared;
 		if(block.m_bIsShared)
 		{
 			const VoxelType tHomogenousValue = block.m_pHomogenousValue;

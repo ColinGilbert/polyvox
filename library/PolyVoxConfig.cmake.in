@@ -14,8 +14,8 @@
 include(FindPackageMessage)
 
 set(PREFIX "@CMAKE_INSTALL_PREFIX@")
-set(PolyVox_LIBRARY_DIRS "${PREFIX}/lib")
-set(PolyVox_INCLUDE_DIRS "${PREFIX}/include/PolyVoxCore" "${PREFIX}/include/PolyVoxUtil" "${PREFIX}/include")
+set(PolyVox_LIBRARY_DIRS "${PREFIX}/PolyVoxCore/lib" "${PREFIX}/PolyVoxUtil/lib")
+set(PolyVox_INCLUDE_DIRS "${PREFIX}/PolyVoxCore/include" "${PREFIX}/PolyVoxUtil/include" "${PREFIX}/include")
 set(PolyVox_LIBRARIES "PolyVoxUtil" "PolyVoxCore")
 
 message(STATUS "Found PolyVox")

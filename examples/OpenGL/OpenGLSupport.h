@@ -1,7 +1,7 @@
 #ifndef __OpenGLExample_OpenGLSupport_H__
 #define __OpenGLExample_OpenGLSupport_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxForwardDeclarations.h"
 
 #include "glew/glew.h"
 

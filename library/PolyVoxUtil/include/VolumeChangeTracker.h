@@ -24,14 +24,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include <list>
 
-#include "../PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "../PolyVoxCore/Region.h"
-#include "../PolyVoxCore/PolyVoxImpl/TypeDef.h"
+#include "PolyVoxForwardDeclarations.h"
+#include "Region.h"
+#include "Export.h"
 
 namespace PolyVox
 {	
 	/// Voxel scene manager
-	class POLYVOX_API VolumeChangeTracker
+	class POLYVOXUTIL_API VolumeChangeTracker
 	{
 	public:
 		//Constructors, etc

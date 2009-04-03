@@ -19,19 +19,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-//Dave, maybe make use of OgrePlatform.h instead?
-// I think use _OgreExport instead of POLYVOX_API and define OGRE_NONCLIENT_BUILD instead of POLYVOX_EXPORT?
-#ifndef __PolyVox_TypeDef_H__
-#define __PolyVox_TypeDef_H__
+#ifndef __PolyVox_Serialization_H__
+#define __PolyVox_Serialization_H__
 
-#ifdef WIN32
-	#ifdef POLYVOX_EXPORT
-		#define POLYVOX_API __declspec(dllexport)
-	#else
-		#define POLYVOX_API __declspec(dllimport)
-	#endif
-#else
-	#define POLYVOX_API __attribute__ ((visibility("default")))
-#endif
+#include "PolyVoxForwardDeclarations.h"
+#include "Region.h"
+#include "Export.h"
+
+#include <iostream>
+
+namespace PolyVox
+{	
+	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRaw(std::istream& stream);
+	POLYVOXUTIL_API void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume);
+
+	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRle(std::istream& stream);
+	POLYVOXUTIL_API void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume);
+}
 
 #endif

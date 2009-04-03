@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	POLYVOX_API uint8_t logBase2(uint32_t uInput);
-	POLYVOX_API bool isPowerOf2(uint32_t uInput);
+	POLYVOXCORE_API uint8_t logBase2(uint32_t uInput);
+	POLYVOXCORE_API bool isPowerOf2(uint32_t uInput);
 
 	template <typename Type>
         Type trilinearlyInterpolate(

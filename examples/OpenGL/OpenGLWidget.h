@@ -5,10 +5,10 @@
 
 #include <QGLWidget>
 
-#include "PolyVoxCore/Volume.h"
-#include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/SurfaceExtractors.h"
-#include "PolyVoxCore/PolyVoxImpl/Utility.h"
+#include "Volume.h"
+#include "IndexedSurfacePatch.h"
+#include "SurfaceExtractors.h"
+#include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"

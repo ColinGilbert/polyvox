@@ -1,7 +1,8 @@
-#include "PolyVoxCore/Volume.h"
-#include "PolyVoxCore/IndexedSurfacePatch.h"
-#include "PolyVoxCore/SurfaceExtractors.h"
-#include "PolyVoxCore/PolyVoxImpl/Utility.h"
+#include "Log.h"
+#include "Volume.h"
+#include "IndexedSurfacePatch.h"
+#include "SurfaceExtractors.h"
+#include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"
@@ -20,8 +21,14 @@ using namespace std;
 using namespace PolyVox;
 using namespace std;
 
+void exampleLog(string message)
+{
+	cout << message << endl;
+}
+
 int main(int argc, char *argv[])
  {
+	 logImpl = &exampleLog;
 	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.

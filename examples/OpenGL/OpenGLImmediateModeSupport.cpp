@@ -1,7 +1,7 @@
 #include "OpenGLImmediateModeSupport.h"
 #include "OpenGLSupport.h"
 
-#include "PolyVoxCore/IndexedSurfacePatch.h"
+#include "IndexedSurfacePatch.h"
 
 using namespace PolyVox;
 using namespace std;

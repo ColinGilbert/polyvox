@@ -19,22 +19,43 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_SurfaceExtractors_H__
-#define __PolyVox_SurfaceExtractors_H__
+#ifndef __PolyVox_Region_H__
+#define __PolyVox_Region_H__
 
 #pragma region Headers
-#include "PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
-
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
-
-#include <list>
+#include "Vector.h"
 #pragma endregion
 
 namespace PolyVox
 {
-	POLYVOX_API void extractSurface(Volume<uint8_t>* volumeData, uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	POLYVOX_API void extractReferenceSurface(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+	class POLYVOXCORE_API Region
+	{
+	public:
+		Region();
+		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);
+
+		const Vector3DInt32& getLowerCorner(void) const;
+		const Vector3DInt32& getUpperCorner(void) const;
+
+		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
+		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
+
+		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
+		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary) const;
+		void cropTo(const Region& other);
+		int32_t depth(void) const;
+		int32_t height(void) const;
+		void shift(const Vector3DInt32& amount);
+		void shiftLowerCorner(const Vector3DInt32& amount);
+		void shiftUpperCorner(const Vector3DInt32& amount);
+		Vector3DInt32 dimensions(void);
+		int32_t width(void) const;
+
+	private:
+		Vector3DInt32 m_v3dLowerCorner;
+		Vector3DInt32 m_v3dUpperCorner;
+	};
 }
 
 #endif

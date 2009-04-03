@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	class POLYVOX_API IndexedSurfacePatch
+	class POLYVOXCORE_API IndexedSurfacePatch
 	{
 	public:
 	   IndexedSurfacePatch();

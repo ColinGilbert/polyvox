@@ -33,7 +33,7 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
-#SOURCE_GROUP("Headers" FILES ${INC_FILES})
+SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
 FIND_PACKAGE(Qt4)
 SET(QT_USE_QTGUI 1)
@@ -48,8 +48,9 @@ FIND_PACKAGE(OpenGL REQUIRED)
 #Also, glut32.dll goes in C:\Windows\System. Using C:\Windows\System32 doesn't seem to work
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/include")
-LINK_DIRECTORIES("../../library")
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/PolyVoxCore/include")
+#There has to be a better way!
+LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/debug ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/release)
 
 #Build
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
@@ -57,8 +58,8 @@ TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} debug P
 
 #Install
 INSTALL(TARGETS OpenGLExample
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION lib
-	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION Examples/OpenGL/bin
+	LIBRARY DESTINATION Examples/OpenGL/lib
+	ARCHIVE DESTINATION Examples/OpenGL/lib
 	COMPONENT example
 )
