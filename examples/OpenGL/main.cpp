@@ -21,14 +21,32 @@ using namespace std;
 using namespace PolyVox;
 using namespace std;
 
-void exampleLog(string message)
+void exampleLog(string message, int severity)
 {
+	//Identify how severe the mesage is
+	switch(severity)
+	{
+	case LS_DEBUG:
+		cout << "DEBUG: ";
+		break;
+	case LS_INFO:
+		cout << "INFO: ";
+		break;
+	case LS_WARN:
+		cout << "WARN: ";
+		break;
+	case LS_ERROR:
+		cout << "ERROR: ";
+		break;
+	}
+
+	//Print the message
 	cout << message << endl;
 }
 
 int main(int argc, char *argv[])
- {
-	 logImpl = &exampleLog;
+{
+	logHandler = &exampleLog;
 	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
@@ -48,17 +66,17 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
 	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
-     QApplication app(argc, argv);
+	QApplication app(argc, argv);
 
-     OpenGLWidget openGLWidget(0);
-	 
+	OpenGLWidget openGLWidget(0);
 
-     openGLWidget.show();
 
-	 openGLWidget.setVolume(&volData);
+	openGLWidget.show();
 
-     return app.exec();
- } 
+	openGLWidget.setVolume(&volData);
+
+	return app.exec();
+} 
 
 #ifdef USING_GLUT
 

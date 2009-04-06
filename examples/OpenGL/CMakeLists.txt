@@ -63,3 +63,11 @@ INSTALL(TARGETS OpenGLExample
 	ARCHIVE DESTINATION Examples/OpenGL/lib
 	COMPONENT example
 )
+
+IF(WIN32)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/release/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxUtil/release/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
+	
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/debug/PolyVoxCore_d.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxUtil/debug/PolyVoxUtil_d.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
+ENDIF(WIN32)

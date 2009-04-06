@@ -1,3 +1,6 @@
 #include "Log.h"
 
-void (*logImpl)(std::string) = 0;
+namespace PolyVox
+{
+	void (*logHandler)(std::string, int severity) = 0;
+}

@@ -38,7 +38,6 @@ namespace PolyVox
 	Volume<VoxelType>::Volume(uint16_t uSideLength, uint16_t uBlockSideLength)
 		:m_pBlocks(0)
 	{
-		logImpl("In volume constructor");
 		//Debug mode validation
 		assert(isPowerOf2(uSideLength));
 		assert(isPowerOf2(uBlockSideLength));
