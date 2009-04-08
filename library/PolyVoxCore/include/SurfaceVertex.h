@@ -44,7 +44,7 @@ namespace PolyVox
 
 		std::string tostring(void) const;
 
-	private:		
+	public:		
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material;

@@ -33,6 +33,7 @@ namespace PolyVox
 {
 	POLYVOXCORE_API void smoothRegionGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp);
 	POLYVOXCORE_API void adjustDecimatedGeometry(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp, uint8_t val);
+	POLYVOXCORE_API IndexedSurfacePatch getSmoothedSurface(IndexedSurfacePatch ispInput);
 }
 
 #endif

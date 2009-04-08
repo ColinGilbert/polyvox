@@ -2,6 +2,9 @@
 
 #include <QMouseEvent>
 
+#include "GradientEstimators.h"
+#include "SurfaceAdjusters.h"
+
 //Some namespaces we need
 using namespace std;
 using namespace PolyVox;
@@ -56,6 +59,12 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 
 					//Extract the surface for this region
 					extractReferenceSurface(m_volData, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
+					computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
+					
+					//for(int ct = 0; ct < 100; ct++)
+					//{
+						*ispCurrent = getSmoothedSurface(*ispCurrent);
+					//}
 
 
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);

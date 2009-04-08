@@ -55,7 +55,7 @@ namespace PolyVox
 
 	   int32_t m_iTimeStamp;
 	
-	private:		
+	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
 	};	

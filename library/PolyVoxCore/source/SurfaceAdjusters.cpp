@@ -147,4 +147,50 @@ namespace PolyVox
 			++iterSurfaceVertex;
 		} //while(iterSurfaceVertex != vecVertices.end())
 	}
+
+	IndexedSurfacePatch getSmoothedSurface(IndexedSurfacePatch ispInput)
+	{
+		IndexedSurfacePatch ispOutput = ispInput;
+
+		for(vector<uint32_t>::iterator iterIndex = ispInput.m_vecTriangleIndices.begin(); iterIndex != ispInput.m_vecTriangleIndices.end();)
+		{
+			SurfaceVertex& v0 = ispOutput.m_vecVertices[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v1 = ispOutput.m_vecVertices[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v2 = ispOutput.m_vecVertices[*iterIndex];
+			iterIndex++;
+
+			Vector3DFloat v0Opp = (v1.position + v2.position) / 2.0f;
+			Vector3DFloat v1Opp = (v0.position + v2.position) / 2.0f;
+			Vector3DFloat v2Opp = (v0.position + v1.position) / 2.0f;
+
+			Vector3DFloat v0ToOpp = v0Opp - v0.position;
+			v0ToOpp.normalise();
+			Vector3DFloat v1ToOpp = v1Opp - v1.position;
+			v1ToOpp.normalise();
+			Vector3DFloat v2ToOpp = v2Opp - v2.position;
+			v2ToOpp.normalise();
+
+			Vector3DFloat n0 = v0.getNormal();
+			n0.normalise();
+			Vector3DFloat n1 = v1.getNormal();
+			n1.normalise();
+			Vector3DFloat n2 = v2.getNormal();
+			n2.normalise();
+
+			v0.position += (n0 * (n0.dot(v0ToOpp)) * 0.1f);
+			v1.position += (n1 * (n1.dot(v1ToOpp)) * 0.1f);
+			v2.position += (n2 * (n2.dot(v2ToOpp)) * 0.1f);
+
+			/*Vector3DFloat triNormal = (v0.getPosition() - v1.getPosition()).cross(v2.getPosition() - v1.getPosition());
+			triNormal.normalise();
+
+			v0.position += (n0 * (triNormal.dot(n0)) * -0.01f);
+			v1.position += (n1 * (triNormal.dot(n1)) * -0.01f);
+			v2.position += (n2 * (triNormal.dot(n2)) * -0.01f);*/
+		}
+
+		return ispOutput;
+	}
 }
