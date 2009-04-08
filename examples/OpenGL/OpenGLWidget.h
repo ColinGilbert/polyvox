@@ -4,6 +4,7 @@
 #include "glew/glew.h"
 
 #include <QGLWidget>
+#include <QTimer>
 
 #include "Volume.h"
 #include "IndexedSurfacePatch.h"
@@ -26,12 +27,24 @@ class OpenGLWidget : public QGLWidget
 
 	 void setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData);
 
+	 void mouseMoveEvent(QMouseEvent* event);
+	 void mousePressEvent(QMouseEvent* event);
+	 void wheelEvent ( QWheelEvent * event ); 
+
  protected:
      void initializeGL();
      void resizeGL(int w, int h);
      void paintGL();
 
  private:
+	QPoint m_LastFrameMousePos;
+	QPoint m_CurrentMousePos;
+
+	int m_xRotation;
+	int m_yRotation;
+	float m_distance;
+
+	QTimer *timer;
 
 	 bool m_bUseOpenGLVertexBufferObjects;
 

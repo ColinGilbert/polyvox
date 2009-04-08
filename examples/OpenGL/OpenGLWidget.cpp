@@ -1,5 +1,7 @@
 #include "OpenGLWidget.h"
 
+#include <QMouseEvent>
+
 //Some namespaces we need
 using namespace std;
 using namespace PolyVox;
@@ -7,11 +9,14 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
-{
-	
+{	
+	m_xRotation = 0;
+	m_yRotation = 0;
+	m_distance = -g_uVolumeSideLength / 2.0f;
 
-	
-	
+	timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+	timer->start(0);
 }
 
 void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
@@ -106,10 +111,9 @@ void OpenGLWidget::resizeGL(int w, int h)
 	glViewport     ( 0, 0, w, h );
 	glMatrixMode   ( GL_PROJECTION );  // Select The Projection Matrix
 	glLoadIdentity ( );                // Reset The Projection Matrix
-	if ( h==0 )  // Calculate The Aspect Ratio Of The Window
-		gluPerspective ( 80, ( float ) w, 1.0, 5000.0 );
-	else
-		gluPerspective ( 80, ( float ) w / ( float ) h, 1.0, 5000.0 );
+
+	float aspect = ( float ) w / ( float ) h;
+	glOrtho(-m_distance*aspect, m_distance*aspect, -m_distance, m_distance, 1.0, 5000);
 	glMatrixMode   ( GL_MODELVIEW );  // Select The Model View Matrix
 	glLoadIdentity ( );    // Reset The Model View Matrix
 }
@@ -122,11 +126,15 @@ void OpenGLWidget::paintGL()
 	glLoadIdentity();									// Reset The Current Modelview Matrix
 
 	//Moves the camera back so we can see the volume
-	glTranslatef(0.0f, 0.0f, -100.0f);	
+	glTranslatef(0.0f, 0.0f, m_distance);	
 
 	//Rotate the volume by the required amount
 	//glRotatef(g_xRotation, 1.0f, 0.0f, 0.0f);
 	//glRotatef(g_yRotation, 0.0f, 1.0f, 0.0f);
+
+	;
+	glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
+	glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
 
 	//Centre the volume on the origin
 	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
@@ -160,4 +168,24 @@ void OpenGLWidget::paintGL()
 		errString = gluErrorString(errCode);
 		cout << "OpenGL Error: " << errString << endl;
 	}									// Reset The Current Modelview Matrix
+}
+
+void OpenGLWidget::mousePressEvent(QMouseEvent* event)
+{
+	m_CurrentMousePos = event->pos();
+	m_LastFrameMousePos = m_CurrentMousePos;
+}
+
+void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	m_CurrentMousePos = event->pos();
+	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
+	m_xRotation += diff.x();
+	m_yRotation += diff.y();
+	m_LastFrameMousePos = m_CurrentMousePos;;
+}
+
+void OpenGLWidget::wheelEvent(QWheelEvent* event)
+{
+	m_distance += event->delta() / 120.0f;
 }
