@@ -34,7 +34,6 @@ namespace PolyVox
 	{
 	public:
 		POLYVOX_SHARED_PTR< BlockData<VoxelType> > m_pBlockData;
-		VoxelType m_pHomogenousValue;
 		bool m_bIsShared;
 		bool m_bIsPotentiallySharable;
 	};

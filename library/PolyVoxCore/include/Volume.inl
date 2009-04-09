@@ -78,7 +78,6 @@ namespace PolyVox
 			m_pBlocks[i].m_pBlockData = getHomogenousBlockData(0);
 			m_pBlocks[i].m_bIsShared = true;
 			m_pBlocks[i].m_bIsPotentiallySharable = false;
-			m_pBlocks[i].m_pHomogenousValue = 0;
 		}
 	}
 
@@ -171,26 +170,27 @@ namespace PolyVox
 				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks
 			];
 
-		if(block.m_bIsShared)
+		//It's quite possible that the user might attempt to set a voxel to it's current value.
+		//We test for this case firstly because it could help performance, but more importantly
+		//because it lets us avoid unsharing blocks unnecessarily.
+		if(block.m_pBlockData->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
 		{
-			const VoxelType tHomogenousValue = block.m_pHomogenousValue;
-			if(tHomogenousValue != tValue)
+			if(block.m_bIsShared)
 			{
-				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(m_uBlockSideLength));
+				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(*(block.m_pBlockData)));
 				block.m_pBlockData = pNewBlockData;
 				block.m_bIsShared = false;
 				block.m_bIsPotentiallySharable = false;
-				block.m_pBlockData->fill(tHomogenousValue);
 				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 			}
+			else
+			{			
+				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+				//There is a chance that setting this voxel makes the block homogenous and therefore shareable. But checking
+				//this will take some time, so for now just set a flag.
+				block.m_bIsPotentiallySharable = true;
+			}
 		}
-		else
-		{			
-			block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-			//There is a chance that setting this voxel makes the block homogenous and therefore shareable. But checking
-			//this will take some time, so for now just set a flag.
-			block.m_bIsPotentiallySharable = true;
-		}		
 	}
 
 	template <typename VoxelType>
@@ -221,7 +221,6 @@ namespace PolyVox
 					delete block.m_pBlockData;
 
 					block.m_pBlockData = getHomogenousBlockData(homogeneousValue);
-					block.m_pHomogenousValue = homogeneousValue;
 					block.m_bIsShared = true;
 				}
 

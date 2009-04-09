@@ -77,9 +77,14 @@ namespace PolyVox
 			return *this;
 		}
 
+		//If this fails an exception will be thrown. Memory is not   
+		//allocated and there is nothing else in this class to clean up
+		m_tData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
+
+		//Copy the data
 		m_uSideLength = rhs.m_uSideLength;
-		m_uSideLengthPower = rhs.m_uSideLengthPower;
-		memcpy(m_tData, rhs.m_tData, m_uSideLength * m_uSideLength * m_uSideLength);
+		m_uSideLengthPower = rhs.m_uSideLengthPower;		
+		memcpy(m_tData, rhs.m_tData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 
 		return *this;
 	}
