@@ -76,7 +76,6 @@ namespace PolyVox
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].m_pBlockData = getHomogenousBlockData(0);
-			m_pBlocks[i].m_bIsShared = true;
 			m_pBlocks[i].m_bIsPotentiallySharable = false;
 		}
 	}
@@ -175,20 +174,19 @@ namespace PolyVox
 		//because it lets us avoid unsharing blocks unnecessarily.
 		if(block.m_pBlockData->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
 		{
-			if(block.m_bIsShared)
+			if(block.m_pBlockData.unique())
 			{
-				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(*(block.m_pBlockData)));
-				block.m_pBlockData = pNewBlockData;
-				block.m_bIsShared = false;
-				block.m_bIsPotentiallySharable = false;
-				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-			}
-			else
-			{			
 				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 				//There is a chance that setting this voxel makes the block homogenous and therefore shareable. But checking
 				//this will take some time, so for now just set a flag.
 				block.m_bIsPotentiallySharable = true;
+			}
+			else
+			{			
+				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(*(block.m_pBlockData)));
+				block.m_pBlockData = pNewBlockData;
+				block.m_bIsPotentiallySharable = false;
+				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 			}
 		}
 	}
@@ -221,7 +219,6 @@ namespace PolyVox
 					delete block.m_pBlockData;
 
 					block.m_pBlockData = getHomogenousBlockData(homogeneousValue);
-					block.m_bIsShared = true;
 				}
 
 				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
