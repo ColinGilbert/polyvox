@@ -61,7 +61,7 @@ namespace PolyVox
 		POLYVOX_SHARED_PTR< BlockData<VoxelType> > getHomogenousBlockData(VoxelType tHomogenousValue) const;
 
 		Block<VoxelType>* m_pBlocks;
-		mutable std::map<VoxelType, POLYVOX_WEAK_PTR< BlockData<VoxelType> > > m_pHomogenousBlockData;
+		static std::map<VoxelType, POLYVOX_WEAK_PTR< BlockData<VoxelType> > > m_pHomogenousBlockData;
 
 		uint32_t m_uNoOfBlocksInVolume;
 		uint16_t m_uSideLengthInBlocks;
@@ -72,6 +72,10 @@ namespace PolyVox
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
 	};
+
+	//Required for the static member
+	template <class VoxelType> std::map<VoxelType, POLYVOX_WEAK_PTR< BlockData<VoxelType> > > Volume<VoxelType>::m_pHomogenousBlockData;
+
 
 	//Some handy typedefs
 	typedef Volume<float> FloatVolume;
