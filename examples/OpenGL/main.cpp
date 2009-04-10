@@ -66,6 +66,8 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
 	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
+	volData.idle(0);
+
 	QApplication app(argc, argv);
 
 	OpenGLWidget openGLWidget(0);

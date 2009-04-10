@@ -152,14 +152,12 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool BlockData<VoxelType>::isHomogeneous(void)
 	{
-		VoxelType currentVoxel = m_tData;
-		VoxelType firstVal = *currentVoxel;
+		const VoxelType tFirstVoxel = m_tData[0];
+		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 
-		uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
 		{
-			++currentVoxel;
-			if(*currentVoxel != firstVal)
+			if(m_tData[ct] != tFirstVoxel)
 			{
 				return false;
 			}
