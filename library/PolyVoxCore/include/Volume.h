@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 
+#include <limits>
 #include <map>
 #include <vector>
 
@@ -56,7 +57,7 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void idle(uint32_t uAmount);
+		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = numeric_limits<uint32_t>::max);
 		bool isRegionHomogenous(const Region& region);
 
 	private:
@@ -80,6 +81,8 @@ namespace PolyVox
 
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
+
+		uint32_t m_uCurrentBlockForTidying;
 	};
 
 	//Required for the static member

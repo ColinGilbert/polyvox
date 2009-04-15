@@ -38,6 +38,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uSideLength, uint16_t uBlockSideLength)
 		:m_pBlocks(0)
+		,m_uCurrentBlockForTidying(0)
 	{
 		//Debug mode validation
 		assert(isPowerOf2(uSideLength));
@@ -201,37 +202,56 @@ namespace PolyVox
 
 	#pragma region Other
 	template <typename VoxelType>
-	void Volume<VoxelType>::idle(uint32_t uAmount)
+	void Volume<VoxelType>::tidyUpMemory(uint32_t uNoOfBlocksToProcess)
 	{
-		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
-		{
-			if(m_vecBlockIsPotentiallyHomogenous[i])
-			{
-				if(m_pBlocks[i].m_pBlockData->isHomogeneous())
-				{
-					VoxelType homogeneousValue = m_pBlocks[i].m_pBlockData->getVoxelAt(0,0,0);
+		//Track the number of blocks we have processed.
+		uint32_t m_uNoOfProcessedBlocks = 0;
 
-					m_pBlocks[i].m_pBlockData = getHomogenousBlockData(homogeneousValue);
+		//We will loop around, and finish if we get back to our start position
+		uint32_t uFinishBlock = m_uCurrentBlockForTidying;
+
+		//Increment the current block, looping around if necessary
+		++m_uCurrentBlockForTidying;
+		m_uCurrentBlockForTidying %= m_uNoOfBlocksInVolume;
+
+		//While we have not reached the user specified limit and there are more blocks to process...
+		while((m_uNoOfProcessedBlocks < uNoOfBlocksToProcess) && (m_uCurrentBlockForTidying != uFinishBlock))
+		{
+			//We only do any work if the block is flagged as potentially homogeneous.
+			if(m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying])
+			{
+				//Check if it's really homogeneous (this can be slow).
+				if(m_pBlocks[m_uCurrentBlockForTidying].m_pBlockData->isHomogeneous())
+				{
+					//If so, replace is with a block from out homogeneous collection.
+					VoxelType homogeneousValue = m_pBlocks[m_uCurrentBlockForTidying].m_pBlockData->getVoxelAt(0,0,0);
+					m_pBlocks[m_uCurrentBlockForTidying].m_pBlockData = getHomogenousBlockData(homogeneousValue);
 				}
 
 				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
-				m_vecBlockIsPotentiallyHomogenous[i] = false;
+				m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying] = false;
+
+				//We've processed a block. This is inside the 'if' because the path outside the 'if' is trivially fast.
+				++m_uNoOfProcessedBlocks;
 			}
+
+			//Increment the current block, looping around if necessary
+			++m_uCurrentBlockForTidying;
+			m_uCurrentBlockForTidying %= m_uNoOfBlocksInVolume;
 		}
 
-		//FIXME - Better way to do this? Maybe using for_each()?
-		std::list< std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator > itersToDelete;
-		for(std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iter = m_pHomogenousBlockData.begin(); iter != m_pHomogenousBlockData.end(); ++iter)
+		//Identify and remove any homogeneous blocks which are not actually in use.
+		std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iter = m_pHomogenousBlockData.begin();
+		while(iter != m_pHomogenousBlockData.end())
 		{
 			if(iter->second.unique())
 			{
-				itersToDelete.push_back(iter);
+				m_pHomogenousBlockData.erase(iter++); //Increments the iterator and returns the previous position to be erased.
 			}
-		}
-
-		for(std::list< std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator >::iterator listIter = itersToDelete.begin(); listIter != itersToDelete.end(); ++listIter)
-		{
-			m_pHomogenousBlockData.erase(*listIter);
+			else
+			{
+				++iter; //Just increments the iterator.
+			}
 		}
 	}	
 
