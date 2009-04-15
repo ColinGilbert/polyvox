@@ -241,7 +241,7 @@ namespace PolyVox
 		}
 
 		//Identify and remove any homogeneous blocks which are not actually in use.
-		std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iter = m_pHomogenousBlockData.begin();
+		typename std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iter = m_pHomogenousBlockData.begin();
 		while(iter != m_pHomogenousBlockData.end())
 		{
 			if(iter->second.unique())
@@ -282,7 +282,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	POLYVOX_SHARED_PTR< BlockData<VoxelType> > Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
 	{
-		std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
+		typename std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlockData.end())
 		{
 			Block<VoxelType> block;

@@ -57,7 +57,7 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = numeric_limits<uint32_t>::max);
+		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = std::numeric_limits<uint32_t>::max);
 		bool isRegionHomogenous(const Region& region);
 
 	private:
