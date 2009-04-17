@@ -42,8 +42,6 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
-	include/PolyVoxImpl/Block.h
-	include/PolyVoxImpl/Block.inl
 	include/PolyVoxImpl/BlockData.h
 	include/PolyVoxImpl/BlockData.inl
 	include/PolyVoxImpl/CPlusPlusZeroXSupport.h

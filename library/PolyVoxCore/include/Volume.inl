@@ -78,7 +78,7 @@ namespace PolyVox
 		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i].m_pBlockData = getHomogenousBlockData(0);
+			m_pBlocks[i] = getHomogenousBlockData(0);
 			m_vecBlockIsPotentiallyHomogenous[i] = false;
 		}
 	}
@@ -131,14 +131,14 @@ namespace PolyVox
 		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		const Block<VoxelType>& block = m_pBlocks
+		const POLYVOX_SHARED_PTR< BlockData< VoxelType > >& block = m_pBlocks
 			[
 				blockX + 
 				blockY * m_uSideLengthInBlocks + 
 				blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks
 			];
 
-		return block.m_pBlockData->getVoxelAt(xOffset,yOffset,zOffset);
+		return block->getVoxelAt(xOffset,yOffset,zOffset);
 	}
 
 	template <typename VoxelType>
@@ -169,26 +169,26 @@ namespace PolyVox
 			blockY * m_uSideLengthInBlocks + 
 			blockZ * m_uSideLengthInBlocks * m_uSideLengthInBlocks;
 
-		Block<VoxelType>& block = m_pBlocks[uBlockIndex];
+		POLYVOX_SHARED_PTR< BlockData<VoxelType> >& block = m_pBlocks[uBlockIndex];
 
 		//It's quite possible that the user might attempt to set a voxel to it's current value.
 		//We test for this case firstly because it could help performance, but more importantly
 		//because it lets us avoid unsharing blocks unnecessarily.
-		if(block.m_pBlockData->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
+		if(block->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
 		{
-			if(block.m_pBlockData.unique())
+			if(block.unique())
 			{
-				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+				block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 				//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
 				//But checking this will take some time, so for now just set a flag.
 				m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = true;
 			}
 			else
 			{			
-				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(*(block.m_pBlockData)));
-				block.m_pBlockData = pNewBlockData;
+				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(*(block)));
+				block = pNewBlockData;
 				m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
-				block.m_pBlockData->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+				block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 			}
 		}
 	}
@@ -221,11 +221,11 @@ namespace PolyVox
 			if(m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying])
 			{
 				//Check if it's really homogeneous (this can be slow).
-				if(m_pBlocks[m_uCurrentBlockForTidying].m_pBlockData->isHomogeneous())
+				if(m_pBlocks[m_uCurrentBlockForTidying]->isHomogeneous())
 				{
 					//If so, replace is with a block from out homogeneous collection.
-					VoxelType homogeneousValue = m_pBlocks[m_uCurrentBlockForTidying].m_pBlockData->getVoxelAt(0,0,0);
-					m_pBlocks[m_uCurrentBlockForTidying].m_pBlockData = getHomogenousBlockData(homogeneousValue);
+					VoxelType homogeneousValue = m_pBlocks[m_uCurrentBlockForTidying]->getVoxelAt(0,0,0);
+					m_pBlocks[m_uCurrentBlockForTidying] = getHomogenousBlockData(homogeneousValue);
 				}
 
 				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
@@ -285,13 +285,13 @@ namespace PolyVox
 		typename std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlockData.end())
 		{
-			Block<VoxelType> block;
-			POLYVOX_SHARED_PTR< BlockData<VoxelType> > temp(new BlockData<VoxelType>(m_uBlockSideLength));
-			block.m_pBlockData = temp;
+			//Block<VoxelType> block;
+			POLYVOX_SHARED_PTR< BlockData<VoxelType> > pHomogeneousBlock(new BlockData<VoxelType>(m_uBlockSideLength));
+			//block.m_pBlockData = temp;
 			//block.m_uReferenceCount++;
-			block.m_pBlockData->fill(tHomogenousValue);
-			m_pHomogenousBlockData.insert(std::make_pair(tHomogenousValue, temp));
-			return block.m_pBlockData;
+			pHomogeneousBlock->fill(tHomogenousValue);
+			m_pHomogenousBlockData.insert(std::make_pair(tHomogenousValue, pHomogeneousBlock));
+			return pHomogeneousBlock;
 		}
 		else
 		{

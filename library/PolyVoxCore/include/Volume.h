@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_Volume_H__
 
 #pragma region Headers
-#include "PolyVoxImpl/Block.h"
+#include "PolyVoxImpl/BlockData.h"
 #include "PolyVoxForwardDeclarations.h"
 
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
@@ -63,7 +63,7 @@ namespace PolyVox
 	private:
 		POLYVOX_SHARED_PTR< BlockData<VoxelType> > getHomogenousBlockData(VoxelType tHomogenousValue) const;
 
-		std::vector< Block<VoxelType> > m_pBlocks;
+		std::vector< POLYVOX_SHARED_PTR< BlockData<VoxelType> > > m_pBlocks;
 		std::vector<bool> m_vecBlockIsPotentiallyHomogenous;
 
 		//Note: We were once storing weak_ptr's in this map, so that the blocks would be deleted once they
