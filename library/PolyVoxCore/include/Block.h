@@ -19,13 +19,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_BlockData_H__
-#define __PolyVox_BlockData_H__
+#ifndef __PolyVox_Block_H__
+#define __PolyVox_Block_H__
 
 #pragma region Headers
-#include "../PolyVoxForwardDeclarations.h"
+#include "PolyVoxForwardDeclarations.h"
 
-#include "CPlusPlusZeroXSupport.h"
+#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion
 
 namespace PolyVox
@@ -59,6 +59,6 @@ namespace PolyVox
 	};
 }
 
-#include "BlockData.inl"
+#include "Block.inl"
 
 #endif

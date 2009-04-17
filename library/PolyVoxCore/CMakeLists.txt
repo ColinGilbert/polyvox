@@ -16,6 +16,8 @@ SET(CORE_SRC_FILES
 
 #Projects headers files
 SET(CORE_INC_FILES
+	include/Block.h
+	include/Block.inl
 	include/GradientEstimators.inl
 	include/IndexedSurfacePatch.h
 	include/Log.h
@@ -42,8 +44,6 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
-	include/PolyVoxImpl/BlockData.h
-	include/PolyVoxImpl/BlockData.inl
 	include/PolyVoxImpl/CPlusPlusZeroXSupport.h
 	include/PolyVoxImpl/DecimatedSurfaceExtractor.h
 	include/PolyVoxImpl/FastSurfaceExtractor.h
