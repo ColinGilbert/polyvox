@@ -5,14 +5,14 @@ using namespace PolyVox;
 void createSphereInVolume(Volume<PolyVox::uint8_t>& volData, float fRadius, PolyVox::uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
-	Vector3DFloat v3dVolCenter(volData.getSideLength() / 2, volData.getSideLength() / 2, volData.getSideLength() / 2);
+	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
 
 	//This three-level for loop iterates over every voxel in the volume
-	for (int z = 0; z < volData.getSideLength(); z++)
+	for (int z = 0; z < volData.getWidth(); z++)
 	{
-		for (int y = 0; y < volData.getSideLength(); y++)
+		for (int y = 0; y < volData.getHeight(); y++)
 		{
-			for (int x = 0; x < volData.getSideLength(); x++)
+			for (int x = 0; x < volData.getDepth(); x++)
 			{
 				//Store our current position as a vector...
 				Vector3DFloat v3dCurrentPos(x,y,z);	

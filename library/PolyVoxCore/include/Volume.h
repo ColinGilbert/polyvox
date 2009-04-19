@@ -43,14 +43,19 @@ namespace PolyVox
 		friend class VolumeIterator<VoxelType>;
 
 	public:		
-		Volume(uint16_t uSideLength, uint16_t uBlockSideLength = 64);
+		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 64);
 		//Volume(const Volume& rhs);
 		~Volume();	
 
 		//Volume& operator=(const Volume& rhs);
 
 		Region getEnclosingRegion(void) const;
-		uint16_t getSideLength(void) const;
+		//uint16_t getSideLength(void) const;
+		uint16_t getWidth(void) const;
+		uint16_t getHeight(void) const;
+		uint16_t getDepth(void) const;
+		uint16_t getLongestSideLength(void) const;
+		float getDiagonalLength(void) const;
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
@@ -74,10 +79,23 @@ namespace PolyVox
 		static std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > > m_pHomogenousBlockData;
 
 		uint32_t m_uNoOfBlocksInVolume;
-		uint16_t m_uSideLengthInBlocks;
 
-		uint8_t m_uSideLengthPower;
-		uint16_t m_uSideLength;
+		//uint16_t m_uSideLengthInBlocks;
+		uint16_t m_uWidthInBlocks;
+		uint16_t m_uHeightInBlocks;
+		uint16_t m_uDepthInBlocks;
+
+		//uint8_t m_uSideLengthPower;
+		//uint16_t m_uSideLength;
+
+		uint16_t m_uWidth;
+		uint8_t m_uWidthPower;		
+
+		uint16_t m_uHeight;
+		uint8_t m_uHeightPower;	
+
+		uint16_t m_uDepth;
+		uint8_t m_uDepthPower;	
 
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;

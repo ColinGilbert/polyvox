@@ -199,8 +199,8 @@ namespace PolyVox
 		mZPosInBlock = mZPosInVolume - (mZBlock << mVolume.m_uBlockSideLengthPower);
 
 		mBlockIndexInVolume = mXBlock + 
-			mYBlock * mVolume.m_uSideLengthInBlocks + 
-			mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
+			mYBlock * mVolume.m_uWidthInBlocks + 
+			mZBlock * mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
 		POLYVOX_SHARED_PTR< BlockData<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
@@ -287,11 +287,11 @@ namespace PolyVox
 					{
 						mXBlock = mXRegionFirstBlock;
 						mBlockIndexInVolume = mXBlock + 
-							mYBlock * mVolume.m_uSideLengthInBlocks + 
-							mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
+							mYBlock * mVolume.m_uWidthInBlocks + 
+							mZBlock * mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
 
 						++mYBlock;
-						mBlockIndexInVolume += mVolume.m_uSideLengthInBlocks;
+						mBlockIndexInVolume += mVolume.m_uWidthInBlocks;
 						if(mYBlock > mYRegionLastBlock)
 						{
 							mYBlock = mYRegionFirstBlock;
@@ -300,7 +300,7 @@ namespace PolyVox
 								mZBlock * mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
 
 							++mZBlock;
-							mBlockIndexInVolume += mVolume.m_uSideLengthInBlocks * mVolume.m_uSideLengthInBlocks;
+							mBlockIndexInVolume += mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
 							if(mZBlock > mZRegionLastBlock)
 							{
 								mIsValidForRegion = false;

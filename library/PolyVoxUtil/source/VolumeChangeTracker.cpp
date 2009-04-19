@@ -46,10 +46,14 @@ namespace PolyVox
 		,m_uRegionSideLength(regionSideLength)
 	{	
 		volumeData = volumeDataToSet;
-		m_uVolumeSideLengthInRegions = volumeData->getSideLength() / m_uRegionSideLength;
+		m_uVolumeWidthInRegions = volumeData->getWidth() / m_uRegionSideLength;
+		m_uVolumeHeightInRegions = volumeData->getHeight() / m_uRegionSideLength;
+		m_uVolumeDepthInRegions = volumeData->getDepth() / m_uRegionSideLength;
 		m_uRegionSideLengthPower = PolyVox::logBase2(m_uRegionSideLength);
 
-		volRegionLastModified = new BlockData<int32_t>(m_uRegionSideLength);
+		uint16_t uLongestSideLength = (std::max)((std::max)(m_uVolumeWidthInRegions,m_uVolumeHeightInRegions),m_uVolumeDepthInRegions);
+
+		volRegionLastModified = new BlockData<int32_t>(uLongestSideLength); //FIXME - Maybe using a block here isn't optimal as it must always be cubic...
 	}
 
 	VolumeChangeTracker::~VolumeChangeTracker()
@@ -58,11 +62,11 @@ namespace PolyVox
 
 	void VolumeChangeTracker::setAllRegionsModified(void)
 	{
-		for(uint16_t blockZ = 0; blockZ < m_uVolumeSideLengthInRegions; ++blockZ)
+		for(uint16_t blockZ = 0; blockZ < m_uVolumeDepthInRegions; ++blockZ)
 		{
-			for(uint16_t blockY = 0; blockY < m_uVolumeSideLengthInRegions; ++blockY)
+			for(uint16_t blockY = 0; blockY < m_uVolumeHeightInRegions; ++blockY)
 			{
-				for(uint16_t blockX = 0; blockX < m_uVolumeSideLengthInRegions; ++blockX)
+				for(uint16_t blockX = 0; blockX < m_uVolumeWidthInRegions; ++blockX)
 				{
 					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_iCurrentTime);
 					++m_iCurrentTime;
@@ -76,9 +80,19 @@ namespace PolyVox
 		return m_iCurrentTime;
 	}
 
-	uint16_t VolumeChangeTracker::getSideLength(void)
+	uint16_t VolumeChangeTracker::getWidth(void)
 	{
-		return volumeData->getSideLength();
+		return volumeData->getWidth();
+	}
+
+	uint16_t VolumeChangeTracker::getHeight(void)
+	{
+		return volumeData->getHeight();
+	}
+
+	uint16_t VolumeChangeTracker::getDepth(void)
+	{
+		return volumeData->getDepth();
 	}
 
 	Region VolumeChangeTracker::getEnclosingRegion(void) const
@@ -98,9 +112,9 @@ namespace PolyVox
 
 	uint8_t VolumeChangeTracker::getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
-		assert(uX < volumeData->getSideLength());
-		assert(uY < volumeData->getSideLength());
-		assert(uZ < volumeData->getSideLength());
+		assert(uX < volumeData->getWidth());
+		assert(uY < volumeData->getHeight());
+		assert(uZ < volumeData->getDepth());
 
 		VolumeIterator<uint8_t> volIter(*volumeData);
 		volIter.setPosition(uX,uY,uZ);
@@ -143,9 +157,9 @@ namespace PolyVox
 			const uint16_t minRegionY = (std::max)(uint16_t(0),uint16_t(regionY-1));
 			const uint16_t minRegionZ = (std::max)(uint16_t(0),uint16_t(regionZ-1));
 
-			const uint16_t maxRegionX = (std::min)(uint16_t(m_uVolumeSideLengthInRegions-1),uint16_t(regionX+1));
-			const uint16_t maxRegionY = (std::min)(uint16_t(m_uVolumeSideLengthInRegions-1),uint16_t(regionY+1));
-			const uint16_t maxRegionZ = (std::min)(uint16_t(m_uVolumeSideLengthInRegions-1),uint16_t(regionZ+1));
+			const uint16_t maxRegionX = (std::min)(uint16_t(m_uVolumeWidthInRegions-1),uint16_t(regionX+1));
+			const uint16_t maxRegionY = (std::min)(uint16_t(m_uVolumeHeightInRegions-1),uint16_t(regionY+1));
+			const uint16_t maxRegionZ = (std::min)(uint16_t(m_uVolumeDepthInRegions-1),uint16_t(regionZ+1));
 
 			for(uint16_t zCt = minRegionZ; zCt <= maxRegionZ; zCt++)
 			{

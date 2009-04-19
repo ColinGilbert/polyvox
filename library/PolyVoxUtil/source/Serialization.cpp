@@ -25,7 +25,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth);
+		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth, volumeHeight, volumeDepth);
 
 		//Read data
 		for(uint16_t z = 0; z < volumeDepth; ++z)
@@ -48,9 +48,9 @@ namespace PolyVox
 	void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume)
 	{
 		//Write volume dimensions
-		uint16_t volumeWidth = volume.getSideLength();
-		uint16_t volumeHeight = volume.getSideLength();
-		uint16_t volumeDepth  = volume.getSideLength();
+		uint16_t volumeWidth = volume.getWidth();
+		uint16_t volumeHeight = volume.getHeight();
+		uint16_t volumeDepth  = volume.getDepth();
 
 		uint8_t volumeWidthPower = logBase2(volumeWidth);
 		uint8_t volumeHeightPower = logBase2(volumeHeight);
@@ -93,7 +93,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth);
+		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth, volumeHeight, volumeDepth);
 
 		//Read data
 		bool firstTime = true;
@@ -130,9 +130,9 @@ namespace PolyVox
 	void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume)
 	{
 		//Write volume dimensions
-		uint16_t volumeWidth = volume.getSideLength();
-		uint16_t volumeHeight = volume.getSideLength();
-		uint16_t volumeDepth  = volume.getSideLength();
+		uint16_t volumeWidth = volume.getWidth();
+		uint16_t volumeHeight = volume.getHeight();
+		uint16_t volumeDepth  = volume.getDepth();
 
 		uint8_t volumeWidthPower = logBase2(volumeWidth);
 		uint8_t volumeHeightPower = logBase2(volumeHeight);
