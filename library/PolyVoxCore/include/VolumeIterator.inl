@@ -148,7 +148,7 @@ namespace PolyVox
 		{
 			const uint8_t uSize = 1 << uLevel;
 
-			VoxelType tValue = std::numeric_limits<VoxelType>::max();
+			VoxelType tValue = (std::numeric_limits<VoxelType>::max)();
 			for(uint8_t z = 0; z < uSize; ++z)
 			{
 				for(uint8_t y = 0; y < uSize; ++y)

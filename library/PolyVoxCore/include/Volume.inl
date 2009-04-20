@@ -102,6 +102,11 @@ namespace PolyVox
 			m_pBlocks[i] = getHomogenousBlockData(0);
 			m_vecBlockIsPotentiallyHomogenous[i] = false;
 		}
+
+		//Other properties we might find useful later
+		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
+		m_uShortestSideLength = (std::min)((std::min)(m_uWidth,m_uHeight),m_uDepth);
+		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
 	}
 
 	/*template <typename VoxelType>
@@ -140,7 +145,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	float Volume<VoxelType>::getDiagonalLength(void) const
 	{
-		return sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
+		return m_fDiagonalLength;
 	}
 
 	template <typename VoxelType>
@@ -152,7 +157,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint16_t Volume<VoxelType>::getLongestSideLength(void) const
 	{
-		return (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
+		return m_uLongestSideLength;
+	}
+
+	template <typename VoxelType>
+	uint16_t Volume<VoxelType>::getShortestSideLength(void) const
+	{
+		return m_uShortestSideLength;
 	}
 
 	template <typename VoxelType>

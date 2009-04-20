@@ -50,11 +50,11 @@ namespace PolyVox
 		//Volume& operator=(const Volume& rhs);
 
 		Region getEnclosingRegion(void) const;
-		//uint16_t getSideLength(void) const;
 		uint16_t getWidth(void) const;
 		uint16_t getHeight(void) const;
 		uint16_t getDepth(void) const;
 		uint16_t getLongestSideLength(void) const;
+		uint16_t getShortestSideLength(void) const;
 		float getDiagonalLength(void) const;
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
@@ -62,7 +62,7 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = std::numeric_limits<uint32_t>::max);
+		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());
 		bool isRegionHomogenous(const Region& region);
 
 	private:
@@ -80,13 +80,9 @@ namespace PolyVox
 
 		uint32_t m_uNoOfBlocksInVolume;
 
-		//uint16_t m_uSideLengthInBlocks;
 		uint16_t m_uWidthInBlocks;
 		uint16_t m_uHeightInBlocks;
 		uint16_t m_uDepthInBlocks;
-
-		//uint8_t m_uSideLengthPower;
-		//uint16_t m_uSideLength;
 
 		uint16_t m_uWidth;
 		uint8_t m_uWidthPower;		
@@ -99,6 +95,11 @@ namespace PolyVox
 
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
+
+		uint16_t m_uLongestSideLength;
+		uint16_t m_uShortestSideLength;
+
+		float m_fDiagonalLength;
 
 		uint32_t m_uCurrentBlockForTidying;
 	};
