@@ -32,6 +32,10 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 	//If we have any volume data then generate the new surface patches.
 	if(m_volData != 0)
 	{
+		m_uVolumeWidthInRegions = volData->getWidth() / m_uRegionSideLength;
+		m_uVolumeHeightInRegions = volData->getHeight() / m_uRegionSideLength;
+		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
+
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
 		for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < g_uVolumeSideLengthInRegions; ++uRegionZ)
@@ -81,6 +85,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 				}
 			}
 		}
+
+		m_distance = m_volData->getLongestSideLength() / -2.0f;
 	}
 }
 
