@@ -37,12 +37,12 @@ class OpenGLWidget : public QGLWidget
      void paintGL();
 
  private:
+	 void setupProjectionMatrix(void);
 	QPoint m_LastFrameMousePos;
 	QPoint m_CurrentMousePos;
 
 	int m_xRotation;
 	int m_yRotation;
-	float m_distance;
 
 	QTimer *timer;
 

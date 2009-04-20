@@ -12,11 +12,11 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
+	,m_volData(0)
 {	
 	m_xRotation = 0;
 	m_yRotation = 0;
 	m_uRegionSideLength = 16.0f;
-	m_distance = -g_uVolumeSideLength / 2.0f;
 
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -87,7 +87,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 			}
 		}
 
-		m_distance = m_volData->getLongestSideLength() / -2.0f;
+		//Projection matrix is dependant on volume size, so we need to set it up again.
+		setupProjectionMatrix();
 	}
 }
 
@@ -124,66 +125,64 @@ void OpenGLWidget::initializeGL()
 
 void OpenGLWidget::resizeGL(int w, int h)
 {
-	glViewport     ( 0, 0, w, h );
-	glMatrixMode   ( GL_PROJECTION );  // Select The Projection Matrix
-	glLoadIdentity ( );                // Reset The Projection Matrix
+	//Setup the viewport based on the window size
+	glViewport(0, 0, w, h);
 
-	float aspect = ( float ) w / ( float ) h;
-	glOrtho(-m_distance*aspect, m_distance*aspect, -m_distance, m_distance, 1.0, 5000);
-	glMatrixMode   ( GL_MODELVIEW );  // Select The Model View Matrix
-	glLoadIdentity ( );    // Reset The Model View Matrix
+	//Projection matrix is also dependant on the size of the current volume.
+	if(m_volData)
+	{
+		setupProjectionMatrix();
+	}
 }
 
 void OpenGLWidget::paintGL()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
-
-	glMatrixMode   ( GL_MODELVIEW );  // Select The Model View Matrix
-	glLoadIdentity();									// Reset The Current Modelview Matrix
-
-	//Moves the camera back so we can see the volume
-	glTranslatef(0.0f, 0.0f, m_distance);	
-
-	//Rotate the volume by the required amount
-	//glRotatef(g_xRotation, 1.0f, 0.0f, 0.0f);
-	//glRotatef(g_yRotation, 0.0f, 1.0f, 0.0f);
-
-	;
-	glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
-	glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
-
-	//Centre the volume on the origin
-	glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
-
-	for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
+	if(m_volData)
 	{
-		for(PolyVox::uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
-		{
-			for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
-			{
-				Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-				if(m_bUseOpenGLVertexBufferObjects)
-				{
-					renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos]);
-				}
-				else
-				{
-					IndexedSurfacePatch* ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
-					renderRegionImmediateMode(*ispCurrent);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear Screen And Depth Buffer
 
+		glMatrixMode(GL_MODELVIEW);  // Select The Model View Matrix
+		glLoadIdentity();									// Reset The Current Modelview Matrix
+
+		//Moves the camera back so we can see the volume
+		glTranslatef(0.0f, 0.0f, -m_volData->getDiagonalLength());	
+
+		glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
+		glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
+
+		//Centre the volume on the origin
+		glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
+
+		for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
+		{
+			for(PolyVox::uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
+			{
+				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
+				{
+					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
+					if(m_bUseOpenGLVertexBufferObjects)
+					{
+						renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos]);
+					}
+					else
+					{
+						IndexedSurfacePatch* ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
+						renderRegionImmediateMode(*ispCurrent);
+
+					}
 				}
 			}
 		}
+
+		GLenum errCode;
+		const GLubyte *errString;
+
+		if ((errCode = glGetError()) != GL_NO_ERROR)
+		{
+			errString = gluErrorString(errCode);
+			cout << "OpenGL Error: " << errString << endl;
+		}
 	}
-
-	GLenum errCode;
-	const GLubyte *errString;
-
-	if ((errCode = glGetError()) != GL_NO_ERROR)
-	{
-		errString = gluErrorString(errCode);
-		cout << "OpenGL Error: " << errString << endl;
-	}									// Reset The Current Modelview Matrix
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent* event)
@@ -203,5 +202,15 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 
 void OpenGLWidget::wheelEvent(QWheelEvent* event)
 {
-	m_distance += event->delta() / 120.0f;
+}
+
+void OpenGLWidget::setupProjectionMatrix(void)
+{
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	float frustumSize = m_volData->getDiagonalLength() / 2.0f;
+	float aspect = static_cast<float>(width()) / static_cast<float>(height());
+
+	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 1.0, 5000);
 }
