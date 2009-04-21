@@ -161,6 +161,7 @@ namespace PolyVox
 			SurfaceVertex& v2 = ispOutput.m_vecVertices[*iterIndex];
 			iterIndex++;
 
+			//FIXME - instead of finding these opposite points (Opp) we could just use the midpoint?
 			Vector3DFloat v0Opp = (v1.position + v2.position) / 2.0f;
 			Vector3DFloat v1Opp = (v0.position + v2.position) / 2.0f;
 			Vector3DFloat v2Opp = (v0.position + v1.position) / 2.0f;

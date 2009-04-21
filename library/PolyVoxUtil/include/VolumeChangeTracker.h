@@ -39,15 +39,9 @@ namespace PolyVox
 		~VolumeChangeTracker();
 
 		//Getters
-		int32_t getCurrentTime(void) const;
-		Region getEnclosingRegion(void) const;		
+		int32_t getCurrentTime(void) const;	
 		int32_t getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ);
-		uint16_t getWidth(void);
-		uint16_t getHeight(void);
-		uint16_t getDepth(void);
-		Volume<uint8_t>* getVolumeData(void) const;
-		uint8_t getVoxelAt(const Vector3DUint16& pos);
-		uint8_t getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ);
+		Volume<uint8_t>* getWrappedVolume(void) const;
 
 		//Setters
 		void setAllRegionsModified(void);
@@ -60,6 +54,7 @@ namespace PolyVox
 		//void markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ);
 
 	private:
+		void incrementCurrentTime(void);
 		bool m_bIsLocked;
 		Region m_regLastLocked;
 		Volume<uint8_t>* volumeData;
@@ -73,9 +68,9 @@ namespace PolyVox
 
 		//It's not what the block class was designed for, but it 
 		//provides a handy way of storing a 3D grid of values.
-		BlockData<int32_t>* volRegionLastModified;
+		Volume<int32_t>* volRegionLastModified;
 
-		static int32_t m_iCurrentTime;
+		static uint32_t m_uCurrentTime;
 	};
 }
 

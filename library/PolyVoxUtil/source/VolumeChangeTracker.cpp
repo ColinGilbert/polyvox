@@ -35,7 +35,7 @@ using namespace std;
 
 namespace PolyVox
 {
-	int32_t VolumeChangeTracker::m_iCurrentTime = 0;
+	uint32_t VolumeChangeTracker::m_uCurrentTime = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// VolumeChangeTracker
@@ -51,9 +51,9 @@ namespace PolyVox
 		m_uVolumeDepthInRegions = volumeData->getDepth() / m_uRegionSideLength;
 		m_uRegionSideLengthPower = PolyVox::logBase2(m_uRegionSideLength);
 
-		uint16_t uLongestSideLength = (std::max)((std::max)(m_uVolumeWidthInRegions,m_uVolumeHeightInRegions),m_uVolumeDepthInRegions);
+		uint16_t uShortestSideLengthInRegions = (std::min)((std::min)(m_uVolumeWidthInRegions,m_uVolumeHeightInRegions),m_uVolumeDepthInRegions);
 
-		volRegionLastModified = new BlockData<int32_t>(uLongestSideLength); //FIXME - Maybe using a block here isn't optimal as it must always be cubic...
+		volRegionLastModified = new Volume<int32_t>(m_uVolumeWidthInRegions, m_uVolumeHeightInRegions, m_uVolumeDepthInRegions, uShortestSideLengthInRegions); //FIXME - Maybe using a block here isn't optimal as it must always be cubic...
 	}
 
 	VolumeChangeTracker::~VolumeChangeTracker()
@@ -68,8 +68,8 @@ namespace PolyVox
 			{
 				for(uint16_t blockX = 0; blockX < m_uVolumeWidthInRegions; ++blockX)
 				{
-					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_iCurrentTime);
-					++m_iCurrentTime;
+					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_uCurrentTime);
+					incrementCurrentTime();
 				}
 			}
 		}
@@ -77,27 +77,7 @@ namespace PolyVox
 
 	int32_t VolumeChangeTracker::getCurrentTime(void) const
 	{
-		return m_iCurrentTime;
-	}
-
-	uint16_t VolumeChangeTracker::getWidth(void)
-	{
-		return volumeData->getWidth();
-	}
-
-	uint16_t VolumeChangeTracker::getHeight(void)
-	{
-		return volumeData->getHeight();
-	}
-
-	uint16_t VolumeChangeTracker::getDepth(void)
-	{
-		return volumeData->getDepth();
-	}
-
-	Region VolumeChangeTracker::getEnclosingRegion(void) const
-	{
-		return volumeData->getEnclosingRegion();
+		return m_uCurrentTime;
 	}
 
 	int32_t VolumeChangeTracker::getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ)
@@ -105,35 +85,17 @@ namespace PolyVox
 		return volRegionLastModified->getVoxelAt(uX, uY, uZ);
 	}
 
-	uint8_t VolumeChangeTracker::getVoxelAt(const Vector3DUint16& pos)
-	{
-		return getVoxelAt(pos.getX(), pos.getY(), pos.getZ());
-	}
-
-	uint8_t VolumeChangeTracker::getVoxelAt(uint16_t uX, uint16_t uY, uint16_t uZ)
-	{
-		assert(uX < volumeData->getWidth());
-		assert(uY < volumeData->getHeight());
-		assert(uZ < volumeData->getDepth());
-
-		VolumeIterator<uint8_t> volIter(*volumeData);
-		volIter.setPosition(uX,uY,uZ);
-		return volIter.getVoxel();
-	}
-
-	Volume<uint8_t>* VolumeChangeTracker::getVolumeData(void) const
+	Volume<uint8_t>* VolumeChangeTracker::getWrappedVolume(void) const
 	{
 		return volumeData;
 	}
 
-	//NOTE - Document the fact that the time stamp is incremented at the start, not the end.
 	void VolumeChangeTracker::setVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value)
 	{
-		++m_iCurrentTime;
-		//FIXME - rather than creating a iterator each time we should have one stored
-		//VolumeIterator<uint8_t> iterVol(*volumeData);
-		/*iterVol.setPosition(x,y,z);
-		iterVol.setVoxel(value);*/
+		//Note: We increase the time stamp both at the start and the end
+		//to avoid ambiguity about whether the timestamp comparison should
+		//be '<' vs '<=' or '>' vs '>=' in the users code.
+		incrementCurrentTime();
 
 		volumeData->setVoxelAt(x,y,z,value);
 		
@@ -145,7 +107,7 @@ namespace PolyVox
 			(z % m_uRegionSideLength != 0) &&
 			(z % m_uRegionSideLength != m_uRegionSideLength-1))
 		{
-			volRegionLastModified->setVoxelAt(x >> m_uRegionSideLengthPower, y >> m_uRegionSideLengthPower, z >> m_uRegionSideLengthPower, m_iCurrentTime);
+			volRegionLastModified->setVoxelAt(x >> m_uRegionSideLengthPower, y >> m_uRegionSideLengthPower, z >> m_uRegionSideLengthPower, m_uCurrentTime);
 		}
 		else //Mark surrounding regions as well
 		{
@@ -167,12 +129,14 @@ namespace PolyVox
 				{
 					for(uint16_t xCt = minRegionX; xCt <= maxRegionX; xCt++)
 					{
-						volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
+						volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_uCurrentTime);
 					}
 				}
 			}
 		}
-		//++m_iCurrentTime;
+
+		//Increment time stamp. See earlier note.
+		incrementCurrentTime();
 	}
 
 	void VolumeChangeTracker::setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value)
@@ -199,11 +163,15 @@ namespace PolyVox
 
 	void VolumeChangeTracker::unlockRegion(void)
 	{
-		++m_iCurrentTime;
 		if(!m_bIsLocked)
 		{
 			throw std::logic_error("No region is locked. You must lock a region before you can unlock it.");
 		}
+
+		//Note: We increase the time stamp both at the start and the end
+		//to avoid ambiguity about whether the timestamp comparison should
+		//be '<' vs '<=' or '>' vs '>=' in the users code.
+		incrementCurrentTime();
 
 		const uint16_t firstRegionX = m_regLastLocked.getLowerCorner().getX() >> m_uRegionSideLengthPower;
 		const uint16_t firstRegionY = m_regLastLocked.getLowerCorner().getY() >> m_uRegionSideLengthPower;
@@ -219,12 +187,28 @@ namespace PolyVox
 			{
 				for(uint16_t xCt = firstRegionX; xCt <= lastRegionX; xCt++)
 				{
-					volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_iCurrentTime);
+					volRegionLastModified->setVoxelAt(xCt,yCt,zCt,m_uCurrentTime);
 				}
 			}
 		}
 
-		//++m_iCurrentTime;
 		m_bIsLocked = false;
+
+		//Increment time stamp. See earlier note.
+		incrementCurrentTime();
+	}
+
+	void VolumeChangeTracker::incrementCurrentTime(void)
+	{
+		//Increment the current time.
+		uint32_t time = m_uCurrentTime++;
+
+		//Watch out for wraparound. Hopefully this will never happen
+		//as we have a pretty by counter, but it's best to be sure...
+		assert(time < m_uCurrentTime);
+		if(time >= m_uCurrentTime)
+		{
+			throw std::overflow_error("The VolumeChangeTracker time has overflowed.");
+		}
 	}
 }
