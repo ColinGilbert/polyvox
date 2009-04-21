@@ -204,7 +204,7 @@ namespace PolyVox
 		uint32_t time = m_uCurrentTime++;
 
 		//Watch out for wraparound. Hopefully this will never happen
-		//as we have a pretty by counter, but it's best to be sure...
+		//as we have a pretty big counter, but it's best to be sure...
 		assert(time < m_uCurrentTime);
 		if(time >= m_uCurrentTime)
 		{
