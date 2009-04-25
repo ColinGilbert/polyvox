@@ -146,7 +146,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void BlockData<VoxelType>::fill(VoxelType tValue)
 	{
-		memset(m_tData, tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		memset(m_tData, (int)tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 	}
 
 	template <typename VoxelType>

@@ -51,9 +51,7 @@ namespace PolyVox
 		m_uVolumeDepthInRegions = volumeData->getDepth() / m_uRegionSideLength;
 		m_uRegionSideLengthPower = PolyVox::logBase2(m_uRegionSideLength);
 
-		uint16_t uShortestSideLengthInRegions = (std::min)((std::min)(m_uVolumeWidthInRegions,m_uVolumeHeightInRegions),m_uVolumeDepthInRegions);
-
-		volRegionLastModified = new Volume<int32_t>(m_uVolumeWidthInRegions, m_uVolumeHeightInRegions, m_uVolumeDepthInRegions, uShortestSideLengthInRegions); //FIXME - Maybe using a block here isn't optimal as it must always be cubic...
+		volRegionLastModified = new Volume<int32_t>(m_uVolumeWidthInRegions, m_uVolumeHeightInRegions, m_uVolumeDepthInRegions, 0);
 	}
 
 	VolumeChangeTracker::~VolumeChangeTracker()

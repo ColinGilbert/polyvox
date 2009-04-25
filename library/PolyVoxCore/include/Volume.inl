@@ -40,6 +40,16 @@ namespace PolyVox
 		:m_pBlocks(0)
 		,m_uCurrentBlockForTidying(0)
 	{
+		//A values of zero for a block side length is a special value to indicate that the block
+		//side length should simply be made as large as possible. This can be useful if you are
+		//creating only a small volume which doesn't need to be broken down into many blocks. This
+		//'largest possible block size' will be equal to the shortest volume dimension, as a volume
+		//dimension can never be less than a block side length.
+		if(uBlockSideLength == 0)
+		{
+			uBlockSideLength = (std::min)((std::min)(uWidth,uHeight),uDepth);
+		}
+
 		//Debug mode validation
 		assert(isPowerOf2(uWidth));
 		assert(isPowerOf2(uHeight));
