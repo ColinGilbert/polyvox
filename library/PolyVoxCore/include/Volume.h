@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_Volume_H__
 
 #pragma region Headers
-#include "Block.h"
+#include "PolyVoxImpl/Block.h"
 #include "PolyVoxForwardDeclarations.h"
 
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
