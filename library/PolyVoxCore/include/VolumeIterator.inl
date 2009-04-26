@@ -201,7 +201,7 @@ namespace PolyVox
 		mBlockIndexInVolume = mXBlock + 
 			mYBlock * mVolume.m_uWidthInBlocks + 
 			mZBlock * mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
-		POLYVOX_SHARED_PTR< BlockData<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+		POLYVOX_SHARED_PTR< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 
 		mVoxelIndexInBlock = mXPosInBlock + 
 			mYPosInBlock * mVolume.m_uBlockSideLength + 
@@ -257,7 +257,7 @@ namespace PolyVox
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * mVolume.m_uBlockSideLength + 
 				mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-			boost::shared_ptr< BlockData<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+			boost::shared_ptr< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;
@@ -270,7 +270,7 @@ namespace PolyVox
 				mVoxelIndexInBlock = mXPosInBlock + 
 					mYPosInBlock * mVolume.m_uBlockSideLength + 
 					mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-				BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+				Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 				mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 				mZPosInBlock++;
@@ -309,7 +309,7 @@ namespace PolyVox
 						}
 					}
 
-					BlockData<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+					Block<VoxelType>* currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 					//mCurrentBlock = mVolume->m_pBlocks[mBlockIndexInVolume];					
 
 					mXPosInVolume = (std::max)(mXRegionFirst,uint16_t(mXBlock * mVolume.m_uBlockSideLength));					

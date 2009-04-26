@@ -31,16 +31,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class BlockData
+	class Block
 	{
 		//Make VolumeIterator a friend
 		friend class VolumeIterator<VoxelType>;
 	public:
-		BlockData(uint16_t uSideLength);
-		BlockData(const BlockData& rhs);
-		~BlockData();
+		Block(uint16_t uSideLength);
+		Block(const Block& rhs);
+		~Block();
 
-		BlockData& operator=(const BlockData& rhs);
+		Block& operator=(const Block& rhs);
 
 		uint16_t getSideLength(void) const;
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;

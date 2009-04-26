@@ -66,9 +66,9 @@ namespace PolyVox
 		bool isRegionHomogenous(const Region& region);
 
 	private:
-		POLYVOX_SHARED_PTR< BlockData<VoxelType> > getHomogenousBlockData(VoxelType tHomogenousValue) const;
+		POLYVOX_SHARED_PTR< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue) const;
 
-		std::vector< POLYVOX_SHARED_PTR< BlockData<VoxelType> > > m_pBlocks;
+		std::vector< POLYVOX_SHARED_PTR< Block<VoxelType> > > m_pBlocks;
 		std::vector<bool> m_vecBlockIsPotentiallyHomogenous;
 
 		//Note: We were once storing weak_ptr's in this map, so that the blocks would be deleted once they
@@ -76,7 +76,7 @@ namespace PolyVox
 		//shared. A call to shared_ptr::unique() from within setVoxel was not sufficient as weak_ptr's did
 		//not contribute to the reference count. Instead we store shared_ptr's here, and check if they
 		//are used by anyone else (i.e are non-unique) when we tidy the volume.
-		static std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > > m_pHomogenousBlockData;
+		static std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > > m_pHomogenousBlock;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
@@ -105,7 +105,7 @@ namespace PolyVox
 	};
 
 	//Required for the static member
-	template <class VoxelType> std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > > Volume<VoxelType>::m_pHomogenousBlockData;
+	template <class VoxelType> std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > > Volume<VoxelType>::m_pHomogenousBlock;
 
 
 	//Some handy typedefs

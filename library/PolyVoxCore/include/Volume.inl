@@ -109,7 +109,7 @@ namespace PolyVox
 		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i] = getHomogenousBlockData(0);
+			m_pBlocks[i] = getHomogenousBlock(0);
 			m_vecBlockIsPotentiallyHomogenous[i] = false;
 		}
 
@@ -197,7 +197,7 @@ namespace PolyVox
 		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		const POLYVOX_SHARED_PTR< BlockData< VoxelType > >& block = m_pBlocks
+		const POLYVOX_SHARED_PTR< Block< VoxelType > >& block = m_pBlocks
 			[
 				blockX + 
 				blockY * m_uWidthInBlocks + 
@@ -235,7 +235,7 @@ namespace PolyVox
 			blockY * m_uWidthInBlocks + 
 			blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
 
-		POLYVOX_SHARED_PTR< BlockData<VoxelType> >& block = m_pBlocks[uBlockIndex];
+		POLYVOX_SHARED_PTR< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
 
 		//It's quite possible that the user might attempt to set a voxel to it's current value.
 		//We test for this case firstly because it could help performance, but more importantly
@@ -251,8 +251,8 @@ namespace PolyVox
 			}
 			else
 			{			
-				POLYVOX_SHARED_PTR< BlockData<VoxelType> > pNewBlockData(new BlockData<VoxelType>(*(block)));
-				block = pNewBlockData;
+				POLYVOX_SHARED_PTR< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
+				block = pNewBlock;
 				m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
 				block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 			}
@@ -291,7 +291,7 @@ namespace PolyVox
 				{
 					//If so, replace is with a block from out homogeneous collection.
 					VoxelType homogeneousValue = m_pBlocks[m_uCurrentBlockForTidying]->getVoxelAt(0,0,0);
-					m_pBlocks[m_uCurrentBlockForTidying] = getHomogenousBlockData(homogeneousValue);
+					m_pBlocks[m_uCurrentBlockForTidying] = getHomogenousBlock(homogeneousValue);
 				}
 
 				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
@@ -307,12 +307,12 @@ namespace PolyVox
 		}
 
 		//Identify and remove any homogeneous blocks which are not actually in use.
-		typename std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iter = m_pHomogenousBlockData.begin();
-		while(iter != m_pHomogenousBlockData.end())
+		typename std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > >::iterator iter = m_pHomogenousBlock.begin();
+		while(iter != m_pHomogenousBlock.end())
 		{
 			if(iter->second.unique())
 			{
-				m_pHomogenousBlockData.erase(iter++); //Increments the iterator and returns the previous position to be erased.
+				m_pHomogenousBlock.erase(iter++); //Increments the iterator and returns the previous position to be erased.
 			}
 			else
 			{
@@ -346,23 +346,23 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	POLYVOX_SHARED_PTR< BlockData<VoxelType> > Volume<VoxelType>::getHomogenousBlockData(VoxelType tHomogenousValue) const
+	POLYVOX_SHARED_PTR< Block<VoxelType> > Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) const
 	{
-		typename std::map<VoxelType, POLYVOX_SHARED_PTR< BlockData<VoxelType> > >::iterator iterResult = m_pHomogenousBlockData.find(tHomogenousValue);
-		if(iterResult == m_pHomogenousBlockData.end())
+		typename std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > >::iterator iterResult = m_pHomogenousBlock.find(tHomogenousValue);
+		if(iterResult == m_pHomogenousBlock.end())
 		{
 			//Block<VoxelType> block;
-			POLYVOX_SHARED_PTR< BlockData<VoxelType> > pHomogeneousBlock(new BlockData<VoxelType>(m_uBlockSideLength));
-			//block.m_pBlockData = temp;
+			POLYVOX_SHARED_PTR< Block<VoxelType> > pHomogeneousBlock(new Block<VoxelType>(m_uBlockSideLength));
+			//block.m_pBlock = temp;
 			//block.m_uReferenceCount++;
 			pHomogeneousBlock->fill(tHomogenousValue);
-			m_pHomogenousBlockData.insert(std::make_pair(tHomogenousValue, pHomogeneousBlock));
+			m_pHomogenousBlock.insert(std::make_pair(tHomogenousValue, pHomogeneousBlock));
 			return pHomogeneousBlock;
 		}
 		else
 		{
 			//iterResult->second.m_uReferenceCount++;
-			//POLYVOX_SHARED_PTR< BlockData<VoxelType> > result(iterResult->second);
+			//POLYVOX_SHARED_PTR< Block<VoxelType> > result(iterResult->second);
 			return iterResult->second;
 		}
 	}
