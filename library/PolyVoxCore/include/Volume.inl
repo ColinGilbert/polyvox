@@ -35,16 +35,27 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	#pragma region Constructors/Destructors
+	/*******************************************************************************
+	Builds a volume of the desired dimensions
+	\param uWidth The desired width in voxels. This must be a power of two.
+	\param uHeight The desired height in voxels. This must be a power of two.
+	\param uDepth The desired depth in voxels. This must be a power of two.
+	\param uBlockSideLength The size of the blocks which make up the volume. Small
+	blocks are more likely to be homogeneous (so more easily shared) and have better
+	cache behaviour. However, there is a memory overhead per block so if they are
+	not shared it could actually be less efficient (this will depend on the data).
+	The size of the volume may also be a factor when choosing block size. Specifying
+	'0' for	the block side length will cause the blocks to be as large as possible,
+	which will basically be the length of the shortest side. Accept the default if
+	you are not sure what to choose here.
+	*******************************************************************************/
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
 		:m_pBlocks(0)
 		,m_uCurrentBlockForTidying(0)
 	{
-		//A values of zero for a block side length is a special value to indicate that the block
-		//side length should simply be made as large as possible. This can be useful if you are
-		//creating only a small volume which doesn't need to be broken down into many blocks. This
-		//'largest possible block size' will be equal to the shortest volume dimension, as a volume
-		//dimension can never be less than a block side length.
+		//A values of zero for a block side length is a special value to indicate 
+		//that the block side length should simply be made as large as possible.
 		if(uBlockSideLength == 0)
 		{
 			uBlockSideLength = (std::min)((std::min)(uWidth,uHeight),uDepth);
@@ -119,12 +130,9 @@ namespace PolyVox
 		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
 	}
 
-	/*template <typename VoxelType>
-	Volume<VoxelType>::Volume(const Volume<VoxelType>& rhs)
-	{
-		*this = rhs;
-	}*/
-
+	/*******************************************************************************
+	Destroys the volume and frees any blocks which are not in use by other volumes.
+	*******************************************************************************/
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
@@ -132,55 +140,84 @@ namespace PolyVox
 	#pragma endregion
 
 	#pragma region Operators
-	/*template <typename VoxelType>
-	Volume<VoxelType>& Volume<VoxelType>::operator=(const Volume& rhs)
-	{
-		
-	}*/
 	#pragma endregion		
 
 	#pragma region Getters
+	/*******************************************************************************
+	The result will always have a lower corner at (0,0,0) and an upper corner at one
+	less than the side length. For example, if a volume has dimensions 256x512x1024
+	then the upper corner of the enclosing region will be at (255,511,1023).
+	\return A Region representing the extent of the volume.
+	*******************************************************************************/
 	template <typename VoxelType>
 	Region Volume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return Region(Vector3DInt32(0,0,0), Vector3DInt32(m_uWidth-1,m_uHeight-1,m_uDepth-1));
 	}
 
+	/*******************************************************************************
+	\return The width of the volume in voxels
+	\sa getHeight(), getDepth()
+	*******************************************************************************/
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getDepth(void) const
+	uint16_t Volume<VoxelType>::getWidth(void) const
 	{
-		return m_uDepth;
+		return m_uWidth;
 	}
 
-	template <typename VoxelType>
-	float Volume<VoxelType>::getDiagonalLength(void) const
-	{
-		return m_fDiagonalLength;
-	}
-
+	/*******************************************************************************
+	\return The height of the volume in voxels
+	\sa getWidth(), getDepth()
+	*******************************************************************************/
 	template <typename VoxelType>
 	uint16_t Volume<VoxelType>::getHeight(void) const
 	{
 		return m_uHeight;
 	}
 
+	/*******************************************************************************
+	\return The depth of the volume in voxels
+	\sa getWidth(), getHeight()
+	*******************************************************************************/
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getLongestSideLength(void) const
+	uint16_t Volume<VoxelType>::getDepth(void) const
 	{
-		return m_uLongestSideLength;
+		return m_uDepth;
 	}
 
+	/*******************************************************************************
+	\return The length of the shortest side in voxels. For example, if a volume has
+	dimensions 256x512x1024 this function will return 256.
+	\sa getLongestSideLength(), getDiagonalLength()
+	*******************************************************************************/
 	template <typename VoxelType>
 	uint16_t Volume<VoxelType>::getShortestSideLength(void) const
 	{
 		return m_uShortestSideLength;
 	}
 
+	/*******************************************************************************
+	\return The length of the longest side in voxels. For example, if a volume has
+	dimensions 256x512x1024 this function will return 1024.
+	\sa getShortestSideLength(), getDiagonalLength()
+	*******************************************************************************/
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getWidth(void) const
+	uint16_t Volume<VoxelType>::getLongestSideLength(void) const
 	{
-		return m_uWidth;
-	}		
+		return m_uLongestSideLength;
+	}	
+
+	/*******************************************************************************
+	\return The length of the diagonal in voxels. For example, if a volume has
+	dimensions 256x512x1024 this function will return sqrt(256*256+512*512+1024*1024)
+	= 1173.139. This value is computed on volume creation so retrieving it is fast.
+	\sa getShortestSideLength(), getLongestSideLength()
+	*******************************************************************************/
+	template <typename VoxelType>
+	float Volume<VoxelType>::getDiagonalLength(void) const
+	{
+		return m_fDiagonalLength;
+	}
 
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
