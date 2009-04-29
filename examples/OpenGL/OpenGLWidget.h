@@ -16,8 +16,6 @@
 #include "Shapes.h"
 
 const PolyVox::uint16_t g_uVolumeSideLength = 128;
-//const PolyVox::uint16_t g_uRegionSideLength = 16;
-//const PolyVox::uint16_t g_uVolumeSideLengthInRegions = g_uVolumeSideLength / g_uRegionSideLength;
 
 class OpenGLWidget : public QGLWidget
  {

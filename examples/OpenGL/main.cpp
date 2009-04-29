@@ -53,20 +53,28 @@ int main(int argc, char *argv[])
 	PolyVox::uint16_t minPos = 0;
 	PolyVox::uint16_t midPos = g_uVolumeSideLength / 2;
 	PolyVox::uint16_t maxPos = g_uVolumeSideLength - 1;
-	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
+	//createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
-	createSphereInVolume(volData, 50.0f, 5);
-	createSphereInVolume(volData, 40.0f, 4);
-	createSphereInVolume(volData, 30.0f, 3);
-	createSphereInVolume(volData, 20.0f, 2);
-	createSphereInVolume(volData, 10.0f, 1);	
+	cout << "Creating sphere 1" << std::endl;
+	createSphereInVolume(volData, 60.0f, 5);
+	cout << "Creating sphere 2" << std::endl;
+	createSphereInVolume(volData, 50.0f, 4);
+	cout << "Creating sphere 3" << std::endl;
+	createSphereInVolume(volData, 40.0f, 3);
+	cout << "Creating sphere 4" << std::endl;
+	createSphereInVolume(volData, 30.0f, 2);
+	cout << "Creating sphere 5" << std::endl;
+	createSphereInVolume(volData, 20.0f, 1);	
 
+	cout << "Creating cubes" << std::endl;
 	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
 	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
+	cout << "Tidying memory...";
 	volData.tidyUpMemory(0);
+	cout << "done." << endl; 
 
 	QApplication app(argc, argv);
 

@@ -16,7 +16,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {	
 	m_xRotation = 0;
 	m_yRotation = 0;
-	m_uRegionSideLength = 16.0f;
+	m_uRegionSideLength = 32.0f;
 
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -41,6 +41,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 		//This three-level for loop iterates over each region.
 		for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
 		{
+			std::cout << "uRegionZ = " << uRegionZ << " of " << m_uVolumeDepthInRegions << std::endl;
 			for(PolyVox::uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
 			{
 				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
@@ -63,13 +64,10 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
-					extractReferenceSurface(m_volData, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
-					computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
-					
-					//for(int ct = 0; ct < 100; ct++)
-					//{
-						*ispCurrent = getSmoothedSurface(*ispCurrent);
-					//}
+					extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
+
+					//computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
+					//*ispCurrent = getSmoothedSurface(*ispCurrent);
 
 
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
@@ -94,7 +92,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 
 void OpenGLWidget::initializeGL()
 {
-	m_bUseOpenGLVertexBufferObjects = true;
+	m_bUseOpenGLVertexBufferObjects = false;
 	if(m_bUseOpenGLVertexBufferObjects)
 	{
 #ifdef WIN32

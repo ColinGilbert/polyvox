@@ -42,8 +42,6 @@ namespace PolyVox
 		void setNormal(const Vector3DFloat& normalToSet);
 		void setPosition(const Vector3DFloat& positionToSet);
 
-		std::string tostring(void) const;
-
 	public:		
 		Vector3DFloat position;
 		Vector3DFloat normal;
