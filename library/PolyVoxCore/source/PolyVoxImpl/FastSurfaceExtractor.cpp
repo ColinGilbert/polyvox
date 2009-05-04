@@ -132,7 +132,6 @@ namespace PolyVox
 					(uYVolSpace < volIter.getVolume().getHeight()-1) &&
 					(uZVolSpace < volIter.getVolume().getDepth()-1))
 				{
-
 					if((uXRegSpace==0) && (uYRegSpace==0))
 					{
 						const uint8_t v000 = volIter.getVoxel();
@@ -147,12 +146,12 @@ namespace PolyVox
 
 						if (v000 == 0) iCubeIndex |= 1;
 						if (v100 == 0) iCubeIndex |= 2;
-						if (v110 == 0) iCubeIndex |= 4;
-						if (v010 == 0) iCubeIndex |= 8;
+						if (v010 == 0) iCubeIndex |= 4;
+						if (v110 == 0) iCubeIndex |= 8;
 						if (v001 == 0) iCubeIndex |= 16;
 						if (v101 == 0) iCubeIndex |= 32;
-						if (v111 == 0) iCubeIndex |= 64;
-						if (v011 == 0) iCubeIndex |= 128;
+						if (v011 == 0) iCubeIndex |= 64;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 					else if((uXRegSpace>0) && uYRegSpace==0)
 					{
@@ -164,26 +163,26 @@ namespace PolyVox
 
 						//x
 						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						uint8_t srcBit6 = iPreviousCubeIndexX & 64;
-						uint8_t destBit7 = srcBit6 << 1;
+						uint8_t srcBit7 = iPreviousCubeIndexX & 128;
+						uint8_t destBit6 = srcBit7 >> 1;
 
 						uint8_t srcBit5 = iPreviousCubeIndexX & 32;
 						uint8_t destBit4 = srcBit5 >> 1;
 
-						uint8_t srcBit2 = iPreviousCubeIndexX & 4;
-						uint8_t destBit3 = srcBit2 << 1;
+						uint8_t srcBit3 = iPreviousCubeIndexX & 8;
+						uint8_t destBit2 = srcBit3 >> 1;
 
 						uint8_t srcBit1 = iPreviousCubeIndexX & 2;
 						uint8_t destBit0 = srcBit1 >> 1;
 
 						iCubeIndex |= destBit0;
-						if (v100 == 0) iCubeIndex |= 2;
-						if (v110 == 0) iCubeIndex |= 4;
-						iCubeIndex |= destBit3;
+						if (v100 == 0) iCubeIndex |= 2;						
+						iCubeIndex |= destBit2;
+						if (v110 == 0) iCubeIndex |= 8;
 						iCubeIndex |= destBit4;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v111 == 0) iCubeIndex |= 64;
-						iCubeIndex |= destBit7;
+						if (v101 == 0) iCubeIndex |= 32;						
+						iCubeIndex |= destBit6;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 					else if((uXRegSpace==0) && (uYRegSpace>0))
 					{
@@ -195,26 +194,28 @@ namespace PolyVox
 
 						//y
 						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-						uint8_t destBit4 = srcBit7 >> 3;
-
+						
 						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-						uint8_t destBit5 = srcBit6 >> 1;
+						uint8_t destBit4 = srcBit6 >> 2;
+
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit5 = srcBit7 >> 2;
+
+						
+						uint8_t srcBit2 = iPreviousCubeIndexY & 4;
+						uint8_t destBit0 = srcBit2 >> 2;
 
 						uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-						uint8_t destBit0 = srcBit3 >> 3;
-
-						uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-						uint8_t destBit1 = srcBit2 >> 1;
+						uint8_t destBit1 = srcBit3 >> 2;
 
 						iCubeIndex |= destBit0;
 						iCubeIndex |= destBit1;
-						if (v110 == 0) iCubeIndex |= 4;
-						if (v010 == 0) iCubeIndex |= 8;
+						if (v010 == 0) iCubeIndex |= 4;
+						if (v110 == 0) iCubeIndex |= 8;
 						iCubeIndex |= destBit4;
 						iCubeIndex |= destBit5;
-						if (v111 == 0) iCubeIndex |= 64;
-						if (v011 == 0) iCubeIndex |= 128;
+						if (v011 == 0) iCubeIndex |= 64;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 					else
 					{
@@ -224,34 +225,35 @@ namespace PolyVox
 
 						//y
 						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-						uint8_t destBit4 = srcBit7 >> 3;
-
+						
 						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-						uint8_t destBit5 = srcBit6 >> 1;
+						uint8_t destBit4 = srcBit6 >> 2;
+						
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit5 = srcBit7 >> 2;
+						
+						uint8_t srcBit2 = iPreviousCubeIndexY & 4;
+						uint8_t destBit0 = srcBit2 >> 2;
 
 						uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-						uint8_t destBit0 = srcBit3 >> 3;
-
-						uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-						uint8_t destBit1 = srcBit2 >> 1;
+						uint8_t destBit1 = srcBit3 >> 2;
 
 						//x
 						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						srcBit6 = iPreviousCubeIndexX & 64;
-						uint8_t destBit7 = srcBit6 << 1;
+						srcBit7 = iPreviousCubeIndexX & 128;
+						uint8_t destBit6 = srcBit7 >> 1;
 
-						srcBit2 = iPreviousCubeIndexX & 4;
-						uint8_t destBit3 = srcBit2 << 1;
+						srcBit3 = iPreviousCubeIndexX & 8;
+						uint8_t destBit2 = srcBit3 >> 1;
 
 						iCubeIndex |= destBit0;
-						iCubeIndex |= destBit1;
-						if (v110 == 0) iCubeIndex |= 4;
-						iCubeIndex |= destBit3;
+						iCubeIndex |= destBit1;						
+						iCubeIndex |= destBit2;
+						if (v110 == 0) iCubeIndex |= 8;
 						iCubeIndex |= destBit4;
-						iCubeIndex |= destBit5;
-						if (v111 == 0) iCubeIndex |= 64;
-						iCubeIndex |= destBit7;
+						iCubeIndex |= destBit5;						
+						iCubeIndex |= destBit6;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 				}
 				else
@@ -268,12 +270,12 @@ namespace PolyVox
 
 					if (v000 == 0) iCubeIndex |= 1;
 					if (v100 == 0) iCubeIndex |= 2;
-					if (v110 == 0) iCubeIndex |= 4;
-					if (v010 == 0) iCubeIndex |= 8;
+					if (v010 == 0) iCubeIndex |= 4;
+					if (v110 == 0) iCubeIndex |= 8;
 					if (v001 == 0) iCubeIndex |= 16;
 					if (v101 == 0) iCubeIndex |= 32;
-					if (v111 == 0) iCubeIndex |= 64;
-					if (v011 == 0) iCubeIndex |= 128;
+					if (v011 == 0) iCubeIndex |= 64;
+					if (v111 == 0) iCubeIndex |= 128;
 				}
 
 				//Save the bitmask
@@ -312,7 +314,6 @@ namespace PolyVox
 					(uYVolSpace < volIter.getVolume().getHeight()-1) &&
 					(uZVolSpace < volIter.getVolume().getDepth()-1))
 				{
-
 					if((uXRegSpace==0) && (uYRegSpace==0))
 					{						
 						const uint8_t v001 = volIter.peekVoxel0px0py1pz();
@@ -326,8 +327,8 @@ namespace PolyVox
 
 						if (v001 == 0) iCubeIndex |= 16;
 						if (v101 == 0) iCubeIndex |= 32;
-						if (v111 == 0) iCubeIndex |= 64;
-						if (v011 == 0) iCubeIndex |= 128;
+						if (v011 == 0) iCubeIndex |= 64;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 					else if((uXRegSpace>0) && uYRegSpace==0)
 					{
@@ -340,16 +341,16 @@ namespace PolyVox
 
 						//x
 						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						uint8_t srcBit6 = iPreviousCubeIndexX & 64;
-						uint8_t destBit7 = srcBit6 << 1;
+						uint8_t srcBit7 = iPreviousCubeIndexX & 128;
+						uint8_t destBit6 = srcBit7 >> 1;
 
 						uint8_t srcBit5 = iPreviousCubeIndexX & 32;
 						uint8_t destBit4 = srcBit5 >> 1;
 
 						iCubeIndex |= destBit4;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v111 == 0) iCubeIndex |= 64;
-						iCubeIndex |= destBit7;
+						if (v101 == 0) iCubeIndex |= 32;						
+						iCubeIndex |= destBit6;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 					else if((uXRegSpace==0) && (uYRegSpace>0))
 					{
@@ -362,16 +363,17 @@ namespace PolyVox
 
 						//y
 						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-						uint8_t destBit4 = srcBit7 >> 3;
-
+						
 						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-						uint8_t destBit5 = srcBit6 >> 1;
+						uint8_t destBit4 = srcBit6 >> 2;
+
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit5 = srcBit7 >> 2;
 
 						iCubeIndex |= destBit4;
 						iCubeIndex |= destBit5;
-						if (v111 == 0) iCubeIndex |= 64;
-						if (v011 == 0) iCubeIndex |= 128;
+						if (v011 == 0) iCubeIndex |= 64;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 					else
 					{
@@ -383,21 +385,21 @@ namespace PolyVox
 
 						//y
 						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-						uint8_t destBit4 = srcBit7 >> 3;
-
 						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-						uint8_t destBit5 = srcBit6 >> 1;
+						uint8_t destBit4 = srcBit6 >> 2;
+
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit5 = srcBit7 >> 2;
 
 						//x
 						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						srcBit6 = iPreviousCubeIndexX & 64;
-						uint8_t destBit7 = srcBit6 << 1;
+						srcBit7 = iPreviousCubeIndexX & 128;
+						uint8_t destBit6 = srcBit7 >> 1;
 
 						iCubeIndex |= destBit4;
-						iCubeIndex |= destBit5;
-						if (v111 == 0) iCubeIndex |= 64;
-						iCubeIndex |= destBit7;
+						iCubeIndex |= destBit5;						
+						iCubeIndex |= destBit6;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 				}
 				else
@@ -409,8 +411,8 @@ namespace PolyVox
 
 					if (v001 == 0) iCubeIndex |= 16;
 					if (v101 == 0) iCubeIndex |= 32;
-					if (v111 == 0) iCubeIndex |= 64;
-					if (v011 == 0) iCubeIndex |= 128;
+					if (v011 == 0) iCubeIndex |= 64;
+					if (v111 == 0) iCubeIndex |= 128;
 				}
 
 				//Save the bitmask
