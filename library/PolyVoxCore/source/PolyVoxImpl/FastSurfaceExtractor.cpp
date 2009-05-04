@@ -487,7 +487,7 @@ namespace PolyVox
 					uint8_t v001;
 					if((uZRegSpace + offset.getZ()) != regSlice.getUpperCorner().getZ())
 					{
-						uint8_t v001 = volIter.peekVoxel0px0py1pz();
+						v001 = volIter.peekVoxel0px0py1pz();
 					}
 					else
 					{
