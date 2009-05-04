@@ -56,9 +56,9 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					PolyVox::uint16_t regionStartY = uRegionY * m_uRegionSideLength;
 					PolyVox::uint16_t regionStartZ = uRegionZ * m_uRegionSideLength;
 
-					PolyVox::uint16_t regionEndX = regionStartX + m_uRegionSideLength + 1; //Why do we need the '+1' here?
-					PolyVox::uint16_t regionEndY = regionStartY + m_uRegionSideLength + 1; //Why do we need the '+1' here?
-					PolyVox::uint16_t regionEndZ = regionStartZ + m_uRegionSideLength + 1; //Why do we need the '+1' here?
+					PolyVox::uint16_t regionEndX = regionStartX + m_uRegionSideLength; //Why do we need the '+1' here?
+					PolyVox::uint16_t regionEndY = regionStartY + m_uRegionSideLength; //Why do we need the '+1' here?
+					PolyVox::uint16_t regionEndZ = regionStartZ + m_uRegionSideLength; //Why do we need the '+1' here?
 
 					Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
 					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);

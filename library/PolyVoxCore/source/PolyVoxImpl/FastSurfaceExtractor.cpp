@@ -48,7 +48,7 @@ namespace PolyVox
 		//When generating the mesh for a region we actually look one voxel outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
-		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
+		//regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
 		region.cropTo(regVolume);
 
 		//Offset from volume corner
@@ -57,7 +57,7 @@ namespace PolyVox
 		//Create a region corresponding to the first slice
 		Region regSlice0(region);
 		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
-		
+
 		//Iterator to access the volume data
 		VolumeIterator<uint8_t> volIter(*volumeData);		
 
@@ -69,7 +69,7 @@ namespace PolyVox
 			generateRoughVerticesForSlice(volIter,regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0);
 		}
 
-		for(uint32_t uSlice = 0; ((uSlice <= region.depth()-1) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
+		for(uint32_t uSlice = 0; ((uSlice < region.depth()) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
 		{
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,1));
@@ -115,147 +115,177 @@ namespace PolyVox
 		uint32_t uNoOfNonEmptyCells = 0;
 
 		//Iterate over each cell in the region
-		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regSlice);
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
+		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace++)
+		{
+			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace++)
+			{		
+				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				volIter.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+				//Current position
+				const uint16_t uXRegSpace = volIter.getPosX() - offset.getX();
+				const uint16_t uYRegSpace = volIter.getPosY() - offset.getY();
 
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = 0;
 
-			if((x==0) && (y==0))
-			{
-				const uint8_t v000 = volIter.getVoxel();
-				const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-				const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+				if((uXVolSpace < volIter.getVolume().getWidth()-1) &&
+					(uYVolSpace < volIter.getVolume().getHeight()-1) &&
+					(uZVolSpace < volIter.getVolume().getDepth()-1))
+				{
 
-				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+					if((uXRegSpace==0) && (uYRegSpace==0))
+					{
+						const uint8_t v000 = volIter.getVoxel();
+						const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+						const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
 
-				if (v000 == 0) iCubeIndex |= 1;
-				if (v100 == 0) iCubeIndex |= 2;
-				if (v110 == 0) iCubeIndex |= 4;
-				if (v010 == 0) iCubeIndex |= 8;
-				if (v001 == 0) iCubeIndex |= 16;
-				if (v101 == 0) iCubeIndex |= 32;
-				if (v111 == 0) iCubeIndex |= 64;
-				if (v011 == 0) iCubeIndex |= 128;
-			}
-			else if((x>0) && y==0)
-			{
-				const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+						const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();					
 
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+						if (v000 == 0) iCubeIndex |= 1;
+						if (v100 == 0) iCubeIndex |= 2;
+						if (v110 == 0) iCubeIndex |= 4;
+						if (v010 == 0) iCubeIndex |= 8;
+						if (v001 == 0) iCubeIndex |= 16;
+						if (v101 == 0) iCubeIndex |= 32;
+						if (v111 == 0) iCubeIndex |= 64;
+						if (v011 == 0) iCubeIndex |= 128;
+					}
+					else if((uXRegSpace>0) && uYRegSpace==0)
+					{
+						const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
 
-				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
-				uint8_t srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
-				
-				uint8_t srcBit5 = iPreviousCubeIndexX & 32;
-				uint8_t destBit4 = srcBit5 >> 1;
+						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
-				uint8_t srcBit2 = iPreviousCubeIndexX & 4;
-				uint8_t destBit3 = srcBit2 << 1;
-				
-				uint8_t srcBit1 = iPreviousCubeIndexX & 2;
-				uint8_t destBit0 = srcBit1 >> 1;
+						//x
+						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+						uint8_t srcBit6 = iPreviousCubeIndexX & 64;
+						uint8_t destBit7 = srcBit6 << 1;
 
-				iCubeIndex |= destBit0;
-				if (v100 == 0) iCubeIndex |= 2;
-				if (v110 == 0) iCubeIndex |= 4;
-				iCubeIndex |= destBit3;
-				iCubeIndex |= destBit4;
-				if (v101 == 0) iCubeIndex |= 32;
-				if (v111 == 0) iCubeIndex |= 64;
-				iCubeIndex |= destBit7;
-			}
-			else if((x==0) && (y>0))
-			{
-				const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+						uint8_t srcBit5 = iPreviousCubeIndexX & 32;
+						uint8_t destBit4 = srcBit5 >> 1;
 
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+						uint8_t srcBit2 = iPreviousCubeIndexX & 4;
+						uint8_t destBit3 = srcBit2 << 1;
 
-				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
-				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
+						uint8_t srcBit1 = iPreviousCubeIndexX & 2;
+						uint8_t destBit0 = srcBit1 >> 1;
 
-				uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-				uint8_t destBit0 = srcBit3 >> 3;
-				
-				uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-				uint8_t destBit1 = srcBit2 >> 1;
+						iCubeIndex |= destBit0;
+						if (v100 == 0) iCubeIndex |= 2;
+						if (v110 == 0) iCubeIndex |= 4;
+						iCubeIndex |= destBit3;
+						iCubeIndex |= destBit4;
+						if (v101 == 0) iCubeIndex |= 32;
+						if (v111 == 0) iCubeIndex |= 64;
+						iCubeIndex |= destBit7;
+					}
+					else if((uXRegSpace==0) && (uYRegSpace>0))
+					{
+						const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
 
-				iCubeIndex |= destBit0;
-				iCubeIndex |= destBit1;
-				if (v110 == 0) iCubeIndex |= 4;
-				if (v010 == 0) iCubeIndex |= 8;
-				iCubeIndex |= destBit4;
-				iCubeIndex |= destBit5;
-				if (v111 == 0) iCubeIndex |= 64;
-				if (v011 == 0) iCubeIndex |= 128;
-			}
-			else
-			{
-				const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();
 
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+						//y
+						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit4 = srcBit7 >> 3;
 
-				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
-				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
+						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
+						uint8_t destBit5 = srcBit6 >> 1;
 
-				uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-				uint8_t destBit0 = srcBit3 >> 3;
-				
-				uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-				uint8_t destBit1 = srcBit2 >> 1;
+						uint8_t srcBit3 = iPreviousCubeIndexY & 8;
+						uint8_t destBit0 = srcBit3 >> 3;
 
-				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
-				srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
+						uint8_t srcBit2 = iPreviousCubeIndexY & 4;
+						uint8_t destBit1 = srcBit2 >> 1;
 
-				srcBit2 = iPreviousCubeIndexX & 4;
-				uint8_t destBit3 = srcBit2 << 1;
+						iCubeIndex |= destBit0;
+						iCubeIndex |= destBit1;
+						if (v110 == 0) iCubeIndex |= 4;
+						if (v010 == 0) iCubeIndex |= 8;
+						iCubeIndex |= destBit4;
+						iCubeIndex |= destBit5;
+						if (v111 == 0) iCubeIndex |= 64;
+						if (v011 == 0) iCubeIndex |= 128;
+					}
+					else
+					{
+						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
 
-				iCubeIndex |= destBit0;
-				iCubeIndex |= destBit1;
-				if (v110 == 0) iCubeIndex |= 4;
-				iCubeIndex |= destBit3;
-				iCubeIndex |= destBit4;
-				iCubeIndex |= destBit5;
-				if (v111 == 0) iCubeIndex |= 64;
-				iCubeIndex |= destBit7;
-			}
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();
 
-			//Save the bitmask
-			bitmask[getIndex(x,y, regSlice.width()+1)] = iCubeIndex;
+						//y
+						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit4 = srcBit7 >> 3;
 
-			if(edgeTable[iCubeIndex] != 0)
-			{
-				++uNoOfNonEmptyCells;
-			}
-			
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
+						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
+						uint8_t destBit5 = srcBit6 >> 1;
+
+						uint8_t srcBit3 = iPreviousCubeIndexY & 8;
+						uint8_t destBit0 = srcBit3 >> 3;
+
+						uint8_t srcBit2 = iPreviousCubeIndexY & 4;
+						uint8_t destBit1 = srcBit2 >> 1;
+
+						//x
+						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+						srcBit6 = iPreviousCubeIndexX & 64;
+						uint8_t destBit7 = srcBit6 << 1;
+
+						srcBit2 = iPreviousCubeIndexX & 4;
+						uint8_t destBit3 = srcBit2 << 1;
+
+						iCubeIndex |= destBit0;
+						iCubeIndex |= destBit1;
+						if (v110 == 0) iCubeIndex |= 4;
+						iCubeIndex |= destBit3;
+						iCubeIndex |= destBit4;
+						iCubeIndex |= destBit5;
+						if (v111 == 0) iCubeIndex |= 64;
+						iCubeIndex |= destBit7;
+					}
+				}
+				else
+				{
+					const uint8_t v000 = volIter.getVoxel();
+					const uint8_t v100 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
+					const uint8_t v010 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
+					const uint8_t v110 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace  );
+
+					const uint8_t v001 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
+					const uint8_t v101 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
+					const uint8_t v011 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
+					const uint8_t v111 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);				
+
+					if (v000 == 0) iCubeIndex |= 1;
+					if (v100 == 0) iCubeIndex |= 2;
+					if (v110 == 0) iCubeIndex |= 4;
+					if (v010 == 0) iCubeIndex |= 8;
+					if (v001 == 0) iCubeIndex |= 16;
+					if (v101 == 0) iCubeIndex |= 32;
+					if (v111 == 0) iCubeIndex |= 64;
+					if (v011 == 0) iCubeIndex |= 128;
+				}
+
+				//Save the bitmask
+				bitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = iCubeIndex;
+
+				if(edgeTable[iCubeIndex] != 0)
+				{
+					++uNoOfNonEmptyCells;
+				}
+
+			}//while(volIter.moveForwardInRegionXYZ());//For each cell
+		}
 
 		return uNoOfNonEmptyCells;
 	}
@@ -265,113 +295,134 @@ namespace PolyVox
 		uint32_t uNoOfNonEmptyCells = 0;
 
 		//Iterate over each cell in the region
-		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regSlice);
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
+		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace++)
+		{
+			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace++)
+			{		
+				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				volIter.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+				//Current position
+				const uint16_t uXRegSpace = volIter.getPosX() - offset.getX();
+				const uint16_t uYRegSpace = volIter.getPosY() - offset.getY();
 
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = 0;
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = 0;
 
-			if((x==0) && (y==0))
-			{
-				const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+				if((uXVolSpace < volIter.getVolume().getWidth()-1) &&
+					(uYVolSpace < volIter.getVolume().getHeight()-1) &&
+					(uZVolSpace < volIter.getVolume().getDepth()-1))
+				{
 
-				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
-				iCubeIndex = iPreviousCubeIndexZ >> 4;
+					if((uXRegSpace==0) && (uYRegSpace==0))
+					{						
+						const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();	
 
-				if (v001 == 0) iCubeIndex |= 16;
-				if (v101 == 0) iCubeIndex |= 32;
-				if (v111 == 0) iCubeIndex |= 64;
-				if (v011 == 0) iCubeIndex |= 128;
+						//z
+						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+						iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+						if (v001 == 0) iCubeIndex |= 16;
+						if (v101 == 0) iCubeIndex |= 32;
+						if (v111 == 0) iCubeIndex |= 64;
+						if (v011 == 0) iCubeIndex |= 128;
+					}
+					else if((uXRegSpace>0) && uYRegSpace==0)
+					{
+						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+						//z
+						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+						iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+						//x
+						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+						uint8_t srcBit6 = iPreviousCubeIndexX & 64;
+						uint8_t destBit7 = srcBit6 << 1;
+
+						uint8_t srcBit5 = iPreviousCubeIndexX & 32;
+						uint8_t destBit4 = srcBit5 >> 1;
+
+						iCubeIndex |= destBit4;
+						if (v101 == 0) iCubeIndex |= 32;
+						if (v111 == 0) iCubeIndex |= 64;
+						iCubeIndex |= destBit7;
+					}
+					else if((uXRegSpace==0) && (uYRegSpace>0))
+					{
+						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+
+						//z
+						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+						iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+						//y
+						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit4 = srcBit7 >> 3;
+
+						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
+						uint8_t destBit5 = srcBit6 >> 1;
+
+						iCubeIndex |= destBit4;
+						iCubeIndex |= destBit5;
+						if (v111 == 0) iCubeIndex |= 64;
+						if (v011 == 0) iCubeIndex |= 128;
+					}
+					else
+					{
+						const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+						//z
+						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+						iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+						//y
+						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+						uint8_t srcBit7 = iPreviousCubeIndexY & 128;
+						uint8_t destBit4 = srcBit7 >> 3;
+
+						uint8_t srcBit6 = iPreviousCubeIndexY & 64;
+						uint8_t destBit5 = srcBit6 >> 1;
+
+						//x
+						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+						srcBit6 = iPreviousCubeIndexX & 64;
+						uint8_t destBit7 = srcBit6 << 1;
+
+						iCubeIndex |= destBit4;
+						iCubeIndex |= destBit5;
+						if (v111 == 0) iCubeIndex |= 64;
+						iCubeIndex |= destBit7;
+					}
+				}
+				else
+				{						
+					const uint8_t v001 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
+					const uint8_t v101 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
+					const uint8_t v011 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
+					const uint8_t v111 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);				
+
+					if (v001 == 0) iCubeIndex |= 16;
+					if (v101 == 0) iCubeIndex |= 32;
+					if (v111 == 0) iCubeIndex |= 64;
+					if (v011 == 0) iCubeIndex |= 128;
+				}
+
+				//Save the bitmask
+				bitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = iCubeIndex;
+
+				if(edgeTable[iCubeIndex] != 0)
+				{
+					++uNoOfNonEmptyCells;
+				}
+
 			}
-			else if((x>0) && y==0)
-			{
-				const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
-
-				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
-				iCubeIndex = iPreviousCubeIndexZ >> 4;
-
-				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
-				uint8_t srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
-				
-				uint8_t srcBit5 = iPreviousCubeIndexX & 32;
-				uint8_t destBit4 = srcBit5 >> 1;
-
-				iCubeIndex |= destBit4;
-				if (v101 == 0) iCubeIndex |= 32;
-				if (v111 == 0) iCubeIndex |= 64;
-				iCubeIndex |= destBit7;
-			}
-			else if((x==0) && (y>0))
-			{
-				const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();
-
-				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
-				iCubeIndex = iPreviousCubeIndexZ >> 4;
-
-				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
-				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
-
-				iCubeIndex |= destBit4;
-				iCubeIndex |= destBit5;
-				if (v111 == 0) iCubeIndex |= 64;
-				if (v011 == 0) iCubeIndex |= 128;
-			}
-			else
-			{
-				const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
-
-				//z
-				uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(x,y, regSlice.width()+1)];
-				iCubeIndex = iPreviousCubeIndexZ >> 4;
-
-				//y
-				uint8_t iPreviousCubeIndexY = bitmask[getIndex(x,y-1, regSlice.width()+1)];
-				uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-				uint8_t destBit4 = srcBit7 >> 3;
-				
-				uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-				uint8_t destBit5 = srcBit6 >> 1;
-
-				//x
-				uint8_t iPreviousCubeIndexX = bitmask[getIndex(x-1,y, regSlice.width()+1)];
-				srcBit6 = iPreviousCubeIndexX & 64;
-				uint8_t destBit7 = srcBit6 << 1;
-
-				iCubeIndex |= destBit4;
-				iCubeIndex |= destBit5;
-				if (v111 == 0) iCubeIndex |= 64;
-				iCubeIndex |= destBit7;
-			}
-
-			//Save the bitmask
-			bitmask[getIndex(x,y, regSlice.width()+1)] = iCubeIndex;
-
-			if(edgeTable[iCubeIndex] != 0)
-			{
-				++uNoOfNonEmptyCells;
-			}
-			
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
+		}
 
 		return uNoOfNonEmptyCells;
 	}
@@ -379,165 +430,187 @@ namespace PolyVox
 	void generateRoughVerticesForSlice(VolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
 	{
 		//Iterate over each cell in the region
-		volIter.setPosition(regSlice.getLowerCorner().getX(),regSlice.getLowerCorner().getY(), regSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regSlice);
-		//while(volIter.moveForwardInRegionXYZ())
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
+		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace++)
+		{
+			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace++)
+			{		
+				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				volIter.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
 
-			const uint8_t v000 = volIter.getVoxel();
+				//Current position
+				const uint16_t uXRegSpace = volIter.getPosX() - offset.getX();
+				const uint16_t uYRegSpace = volIter.getPosY() - offset.getY();
+				const uint16_t uZRegSpace = volIter.getPosZ() - offset.getZ();
 
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask[getIndex(x,y, regSlice.width()+1)];
+				const uint8_t v000 = volIter.getVoxel();
 
-			/* Cube is entirely in/out of the surface */
-			if (edgeTable[iCubeIndex] == 0)
-			{
-				continue;
-			}
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = bitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
 
-			/* Find the vertices where the surface intersects the cube */
-			if (edgeTable[iCubeIndex] & 1)
-			{
-				if((x + offset.getX()) != regSlice.getUpperCorner().getX())
+				/* Cube is entirely in/out of the surface */
+				if (edgeTable[iCubeIndex] == 0)
 				{
-					const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-					const Vector3DFloat v3dPosition(x + 0.5f, y, z);
-					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f, 0.0f, 0.0f);					
-					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
-					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-					vertexIndicesX[getIndex(x,y, regSlice.width()+1)] = uLastVertexIndex;
+					continue;
 				}
-			}
-			if (edgeTable[iCubeIndex] & 8)
-			{
-				if((y + offset.getY()) != regSlice.getUpperCorner().getY())
+
+				/* Find the vertices where the surface intersects the cube */
+				if (edgeTable[iCubeIndex] & 1)
 				{
-					const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-					const Vector3DFloat v3dPosition(x, y + 0.5f, z);
-					const Vector3DFloat v3dNormal(0.0f, v000 > v010 ? 1.0f : -1.0f, 0.0f);
-					const uint8_t uMaterial = v000 | v010;
-					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-					vertexIndicesY[getIndex(x,y, regSlice.width()+1)] = uLastVertexIndex;
+					if((uXRegSpace + offset.getX()) != regSlice.getUpperCorner().getX())
+					{
+						const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+						const Vector3DFloat v3dPosition(uXRegSpace + 0.5f, uYRegSpace, uZRegSpace);
+						const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f, 0.0f, 0.0f);					
+						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
+						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+						uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
+						vertexIndicesX[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = uLastVertexIndex;
+					}
 				}
-			}
-			if (edgeTable[iCubeIndex] & 256)
-			{
-				//if((z + offset.getZ()) != upperCorner.getZ())
+				if (edgeTable[iCubeIndex] & 8)
 				{
-					const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-					const Vector3DFloat v3dPosition(x, y, z + 0.5f);
+					if((uYRegSpace + offset.getY()) != regSlice.getUpperCorner().getY())
+					{
+						const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+						const Vector3DFloat v3dPosition(uXRegSpace, uYRegSpace + 0.5f, uZRegSpace);
+						const Vector3DFloat v3dNormal(0.0f, v000 > v010 ? 1.0f : -1.0f, 0.0f);
+						const uint8_t uMaterial = v000 | v010;
+						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+						uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
+						vertexIndicesY[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = uLastVertexIndex;
+					}
+				}
+				if (edgeTable[iCubeIndex] & 256)
+				{
+					uint8_t v001;
+					if((uZRegSpace + offset.getZ()) != regSlice.getUpperCorner().getZ())
+					{
+						uint8_t v001 = volIter.peekVoxel0px0py1pz();
+					}
+					else
+					{
+						v001 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace,uYVolSpace,uZVolSpace+1);
+					}
+					const Vector3DFloat v3dPosition(uXRegSpace, uYRegSpace, uZRegSpace + 0.5f);
 					const Vector3DFloat v3dNormal(0.0f, 0.0f, v000 > v001 ? 1.0f : -1.0f);
 					const uint8_t uMaterial = v000 | v001;
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-					vertexIndicesZ[getIndex(x,y, regSlice.width()+1)] = uLastVertexIndex;
+					vertexIndicesZ[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = uLastVertexIndex;
 				}
 			}
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
+		}
 	}
 
 	void generateRoughIndicesForSlice(VolumeIterator<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
 	{
 		uint32_t indlist[12];
 
-		Region regCroppedSlice(regSlice);		
-		regCroppedSlice.setUpperCorner(regCroppedSlice.getUpperCorner() - Vector3DInt32(1,1,0));
+		//Iterate over each cell in the region
+		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace < regSlice.getUpperCorner().getY(); uYVolSpace++)
+		{
+			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace < regSlice.getUpperCorner().getX(); uXVolSpace++)
+			{		
+				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				volIter.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
 
-		volIter.setPosition(regCroppedSlice.getLowerCorner().getX(),regCroppedSlice.getLowerCorner().getY(), regCroppedSlice.getLowerCorner().getZ());
-		volIter.setValidRegion(regCroppedSlice);
-		do
-		{		
-			//Current position
-			const uint16_t x = volIter.getPosX() - offset.getX();
-			const uint16_t y = volIter.getPosY() - offset.getY();
-			const uint16_t z = volIter.getPosZ() - offset.getZ();
+				//Current position
+				const uint16_t uXRegSpace = volIter.getPosX() - offset.getX();
+				const uint16_t uYRegSpace = volIter.getPosY() - offset.getY();
+				const uint16_t uZRegSpace = volIter.getPosZ() - offset.getZ();
 
-			//Determine the index into the edge table which tells us which vertices are inside of the surface
-			uint8_t iCubeIndex = bitmask0[getIndex(x,y, regSlice.width()+1)];
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = bitmask0[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
 
-			/* Cube is entirely in/out of the surface */
-			if (edgeTable[iCubeIndex] == 0)
-			{
-				continue;
-			}
+				/* Cube is entirely in/out of the surface */
+				if (edgeTable[iCubeIndex] == 0)
+				{
+					continue;
+				}
 
-			/* Find the vertices where the surface intersects the cube */
-			if (edgeTable[iCubeIndex] & 1)
-			{
-				indlist[0] = vertexIndicesX0[getIndex(x,y, regSlice.width()+1)];
-				assert(indlist[0] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 2)
-			{
-				indlist[1] = vertexIndicesY0[getIndex(x+1,y, regSlice.width()+1)];
-				assert(indlist[1] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 4)
-			{
-				indlist[2] = vertexIndicesX0[getIndex(x,y+1, regSlice.width()+1)];
-				assert(indlist[2] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 8)
-			{
-				indlist[3] = vertexIndicesY0[getIndex(x,y, regSlice.width()+1)];
-				assert(indlist[3] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 16)
-			{
-				indlist[4] = vertexIndicesX1[getIndex(x,y, regSlice.width()+1)];
-				assert(indlist[4] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 32)
-			{
-				indlist[5] = vertexIndicesY1[getIndex(x+1,y, regSlice.width()+1)];
-				assert(indlist[5] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 64)
-			{
-				indlist[6] = vertexIndicesX1[getIndex(x,y+1, regSlice.width()+1)];
-				assert(indlist[6] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 128)
-			{
-				indlist[7] = vertexIndicesY1[getIndex(x,y, regSlice.width()+1)];
-				assert(indlist[7] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 256)
-			{
-				indlist[8] = vertexIndicesZ0[getIndex(x,y, regSlice.width()+1)];
-				assert(indlist[8] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 512)
-			{
-				indlist[9] = vertexIndicesZ0[getIndex(x+1,y, regSlice.width()+1)];
-				assert(indlist[9] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 1024)
-			{
-				indlist[10] = vertexIndicesZ0[getIndex(x+1,y+1, regSlice.width()+1)];
-				assert(indlist[10] != -1);
-			}
-			if (edgeTable[iCubeIndex] & 2048)
-			{
-				indlist[11] = vertexIndicesZ0[getIndex(x,y+1, regSlice.width()+1)];
-				assert(indlist[11] != -1);
-			}
+				/* Find the vertices where the surface intersects the cube */
+				if (edgeTable[iCubeIndex] & 1)
+				{
+					indlist[0] = vertexIndicesX0[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[0] != -1);
+					assert(indlist[0] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 2)
+				{
+					indlist[1] = vertexIndicesY0[getIndex(uXRegSpace+1,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[1] != -1);
+					assert(indlist[1] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 4)
+				{
+					indlist[2] = vertexIndicesX0[getIndex(uXRegSpace,uYRegSpace+1, regSlice.width()+1)];
+					assert(indlist[2] != -1);
+					assert(indlist[2] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 8)
+				{
+					indlist[3] = vertexIndicesY0[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[3] != -1);
+					assert(indlist[3] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 16)
+				{
+					indlist[4] = vertexIndicesX1[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[4] != -1);
+					assert(indlist[4] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 32)
+				{
+					indlist[5] = vertexIndicesY1[getIndex(uXRegSpace+1,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[5] != -1);
+					assert(indlist[5] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 64)
+				{
+					indlist[6] = vertexIndicesX1[getIndex(uXRegSpace,uYRegSpace+1, regSlice.width()+1)];
+					assert(indlist[6] != -1);
+					assert(indlist[6] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 128)
+				{
+					indlist[7] = vertexIndicesY1[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[7] != -1);
+					assert(indlist[7] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 256)
+				{
+					indlist[8] = vertexIndicesZ0[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[8] != -1);
+					assert(indlist[8] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 512)
+				{
+					indlist[9] = vertexIndicesZ0[getIndex(uXRegSpace+1,uYRegSpace, regSlice.width()+1)];
+					assert(indlist[9] != -1);
+					assert(indlist[9] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 1024)
+				{
+					indlist[10] = vertexIndicesZ0[getIndex(uXRegSpace+1,uYRegSpace+1, regSlice.width()+1)];
+					assert(indlist[10] != -1);
+					assert(indlist[10] < 10000);
+				}
+				if (edgeTable[iCubeIndex] & 2048)
+				{
+					indlist[11] = vertexIndicesZ0[getIndex(uXRegSpace,uYRegSpace+1, regSlice.width()+1)];
+					assert(indlist[11] != -1);
+					assert(indlist[11] < 10000);
+				}
 
-			for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
-			{
-				uint32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
-				uint32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
-				uint32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
+				for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
+				{
+					uint32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
+					uint32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
+					uint32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
 
-				singleMaterialPatch->addTriangle(ind0, ind1, ind2);
-			}//For each triangle
-		}while(volIter.moveForwardInRegionXYZ());//For each cell
+					singleMaterialPatch->addTriangle(ind0, ind1, ind2);
+				}//For each triangle
+			}
+		}
 	}
 }

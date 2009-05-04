@@ -247,11 +247,26 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
-		assert(v3dPos.getX() < m_uWidth);
-		assert(v3dPos.getY() < m_uHeight);
-		assert(v3dPos.getZ() < m_uDepth);
-
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	template <typename VoxelType>
+	VoxelType Volume<VoxelType>::getVoxelAtWithBoundCheck(int16_t uXPos, int16_t uYPos, int16_t uZPos) const
+	{
+		if((uXPos >=0) && (uXPos < m_uWidth) && (uYPos >= 0) && (uYPos < m_uHeight) && (uZPos >= 0) && (uZPos < m_uDepth))
+		{
+			return getVoxelAt(uXPos, uYPos, uZPos);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	template <typename VoxelType>
+	VoxelType Volume<VoxelType>::getVoxelAtWithBoundCheck(const Vector3DInt16& v3dPos) const
+	{
+		return getVoxelAtWithBoundCheck(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 	#pragma endregion	
 

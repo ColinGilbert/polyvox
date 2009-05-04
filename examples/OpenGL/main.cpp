@@ -72,6 +72,10 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
 	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
+	createCubeInVolume(volData, Vector3DUint16(1, midPos-10, midPos-10), Vector3DUint16(maxPos-1, midPos+10, midPos+10), 255);
+	createCubeInVolume(volData, Vector3DUint16(midPos-10, 1, midPos-10), Vector3DUint16(midPos+10, maxPos-1, midPos+10), 255);
+	createCubeInVolume(volData, Vector3DUint16(midPos-10, midPos-10 ,1), Vector3DUint16(midPos+10, midPos+10, maxPos-1), 255);
+
 	cout << "Tidying memory...";
 	volData.tidyUpMemory(0);
 	cout << "done." << endl; 

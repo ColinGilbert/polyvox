@@ -382,6 +382,23 @@ namespace PolyVox
 
 		return true;
 	}
+
+	template <typename VoxelType>
+	void VolumeIterator<VoxelType>::movePositiveX(void)
+	{
+		++mXPosInVolume;
+		if(mXPosInVolume % mVolume.m_uBlockSideLength == 0)
+		{
+			//We've hit the block boundary. Just calling setPosition() is the easiest weay to resolve this.
+			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		}
+		else
+		{
+			//No need to compute new block.
+			++mVoxelIndexInBlock;
+			++mCurrentVoxel;
+		}
+	}
 	#pragma endregion
 
 	#pragma region Peekers

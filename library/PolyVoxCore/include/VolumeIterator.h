@@ -57,7 +57,9 @@ namespace PolyVox
 
 		bool isValidForRegion(void) const;
 		bool moveForwardInRegionXYZ(void);
-		void moveForwardInRegionXYZFast(void);			
+		void moveForwardInRegionXYZFast(void);
+
+		void movePositiveX(void);
 
 		VoxelType peekVoxel1nx1ny1nz(void) const;
 		VoxelType peekVoxel1nx1ny0pz(void) const;
