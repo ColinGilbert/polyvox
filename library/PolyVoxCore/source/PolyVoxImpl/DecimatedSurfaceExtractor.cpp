@@ -191,25 +191,14 @@ namespace PolyVox
 
 					//x
 					uint8_t iPreviousCubeIndexX = bitmask[getDecimatedIndex(x- offset.getX()-uStepSize,y- offset.getY(), regSlice.width()+1)];
-					uint8_t srcBit7 = iPreviousCubeIndexX & 128;
-					uint8_t destBit6 = srcBit7 >> 1;
+					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+					iPreviousCubeIndexX >>= 1;
 
-					uint8_t srcBit5 = iPreviousCubeIndexX & 32;
-					uint8_t destBit4 = srcBit5 >> 1;
+					iCubeIndex = iPreviousCubeIndexX;
 
-					uint8_t srcBit3 = iPreviousCubeIndexX & 8;
-					uint8_t destBit2 = srcBit3 >> 1;
-
-					uint8_t srcBit1 = iPreviousCubeIndexX & 2;
-					uint8_t destBit0 = srcBit1 >> 1;
-
-					iCubeIndex |= destBit0;
-					if (v100 == 0) iCubeIndex |= 2;						
-					iCubeIndex |= destBit2;
+					if (v100 == 0) iCubeIndex |= 2;	
 					if (v110 == 0) iCubeIndex |= 8;
-					iCubeIndex |= destBit4;
-					if (v101 == 0) iCubeIndex |= 32;						
-					iCubeIndex |= destBit6;
+					if (v101 == 0) iCubeIndex |= 32;
 					if (v111 == 0) iCubeIndex |= 128;
 				}
 				else if((x==regSlice.getLowerCorner().getX()) && (y>regSlice.getLowerCorner().getY()))
@@ -226,25 +215,13 @@ namespace PolyVox
 
 					//y
 					uint8_t iPreviousCubeIndexY = bitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY()-uStepSize, regSlice.width()+1)];
-					uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-					uint8_t destBit4 = srcBit6 >> 2;
+					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+					iPreviousCubeIndexY >>= 2;
 
-					uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-					uint8_t destBit5 = srcBit7 >> 2;
+					iCubeIndex = iPreviousCubeIndexY;
 
-					
-					uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-					uint8_t destBit0 = srcBit2 >> 2;
-
-					uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-					uint8_t destBit1 = srcBit3 >> 2;
-
-					iCubeIndex |= destBit0;
-					iCubeIndex |= destBit1;
 					if (v010 == 0) iCubeIndex |= 4;
 					if (v110 == 0) iCubeIndex |= 8;
-					iCubeIndex |= destBit4;
-					iCubeIndex |= destBit5;
 					if (v011 == 0) iCubeIndex |= 64;
 					if (v111 == 0) iCubeIndex |= 128;
 				}
@@ -258,33 +235,17 @@ namespace PolyVox
 
 					//y
 					uint8_t iPreviousCubeIndexY = bitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY()-uStepSize, regSlice.width()+1)];
-					uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-					uint8_t destBit4 = srcBit6 >> 2;
-					
-					uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-					uint8_t destBit5 = srcBit7 >> 2;
-					
-					uint8_t srcBit2 = iPreviousCubeIndexY & 4;
-					uint8_t destBit0 = srcBit2 >> 2;
-
-					uint8_t srcBit3 = iPreviousCubeIndexY & 8;
-					uint8_t destBit1 = srcBit3 >> 2;
+					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+					iPreviousCubeIndexY >>= 2;
 
 					//x
 					uint8_t iPreviousCubeIndexX = bitmask[getDecimatedIndex(x- offset.getX()-uStepSize,y- offset.getY(), regSlice.width()+1)];
-					srcBit7 = iPreviousCubeIndexX & 128;
-					uint8_t destBit6 = srcBit7 >> 1;
+					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+					iPreviousCubeIndexX >>= 1;
 
-					srcBit3 = iPreviousCubeIndexX & 8;
-					uint8_t destBit2 = srcBit3 >> 1;
+					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
 
-					iCubeIndex |= destBit0;
-					iCubeIndex |= destBit1;						
-					iCubeIndex |= destBit2;
 					if (v110 == 0) iCubeIndex |= 8;
-					iCubeIndex |= destBit4;
-					iCubeIndex |= destBit5;						
-					iCubeIndex |= destBit6;
 					if (v111 == 0) iCubeIndex |= 128;
 				}
 
@@ -347,19 +308,16 @@ namespace PolyVox
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY(), regSlice.width()+1)];
-					iCubeIndex = iPreviousCubeIndexZ >> 4;
+					iPreviousCubeIndexZ >>= 4;
 
 					//x
 					uint8_t iPreviousCubeIndexX = bitmask[getDecimatedIndex(x- offset.getX()-uStepSize,y- offset.getY(), regSlice.width()+1)];
-					uint8_t srcBit7 = iPreviousCubeIndexX & 128;
-					uint8_t destBit6 = srcBit7 >> 1;
+					iPreviousCubeIndexX &= 160; //160 = 128+32
+					iPreviousCubeIndexX >>= 1;
 
-					uint8_t srcBit5 = iPreviousCubeIndexX & 32;
-					uint8_t destBit4 = srcBit5 >> 1;
+					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
 
-					iCubeIndex |= destBit4;
-					if (v101 == 0) iCubeIndex |= 32;						
-					iCubeIndex |= destBit6;
+					if (v101 == 0) iCubeIndex |= 32;
 					if (v111 == 0) iCubeIndex |= 128;
 				}
 				else if((x==regSlice.getLowerCorner().getX()) && (y>regSlice.getLowerCorner().getY()))
@@ -371,18 +329,15 @@ namespace PolyVox
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY(), regSlice.width()+1)];
-					iCubeIndex = iPreviousCubeIndexZ >> 4;
+					iPreviousCubeIndexZ >>= 4;
 
 					//y
 					uint8_t iPreviousCubeIndexY = bitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY()-uStepSize, regSlice.width()+1)];
-					uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-					uint8_t destBit4 = srcBit6 >> 2;
+					iPreviousCubeIndexY &= 192; //192 = 128 + 64
+					iPreviousCubeIndexY >>= 2;
 
-					uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-					uint8_t destBit5 = srcBit7 >> 2;
+					iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					iCubeIndex |= destBit4;
-					iCubeIndex |= destBit5;
 					if (v011 == 0) iCubeIndex |= 64;
 					if (v111 == 0) iCubeIndex |= 128;
 				}
@@ -393,24 +348,20 @@ namespace PolyVox
 
 					//z
 					uint8_t iPreviousCubeIndexZ = previousBitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY(), regSlice.width()+1)];
-					iCubeIndex = iPreviousCubeIndexZ >> 4;
+					iPreviousCubeIndexZ >>= 4;
 
 					//y
 					uint8_t iPreviousCubeIndexY = bitmask[getDecimatedIndex(x- offset.getX(),y- offset.getY()-uStepSize, regSlice.width()+1)];
-					uint8_t srcBit6 = iPreviousCubeIndexY & 64;
-					uint8_t destBit4 = srcBit6 >> 2;
-
-					uint8_t srcBit7 = iPreviousCubeIndexY & 128;
-					uint8_t destBit5 = srcBit7 >> 2;
+					iPreviousCubeIndexY &= 192; //192 = 128 + 64
+					iPreviousCubeIndexY >>= 2;
 
 					//x
 					uint8_t iPreviousCubeIndexX = bitmask[getDecimatedIndex(x- offset.getX()-uStepSize,y- offset.getY(), regSlice.width()+1)];
-					srcBit7 = iPreviousCubeIndexX & 128;
-					uint8_t destBit6 = srcBit7 >> 1;
+					iPreviousCubeIndexX &= 128;
+					iPreviousCubeIndexX >>= 1;
 
-					iCubeIndex |= destBit4;
-					iCubeIndex |= destBit5;						
-					iCubeIndex |= destBit6;
+					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
 					if (v111 == 0) iCubeIndex |= 128;
 				}
 

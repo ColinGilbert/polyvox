@@ -64,7 +64,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
-					extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
+					extractSurface(m_volData, 2, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
 
 					//computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
 					//*ispCurrent = getSmoothedSurface(*ispCurrent);
