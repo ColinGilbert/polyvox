@@ -37,72 +37,72 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	///The Volume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
-	/*******************************************************************************
-	A Volume is essentially a '3D image' in which each element (voxel) is identified
-	by a three dimensional (x,y,z) coordinate, rather than the two dimensional (x,y)
-	coordinate which is used to identify an element (pixel) in a normal image. Within
-	PolyVox, the Volume class is used to store and manipulate our data before we extract 
-	our SurfacePatch's from it.
-
-	<b>Data Representaion - feel free to skip</b>
-	If stored carelessly, volume data can take up a huge amount of memory. For example, a
-	volume of dimensions 1024x1024x1024 with 1 byte per voxel will require 1GB of memory
-	if stored in an uncompressed form. Natuarally our Volume class is much more efficient
-	than this and it is worth understanding (at least at a high level) the approach
-	which is used.
-
-	Essentially, the Volume class stores its data as a collection of blocks. Each 
-	of these block is much smaller than the whole volume, for example a typical size
-	might be 32x32x32 voxels (though is is configurable by the user). In this case,
-	a 256x512x1024 volume would contain 8x16x32 = 4096 blocks. However, it is unlikely that
-	all these blocks actually have to be stored because usually there are duplicates
-	in which case common data can be shared.
-
-	Identifying duplicate blocks is in general a difficult task which involves looking at pairs
-	of blocks and comparing all the voxels. This is a time consuming task which is not amiable 
-	to being performed when the volume is being modified in real time. However, there are two
-	specific scenarios which are easily spotted and which PolyVox uses to identify block
-	sharing opportunities.
-
-	-# Homogeneous blocks (those which contain just a single voxel value) are easy to
-	spot and fairly common becuase volumes often contain large homogeous regions. Any time
-	you change the value of a voxel you have potentially made the block which contains
-	it homogeneous. PolyVox does not check the homogeneity immediatly as this would slow
-	down the process of modifying voxels, but you can use the tidyUpMemory() function
-	to check for and remove duplicate homogeneous regions whenever you have spare
-	processing time.
-
-	-# Copying a volume naturally means that all the voxels in the second voluem are
-	the same as the first. Therefore volume copying is a relatively fast operation in
-	which all the blocks in the second volume simply reference the first volume. Future
-	modifications to either volume will, of course, cause the blocks to become unshared.
-
-	Other advantages of breaking the volume down into blocks include enhancing data locality
-	(i.e. voxels which are spatially near to each other are also likely to be near in
-	memory) and the ability to load larger volumes as no large contiguous areas of
-	memory are needed. However, these advantages are more transparent to user code
-	so we will not dwell on them here.
-
-	<b>Usage</b>
-	Volumes are constructed by passing the desired width height and depth to the
-	constructor. Note that for speed reasons only values which are a power of two
-	are permitted for these sidelengths.
-
-	Access to specific voxels is provided by the getVoxelAt() and setVoxelAt fuctions.
-	Each of these has two forms so that voxels can be identified by integer triples
-	or by Vector3DUint16's.
-
-	The tidyUpMemory() function should normally be called after you first populate
-	the volume with data, and then at periodic intervals as the volume is modified.
-	However, you don't actually <i>have</i> to call it at all. See the functions
-	documentation for further details.
-
-	One further important point of note is that this class is templatised on the voxel
-	type. This allows you to store volumes of data types you might not normally expect,
-	for example theOpenGL example 'abuses' this class to store a 3D grid of pointers.
-	However, it is not guarentted that all functionality works correctly with non-integer
-	voxel types.
-	*******************************************************************************/
+	////////////////////////////////////////////////////////////////////////////////
+	/// A Volume is essentially a '3D image' in which each element (voxel) is identified
+	/// by a three dimensional (x,y,z) coordinate, rather than the two dimensional (x,y)
+	/// coordinate which is used to identify an element (pixel) in a normal image. Within
+	/// PolyVox, the Volume class is used to store and manipulate our data before we extract 
+	/// our SurfacePatch's from it.
+	/// 
+	/// <b>Data Representaion - feel free to skip</b>
+	/// If stored carelessly, volume data can take up a huge amount of memory. For example, a
+	/// volume of dimensions 1024x1024x1024 with 1 byte per voxel will require 1GB of memory
+	/// if stored in an uncompressed form. Natuarally our Volume class is much more efficient
+	/// than this and it is worth understanding (at least at a high level) the approach
+	/// which is used.
+	/// 
+	/// Essentially, the Volume class stores its data as a collection of blocks. Each 
+	/// of these block is much smaller than the whole volume, for example a typical size
+	/// might be 32x32x32 voxels (though is is configurable by the user). In this case,
+	/// a 256x512x1024 volume would contain 8x16x32 = 4096 blocks. However, it is unlikely that
+	/// all these blocks actually have to be stored because usually there are duplicates
+	/// in which case common data can be shared.
+	/// 
+	/// Identifying duplicate blocks is in general a difficult task which involves looking at pairs
+	/// of blocks and comparing all the voxels. This is a time consuming task which is not amiable 
+	/// to being performed when the volume is being modified in real time. However, there are two
+	/// specific scenarios which are easily spotted and which PolyVox uses to identify block
+	/// sharing opportunities.
+	/// 
+	/// -# Homogeneous blocks (those which contain just a single voxel value) are easy to
+	/// spot and fairly common becuase volumes often contain large homogeous regions. Any time
+	/// you change the value of a voxel you have potentially made the block which contains
+	/// it homogeneous. PolyVox does not check the homogeneity immediatly as this would slow
+	/// down the process of modifying voxels, but you can use the tidyUpMemory() function
+	/// to check for and remove duplicate homogeneous regions whenever you have spare
+	/// processing time.
+	/// 
+	/// -# Copying a volume naturally means that all the voxels in the second voluem are
+	/// the same as the first. Therefore volume copying is a relatively fast operation in
+	/// which all the blocks in the second volume simply reference the first volume. Future
+	/// modifications to either volume will, of course, cause the blocks to become unshared.
+	/// 
+	/// Other advantages of breaking the volume down into blocks include enhancing data locality
+	/// (i.e. voxels which are spatially near to each other are also likely to be near in
+	/// memory) and the ability to load larger volumes as no large contiguous areas of
+	/// memory are needed. However, these advantages are more transparent to user code
+	/// so we will not dwell on them here.
+	/// 
+	/// <b>Usage</b>
+	/// Volumes are constructed by passing the desired width height and depth to the
+	/// constructor. Note that for speed reasons only values which are a power of two
+	/// are permitted for these sidelengths.
+	/// 
+	/// Access to specific voxels is provided by the getVoxelAt() and setVoxelAt fuctions.
+	/// Each of these has two forms so that voxels can be identified by integer triples
+	/// or by Vector3DUint16's.
+	/// 
+	/// The tidyUpMemory() function should normally be called after you first populate
+	/// the volume with data, and then at periodic intervals as the volume is modified.
+	/// However, you don't actually <i>have</i> to call it at all. See the functions
+	/// documentation for further details.
+	/// 
+	/// One further important point of note is that this class is templatised on the voxel
+	/// type. This allows you to store volumes of data types you might not normally expect,
+	/// for example theOpenGL example 'abuses' this class to store a 3D grid of pointers.
+	/// However, it is not guarentted that all functionality works correctly with non-integer
+	/// voxel types.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	class Volume
 	{
