@@ -10,7 +10,6 @@
 
 #include "PolyVoxImpl/DecimatedSurfaceExtractor.h"
 #include "PolyVoxImpl/FastSurfaceExtractor.h"
-#include "PolyVoxImpl/ReferenceSurfaceExtractor.h"
 
 #include <algorithm>
 
@@ -28,13 +27,6 @@ namespace PolyVox
 		{
 			extractDecimatedSurfaceImpl(volumeData, uLevel, region, singleMaterialPatch);
 		}
-
-		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
-	}
-
-	void extractReferenceSurface(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
-	{
-		extractReferenceSurfaceImpl(volumeData, region, singleMaterialPatch);
 
 		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
 	}

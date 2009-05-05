@@ -37,7 +37,6 @@ SET(IMPL_SRC_FILES
 	source/PolyVoxImpl/DecimatedSurfaceExtractor.cpp
 	source/PolyVoxImpl/FastSurfaceExtractor.cpp
 	source/PolyVoxImpl/MarchingCubesTables.cpp
-	source/PolyVoxImpl/ReferenceSurfaceExtractor.cpp
 	source/PolyVoxImpl/Utility.cpp
 )
 
@@ -48,7 +47,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxImpl/DecimatedSurfaceExtractor.h
 	include/PolyVoxImpl/FastSurfaceExtractor.h
 	include/PolyVoxImpl/MarchingCubesTables.h
-	include/PolyVoxImpl/ReferenceSurfaceExtractor.h
 	include/PolyVoxImpl/TypeDef.h
 	include/PolyVoxImpl/Utility.h
 )

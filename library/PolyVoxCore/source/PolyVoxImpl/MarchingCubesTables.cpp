@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-//Based on code by Paul Bourke
-//From the article "Polygonising a scalar field"
+//These tables were based on the article "Polygonising a scalar field".
+//They have been optimised to allow a more efficient algorithm via bitwise operations.
 
 // http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/index.html
 
