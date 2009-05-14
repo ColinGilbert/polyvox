@@ -62,7 +62,7 @@ namespace PolyVox
 		VolumeIterator<uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
-		uint32_t uNoOfNonEmptyCellsForSlice0 = computeInitialRoughBitmaskForSlice(volIter, regSlice0, offset, bitmask0);		
+		uint32_t uNoOfNonEmptyCellsForSlice0 = computeRoughBitmaskForSlice(volIter, regSlice0, offset, bitmask0, 0);		
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
@@ -74,7 +74,7 @@ namespace PolyVox
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,1));
 
-			uint32_t uNoOfNonEmptyCellsForSlice1 = computeRoughBitmaskForSliceFromPrevious(volIter, regSlice1, offset, bitmask1, bitmask0);
+			uint32_t uNoOfNonEmptyCellsForSlice1 = computeRoughBitmaskForSlice(volIter, regSlice1, offset, bitmask1, bitmask0);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -110,7 +110,7 @@ namespace PolyVox
 		return x + (y * (regionWidth+1));
 	}
 
-	uint32_t computeInitialRoughBitmaskForSlice(VolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask)
+	uint32_t computeRoughBitmaskForSlice(VolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
@@ -132,90 +132,188 @@ namespace PolyVox
 					(uYVolSpace < volIter.getVolume().getHeight()-1) &&
 					(uZVolSpace < volIter.getVolume().getDepth()-1))
 				{
-					if((uXRegSpace==0) && (uYRegSpace==0))
+					bool isPrevXAvail = uXRegSpace > 0;
+					bool isPrevYAvail = uYRegSpace > 0;
+					bool isPrevZAvail = previousBitmask != 0;
+
+					if(isPrevZAvail)
 					{
-						const uint8_t v000 = volIter.getVoxel();
-						const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-						const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+						if(isPrevYAvail)
+						{
+							if(isPrevXAvail)
+							{
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
-						const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();					
+								//z
+								uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexZ >>= 4;
 
-						if (v000 == 0) iCubeIndex |= 1;
-						if (v100 == 0) iCubeIndex |= 2;
-						if (v010 == 0) iCubeIndex |= 4;
-						if (v110 == 0) iCubeIndex |= 8;
-						if (v001 == 0) iCubeIndex |= 16;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v011 == 0) iCubeIndex |= 64;
-						if (v111 == 0) iCubeIndex |= 128;
+								//y
+								uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+								iPreviousCubeIndexY >>= 2;
+
+								//x
+								uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+								iPreviousCubeIndexX >>= 1;
+
+								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+
+								//z
+								uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexZ >>= 4;
+
+								//y
+								uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+								iPreviousCubeIndexY &= 192; //192 = 128 + 64
+								iPreviousCubeIndexY >>= 2;
+
+								iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
+								if (v011 == 0) iCubeIndex |= 64;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+						}
+						else //previous Y not available
+						{
+							if(isPrevXAvail)
+							{
+								const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+
+								//z
+								uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexZ >>= 4;
+
+								//x
+								uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexX &= 160; //160 = 128+32
+								iPreviousCubeIndexX >>= 1;
+
+								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
+
+								if (v101 == 0) iCubeIndex |= 32;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+								const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+								const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();	
+
+								//z
+								uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+								iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+								if (v001 == 0) iCubeIndex |= 16;
+								if (v101 == 0) iCubeIndex |= 32;
+								if (v011 == 0) iCubeIndex |= 64;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+						}
 					}
-					else if((uXRegSpace>0) && uYRegSpace==0)
+					else //previous Z not available
 					{
-						const uint8_t v100 = volIter.peekVoxel1px0py0pz();
-						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+						if(isPrevYAvail)
+						{
+							if(isPrevXAvail)
+							{
+								const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();
 
-						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
+								//y
+								uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+								iPreviousCubeIndexY >>= 2;
 
-						//x
-						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-						iPreviousCubeIndexX >>= 1;
+								//x
+								uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+								iPreviousCubeIndexX >>= 1;
 
-						iCubeIndex = iPreviousCubeIndexX;
+								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
 
-						if (v100 == 0) iCubeIndex |= 2;	
-						if (v110 == 0) iCubeIndex |= 8;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-					else if((uXRegSpace==0) && (uYRegSpace>0))
-					{
-						const uint8_t v010 = volIter.peekVoxel0px1py0pz();
-						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+								if (v110 == 0) iCubeIndex |= 8;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+								const uint8_t v110 = volIter.peekVoxel1px1py0pz();
 
-						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+								const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();
 
-						//y
-						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-						iPreviousCubeIndexY >>= 2;
+								//y
+								uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
+								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+								iPreviousCubeIndexY >>= 2;
 
-						iCubeIndex = iPreviousCubeIndexY;
+								iCubeIndex = iPreviousCubeIndexY;
 
-						if (v010 == 0) iCubeIndex |= 4;
-						if (v110 == 0) iCubeIndex |= 8;
-						if (v011 == 0) iCubeIndex |= 64;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-					else
-					{
-						const uint8_t v110 = volIter.peekVoxel1px1py0pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();
+								if (v010 == 0) iCubeIndex |= 4;
+								if (v110 == 0) iCubeIndex |= 8;
+								if (v011 == 0) iCubeIndex |= 64;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+						}
+						else //previous Y not available
+						{
+							if(isPrevXAvail)
+							{
+								const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+								const uint8_t v110 = volIter.peekVoxel1px1py0pz();
 
-						//y
-						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-						iPreviousCubeIndexY >>= 2;
+								const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
 
-						//x
-						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-						iPreviousCubeIndexX >>= 1;
+								//x
+								uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
+								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+								iPreviousCubeIndexX >>= 1;
 
-						iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
+								iCubeIndex = iPreviousCubeIndexX;
 
-						if (v110 == 0) iCubeIndex |= 8;
-						if (v111 == 0) iCubeIndex |= 128;
+								if (v100 == 0) iCubeIndex |= 2;	
+								if (v110 == 0) iCubeIndex |= 8;
+								if (v101 == 0) iCubeIndex |= 32;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								const uint8_t v000 = volIter.getVoxel();
+								const uint8_t v100 = volIter.peekVoxel1px0py0pz();
+								const uint8_t v010 = volIter.peekVoxel0px1py0pz();
+								const uint8_t v110 = volIter.peekVoxel1px1py0pz();
+
+								const uint8_t v001 = volIter.peekVoxel0px0py1pz();
+								const uint8_t v101 = volIter.peekVoxel1px0py1pz();
+								const uint8_t v011 = volIter.peekVoxel0px1py1pz();
+								const uint8_t v111 = volIter.peekVoxel1px1py1pz();					
+
+								if (v000 == 0) iCubeIndex |= 1;
+								if (v100 == 0) iCubeIndex |= 2;
+								if (v010 == 0) iCubeIndex |= 4;
+								if (v110 == 0) iCubeIndex |= 8;
+								if (v001 == 0) iCubeIndex |= 16;
+								if (v101 == 0) iCubeIndex |= 32;
+								if (v011 == 0) iCubeIndex |= 64;
+								if (v111 == 0) iCubeIndex |= 128;
+							}
+						}
 					}
 				}
-				else
-				{
+				else //We're at the edge of the volume - use bounds checking.
+				{	
 					const uint8_t v000 = volIter.getVoxel();
 					const uint8_t v100 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
 					const uint8_t v010 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
@@ -230,132 +328,6 @@ namespace PolyVox
 					if (v100 == 0) iCubeIndex |= 2;
 					if (v010 == 0) iCubeIndex |= 4;
 					if (v110 == 0) iCubeIndex |= 8;
-					if (v001 == 0) iCubeIndex |= 16;
-					if (v101 == 0) iCubeIndex |= 32;
-					if (v011 == 0) iCubeIndex |= 64;
-					if (v111 == 0) iCubeIndex |= 128;
-				}
-
-				//Save the bitmask
-				bitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = iCubeIndex;
-
-				if(edgeTable[iCubeIndex] != 0)
-				{
-					++uNoOfNonEmptyCells;
-				}
-
-			}//while(volIter.moveForwardInRegionXYZ());//For each cell
-		}
-
-		return uNoOfNonEmptyCells;
-	}
-
-	uint32_t computeRoughBitmaskForSliceFromPrevious(VolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
-	{
-		uint32_t uNoOfNonEmptyCells = 0;
-
-		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace++)
-		{
-			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace++)
-			{		
-				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
-				volIter.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-				//Current position
-				const uint16_t uXRegSpace = volIter.getPosX() - offset.getX();
-				const uint16_t uYRegSpace = volIter.getPosY() - offset.getY();
-
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = 0;
-
-				if((uXVolSpace < volIter.getVolume().getWidth()-1) &&
-					(uYVolSpace < volIter.getVolume().getHeight()-1) &&
-					(uZVolSpace < volIter.getVolume().getDepth()-1))
-				{
-					if((uXRegSpace==0) && (uYRegSpace==0))
-					{						
-						const uint8_t v001 = volIter.peekVoxel0px0py1pz();
-						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();	
-
-						//z
-						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-						iCubeIndex = iPreviousCubeIndexZ >> 4;
-
-						if (v001 == 0) iCubeIndex |= 16;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v011 == 0) iCubeIndex |= 64;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-					else if((uXRegSpace>0) && uYRegSpace==0)
-					{
-						const uint8_t v101 = volIter.peekVoxel1px0py1pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
-
-						//z
-						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexZ >>= 4;
-
-						//x
-						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexX &= 160; //160 = 128+32
-						iPreviousCubeIndexX >>= 1;
-
-						iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
-
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-					else if((uXRegSpace==0) && (uYRegSpace>0))
-					{
-						const uint8_t v011 = volIter.peekVoxel0px1py1pz();
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();
-
-						//z
-						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexZ >>= 4;
-
-						//y
-						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						iPreviousCubeIndexY &= 192; //192 = 128 + 64
-						iPreviousCubeIndexY >>= 2;
-
-						iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
-						if (v011 == 0) iCubeIndex |= 64;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-					else
-					{
-						const uint8_t v111 = volIter.peekVoxel1px1py1pz();			
-
-						//z
-						uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexZ >>= 4;
-
-						//y
-						uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-						iPreviousCubeIndexY &= 192; //192 = 128 + 64
-						iPreviousCubeIndexY >>= 2;
-
-						//x
-						uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-						iPreviousCubeIndexX &= 128;
-						iPreviousCubeIndexX >>= 1;
-
-						iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-				}
-				else
-				{						
-					const uint8_t v001 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
-					const uint8_t v101 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
-					const uint8_t v011 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
-					const uint8_t v111 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);				
-
 					if (v001 == 0) iCubeIndex |= 16;
 					if (v101 == 0) iCubeIndex |= 32;
 					if (v011 == 0) iCubeIndex |= 64;

@@ -34,8 +34,7 @@ namespace PolyVox
 	uint32_t getDecimatedIndex(uint32_t x, uint32_t y, uint32_t regionWidth);
 
 	void extractDecimatedSurfaceImpl(Volume<uint8_t>* volumeData, uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch);
-	uint32_t computeInitialDecimatedBitmaskForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t *bitmask);
-	uint32_t computeDecimatedBitmaskForSliceFromPrevious(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t *bitmask, uint8_t *previousBitmask);
+	uint32_t computeDecimatedBitmaskForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t *bitmask, uint8_t *previousBitmask);
 	void generateDecimatedIndicesForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[]);
 	void generateDecimatedVerticesForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[]);
 }
