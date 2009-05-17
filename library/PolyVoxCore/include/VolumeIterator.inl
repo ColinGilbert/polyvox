@@ -257,7 +257,7 @@ namespace PolyVox
 			mVoxelIndexInBlock = mXPosInBlock + 
 				mYPosInBlock * mVolume.m_uBlockSideLength + 
 				mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-			boost::shared_ptr< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+			POLYVOX_SHARED_PTR< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
 			mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
 
 			mYPosInBlock++;

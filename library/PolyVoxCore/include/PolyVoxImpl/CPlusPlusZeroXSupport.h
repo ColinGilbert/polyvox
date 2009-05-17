@@ -5,9 +5,8 @@
 //we use the one from boost. Slightly ugly defines here - unfortunatly C++ does not support 'typedef templates'.
 //Ironically 'typedef templates' are coming in the next version of C++, by which time we won't need them.
 #ifdef C_PLUS_PLUS_ZERO_X_SUPPORTED
-	#include <stdint>
-	#include <shared_ptr> //Just a guess at what the standard name will be.
-	#include <weak_ptr> //These includes may need changing
+	#include <cstdint>
+	#include <memory> //Just a guess at what the standard name will be. may need changing
 
 	#define POLYVOX_STD_NAMESPACE std
 	#define POLYVOX_SHARED_PTR std::shared_ptr
