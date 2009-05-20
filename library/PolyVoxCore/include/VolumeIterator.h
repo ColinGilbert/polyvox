@@ -47,6 +47,7 @@ namespace PolyVox
 		uint16_t getPosY(void) const;
 		uint16_t getPosZ(void) const;
 		VoxelType getSubSampledVoxel(uint8_t uLevel) const;
+		VoxelType getSubSampledVoxelWithBoundsCheck(uint8_t uLevel) const;
 		const Volume<VoxelType>& getVolume(void) const;
 		VoxelType getVoxel(void) const;			
 
