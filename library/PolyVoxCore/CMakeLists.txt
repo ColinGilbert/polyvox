@@ -9,7 +9,8 @@ SET(CORE_SRC_FILES
 	source/Log.cpp
 	source/Region.cpp
 	source/SurfaceAdjusters.cpp
-	source/SurfaceExtractors.cpp 
+	source/SurfaceExtractor.cpp 
+	source/SurfaceExtractors.cpp
 	source/SurfaceVertex.cpp
 	source/VoxelFilters.cpp
 )
@@ -22,6 +23,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxForwardDeclarations.h
 	include/Region.h
 	include/SurfaceAdjusters.h
+	include/SurfaceExtractor.h
 	include/SurfaceExtractors.h
 	include/SurfaceVertex.h
 	include/Vector.h
