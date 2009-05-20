@@ -38,6 +38,7 @@ namespace PolyVox
 	class IndexedSurfacePatch;
 	class Region;
 	class SurfaceVertex;
+	class SurfaceExtractor;
 
 	//---------- Vector ----------
 	template <uint32_t Size, typename Type> class Vector;

@@ -4,6 +4,7 @@
 
 #include "GradientEstimators.h"
 #include "SurfaceAdjusters.h"
+#include "SurfaceExtractor.h"
 
 //Some namespaces we need
 using namespace std;
@@ -37,6 +38,9 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 		m_uVolumeHeightInRegions = volData->getHeight() / m_uRegionSideLength;
 		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
 
+		SurfaceExtractor surfaceExtractor(*volData);
+		surfaceExtractor.setLodLevel(0);
+
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
 		for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
@@ -64,7 +68,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
-					extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
+					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
+					surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
 
 					//computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
 					//*ispCurrent = getSmoothedSurface(*ispCurrent);
