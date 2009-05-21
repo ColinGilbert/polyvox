@@ -53,12 +53,6 @@ namespace PolyVox
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
 		void setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos);
-		void setValidRegion(const Region& region);
-		void setValidRegion(uint16_t xFirst, uint16_t yFirst, uint16_t zFirst, uint16_t xLast, uint16_t yLast, uint16_t zLast);	
-
-		bool isValidForRegion(void) const;
-		bool moveForwardInRegionXYZ(void);
-		void moveForwardInRegionXYZFast(void);
 
 		void movePositiveX(void);
 
@@ -116,22 +110,6 @@ namespace PolyVox
 		VoxelType* mCurrentVoxel;
 		uint32_t mBlockIndexInVolume;
 		uint32_t mVoxelIndexInBlock;
-
-		uint16_t mXRegionFirst;
-		uint16_t mYRegionFirst;
-		uint16_t mZRegionFirst;
-		uint16_t mXRegionLast;
-		uint16_t mYRegionLast;
-		uint16_t mZRegionLast;
-
-		uint16_t mXRegionFirstBlock;
-		uint16_t mYRegionFirstBlock;
-		uint16_t mZRegionFirstBlock;
-		uint16_t mXRegionLastBlock;
-		uint16_t mYRegionLastBlock;
-		uint16_t mZRegionLastBlock;
-
-		bool mIsValidForRegion;
 	};
 }
 

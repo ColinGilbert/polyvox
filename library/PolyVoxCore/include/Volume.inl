@@ -372,28 +372,6 @@ namespace PolyVox
 			}
 		}
 	}	
-
-	template <typename VoxelType>
-	bool Volume<VoxelType>::isRegionHomogenous(const Region& region)
-	{
-		VolumeIterator<VoxelType> iter(*this);
-		iter.setValidRegion(region);
-		iter.setPosition(static_cast<Vector3DInt16>(region.getLowerCorner()));
-
-		VoxelType tFirst = iter.getVoxel();
-		iter.moveForwardInRegionXYZ();
-
-		do
-		{
-			VoxelType tCurrent = iter.getVoxel();
-			if(tCurrent != tFirst)
-			{
-				return false;
-			}
-		}while(iter.moveForwardInRegionXYZ());
-
-		return true;
-	}
 	#pragma endregion
 
 	#pragma region Private Implementation
