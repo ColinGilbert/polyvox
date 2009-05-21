@@ -19,8 +19,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ******************************************************************************/
 #pragma endregion
 
-#ifndef __VolumeIterator_H__
-#define __VolumeIterator_H__
+#ifndef __VolumeSampler_H__
+#define __VolumeSampler_H__
 
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
@@ -31,17 +31,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class VolumeIterator
+	class VolumeSampler
 	{
 	public:
-		VolumeIterator(Volume<VoxelType>& volume);
-		~VolumeIterator();		
+		VolumeSampler(Volume<VoxelType>& volume);
+		~VolumeSampler();		
 
-		bool operator==(const VolumeIterator& rhs);
-		bool operator<(const VolumeIterator& rhs);
-		bool operator>(const VolumeIterator& rhs);
-		bool operator<=(const VolumeIterator& rhs);
-		bool operator>=(const VolumeIterator& rhs);
+		bool operator==(const VolumeSampler& rhs);
+		bool operator<(const VolumeSampler& rhs);
+		bool operator>(const VolumeSampler& rhs);
+		bool operator<=(const VolumeSampler& rhs);
+		bool operator>=(const VolumeSampler& rhs);
 
 		uint16_t getPosX(void) const;
 		uint16_t getPosY(void) const;
@@ -113,6 +113,6 @@ namespace PolyVox
 	};
 }
 
-#include "VolumeIterator.inl"
+#include "VolumeSampler.inl"
 
 #endif

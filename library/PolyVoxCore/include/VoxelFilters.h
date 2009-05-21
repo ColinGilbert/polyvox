@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(VolumeIterator<uint8_t>& volIter);
+	float computeSmoothedVoxel(VolumeSampler<uint8_t>& volIter);
 }
 
 #endif

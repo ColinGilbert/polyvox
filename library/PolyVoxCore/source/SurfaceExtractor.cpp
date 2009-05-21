@@ -75,7 +75,7 @@ namespace PolyVox
 		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
 
 		//Iterator to access the volume data
-		VolumeIterator<uint8_t> volIter(*volumeData);		
+		VolumeSampler<uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
 		uint32_t uNoOfNonEmptyCellsForSlice0 = computeBitmaskForSliceLevel0(volIter, regSlice0, offset, bitmask0, 0);		
@@ -121,7 +121,7 @@ namespace PolyVox
 		delete[] vertexIndicesZ1;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeIterator<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
@@ -359,7 +359,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void SurfaceExtractor::generateVerticesForSliceLevel0(VolumeIterator<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
+	void SurfaceExtractor::generateVerticesForSliceLevel0(VolumeSampler<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
 	{
 		//Iterate over each cell in the region
 		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace++)
@@ -434,7 +434,7 @@ namespace PolyVox
 		}
 	}
 
-	void SurfaceExtractor::generateIndicesForSliceLevel0(VolumeIterator<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
+	void SurfaceExtractor::generateIndicesForSliceLevel0(VolumeSampler<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
 	{
 		uint32_t indlist[12];
 
@@ -588,7 +588,7 @@ namespace PolyVox
 		regSlice0.setUpperCorner(v3dUpperCorner);
 		
 		//Iterator to access the volume data
-		VolumeIterator<uint8_t> volIter(*volumeData);		
+		VolumeSampler<uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
 		uint32_t uNoOfNonEmptyCellsForSlice0 = computeDecimatedBitmaskForSlice(volIter, uLevel, regSlice0, offset, bitmask0, 0);		
@@ -643,7 +643,7 @@ namespace PolyVox
 		}*/
 	}
 
-	uint32_t SurfaceExtractor::computeDecimatedBitmaskForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	uint32_t SurfaceExtractor::computeDecimatedBitmaskForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32_t uNoOfNonEmptyCells = 0;
@@ -885,7 +885,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void SurfaceExtractor::generateDecimatedVerticesForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
+	void SurfaceExtractor::generateDecimatedVerticesForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 
@@ -956,7 +956,7 @@ namespace PolyVox
 		}
 	}
 
-	void SurfaceExtractor::generateDecimatedIndicesForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
+	void SurfaceExtractor::generateDecimatedIndicesForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32_t indlist[12];

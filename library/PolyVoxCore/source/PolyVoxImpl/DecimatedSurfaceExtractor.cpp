@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "IndexedSurfacePatch.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "Region.h"
-#include "VolumeIterator.h"
+#include "VolumeSampler.h"
 
 #include <algorithm>
 
@@ -77,7 +77,7 @@ namespace PolyVox
 		regSlice0.setUpperCorner(v3dUpperCorner);
 		
 		//Iterator to access the volume data
-		VolumeIterator<uint8_t> volIter(*volumeData);		
+		VolumeSampler<uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
 		uint32_t uNoOfNonEmptyCellsForSlice0 = computeDecimatedBitmaskForSlice(volIter, uLevel, regSlice0, offset, bitmask0, 0);		
@@ -132,7 +132,7 @@ namespace PolyVox
 		}*/
 	}
 
-	uint32_t computeDecimatedBitmaskForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	uint32_t computeDecimatedBitmaskForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32_t uNoOfNonEmptyCells = 0;
@@ -374,7 +374,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void generateDecimatedVerticesForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
+	void generateDecimatedVerticesForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[])
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 
@@ -445,7 +445,7 @@ namespace PolyVox
 		}
 	}
 
-	void generateDecimatedIndicesForSlice(VolumeIterator<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
+	void generateDecimatedIndicesForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[])
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32_t indlist[12];

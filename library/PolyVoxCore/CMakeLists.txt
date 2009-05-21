@@ -30,8 +30,8 @@ SET(CORE_INC_FILES
 	include/Vector.inl
 	include/Volume.h
 	include/Volume.inl
-	include/VolumeIterator.h
-	include/VolumeIterator.inl
+	include/VolumeSampler.h
+	include/VolumeSampler.inl
 	include/VoxelFilters.h
 )
 

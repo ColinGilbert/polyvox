@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxImpl/Utility.h"
 #include "Vector.h"
 #include "Volume.h"
-#include "VolumeIterator.h"
+#include "VolumeSampler.h"
 
 using namespace std;
 
@@ -142,7 +142,7 @@ namespace PolyVox
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		/*VolumeIterator<uint8_t> iterVol(*volumeData);
+		/*VolumeSampler<uint8_t> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 		volumeData->setVoxelAt(x,y,z,value);

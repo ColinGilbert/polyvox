@@ -1,10 +1,10 @@
 #include "VoxelFilters.h"
 
-#include "VolumeIterator.h"
+#include "VolumeSampler.h"
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(VolumeIterator<uint8_t>& volIter)
+	float computeSmoothedVoxel(VolumeSampler<uint8_t>& volIter)
 	{
 		assert(volIter.getPosX() >= 1);
 		assert(volIter.getPosY() >= 1);

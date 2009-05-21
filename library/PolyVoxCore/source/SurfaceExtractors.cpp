@@ -6,7 +6,7 @@
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "Region.h"
 #include "SurfaceAdjusters.h"
-#include "VolumeIterator.h"
+#include "VolumeSampler.h"
 
 #include "PolyVoxImpl/DecimatedSurfaceExtractor.h"
 #include "PolyVoxImpl/FastSurfaceExtractor.h"

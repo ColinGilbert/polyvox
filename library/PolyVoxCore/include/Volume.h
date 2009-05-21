@@ -106,8 +106,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	class Volume
 	{
-		//Make VolumeIterator a friend
-		friend class VolumeIterator<VoxelType>;
+		//Make VolumeSampler a friend
+		friend class VolumeSampler<VoxelType>;
 
 	public:		
 		///Constructor

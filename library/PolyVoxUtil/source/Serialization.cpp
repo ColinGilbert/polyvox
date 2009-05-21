@@ -1,7 +1,7 @@
 #include "Serialization.h"
 
 #include "Volume.h"
-#include "VolumeIterator.h"
+#include "VolumeSampler.h"
 #include "PolyVoxImpl/Utility.h"
 
 using namespace std;
@@ -61,7 +61,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		VolumeIterator<uint8_t> volIter(volume);
+		VolumeSampler<uint8_t> volIter(volume);
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			for(uint16_t y = 0; y < volumeHeight; ++y)
@@ -143,7 +143,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		VolumeIterator<uint8_t> volIter(volume);
+		VolumeSampler<uint8_t> volIter(volume);
 		uint8_t current = 0;
 		uint32_t runLength = 0;
 		bool firstTime = true;
