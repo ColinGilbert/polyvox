@@ -51,6 +51,10 @@ namespace PolyVox
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
+	   void smooth(float fAmount, bool bIncludeEdgeVertices = false);
+
+	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
+
 	   Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
 
 	   int32_t m_iTimeStamp;

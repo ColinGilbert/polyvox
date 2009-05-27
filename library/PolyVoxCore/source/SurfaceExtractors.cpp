@@ -5,7 +5,6 @@
 #include "IndexedSurfacePatch.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "Region.h"
-#include "SurfaceAdjusters.h"
 #include "VolumeSampler.h"
 
 #include "PolyVoxImpl/DecimatedSurfaceExtractor.h"

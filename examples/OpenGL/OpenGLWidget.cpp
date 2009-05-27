@@ -3,7 +3,6 @@
 #include <QMouseEvent>
 
 #include "GradientEstimators.h"
-#include "SurfaceAdjusters.h"
 #include "SurfaceExtractor.h"
 
 //Some namespaces we need
@@ -73,6 +72,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 
 					//computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
 					//*ispCurrent = getSmoothedSurface(*ispCurrent);
+					ispCurrent->smooth(0.2f);
+					ispCurrent->generateAveragedFaceNormals(true);
 
 
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);

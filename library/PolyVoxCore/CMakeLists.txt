@@ -8,7 +8,6 @@ SET(CORE_SRC_FILES
 	source/IndexedSurfacePatch.cpp
 	source/Log.cpp
 	source/Region.cpp
-	source/SurfaceAdjusters.cpp
 	source/SurfaceExtractor.cpp 
 	source/SurfaceExtractors.cpp
 	source/SurfaceVertex.cpp
@@ -22,7 +21,6 @@ SET(CORE_INC_FILES
 	include/Log.h
 	include/PolyVoxForwardDeclarations.h
 	include/Region.h
-	include/SurfaceAdjusters.h
 	include/SurfaceExtractor.h
 	include/SurfaceExtractors.h
 	include/SurfaceVertex.h
