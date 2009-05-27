@@ -17,7 +17,7 @@ void renderRegionImmediateMode(PolyVox::IndexedSurfacePatch& isp)
 		const SurfaceVertex& vertex = vecVertices[*iterIndex];
 		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
 		//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
-		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
+		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(isp.m_Region.getLowerCorner());
 
 
 

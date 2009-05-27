@@ -27,6 +27,6 @@ namespace PolyVox
 			extractDecimatedSurfaceImpl(volumeData, uLevel, region, singleMaterialPatch);
 		}
 
-		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
+		singleMaterialPatch->m_Region = region;
 	}
 }

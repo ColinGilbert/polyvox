@@ -13,7 +13,7 @@ namespace PolyVox
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
-			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_v3dRegionPosition);
+			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_Region.getLowerCorner());
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
 			VolumeSampler<uint8_t> volIter(*volumeData);

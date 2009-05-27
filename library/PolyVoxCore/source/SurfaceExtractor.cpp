@@ -33,7 +33,7 @@ namespace PolyVox
 		{
 			extractDecimatedSurfaceImpl(&m_volData, m_uLodLevel, region, singleMaterialPatch);
 		}
-		singleMaterialPatch->m_v3dRegionPosition = region.getLowerCorner();
+		singleMaterialPatch->m_Region = region;
 	}
 
 	uint32_t SurfaceExtractor::getIndex(uint32_t x, uint32_t y, uint32_t regionWidth)

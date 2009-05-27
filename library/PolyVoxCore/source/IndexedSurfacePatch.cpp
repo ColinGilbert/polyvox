@@ -118,6 +118,8 @@ namespace PolyVox
 	{
 		std::vector<SurfaceVertex> vecOriginalVertices = m_vecVertices;
 
+		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
+
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
 		{
 			SurfaceVertex& v0 = vecOriginalVertices[*iterIndex];
@@ -147,19 +149,33 @@ namespace PolyVox
 			Vector3DFloat n1 = v1.getNormal();
 			n1.normalise();
 			Vector3DFloat n2 = v2.getNormal();
-			n2.normalise();
+			n2.normalise();			
 
-			v0New.position += (n0 * (n0.dot(v0ToOpp)) * fAmount);
-			v1New.position += (n1 * (n1.dot(v1ToOpp)) * fAmount);
-			v2New.position += (n2 * (n2.dot(v2ToOpp)) * fAmount);
+			if(m_Region.containsPoint(v0.getPosition() + offset, 0.001))
+			{
+				v0New.position += (n0 * (n0.dot(v0ToOpp)) * fAmount);
+			}
+			if(m_Region.containsPoint(v1.getPosition() + offset, 0.001))
+			{
+				v1New.position += (n1 * (n1.dot(v1ToOpp)) * fAmount);
+			}
+			if(m_Region.containsPoint(v2.getPosition() + offset, 0.001))
+			{
+				v2New.position += (n2 * (n2.dot(v2ToOpp)) * fAmount);
+			}
 		}
 	}	
 
 	void IndexedSurfacePatch::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
 	{
+		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
+
 		for(vector<SurfaceVertex>::iterator iterVertex = m_vecVertices.begin(); iterVertex != m_vecVertices.end(); iterVertex++)
 		{
-			iterVertex->setNormal(Vector3DFloat(0.0f,0.0f,0.0f));
+			if(m_Region.containsPoint(iterVertex->getPosition() + offset, 0.001))
+			{
+				iterVertex->setNormal(Vector3DFloat(0.0f,0.0f,0.0f));
+			}
 		}
 
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
@@ -173,9 +189,18 @@ namespace PolyVox
 
 			Vector3DFloat triangleNormal = (v1.getPosition()-v0.getPosition()).cross(v2.getPosition()-v0.getPosition());
 
-			v0.setNormal(v0.getNormal() + triangleNormal);
-			v1.setNormal(v1.getNormal() + triangleNormal);
-			v2.setNormal(v2.getNormal() + triangleNormal);
+			if(m_Region.containsPoint(v0.getPosition() + offset, 0.001))
+			{
+				v0.setNormal(v0.getNormal() + triangleNormal);
+			}
+			if(m_Region.containsPoint(v1.getPosition() + offset, 0.001))
+			{
+				v1.setNormal(v1.getNormal() + triangleNormal);
+			}
+			if(m_Region.containsPoint(v2.getPosition() + offset, 0.001))
+			{
+				v2.setNormal(v2.getNormal() + triangleNormal);
+			}
 		}
 
 		if(bNormalise)

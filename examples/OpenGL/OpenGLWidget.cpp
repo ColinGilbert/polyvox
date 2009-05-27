@@ -70,10 +70,10 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
 					surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
 
-					//computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
+					computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
 					//*ispCurrent = getSmoothedSurface(*ispCurrent);
-					ispCurrent->smooth(0.2f);
-					ispCurrent->generateAveragedFaceNormals(true);
+					ispCurrent->smooth(0.3f);
+					//ispCurrent->generateAveragedFaceNormals(true);
 
 
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);

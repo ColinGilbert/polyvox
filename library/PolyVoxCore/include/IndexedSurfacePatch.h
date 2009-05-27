@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 
 #include "PolyVoxForwardDeclarations.h"
+#include "Region.h"
 #include "SurfaceVertex.h"
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -55,7 +56,9 @@ namespace PolyVox
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 
-	   Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
+	   //Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
+
+	   Region m_Region;
 
 	   int32_t m_iTimeStamp;
 	
