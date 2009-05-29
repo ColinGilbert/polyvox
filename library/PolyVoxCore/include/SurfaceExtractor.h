@@ -41,7 +41,7 @@ namespace PolyVox
 
 		void setLodLevel(uint8_t uLodLevel);
 
-		void extractSurfaceForRegion(Region region, IndexedSurfacePatch* singleMaterialPatch);
+		POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSurfaceForRegion(Region region);
 
 	private:
 		uint8_t m_uLodLevel;

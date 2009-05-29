@@ -23,17 +23,21 @@ namespace PolyVox
 		m_uLodLevel = uLodLevel;
 	}
 
-	void SurfaceExtractor::extractSurfaceForRegion(Region region, IndexedSurfacePatch* singleMaterialPatch)
+	POLYVOX_SHARED_PTR<IndexedSurfacePatch> SurfaceExtractor::extractSurfaceForRegion(Region region)
 	{
+		POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
+
 		if(m_uLodLevel == 0)
 		{
-			extractSurfaceForRegionLevel0(&m_volData, region, singleMaterialPatch);
+			extractSurfaceForRegionLevel0(&m_volData, region, result.get());
 		}
 		else
 		{
-			extractDecimatedSurfaceImpl(&m_volData, m_uLodLevel, region, singleMaterialPatch);
+			extractDecimatedSurfaceImpl(&m_volData, m_uLodLevel, region, result.get());
 		}
-		singleMaterialPatch->m_Region = region;
+		result->m_Region = region;
+
+		return result;
 	}
 
 	uint32_t SurfaceExtractor::getIndex(uint32_t x, uint32_t y, uint32_t regionWidth)

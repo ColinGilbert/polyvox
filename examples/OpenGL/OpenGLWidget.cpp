@@ -49,9 +49,6 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 			{
 				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
 				{
-					//Create a new surface patch (which is basiaclly the PolyVox term for a mesh).
-					IndexedSurfacePatch* ispCurrent = new IndexedSurfacePatch();
-
 					//Compute the extents of the current region
 					//FIXME - This is a little complex? PolyVox could
 					//provide more functions for dealing with regions?
@@ -68,23 +65,23 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
-					surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
+					POLYVOX_SHARED_PTR<IndexedSurfacePatch> isp = surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner));
 
-					computeNormalsForVertices(m_volData, *ispCurrent, SOBEL_SMOOTHED);
+					computeNormalsForVertices(m_volData, *(isp.get()), SOBEL_SMOOTHED);
 					//*ispCurrent = getSmoothedSurface(*ispCurrent);
-					ispCurrent->smooth(0.3f);
+					isp->smooth(0.3f);
 					//ispCurrent->generateAveragedFaceNormals(true);
 
 
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 					if(m_bUseOpenGLVertexBufferObjects)
 					{
-						OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*ispCurrent);					
+						OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*(isp.get()));					
 						m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
 					}
 					else
 					{
-						m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, ispCurrent));
+						m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, isp));
 					}
 					//delete ispCurrent;
 				}
@@ -170,7 +167,7 @@ void OpenGLWidget::paintGL()
 					}
 					else
 					{
-						IndexedSurfacePatch* ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
+						POLYVOX_SHARED_PTR<IndexedSurfacePatch> ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
 						renderRegionImmediateMode(*ispCurrent);
 
 					}
