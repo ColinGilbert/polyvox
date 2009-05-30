@@ -82,7 +82,7 @@ namespace PolyVox
 		VolumeSampler<uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
-		uint32_t uNoOfNonEmptyCellsForSlice0 = computeBitmaskForSliceLevel0(volIter, regSlice0, offset, bitmask0, 0);		
+		uint32_t uNoOfNonEmptyCellsForSlice0 = computeBitmaskForSlice(volIter, 0, regSlice0, offset, bitmask0, 0);		
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
@@ -94,7 +94,7 @@ namespace PolyVox
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,1));
 
-			uint32_t uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSliceLevel0(volIter, regSlice1, offset, bitmask1, bitmask0);
+			uint32_t uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(volIter, 0, regSlice1, offset, bitmask1, bitmask0);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -125,7 +125,7 @@ namespace PolyVox
 		delete[] vertexIndicesZ1;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	/*uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
@@ -361,7 +361,7 @@ namespace PolyVox
 		}
 
 		return uNoOfNonEmptyCells;
-	}
+	}*/
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Level 1
@@ -408,7 +408,7 @@ namespace PolyVox
 		VolumeSampler<uint8_t> volIter(*volumeData);		
 
 		//Compute bitmask for initial slice
-		uint32_t uNoOfNonEmptyCellsForSlice0 = computeDecimatedBitmaskForSlice(volIter, uLevel, regSlice0, offset, bitmask0, 0);		
+		uint32_t uNoOfNonEmptyCellsForSlice0 = computeBitmaskForSlice(volIter, uLevel, regSlice0, offset, bitmask0, 0);		
 		if(uNoOfNonEmptyCellsForSlice0 != 0)
 		{
 			//If there were some non-empty cells then generate initial slice vertices for them
@@ -420,7 +420,7 @@ namespace PolyVox
 			Region regSlice1(regSlice0);
 			regSlice1.shift(Vector3DInt32(0,0,uStepSize));
 
-			uint32_t uNoOfNonEmptyCellsForSlice1 = computeDecimatedBitmaskForSlice(volIter, uLevel, regSlice1, offset, bitmask1, bitmask0);
+			uint32_t uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(volIter, uLevel, regSlice1, offset, bitmask1, bitmask0);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -460,7 +460,7 @@ namespace PolyVox
 		}*/
 	}
 
-	uint32_t SurfaceExtractor::computeDecimatedBitmaskForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	uint32_t SurfaceExtractor::computeBitmaskForSlice(VolumeSampler<uint8_t>& volIter, uint8_t uLevel, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 		uint32_t uNoOfNonEmptyCells = 0;
@@ -474,12 +474,16 @@ namespace PolyVox
 				//Current position
 				volIter.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
-				const uint16_t uXRegSpace = volIter.getPosX() - offset.getX();
-				const uint16_t uYRegSpace = volIter.getPosY() - offset.getY();
+				const uint16_t uXRegSpace = uXVolSpace - offset.getX();
+				const uint16_t uYRegSpace = uYVolSpace - offset.getY();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = 0;
 
+				if((uXVolSpace < volIter.getVolume().getWidth()-uStepSize) &&
+					(uYVolSpace < volIter.getVolume().getHeight()-uStepSize) &&
+					(uZVolSpace < volIter.getVolume().getDepth()-uStepSize))
+				{
 				bool isPrevXAvail = uXRegSpace > 0;
 				bool isPrevYAvail = uYRegSpace > 0;
 				bool isPrevZAvail = previousBitmask != 0;
@@ -685,6 +689,66 @@ namespace PolyVox
 							if (v011 == 0) iCubeIndex |= 64;
 							if (v111 == 0) iCubeIndex |= 128;
 						}
+					}
+				}
+				}
+				else
+				{
+					if(uLevel == 0)
+					{
+						const uint8_t v000 = volIter.getVoxel();
+						const uint8_t v100 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
+						const uint8_t v010 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
+						const uint8_t v110 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace  );
+
+						const uint8_t v001 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
+						const uint8_t v101 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
+						const uint8_t v011 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
+						const uint8_t v111 = volIter.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);
+
+						if (v000 == 0) iCubeIndex |= 1;
+						if (v100 == 0) iCubeIndex |= 2;
+						if (v010 == 0) iCubeIndex |= 4;
+						if (v110 == 0) iCubeIndex |= 8;
+						if (v001 == 0) iCubeIndex |= 16;
+						if (v101 == 0) iCubeIndex |= 32;
+						if (v011 == 0) iCubeIndex |= 64;
+						if (v111 == 0) iCubeIndex |= 128;
+					}
+					else
+					{
+						const uint8_t v000 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+						volIter.setPosition(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
+						const uint8_t v100 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+						volIter.setPosition(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
+						const uint8_t v010 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+						volIter.setPosition(uXVolSpace+1, uYVolSpace+1, uZVolSpace  );
+						const uint8_t v110 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+
+						volIter.setPosition(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
+						const uint8_t v001 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+						volIter.setPosition(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
+						const uint8_t v101 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+						volIter.setPosition(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
+						const uint8_t v011 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);
+
+						volIter.setPosition(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);				
+						const uint8_t v111 = volIter.getSubSampledVoxelWithBoundsCheck(uLevel);				
+
+						if (v000 == 0) iCubeIndex |= 1;
+						if (v100 == 0) iCubeIndex |= 2;
+						if (v010 == 0) iCubeIndex |= 4;
+						if (v110 == 0) iCubeIndex |= 8;
+						if (v001 == 0) iCubeIndex |= 16;
+						if (v101 == 0) iCubeIndex |= 32;
+						if (v011 == 0) iCubeIndex |= 64;
+						if (v111 == 0) iCubeIndex |= 128;
 					}
 				}
 
