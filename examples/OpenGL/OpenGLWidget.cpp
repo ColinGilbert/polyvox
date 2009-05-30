@@ -38,7 +38,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
 
 		SurfaceExtractor surfaceExtractor(*volData);
-		surfaceExtractor.setLodLevel(1);
+		surfaceExtractor.setLodLevel(0);
 
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
