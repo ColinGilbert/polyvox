@@ -1,7 +1,6 @@
 #include "Log.h"
 #include "Volume.h"
 #include "IndexedSurfacePatch.h"
-#include "SurfaceExtractors.h"
 #include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"

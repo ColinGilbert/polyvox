@@ -9,7 +9,6 @@ SET(CORE_SRC_FILES
 	source/Log.cpp
 	source/Region.cpp
 	source/SurfaceExtractor.cpp 
-	source/SurfaceExtractors.cpp
 	source/SurfaceVertex.cpp
 	source/VoxelFilters.cpp
 )
@@ -22,7 +21,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxForwardDeclarations.h
 	include/Region.h
 	include/SurfaceExtractor.h
-	include/SurfaceExtractors.h
 	include/SurfaceVertex.h
 	include/Vector.h
 	include/Vector.inl
@@ -34,8 +32,6 @@ SET(CORE_INC_FILES
 )
 
 SET(IMPL_SRC_FILES
-	source/PolyVoxImpl/DecimatedSurfaceExtractor.cpp
-	source/PolyVoxImpl/FastSurfaceExtractor.cpp
 	source/PolyVoxImpl/MarchingCubesTables.cpp
 	source/PolyVoxImpl/Utility.cpp
 )
@@ -44,8 +40,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxImpl/Block.h
 	include/PolyVoxImpl/Block.inl
 	include/PolyVoxImpl/CPlusPlusZeroXSupport.h
-	include/PolyVoxImpl/DecimatedSurfaceExtractor.h
-	include/PolyVoxImpl/FastSurfaceExtractor.h
 	include/PolyVoxImpl/MarchingCubesTables.h
 	include/PolyVoxImpl/TypeDef.h
 	include/PolyVoxImpl/Utility.h
