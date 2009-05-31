@@ -38,7 +38,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
 
 		SurfaceExtractor surfaceExtractor(*volData);
-		surfaceExtractor.setLodLevel(0);
+		surfaceExtractor.setLodLevel(1);
 
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
@@ -56,9 +56,9 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					PolyVox::uint16_t regionStartY = uRegionY * m_uRegionSideLength;
 					PolyVox::uint16_t regionStartZ = uRegionZ * m_uRegionSideLength;
 
-					PolyVox::uint16_t regionEndX = regionStartX + m_uRegionSideLength; //Why do we need the '+1' here?
-					PolyVox::uint16_t regionEndY = regionStartY + m_uRegionSideLength; //Why do we need the '+1' here?
-					PolyVox::uint16_t regionEndZ = regionStartZ + m_uRegionSideLength; //Why do we need the '+1' here?
+					PolyVox::uint16_t regionEndX = regionStartX + m_uRegionSideLength;
+					PolyVox::uint16_t regionEndY = regionStartY + m_uRegionSideLength;
+					PolyVox::uint16_t regionEndZ = regionStartZ + m_uRegionSideLength;
 
 					Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
 					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);

@@ -27,14 +27,8 @@ namespace PolyVox
 	{
 		POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
 
-		if(m_uLodLevel == 0)
-		{
-			extractSurfaceForRegionLevel0(&m_volData, region, result.get());
-		}
-		else
-		{
-			extractDecimatedSurfaceImpl(&m_volData, m_uLodLevel, region, result.get());
-		}
+		extractSurfaceImpl(&m_volData, m_uLodLevel, region, result.get());
+
 		result->m_Region = region;
 
 		return result;
@@ -48,82 +42,6 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// Level 0
 	////////////////////////////////////////////////////////////////////////////////
-
-	void SurfaceExtractor::extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch)
-	{	
-		singleMaterialPatch->clear();
-
-		//For edge indices
-		int32_t* vertexIndicesX0 = new int32_t[(region.width()+8) * (region.height()+8)];
-		int32_t* vertexIndicesY0 = new int32_t[(region.width()+8) * (region.height()+8)];
-		int32_t* vertexIndicesZ0 = new int32_t[(region.width()+8) * (region.height()+8)];
-		int32_t* vertexIndicesX1 = new int32_t[(region.width()+8) * (region.height()+8)];
-		int32_t* vertexIndicesY1 = new int32_t[(region.width()+8) * (region.height()+8)];
-		int32_t* vertexIndicesZ1 = new int32_t[(region.width()+8) * (region.height()+8)];
-
-		//Cell bitmasks
-		uint8_t* bitmask0 = new uint8_t[(region.width()+8) * (region.height()+8)];
-		uint8_t* bitmask1 = new uint8_t[(region.width()+8) * (region.height()+8)];
-
-		//When generating the mesh for a region we actually look one voxel outside it in the
-		// back, bottom, right direction. Protect against access violations by cropping region here
-		Region regVolume = volumeData->getEnclosingRegion();
-		//regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
-		region.cropTo(regVolume);
-
-		//Offset from volume corner
-		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
-
-		//Create a region corresponding to the first slice
-		Region regSlice0(region);
-		regSlice0.setUpperCorner(Vector3DInt32(regSlice0.getUpperCorner().getX(),regSlice0.getUpperCorner().getY(),regSlice0.getLowerCorner().getZ()));
-
-		//Iterator to access the volume data
-		VolumeSampler<uint8_t> volIter(*volumeData);		
-
-		//Compute bitmask for initial slice
-		uint32_t uNoOfNonEmptyCellsForSlice0 = computeBitmaskForSlice(volIter, 0, regSlice0, offset, bitmask0, 0);		
-		if(uNoOfNonEmptyCellsForSlice0 != 0)
-		{
-			//If there were some non-empty cells then generate initial slice vertices for them
-			generateVerticesForSlice(volIter, 0, regSlice0, offset, bitmask0, singleMaterialPatch, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0);
-		}
-
-		for(uint32_t uSlice = 0; ((uSlice < region.depth()) && (uSlice + offset.getZ() < region.getUpperCorner().getZ())); ++uSlice)
-		{
-			Region regSlice1(regSlice0);
-			regSlice1.shift(Vector3DInt32(0,0,1));
-
-			uint32_t uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(volIter, 0, regSlice1, offset, bitmask1, bitmask0);
-
-			if(uNoOfNonEmptyCellsForSlice1 != 0)
-			{
-				generateVerticesForSlice(volIter, 0, regSlice1, offset, bitmask1, singleMaterialPatch, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);				
-			}
-
-			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
-			{
-				generateIndicesForSlice(volIter, 0, regSlice0, singleMaterialPatch, offset, bitmask0, bitmask1, vertexIndicesX0, vertexIndicesY0, vertexIndicesZ0, vertexIndicesX1, vertexIndicesY1, vertexIndicesZ1);
-			}
-
-			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-			std::swap(bitmask0, bitmask1);
-			std::swap(vertexIndicesX0, vertexIndicesX1);
-			std::swap(vertexIndicesY0, vertexIndicesY1);
-			std::swap(vertexIndicesZ0, vertexIndicesZ1);
-
-			regSlice0 = regSlice1;
-		}
-
-		delete[] bitmask0;
-		delete[] bitmask1;
-		delete[] vertexIndicesX0;
-		delete[] vertexIndicesX1;
-		delete[] vertexIndicesY0;
-		delete[] vertexIndicesY1;
-		delete[] vertexIndicesZ0;
-		delete[] vertexIndicesZ1;
-	}
 
 	/*uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
@@ -367,7 +285,7 @@ namespace PolyVox
 	// Level 1
 	////////////////////////////////////////////////////////////////////////////////
 
-	void SurfaceExtractor::extractDecimatedSurfaceImpl(Volume<uint8_t>* volumeData, uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void SurfaceExtractor::extractSurfaceImpl(Volume<uint8_t>* volumeData, uint8_t uLevel, Region region, IndexedSurfacePatch* singleMaterialPatch)
 	{	
 		singleMaterialPatch->clear();
 
@@ -376,23 +294,26 @@ namespace PolyVox
 		//FIXME - Instead of region.width()+2 we used to use POLYVOX_REGION_SIDE_LENGTH+1
 		//Normally POLYVOX_REGION_SIDE_LENGTH is the same as region.width() (often 32) but at the
 		//edges of the volume it is 1 smaller. Need to think what values really belong here.
-		int32_t* vertexIndicesX0 = new int32_t[(region.width()+2) * (region.height()+2)];
-		int32_t* vertexIndicesY0 = new int32_t[(region.width()+2) * (region.height()+2)];
-		int32_t* vertexIndicesZ0 = new int32_t[(region.width()+2) * (region.height()+2)];
-		int32_t* vertexIndicesX1 = new int32_t[(region.width()+2) * (region.height()+2)];
-		int32_t* vertexIndicesY1 = new int32_t[(region.width()+2) * (region.height()+2)];
-		int32_t* vertexIndicesZ1 = new int32_t[(region.width()+2) * (region.height()+2)];
+		int32_t* vertexIndicesX0 = new int32_t[(region.width()+8) * (region.height()+8)];
+		int32_t* vertexIndicesY0 = new int32_t[(region.width()+8) * (region.height()+8)];
+		int32_t* vertexIndicesZ0 = new int32_t[(region.width()+8) * (region.height()+8)];
+		int32_t* vertexIndicesX1 = new int32_t[(region.width()+8) * (region.height()+8)];
+		int32_t* vertexIndicesY1 = new int32_t[(region.width()+8) * (region.height()+8)];
+		int32_t* vertexIndicesZ1 = new int32_t[(region.width()+8) * (region.height()+8)];
 
 		//Cell bitmasks
-		uint8_t* bitmask0 = new uint8_t[(region.width()+2) * (region.height()+2)];
-		uint8_t* bitmask1 = new uint8_t[(region.width()+2) * (region.height()+2)];
+		uint8_t* bitmask0 = new uint8_t[(region.width()+8) * (region.height()+8)];
+		uint8_t* bitmask1 = new uint8_t[(region.width()+8) * (region.height()+8)];
 
 		const uint8_t uStepSize = uLevel == 0 ? 1 : 1 << uLevel;
 
 		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = volumeData->getEnclosingRegion();
-		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*uStepSize-1,2*uStepSize-1,2*uStepSize-1));
+		if(uLevel > 0)
+		{
+			regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*uStepSize-1,2*uStepSize-1,2*uStepSize-1));
+		}
 		region.cropTo(regVolume);
 
 		//Offset from volume corner
