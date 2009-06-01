@@ -60,7 +60,10 @@ namespace PolyVox
 		int32_t* m_pCurrentVertexIndicesY; 
 		int32_t* m_pCurrentVertexIndicesZ; 
 
-		uint32_t getIndex(uint32_t x, uint32_t y, uint32_t regionWidth);
+		inline uint32_t getIndex(uint32_t x, uint32_t y)
+		{
+			return x + (y * (m_uRegionWidth+2));
+		}
 
 		IndexedSurfacePatch* m_ispCurrent;
 
@@ -68,6 +71,8 @@ namespace PolyVox
 
 		Region regSlice0;
 		Region regSlice1;
+
+		uint16_t m_uRegionWidth;
 
 		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* m_ispCurrent);
 
