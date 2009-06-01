@@ -50,14 +50,25 @@ namespace PolyVox
 		Volume<uint8_t> m_volData;
 		VolumeSampler<uint8_t> m_iterVolume;
 
+		uint8_t* m_pPreviousBitmask;
+		uint8_t* m_pCurrentBitmask;
+
+
+		int32_t* m_pPreviousVertexIndicesX;
+		int32_t* m_pPreviousVertexIndicesY; 
+		int32_t* m_pPreviousVertexIndicesZ; 
+		int32_t* m_pCurrentVertexIndicesX; 
+		int32_t* m_pCurrentVertexIndicesY; 
+		int32_t* m_pCurrentVertexIndicesZ; 
+
 		uint32_t getIndex(uint32_t x, uint32_t y, uint32_t regionWidth);
 
 		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 
 		void extractSurfaceImpl(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
-		uint32_t computeBitmaskForSlice(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset, uint8_t *bitmask, uint8_t *previousBitmask);
-		void generateIndicesForSlice(VolumeSampler<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset, uint8_t* bitmask0, uint8_t* bitmask1, int32_t vertexIndicesX0[],int32_t vertexIndicesY0[],int32_t vertexIndicesZ0[], int32_t vertexIndicesX1[],int32_t vertexIndicesY1[],int32_t vertexIndicesZ1[]);
-		void generateVerticesForSlice(VolumeSampler<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, IndexedSurfacePatch* singleMaterialPatch,int32_t vertexIndicesX[],int32_t vertexIndicesY[],int32_t vertexIndicesZ[]);
+		uint32_t computeBitmaskForSlice(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset);
+		void generateIndicesForSlice(VolumeSampler<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset);
+		void generateVerticesForSlice(VolumeSampler<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, IndexedSurfacePatch* singleMaterialPatch);
 	};
 }
 
