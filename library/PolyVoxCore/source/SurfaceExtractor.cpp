@@ -322,11 +322,11 @@ namespace PolyVox
 		m_v3dRegionOffset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
 		//Create a region corresponding to the first slice
-		Region regSlice0(region);
+		regSlice0 = region;
 		Vector3DInt32 v3dUpperCorner = regSlice0.getUpperCorner();
 		v3dUpperCorner.setZ(regSlice0.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
 		regSlice0.setUpperCorner(v3dUpperCorner);
-		Region regSlice1 = regSlice0;	
+		regSlice1 = regSlice0;	
 
 		uint32_t uNoOfNonEmptyCellsForSlice0 = 0;
 		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
@@ -335,18 +335,18 @@ namespace PolyVox
 
 		for(uint32_t uSlice = 0; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
 		{			
-			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(regSlice1);
+			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice();
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
-				generateVerticesForSlice(regSlice1);				
+				generateVerticesForSlice();				
 			}
 			
 			if(isFirstSliceDone)
 			{
 				if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 				{
-					generateIndicesForSlice(regSlice0);
+					generateIndicesForSlice();
 				}
 			}
 
@@ -372,16 +372,16 @@ namespace PolyVox
 		delete[] m_pCurrentVertexIndicesZ;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSlice(const Region& regSlice)
+	uint32_t SurfaceExtractor::computeBitmaskForSlice()
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = regSlice1.getLowerCorner().getY(); uYVolSpace <= regSlice1.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
-			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = regSlice1.getLowerCorner().getX(); uXVolSpace <= regSlice1.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{	
-				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				uint16_t uZVolSpace = regSlice1.getLowerCorner().getZ();
 				//Current position
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
@@ -410,16 +410,16 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
 
 							//z
-							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexZ >>= 4;
 
 							//y
-							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice1.width()+1)];
 							iPreviousCubeIndexY &= 192; //192 = 128 + 64
 							iPreviousCubeIndexY >>= 2;
 
 							//x
-							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexX &= 128;
 							iPreviousCubeIndexX >>= 1;
 
@@ -435,11 +435,11 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
 
 							//z
-							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexZ >>= 4;
 
 							//y
-							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice1.width()+1)];
 							iPreviousCubeIndexY &= 192; //192 = 128 + 64
 							iPreviousCubeIndexY >>= 2;
 
@@ -459,11 +459,11 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
 
 							//z
-							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexZ >>= 4;
 
 							//x
-							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexX &= 160; //160 = 128+32
 							iPreviousCubeIndexX >>= 1;
 
@@ -484,7 +484,7 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
 
 							//z
-							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice1.width()+1)];
 							iCubeIndex = iPreviousCubeIndexZ >> 4;
 
 							if (v001 == 0) iCubeIndex |= 16;
@@ -507,12 +507,12 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
 
 							//y
-							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice1.width()+1)];
 							iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 							iPreviousCubeIndexY >>= 2;
 
 							//x
-							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 							iPreviousCubeIndexX >>= 1;
 
@@ -534,7 +534,7 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
 
 							//y
-							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize, regSlice1.width()+1)];
 							iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 							iPreviousCubeIndexY >>= 2;
 
@@ -561,7 +561,7 @@ namespace PolyVox
 							const uint8_t v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
 
 							//x
-							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice.width()+1)];
+							uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace, regSlice1.width()+1)];
 							iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 							iPreviousCubeIndexX >>= 1;
 
@@ -665,7 +665,7 @@ namespace PolyVox
 				}
 
 				//Save the bitmask
-				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY(), regSlice.width()+1)] = iCubeIndex;
+				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY(), regSlice1.width()+1)] = iCubeIndex;
 
 				if(edgeTable[iCubeIndex] != 0)
 				{
@@ -678,14 +678,14 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void SurfaceExtractor::generateVerticesForSlice(Region& regSlice)
+	void SurfaceExtractor::generateVerticesForSlice()
 	{
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = regSlice1.getLowerCorner().getY(); uYVolSpace <= regSlice1.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
-			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = regSlice1.getLowerCorner().getX(); uXVolSpace <= regSlice1.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
-				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				uint16_t uZVolSpace = regSlice1.getLowerCorner().getZ();
 
 				//Current position
 				const uint16_t uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
@@ -699,7 +699,7 @@ namespace PolyVox
 				const uint8_t v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)];
+				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice1.width()+1)];
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -710,7 +710,7 @@ namespace PolyVox
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
-					if(uXVolSpace != regSlice.getUpperCorner().getX())
+					if(uXVolSpace != regSlice1.getUpperCorner().getX())
 					{
 						m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
 						const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
@@ -719,12 +719,12 @@ namespace PolyVox
 						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)] = uLastVertexIndex;
+						m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice1.width()+1)] = uLastVertexIndex;
 					}
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
-					if(uYVolSpace != regSlice.getUpperCorner().getY())
+					if(uYVolSpace != regSlice1.getUpperCorner().getY())
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
 						const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
@@ -733,7 +733,7 @@ namespace PolyVox
 						const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)] = uLastVertexIndex;
+						m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice1.width()+1)] = uLastVertexIndex;
 					}
 				}
 				if (edgeTable[iCubeIndex] & 256)
@@ -747,22 +747,22 @@ namespace PolyVox
 						const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
 						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)] = uLastVertexIndex;
+						m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice1.width()+1)] = uLastVertexIndex;
 					}
 				}
 			}//For each cell
 		}
 	}
 
-	void SurfaceExtractor::generateIndicesForSlice(const Region& regSlice)
+	void SurfaceExtractor::generateIndicesForSlice()
 	{
 		uint32_t indlist[12];
 
-		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace < regSlice.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = regSlice0.getLowerCorner().getY(); uYVolSpace < regSlice0.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
-			for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace < regSlice.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = regSlice0.getLowerCorner().getX(); uXVolSpace < regSlice0.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
-				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
+				uint16_t uZVolSpace = regSlice0.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
 
 				//Current position
@@ -771,7 +771,7 @@ namespace PolyVox
 				const uint16_t uZRegSpace = m_sampVolume.getPosZ() - m_v3dRegionOffset.getZ();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+				uint8_t iCubeIndex = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice0.width()+1)];
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -782,62 +782,62 @@ namespace PolyVox
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
-					indlist[0] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					indlist[0] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[0] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2)
 				{
-					indlist[1] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace, regSlice.width()+1)];
+					indlist[1] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[1] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 4)
 				{
-					indlist[2] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize, regSlice.width()+1)];
+					indlist[2] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize, regSlice0.width()+1)];
 					assert(indlist[2] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
-					indlist[3] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					indlist[3] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[3] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 16)
 				{
-					indlist[4] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					indlist[4] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[4] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 32)
 				{
-					indlist[5] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace, regSlice.width()+1)];
+					indlist[5] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[5] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 64)
 				{
-					indlist[6] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize, regSlice.width()+1)];
+					indlist[6] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize, regSlice0.width()+1)];
 					assert(indlist[6] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 128)
 				{
-					indlist[7] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					indlist[7] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[7] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 256)
 				{
-					indlist[8] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
+					indlist[8] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[8] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 512)
 				{
-					indlist[9] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace, regSlice.width()+1)];
+					indlist[9] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace, regSlice0.width()+1)];
 					assert(indlist[9] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 1024)
 				{
-					indlist[10] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace+m_uStepSize, regSlice.width()+1)];
+					indlist[10] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace+m_uStepSize, regSlice0.width()+1)];
 					assert(indlist[10] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2048)
 				{
-					indlist[11] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace+m_uStepSize, regSlice.width()+1)];
+					indlist[11] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace+m_uStepSize, regSlice0.width()+1)];
 					assert(indlist[11] != -1);
 				}
 

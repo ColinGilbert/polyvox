@@ -66,12 +66,15 @@ namespace PolyVox
 
 		Vector3DFloat m_v3dRegionOffset;
 
+		Region regSlice0;
+		Region regSlice1;
+
 		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* m_ispCurrent);
 
 		void extractSurfaceImpl(Region region);
-		uint32_t computeBitmaskForSlice(const Region& regSlice);
-		void generateIndicesForSlice(const Region& regSlice);
-		void generateVerticesForSlice(Region& regSlice);
+		uint32_t computeBitmaskForSlice();
+		void generateIndicesForSlice();
+		void generateVerticesForSlice();
 	};
 }
 
