@@ -48,7 +48,7 @@ namespace PolyVox
 		uint8_t m_uStepSize;
 
 		Volume<uint8_t> m_volData;
-		VolumeSampler<uint8_t> m_iterVolume;
+		VolumeSampler<uint8_t> m_sampVolume;
 
 		uint8_t* m_pPreviousBitmask;
 		uint8_t* m_pCurrentBitmask;
@@ -65,10 +65,10 @@ namespace PolyVox
 
 		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
 
-		void extractSurfaceImpl(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
-		uint32_t computeBitmaskForSlice(VolumeSampler<uint8_t>& volIter, const Region& regSlice, const Vector3DFloat& offset);
-		void generateIndicesForSlice(VolumeSampler<uint8_t>& volIter, const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset);
-		void generateVerticesForSlice(VolumeSampler<uint8_t>& volIter, Region& regSlice, const Vector3DFloat& offset, IndexedSurfacePatch* singleMaterialPatch);
+		void extractSurfaceImpl(Region region, IndexedSurfacePatch* singleMaterialPatch);
+		uint32_t computeBitmaskForSlice(const Region& regSlice, const Vector3DFloat& offset);
+		void generateIndicesForSlice(const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset);
+		void generateVerticesForSlice(Region& regSlice, const Vector3DFloat& offset, IndexedSurfacePatch* singleMaterialPatch);
 	};
 }
 
