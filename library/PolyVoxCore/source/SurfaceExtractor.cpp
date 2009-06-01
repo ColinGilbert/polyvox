@@ -28,13 +28,14 @@ namespace PolyVox
 
 	POLYVOX_SHARED_PTR<IndexedSurfacePatch> SurfaceExtractor::extractSurfaceForRegion(Region region)
 	{
-		POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
+		//POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
+		m_ispCurrent = new IndexedSurfacePatch();
 
-		extractSurfaceImpl(region, result.get());
+		extractSurfaceImpl(region);
 
-		result->m_Region = region;
+		m_ispCurrent->m_Region = region;
 
-		return result;
+		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
 	}
 
 	uint32_t SurfaceExtractor::getIndex(uint32_t x, uint32_t y, uint32_t regionWidth)
@@ -46,7 +47,7 @@ namespace PolyVox
 	// Level 0
 	////////////////////////////////////////////////////////////////////////////////
 
-	/*uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& m_sampVolume, const Region& regSlice, const Vector3DFloat& offset, uint8_t* bitmask, uint8_t* previousBitmask)
+	/*uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& m_sampVolume, const Region& regSlice, const Vector3DFloat& m_v3dRegionOffset, uint8_t* bitmask, uint8_t* previousBitmask)
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
@@ -58,8 +59,8 @@ namespace PolyVox
 				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 				//Current position
-				const uint16_t uXRegSpace = m_sampVolume.getPosX() - offset.getX();
-				const uint16_t uYRegSpace = m_sampVolume.getPosY() - offset.getY();
+				const uint16_t uXRegSpace = m_sampVolume.getPosX() - m_v3dRegionOffset.getX();
+				const uint16_t uYRegSpace = m_sampVolume.getPosY() - m_v3dRegionOffset.getY();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = 0;
@@ -288,9 +289,9 @@ namespace PolyVox
 	// Level 1
 	////////////////////////////////////////////////////////////////////////////////
 
-	void SurfaceExtractor::extractSurfaceImpl(Region region, IndexedSurfacePatch* singleMaterialPatch)
+	void SurfaceExtractor::extractSurfaceImpl(Region region)
 	{	
-		singleMaterialPatch->clear();
+		m_ispCurrent->clear();
 
 		//For edge indices
 		//FIXME - do the slices need to be this big? Surely for a decimated mesh they can be smaller?
@@ -317,8 +318,8 @@ namespace PolyVox
 		}
 		region.cropTo(regVolume);
 
-		//Offset from volume corner
-		const Vector3DFloat offset = static_cast<Vector3DFloat>(region.getLowerCorner());
+		//m_v3dRegionOffset from volume corner
+		m_v3dRegionOffset = static_cast<Vector3DFloat>(region.getLowerCorner());
 
 		//Create a region corresponding to the first slice
 		Region regSlice0(region);
@@ -332,21 +333,20 @@ namespace PolyVox
 
 		bool isFirstSliceDone = false;
 
-		for(uint32_t uSlice = 0; ((uSlice <= region.depth()) && (uSlice + offset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
-		{
-			
-			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(regSlice1, offset);
+		for(uint32_t uSlice = 0; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
+		{			
+			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(regSlice1);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
-				generateVerticesForSlice(regSlice1, offset, singleMaterialPatch);				
+				generateVerticesForSlice(regSlice1);				
 			}
 			
 			if(isFirstSliceDone)
 			{
 				if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 				{
-					generateIndicesForSlice(regSlice0, singleMaterialPatch, offset);
+					generateIndicesForSlice(regSlice0);
 				}
 			}
 
@@ -372,7 +372,7 @@ namespace PolyVox
 		delete[] m_pCurrentVertexIndicesZ;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSlice(const Region& regSlice, const Vector3DFloat& offset)
+	uint32_t SurfaceExtractor::computeBitmaskForSlice(const Region& regSlice)
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
@@ -385,9 +385,9 @@ namespace PolyVox
 				//Current position
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
-				const uint16_t uXRegSpace = uXVolSpace - offset.getX();
-				const uint16_t uYRegSpace = uYVolSpace - offset.getY();
-				const uint16_t uZRegSpace = uZVolSpace - offset.getZ();
+				const uint16_t uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+				const uint16_t uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+				const uint16_t uZRegSpace = uZVolSpace - m_v3dRegionOffset.getZ();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = 0;
@@ -665,7 +665,7 @@ namespace PolyVox
 				}
 
 				//Save the bitmask
-				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- offset.getY(), regSlice.width()+1)] = iCubeIndex;
+				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY(), regSlice.width()+1)] = iCubeIndex;
 
 				if(edgeTable[iCubeIndex] != 0)
 				{
@@ -678,7 +678,7 @@ namespace PolyVox
 		return uNoOfNonEmptyCells;
 	}
 
-	void SurfaceExtractor::generateVerticesForSlice(Region& regSlice, const Vector3DFloat& offset, IndexedSurfacePatch* singleMaterialPatch)
+	void SurfaceExtractor::generateVerticesForSlice(Region& regSlice)
 	{
 		//Iterate over each cell in the region
 		for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
@@ -688,9 +688,9 @@ namespace PolyVox
 				uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
 
 				//Current position
-				const uint16_t uXRegSpace = uXVolSpace - offset.getX();
-				const uint16_t uYRegSpace = uYVolSpace - offset.getY();
-				const uint16_t uZRegSpace = uZVolSpace - offset.getZ();
+				const uint16_t uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+				const uint16_t uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+				const uint16_t uZRegSpace = uZVolSpace - m_v3dRegionOffset.getZ();
 
 				//Current position
 				//const uint16_t z = regSlice.getLowerCorner().getZ();
@@ -699,7 +699,7 @@ namespace PolyVox
 				const uint8_t v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXVolSpace - offset.getX(),uYVolSpace - offset.getY(), regSlice.width()+1)];
+				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)];
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -714,12 +714,12 @@ namespace PolyVox
 					{
 						m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
 						const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-						const Vector3DFloat v3dPosition(uXVolSpace - offset.getX() + 0.5f * m_uStepSize, uYVolSpace - offset.getY(), uZVolSpace - offset.getZ());
+						const Vector3DFloat v3dPosition(uXVolSpace - m_v3dRegionOffset.getX() + 0.5f * m_uStepSize, uYVolSpace - m_v3dRegionOffset.getY(), uZVolSpace - m_v3dRegionOffset.getZ());
 						const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
 						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-						uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesX[getIndex(uXVolSpace - offset.getX(),uYVolSpace - offset.getY(), regSlice.width()+1)] = uLastVertexIndex;
+						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+						m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)] = uLastVertexIndex;
 					}
 				}
 				if (edgeTable[iCubeIndex] & 8)
@@ -728,12 +728,12 @@ namespace PolyVox
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
 						const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-						const Vector3DFloat v3dPosition(uXVolSpace - offset.getX(), uYVolSpace - offset.getY() + 0.5f * m_uStepSize, uZVolSpace - offset.getZ());
+						const Vector3DFloat v3dPosition(uXVolSpace - m_v3dRegionOffset.getX(), uYVolSpace - m_v3dRegionOffset.getY() + 0.5f * m_uStepSize, uZVolSpace - m_v3dRegionOffset.getZ());
 						const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
 						const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-						uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesY[getIndex(uXVolSpace - offset.getX(),uYVolSpace - offset.getY(), regSlice.width()+1)] = uLastVertexIndex;
+						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+						m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)] = uLastVertexIndex;
 					}
 				}
 				if (edgeTable[iCubeIndex] & 256)
@@ -742,19 +742,19 @@ namespace PolyVox
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace + m_uStepSize);
 						const uint8_t v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-						const Vector3DFloat v3dPosition(uXVolSpace - offset.getX(), uYVolSpace - offset.getY(), uZVolSpace - offset.getZ() + 0.5f * m_uStepSize);
+						const Vector3DFloat v3dPosition(uXVolSpace - m_v3dRegionOffset.getX(), uYVolSpace - m_v3dRegionOffset.getY(), uZVolSpace - m_v3dRegionOffset.getZ() + 0.5f * m_uStepSize);
 						const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
 						const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
 						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-						uint32_t uLastVertexIndex = singleMaterialPatch->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - offset.getX(),uYVolSpace - offset.getY(), regSlice.width()+1)] = uLastVertexIndex;
+						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+						m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_v3dRegionOffset.getX(),uYVolSpace - m_v3dRegionOffset.getY(), regSlice.width()+1)] = uLastVertexIndex;
 					}
 				}
 			}//For each cell
 		}
 	}
 
-	void SurfaceExtractor::generateIndicesForSlice(const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset)
+	void SurfaceExtractor::generateIndicesForSlice(const Region& regSlice)
 	{
 		uint32_t indlist[12];
 
@@ -766,9 +766,9 @@ namespace PolyVox
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
 
 				//Current position
-				const uint16_t uXRegSpace = m_sampVolume.getPosX() - offset.getX();
-				const uint16_t uYRegSpace = m_sampVolume.getPosY() - offset.getY();
-				const uint16_t uZRegSpace = m_sampVolume.getPosZ() - offset.getZ();
+				const uint16_t uXRegSpace = m_sampVolume.getPosX() - m_v3dRegionOffset.getX();
+				const uint16_t uYRegSpace = m_sampVolume.getPosY() - m_v3dRegionOffset.getY();
+				const uint16_t uZRegSpace = m_sampVolume.getPosZ() - m_v3dRegionOffset.getZ();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
@@ -847,7 +847,7 @@ namespace PolyVox
 					uint32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
 					uint32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
 
-					singleMaterialPatch->addTriangle(ind0, ind1, ind2);
+					m_ispCurrent->addTriangle(ind0, ind1, ind2);
 				}//For each triangle
 			}//For each cell
 		}

@@ -53,7 +53,6 @@ namespace PolyVox
 		uint8_t* m_pPreviousBitmask;
 		uint8_t* m_pCurrentBitmask;
 
-
 		int32_t* m_pPreviousVertexIndicesX;
 		int32_t* m_pPreviousVertexIndicesY; 
 		int32_t* m_pPreviousVertexIndicesZ; 
@@ -63,12 +62,16 @@ namespace PolyVox
 
 		uint32_t getIndex(uint32_t x, uint32_t y, uint32_t regionWidth);
 
-		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* singleMaterialPatch);
+		IndexedSurfacePatch* m_ispCurrent;
 
-		void extractSurfaceImpl(Region region, IndexedSurfacePatch* singleMaterialPatch);
-		uint32_t computeBitmaskForSlice(const Region& regSlice, const Vector3DFloat& offset);
-		void generateIndicesForSlice(const Region& regSlice, IndexedSurfacePatch* singleMaterialPatch, const Vector3DFloat& offset);
-		void generateVerticesForSlice(Region& regSlice, const Vector3DFloat& offset, IndexedSurfacePatch* singleMaterialPatch);
+		Vector3DFloat m_v3dRegionOffset;
+
+		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* m_ispCurrent);
+
+		void extractSurfaceImpl(Region region);
+		uint32_t computeBitmaskForSlice(const Region& regSlice);
+		void generateIndicesForSlice(const Region& regSlice);
+		void generateVerticesForSlice(Region& regSlice);
 	};
 }
 
