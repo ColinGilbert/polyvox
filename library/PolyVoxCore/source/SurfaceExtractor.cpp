@@ -307,10 +307,7 @@ namespace PolyVox
 		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = m_volData.getEnclosingRegion();
-		if(m_uLodLevel > 0)
-		{
-			regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
-		}
+		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
 		region.cropTo(regVolume);
 
 		//m_v3dRegionOffset from volume corner
@@ -332,7 +329,7 @@ namespace PolyVox
 
 		for(uint32_t uSlice = 0; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
 		{			
-			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice();
+			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(!isFirstSliceDone);
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -369,381 +366,104 @@ namespace PolyVox
 		delete[] m_pCurrentVertexIndicesZ;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSlice()
+	uint32_t SurfaceExtractor::computeBitmaskForSlice(bool bIsFirstSlice)
 	{
 		uint32_t uNoOfNonEmptyCells = 0;
 
 		const uint16_t uMaxXVolSpace = regSlice1.getUpperCorner().getX();
 		const uint16_t uMaxYVolSpace = regSlice1.getUpperCorner().getY();
 
-		const uint16_t uZVolSpace = regSlice1.getLowerCorner().getZ();
-		const uint16_t uZRegSpace = uZVolSpace - m_v3dRegionOffset.getZ();
+		uZVolSpace = regSlice1.getLowerCorner().getZ();
+		uZRegSpace = uZVolSpace - m_v3dRegionOffset.getZ();
 
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = regSlice1.getLowerCorner().getY(); uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		/*for(*/uYVolSpace = regSlice1.getLowerCorner().getY();/* uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)*/
 		{
-			for(uint16_t uXVolSpace = regSlice1.getLowerCorner().getX(); uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+			/*for(*/uXVolSpace = regSlice1.getLowerCorner().getX();/* uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)*/
 			{	
-				const uint16_t uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
-				const uint16_t uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 				//Current position
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = 0;
+				uint8_t iCubeIndex = computeBitmaskForCell(false, false, !bIsFirstSlice, m_uLodLevel);
 
-				if((uXVolSpace < m_sampVolume.getVolume().getWidth()-m_uStepSize) &&
-					(uYVolSpace < m_sampVolume.getVolume().getHeight()-m_uStepSize) &&
-					(uZVolSpace < m_sampVolume.getVolume().getDepth()-m_uStepSize))
+				//Save the bitmask
+				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
+
+				if(edgeTable[iCubeIndex] != 0)
 				{
-					bool isPrevXAvail = uXRegSpace > 0;
-					bool isPrevYAvail = uYRegSpace > 0;
-					bool isPrevZAvail = uZRegSpace > 0;
-
-					if(isPrevZAvail)
-					{
-						if(isPrevYAvail)
-						{
-							if(isPrevXAvail)
-							{
-								if(m_uLodLevel == 0)
-								{
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
-								}
-
-								//z
-								uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
-								iPreviousCubeIndexZ >>= 4;
-
-								//y
-								uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
-								iPreviousCubeIndexY &= 192; //192 = 128 + 64
-								iPreviousCubeIndexY >>= 2;
-
-								//x
-								uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
-								iPreviousCubeIndexX &= 128;
-								iPreviousCubeIndexX >>= 1;
-
-								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-							else //previous X not available
-							{
-								if(m_uLodLevel == 0)
-								{
-									v011 = m_sampVolume.peekVoxel0px1py1pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
-								}
-
-								//z
-								uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
-								iPreviousCubeIndexZ >>= 4;
-
-								//y
-								uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
-								iPreviousCubeIndexY &= 192; //192 = 128 + 64
-								iPreviousCubeIndexY >>= 2;
-
-								iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
-								if (v011 == 0) iCubeIndex |= 64;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-						}
-						else //previous Y not available
-						{
-							if(isPrevXAvail)
-							{
-								if(m_uLodLevel == 0)
-								{
-									v101 = m_sampVolume.peekVoxel1px0py1pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-									v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
-								}
-
-								//z
-								uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
-								iPreviousCubeIndexZ >>= 4;
-
-								//x
-								uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
-								iPreviousCubeIndexX &= 160; //160 = 128+32
-								iPreviousCubeIndexX >>= 1;
-
-								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
-
-								if (v101 == 0) iCubeIndex |= 32;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-							else //previous X not available
-							{
-								if(m_uLodLevel == 0)
-								{
-									v001 = m_sampVolume.peekVoxel0px0py1pz();
-									v101 = m_sampVolume.peekVoxel1px0py1pz();
-									v011 = m_sampVolume.peekVoxel0px1py1pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
-									v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-									v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
-								}
-
-								//z
-								uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
-								iCubeIndex = iPreviousCubeIndexZ >> 4;
-
-								if (v001 == 0) iCubeIndex |= 16;
-								if (v101 == 0) iCubeIndex |= 32;
-								if (v011 == 0) iCubeIndex |= 64;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-						}
-					}
-					else //previous Z not available
-					{
-						if(isPrevYAvail)
-						{
-							if(isPrevXAvail)
-							{
-								if(m_uLodLevel == 0)
-								{
-									v110 = m_sampVolume.peekVoxel1px1py0pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-									v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-								}
-
-								//y
-								uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
-								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-								iPreviousCubeIndexY >>= 2;
-
-								//x
-								uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
-								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-								iPreviousCubeIndexX >>= 1;
-
-								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
-
-								if (v110 == 0) iCubeIndex |= 8;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-							else //previous X not available
-							{
-								if(m_uLodLevel == 0)
-								{
-									v010 = m_sampVolume.peekVoxel0px1py0pz();
-									v110 = m_sampVolume.peekVoxel1px1py0pz();
-
-									v011 = m_sampVolume.peekVoxel0px1py1pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
-									v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-									v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-								}
-
-								//y
-								uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
-								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-								iPreviousCubeIndexY >>= 2;
-
-								iCubeIndex = iPreviousCubeIndexY;
-
-								if (v010 == 0) iCubeIndex |= 4;
-								if (v110 == 0) iCubeIndex |= 8;
-								if (v011 == 0) iCubeIndex |= 64;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-						}
-						else //previous Y not available
-						{
-							if(isPrevXAvail)
-							{
-								if(m_uLodLevel == 0)
-								{
-									v100 = m_sampVolume.peekVoxel1px0py0pz();
-									v110 = m_sampVolume.peekVoxel1px1py0pz();
-
-									v101 = m_sampVolume.peekVoxel1px0py1pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
-									v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-									v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-									v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-								}
-
-								//x
-								uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
-								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-								iPreviousCubeIndexX >>= 1;
-
-								iCubeIndex = iPreviousCubeIndexX;
-
-								if (v100 == 0) iCubeIndex |= 2;	
-								if (v110 == 0) iCubeIndex |= 8;
-								if (v101 == 0) iCubeIndex |= 32;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-							else //previous X not available
-							{
-								if(m_uLodLevel == 0)
-								{
-									v000 = m_sampVolume.getVoxel();
-									v100 = m_sampVolume.peekVoxel1px0py0pz();
-									v010 = m_sampVolume.peekVoxel0px1py0pz();
-									v110 = m_sampVolume.peekVoxel1px1py0pz();
-
-									v001 = m_sampVolume.peekVoxel0px0py1pz();
-									v101 = m_sampVolume.peekVoxel1px0py1pz();
-									v011 = m_sampVolume.peekVoxel0px1py1pz();
-									v111 = m_sampVolume.peekVoxel1px1py1pz();
-								}
-								else
-								{
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-									v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
-									v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
-									v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-									v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
-									v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-									v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-									m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-									v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-								}
-
-								if (v000 == 0) iCubeIndex |= 1;
-								if (v100 == 0) iCubeIndex |= 2;
-								if (v010 == 0) iCubeIndex |= 4;
-								if (v110 == 0) iCubeIndex |= 8;
-								if (v001 == 0) iCubeIndex |= 16;
-								if (v101 == 0) iCubeIndex |= 32;
-								if (v011 == 0) iCubeIndex |= 64;
-								if (v111 == 0) iCubeIndex |= 128;
-							}
-						}
-					}
+					++uNoOfNonEmptyCells;
 				}
-				else
+
+			}//For each cell
+		}
+
+		//Iterate over each cell in the region
+		for(uYVolSpace = regSlice1.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		{
+			/*for(*/uXVolSpace = regSlice1.getLowerCorner().getX();/* uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)*/
+			{	
+				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+
+				//Current position
+				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = computeBitmaskForCell(false, true, !bIsFirstSlice, m_uLodLevel);
+
+				//Save the bitmask
+				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
+
+				if(edgeTable[iCubeIndex] != 0)
 				{
-					if(m_uLodLevel == 0)
-					{
-						v000 = m_sampVolume.getVoxel();
-						v100 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
-						v010 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
-						v110 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace  );
-
-						v001 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
-						v101 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
-						v011 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
-						v111 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);
-
-						if (v000 == 0) iCubeIndex |= 1;
-						if (v100 == 0) iCubeIndex |= 2;
-						if (v010 == 0) iCubeIndex |= 4;
-						if (v110 == 0) iCubeIndex |= 8;
-						if (v001 == 0) iCubeIndex |= 16;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v011 == 0) iCubeIndex |= 64;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
-					else
-					{
-						v000 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
-						v100 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
-						v010 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace+1, uYVolSpace+1, uZVolSpace  );
-						v110 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-
-						m_sampVolume.setPosition(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
-						v001 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
-						v101 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
-						v011 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);				
-						v111 = m_sampVolume.getSubSampledVoxelWithBoundsCheck(m_uLodLevel);				
-
-						if (v000 == 0) iCubeIndex |= 1;
-						if (v100 == 0) iCubeIndex |= 2;
-						if (v010 == 0) iCubeIndex |= 4;
-						if (v110 == 0) iCubeIndex |= 8;
-						if (v001 == 0) iCubeIndex |= 16;
-						if (v101 == 0) iCubeIndex |= 32;
-						if (v011 == 0) iCubeIndex |= 64;
-						if (v111 == 0) iCubeIndex |= 128;
-					}
+					++uNoOfNonEmptyCells;
 				}
+
+			}//For each cell
+		}
+
+		//Iterate over each cell in the region
+		/*for(*/uYVolSpace = regSlice1.getLowerCorner().getY();/* uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)*/
+		{
+			for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+			{	
+				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+
+				//Current position
+				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = computeBitmaskForCell(true, false, !bIsFirstSlice, m_uLodLevel);
+
+				//Save the bitmask
+				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
+
+				if(edgeTable[iCubeIndex] != 0)
+				{
+					++uNoOfNonEmptyCells;
+				}
+
+			}//For each cell
+		}
+
+		//Iterate over each cell in the region
+		for(uYVolSpace = regSlice1.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		{
+			for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+			{	
+				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+
+				//Current position
+				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+
+				//Determine the index into the edge table which tells us which vertices are inside of the surface
+				uint8_t iCubeIndex = computeBitmaskForCell(true, true, !bIsFirstSlice, m_uLodLevel);
 
 				//Save the bitmask
 				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
@@ -757,6 +477,297 @@ namespace PolyVox
 		}
 
 		return uNoOfNonEmptyCells;
+	}
+
+	uint8_t SurfaceExtractor::computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel)
+	{
+		uint8_t iCubeIndex = 0;
+
+		if(isPrevZAvail)
+		{
+			if(isPrevYAvail)
+			{
+				if(isPrevXAvail)
+				{
+					if(m_uLodLevel == 0)
+					{
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+					}
+
+					//z
+					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
+					iPreviousCubeIndexZ >>= 4;
+
+					//y
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					iPreviousCubeIndexY &= 192; //192 = 128 + 64
+					iPreviousCubeIndexY >>= 2;
+
+					//x
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					iPreviousCubeIndexX &= 128;
+					iPreviousCubeIndexX >>= 1;
+
+					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+				else //previous X not available
+				{
+					if(m_uLodLevel == 0)
+					{
+						v011 = m_sampVolume.peekVoxel0px1py1pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+					}
+
+					//z
+					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
+					iPreviousCubeIndexZ >>= 4;
+
+					//y
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					iPreviousCubeIndexY &= 192; //192 = 128 + 64
+					iPreviousCubeIndexY >>= 2;
+
+					iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
+					if (v011 == 0) iCubeIndex |= 64;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+			}
+			else //previous Y not available
+			{
+				if(isPrevXAvail)
+				{
+					if(m_uLodLevel == 0)
+					{
+						v101 = m_sampVolume.peekVoxel1px0py1pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
+						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+					}
+
+					//z
+					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
+					iPreviousCubeIndexZ >>= 4;
+
+					//x
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					iPreviousCubeIndexX &= 160; //160 = 128+32
+					iPreviousCubeIndexX >>= 1;
+
+					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
+
+					if (v101 == 0) iCubeIndex |= 32;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+				else //previous X not available
+				{
+					if(m_uLodLevel == 0)
+					{
+						v001 = m_sampVolume.peekVoxel0px0py1pz();
+						v101 = m_sampVolume.peekVoxel1px0py1pz();
+						v011 = m_sampVolume.peekVoxel0px1py1pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
+						v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
+						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+					}
+
+					//z
+					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
+					iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+					if (v001 == 0) iCubeIndex |= 16;
+					if (v101 == 0) iCubeIndex |= 32;
+					if (v011 == 0) iCubeIndex |= 64;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+			}
+		}
+		else //previous Z not available
+		{
+			if(isPrevYAvail)
+			{
+				if(isPrevXAvail)
+				{
+					if(m_uLodLevel == 0)
+					{
+						v110 = m_sampVolume.peekVoxel1px1py0pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
+						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					}
+
+					//y
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+					iPreviousCubeIndexY >>= 2;
+
+					//x
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+					iPreviousCubeIndexX >>= 1;
+
+					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
+
+					if (v110 == 0) iCubeIndex |= 8;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+				else //previous X not available
+				{
+					if(m_uLodLevel == 0)
+					{
+						v010 = m_sampVolume.peekVoxel0px1py0pz();
+						v110 = m_sampVolume.peekVoxel1px1py0pz();
+
+						v011 = m_sampVolume.peekVoxel0px1py1pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
+						v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
+						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					}
+
+					//y
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+					iPreviousCubeIndexY >>= 2;
+
+					iCubeIndex = iPreviousCubeIndexY;
+
+					if (v010 == 0) iCubeIndex |= 4;
+					if (v110 == 0) iCubeIndex |= 8;
+					if (v011 == 0) iCubeIndex |= 64;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+			}
+			else //previous Y not available
+			{
+				if(isPrevXAvail)
+				{
+					if(m_uLodLevel == 0)
+					{
+						v100 = m_sampVolume.peekVoxel1px0py0pz();
+						v110 = m_sampVolume.peekVoxel1px1py0pz();
+
+						v101 = m_sampVolume.peekVoxel1px0py1pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
+						v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
+						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
+						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					}
+
+					//x
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+					iPreviousCubeIndexX >>= 1;
+
+					iCubeIndex = iPreviousCubeIndexX;
+
+					if (v100 == 0) iCubeIndex |= 2;	
+					if (v110 == 0) iCubeIndex |= 8;
+					if (v101 == 0) iCubeIndex |= 32;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+				else //previous X not available
+				{
+					if(m_uLodLevel == 0)
+					{
+						v000 = m_sampVolume.getVoxel();
+						v100 = m_sampVolume.peekVoxel1px0py0pz();
+						v010 = m_sampVolume.peekVoxel0px1py0pz();
+						v110 = m_sampVolume.peekVoxel1px1py0pz();
+
+						v001 = m_sampVolume.peekVoxel0px0py1pz();
+						v101 = m_sampVolume.peekVoxel1px0py1pz();
+						v011 = m_sampVolume.peekVoxel0px1py1pz();
+						v111 = m_sampVolume.peekVoxel1px1py1pz();
+					}
+					else
+					{
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+						v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
+						v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
+						v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
+						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
+						v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
+						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
+						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					}
+
+					if (v000 == 0) iCubeIndex |= 1;
+					if (v100 == 0) iCubeIndex |= 2;
+					if (v010 == 0) iCubeIndex |= 4;
+					if (v110 == 0) iCubeIndex |= 8;
+					if (v001 == 0) iCubeIndex |= 16;
+					if (v101 == 0) iCubeIndex |= 32;
+					if (v011 == 0) iCubeIndex |= 64;
+					if (v111 == 0) iCubeIndex |= 128;
+				}
+			}
+		}
+
+		return iCubeIndex;
 	}
 
 	void SurfaceExtractor::generateVerticesForSlice()
