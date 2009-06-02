@@ -58,7 +58,16 @@ namespace PolyVox
 		int32_t* m_pPreviousVertexIndicesZ; 
 		int32_t* m_pCurrentVertexIndicesX; 
 		int32_t* m_pCurrentVertexIndicesY; 
-		int32_t* m_pCurrentVertexIndicesZ; 
+		int32_t* m_pCurrentVertexIndicesZ;
+
+		uint8_t v000;
+		uint8_t v100;
+		uint8_t v010;
+		uint8_t v110;
+		uint8_t v001;
+		uint8_t v101;
+		uint8_t v011;
+		uint8_t v111;
 
 		inline uint32_t getIndex(uint32_t x, uint32_t y)
 		{
