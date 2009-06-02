@@ -47,44 +47,43 @@ namespace PolyVox
 		uint16_t getPosY(void) const;
 		uint16_t getPosZ(void) const;
 		VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-		VoxelType getSubSampledVoxelWithBoundsCheck(uint8_t uLevel) const;
 		const Volume<VoxelType>& getVolume(void) const;
-		VoxelType getVoxel(void) const;			
+		inline VoxelType getVoxel(void) const;			
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
 		void setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos);
 
 		void movePositiveX(void);
 
-		VoxelType peekVoxel1nx1ny1nz(void) const;
-		VoxelType peekVoxel1nx1ny0pz(void) const;
-		VoxelType peekVoxel1nx1ny1pz(void) const;
-		VoxelType peekVoxel1nx0py1nz(void) const;
-		VoxelType peekVoxel1nx0py0pz(void) const;
-		VoxelType peekVoxel1nx0py1pz(void) const;
-		VoxelType peekVoxel1nx1py1nz(void) const;
-		VoxelType peekVoxel1nx1py0pz(void) const;
-		VoxelType peekVoxel1nx1py1pz(void) const;
+		inline VoxelType peekVoxel1nx1ny1nz(void) const;
+		inline VoxelType peekVoxel1nx1ny0pz(void) const;
+		inline VoxelType peekVoxel1nx1ny1pz(void) const;
+		inline VoxelType peekVoxel1nx0py1nz(void) const;
+		inline VoxelType peekVoxel1nx0py0pz(void) const;
+		inline VoxelType peekVoxel1nx0py1pz(void) const;
+		inline VoxelType peekVoxel1nx1py1nz(void) const;
+		inline VoxelType peekVoxel1nx1py0pz(void) const;
+		inline VoxelType peekVoxel1nx1py1pz(void) const;
 
-		VoxelType peekVoxel0px1ny1nz(void) const;
-		VoxelType peekVoxel0px1ny0pz(void) const;
-		VoxelType peekVoxel0px1ny1pz(void) const;
-		VoxelType peekVoxel0px0py1nz(void) const;
-		VoxelType peekVoxel0px0py0pz(void) const;
-		VoxelType peekVoxel0px0py1pz(void) const;
-		VoxelType peekVoxel0px1py1nz(void) const;
-		VoxelType peekVoxel0px1py0pz(void) const;
-		VoxelType peekVoxel0px1py1pz(void) const;
+		inline VoxelType peekVoxel0px1ny1nz(void) const;
+		inline VoxelType peekVoxel0px1ny0pz(void) const;
+		inline VoxelType peekVoxel0px1ny1pz(void) const;
+		inline VoxelType peekVoxel0px0py1nz(void) const;
+		inline VoxelType peekVoxel0px0py0pz(void) const;
+		inline VoxelType peekVoxel0px0py1pz(void) const;
+		inline VoxelType peekVoxel0px1py1nz(void) const;
+		inline VoxelType peekVoxel0px1py0pz(void) const;
+		inline VoxelType peekVoxel0px1py1pz(void) const;
 
-		VoxelType peekVoxel1px1ny1nz(void) const;
-		VoxelType peekVoxel1px1ny0pz(void) const;
-		VoxelType peekVoxel1px1ny1pz(void) const;
-		VoxelType peekVoxel1px0py1nz(void) const;
-		VoxelType peekVoxel1px0py0pz(void) const;
-		VoxelType peekVoxel1px0py1pz(void) const;
-		VoxelType peekVoxel1px1py1nz(void) const;
-		VoxelType peekVoxel1px1py0pz(void) const;
-		VoxelType peekVoxel1px1py1pz(void) const;
+		inline VoxelType peekVoxel1px1ny1nz(void) const;
+		inline VoxelType peekVoxel1px1ny0pz(void) const;
+		inline VoxelType peekVoxel1px1ny1pz(void) const;
+		inline VoxelType peekVoxel1px0py1nz(void) const;
+		inline VoxelType peekVoxel1px0py0pz(void) const;
+		inline VoxelType peekVoxel1px0py1pz(void) const;
+		inline VoxelType peekVoxel1px1py1nz(void) const;
+		inline VoxelType peekVoxel1px1py0pz(void) const;
+		inline VoxelType peekVoxel1px1py1pz(void) const;
 
 	private:
 

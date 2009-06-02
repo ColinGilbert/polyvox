@@ -164,25 +164,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType VolumeSampler<VoxelType>::getSubSampledVoxelWithBoundsCheck(uint8_t uLevel) const
-	{
-		const uint8_t uSize = 1 << uLevel;
-
-		if((mXPosInVolume >= 0) && (mXPosInVolume <= mVolume.getWidth() - uSize) &&
-			(mYPosInVolume >= 0) && (mYPosInVolume <= mVolume.getHeight() - uSize) &&
-			(mZPosInVolume >= 0) && (mZPosInVolume <= mVolume.getDepth() - uSize))
-		{
-			return getSubSampledVoxel(uLevel);
-		}
-		else
-		{
-			//If any voxel is outside then it's value will be zero, and so the minimum will be zero.
-			//No need to even look at the rest of the voxels.
-			return 0;
-		}
-	}
-
-	template <typename VoxelType>
 	const Volume<VoxelType>& VolumeSampler<VoxelType>::getVolume(void) const
 	{
 		return mVolume;
