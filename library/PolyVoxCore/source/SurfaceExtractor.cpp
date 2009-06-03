@@ -31,14 +31,14 @@ namespace PolyVox
 		//POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
 		m_ispCurrent = new IndexedSurfacePatch();
 
-		extractSurfaceImpl(region);
+		extractSurfaceImpl(region, m_uLodLevel);
 
 		m_ispCurrent->m_Region = region;
 
 		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
 	}
 
-	void SurfaceExtractor::extractSurfaceImpl(Region region)
+	void SurfaceExtractor::extractSurfaceImpl(Region region, uint8_t uLodLevel)
 	{	
 		m_ispCurrent->clear();
 
@@ -79,11 +79,28 @@ namespace PolyVox
 		uint32_t uNoOfNonEmptyCellsForSlice0 = 0;
 		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
 
-		bool isFirstSliceDone = false;
+		//Process the first slice (previous slice not available)
+		computeBitmaskForSlice(false, uLodLevel);
+		uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
-		for(uint32_t uSlice = 0; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
+		if(uNoOfNonEmptyCellsForSlice1 != 0)
+		{
+			generateVerticesForSlice();				
+		}
+
+		std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
+		std::swap(m_pPreviousBitmask, m_pCurrentBitmask);
+		std::swap(m_pPreviousVertexIndicesX, m_pCurrentVertexIndicesX);
+		std::swap(m_pPreviousVertexIndicesY, m_pCurrentVertexIndicesY);
+		std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
+
+		regSlice0 = regSlice1;
+		regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
+
+		//Process the first slice (previous slice is available)
+		for(uint32_t uSlice = 1; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
 		{	
-			computeBitmaskForSlice(!isFirstSliceDone);
+			computeBitmaskForSlice(true, uLodLevel);
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
@@ -91,12 +108,9 @@ namespace PolyVox
 				generateVerticesForSlice();				
 			}
 
-			if(isFirstSliceDone)
+			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 			{
-				if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
-				{
-					generateIndicesForSlice();
-				}
+				generateIndicesForSlice();
 			}
 
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
@@ -107,8 +121,6 @@ namespace PolyVox
 
 			regSlice0 = regSlice1;
 			regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
-
-			isFirstSliceDone = true;
 		}
 
 		delete[] m_pPreviousBitmask;
@@ -121,7 +133,7 @@ namespace PolyVox
 		delete[] m_pCurrentVertexIndicesZ;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSlice(bool bIsFirstSlice)
+	uint32_t SurfaceExtractor::computeBitmaskForSlice(bool isPrevZAvail, uint8_t uLodLevel)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -139,7 +151,7 @@ namespace PolyVox
 		uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 		m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-		computeBitmaskForCell(false, false, !bIsFirstSlice, m_uLodLevel);
+		computeBitmaskForCell(false, false, isPrevZAvail, uLodLevel);
 
 
 		//Process the edge where x is minimal.
@@ -150,7 +162,7 @@ namespace PolyVox
 			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-			computeBitmaskForCell(false, true, !bIsFirstSlice, m_uLodLevel);
+			computeBitmaskForCell(false, true, isPrevZAvail, uLodLevel);
 		}
 
 		//Process the edge where y is minimal.
@@ -161,7 +173,7 @@ namespace PolyVox
 			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-			computeBitmaskForCell(true, false, !bIsFirstSlice, m_uLodLevel);
+			computeBitmaskForCell(true, false, isPrevZAvail, uLodLevel);
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
@@ -173,7 +185,7 @@ namespace PolyVox
 				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-				computeBitmaskForCell(true, true, !bIsFirstSlice, m_uLodLevel);
+				computeBitmaskForCell(true, true, isPrevZAvail, uLodLevel);
 			}
 		}
 
@@ -190,14 +202,14 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v111 = m_sampVolume.peekVoxel1px1py1pz();
 					}
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
 					}
 
 					//z
@@ -220,7 +232,7 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v011 = m_sampVolume.peekVoxel0px1py1pz();
 						v111 = m_sampVolume.peekVoxel1px1py1pz();
@@ -229,9 +241,9 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
 					}
 
 					//z
@@ -253,7 +265,7 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v101 = m_sampVolume.peekVoxel1px0py1pz();
 						v111 = m_sampVolume.peekVoxel1px1py1pz();
@@ -262,9 +274,9 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
 					}
 
 					//z
@@ -283,7 +295,7 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v001 = m_sampVolume.peekVoxel0px0py1pz();
 						v101 = m_sampVolume.peekVoxel1px0py1pz();
@@ -293,13 +305,13 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
-						v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v001 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);	
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
 					}
 
 					//z
@@ -319,7 +331,7 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v110 = m_sampVolume.peekVoxel1px1py0pz();
 						v111 = m_sampVolume.peekVoxel1px1py1pz();
@@ -327,10 +339,10 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 					}
 
 					//y
@@ -350,7 +362,7 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v010 = m_sampVolume.peekVoxel0px1py0pz();
 						v110 = m_sampVolume.peekVoxel1px1py0pz();
@@ -361,14 +373,14 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
-						v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v010 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 					}
 
 					//y
@@ -388,7 +400,7 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v100 = m_sampVolume.peekVoxel1px0py0pz();
 						v110 = m_sampVolume.peekVoxel1px1py0pz();
@@ -399,14 +411,14 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
-						v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v100 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 					}
 
 					//x
@@ -423,7 +435,7 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(m_uLodLevel == 0)
+					if(uLodLevel == 0)
 					{
 						v000 = m_sampVolume.getVoxel();
 						v100 = m_sampVolume.peekVoxel1px0py0pz();
@@ -438,22 +450,22 @@ namespace PolyVox
 					else
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-						v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v000 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
-						v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v100 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
-						v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v010 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
-						v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v001 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
 					}
 
 					if (v000 == 0) iCubeIndex |= 1;

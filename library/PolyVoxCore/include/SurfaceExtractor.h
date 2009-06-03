@@ -95,8 +95,8 @@ namespace PolyVox
 
 		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* m_ispCurrent);
 
-		void extractSurfaceImpl(Region region);
-		uint32_t computeBitmaskForSlice(bool bIsFirstSlice);
+		void extractSurfaceImpl(Region region, uint8_t uLodLevel);
+		uint32_t computeBitmaskForSlice(bool isPrevZAvail, uint8_t uLodLevel);
 		void computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel);
 		void generateIndicesForSlice();
 		void generateVerticesForSlice();
