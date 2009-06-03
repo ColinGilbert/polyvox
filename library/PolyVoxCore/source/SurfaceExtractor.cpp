@@ -38,252 +38,6 @@ namespace PolyVox
 		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	// Level 0
-	////////////////////////////////////////////////////////////////////////////////
-
-	/*uint32_t SurfaceExtractor::computeBitmaskForSliceLevel0(VolumeSampler<uint8_t>& m_sampVolume, const Region& regSlice, const Vector3DFloat& m_v3dRegionOffset, uint8_t* bitmask, uint8_t* previousBitmask)
-	{
-	uint32_t uNoOfNonEmptyCells = 0;
-
-	//Iterate over each cell in the region
-	for(uint16_t uYVolSpace = regSlice.getLowerCorner().getY(); uYVolSpace <= regSlice.getUpperCorner().getY(); uYVolSpace++)
-	{
-	for(uint16_t uXVolSpace = regSlice.getLowerCorner().getX(); uXVolSpace <= regSlice.getUpperCorner().getX(); uXVolSpace++)
-	{		
-	uint16_t uZVolSpace = regSlice.getLowerCorner().getZ();
-	m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-	//Current position
-	const uint16_t uXRegSpace = m_sampVolume.getPosX() - m_v3dRegionOffset.getX();
-	const uint16_t uYRegSpace = m_sampVolume.getPosY() - m_v3dRegionOffset.getY();
-
-	//Determine the index into the edge table which tells us which vertices are inside of the surface
-	uint8_t iCubeIndex = 0;
-
-	if((uXVolSpace < m_sampVolume.getVolume().getWidth()-1) &&
-	(uYVolSpace < m_sampVolume.getVolume().getHeight()-1) &&
-	(uZVolSpace < m_sampVolume.getVolume().getDepth()-1))
-	{
-	bool isPrevXAvail = uXRegSpace > 0;
-	bool isPrevYAvail = uYRegSpace > 0;
-	bool isPrevZAvail = previousBitmask != 0;
-
-	if(isPrevZAvail)
-	{
-	if(isPrevYAvail)
-	{
-	if(isPrevXAvail)
-	{
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();			
-
-	//z
-	uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexZ >>= 4;
-
-	//y
-	uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-	iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-	iPreviousCubeIndexY >>= 2;
-
-	//x
-	uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-	iPreviousCubeIndexX >>= 1;
-
-	iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	else //previous X not available
-	{
-	const uint8_t v011 = m_sampVolume.peekVoxel0px1py1pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();
-
-	//z
-	uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexZ >>= 4;
-
-	//y
-	uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-	iPreviousCubeIndexY &= 192; //192 = 128 + 64
-	iPreviousCubeIndexY >>= 2;
-
-	iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
-	if (v011 == 0) iCubeIndex |= 64;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	}
-	else //previous Y not available
-	{
-	if(isPrevXAvail)
-	{
-	const uint8_t v101 = m_sampVolume.peekVoxel1px0py1pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();			
-
-	//z
-	uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexZ >>= 4;
-
-	//x
-	uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexX &= 160; //160 = 128+32
-	iPreviousCubeIndexX >>= 1;
-
-	iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
-
-	if (v101 == 0) iCubeIndex |= 32;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	else //previous X not available
-	{
-	const uint8_t v001 = m_sampVolume.peekVoxel0px0py1pz();
-	const uint8_t v101 = m_sampVolume.peekVoxel1px0py1pz();
-	const uint8_t v011 = m_sampVolume.peekVoxel0px1py1pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();	
-
-	//z
-	uint8_t iPreviousCubeIndexZ = previousBitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)];
-	iCubeIndex = iPreviousCubeIndexZ >> 4;
-
-	if (v001 == 0) iCubeIndex |= 16;
-	if (v101 == 0) iCubeIndex |= 32;
-	if (v011 == 0) iCubeIndex |= 64;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	}
-	}
-	else //previous Z not available
-	{
-	if(isPrevYAvail)
-	{
-	if(isPrevXAvail)
-	{
-	const uint8_t v110 = m_sampVolume.peekVoxel1px1py0pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();
-
-	//y
-	uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-	iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-	iPreviousCubeIndexY >>= 2;
-
-	//x
-	uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-	iPreviousCubeIndexX >>= 1;
-
-	iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
-
-	if (v110 == 0) iCubeIndex |= 8;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	else //previous X not available
-	{
-	const uint8_t v010 = m_sampVolume.peekVoxel0px1py0pz();
-	const uint8_t v110 = m_sampVolume.peekVoxel1px1py0pz();
-
-	const uint8_t v011 = m_sampVolume.peekVoxel0px1py1pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();
-
-	//y
-	uint8_t iPreviousCubeIndexY = bitmask[getIndex(uXRegSpace,uYRegSpace-1, regSlice.width()+1)];
-	iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-	iPreviousCubeIndexY >>= 2;
-
-	iCubeIndex = iPreviousCubeIndexY;
-
-	if (v010 == 0) iCubeIndex |= 4;
-	if (v110 == 0) iCubeIndex |= 8;
-	if (v011 == 0) iCubeIndex |= 64;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	}
-	else //previous Y not available
-	{
-	if(isPrevXAvail)
-	{
-	const uint8_t v100 = m_sampVolume.peekVoxel1px0py0pz();
-	const uint8_t v110 = m_sampVolume.peekVoxel1px1py0pz();
-
-	const uint8_t v101 = m_sampVolume.peekVoxel1px0py1pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();			
-
-	//x
-	uint8_t iPreviousCubeIndexX = bitmask[getIndex(uXRegSpace-1,uYRegSpace, regSlice.width()+1)];
-	iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-	iPreviousCubeIndexX >>= 1;
-
-	iCubeIndex = iPreviousCubeIndexX;
-
-	if (v100 == 0) iCubeIndex |= 2;	
-	if (v110 == 0) iCubeIndex |= 8;
-	if (v101 == 0) iCubeIndex |= 32;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	else //previous X not available
-	{
-	const uint8_t v000 = m_sampVolume.getVoxel();
-	const uint8_t v100 = m_sampVolume.peekVoxel1px0py0pz();
-	const uint8_t v010 = m_sampVolume.peekVoxel0px1py0pz();
-	const uint8_t v110 = m_sampVolume.peekVoxel1px1py0pz();
-
-	const uint8_t v001 = m_sampVolume.peekVoxel0px0py1pz();
-	const uint8_t v101 = m_sampVolume.peekVoxel1px0py1pz();
-	const uint8_t v011 = m_sampVolume.peekVoxel0px1py1pz();
-	const uint8_t v111 = m_sampVolume.peekVoxel1px1py1pz();					
-
-	if (v000 == 0) iCubeIndex |= 1;
-	if (v100 == 0) iCubeIndex |= 2;
-	if (v010 == 0) iCubeIndex |= 4;
-	if (v110 == 0) iCubeIndex |= 8;
-	if (v001 == 0) iCubeIndex |= 16;
-	if (v101 == 0) iCubeIndex |= 32;
-	if (v011 == 0) iCubeIndex |= 64;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-	}
-	}
-	}
-	else //We're at the edge of the volume - use bounds checking.
-	{	
-	const uint8_t v000 = m_sampVolume.getVoxel();
-	const uint8_t v100 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace  );
-	const uint8_t v010 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace  );
-	const uint8_t v110 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace  );
-
-	const uint8_t v001 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace  , uZVolSpace+1);
-	const uint8_t v101 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace  , uZVolSpace+1);
-	const uint8_t v011 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace  , uYVolSpace+1, uZVolSpace+1);
-	const uint8_t v111 = m_sampVolume.getVolume().getVoxelAtWithBoundCheck(uXVolSpace+1, uYVolSpace+1, uZVolSpace+1);				
-
-	if (v000 == 0) iCubeIndex |= 1;
-	if (v100 == 0) iCubeIndex |= 2;
-	if (v010 == 0) iCubeIndex |= 4;
-	if (v110 == 0) iCubeIndex |= 8;
-	if (v001 == 0) iCubeIndex |= 16;
-	if (v101 == 0) iCubeIndex |= 32;
-	if (v011 == 0) iCubeIndex |= 64;
-	if (v111 == 0) iCubeIndex |= 128;
-	}
-
-	//Save the bitmask
-	bitmask[getIndex(uXRegSpace,uYRegSpace, regSlice.width()+1)] = iCubeIndex;
-
-	if(edgeTable[iCubeIndex] != 0)
-	{
-	++uNoOfNonEmptyCells;
-	}
-
-	}
-	}
-
-	return uNoOfNonEmptyCells;
-	}*/
-
-	////////////////////////////////////////////////////////////////////////////////
-	// Level 1
-	////////////////////////////////////////////////////////////////////////////////
-
 	void SurfaceExtractor::extractSurfaceImpl(Region region)
 	{	
 		m_ispCurrent->clear();
@@ -328,8 +82,9 @@ namespace PolyVox
 		bool isFirstSliceDone = false;
 
 		for(uint32_t uSlice = 0; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
-		{			
-			uNoOfNonEmptyCellsForSlice1 = computeBitmaskForSlice(!isFirstSliceDone);
+		{	
+			computeBitmaskForSlice(!isFirstSliceDone);
+			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
@@ -368,7 +123,7 @@ namespace PolyVox
 
 	uint32_t SurfaceExtractor::computeBitmaskForSlice(bool bIsFirstSlice)
 	{
-		uint32_t uNoOfNonEmptyCells = 0;
+		m_uNoOfOccupiedCells = 0;
 
 		const uint16_t uMaxXVolSpace = regSlice1.getUpperCorner().getX();
 		const uint16_t uMaxYVolSpace = regSlice1.getUpperCorner().getY();
@@ -388,15 +143,7 @@ namespace PolyVox
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = computeBitmaskForCell(false, false, !bIsFirstSlice, m_uLodLevel);
-
-				//Save the bitmask
-				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
-
-				if(edgeTable[iCubeIndex] != 0)
-				{
-					++uNoOfNonEmptyCells;
-				}
+				computeBitmaskForCell(false, false, !bIsFirstSlice, m_uLodLevel);
 
 			}//For each cell
 		}
@@ -413,15 +160,7 @@ namespace PolyVox
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = computeBitmaskForCell(false, true, !bIsFirstSlice, m_uLodLevel);
-
-				//Save the bitmask
-				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
-
-				if(edgeTable[iCubeIndex] != 0)
-				{
-					++uNoOfNonEmptyCells;
-				}
+				computeBitmaskForCell(false, true, !bIsFirstSlice, m_uLodLevel);
 
 			}//For each cell
 		}
@@ -438,15 +177,7 @@ namespace PolyVox
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = computeBitmaskForCell(true, false, !bIsFirstSlice, m_uLodLevel);
-
-				//Save the bitmask
-				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
-
-				if(edgeTable[iCubeIndex] != 0)
-				{
-					++uNoOfNonEmptyCells;
-				}
+				computeBitmaskForCell(true, false, !bIsFirstSlice, m_uLodLevel);
 
 			}//For each cell
 		}
@@ -463,23 +194,15 @@ namespace PolyVox
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = computeBitmaskForCell(true, true, !bIsFirstSlice, m_uLodLevel);
-
-				//Save the bitmask
-				m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
-
-				if(edgeTable[iCubeIndex] != 0)
-				{
-					++uNoOfNonEmptyCells;
-				}
+				computeBitmaskForCell(true, true, !bIsFirstSlice, m_uLodLevel);
 
 			}//For each cell
 		}
 
-		return uNoOfNonEmptyCells;
+		return m_uNoOfOccupiedCells;
 	}
 
-	uint8_t SurfaceExtractor::computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel)
+	void SurfaceExtractor::computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -767,7 +490,13 @@ namespace PolyVox
 			}
 		}
 
-		return iCubeIndex;
+		//Save the bitmask
+		m_pCurrentBitmask[getIndex(uXRegSpace,uYVolSpace- m_v3dRegionOffset.getY())] = iCubeIndex;
+
+		if(edgeTable[iCubeIndex] != 0)
+		{
+			++m_uNoOfOccupiedCells;
+		}
 	}
 
 	void SurfaceExtractor::generateVerticesForSlice()

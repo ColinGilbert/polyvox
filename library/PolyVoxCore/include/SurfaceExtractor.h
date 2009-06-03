@@ -77,6 +77,8 @@ namespace PolyVox
 		uint16_t uYRegSpace;
 		uint16_t uZRegSpace;
 
+		uint32_t m_uNoOfOccupiedCells;
+
 		inline uint32_t getIndex(uint32_t x, uint32_t y)
 		{
 			return x + (y * (m_uRegionWidth+2));
@@ -95,7 +97,7 @@ namespace PolyVox
 
 		void extractSurfaceImpl(Region region);
 		uint32_t computeBitmaskForSlice(bool bIsFirstSlice);
-		uint8_t computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel);
+		void computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel);
 		void generateIndicesForSlice();
 		void generateVerticesForSlice();
 	};
