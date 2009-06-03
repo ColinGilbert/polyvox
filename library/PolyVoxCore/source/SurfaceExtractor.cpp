@@ -131,58 +131,40 @@ namespace PolyVox
 		uZVolSpace = regSlice1.getLowerCorner().getZ();
 		uZRegSpace = uZVolSpace - m_v3dRegionOffset.getZ();
 
-		//Iterate over each cell in the region
-		/*for(*/uYVolSpace = regSlice1.getLowerCorner().getY();/* uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)*/
-		{
-			/*for(*/uXVolSpace = regSlice1.getLowerCorner().getX();/* uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)*/
-			{	
-				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
-				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+		//Process the lower left corner
+		uYVolSpace = regSlice1.getLowerCorner().getY();
+		uXVolSpace = regSlice1.getLowerCorner().getX();
 
-				//Current position
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+		uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+		uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				computeBitmaskForCell(false, false, !bIsFirstSlice, m_uLodLevel);
+		m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+		computeBitmaskForCell(false, false, !bIsFirstSlice, m_uLodLevel);
 
-			}//For each cell
-		}
 
-		//Iterate over each cell in the region
+		//Process the edge where x is minimal.
+		uXVolSpace = regSlice1.getLowerCorner().getX();
 		for(uYVolSpace = regSlice1.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
 		{
-			/*for(*/uXVolSpace = regSlice1.getLowerCorner().getX();/* uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)*/
-			{	
-				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
-				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+			uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
-				//Current position
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				computeBitmaskForCell(false, true, !bIsFirstSlice, m_uLodLevel);
-
-			}//For each cell
+			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+			computeBitmaskForCell(false, true, !bIsFirstSlice, m_uLodLevel);
 		}
 
-		//Iterate over each cell in the region
-		/*for(*/uYVolSpace = regSlice1.getLowerCorner().getY();/* uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)*/
-		{
-			for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
-			{	
-				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
-				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
+		//Process the edge where y is minimal.
+		uYVolSpace = regSlice1.getLowerCorner().getY();
+		for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+		{	
+			uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
+			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
-				//Current position
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				computeBitmaskForCell(true, false, !bIsFirstSlice, m_uLodLevel);
-
-			}//For each cell
+			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+			computeBitmaskForCell(true, false, !bIsFirstSlice, m_uLodLevel);
 		}
 
-		//Iterate over each cell in the region
+		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
 		for(uYVolSpace = regSlice1.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
 		{
 			for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
@@ -190,13 +172,9 @@ namespace PolyVox
 				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
 				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
-				//Current position
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				computeBitmaskForCell(true, true, !bIsFirstSlice, m_uLodLevel);
-
-			}//For each cell
+			}
 		}
 
 		return m_uNoOfOccupiedCells;
