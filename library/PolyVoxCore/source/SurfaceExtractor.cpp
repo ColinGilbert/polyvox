@@ -31,14 +31,27 @@ namespace PolyVox
 		//POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
 		m_ispCurrent = new IndexedSurfacePatch();
 
-		extractSurfaceImpl(region, m_uLodLevel);
+		switch(m_uLodLevel)
+		{
+		case 0:
+			extractSurfaceImpl<0>(region);
+			break;
+		case 1:
+			extractSurfaceImpl<1>(region);
+			break;
+		case 2:
+			extractSurfaceImpl<2>(region);
+			break;
+		}
+		
 
 		m_ispCurrent->m_Region = region;
 
 		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
 	}
 
-	void SurfaceExtractor::extractSurfaceImpl(Region region, uint8_t uLodLevel)
+	template<uint8_t uLodLevel>
+	void SurfaceExtractor::extractSurfaceImpl(Region region)
 	{	
 		m_ispCurrent->clear();
 
@@ -80,7 +93,7 @@ namespace PolyVox
 		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
 
 		//Process the first slice (previous slice not available)
-		computeBitmaskForSlice(false, uLodLevel);
+		computeBitmaskForSlice<false, uLodLevel>();
 		uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 		if(uNoOfNonEmptyCellsForSlice1 != 0)
@@ -100,7 +113,7 @@ namespace PolyVox
 		//Process the first slice (previous slice is available)
 		for(uint32_t uSlice = 1; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
 		{	
-			computeBitmaskForSlice(true, uLodLevel);
+			computeBitmaskForSlice<true, uLodLevel>();
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
@@ -133,7 +146,8 @@ namespace PolyVox
 		delete[] m_pCurrentVertexIndicesZ;
 	}
 
-	uint32_t SurfaceExtractor::computeBitmaskForSlice(bool isPrevZAvail, uint8_t uLodLevel)
+	template<bool isPrevZAvail, uint8_t uLodLevel>
+	uint32_t SurfaceExtractor::computeBitmaskForSlice(void)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -151,7 +165,7 @@ namespace PolyVox
 		uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 		m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-		computeBitmaskForCell(false, false, isPrevZAvail, uLodLevel);
+		computeBitmaskForCell<false, false, isPrevZAvail, uLodLevel>();
 
 
 		//Process the edge where x is minimal.
@@ -162,7 +176,7 @@ namespace PolyVox
 			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-			computeBitmaskForCell(false, true, isPrevZAvail, uLodLevel);
+			computeBitmaskForCell<false, true, isPrevZAvail, uLodLevel>();
 		}
 
 		//Process the edge where y is minimal.
@@ -173,7 +187,7 @@ namespace PolyVox
 			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-			computeBitmaskForCell(true, false, isPrevZAvail, uLodLevel);
+			computeBitmaskForCell<true, false, isPrevZAvail, uLodLevel>();
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
@@ -185,14 +199,15 @@ namespace PolyVox
 				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
 
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-				computeBitmaskForCell(true, true, isPrevZAvail, uLodLevel);
+				computeBitmaskForCell<true, true, isPrevZAvail, uLodLevel>();
 			}
 		}
 
 		return m_uNoOfOccupiedCells;
 	}
 
-	void SurfaceExtractor::computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel)
+	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel>
+	void SurfaceExtractor::computeBitmaskForCell(void)
 	{
 		uint8_t iCubeIndex = 0;
 

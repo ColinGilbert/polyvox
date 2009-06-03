@@ -92,12 +92,20 @@ namespace PolyVox
 		Region regSlice1;
 
 		uint16_t m_uRegionWidth;
+		//uint16_t m_uRegionWidthOverStepSize;
+		//uint16_t m_uRegionHeightOverStepSize;
 
 		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* m_ispCurrent);
 
-		void extractSurfaceImpl(Region region, uint8_t uLodLevel);
-		uint32_t computeBitmaskForSlice(bool isPrevZAvail, uint8_t uLodLevel);
-		void computeBitmaskForCell(bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel);
+		template<uint8_t uLodLevel>
+		void extractSurfaceImpl(Region region);
+
+		template<bool isPrevZAvail, uint8_t uLodLevel>
+		uint32_t computeBitmaskForSlice(void);
+
+		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel>
+		void computeBitmaskForCell(void);
+
 		void generateIndicesForSlice();
 		void generateVerticesForSlice();
 	};
