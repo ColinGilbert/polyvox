@@ -28,67 +28,71 @@ namespace PolyVox
 
 	POLYVOX_SHARED_PTR<IndexedSurfacePatch> SurfaceExtractor::extractSurfaceForRegion(Region region)
 	{
-		//POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch());
-		m_ispCurrent = new IndexedSurfacePatch();
-
-		switch(m_uLodLevel)
-		{
-		case 0:
-			extractSurfaceImpl<0>(region);
-			break;
-		case 1:
-			extractSurfaceImpl<1>(region);
-			break;
-		case 2:
-			extractSurfaceImpl<2>(region);
-			break;
-		}
-		
-
-		m_ispCurrent->m_Region = region;
-
-		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
-	}
-
-	template<uint8_t uLodLevel>
-	void SurfaceExtractor::extractSurfaceImpl(Region region)
-	{	
-		m_ispCurrent->clear();
-
-		//For edge indices
-		//FIXME - do the slices need to be this big? Surely for a decimated mesh they can be smaller?
-		//FIXME - Instead of region.width()+2 we used to use POLYVOX_REGION_SIDE_LENGTH+1
-		//Normally POLYVOX_REGION_SIDE_LENGTH is the same as region.width() (often 32) but at the
-		//edges of the volume it is 1 smaller. Need to think what values really belong here.
-		m_pPreviousVertexIndicesX = new int32_t[(region.width()+8) * (region.height()+8)];
-		m_pPreviousVertexIndicesY = new int32_t[(region.width()+8) * (region.height()+8)];
-		m_pPreviousVertexIndicesZ = new int32_t[(region.width()+8) * (region.height()+8)];
-		m_pCurrentVertexIndicesX = new int32_t[(region.width()+8) * (region.height()+8)];
-		m_pCurrentVertexIndicesY = new int32_t[(region.width()+8) * (region.height()+8)];
-		m_pCurrentVertexIndicesZ = new int32_t[(region.width()+8) * (region.height()+8)];
-
-		//Cell bitmasks
-		m_pPreviousBitmask = new uint8_t[(region.width()+8) * (region.height()+8)];
-		m_pCurrentBitmask = new uint8_t[(region.width()+8) * (region.height()+8)];
+		m_Region = region;
 
 		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = m_volData.getEnclosingRegion();
 		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
-		region.cropTo(regVolume);
+		m_Region.cropTo(regVolume);
+
+		m_ispCurrent = new IndexedSurfacePatch();
+
+		m_uRegionWidth = m_Region.width();
+		m_uRegionHeight = m_Region.height();
+
+		//For edge indices
+		m_pPreviousVertexIndicesX = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pPreviousVertexIndicesY = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pPreviousVertexIndicesZ = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pCurrentVertexIndicesX = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pCurrentVertexIndicesY = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pCurrentVertexIndicesZ = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+
+		//Cell bitmasks
+		m_pPreviousBitmask = new uint8_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pCurrentBitmask = new uint8_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
 
 		//m_v3dRegionOffset from volume corner
-		m_v3dRegionOffset = static_cast<Vector3DFloat>(region.getLowerCorner());
+		m_v3dRegionOffset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
 
 		//Create a region corresponding to the first slice
-		regSlice0 = region;
+		regSlice0 = m_Region;
 		Vector3DInt32 v3dUpperCorner = regSlice0.getUpperCorner();
 		v3dUpperCorner.setZ(regSlice0.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
 		regSlice0.setUpperCorner(v3dUpperCorner);
 		regSlice1 = regSlice0;	
 
-		m_uRegionWidth = region.width();
+		switch(m_uLodLevel)
+		{
+		case 0:
+			extractSurfaceImpl<0>();
+			break;
+		case 1:
+			extractSurfaceImpl<1>();
+			break;
+		case 2:
+			extractSurfaceImpl<2>();
+			break;
+		}
 
+		delete[] m_pPreviousBitmask;
+		delete[] m_pCurrentBitmask;
+		delete[] m_pPreviousVertexIndicesX;
+		delete[] m_pCurrentVertexIndicesX;
+		delete[] m_pPreviousVertexIndicesY;
+		delete[] m_pCurrentVertexIndicesY;
+		delete[] m_pPreviousVertexIndicesZ;
+		delete[] m_pCurrentVertexIndicesZ;		
+
+		m_ispCurrent->m_Region = m_Region;
+
+		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
+	}
+
+	template<uint8_t uLodLevel>
+	void SurfaceExtractor::extractSurfaceImpl(void)
+	{	
 		uint32_t uNoOfNonEmptyCellsForSlice0 = 0;
 		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
 
@@ -111,7 +115,7 @@ namespace PolyVox
 		regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
 
 		//Process the first slice (previous slice is available)
-		for(uint32_t uSlice = 1; ((uSlice <= region.depth()) && (uSlice + m_v3dRegionOffset.getZ() <= regVolume.getUpperCorner().getZ())); uSlice += m_uStepSize)
+		for(uint32_t uSlice = 1; uSlice <= m_Region.depth(); uSlice += m_uStepSize)
 		{	
 			computeBitmaskForSlice<true, uLodLevel>();
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
@@ -135,15 +139,6 @@ namespace PolyVox
 			regSlice0 = regSlice1;
 			regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
 		}
-
-		delete[] m_pPreviousBitmask;
-		delete[] m_pCurrentBitmask;
-		delete[] m_pPreviousVertexIndicesX;
-		delete[] m_pCurrentVertexIndicesX;
-		delete[] m_pPreviousVertexIndicesY;
-		delete[] m_pCurrentVertexIndicesY;
-		delete[] m_pPreviousVertexIndicesZ;
-		delete[] m_pCurrentVertexIndicesZ;
 	}
 
 	template<bool isPrevZAvail, uint8_t uLodLevel>
@@ -536,7 +531,7 @@ namespace PolyVox
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
-					if(uXVolSpace != regSlice1.getUpperCorner().getX())
+					//if(uXVolSpace != regSlice1.getUpperCorner().getX())
 					{
 						m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
 						const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
@@ -550,7 +545,7 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
-					if(uYVolSpace != regSlice1.getUpperCorner().getY())
+					//if(uYVolSpace != regSlice1.getUpperCorner().getY())
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
 						const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);

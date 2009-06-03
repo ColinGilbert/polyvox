@@ -81,24 +81,22 @@ namespace PolyVox
 
 		inline uint32_t getIndex(uint32_t x, uint32_t y)
 		{
-			return x + (y * (m_uRegionWidth+2));
+			return x + (y * (m_uRegionWidth+1));
 		}
 
 		IndexedSurfacePatch* m_ispCurrent;
 
 		Vector3DFloat m_v3dRegionOffset;
 
+		Region m_Region;
 		Region regSlice0;
 		Region regSlice1;
 
 		uint16_t m_uRegionWidth;
-		//uint16_t m_uRegionWidthOverStepSize;
-		//uint16_t m_uRegionHeightOverStepSize;
-
-		//void extractSurfaceForRegionLevel0(Volume<uint8_t>* volumeData, Region region, IndexedSurfacePatch* m_ispCurrent);
+		uint16_t m_uRegionHeight;
 
 		template<uint8_t uLodLevel>
-		void extractSurfaceImpl(Region region);
+		void extractSurfaceImpl(void);
 
 		template<bool isPrevZAvail, uint8_t uLodLevel>
 		uint32_t computeBitmaskForSlice(void);
