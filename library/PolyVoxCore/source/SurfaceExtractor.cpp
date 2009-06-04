@@ -29,11 +29,14 @@ namespace PolyVox
 	POLYVOX_SHARED_PTR<IndexedSurfacePatch> SurfaceExtractor::extractSurfaceForRegion(Region region)
 	{
 		m_Region = region;
+		m_UncroppedRegion = region;
 
 		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		Region regVolume = m_volData.getEnclosingRegion();
 		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
+		m_croppedVolume = regVolume;
+		//regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
 		m_Region.cropTo(regVolume);
 
 		m_ispCurrent = new IndexedSurfacePatch();
@@ -41,17 +44,20 @@ namespace PolyVox
 		m_uRegionWidth = m_Region.width();
 		m_uRegionHeight = m_Region.height();
 
+		m_uScratchPadWidth = m_uRegionWidth+m_uStepSize+8;
+		m_uScratchPadHeight = m_uRegionHeight+m_uStepSize+8;
+
 		//For edge indices
-		m_pPreviousVertexIndicesX = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
-		m_pPreviousVertexIndicesY = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
-		m_pPreviousVertexIndicesZ = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
-		m_pCurrentVertexIndicesX = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
-		m_pCurrentVertexIndicesY = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
-		m_pCurrentVertexIndicesZ = new int32_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pPreviousVertexIndicesX = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
+		m_pPreviousVertexIndicesY = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
+		m_pPreviousVertexIndicesZ = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
+		m_pCurrentVertexIndicesX = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
+		m_pCurrentVertexIndicesY = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
+		m_pCurrentVertexIndicesZ = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
 
 		//Cell bitmasks
-		m_pPreviousBitmask = new uint8_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
-		m_pCurrentBitmask = new uint8_t[(m_uRegionWidth+1) * (m_uRegionHeight+1)];
+		m_pPreviousBitmask = new uint8_t[m_uScratchPadWidth * m_uScratchPadHeight];
+		m_pCurrentBitmask = new uint8_t[m_uScratchPadWidth * m_uScratchPadHeight];
 
 		//m_v3dRegionOffset from volume corner
 		m_v3dRegionOffset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
@@ -102,6 +108,9 @@ namespace PolyVox
 
 		if(uNoOfNonEmptyCellsForSlice1 != 0)
 		{
+			memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+			memset(m_pCurrentVertexIndicesY, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+			memset(m_pCurrentVertexIndicesZ, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
 			generateVerticesForSlice();				
 		}
 
@@ -114,7 +123,7 @@ namespace PolyVox
 		regSlice0 = regSlice1;
 		regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
 
-		//Process the first slice (previous slice is available)
+		//Process the other slices (previous slice is available)
 		for(uint32_t uSlice = 1; uSlice <= m_Region.depth(); uSlice += m_uStepSize)
 		{	
 			computeBitmaskForSlice<true, uLodLevel>();
@@ -122,6 +131,9 @@ namespace PolyVox
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
+				memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+				memset(m_pCurrentVertexIndicesY, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+				memset(m_pCurrentVertexIndicesZ, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
 				generateVerticesForSlice();				
 			}
 
@@ -138,6 +150,16 @@ namespace PolyVox
 
 			regSlice0 = regSlice1;
 			regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
+		}
+
+		//A final slice just to close of the volume
+		regSlice1.shift(Vector3DInt32(0,0,-m_uStepSize));
+		if(regSlice1.getLowerCorner().getZ() == m_croppedVolume.getUpperCorner().getZ())
+		{
+			memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+			memset(m_pCurrentVertexIndicesY, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+			memset(m_pCurrentVertexIndicesZ, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
+			generateIndicesForSlice();
 		}
 	}
 
@@ -577,11 +599,15 @@ namespace PolyVox
 
 	void SurfaceExtractor::generateIndicesForSlice()
 	{
-		uint32_t indlist[12];
-
-		for(uint16_t uYVolSpace = regSlice0.getLowerCorner().getY(); uYVolSpace < regSlice0.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		int32_t indlist[12];
+		for(int i = 0; i < 12; i++)
 		{
-			for(uint16_t uXVolSpace = regSlice0.getLowerCorner().getX(); uXVolSpace < regSlice0.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			indlist[i] = -1;
+		}
+
+		for(uint16_t uYVolSpace = regSlice0.getLowerCorner().getY(); uYVolSpace < m_UncroppedRegion.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		{
+			for(uint16_t uXVolSpace = regSlice0.getLowerCorner().getX(); uXVolSpace < m_UncroppedRegion.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
 				uint16_t uZVolSpace = regSlice0.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
@@ -604,71 +630,81 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					indlist[0] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace)];
-					assert(indlist[0] != -1);
+					//assert(indlist[0] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2)
 				{
 					indlist[1] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace)];
-					assert(indlist[1] != -1);
+					//assert(indlist[1] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 4)
 				{
 					indlist[2] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize)];
-					assert(indlist[2] != -1);
+					//assert(indlist[2] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
 					indlist[3] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace,uYRegSpace)];
-					assert(indlist[3] != -1);
+					//assert(indlist[3] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 16)
 				{
 					indlist[4] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace)];
-					assert(indlist[4] != -1);
+					//assert(indlist[4] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 32)
 				{
 					indlist[5] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace)];
-					assert(indlist[5] != -1);
+					//assert(indlist[5] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 64)
 				{
 					indlist[6] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize)];
-					assert(indlist[6] != -1);
+					//assert(indlist[6] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 128)
 				{
 					indlist[7] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace,uYRegSpace)];
-					assert(indlist[7] != -1);
+					//assert(indlist[7] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 256)
 				{
 					indlist[8] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace)];
-					assert(indlist[8] != -1);
+					//assert(indlist[8] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 512)
 				{
 					indlist[9] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace)];
-					assert(indlist[9] != -1);
+					//assert(indlist[9] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 1024)
 				{
 					indlist[10] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace+m_uStepSize)];
-					assert(indlist[10] != -1);
+					//assert(indlist[10] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2048)
 				{
 					indlist[11] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace+m_uStepSize)];
-					assert(indlist[11] != -1);
+					//assert(indlist[11] != -1);
 				}
 
 				for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 				{
-					uint32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
-					uint32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
-					uint32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
+					int32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
+					int32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
+					int32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
 
-					m_ispCurrent->addTriangle(ind0, ind1, ind2);
+					if((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
+					{
+						assert(ind0 >= 0);
+						assert(ind1 >= 0);
+						assert(ind2 >= 0);
+
+						assert(ind0 < 1000000);
+						assert(ind1 < 1000000);
+						assert(ind2 < 1000000);
+						m_ispCurrent->addTriangle(ind0, ind1, ind2);
+					}
 				}//For each triangle
 			}//For each cell
 		}

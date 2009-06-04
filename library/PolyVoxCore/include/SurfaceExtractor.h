@@ -44,6 +44,7 @@ namespace PolyVox
 		POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSurfaceForRegion(Region region);
 
 	private:
+
 		uint8_t m_uLodLevel;
 		uint8_t m_uStepSize;
 
@@ -79,21 +80,26 @@ namespace PolyVox
 
 		uint32_t m_uNoOfOccupiedCells;
 
-		inline uint32_t getIndex(uint32_t x, uint32_t y)
-		{
-			return x + (y * (m_uRegionWidth+1));
-		}
-
 		IndexedSurfacePatch* m_ispCurrent;
 
 		Vector3DFloat m_v3dRegionOffset;
 
+		uint16_t m_uScratchPadWidth;
+		uint16_t m_uScratchPadHeight;
+
 		Region m_Region;
+		Region m_UncroppedRegion;
+		Region m_croppedVolume;
 		Region regSlice0;
 		Region regSlice1;
 
 		uint16_t m_uRegionWidth;
 		uint16_t m_uRegionHeight;
+
+		inline uint32_t getIndex(uint32_t x, uint32_t y)
+		{
+			return x + (y * m_uScratchPadWidth);
+		}
 
 		template<uint8_t uLodLevel>
 		void extractSurfaceImpl(void);
