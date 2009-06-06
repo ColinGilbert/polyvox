@@ -27,22 +27,22 @@ namespace PolyVox
 	}
 
 	POLYVOX_SHARED_PTR<IndexedSurfacePatch> SurfaceExtractor::extractSurfaceForRegion(Region region)
-	{
-		m_Region = region;
-		m_UncroppedRegion = region;
+	{		
+		m_regInputUncropped = region;
 
 		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
-		Region regVolume = m_volData.getEnclosingRegion();
-		regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
-		m_croppedVolume = regVolume;
-		//regVolume.setUpperCorner(regVolume.getUpperCorner() - Vector3DInt32(1,1,1));
-		m_Region.cropTo(regVolume);
+		m_regVolumeCropped = m_volData.getEnclosingRegion();
+		m_regInputUncropped.cropTo(m_regVolumeCropped);
+		m_regVolumeCropped.setUpperCorner(m_regVolumeCropped.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
+	
+		m_regInputCropped = region;
+		m_regInputCropped.cropTo(m_regVolumeCropped);
 
 		m_ispCurrent = new IndexedSurfacePatch();
 
-		m_uRegionWidth = m_Region.width();
-		m_uRegionHeight = m_Region.height();
+		m_uRegionWidth = m_regInputCropped.width();
+		m_uRegionHeight = m_regInputCropped.height();
 
 		m_uScratchPadWidth = m_uRegionWidth+m_uStepSize+8;
 		m_uScratchPadHeight = m_uRegionHeight+m_uStepSize+8;
@@ -60,10 +60,10 @@ namespace PolyVox
 		m_pCurrentBitmask = new uint8_t[m_uScratchPadWidth * m_uScratchPadHeight];
 
 		//m_v3dRegionOffset from volume corner
-		m_v3dRegionOffset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
+		m_v3dRegionOffset = static_cast<Vector3DFloat>(m_regInputCropped.getLowerCorner());
 
 		//Create a region corresponding to the first slice
-		m_regSlicePrevious = m_Region;
+		m_regSlicePrevious = m_regInputCropped;
 		Vector3DInt32 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
 		v3dUpperCorner.setZ(m_regSlicePrevious.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
 		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
@@ -91,7 +91,7 @@ namespace PolyVox
 		delete[] m_pPreviousVertexIndicesZ;
 		delete[] m_pCurrentVertexIndicesZ;		
 
-		m_ispCurrent->m_Region = m_Region;
+		m_ispCurrent->m_Region = m_regInputUncropped;
 
 		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
 	}
@@ -124,7 +124,7 @@ namespace PolyVox
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,m_uStepSize));
 
 		//Process the other slices (previous slice is available)
-		for(uint32_t uSlice = 1; uSlice <= m_Region.depth(); uSlice += m_uStepSize)
+		for(uint32_t uSlice = 1; uSlice <= m_regInputCropped.depth(); uSlice += m_uStepSize)
 		{	
 			computeBitmaskForSlice<true, uLodLevel>();
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
@@ -154,7 +154,7 @@ namespace PolyVox
 
 		//A final slice just to close of the volume
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,-m_uStepSize));
-		if(m_regSliceCurrent.getLowerCorner().getZ() == m_croppedVolume.getUpperCorner().getZ())
+		if(m_regSliceCurrent.getLowerCorner().getZ() == m_regVolumeCropped.getUpperCorner().getZ())
 		{
 			memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
 			memset(m_pCurrentVertexIndicesY, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
@@ -614,9 +614,9 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
-		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace < m_UncroppedRegion.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace < m_regInputUncropped.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
-			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace < m_UncroppedRegion.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace < m_regInputUncropped.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
 				uint16_t uZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	

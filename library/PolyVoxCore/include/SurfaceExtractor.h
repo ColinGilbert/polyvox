@@ -108,9 +108,9 @@ namespace PolyVox
 		Vector3DFloat m_v3dRegionOffset;
 
 		//Information about the region we a re currently processing
-		Region m_Region;
-		Region m_UncroppedRegion;
-		Region m_croppedVolume;
+		Region m_regInputCropped;
+		Region m_regInputUncropped;
+		Region m_regVolumeCropped;
 		Region m_regSlicePrevious;
 		Region m_regSliceCurrent;
 
