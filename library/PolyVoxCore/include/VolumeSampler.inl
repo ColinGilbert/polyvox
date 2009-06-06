@@ -190,24 +190,23 @@ namespace PolyVox
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		mXBlock = mXPosInVolume >> mVolume.m_uBlockSideLengthPower;
-		mYBlock = mYPosInVolume >> mVolume.m_uBlockSideLengthPower;
-		mZBlock = mZPosInVolume >> mVolume.m_uBlockSideLengthPower;
+		uint16_t uXBlock = mXPosInVolume >> mVolume.m_uBlockSideLengthPower;
+		uint16_t uYBlock = mYPosInVolume >> mVolume.m_uBlockSideLengthPower;
+		uint16_t uZBlock = mZPosInVolume >> mVolume.m_uBlockSideLengthPower;
 
-		mXPosInBlock = mXPosInVolume - (mXBlock << mVolume.m_uBlockSideLengthPower);
-		mYPosInBlock = mYPosInVolume - (mYBlock << mVolume.m_uBlockSideLengthPower);
-		mZPosInBlock = mZPosInVolume - (mZBlock << mVolume.m_uBlockSideLengthPower);
+		uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << mVolume.m_uBlockSideLengthPower);
+		uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume.m_uBlockSideLengthPower);
+		uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << mVolume.m_uBlockSideLengthPower);
 
-		mBlockIndexInVolume = mXBlock + 
-			mYBlock * mVolume.m_uWidthInBlocks + 
-			mZBlock * mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
-		POLYVOX_SHARED_PTR< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[mBlockIndexInVolume];
+		uint32_t uBlockIndexInVolume = uXBlock + 
+			uYBlock * mVolume.m_uWidthInBlocks + 
+			uZBlock * mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
+		POLYVOX_SHARED_PTR< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[uBlockIndexInVolume];
 
-		mVoxelIndexInBlock = mXPosInBlock + 
-			mYPosInBlock * mVolume.m_uBlockSideLength + 
-			mZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
-
-		mCurrentVoxel = currentBlock->m_tData + mVoxelIndexInBlock;
+		uint32_t uVoxelIndexInBlock = uXPosInBlock + 
+			uYPosInBlock * mVolume.m_uBlockSideLength + 
+			uZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
+		mCurrentVoxel = currentBlock->m_tData + uVoxelIndexInBlock;
 	}
 	#pragma endregion
 
@@ -215,17 +214,108 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::movePositiveX(void)
 	{
-		++mXPosInVolume;
-		if(mXPosInVolume % mVolume.m_uBlockSideLength == 0)
+		assert(mXPosInVolume < mVolume.m_uWidth - 1);
+
+		//Note the *post* increament here
+		if((mXPosInVolume++) % mVolume.m_uBlockSideLength == 0)
+		{
+			//No need to compute new block.
+			++mCurrentVoxel;			
+		}
+		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
 		}
-		else
+	}
+
+	template <typename VoxelType>
+	void VolumeSampler<VoxelType>::movePositiveY(void)
+	{
+		assert(mYPosInVolume < mVolume.m_uHeight - 1);
+
+		//Note the *post* increament here
+		if((mYPosInVolume++) % mVolume.m_uBlockSideLength == 0)
 		{
 			//No need to compute new block.
-			++mVoxelIndexInBlock;
-			++mCurrentVoxel;
+			mCurrentVoxel += mVolume.m_uBlockSideLength;
+		}
+		else
+		{
+			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		}
+	}
+
+	template <typename VoxelType>
+	void VolumeSampler<VoxelType>::movePositiveZ(void)
+	{
+		assert(mZPosInVolume < mVolume.m_uDepth - 1);
+
+		//Note the *post* increament here
+		if((mZPosInVolume++) % mVolume.m_uBlockSideLength == 0)
+		{
+			//No need to compute new block.
+			mCurrentVoxel += mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
+		}
+		else
+		{
+			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		}
+	}
+
+	template <typename VoxelType>
+	void VolumeSampler<VoxelType>::moveNegativeX(void)
+	{
+		assert(mXPosInVolume > 0);
+
+		//Note the *pre* increament here
+		if((--mXPosInVolume) % mVolume.m_uBlockSideLength == 0)
+		{
+			//No need to compute new block.
+			++mCurrentVoxel;			
+		}
+		else
+		{
+			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		}
+	}
+
+	template <typename VoxelType>
+	void VolumeSampler<VoxelType>::moveNegativeY(void)
+	{
+		assert(mYPosInVolume > 0);
+
+		//Note the *pre* increament here
+		if((--mYPosInVolume) % mVolume.m_uBlockSideLength == 0)
+		{
+			//No need to compute new block.
+			mCurrentVoxel += mVolume.m_uBlockSideLength;
+		}
+		else
+		{
+			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		}
+	}
+
+	template <typename VoxelType>
+	void VolumeSampler<VoxelType>::moveNegativeZ(void)
+	{
+		assert(mZPosInVolume > 0);
+
+		//Note the *pre* increament here
+		if((--mZPosInVolume) % mVolume.m_uBlockSideLength == 0)
+		{
+			//No need to compute new block.
+			mCurrentVoxel += mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
+		}
+		else
+		{
+			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
 		}
 	}
 	#pragma endregion

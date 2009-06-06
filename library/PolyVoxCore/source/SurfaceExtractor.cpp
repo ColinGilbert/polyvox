@@ -63,11 +63,11 @@ namespace PolyVox
 		m_v3dRegionOffset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
 
 		//Create a region corresponding to the first slice
-		regSlice0 = m_Region;
-		Vector3DInt32 v3dUpperCorner = regSlice0.getUpperCorner();
-		v3dUpperCorner.setZ(regSlice0.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
-		regSlice0.setUpperCorner(v3dUpperCorner);
-		regSlice1 = regSlice0;	
+		m_regSlicePrevious = m_Region;
+		Vector3DInt32 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
+		v3dUpperCorner.setZ(m_regSlicePrevious.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
+		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
+		m_regSliceCurrent = m_regSlicePrevious;	
 
 		switch(m_uLodLevel)
 		{
@@ -120,8 +120,8 @@ namespace PolyVox
 		std::swap(m_pPreviousVertexIndicesY, m_pCurrentVertexIndicesY);
 		std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
 
-		regSlice0 = regSlice1;
-		regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
+		m_regSlicePrevious = m_regSliceCurrent;
+		m_regSliceCurrent.shift(Vector3DInt32(0,0,m_uStepSize));
 
 		//Process the other slices (previous slice is available)
 		for(uint32_t uSlice = 1; uSlice <= m_Region.depth(); uSlice += m_uStepSize)
@@ -148,13 +148,13 @@ namespace PolyVox
 			std::swap(m_pPreviousVertexIndicesY, m_pCurrentVertexIndicesY);
 			std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
 
-			regSlice0 = regSlice1;
-			regSlice1.shift(Vector3DInt32(0,0,m_uStepSize));
+			m_regSlicePrevious = m_regSliceCurrent;
+			m_regSliceCurrent.shift(Vector3DInt32(0,0,m_uStepSize));
 		}
 
 		//A final slice just to close of the volume
-		regSlice1.shift(Vector3DInt32(0,0,-m_uStepSize));
-		if(regSlice1.getLowerCorner().getZ() == m_croppedVolume.getUpperCorner().getZ())
+		m_regSliceCurrent.shift(Vector3DInt32(0,0,-m_uStepSize));
+		if(m_regSliceCurrent.getLowerCorner().getZ() == m_croppedVolume.getUpperCorner().getZ())
 		{
 			memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
 			memset(m_pCurrentVertexIndicesY, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
@@ -168,15 +168,15 @@ namespace PolyVox
 	{
 		m_uNoOfOccupiedCells = 0;
 
-		const uint16_t uMaxXVolSpace = regSlice1.getUpperCorner().getX();
-		const uint16_t uMaxYVolSpace = regSlice1.getUpperCorner().getY();
+		const uint16_t uMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
+		const uint16_t uMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
 
-		uZVolSpace = regSlice1.getLowerCorner().getZ();
+		uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 		uZRegSpace = uZVolSpace - m_v3dRegionOffset.getZ();
 
 		//Process the lower left corner
-		uYVolSpace = regSlice1.getLowerCorner().getY();
-		uXVolSpace = regSlice1.getLowerCorner().getX();
+		uYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
+		uXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
 
 		uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
 		uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
@@ -186,8 +186,8 @@ namespace PolyVox
 
 
 		//Process the edge where x is minimal.
-		uXVolSpace = regSlice1.getLowerCorner().getX();
-		for(uYVolSpace = regSlice1.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		uXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
+		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
 		{
 			uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
 			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
@@ -197,8 +197,8 @@ namespace PolyVox
 		}
 
 		//Process the edge where y is minimal.
-		uYVolSpace = regSlice1.getLowerCorner().getY();
-		for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+		uYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
+		for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
 		{	
 			uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
 			uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
@@ -208,9 +208,9 @@ namespace PolyVox
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
-		for(uYVolSpace = regSlice1.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
 		{
-			for(uXVolSpace = regSlice1.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+			for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
 			{	
 				uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
 				uYRegSpace = uYVolSpace - m_v3dRegionOffset.getY();
@@ -227,6 +227,15 @@ namespace PolyVox
 	void SurfaceExtractor::computeBitmaskForCell(void)
 	{
 		uint8_t iCubeIndex = 0;
+
+		uint8_t v000 = 0;
+		uint8_t v100 = 0;
+		uint8_t v010 = 0;
+		uint8_t v110 = 0;
+		uint8_t v001 = 0;
+		uint8_t v101 = 0;
+		uint8_t v011 = 0;
+		uint8_t v111 = 0;
 
 		if(isPrevZAvail)
 		{
@@ -524,11 +533,11 @@ namespace PolyVox
 	void SurfaceExtractor::generateVerticesForSlice()
 	{
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = regSlice1.getLowerCorner().getY(); uYVolSpace <= regSlice1.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
-			for(uint16_t uXVolSpace = regSlice1.getLowerCorner().getX(); uXVolSpace <= regSlice1.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
-				uint16_t uZVolSpace = regSlice1.getLowerCorner().getZ();
+				uint16_t uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 
 				//Current position
 				const uint16_t uXRegSpace = uXVolSpace - m_v3dRegionOffset.getX();
@@ -553,7 +562,7 @@ namespace PolyVox
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
-					//if(uXVolSpace != regSlice1.getUpperCorner().getX())
+					//if(uXVolSpace != m_regSliceCurrent.getUpperCorner().getX())
 					{
 						m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
 						const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
@@ -567,7 +576,7 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
-					//if(uYVolSpace != regSlice1.getUpperCorner().getY())
+					//if(uYVolSpace != m_regSliceCurrent.getUpperCorner().getY())
 					{
 						m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
 						const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
@@ -605,11 +614,11 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
-		for(uint16_t uYVolSpace = regSlice0.getLowerCorner().getY(); uYVolSpace < m_UncroppedRegion.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace < m_UncroppedRegion.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
-			for(uint16_t uXVolSpace = regSlice0.getLowerCorner().getX(); uXVolSpace < m_UncroppedRegion.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace < m_UncroppedRegion.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
-				uint16_t uZVolSpace = regSlice0.getLowerCorner().getZ();
+				uint16_t uZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
 
 				//Current position

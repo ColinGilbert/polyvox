@@ -44,16 +44,43 @@ namespace PolyVox
 		POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSurfaceForRegion(Region region);
 
 	private:
+		//Extract the surface for a particular LOD level
+		template<uint8_t uLodLevel>
+		void extractSurfaceImpl(void);
 
+		//Compute the cell bitmask for a particular slice in z.
+		template<bool isPrevZAvail, uint8_t uLodLevel>
+		uint32_t computeBitmaskForSlice(void);
+
+		//Compute the cell bitmask for a given cell.
+		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel>
+		void computeBitmaskForCell(void);
+
+		//Use the cell bitmasks to generate all the vertices needed for that slice
+		void generateVerticesForSlice();
+
+		//Use the cell bitmasks to generate all the indices needed for that slice
+		void generateIndicesForSlice();
+
+		//Converts a position into an index for accessing scratch areas.
+		inline uint32_t getIndex(uint32_t x, uint32_t y)
+		{
+			return x + (y * m_uScratchPadWidth);
+		}
+
+		//The lod level can step size.
 		uint8_t m_uLodLevel;
 		uint8_t m_uStepSize;
 
+		//The volume data and a sampler to access it.
 		Volume<uint8_t> m_volData;
 		VolumeSampler<uint8_t> m_sampVolume;
 
+		//Cell bitmasks for the current and previous slices.
 		uint8_t* m_pPreviousBitmask;
 		uint8_t* m_pCurrentBitmask;
 
+		//Used to keep track of where generated vertices have been placed.
 		int32_t* m_pPreviousVertexIndicesX;
 		int32_t* m_pPreviousVertexIndicesY; 
 		int32_t* m_pPreviousVertexIndicesZ; 
@@ -61,57 +88,40 @@ namespace PolyVox
 		int32_t* m_pCurrentVertexIndicesY; 
 		int32_t* m_pCurrentVertexIndicesZ;
 
-		uint8_t v000;
-		uint8_t v100;
-		uint8_t v010;
-		uint8_t v110;
-		uint8_t v001;
-		uint8_t v101;
-		uint8_t v011;
-		uint8_t v111;
-
+		//Holds a position in volume space.
 		uint16_t uXVolSpace;
 		uint16_t uYVolSpace;
 		uint16_t uZVolSpace;
 
+		//Holds a position in region space.
 		uint16_t uXRegSpace;
 		uint16_t uYRegSpace;
 		uint16_t uZRegSpace;
 
+		//Used to return the number of cells in a slice which contain triangles.
 		uint32_t m_uNoOfOccupiedCells;
 
+		//The surface patch we are currently filling.
 		IndexedSurfacePatch* m_ispCurrent;
 
+		//Remove this?
 		Vector3DFloat m_v3dRegionOffset;
 
-		uint16_t m_uScratchPadWidth;
-		uint16_t m_uScratchPadHeight;
-
+		//Information about the region we a re currently processing
 		Region m_Region;
 		Region m_UncroppedRegion;
 		Region m_croppedVolume;
-		Region regSlice0;
-		Region regSlice1;
+		Region m_regSlicePrevious;
+		Region m_regSliceCurrent;
 
+		//Store the width and height because they are frequently
+		//used and have some overhead to compute.
 		uint16_t m_uRegionWidth;
 		uint16_t m_uRegionHeight;
 
-		inline uint32_t getIndex(uint32_t x, uint32_t y)
-		{
-			return x + (y * m_uScratchPadWidth);
-		}
-
-		template<uint8_t uLodLevel>
-		void extractSurfaceImpl(void);
-
-		template<bool isPrevZAvail, uint8_t uLodLevel>
-		uint32_t computeBitmaskForSlice(void);
-
-		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel>
-		void computeBitmaskForCell(void);
-
-		void generateIndicesForSlice();
-		void generateVerticesForSlice();
+		//These are used in several places so best stored.
+		uint16_t m_uScratchPadWidth;
+		uint16_t m_uScratchPadHeight;		
 	};
 }
 

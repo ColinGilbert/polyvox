@@ -54,6 +54,12 @@ namespace PolyVox
 		void setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos);
 
 		void movePositiveX(void);
+		void movePositiveY(void);
+		void movePositiveZ(void);
+
+		void moveNegativeX(void);
+		void moveNegativeY(void);
+		void moveNegativeZ(void);
 
 		inline VoxelType peekVoxel1nx1ny1nz(void) const;
 		inline VoxelType peekVoxel1nx1ny0pz(void) const;
@@ -95,20 +101,8 @@ namespace PolyVox
 		uint16_t mYPosInVolume;
 		uint16_t mZPosInVolume;
 
-		//The position of the current block
-		uint16_t mXBlock;
-		uint16_t mYBlock;
-		uint16_t mZBlock;
-
-		//The offset into the current block
-		uint16_t mXPosInBlock;
-		uint16_t mYPosInBlock;
-		uint16_t mZPosInBlock;
-
 		//Other current position information
 		VoxelType* mCurrentVoxel;
-		uint32_t mBlockIndexInVolume;
-		uint32_t mVoxelIndexInBlock;
 	};
 }
 
