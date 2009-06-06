@@ -14,6 +14,7 @@
 #endif
 
 #include <QApplication>
+#include <QTime>
 
 //Some namespaces we need
 using namespace std;
@@ -63,7 +64,7 @@ int main(int argc, char *argv[])
 	cout << "Creating sphere 4" << std::endl;
 	createSphereInVolume(volData, 30.0f, 2);
 	cout << "Creating sphere 5" << std::endl;
-	createSphereInVolume(volData, 20.0f, 1);	
+	createSphereInVolume(volData, 20.0f, 1);
 
 	cout << "Creating cubes" << std::endl;
 	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
@@ -74,6 +75,8 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DUint16(1, midPos-10, midPos-10), Vector3DUint16(maxPos-1, midPos+10, midPos+10), 255);
 	createCubeInVolume(volData, Vector3DUint16(midPos-10, 1, midPos-10), Vector3DUint16(midPos+10, maxPos-1, midPos+10), 255);
 	createCubeInVolume(volData, Vector3DUint16(midPos-10, midPos-10 ,1), Vector3DUint16(midPos+10, midPos+10, maxPos-1), 255);
+
+	//createCubeInVolume(volData, Vector3DUint16(1, 1, 1), Vector3DUint16(maxPos-1, maxPos-1, midPos/4), 255);
 
 	cout << "Tidying memory...";
 	volData.tidyUpMemory(0);
@@ -86,7 +89,12 @@ int main(int argc, char *argv[])
 
 	openGLWidget.show();
 
+	QTime time;
+	time.start();
 	openGLWidget.setVolume(&volData);
+	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
+
+	//return 0;
 
 	return app.exec();
 } 

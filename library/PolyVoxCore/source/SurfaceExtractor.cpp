@@ -541,14 +541,8 @@ namespace PolyVox
 				const uint16_t uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 				const uint16_t uZRegSpace = uZVolSpace - m_regInputCropped.getLowerCorner().getZ();
 
-				//Current position
-				//const uint16_t z = regSlice.getLowerCorner().getZ();
-
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-				const uint8_t v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())];
+				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace)];
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -556,48 +550,42 @@ namespace PolyVox
 					continue;
 				}
 
+				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+				const uint8_t v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
-					//if(uXVolSpace != m_regSliceCurrent.getUpperCorner().getX())
-					{
-						m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
-						const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-						const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX() + 0.5f * m_uStepSize, uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ());
-						const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
-						const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
-						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
-					}
+					m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
+					const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX() + 0.5f * m_uStepSize, uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ());
+					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
+					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+					m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
-					//if(uYVolSpace != m_regSliceCurrent.getUpperCorner().getY())
-					{
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
-						const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-						const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY() + 0.5f * m_uStepSize, uZVolSpace - m_regInputCropped.getLowerCorner().getZ());
-						const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
-						const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
-						SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
-					}
+					m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
+					const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY() + 0.5f * m_uStepSize, uZVolSpace - m_regInputCropped.getLowerCorner().getZ());
+					const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
+					const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+					m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
 				if (edgeTable[iCubeIndex] & 256)
 				{
-					//if(z != regSlice.getUpperCorner.getZ())
-					{
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace + m_uStepSize);
-						const uint8_t v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-						const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ() + 0.5f * m_uStepSize);
-						const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
-						const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
-						const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-						uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
-						m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
-					}
+					m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace + m_uStepSize);
+					const uint8_t v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ() + 0.5f * m_uStepSize);
+					const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
+					const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
+					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+					m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
 			}//For each cell
 		}
