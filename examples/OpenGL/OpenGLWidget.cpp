@@ -60,8 +60,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					PolyVox::uint16_t regionEndY = regionStartY + m_uRegionSideLength;
 					PolyVox::uint16_t regionEndZ = regionStartZ + m_uRegionSideLength;
 
-					Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
-					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
+					Vector3DInt16 regLowerCorner(regionStartX, regionStartY, regionStartZ);
+					Vector3DInt16 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);

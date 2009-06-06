@@ -34,7 +34,7 @@ namespace PolyVox
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		m_regVolumeCropped = m_volData.getEnclosingRegion();
 		m_regInputUncropped.cropTo(m_regVolumeCropped);
-		m_regVolumeCropped.setUpperCorner(m_regVolumeCropped.getUpperCorner() - Vector3DInt32(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
+		m_regVolumeCropped.setUpperCorner(m_regVolumeCropped.getUpperCorner() - Vector3DInt16(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
 	
 		m_regInputCropped = region;
 		m_regInputCropped.cropTo(m_regVolumeCropped);
@@ -64,7 +64,7 @@ namespace PolyVox
 
 		//Create a region corresponding to the first slice
 		m_regSlicePrevious = m_regInputCropped;
-		Vector3DInt32 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
+		Vector3DInt16 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
 		v3dUpperCorner.setZ(m_regSlicePrevious.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
 		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
 		m_regSliceCurrent = m_regSlicePrevious;	
@@ -121,7 +121,7 @@ namespace PolyVox
 		std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
-		m_regSliceCurrent.shift(Vector3DInt32(0,0,m_uStepSize));
+		m_regSliceCurrent.shift(Vector3DInt16(0,0,m_uStepSize));
 
 		//Process the other slices (previous slice is available)
 		for(uint32_t uSlice = 1; uSlice <= m_regInputCropped.depth(); uSlice += m_uStepSize)
@@ -149,11 +149,11 @@ namespace PolyVox
 			std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
 
 			m_regSlicePrevious = m_regSliceCurrent;
-			m_regSliceCurrent.shift(Vector3DInt32(0,0,m_uStepSize));
+			m_regSliceCurrent.shift(Vector3DInt16(0,0,m_uStepSize));
 		}
 
 		//A final slice just to close of the volume
-		m_regSliceCurrent.shift(Vector3DInt32(0,0,-m_uStepSize));
+		m_regSliceCurrent.shift(Vector3DInt16(0,0,-m_uStepSize));
 		if(m_regSliceCurrent.getLowerCorner().getZ() == m_regVolumeCropped.getUpperCorner().getZ())
 		{
 			memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);

@@ -152,7 +152,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Region Volume<VoxelType>::getEnclosingRegion(void) const
 	{
-		return Region(Vector3DInt32(0,0,0), Vector3DInt32(m_uWidth-1,m_uHeight-1,m_uDepth-1));
+		return Region(Vector3DInt16(0,0,0), Vector3DInt16(m_uWidth-1,m_uHeight-1,m_uDepth-1));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

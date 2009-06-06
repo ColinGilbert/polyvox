@@ -14,13 +14,13 @@ namespace PolyVox
 		while(iterSurfaceVertex != vecVertices.end())
 		{
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_Region.getLowerCorner());
-			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
+			const Vector3DInt16 v3dFloor = static_cast<Vector3DInt16>(v3dPos);
 
 			VolumeSampler<uint8_t> volIter(*volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
-			bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt32(1,1,1),2);
+			bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt16(1,1,1),2);
 
 			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
 			{
