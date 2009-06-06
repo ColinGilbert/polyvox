@@ -9,7 +9,7 @@ namespace PolyVox
 	SurfaceExtractor::SurfaceExtractor(Volume<uint8_t>& volData)
 		:m_uLodLevel(0)
 		,m_volData(volData)
-		,m_sampVolume(volData)
+		,m_sampVolume(&volData)
 	{
 	}
 
@@ -184,35 +184,62 @@ namespace PolyVox
 
 		//Process the edge where x is minimal.
 		uXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
+		m_sampVolume.setPosition(uXVolSpace, m_regSliceCurrent.getLowerCorner().getY(), uZVolSpace);
 		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
 		{
 			uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
 			uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
-			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+			if(uLodLevel == 0)
+			{
+				m_sampVolume.movePositiveY();
+			}
+			else
+			{
+				m_sampVolume.setPosition(uXVolSpace, uYVolSpace, uZVolSpace);
+			}
+
 			computeBitmaskForCell<false, true, isPrevZAvail, uLodLevel>();
 		}
 
 		//Process the edge where y is minimal.
 		uYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
+		m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), uYVolSpace, uZVolSpace);
 		for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
 		{	
 			uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
 			uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
-			m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+			if(uLodLevel == 0)
+			{
+				m_sampVolume.movePositiveX();
+			}
+			else
+			{
+				m_sampVolume.setPosition(uXVolSpace, uYVolSpace, uZVolSpace);
+			}
+
 			computeBitmaskForCell<true, false, isPrevZAvail, uLodLevel>();
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
 		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
 		{
+			m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), uYVolSpace, uZVolSpace);
 			for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
 			{	
 				uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
 				uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+				if(uLodLevel == 0)
+				{
+					m_sampVolume.movePositiveX();
+				}
+				else
+				{
+					m_sampVolume.setPosition(uXVolSpace, uYVolSpace, uZVolSpace);
+				}
+
 				computeBitmaskForCell<true, true, isPrevZAvail, uLodLevel>();
 			}
 		}
@@ -274,7 +301,6 @@ namespace PolyVox
 					{
 						v011 = m_sampVolume.peekVoxel0px1py1pz();
 						v111 = m_sampVolume.peekVoxel1px1py1pz();
-
 					}
 					else
 					{
@@ -307,7 +333,6 @@ namespace PolyVox
 					{
 						v101 = m_sampVolume.peekVoxel1px0py1pz();
 						v111 = m_sampVolume.peekVoxel1px1py1pz();
-
 					}
 					else
 					{

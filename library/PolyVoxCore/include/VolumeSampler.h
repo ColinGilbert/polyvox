@@ -34,20 +34,16 @@ namespace PolyVox
 	class VolumeSampler
 	{
 	public:
-		VolumeSampler(Volume<VoxelType>& volume);
-		~VolumeSampler();		
+		VolumeSampler(Volume<VoxelType>* volume);
+		~VolumeSampler();
 
-		bool operator==(const VolumeSampler& rhs);
-		bool operator<(const VolumeSampler& rhs);
-		bool operator>(const VolumeSampler& rhs);
-		bool operator<=(const VolumeSampler& rhs);
-		bool operator>=(const VolumeSampler& rhs);
+		VolumeSampler<VoxelType>& operator=(const VolumeSampler<VoxelType>& rhs) throw();
 
 		uint16_t getPosX(void) const;
 		uint16_t getPosY(void) const;
 		uint16_t getPosZ(void) const;
 		VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-		const Volume<VoxelType>& getVolume(void) const;
+		const Volume<VoxelType>* getVolume(void) const;
 		inline VoxelType getVoxel(void) const;			
 
 		void setPosition(const Vector3DInt16& v3dNewPos);
@@ -94,7 +90,7 @@ namespace PolyVox
 	private:
 
 		//The current volume
-		Volume<VoxelType>& mVolume;
+		Volume<VoxelType>* mVolume;
 
 		//The current position in the volume
 		uint16_t mXPosInVolume;

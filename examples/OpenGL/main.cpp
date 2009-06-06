@@ -66,6 +66,17 @@ int main(int argc, char *argv[])
 	cout << "Creating sphere 5" << std::endl;
 	createSphereInVolume(volData, 20.0f, 1);
 
+	/*cout << "Creating sphere 1" << std::endl;
+	createSphereInVolume(volData, 120.0f, 5);
+	cout << "Creating sphere 2" << std::endl;
+	createSphereInVolume(volData, 100.0f, 4);
+	cout << "Creating sphere 3" << std::endl;
+	createSphereInVolume(volData, 80.0f, 3);
+	cout << "Creating sphere 4" << std::endl;
+	createSphereInVolume(volData, 60.0f, 2);
+	cout << "Creating sphere 5" << std::endl;
+	createSphereInVolume(volData, 40.0f, 1);*/
+
 	cout << "Creating cubes" << std::endl;
 	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);

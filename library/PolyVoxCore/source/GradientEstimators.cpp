@@ -16,7 +16,7 @@ namespace PolyVox
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_Region.getLowerCorner());
 			const Vector3DInt16 v3dFloor = static_cast<Vector3DInt16>(v3dPos);
 
-			VolumeSampler<uint8_t> volIter(*volumeData);
+			VolumeSampler<uint8_t> volIter(volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
@@ -42,7 +42,7 @@ namespace PolyVox
 	{
 		Vector3DFloat v3dGradient; //To store the result
 
-		VolumeSampler<uint8_t> volIter(*volumeData);
+		VolumeSampler<uint8_t> volIter(volumeData);
 
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
