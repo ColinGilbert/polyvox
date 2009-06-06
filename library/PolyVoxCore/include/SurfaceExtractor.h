@@ -104,9 +104,6 @@ namespace PolyVox
 		//The surface patch we are currently filling.
 		IndexedSurfacePatch* m_ispCurrent;
 
-		//Remove this?
-		Vector3DFloat m_v3dRegionOffset;
-
 		//Information about the region we a re currently processing
 		Region m_regInputCropped;
 		Region m_regInputUncropped;
