@@ -190,20 +190,20 @@ namespace PolyVox
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		uint16_t uXBlock = mXPosInVolume >> mVolume.m_uBlockSideLengthPower;
-		uint16_t uYBlock = mYPosInVolume >> mVolume.m_uBlockSideLengthPower;
-		uint16_t uZBlock = mZPosInVolume >> mVolume.m_uBlockSideLengthPower;
+		const uint16_t uXBlock = mXPosInVolume >> mVolume.m_uBlockSideLengthPower;
+		const uint16_t uYBlock = mYPosInVolume >> mVolume.m_uBlockSideLengthPower;
+		const uint16_t uZBlock = mZPosInVolume >> mVolume.m_uBlockSideLengthPower;
 
-		uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << mVolume.m_uBlockSideLengthPower);
-		uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume.m_uBlockSideLengthPower);
-		uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << mVolume.m_uBlockSideLengthPower);
+		const uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << mVolume.m_uBlockSideLengthPower);
+		const uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume.m_uBlockSideLengthPower);
+		const uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << mVolume.m_uBlockSideLengthPower);
 
-		uint32_t uBlockIndexInVolume = uXBlock + 
+		const uint32_t uBlockIndexInVolume = uXBlock + 
 			uYBlock * mVolume.m_uWidthInBlocks + 
 			uZBlock * mVolume.m_uWidthInBlocks * mVolume.m_uHeightInBlocks;
-		POLYVOX_SHARED_PTR< Block<VoxelType> > currentBlock = mVolume.m_pBlocks[uBlockIndexInVolume];
+		const POLYVOX_SHARED_PTR< Block<VoxelType> >& currentBlock = mVolume.m_pBlocks[uBlockIndexInVolume];
 
-		uint32_t uVoxelIndexInBlock = uXPosInBlock + 
+		const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
 			uYPosInBlock * mVolume.m_uBlockSideLength + 
 			uZPosInBlock * mVolume.m_uBlockSideLength * mVolume.m_uBlockSideLength;
 		mCurrentVoxel = currentBlock->m_tData + uVoxelIndexInBlock;
