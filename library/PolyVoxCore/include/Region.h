@@ -55,6 +55,12 @@ namespace PolyVox
 	private:
 		Vector3DInt16 m_v3dLowerCorner;
 		Vector3DInt16 m_v3dUpperCorner;
+
+		//FIXME - This variable is unused, but without it the OpenGL example crashes in release mode
+		//when the volume size is 128^3 and the level of detail is 2. Very strange, but consistant.
+		//Presubablly some kind of alignment issue? It started after this class was changed to use
+		//int16's rather than int32's. To be investigated.
+		uint8_t dummy; 
 	};
 }
 
