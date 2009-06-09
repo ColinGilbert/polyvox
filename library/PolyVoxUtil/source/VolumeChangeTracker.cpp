@@ -59,14 +59,14 @@ namespace PolyVox
 
 	void VolumeChangeTracker::setAllRegionsModified(void)
 	{
+		incrementCurrentTime();
 		for(uint16_t blockZ = 0; blockZ < m_uVolumeDepthInRegions; ++blockZ)
 		{
 			for(uint16_t blockY = 0; blockY < m_uVolumeHeightInRegions; ++blockY)
 			{
 				for(uint16_t blockX = 0; blockX < m_uVolumeWidthInRegions; ++blockX)
 				{
-					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_uCurrentTime);
-					incrementCurrentTime();
+					volRegionLastModified->setVoxelAt(blockX, blockY, blockZ, m_uCurrentTime);					
 				}
 			}
 		}
