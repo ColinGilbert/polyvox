@@ -78,7 +78,7 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRle(istream& stream)
+	Volume<uint8_t>* loadVolumeRle(istream& stream, void (*pCallback)(float))
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -103,6 +103,13 @@ namespace PolyVox
 		stream.read(reinterpret_cast<char*>(&runLength), sizeof(runLength));
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
+			//Update progress once per slice.
+			if(pCallback)
+			{
+				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
+				pCallback(fProgress);
+			}
+
 			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
 				for(uint16_t x = 0; x < volumeWidth; ++x)
@@ -121,9 +128,14 @@ namespace PolyVox
 						runLength--;
 					}
 				}
-			}
+			}			
 		}
 
+		//Finished
+		if(pCallback)
+		{
+			pCallback(1.0f);
+		}
 		return volume;
 	}
 
