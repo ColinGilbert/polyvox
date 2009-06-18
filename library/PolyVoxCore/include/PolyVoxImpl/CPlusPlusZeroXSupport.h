@@ -11,6 +11,10 @@
 	#define POLYVOX_STD_NAMESPACE std
 	#define POLYVOX_SHARED_PTR std::shared_ptr
 	#define POLYVOX_WEAK_PTR std::weak_ptr
+
+	#include <functional>
+
+	#define POLYVOX_FUNCTION std::function
 #else
 	#include "boost/cstdint.hpp"
 	#include "boost/shared_ptr.hpp"
@@ -19,6 +23,10 @@
 	#define POLYVOX_STD_NAMESPACE boost
 	#define POLYVOX_SHARED_PTR boost::shared_ptr
 	#define POLYVOX_WEAK_PTR boost::weak_ptr
+
+	#include "boost/function.hpp"
+
+	#define POLYVOX_FUNCTION boost::function
 #endif
 
 //In some ways these integer types are an implementation detail and should be in the PolyVoxImpl namespace.

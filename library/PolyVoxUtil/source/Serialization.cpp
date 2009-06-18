@@ -10,7 +10,7 @@ namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRaw(istream& stream)
+	Volume<uint8_t>* loadVolumeRaw(istream& stream, POLYVOX_FUNCTION<void (float)> pCallback)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -45,7 +45,7 @@ namespace PolyVox
 		return volume;
 	}
 
-	void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume)
+	void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume, POLYVOX_FUNCTION<void (float)> pCallback)
 	{
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
@@ -78,7 +78,7 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRle(istream& stream, void (*pCallback)(float))
+	Volume<uint8_t>* loadVolumeRle(istream& stream, POLYVOX_FUNCTION<void (float)> pCallback)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -139,7 +139,7 @@ namespace PolyVox
 		return volume;
 	}
 
-	void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume)
+	void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume, POLYVOX_FUNCTION<void (float)> pCallback)
 	{
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
