@@ -30,16 +30,29 @@ namespace PolyVox
 		//Read data
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
+			//Update progress once per slice.
+			if(pCallback)
+			{
+				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
+				pCallback(fProgress);
+			}
+
 			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
 				for(uint16_t x = 0; x < volumeWidth; ++x)
 				{
 					uint8_t value = 0;
 					stream.read(reinterpret_cast<char*>(&value), sizeof(value));
-			
+
 					volume->setVoxelAt(x,y,z,value);
 				}
 			}
+		}
+
+		//Finished
+		if(pCallback)
+		{
+			pCallback(1.0f);
 		}
 
 		return volume;
@@ -64,6 +77,13 @@ namespace PolyVox
 		VolumeSampler<uint8_t> volIter(&volume);
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
+			//Update progress once per slice.
+			if(pCallback)
+			{
+				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
+				pCallback(fProgress);
+			}
+
 			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
 				for(uint16_t x = 0; x < volumeWidth; ++x)
@@ -73,6 +93,12 @@ namespace PolyVox
 					stream.write(reinterpret_cast<char*>(&value), sizeof(value));
 				}
 			}
+		}
+
+		//Finished
+		if(pCallback)
+		{
+			pCallback(1.0f);
 		}
 	}
 
@@ -136,6 +162,7 @@ namespace PolyVox
 		{
 			pCallback(1.0f);
 		}
+
 		return volume;
 	}
 
@@ -161,6 +188,13 @@ namespace PolyVox
 		bool firstTime = true;
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
+			//Update progress once per slice.
+			if(pCallback)
+			{
+				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
+				pCallback(fProgress);
+			}
+
 			for(uint16_t y = 0; y < volumeHeight; ++y)
 			{
 				for(uint16_t x = 0; x < volumeWidth; ++x)
@@ -192,5 +226,11 @@ namespace PolyVox
 		}
 		stream.write(reinterpret_cast<char*>(&current), sizeof(current));
 		stream.write(reinterpret_cast<char*>(&runLength), sizeof(runLength));
+
+		//Finished
+		if(pCallback)
+		{
+			pCallback(1.0f);
+		}
 	}
 }
