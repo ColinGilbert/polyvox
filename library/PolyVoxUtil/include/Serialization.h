@@ -30,11 +30,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {	
-	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRaw(std::istream& stream, POLYVOX_FUNCTION<void (float)> pCallback = 0);
-	POLYVOXUTIL_API void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume, POLYVOX_FUNCTION<void (float)> pCallback = 0);
+	class VolumeSerializationProgressListener
+	{
+	public:
+		virtual void onProgressUpdated(float fProgress) = 0;
+	};
 
-	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRle(std::istream& stream, POLYVOX_FUNCTION<void (float)> pCallback = 0);
-	POLYVOXUTIL_API void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume, POLYVOX_FUNCTION<void (float)> pCallback = 0);
+	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	POLYVOXUTIL_API void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume, VolumeSerializationProgressListener* progressListener = 0);
+
+	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	POLYVOXUTIL_API void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume, VolumeSerializationProgressListener* progressListener = 0);
 }
 
 #endif

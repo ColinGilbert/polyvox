@@ -10,7 +10,7 @@ namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRaw(istream& stream, POLYVOX_FUNCTION<void (float)> pCallback)
+	Volume<uint8_t>* loadVolumeRaw(istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -31,10 +31,10 @@ namespace PolyVox
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			//Update progress once per slice.
-			if(pCallback)
+			if(progressListener)
 			{
 				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
-				pCallback(fProgress);
+				progressListener->onProgressUpdated(fProgress);
 			}
 
 			for(uint16_t y = 0; y < volumeHeight; ++y)
@@ -50,15 +50,15 @@ namespace PolyVox
 		}
 
 		//Finished
-		if(pCallback)
+		if(progressListener)
 		{
-			pCallback(1.0f);
+			progressListener->onProgressUpdated(1.0f);
 		}
 
 		return volume;
 	}
 
-	void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume, POLYVOX_FUNCTION<void (float)> pCallback)
+	void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
@@ -78,10 +78,10 @@ namespace PolyVox
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			//Update progress once per slice.
-			if(pCallback)
+			if(progressListener)
 			{
 				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
-				pCallback(fProgress);
+				progressListener->onProgressUpdated(fProgress);
 			}
 
 			for(uint16_t y = 0; y < volumeHeight; ++y)
@@ -96,15 +96,15 @@ namespace PolyVox
 		}
 
 		//Finished
-		if(pCallback)
+		if(progressListener)
 		{
-			pCallback(1.0f);
+			progressListener->onProgressUpdated(1.0f);
 		}
 	}
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRle(istream& stream, POLYVOX_FUNCTION<void (float)> pCallback)
+	Volume<uint8_t>* loadVolumeRle(istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -130,10 +130,10 @@ namespace PolyVox
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			//Update progress once per slice.
-			if(pCallback)
+			if(progressListener)
 			{
 				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
-				pCallback(fProgress);
+				progressListener->onProgressUpdated(fProgress);
 			}
 
 			for(uint16_t y = 0; y < volumeHeight; ++y)
@@ -158,15 +158,15 @@ namespace PolyVox
 		}
 
 		//Finished
-		if(pCallback)
+		if(progressListener)
 		{
-			pCallback(1.0f);
+			progressListener->onProgressUpdated(1.0f);
 		}
 
 		return volume;
 	}
 
-	void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume, POLYVOX_FUNCTION<void (float)> pCallback)
+	void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
@@ -189,10 +189,10 @@ namespace PolyVox
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			//Update progress once per slice.
-			if(pCallback)
+			if(progressListener)
 			{
 				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
-				pCallback(fProgress);
+				progressListener->onProgressUpdated(fProgress);
 			}
 
 			for(uint16_t y = 0; y < volumeHeight; ++y)
@@ -228,9 +228,9 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&runLength), sizeof(runLength));
 
 		//Finished
-		if(pCallback)
+		if(progressListener)
 		{
-			pCallback(1.0f);
+			progressListener->onProgressUpdated(1.0f);
 		}
 	}
 }
