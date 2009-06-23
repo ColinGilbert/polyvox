@@ -116,6 +116,11 @@ namespace PolyVox
 
 	void IndexedSurfacePatch::smooth(float fAmount, bool bIncludeEdgeVertices)
 	{
+		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
+		{
+			return;
+		}
+
 		std::vector<SurfaceVertex> vecOriginalVertices = m_vecVertices;
 
 		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
