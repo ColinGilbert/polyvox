@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #define __PolyVox_IndexedSurfacePatch_H__
 
 #include <vector>
+#include <set>
 
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 
@@ -54,6 +55,8 @@ namespace PolyVox
 
 	   void smooth(float fAmount, bool bIncludeEdgeVertices = false);
 
+	   POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSubset(std::set<uint8_t> setMaterials);
+
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 
 	   //Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
@@ -66,7 +69,6 @@ namespace PolyVox
 		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
 	};	
-
 }
 
 #endif /* __IndexedSurfacePatch_H__ */

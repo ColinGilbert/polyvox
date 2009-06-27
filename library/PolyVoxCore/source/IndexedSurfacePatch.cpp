@@ -218,4 +218,38 @@ namespace PolyVox
 			}
 		}
 	}
+
+	POLYVOX_SHARED_PTR<IndexedSurfacePatch> IndexedSurfacePatch::extractSubset(std::set<uint8_t> setMaterials)
+	{
+		POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch);
+
+		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
+		{
+			return result;
+		}
+
+		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
+		{
+			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			iterIndex++;
+
+			if(
+				(setMaterials.find(v0.getMaterial()) != setMaterials.end()) || 
+				(setMaterials.find(v1.getMaterial()) != setMaterials.end()) || 
+				(setMaterials.find(v2.getMaterial()) != setMaterials.end()))
+			{
+				uint32_t i0 = result->addVertex(v0);
+				uint32_t i1 = result->addVertex(v1);
+				uint32_t i2 = result->addVertex(v2);
+
+				result->addTriangle(i0,i1,i2);
+			}
+		}
+
+		return result;
+	}
 }
