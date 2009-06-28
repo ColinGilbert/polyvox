@@ -24,13 +24,6 @@ namespace PolyVox
 		return m_v3dUpperCorner;
 	}	
 
-	const Vector3DInt16& Region::getCentre(void) const
-	{
-		Vector3DInt32 v3dMidpoint = static_cast<Vector3DInt32>(m_v3dLowerCorner) + static_cast<Vector3DInt32>(m_v3dUpperCorner);
-		v3dMidpoint = v3dMidpoint / static_cast<int32_t>(2);
-		return m_v3dLowerCorner + static_cast<Vector3DInt16>(v3dMidpoint);
-	}
-
 	void Region::setLowerCorner(const Vector3DInt16& v3dLowerCorner)
 	{
 		m_v3dLowerCorner = v3dLowerCorner;

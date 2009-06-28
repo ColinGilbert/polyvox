@@ -37,7 +37,6 @@ namespace PolyVox
 
 		const Vector3DInt16& getLowerCorner(void) const;
 		const Vector3DInt16& getUpperCorner(void) const;
-		const Vector3DInt16& getCentre(void) const;
 
 		void setLowerCorner(const Vector3DInt16& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt16& v3dUpperCorner);
