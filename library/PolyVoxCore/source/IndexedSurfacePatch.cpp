@@ -171,6 +171,14 @@ namespace PolyVox
 		}
 	}	
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function can help improve the visual appearance of a surface patch by
+	/// smoothing normals with other nearby normals. It iterates over each triangle
+	/// in the surface patch and determines the sum of its corners normals. For any
+	/// given vertex, these sums are in turn summed for any triangles which use the
+	/// vertex. Usually, the resulting normals should be renormalised afterwards.
+	/// Note: This function can cause lighting discontinuities accross region boundaries.
+	////////////////////////////////////////////////////////////////////////////////
 	void IndexedSurfacePatch::sumNearbyNormals(bool bNormalise)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
