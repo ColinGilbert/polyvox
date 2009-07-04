@@ -171,10 +171,53 @@ namespace PolyVox
 		}
 	}	
 
+	void IndexedSurfacePatch::sumNearbyNormals(bool bNormalise)
+	{
+		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
+		{
+			return;
+		}
+
+		std::vector<Vector3DFloat> summedNormals(m_vecVertices.size());
+
+		//Initialise all normals to zero. Pretty sure this is ok,
+		//as the vector should stoer all elements contiguously.
+		memset(&summedNormals[0], 0, summedNormals.size() * sizeof(Vector3DFloat));
+
+		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
+		{
+			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			Vector3DFloat& v0New = summedNormals[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			Vector3DFloat& v1New = summedNormals[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			Vector3DFloat& v2New = summedNormals[*iterIndex];
+			iterIndex++;
+
+			Vector3DFloat sumOfNormals = v0.getNormal() + v1.getNormal() + v2.getNormal();
+
+			v0New += sumOfNormals;
+			v1New += sumOfNormals;
+			v2New += sumOfNormals;
+		}
+
+		for(uint32_t uIndex = 0; uIndex < summedNormals.size(); uIndex++)
+		{
+			if(bNormalise)
+			{
+				summedNormals[uIndex].normalise();
+			}
+			m_vecVertices[uIndex].setNormal(summedNormals[uIndex]);
+		}
+	}
+
 	void IndexedSurfacePatch::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
 	{
 		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
 
+		//Initially zero the normals
 		for(vector<SurfaceVertex>::iterator iterVertex = m_vecVertices.begin(); iterVertex != m_vecVertices.end(); iterVertex++)
 		{
 			if(m_Region.containsPoint(iterVertex->getPosition() + offset, 0.001))
