@@ -114,59 +114,89 @@ namespace PolyVox
 		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
 	}
 
-	void IndexedSurfacePatch::smooth(float fAmount, bool bIncludeEdgeVertices)
+	////////////////////////////////////////////////////////////////////////////////
+	/// The function works on a per triangle basis without any need for connectivity
+	/// information. It determines whether a triangle is lying on a flat or curved
+	/// section of the surface patch by examining the normals - therefore these
+	/// normals must hve been set to something sensible before this functions is called.
+	/// \param fAmount A factor controlling how much the vertices move by. Find a good
+	/// value by experimentation, starting with something small such as 0.1f.
+	/// \param uNoRequiredUses The minumum number of triangles which have to be using 
+	/// a vertex for that vertex to be modified. This is can be used to help prevent
+	/// the operation being carried out on edge vertices, which could cause discontinuities.
+	////////////////////////////////////////////////////////////////////////////////
+	void IndexedSurfacePatch::smoothPositions(float fAmount, uint8_t uNoRequiredUses)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
 			return;
 		}
+		//Used to count how many times a given vertex is used. This helps determine if it's on an edge.
+		std::vector<uint32_t> useCount(m_vecVertices.size());
+		//Initialise all counts to zero. Should be ok as the vector should store all elements contiguously.
+		memset(&useCount[0], 0, useCount.size() * sizeof(uint32_t));
 
-		std::vector<SurfaceVertex> vecOriginalVertices = m_vecVertices;
+		//This will hold the new positions, and is initialised with the current positions.
+		std::vector<Vector3DFloat> newPositions(m_vecVertices.size());
+		for(uint32_t uIndex = 0; uIndex < newPositions.size(); uIndex++)
+		{
+			newPositions[uIndex] = m_vecVertices[uIndex].getPosition();
+		}
 
-		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
-
+		//Iterate over each triangle
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
 		{
-			SurfaceVertex& v0 = vecOriginalVertices[*iterIndex];
-			SurfaceVertex& v0New = m_vecVertices[*iterIndex];
+			//Get the vertex data for the triangle
+			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			Vector3DFloat& v0New = newPositions[*iterIndex];
+			useCount[*iterIndex]++;
 			iterIndex++;
-			SurfaceVertex& v1 = vecOriginalVertices[*iterIndex];
-			SurfaceVertex& v1New = m_vecVertices[*iterIndex];
+			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			Vector3DFloat& v1New = newPositions[*iterIndex];
+			useCount[*iterIndex]++;
 			iterIndex++;
-			SurfaceVertex& v2 = vecOriginalVertices[*iterIndex];
-			SurfaceVertex& v2New = m_vecVertices[*iterIndex];
+			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			Vector3DFloat& v2New = newPositions[*iterIndex];
+			useCount[*iterIndex]++;
 			iterIndex++;
 
-			//FIXME - instead of finding these opposite points (Opp) we could just use the midpoint?
-			Vector3DFloat v0Opp = (v1.position + v2.position) / 2.0f;
-			Vector3DFloat v1Opp = (v0.position + v2.position) / 2.0f;
-			Vector3DFloat v2Opp = (v0.position + v1.position) / 2.0f;
+			//Find the midpoint
+			Vector3DFloat v3dMidpoint = (v0.position + v1.position + v2.position) / 3.0f;
 
-			Vector3DFloat v0ToOpp = v0Opp - v0.position;
-			v0ToOpp.normalise();
-			Vector3DFloat v1ToOpp = v1Opp - v1.position;
-			v1ToOpp.normalise();
-			Vector3DFloat v2ToOpp = v2Opp - v2.position;
-			v2ToOpp.normalise();
-
+			//Vectors from vertex to midpoint
+			Vector3DFloat v0ToMidpoint = v3dMidpoint - v0.position;
+			Vector3DFloat v1ToMidpoint = v3dMidpoint - v1.position;
+			Vector3DFloat v2ToMidpoint = v3dMidpoint - v2.position;
+			
+			//Get the vertex normals
 			Vector3DFloat n0 = v0.getNormal();
-			n0.normalise();
-			Vector3DFloat n1 = v1.getNormal();
-			n1.normalise();
-			Vector3DFloat n2 = v2.getNormal();
-			n2.normalise();			
+			Vector3DFloat n1 = v1.getNormal();			
+			Vector3DFloat n2 = v2.getNormal();				
 
-			if(m_Region.containsPoint(v0.getPosition() + offset, 0.001))
+			//I don't think these normalisation are necessary... and could be slow.
+			//Normals should be normalised anyway, and as long as all triangles are
+			//about the same size the distances to midpoint should be similar too.
+			//v0ToMidpoint.normalise();
+			//v1ToMidpoint.normalise();
+			//v2ToMidpoint.normalise();
+			//n0.normalise();
+			//n1.normalise();
+			//n2.normalise();
+			
+			//If the dot product is zero the the normals are perpendicular
+			//to the triangle, hence the positions do not move.
+			v0New += (n0 * (n0.dot(v0ToMidpoint)) * fAmount);
+			v1New += (n1 * (n1.dot(v1ToMidpoint)) * fAmount);
+			v2New += (n2 * (n2.dot(v2ToMidpoint)) * fAmount);
+		}
+
+		//Update with the new positions
+		for(uint32_t uIndex = 0; uIndex < newPositions.size(); uIndex++)
+		{
+			//Check we have enough uses. 
+			if(useCount[uIndex] >= uNoRequiredUses)
 			{
-				v0New.position += (n0 * (n0.dot(v0ToOpp)) * fAmount);
-			}
-			if(m_Region.containsPoint(v1.getPosition() + offset, 0.001))
-			{
-				v1New.position += (n1 * (n1.dot(v1ToOpp)) * fAmount);
-			}
-			if(m_Region.containsPoint(v2.getPosition() + offset, 0.001))
-			{
-				v2New.position += (n2 * (n2.dot(v2ToOpp)) * fAmount);
+				m_vecVertices[uIndex].setPosition(newPositions[uIndex]);
 			}
 		}
 	}	
@@ -179,7 +209,7 @@ namespace PolyVox
 	/// vertex. Usually, the resulting normals should be renormalised afterwards.
 	/// Note: This function can cause lighting discontinuities accross region boundaries.
 	////////////////////////////////////////////////////////////////////////////////
-	void IndexedSurfacePatch::sumNearbyNormals(bool bNormalise)
+	void IndexedSurfacePatch::sumNearbyNormals(bool bNormaliseResult)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -188,8 +218,7 @@ namespace PolyVox
 
 		std::vector<Vector3DFloat> summedNormals(m_vecVertices.size());
 
-		//Initialise all normals to zero. Pretty sure this is ok,
-		//as the vector should stoer all elements contiguously.
+		//Initialise all normals to zero. Should be ok as the vector should store all elements contiguously.
 		memset(&summedNormals[0], 0, summedNormals.size() * sizeof(Vector3DFloat));
 
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
@@ -213,7 +242,7 @@ namespace PolyVox
 
 		for(uint32_t uIndex = 0; uIndex < summedNormals.size(); uIndex++)
 		{
-			if(bNormalise)
+			if(bNormaliseResult)
 			{
 				summedNormals[uIndex].normalise();
 			}

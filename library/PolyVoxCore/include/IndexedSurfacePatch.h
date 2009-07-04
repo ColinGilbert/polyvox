@@ -53,8 +53,8 @@ namespace PolyVox
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
-	   void smooth(float fAmount, bool bIncludeEdgeVertices = false);
-	   void sumNearbyNormals(bool bNormalise = true);
+	   void smoothPositions(float fAmount, uint8_t uNoRequiredUses = 0);
+	   void sumNearbyNormals(bool bNormaliseResult = true);
 
 	   POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSubset(std::set<uint8_t> setMaterials);
 
