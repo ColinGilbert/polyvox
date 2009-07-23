@@ -37,7 +37,10 @@ namespace PolyVox
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
+
+		bool isEdgeVertex(void) const;
 	
+		void setEdgeVertex(bool isEdgeVertex);
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
 		void setPosition(const Vector3DFloat& positionToSet);
@@ -46,6 +49,7 @@ namespace PolyVox
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material;
+		bool m_bIsEdgeVertex;
 			
 	};
 

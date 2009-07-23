@@ -554,17 +554,21 @@ namespace PolyVox
 
 	void SurfaceExtractor::generateVerticesForSlice()
 	{
+		uint16_t uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
+		const uint16_t uZRegSpace = uZVolSpace - m_regInputCropped.getLowerCorner().getZ();
+		bool isZEdge = ((uZVolSpace == m_regInputCropped.getLowerCorner().getZ()) || (uZVolSpace == m_regInputCropped.getUpperCorner().getZ()));
+
 		//Iterate over each cell in the region
 		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
+			const uint16_t uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
+			bool isYEdge = ((uYVolSpace == m_regInputCropped.getLowerCorner().getY()) || (uYVolSpace == m_regInputCropped.getUpperCorner().getY()));
+
 			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
-				uint16_t uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-
 				//Current position
 				const uint16_t uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
-				const uint16_t uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
-				const uint16_t uZRegSpace = uZVolSpace - m_regInputCropped.getLowerCorner().getZ();
+				bool isXEdge = ((uXVolSpace == m_regInputCropped.getLowerCorner().getX()) || (uXVolSpace == m_regInputCropped.getUpperCorner().getX()));
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace)];
@@ -574,6 +578,9 @@ namespace PolyVox
 				{
 					continue;
 				}
+
+				//Check whether the generated vertex will lie on the edge of the region
+
 
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
 				const uint8_t v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
@@ -587,6 +594,7 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
 					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					surfaceVertex.setEdgeVertex(isXEdge || isYEdge || isZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
@@ -598,6 +606,7 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
 					const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					surfaceVertex.setEdgeVertex(isXEdge || isYEdge || isZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
@@ -608,7 +617,8 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ() + 0.5f * m_uStepSize);
 					const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
 					const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
-					const SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					surfaceVertex.setEdgeVertex(isXEdge || isYEdge || isZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}

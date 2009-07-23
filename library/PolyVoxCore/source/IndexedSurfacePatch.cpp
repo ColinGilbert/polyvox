@@ -121,20 +121,16 @@ namespace PolyVox
 	/// normals must hve been set to something sensible before this functions is called.
 	/// \param fAmount A factor controlling how much the vertices move by. Find a good
 	/// value by experimentation, starting with something small such as 0.1f.
-	/// \param uNoRequiredUses The minumum number of triangles which have to be using 
-	/// a vertex for that vertex to be modified. This is can be used to help prevent
-	/// the operation being carried out on edge vertices, which could cause discontinuities.
+	/// \param bIncludeEdgeVertices Indicates whether vertices on the edge of an
+	/// IndexedSurfacePatch should be smoothed. This can cause dicontinuities between
+	/// neighbouring patches.
 	////////////////////////////////////////////////////////////////////////////////
-	void IndexedSurfacePatch::smoothPositions(float fAmount, uint8_t uNoRequiredUses)
+	void IndexedSurfacePatch::smoothPositions(float fAmount, bool bIncludeEdgeVertices)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
 			return;
 		}
-		//Used to count how many times a given vertex is used. This helps determine if it's on an edge.
-		std::vector<uint32_t> useCount(m_vecVertices.size());
-		//Initialise all counts to zero. Should be ok as the vector should store all elements contiguously.
-		memset(&useCount[0], 0, useCount.size() * sizeof(uint32_t));
 
 		//This will hold the new positions, and is initialised with the current positions.
 		std::vector<Vector3DFloat> newPositions(m_vecVertices.size());
@@ -149,15 +145,12 @@ namespace PolyVox
 			//Get the vertex data for the triangle
 			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v0New = newPositions[*iterIndex];
-			useCount[*iterIndex]++;
 			iterIndex++;
 			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v1New = newPositions[*iterIndex];
-			useCount[*iterIndex]++;
 			iterIndex++;
 			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v2New = newPositions[*iterIndex];
-			useCount[*iterIndex]++;
 			iterIndex++;
 
 			//Find the midpoint
@@ -193,8 +186,7 @@ namespace PolyVox
 		//Update with the new positions
 		for(uint32_t uIndex = 0; uIndex < newPositions.size(); uIndex++)
 		{
-			//Check we have enough uses. 
-			if(useCount[uIndex] >= uNoRequiredUses)
+			if((bIncludeEdgeVertices) || (m_vecVertices[uIndex].isEdgeVertex() == false))
 			{
 				m_vecVertices[uIndex].setPosition(newPositions[uIndex]);
 			}

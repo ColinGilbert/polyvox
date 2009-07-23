@@ -58,6 +58,16 @@ namespace PolyVox
 		return position;
 	}
 
+	bool SurfaceVertex::isEdgeVertex(void) const
+	{
+		return m_bIsEdgeVertex;
+	}
+
+	void SurfaceVertex::setEdgeVertex(bool isEdgeVertex)
+	{
+		m_bIsEdgeVertex = isEdgeVertex;
+	}
+
 	void SurfaceVertex::setMaterial(float materialToSet)
 	{
 		material = materialToSet;

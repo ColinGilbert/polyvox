@@ -104,7 +104,7 @@ namespace PolyVox
 		//The surface patch we are currently filling.
 		IndexedSurfacePatch* m_ispCurrent;
 
-		//Information about the region we a re currently processing
+		//Information about the region we are currently processing
 		Region m_regInputCropped;
 		Region m_regInputUncropped;
 		Region m_regVolumeCropped;
