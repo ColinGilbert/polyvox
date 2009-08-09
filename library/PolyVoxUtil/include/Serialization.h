@@ -36,10 +36,10 @@ namespace PolyVox
 		virtual void onProgressUpdated(float fProgress) = 0;
 	};
 
-	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	POLYVOXUTIL_API POLYVOX_SHARED_PTR< Volume<uint8_t> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
 	POLYVOXUTIL_API void saveVolumeRaw(std::ostream& stream, Volume<uint8_t>& volume, VolumeSerializationProgressListener* progressListener = 0);
 
-	POLYVOXUTIL_API Volume<uint8_t>* loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	POLYVOXUTIL_API POLYVOX_SHARED_PTR< Volume<uint8_t> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
 	POLYVOXUTIL_API void saveVolumeRle(std::ostream& stream, Volume<uint8_t>& volume, VolumeSerializationProgressListener* progressListener = 0);
 }
 

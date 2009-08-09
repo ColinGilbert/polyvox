@@ -10,7 +10,7 @@ namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRaw(istream& stream, VolumeSerializationProgressListener* progressListener)
+	POLYVOX_SHARED_PTR< Volume<uint8_t> > loadVolumeRaw(istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -25,7 +25,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth, volumeHeight, volumeDepth);
+		POLYVOX_SHARED_PTR< Volume<uint8_t> > volume(new Volume<uint8_t>(volumeWidth, volumeHeight, volumeDepth));
 
 		//Read data
 		for(uint16_t z = 0; z < volumeDepth; ++z)
@@ -104,7 +104,7 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	Volume<uint8_t>* loadVolumeRle(istream& stream, VolumeSerializationProgressListener* progressListener)
+	POLYVOX_SHARED_PTR< Volume<uint8_t> > loadVolumeRle(istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -119,7 +119,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		Volume<uint8_t>* volume = new Volume<uint8_t>(volumeWidth, volumeHeight, volumeDepth);
+		POLYVOX_SHARED_PTR< Volume<uint8_t> > volume(new Volume<uint8_t>(volumeWidth, volumeHeight, volumeDepth));
 
 		//Read data
 		bool firstTime = true;
