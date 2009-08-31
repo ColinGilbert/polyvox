@@ -70,13 +70,25 @@ IF(WIN32)
 ENDIF(WIN32)
 
 #Install
-INSTALL(TARGETS PolyVoxCore
-	RUNTIME DESTINATION PolyVoxCore/bin
-	LIBRARY DESTINATION PolyVoxCore/lib
-	ARCHIVE DESTINATION PolyVoxCore/lib
-	COMPONENT library
-)
+IF(WIN32)
+	INSTALL(TARGETS PolyVoxCore
+		RUNTIME DESTINATION PolyVoxCore/bin
+		LIBRARY DESTINATION PolyVoxCore/lib
+		ARCHIVE DESTINATION PolyVoxCore/lib
+		COMPONENT library
+	)
 
-#Install the core header files, including the ones in the PolyVoxImpl subfolder.
-INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
+	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+ELSE(WIN32)
+	INSTALL(TARGETS PolyVoxCore
+		RUNTIME DESTINATION bin
+		LIBRARY DESTINATION lib
+		ARCHIVE DESTINATION lib
+		COMPONENT library
+	)
+
+	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
+	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+ENDIF(WIN32)
 

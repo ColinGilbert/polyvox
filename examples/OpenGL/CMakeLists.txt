@@ -56,15 +56,15 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/debug ${C
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
 TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d optimized PolyVoxCore)
 
-#Install
-INSTALL(TARGETS OpenGLExample
-	RUNTIME DESTINATION Examples/OpenGL/bin
-	LIBRARY DESTINATION Examples/OpenGL/lib
-	ARCHIVE DESTINATION Examples/OpenGL/lib
-	COMPONENT example
-)
-
+#Install - Only install the example in Windows
 IF(WIN32)
+	INSTALL(TARGETS OpenGLExample
+		RUNTIME DESTINATION Examples/OpenGL/bin
+		LIBRARY DESTINATION Examples/OpenGL/lib
+		ARCHIVE DESTINATION Examples/OpenGL/lib
+		COMPONENT example
+	)
+
 	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/release/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
 	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxUtil/release/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
 	
