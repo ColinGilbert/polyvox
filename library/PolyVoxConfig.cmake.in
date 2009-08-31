@@ -14,9 +14,18 @@
 include(FindPackageMessage)
 
 set(PREFIX "@CMAKE_INSTALL_PREFIX@")
-set(PolyVox_LIBRARY_DIRS "${PREFIX}/@PolyVoxCore_LIBRARY_INSTALL_DIRS@" "${PREFIX}/@PolyVoxUtil_LIBRARY_INSTALL_DIRS@")
-set(PolyVox_INCLUDE_DIRS "${PREFIX}/@PolyVoxCore_INCLUDE_INSTALL_DIRS@" "${PREFIX}/@PolyVoxCore_INCLUDE_INSTALL_DIRS@" "${PREFIX}/include")
+
+
+set(PolyVoxCore_LIBRARY_DIRS "${PREFIX}/@PolyVoxCore_LIBRARY_INSTALL_DIRS@")
+set(PolyVoxUtil_LIBRARY_DIRS "${PREFIX}/@PolyVoxUtil_LIBRARY_INSTALL_DIRS@")
+set(PolyVox_LIBRARY_DIRS "${PolyVoxCore_LIBRARY_DIR}" "${PolyVoxUtil_LIBRARY_DIR}")
+
+set(PolyVoxCore_INCLUDE_DIRS "${PREFIX}/@PolyVoxCore_INCLUDE_INSTALL_DIRS@")
+set(PolyVoxUtil_INCLUDE_DIRS "${PREFIX}/@PolyVoxUtil_INCLUDE_INSTALL_DIRS@")
+set(PolyVox_INCLUDE_DIRS "${PolyVoxCore_INCLUDE_DIRS}" "${PolyVoxUtil_INCLUDE_DIRS}" "${PREFIX}/include")
+
 set(PolyVox_LIBRARIES "PolyVoxUtil" "PolyVoxCore")
+
 
 message(STATUS "Found PolyVox")
 message(STATUS "  libraries : '${PolyVox_LIBRARIES}' from ${PolyVox_LIBRARY_DIRS}")
