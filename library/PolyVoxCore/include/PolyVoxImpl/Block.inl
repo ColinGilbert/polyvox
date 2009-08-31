@@ -147,6 +147,12 @@ namespace PolyVox
 	void Block<VoxelType>::fill(VoxelType tValue)
 	{
 		memset(m_tData, (int)tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		//This next block fixes the compile error on Linux
+		/*const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		for(uint32_t ct = 0; ct < uNoOfVoxels; ++ct)
+		{
+			m_tData[ct] = tValue;
+		}*/
 	}
 
 	template <typename VoxelType>
