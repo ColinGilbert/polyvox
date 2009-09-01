@@ -32,6 +32,7 @@ namespace PolyVox
 	SurfaceVertex::SurfaceVertex(Vector3DFloat positionToSet, float materialToSet)
 		:position(positionToSet)
 		,material(materialToSet)
+		,m_bIsMaterialEdgeVertex(false)
 	{
 		
 	}
@@ -40,6 +41,7 @@ namespace PolyVox
 		:position(positionToSet)
 		,normal(normalToSet)
 		,material(materialToSet)
+		,m_bIsMaterialEdgeVertex(false)
 	{
 	}
 

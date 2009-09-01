@@ -48,8 +48,9 @@ namespace PolyVox
 	public:		
 		Vector3DFloat position;
 		Vector3DFloat normal;
-		float material;
+		float material; //FIXME: This shouldn't be float on CPU?
 		bool m_bIsEdgeVertex;
+		bool m_bIsMaterialEdgeVertex;
 			
 	};
 

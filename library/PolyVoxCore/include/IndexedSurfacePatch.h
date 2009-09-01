@@ -45,7 +45,7 @@ namespace PolyVox
 	   uint32_t getNoOfNonUniformTrianges(void) const;
 	   uint32_t getNoOfUniformTrianges(void) const;
 	   uint32_t getNoOfVertices(void) const;	   
-	   std::vector<SurfaceVertex>& getRawVertexData(void); //FIXME - this shoudl be removed
+	   std::vector<SurfaceVertex>& getRawVertexData(void); //FIXME - this should be removed
 	   const std::vector<SurfaceVertex>& getVertices(void) const;
 
 	   void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
