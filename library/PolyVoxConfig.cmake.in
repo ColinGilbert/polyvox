@@ -24,8 +24,8 @@ set(PolyVoxCore_INCLUDE_DIRS "${PREFIX}/@PolyVoxCore_INCLUDE_INSTALL_DIRS@")
 set(PolyVoxUtil_INCLUDE_DIRS "${PREFIX}/@PolyVoxUtil_INCLUDE_INSTALL_DIRS@")
 set(PolyVox_INCLUDE_DIRS "${PolyVoxCore_INCLUDE_DIRS}" "${PolyVoxUtil_INCLUDE_DIRS}" "${PREFIX}/include")
 
-set(PolyVoxCore_LIBRARIES "PolyVoxCore")
-set(PolyVoxUtil_LIBRARIES "PolyVoxUtil")
+set(PolyVoxCore_LIBRARIES debug "PolyVoxCore_d" optimized "PolyVoxCore")
+set(PolyVoxUtil_LIBRARIES debug "PolyVoxUtil_d" optimized "PolyVoxUtil")
 set(PolyVox_LIBRARIES "${PolyVoxCore_LIBRARIES};${PolyVoxUtil_LIBRARIES}")
 
 message(STATUS "Found PolyVox")
