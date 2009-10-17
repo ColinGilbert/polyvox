@@ -169,5 +169,19 @@ namespace PolyVox
 		}
 		return true;
 	}
+
+	template <typename VoxelType>
+	uint32_t Block<VoxelType>::sizeInChars(void)
+	{
+		uint32_t uSizeInChars = sizeof(Block<VoxelType>);
+
+		if(m_tData != 0)
+		{
+			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+			uSizeInChars += uNoOfVoxels * sizeof(VoxelType);
+		}
+
+		return  uSizeInChars;
+	}
 	#pragma endregion
 }

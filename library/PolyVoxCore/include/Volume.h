@@ -72,7 +72,7 @@ namespace PolyVox
 	/// to check for and remove duplicate homogeneous regions whenever you have spare
 	/// processing time.
 	/// 
-	/// -# Copying a volume naturally means that all the voxels in the second voluem are
+	/// -# Copying a volume naturally means that all the voxels in the second volume are
 	/// the same as the first. Therefore volume copying is a relatively fast operation in
 	/// which all the blocks in the second volume simply reference the first volume. Future
 	/// modifications to either volume will, of course, cause the blocks to become unshared.
@@ -111,7 +111,7 @@ namespace PolyVox
 
 	public:		
 		///Constructor
-		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 64);
+		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 		///Destructor
 		~Volume();	
 
@@ -136,9 +136,11 @@ namespace PolyVox
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());
+		///Calculates roughly how much memory is used by the volume.
+		uint32_t calculateSizeInChars(void);
 
 	private:
-		POLYVOX_SHARED_PTR< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue) const;
+		POLYVOX_SHARED_PTR< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue);
 
 		std::vector< POLYVOX_SHARED_PTR< Block<VoxelType> > > m_pBlocks;
 		std::vector<bool> m_vecBlockIsPotentiallyHomogenous;
@@ -148,8 +150,7 @@ namespace PolyVox
 		//shared. A call to shared_ptr::unique() from within setVoxel was not sufficient as weak_ptr's did
 		//not contribute to the reference count. Instead we store shared_ptr's here, and check if they
 		//are used by anyone else (i.e are non-unique) when we tidy the volume.
-		//FIXME - How do we handle sharing between two volumes with different block sizes?!
-		static std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > > m_pHomogenousBlock;
+		std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > > m_pHomogenousBlock;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
@@ -176,10 +177,6 @@ namespace PolyVox
 
 		uint32_t m_uCurrentBlockForTidying;
 	};
-
-	//Required for the static member
-	template <class VoxelType> std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > > Volume<VoxelType>::m_pHomogenousBlock;
-
 
 	//Some handy typedefs
 	typedef Volume<float> FloatVolume;

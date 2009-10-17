@@ -51,6 +51,7 @@ namespace PolyVox
 
 		void fill(VoxelType tValue);
 		bool isHomogeneous(void);
+		uint32_t sizeInChars(void);
 
 	private:
 		uint16_t m_uSideLength;
