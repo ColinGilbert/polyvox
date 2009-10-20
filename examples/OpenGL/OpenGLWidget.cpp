@@ -16,7 +16,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {	
 	m_xRotation = 0;
 	m_yRotation = 0;
-	m_uRegionSideLength = 32.0f;
+	m_uRegionSideLength = 32;
 
 	timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -72,18 +72,23 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					//isp->smooth(0.3f);
 					//ispCurrent->generateAveragedFaceNormals(true);
 
+					if(isp->m_vecTriangleIndices.size() > 0)
+					{
+						isp->makeProgressiveMesh();
 
-					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-					if(m_bUseOpenGLVertexBufferObjects)
-					{
-						OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*(isp.get()));					
-						m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
+
+						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
+						if(m_bUseOpenGLVertexBufferObjects)
+						{
+							OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*(isp.get()));					
+							m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
+						}
+						//else
+						//{
+							m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, isp));
+						//}
+						//delete ispCurrent;
 					}
-					else
-					{
-						m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, isp));
-					}
-					//delete ispCurrent;
 				}
 			}
 		}
@@ -161,15 +166,18 @@ void OpenGLWidget::paintGL()
 				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
 				{
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-					if(m_bUseOpenGLVertexBufferObjects)
-					{
-						renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos]);
-					}
-					else
+					if(m_mapIndexedSurfacePatches.find(v3dRegPos) != m_mapIndexedSurfacePatches.end())
 					{
 						POLYVOX_SHARED_PTR<IndexedSurfacePatch> ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
-						renderRegionImmediateMode(*ispCurrent);
-
+						unsigned int uLodLevel = 0; //ispCurrent->m_vecLodRecords.size() - 1;
+						if(m_bUseOpenGLVertexBufferObjects)
+						{													
+							renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos], uLodLevel);
+						}
+						else
+						{						
+							renderRegionImmediateMode(*ispCurrent, uLodLevel);
+						}
 					}
 				}
 			}

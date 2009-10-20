@@ -10,9 +10,10 @@ struct OpenGLSurfacePatch
 	GLulong noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
+	const PolyVox::IndexedSurfacePatch* sourceISP;
 };
 
 OpenGLSurfacePatch BuildOpenGLSurfacePatch(const PolyVox::IndexedSurfacePatch& isp);
-void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch);
+void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch, unsigned int uLodLevel);
 
 #endif //__OpenGLExample_OpenGLVertexBufferObjectSupport_H__

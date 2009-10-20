@@ -11,6 +11,9 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 	//Represents our filled in OpenGL vertex and index buffer objects.
 	OpenGLSurfacePatch result;
 
+	//The source
+	result.sourceISP = &isp;
+
 	//Convienient access to the vertices and indices
 	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
 	const vector<PolyVox::uint32_t>& vecIndices = isp.getIndices();
@@ -74,8 +77,10 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 	return result;
 }
 
-void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch)
+void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch, unsigned int uLodLevel)
 {
+	int beginIndex = openGLSurfacePatch.sourceISP->m_vecLodRecords[uLodLevel].beginIndex;
+	int endIndex = openGLSurfacePatch.sourceISP->m_vecLodRecords[uLodLevel].endIndex;
 	glBindBuffer(GL_ARRAY_BUFFER, openGLSurfacePatch.vertexBuffer);
 	glVertexPointer(3, GL_FLOAT, 36, 0);
 	glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
@@ -87,7 +92,8 @@ void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 
-	glDrawElements(GL_TRIANGLES, openGLSurfacePatch.noOfIndices, GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, openGLSurfacePatch.noOfIndices, GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(GL_TRIANGLES, beginIndex, endIndex-1, endIndex - beginIndex,/* openGLSurfacePatch.noOfIndices,*/ GL_UNSIGNED_INT, 0);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

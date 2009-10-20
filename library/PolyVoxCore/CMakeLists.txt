@@ -7,9 +7,11 @@ SET(CORE_SRC_FILES
 	source/GradientEstimators.cpp
 	source/IndexedSurfacePatch.cpp
 	source/Log.cpp
+	source/progmesh.cpp
 	source/Region.cpp
 	source/SurfaceExtractor.cpp 
 	source/SurfaceVertex.cpp
+	source/vector.cpp
 	source/VoxelFilters.cpp
 )
 
@@ -17,12 +19,15 @@ SET(CORE_SRC_FILES
 SET(CORE_INC_FILES
 	include/GradientEstimators.inl
 	include/IndexedSurfacePatch.h
+	include/list.h
 	include/Log.h
 	include/PolyVoxForwardDeclarations.h
+	include/progmesh.h
 	include/Region.h
 	include/SurfaceExtractor.h
 	include/SurfaceVertex.h
 	include/Vector.h
+	include/vector_melax.h
 	include/Vector.inl
 	include/Volume.h
 	include/Volume.inl
@@ -80,6 +85,11 @@ IF(WIN32)
 
 	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
 	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+	
+	#On windows, we also install the debug information. It's unfortunate that we have to hard-code
+	#the 'Debug' part of the path, but CMake doesn't seem to provide a way around this. The best I
+	#found was: http://www.cmake.org/pipermail/cmake/2007-October/016924.html (and it is a bit ugly).
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/PolyVoxCore_d.pdb DESTINATION PolyVoxCore/lib CONFIGURATIONS Debug)
 ELSE(WIN32)
 	INSTALL(TARGETS PolyVoxCore
 		RUNTIME DESTINATION bin
@@ -91,4 +101,3 @@ ELSE(WIN32)
 	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
 	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
 ENDIF(WIN32)
-

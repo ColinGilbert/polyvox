@@ -50,6 +50,11 @@ IF(WIN32)
 
 	#Install the util header files.
 	INSTALL(DIRECTORY include DESTINATION PolyVoxUtil COMPONENT development PATTERN "*.svn*" EXCLUDE)
+	
+	#On windows, we also install the debug information. It's unfortunate that we have to hard-code
+	#the 'Debug' part of the path, but CMake doesn't seem to provide a way around this. The best I
+	#found was: http://www.cmake.org/pipermail/cmake/2007-October/016924.html (and it is a bit ugly).
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/PolyVoxUtil_d.pdb DESTINATION PolyVoxUtil/lib CONFIGURATIONS Debug)
 ELSE(WIN32)
 	INSTALL(TARGETS PolyVoxUtil
 		RUNTIME DESTINATION bin

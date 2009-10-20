@@ -21,6 +21,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 #include "IndexedSurfacePatch.h"
 
+#include "progmesh.h"
+
 using namespace std;
 
 namespace PolyVox
@@ -330,5 +332,274 @@ namespace PolyVox
 		}
 
 		return result;
+	}
+
+	/*int IndexedSurfacePatch::countMaterialBoundary(void)
+	{
+		int count = 0;
+		for(int ct = 0; ct < m_vecVertices.size(); ct++)
+		{
+			if(m_vecVertices[ct].m_bIsMaterialEdgeVertex)
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+	void IndexedSurfacePatch::growMaterialBoundary(void)
+	{
+		std::vector<SurfaceVertex> vecNewVertices = m_vecVertices;
+
+		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
+		{
+			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			SurfaceVertex& v0New = vecNewVertices[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			SurfaceVertex& v1New = vecNewVertices[*iterIndex];
+			iterIndex++;
+			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			SurfaceVertex& v2New = vecNewVertices[*iterIndex];
+			iterIndex++;
+
+			if(v0.m_bIsMaterialEdgeVertex || v1.m_bIsMaterialEdgeVertex || v2.m_bIsMaterialEdgeVertex)
+			{
+				v0New.m_bIsMaterialEdgeVertex = true;
+				v1New.m_bIsMaterialEdgeVertex = true;
+				v2New.m_bIsMaterialEdgeVertex = true;
+			}
+		}
+
+		m_vecVertices = vecNewVertices;
+	}*/
+
+	void IndexedSurfacePatch::makeProgressiveMesh(void)
+	{
+
+		//Build the mesh using Stan Melax's code
+		List<VectorM> vecList;
+		for(int vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
+		{
+			VectorM vec;
+			vec.x = m_vecVertices[vertCt].getPosition().getX();
+			vec.y = m_vecVertices[vertCt].getPosition().getY();
+			vec.z = m_vecVertices[vertCt].getPosition().getZ();
+
+			if(m_vecVertices[vertCt].isEdgeVertex() || m_vecVertices[vertCt].m_bIsMaterialEdgeVertex)
+			{
+				vec.fBoundaryCost = 1.0f;
+			}
+			else
+			{
+				vec.fBoundaryCost = 0.0f;
+			}
+
+			vecList.Add(vec);
+		}
+
+		List<tridata> triList;
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size(); )
+		{
+			tridata tri;
+			tri.v[0] = m_vecTriangleIndices[triCt];
+			triCt++;
+			tri.v[1] = m_vecTriangleIndices[triCt];
+			triCt++;
+			tri.v[2] = m_vecTriangleIndices[triCt];
+			triCt++;
+			triList.Add(tri);
+		}
+
+		List<int> map;
+		List<int> permutation;
+
+		ProgressiveMesh(vecList, triList, map, permutation);
+
+		//Apply the permutation to our vertices
+		std::vector<SurfaceVertex> vecNewVertices(m_vecVertices.size());
+		for(int vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
+		{
+			vecNewVertices[permutation[vertCt]]= m_vecVertices[vertCt];
+		}
+
+		std::vector<uint32_t> vecNewTriangleIndices(m_vecTriangleIndices.size());
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
+		{
+			vecNewTriangleIndices[triCt] = permutation[m_vecTriangleIndices[triCt]];
+		}
+
+		m_vecVertices = vecNewVertices;
+		m_vecTriangleIndices = vecNewTriangleIndices;
+
+		////////////////////////////////////////////////////////////////////////////////
+		//Check for unused vertices?
+		//int usedVertices = 0;
+		//int unusedVertices = 0;
+		/*usedVertices = 0;
+		unusedVertices = 0;
+		for(int vertCt = 0; vertCt < isp->m_vecVertices.size(); vertCt++)
+		{
+			bool found = false;
+			for(int triCt = 0; triCt < isp->m_vecTriangleIndices.size();  triCt++)
+			{
+				if(vertCt == isp->m_vecTriangleIndices[triCt])
+				{
+					found = true;
+					break;
+				}
+			}
+			if(found)
+			{
+				usedVertices++;
+			}
+			else
+			{
+				unusedVertices++;
+			}
+		}
+
+		std::cout << "Used   = " << usedVertices << std::endl;
+		std::cout << "Unused = " << unusedVertices << std::endl;*/
+		////////////////////////////////////////////////////////////////////////////////
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		//switch triangle order?
+		/*int noOfTriIndices = isp->m_vecTriangleIndices.size();
+		for(int triCt = 0; triCt < noOfTriIndices; triCt++)
+		{
+			vecNewTriangleIndices[(noOfTriIndices - 1) - triCt] = isp->m_vecTriangleIndices[triCt];
+		}
+		isp->m_vecTriangleIndices = vecNewTriangleIndices;*/
+
+		//Now build the new index buffers
+		std::vector<uint32_t> vecNewTriangles;
+		std::vector<uint32_t> vecUnaffectedTriangles;
+		std::vector<uint32_t> vecCollapsedTriangles;
+
+		vector<bool> vecCanCollapse(m_vecVertices.size());
+		for(int ct = 0; ct < vecCanCollapse.size(); ct++)
+		{
+			vecCanCollapse[ct] = true;
+		}
+
+		vector<bool> vecTriangleRemoved(m_vecTriangleIndices.size() / 3);
+		for(int ct = 0; ct < vecTriangleRemoved.size(); ct++)
+		{
+			vecTriangleRemoved[ct] = false;
+		}
+
+		int noOfCollapsed = 0;
+		m_vecLodRecords.clear();
+		
+
+		for(int vertToCollapse = m_vecVertices.size() - 1; vertToCollapse > 0; vertToCollapse--)
+		//int vertToCollapse = isp->m_vecVertices.size() - 1;
+		{
+			int vertCollapseTarget = map[vertToCollapse];
+
+			if((vecCanCollapse[vertToCollapse]) && (vecCanCollapse[vertCollapseTarget]))
+			{
+				int noOfNew = 0;
+
+				for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
+				{
+					int v0 = m_vecTriangleIndices[triCt];
+					triCt++;
+					int v1 = m_vecTriangleIndices[triCt];
+					triCt++;
+					int v2 = m_vecTriangleIndices[triCt];
+					triCt++;
+
+					if(vecTriangleRemoved[(triCt - 3) / 3] == false)
+					{
+						if( (v0 == vertToCollapse) || (v1 == vertToCollapse) || (v2 == vertToCollapse) )
+						{
+							vecCollapsedTriangles.push_back(v0);
+							vecCollapsedTriangles.push_back(v1);
+							vecCollapsedTriangles.push_back(v2);
+
+							vecCanCollapse[v0] = false;
+							vecCanCollapse[v1] = false;
+							vecCanCollapse[v2] = false;
+
+							noOfCollapsed++;
+
+							int targetV0 = v0;
+							int targetV1 = v1;
+							int targetV2 = v2;
+
+							if(targetV0 == vertToCollapse) targetV0 = vertCollapseTarget;
+							if(targetV1 == vertToCollapse) targetV1 = vertCollapseTarget;
+							if(targetV2 == vertToCollapse) targetV2 = vertCollapseTarget;
+
+							if((targetV0 != targetV1) && (targetV1 != targetV2) && (targetV2 != targetV0))
+							{
+								vecNewTriangles.push_back(targetV0);
+								vecNewTriangles.push_back(targetV1);
+								vecNewTriangles.push_back(targetV2);
+
+								noOfNew++;
+
+								vecCanCollapse[targetV0] = false;
+								vecCanCollapse[targetV1] = false;
+								vecCanCollapse[targetV2] = false;
+							}										
+
+							vecTriangleRemoved[(triCt - 3) / 3] = true;
+
+							
+						}
+					}
+				}
+				LodRecord lodRecord;
+				lodRecord.beginIndex = vecNewTriangles.size() - (3 * noOfNew);
+				lodRecord.endIndex = vecCollapsedTriangles.size();
+				m_vecLodRecords.push_back(lodRecord);
+			}
+		}
+
+		//Copy triangles into unaffected list
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
+		{
+			int v0 = m_vecTriangleIndices[triCt];
+			triCt++;
+			int v1 = m_vecTriangleIndices[triCt];
+			triCt++;
+			int v2 = m_vecTriangleIndices[triCt];
+			triCt++;
+
+			if(vecTriangleRemoved[(triCt - 3) / 3] == false)
+			{
+				vecUnaffectedTriangles.push_back(v0);
+				vecUnaffectedTriangles.push_back(v1);
+				vecUnaffectedTriangles.push_back(v2);
+			}
+		}
+
+		//Now copy the three lists of triangles back
+		m_vecTriangleIndices.clear();
+
+		for(int ct = 0; ct < vecNewTriangles.size(); ct++)
+		{
+			m_vecTriangleIndices.push_back(vecNewTriangles[ct]);
+		}
+
+		for(int ct = 0; ct < vecUnaffectedTriangles.size(); ct++)
+		{
+			m_vecTriangleIndices.push_back(vecUnaffectedTriangles[ct]);
+		}
+
+		for(int ct = 0; ct < vecCollapsedTriangles.size(); ct++)
+		{
+			m_vecTriangleIndices.push_back(vecCollapsedTriangles[ct]);
+		}
+
+		//Adjust the lod records
+		for(int ct = 0; ct < m_vecLodRecords.size(); ct++)
+		{
+			m_vecLodRecords[ct].endIndex += (vecNewTriangles.size() + vecUnaffectedTriangles.size());
+		}
 	}
 }

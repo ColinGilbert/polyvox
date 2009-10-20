@@ -34,6 +34,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 namespace PolyVox
 {
+	class LodRecord
+	{
+	public:
+		int beginIndex;
+		int endIndex; //Let's put it just past the end STL style
+	};
+
 	class POLYVOXCORE_API IndexedSurfacePatch
 	{
 	public:
@@ -62,13 +69,22 @@ namespace PolyVox
 
 	   //Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
 
+	   /*void growMaterialBoundary(void);
+	   int countMaterialBoundary(void);*/
+
+	   void makeProgressiveMesh(void);
+
 	   Region m_Region;
 
 	   int32_t m_iTimeStamp;
+
+	   int32_t m_iNoOfLod0Tris;
 	
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<SurfaceVertex> m_vecVertices;
+
+		std::vector<LodRecord> m_vecLodRecords;
 	};	
 }
 

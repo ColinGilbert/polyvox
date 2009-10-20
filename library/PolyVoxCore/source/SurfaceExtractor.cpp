@@ -90,6 +90,12 @@ namespace PolyVox
 
 		m_ispCurrent->m_Region = m_regInputUncropped;
 
+		m_ispCurrent->m_vecLodRecords.clear();
+		LodRecord lodRecord;
+		lodRecord.beginIndex = 0;
+		lodRecord.endIndex = m_ispCurrent->getNoOfIndices();
+		m_ispCurrent->m_vecLodRecords.push_back(lodRecord);
+
 		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
 	}
 
