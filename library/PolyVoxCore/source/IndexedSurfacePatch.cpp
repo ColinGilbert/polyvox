@@ -98,7 +98,11 @@ namespace PolyVox
 		m_vecTriangleIndices.push_back(index1);
 		m_vecTriangleIndices.push_back(index2);
 
-		if((m_vecVertices[index0].material != m_vecVertices[index1].material) || (m_vecVertices[index0].material != m_vecVertices[index2].material))
+		if((m_vecVertices[index0].material == m_vecVertices[index1].material) && (m_vecVertices[index0].material == m_vecVertices[index2].material))
+		{
+			m_mapUsedMaterials.insert(m_vecVertices[index0].material);			
+		}
+		else
 		{
 			m_vecVertices[index0].m_bIsMaterialEdgeVertex = true;
 			m_vecVertices[index1].m_bIsMaterialEdgeVertex = true;
