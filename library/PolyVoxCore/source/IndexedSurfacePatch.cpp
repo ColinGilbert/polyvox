@@ -313,27 +313,58 @@ namespace PolyVox
 			return result;
 		}
 
-		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
+		assert(m_vecLodRecords.size() == 1);
+		if(m_vecLodRecords.size() != 1)
 		{
-			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
-			iterIndex++;
-			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
-			iterIndex++;
-			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
-			iterIndex++;
+			//If we have done progressive LOD then it's too late to split into subsets.
+			return result;
+		}
+
+		std::vector<int32_t> indexMap(m_vecVertices.size());
+		std::fill(indexMap.begin(), indexMap.end(), -1);
+
+		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt += 3)
+		{
+
+			SurfaceVertex& v0 = m_vecVertices[m_vecTriangleIndices[triCt]];
+			SurfaceVertex& v1 = m_vecVertices[m_vecTriangleIndices[triCt + 1]];
+			SurfaceVertex& v2 = m_vecVertices[m_vecTriangleIndices[triCt + 2]];
 
 			if(
 				(setMaterials.find(v0.getMaterial()) != setMaterials.end()) || 
 				(setMaterials.find(v1.getMaterial()) != setMaterials.end()) || 
 				(setMaterials.find(v2.getMaterial()) != setMaterials.end()))
 			{
-				uint32_t i0 = result->addVertex(v0);
-				uint32_t i1 = result->addVertex(v1);
-				uint32_t i2 = result->addVertex(v2);
+				uint32_t i0;
+				if(indexMap[m_vecTriangleIndices[triCt]] == -1)
+				{
+					indexMap[m_vecTriangleIndices[triCt]] = result->addVertex(v0);
+				}
+				i0 = indexMap[m_vecTriangleIndices[triCt]];
+
+				uint32_t i1;
+				if(indexMap[m_vecTriangleIndices[triCt+1]] == -1)
+				{
+					indexMap[m_vecTriangleIndices[triCt+1]] = result->addVertex(v1);
+				}
+				i1 = indexMap[m_vecTriangleIndices[triCt+1]];
+
+				uint32_t i2;
+				if(indexMap[m_vecTriangleIndices[triCt+2]] == -1)
+				{
+					indexMap[m_vecTriangleIndices[triCt+2]] = result->addVertex(v2);
+				}
+				i2 = indexMap[m_vecTriangleIndices[triCt+2]];
 
 				result->addTriangle(i0,i1,i2);
 			}
 		}
+
+		result->m_vecLodRecords.clear();
+		LodRecord lodRecord;
+		lodRecord.beginIndex = 0;
+		lodRecord.endIndex = result->getNoOfIndices();
+		result->m_vecLodRecords.push_back(lodRecord);
 
 		return result;
 	}
