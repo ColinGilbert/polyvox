@@ -29,8 +29,18 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/TypeDef.h"
 #include "Vector.h"
 
+#include <bitset>
+
 namespace PolyVox
 {	
+	enum POLYVOXCORE_API VertexFlags
+	{
+		VF_ON_MATERIAL_EDGE =  0x00,
+		VF_ON_GEOMETRY_EDGE_X = 0x01,
+		VF_ON_GEOMETRY_EDGE_Y = 0x02,
+		VF_ON_GEOMETRY_EDGE_Z = 0x03
+	};
+
 	class POLYVOXCORE_API SurfaceVertex
 	{
 	public:	
@@ -42,20 +52,26 @@ namespace PolyVox
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
 
-		bool isEdgeVertex(void) const;
-	
-		void setEdgeVertex(bool isEdgeVertex);
+		bool isOnEdge(void) const;
+		bool isOnGeometryEdge(void) const;
+		bool isOnGeometryEdgeX(void) const;
+		bool isOnGeometryEdgeY(void) const;
+		bool isOnGeometryEdgeZ(void) const;
+		bool isOnMaterialEdge(void) const;
+
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
+		void setOnGeometryEdgeX(bool bOnRegionEdge);
+		void setOnGeometryEdgeY(bool bOnRegionEdge);
+		void setOnGeometryEdgeZ(bool bOnRegionEdge);
+		void setOnMaterialEdge(bool bOnMaterialEdge);
 		void setPosition(const Vector3DFloat& positionToSet);
 
 	public:		
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material; //FIXME: This shouldn't be float on CPU?
-		bool m_bIsEdgeVertex;
-		bool m_bIsMaterialEdgeVertex;
-			
+		std::bitset<4> m_bFlags;			
 	};
 
 	

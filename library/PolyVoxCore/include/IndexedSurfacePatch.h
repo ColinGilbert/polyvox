@@ -64,7 +64,7 @@ namespace PolyVox
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
-	   void smoothPositions(float fAmount, bool bIncludeEdgeVertices = false);
+	   void smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices = false);
 	   void sumNearbyNormals(bool bNormaliseResult = true);
 
 	   POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSubset(std::set<uint8_t> setMaterials);
@@ -75,6 +75,14 @@ namespace PolyVox
 
 	   /*void growMaterialBoundary(void);
 	   int countMaterialBoundary(void);*/
+
+	   bool isSubset(std::bitset<4> a, std::bitset<4> b);
+
+	   void decimate(float fMinDotProductForCollapse = 0.999f);
+
+	   uint32_t performDecimationPass(float fMinDotProductForCollapse);
+	   int noOfDegenerateTris(void);
+	   void removeDegenerateTris(void);
 
 	   void makeProgressiveMesh(void);
 

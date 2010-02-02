@@ -27,6 +27,8 @@ freely, subject to the following restrictions:
 
 #include "progmesh.h"
 
+#include <cstdlib>
+
 using namespace std;
 
 namespace PolyVox
@@ -108,9 +110,9 @@ namespace PolyVox
 		}
 		else
 		{
-			m_vecVertices[index0].m_bIsMaterialEdgeVertex = true;
-			m_vecVertices[index1].m_bIsMaterialEdgeVertex = true;
-			m_vecVertices[index2].m_bIsMaterialEdgeVertex = true;
+			m_vecVertices[index0].setOnMaterialEdge(true);
+			m_vecVertices[index1].setOnMaterialEdge(true);
+			m_vecVertices[index2].setOnMaterialEdge(true);
 		}
 	}
 
@@ -124,6 +126,8 @@ namespace PolyVox
 	{
 		m_vecVertices.clear();
 		m_vecTriangleIndices.clear();
+		m_vecLodRecords.clear();
+		m_mapUsedMaterials.clear();
 	}
 
 	const bool IndexedSurfacePatch::isEmpty(void) const
@@ -138,11 +142,11 @@ namespace PolyVox
 	/// normals must hve been set to something sensible before this functions is called.
 	/// \param fAmount A factor controlling how much the vertices move by. Find a good
 	/// value by experimentation, starting with something small such as 0.1f.
-	/// \param bIncludeEdgeVertices Indicates whether vertices on the edge of an
+	/// \param bIncludeGeometryEdgeVertices Indicates whether vertices on the edge of an
 	/// IndexedSurfacePatch should be smoothed. This can cause dicontinuities between
 	/// neighbouring patches.
 	////////////////////////////////////////////////////////////////////////////////
-	void IndexedSurfacePatch::smoothPositions(float fAmount, bool bIncludeEdgeVertices)
+	void IndexedSurfacePatch::smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -203,7 +207,7 @@ namespace PolyVox
 		//Update with the new positions
 		for(uint32_t uIndex = 0; uIndex < newPositions.size(); uIndex++)
 		{
-			if((bIncludeEdgeVertices) || (m_vecVertices[uIndex].isEdgeVertex() == false))
+			if((bIncludeGeometryEdgeVertices) || (m_vecVertices[uIndex].isOnGeometryEdge() == false))
 			{
 				m_vecVertices[uIndex].setPosition(newPositions[uIndex]);
 			}
@@ -413,6 +417,313 @@ namespace PolyVox
 		m_vecVertices = vecNewVertices;
 	}*/
 
+	void IndexedSurfacePatch::decimate(float fMinDotProductForCollapse)
+	{
+		/*
+			Note for after holiday - This decimation is half working, but we get some undesirable collpses still. The face flip check
+			should stop these but doesn't quite seem to work. Also, note that before calling this function it is better if
+			'generateAveragedFaceNormals(true);' has been called first, as this seems to give better normals for our purposes.
+		*/
+		uint32_t noOfEdgesCollapsed = 0;
+		do
+		{
+			//generateAveragedFaceNormals(true);
+			noOfEdgesCollapsed = performDecimationPass(fMinDotProductForCollapse);
+			removeDegenerateTris();			
+		}while(noOfEdgesCollapsed > 0);
+
+		//cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
+		/*cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
+		cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
+		cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
+		cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();*/
+
+
+		//Decimation will have invalidated LOD levels.
+		m_vecLodRecords.clear();
+		LodRecord lodRecord;
+		lodRecord.beginIndex = 0;
+		lodRecord.endIndex = getNoOfIndices();
+		m_vecLodRecords.push_back(lodRecord);
+	}
+
+	/*Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.*/
+	bool IndexedSurfacePatch::isSubset(std::bitset<4> a, std::bitset<4> b)
+	{
+		bool result = true;
+
+		for(int ct = 0; ct < 4; ct++)
+		{
+			if(a.test(ct))
+			{
+				if(b.test(ct) == false)
+				{
+					result = false;
+					break;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	uint32_t IndexedSurfacePatch::performDecimationPass(float fMinDotProductForCollapse)
+	{
+		/*
+		Note for after holiday - breaking this function down into sub functions will
+		likely help identify where the problem is...
+		*/
+
+		//Do we need a set? Do we actually get duplications?
+		vector< set<uint32_t> > trianglesUsingVertex(m_vecVertices.size());
+		for(int ct = 0; ct < m_vecTriangleIndices.size(); ct++)
+		{
+			int triangle = ct / 3;
+
+			trianglesUsingVertex[m_vecTriangleIndices[ct]].insert(triangle);
+		}
+
+
+		uint32_t noOfEdgesCollapsed = 0;
+
+		/*
+		Note for after holiday - Check the use of this vertex mapper, and make
+		sure that when we access a vertex we go through the mapper if necessary.
+		*/
+		vector<uint32_t> vertexMapper(m_vecVertices.size());
+		vector<bool> vertexLocked(m_vecVertices.size());
+
+		//Initialise the mapper.
+		for(uint32_t ct = 0; ct < vertexMapper.size(); ct++)
+		{
+			vertexMapper[ct] = ct;
+		}
+
+		for(uint32_t ct = 0; ct < vertexLocked.size(); ct++)
+		{
+			vertexLocked[ct] = false;
+		}
+
+		//It *may* be beneficial to do this randomisation of the order in which we process the triangles
+		//in order to help the resulting vertices/triangles be more uniformly distributed. As a reminder,
+		//comment out the shuffle line to see what it does.
+		vector<int> vecOfTriCts;
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
+		{
+			vecOfTriCts.push_back(triCt);
+		}
+		random_shuffle(vecOfTriCts.begin(), vecOfTriCts.end());
+
+		//For each triange
+		//for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
+		for(int ctIter = 0; ctIter < vecOfTriCts.size(); ctIter++)
+		{
+			int triCt = vecOfTriCts[ctIter];
+
+			//For each edge in each triangle
+			for(int edgeCt = 0; edgeCt < 3; edgeCt++)
+			{
+				int v0 = m_vecTriangleIndices[triCt * 3 + (edgeCt)];
+				int v1 = m_vecTriangleIndices[triCt * 3 + ((edgeCt +1) % 3)];
+
+				/*v0 = vertexMapper[v0];
+				v1 = vertexMapper[v1];*/
+
+				//A vertex will be locked if it has already been involved in a collapse this pass.
+				if(vertexLocked[v0] || vertexLocked[v1])
+				{
+					continue;
+				}
+
+				//For now, don't collapse vertices on mateial edges...
+				if(m_vecVertices[v0].isOnMaterialEdge() || m_vecVertices[v1].isOnMaterialEdge())
+				{
+					continue;
+				}
+
+				//...or those on geometry (region) edges.
+				if(m_vecVertices[v0].isOnGeometryEdge() || m_vecVertices[v1].isOnGeometryEdge())
+				{
+					continue;
+				}
+
+				//After holiday, consider using the following line so that 'internal' vertices can collapse onto
+				//edges (but not vice-versa) and edges can collapse onto corners (but not vice-versa).
+				//FIXME - Stop corners collapsing onto corners!
+				/*if(isSubset(m_vecVertices[v0].m_bFlags, m_vecVertices[v1].m_bFlags) == false)
+				{
+					continue;
+				}*/
+
+				//Check the normals are within the threashold.
+				if(m_vecVertices[v0].getNormal().dot(m_vecVertices[v1].getNormal()) < fMinDotProductForCollapse)
+				{
+					continue;
+				}
+
+				////////////////////////////////////////////////////////////////////////////////
+				//The last test is whether we will flip any of the faces
+
+				bool faceFlipped = false;
+				set<uint32_t> triangles = trianglesUsingVertex[v0];
+				/*set<uint32_t> triangles;
+				std::set_union(trianglesUsingVertex[v0].begin(), trianglesUsingVertex[v0].end(),
+					trianglesUsingVertex[v1].begin(), trianglesUsingVertex[v1].end(),
+					std::inserter(triangles, triangles.begin()));*/
+
+				for(set<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
+				{
+					uint32_t tri = *triIter;
+					
+					uint32_t v0Old = m_vecTriangleIndices[tri * 3];
+					uint32_t v1Old = m_vecTriangleIndices[tri * 3 + 1];
+					uint32_t v2Old = m_vecTriangleIndices[tri * 3 + 2];
+
+					//Check if degenerate
+					if((v0Old == v1Old) || (v1Old == v2Old) || (v2Old == v0Old))
+					{
+						continue;
+					}
+
+					uint32_t v0New = v0Old;
+					uint32_t v1New = v1Old;
+					uint32_t v2New = v2Old;
+
+					if(v0New == v0)
+						v0New = v1;
+					if(v1New == v0)
+						v1New = v1;
+					if(v2New == v0)
+						v2New = v1;
+
+					//Check if degenerate
+					if((v0New == v1New) || (v1New == v2New) || (v2New == v0New))
+					{
+						continue;
+					}
+
+					Vector3DFloat v0OldPos = m_vecVertices[vertexMapper[v0Old]].getPosition();
+					Vector3DFloat v1OldPos = m_vecVertices[vertexMapper[v1Old]].getPosition();
+					Vector3DFloat v2OldPos = m_vecVertices[vertexMapper[v2Old]].getPosition();
+
+					Vector3DFloat v0NewPos = m_vecVertices[vertexMapper[v0New]].getPosition();
+					Vector3DFloat v1NewPos = m_vecVertices[vertexMapper[v1New]].getPosition();
+					Vector3DFloat v2NewPos = m_vecVertices[vertexMapper[v2New]].getPosition();
+
+					/*Vector3DFloat v0OldPos = m_vecVertices[v0Old].getPosition();
+					Vector3DFloat v1OldPos = m_vecVertices[v1Old].getPosition();
+					Vector3DFloat v2OldPos = m_vecVertices[v2Old].getPosition();
+
+					Vector3DFloat v0NewPos = m_vecVertices[v0New].getPosition();
+					Vector3DFloat v1NewPos = m_vecVertices[v1New].getPosition();
+					Vector3DFloat v2NewPos = m_vecVertices[v2New].getPosition();*/
+
+					Vector3DFloat OldNormal = (v1OldPos - v0OldPos).cross(v2OldPos - v1OldPos);
+					Vector3DFloat NewNormal = (v1NewPos - v0NewPos).cross(v2NewPos - v1NewPos);
+
+					OldNormal.normalise();
+					NewNormal.normalise();
+
+					// Note for after holiday - We are still getting faces flipping despite the following test. I tried changing
+					// the 0.0 to 0.9 (which should still let coplanar faces merge) but oddly nothing then merged. Investigate this.
+					float dotProduct = OldNormal.dot(NewNormal);
+					//cout << dotProduct << endl;
+					if(dotProduct < 0.9f)
+					{
+						//cout << "   Face flipped!!" << endl;
+
+						faceFlipped = true;
+
+						/*vertexLocked[v0] = true;
+						vertexLocked[v1] = true;*/
+
+						break;
+					}
+				}
+
+				if(faceFlipped == true)
+				{
+					continue;
+				}
+
+				////////////////////////////////////////////////////////////////////////////////
+
+				//Move v0 onto v1
+				vertexMapper[v0] = v1; //vertexMapper[v1];
+				vertexLocked[v0] = true;
+				vertexLocked[v1] = true;
+
+				//Increment the counter
+				++noOfEdgesCollapsed;
+			}
+		}
+
+		if(noOfEdgesCollapsed > 0)
+		{
+			//Fix up the indices
+			for(int triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
+			{
+				uint32_t before = m_vecTriangleIndices[triCt];
+				uint32_t after = vertexMapper[m_vecTriangleIndices[triCt]];
+				if(before != after)
+				{
+					m_vecTriangleIndices[triCt] = vertexMapper[m_vecTriangleIndices[triCt]];
+				}
+			}
+		}
+
+		return noOfEdgesCollapsed;
+	}
+
+	int IndexedSurfacePatch::noOfDegenerateTris(void)
+	{
+		int count = 0;
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
+		{
+			int v0 = m_vecTriangleIndices[triCt];
+			triCt++;
+			int v1 = m_vecTriangleIndices[triCt];
+			triCt++;
+			int v2 = m_vecTriangleIndices[triCt];
+			triCt++;
+
+			if((v0 == v1) || (v1 == v2) || (v2 == v0))
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+	void IndexedSurfacePatch::removeDegenerateTris(void)
+	{
+		int noOfNonDegenerate = 0;
+		int targetCt = 0;
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
+		{
+			int v0 = m_vecTriangleIndices[triCt];
+			triCt++;
+			int v1 = m_vecTriangleIndices[triCt];
+			triCt++;
+			int v2 = m_vecTriangleIndices[triCt];
+			triCt++;
+
+			if((v0 != v1) && (v1 != v2) & (v2 != v0))
+			{
+				m_vecTriangleIndices[targetCt] = v0;
+				targetCt++;
+				m_vecTriangleIndices[targetCt] = v1;
+				targetCt++;
+				m_vecTriangleIndices[targetCt] = v2;
+				targetCt++;
+
+				noOfNonDegenerate++;
+			}
+		}
+
+		m_vecTriangleIndices.resize(noOfNonDegenerate * 3);
+	}
+
 	void IndexedSurfacePatch::makeProgressiveMesh(void)
 	{
 
@@ -425,7 +736,7 @@ namespace PolyVox
 			vec.y = m_vecVertices[vertCt].getPosition().getY();
 			vec.z = m_vecVertices[vertCt].getPosition().getZ();
 
-			if(m_vecVertices[vertCt].isEdgeVertex() || m_vecVertices[vertCt].m_bIsMaterialEdgeVertex)
+			if(m_vecVertices[vertCt].isOnEdge())
 			{
 				vec.fBoundaryCost = 1.0f;
 			}

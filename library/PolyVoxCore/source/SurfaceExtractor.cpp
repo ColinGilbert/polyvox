@@ -623,7 +623,10 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
 					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					surfaceVertex.setEdgeVertex(isXEdge || isYEdge || isZEdge);
+					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
+					surfaceVertex.setOnGeometryEdgeX(isXEdge);
+					surfaceVertex.setOnGeometryEdgeY(isYEdge);
+					surfaceVertex.setOnGeometryEdgeZ(isZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
@@ -635,7 +638,10 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
 					const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					surfaceVertex.setEdgeVertex(isXEdge || isYEdge || isZEdge);
+					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
+					surfaceVertex.setOnGeometryEdgeX(isXEdge);
+					surfaceVertex.setOnGeometryEdgeY(isYEdge);
+					surfaceVertex.setOnGeometryEdgeZ(isZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
@@ -647,7 +653,10 @@ namespace PolyVox
 					const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
 					const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					surfaceVertex.setEdgeVertex(isXEdge || isYEdge || isZEdge);
+					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
+					surfaceVertex.setOnGeometryEdgeX(isXEdge);
+					surfaceVertex.setOnGeometryEdgeY(isYEdge);
+					surfaceVertex.setOnGeometryEdgeZ(isZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}

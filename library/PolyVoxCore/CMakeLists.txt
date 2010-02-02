@@ -7,6 +7,10 @@ SET(CORE_SRC_FILES
 	source/GradientEstimators.cpp
 	source/IndexedSurfacePatch.cpp
 	source/Log.cpp
+	source/Mesh.cpp
+	source/MeshEdge.cpp
+	source/MeshFace.cpp
+	source/MeshVertex.cpp
 	source/progmesh.cpp
 	source/Region.cpp
 	source/SurfaceExtractor.cpp 
@@ -21,6 +25,10 @@ SET(CORE_INC_FILES
 	include/IndexedSurfacePatch.h
 	include/list.h
 	include/Log.h
+	include/Mesh.h
+	include/MeshEdge.h
+	include/MeshFace.h
+	include/MeshVertex.h
 	include/PolyVoxForwardDeclarations.h
 	include/progmesh.h
 	include/Region.h

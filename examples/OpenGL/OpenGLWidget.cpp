@@ -28,6 +28,9 @@ freely, subject to the following restrictions:
 #include "GradientEstimators.h"
 #include "SurfaceExtractor.h"
 
+#include "RenderDynamicMesh.h"
+#include "Mesh.h"
+
 //Some namespaces we need
 using namespace std;
 using namespace PolyVox;
@@ -97,7 +100,40 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 
 					if(isp->m_vecTriangleIndices.size() > 0)
 					{
-						isp->makeProgressiveMesh();
+						//isp->makeProgressiveMesh();
+
+						/*RenderDynamicMesh rdm;
+						rdm.buildFromIndexedSurfacePatch(*isp);*/
+
+						//computeNormalsForVertices(m_volData, *(isp.get()), SOBEL_SMOOTHED);
+
+						//isp->smoothPositions(0.3f);
+						//isp->generateAveragedFaceNormals(true);
+						
+						/*for(int ct = 0; ct < 20; ct ++)
+						{
+						//cout << "Before: " << isp->noOfDegenerateTris() << endl;
+						isp->decimate();
+						//cout << "After: " << isp->noOfDegenerateTris() << endl;
+						isp->removeDegenerateTris();
+						//cout << "After Remove: " << isp->noOfDegenerateTris() << endl << endl;
+						}*/
+
+						////////////////////////////////////////////////////////////////////////////////
+						//For decimation built into ISP
+						//isp->generateAveragedFaceNormals(true);
+
+						isp->decimate(0.999f);
+
+						//isp->generateAveragedFaceNormals(true);
+						////////////////////////////////////////////////////////////////////////////////
+
+						/*isp->generateAveragedFaceNormals(true);
+						Mesh mesh;
+						mesh.buildFromISP(isp.get());
+						//mesh.removeEdge(*(mesh.m_edges.begin()));
+						mesh.decimateAll();
+						mesh.fillISP(isp.get());*/
 
 
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);

@@ -39,6 +39,13 @@ namespace PolyVox
 	typedef Volume<uint16_t> UInt16Volume;
 	//---------------------------------
 
+	//---------- Mesh ----------
+	class Mesh;
+	class MeshEdge;
+	class MeshFace;
+	class MeshVertex;
+	//---------------------------------
+
 	class IndexedSurfacePatch;
 	class Region;
 	class SurfaceVertex;
