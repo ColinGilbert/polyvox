@@ -51,6 +51,7 @@ namespace PolyVox
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
+		unsigned int getNoOfGeometryEdges(void) const;
 
 		bool isOnEdge(void) const;
 		bool isOnGeometryEdge(void) const;

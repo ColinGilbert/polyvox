@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 #include "progmesh.h"
 
 #include <cstdlib>
+#include <list>
 
 using namespace std;
 
@@ -469,53 +470,52 @@ namespace PolyVox
 
 	uint32_t IndexedSurfacePatch::performDecimationPass(float fMinDotProductForCollapse)
 	{
-		/*
-		Note for after holiday - breaking this function down into sub functions will
-		likely help identify where the problem is...
-		*/
-
-		//Do we need a set? Do we actually get duplications?
-		vector< set<uint32_t> > trianglesUsingVertex(m_vecVertices.size());
+		// I'm using a vector of lists here, rather than a vector of sets,
+		// because I don't believe that duplicaes should occur. But this
+		// might be worth checking if we have problems in the future.
+		vector< list<uint32_t> > trianglesUsingVertex(m_vecVertices.size());
 		for(int ct = 0; ct < m_vecTriangleIndices.size(); ct++)
 		{
 			int triangle = ct / 3;
 
-			trianglesUsingVertex[m_vecTriangleIndices[ct]].insert(triangle);
+			trianglesUsingVertex[m_vecTriangleIndices[ct]].push_back(triangle);
 		}
 
-
+		// Count how many edges we have collapsed
 		uint32_t noOfEdgesCollapsed = 0;
 
-		/*
-		Note for after holiday - Check the use of this vertex mapper, and make
-		sure that when we access a vertex we go through the mapper if necessary.
-		*/
+		// The vertex mapper track whick vertices collapse onto which.
 		vector<uint32_t> vertexMapper(m_vecVertices.size());
+
+		// Once a vertex is involved in a collapse (either because it
+		// moves onto a different vertex, or because a different vertex
+		// moves onto it) it is forbidden to take part in another collapse
+		// this pass. We enforce this by setting the vertex locked flag.
 		vector<bool> vertexLocked(m_vecVertices.size());
 
-		//Initialise the mapper.
-		for(uint32_t ct = 0; ct < vertexMapper.size(); ct++)
+		// Initialise the vectors
+		for(uint32_t ct = 0; ct < m_vecVertices.size(); ct++)
 		{
+			// Initiall all vertices points to themselves
 			vertexMapper[ct] = ct;
-		}
-
-		for(uint32_t ct = 0; ct < vertexLocked.size(); ct++)
-		{
+			// All vertices are initially unlocked
 			vertexLocked[ct] = false;
 		}
 
-		//It *may* be beneficial to do this randomisation of the order in which we process the triangles
-		//in order to help the resulting vertices/triangles be more uniformly distributed. As a reminder,
-		//comment out the shuffle line to see what it does.
-		vector<int> vecOfTriCts;
-		for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
+		
+		// Each triangle exists in this vector once.
+		vector<int> vecOfTriCts(m_vecTriangleIndices.size() / 3);
+		for(int triCt = 0; triCt < vecOfTriCts.size(); triCt++)
 		{
-			vecOfTriCts.push_back(triCt);
+			vecOfTriCts[triCt] = triCt;
 		}
+
+		// It *may* be beneficial to randomise the order in which triangles
+		// are processed to get a more uniform distribution off collapses and 
+		// more equally sized triangles at the end. This need more testing really.
 		random_shuffle(vecOfTriCts.begin(), vecOfTriCts.end());
 
-		//For each triange
-		//for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
+		//For each triange...
 		for(int ctIter = 0; ctIter < vecOfTriCts.size(); ctIter++)
 		{
 			int triCt = vecOfTriCts[ctIter];
@@ -525,9 +525,6 @@ namespace PolyVox
 			{
 				int v0 = m_vecTriangleIndices[triCt * 3 + (edgeCt)];
 				int v1 = m_vecTriangleIndices[triCt * 3 + ((edgeCt +1) % 3)];
-
-				/*v0 = vertexMapper[v0];
-				v1 = vertexMapper[v1];*/
 
 				//A vertex will be locked if it has already been involved in a collapse this pass.
 				if(vertexLocked[v0] || vertexLocked[v1])
@@ -542,15 +539,23 @@ namespace PolyVox
 				}
 
 				//...or those on geometry (region) edges.
-				if(m_vecVertices[v0].isOnGeometryEdge() || m_vecVertices[v1].isOnGeometryEdge())
+				/*if(m_vecVertices[v0].isOnGeometryEdge() || m_vecVertices[v1].isOnGeometryEdge())
 				{
 					continue;
-				}
+				}*/
+
+				// In theory it seems we should also allow edge vertices to collapse onto other edge vertices,
+				// and also onto corner vertices.But a corner vertex shouldn't collapse onto another corner?
 
 				//After holiday, consider using the following line so that 'internal' vertices can collapse onto
 				//edges (but not vice-versa) and edges can collapse onto corners (but not vice-versa).
 				//FIXME - Stop corners collapsing onto corners!
-				/*if(isSubset(m_vecVertices[v0].m_bFlags, m_vecVertices[v1].m_bFlags) == false)
+				if(isSubset(m_vecVertices[v0].m_bFlags, m_vecVertices[v1].m_bFlags) == false)
+				{
+					continue;
+				}
+
+				/*if((m_vecVertices[v0].getNoOfGeometryEdges()) >= (m_vecVertices[v1].getNoOfGeometryEdges()))
 				{
 					continue;
 				}*/
@@ -565,13 +570,13 @@ namespace PolyVox
 				//The last test is whether we will flip any of the faces
 
 				bool faceFlipped = false;
-				set<uint32_t> triangles = trianglesUsingVertex[v0];
+				list<uint32_t> triangles = trianglesUsingVertex[v0];
 				/*set<uint32_t> triangles;
 				std::set_union(trianglesUsingVertex[v0].begin(), trianglesUsingVertex[v0].end(),
 					trianglesUsingVertex[v1].begin(), trianglesUsingVertex[v1].end(),
 					std::inserter(triangles, triangles.begin()));*/
 
-				for(set<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
+				for(list<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
 				{
 					uint32_t tri = *triIter;
 					

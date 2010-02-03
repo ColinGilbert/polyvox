@@ -61,6 +61,15 @@ namespace PolyVox
 	{
 		return position;
 	}
+	
+	//Returns a value between 0-3, for how many geometry edges (X,Y,Z) this vertex is on.
+	unsigned int SurfaceVertex::getNoOfGeometryEdges(void) const
+	{
+		unsigned int uIsOnEdgeX = static_cast<unsigned int>(isOnGeometryEdgeX());
+		unsigned int uIsOnEdgeY = static_cast<unsigned int>(isOnGeometryEdgeY());
+		unsigned int uIsOnEdgeZ = static_cast<unsigned int>(isOnGeometryEdgeZ());
+		return uIsOnEdgeX + uIsOnEdgeY + uIsOnEdgeZ;
+	}
 
 	bool SurfaceVertex::isOnEdge(void) const
 	{
