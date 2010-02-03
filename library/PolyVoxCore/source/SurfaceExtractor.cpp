@@ -585,19 +585,25 @@ namespace PolyVox
 	{
 		uint16_t uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 		const uint16_t uZRegSpace = uZVolSpace - m_regInputCropped.getLowerCorner().getZ();
-		bool isZEdge = ((uZVolSpace == m_regInputCropped.getLowerCorner().getZ()) || (uZVolSpace == m_regInputCropped.getUpperCorner().getZ()));
+		//bool isZEdge = ((uZVolSpace == m_regInputCropped.getLowerCorner().getZ()) || (uZVolSpace == m_regInputCropped.getUpperCorner().getZ()));
+		bool isNegZEdge = (uZVolSpace == m_regInputCropped.getLowerCorner().getZ());
+		bool isPosZEdge = (uZVolSpace == m_regInputCropped.getUpperCorner().getZ());
 
 		//Iterate over each cell in the region
 		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
 		{
 			const uint16_t uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
-			bool isYEdge = ((uYVolSpace == m_regInputCropped.getLowerCorner().getY()) || (uYVolSpace == m_regInputCropped.getUpperCorner().getY()));
+			//bool isYEdge = ((uYVolSpace == m_regInputCropped.getLowerCorner().getY()) || (uYVolSpace == m_regInputCropped.getUpperCorner().getY()));
+			bool isNegYEdge = (uYVolSpace == m_regInputCropped.getLowerCorner().getY());
+			bool isPosYEdge = (uYVolSpace == m_regInputCropped.getUpperCorner().getY());
 
 			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
 			{		
 				//Current position
 				const uint16_t uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
-				bool isXEdge = ((uXVolSpace == m_regInputCropped.getLowerCorner().getX()) || (uXVolSpace == m_regInputCropped.getUpperCorner().getX()));
+				//bool isXEdge = ((uXVolSpace == m_regInputCropped.getLowerCorner().getX()) || (uXVolSpace == m_regInputCropped.getUpperCorner().getX()));
+				bool isNegXEdge = (uXVolSpace == m_regInputCropped.getLowerCorner().getX());
+				bool isPosXEdge = (uXVolSpace == m_regInputCropped.getUpperCorner().getX());
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace)];
@@ -624,9 +630,12 @@ namespace PolyVox
 					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
-					surfaceVertex.setOnGeometryEdgeX(isXEdge);
-					surfaceVertex.setOnGeometryEdgeY(isYEdge);
-					surfaceVertex.setOnGeometryEdgeZ(isZEdge);
+					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
+					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
+					surfaceVertex.setOnGeometryEdgeNegY(isNegYEdge);
+					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
+					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
+					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
@@ -639,9 +648,12 @@ namespace PolyVox
 					const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
-					surfaceVertex.setOnGeometryEdgeX(isXEdge);
-					surfaceVertex.setOnGeometryEdgeY(isYEdge);
-					surfaceVertex.setOnGeometryEdgeZ(isZEdge);
+					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
+					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
+					surfaceVertex.setOnGeometryEdgeNegY(isNegYEdge);
+					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
+					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
+					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
@@ -654,9 +666,12 @@ namespace PolyVox
 					const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
-					surfaceVertex.setOnGeometryEdgeX(isXEdge);
-					surfaceVertex.setOnGeometryEdgeY(isYEdge);
-					surfaceVertex.setOnGeometryEdgeZ(isZEdge);
+					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
+					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
+					surfaceVertex.setOnGeometryEdgeNegY(isNegYEdge);
+					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
+					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
+					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}

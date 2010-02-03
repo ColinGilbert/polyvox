@@ -36,9 +36,12 @@ namespace PolyVox
 	enum POLYVOXCORE_API VertexFlags
 	{
 		VF_ON_MATERIAL_EDGE =  0x00,
-		VF_ON_GEOMETRY_EDGE_X = 0x01,
-		VF_ON_GEOMETRY_EDGE_Y = 0x02,
-		VF_ON_GEOMETRY_EDGE_Z = 0x03
+		VF_ON_GEOMETRY_EDGE_NEG_X = 0x01,
+		VF_ON_GEOMETRY_EDGE_POS_X = 0x02,
+		VF_ON_GEOMETRY_EDGE_NEG_Y = 0x03,
+		VF_ON_GEOMETRY_EDGE_POS_Y = 0x04,
+		VF_ON_GEOMETRY_EDGE_NEG_Z = 0x05,
+		VF_ON_GEOMETRY_EDGE_POS_Z = 0x06,
 	};
 
 	class POLYVOXCORE_API SurfaceVertex
@@ -51,20 +54,26 @@ namespace PolyVox
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
-		unsigned int getNoOfGeometryEdges(void) const;
+		//unsigned int getNoOfGeometryEdges(void) const;
 
 		bool isOnEdge(void) const;
 		bool isOnGeometryEdge(void) const;
-		bool isOnGeometryEdgeX(void) const;
-		bool isOnGeometryEdgeY(void) const;
-		bool isOnGeometryEdgeZ(void) const;
+		bool isOnGeometryEdgeNegX(void) const;
+		bool isOnGeometryEdgePosX(void) const;
+		bool isOnGeometryEdgeNegY(void) const;
+		bool isOnGeometryEdgePosY(void) const;
+		bool isOnGeometryEdgeNegZ(void) const;
+		bool isOnGeometryEdgePosZ(void) const;
 		bool isOnMaterialEdge(void) const;
 
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
-		void setOnGeometryEdgeX(bool bOnRegionEdge);
-		void setOnGeometryEdgeY(bool bOnRegionEdge);
-		void setOnGeometryEdgeZ(bool bOnRegionEdge);
+		void setOnGeometryEdgeNegX(bool bOnRegionEdge);
+		void setOnGeometryEdgePosX(bool bOnRegionEdge);
+		void setOnGeometryEdgeNegY(bool bOnRegionEdge);
+		void setOnGeometryEdgePosY(bool bOnRegionEdge);
+		void setOnGeometryEdgeNegZ(bool bOnRegionEdge);
+		void setOnGeometryEdgePosZ(bool bOnRegionEdge);
 		void setOnMaterialEdge(bool bOnMaterialEdge);
 		void setPosition(const Vector3DFloat& positionToSet);
 
@@ -72,7 +81,7 @@ namespace PolyVox
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material; //FIXME: This shouldn't be float on CPU?
-		std::bitset<4> m_bFlags;			
+		std::bitset<7> m_bFlags;	
 	};
 
 	

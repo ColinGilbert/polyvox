@@ -76,7 +76,7 @@ namespace PolyVox
 	   /*void growMaterialBoundary(void);
 	   int countMaterialBoundary(void);*/
 
-	   bool isSubset(std::bitset<4> a, std::bitset<4> b);
+	   bool isSubset(std::bitset<7> a, std::bitset<7> b);
 
 	   void decimate(float fMinDotProductForCollapse = 0.999f);
 

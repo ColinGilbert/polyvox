@@ -63,13 +63,13 @@ namespace PolyVox
 	}
 	
 	//Returns a value between 0-3, for how many geometry edges (X,Y,Z) this vertex is on.
-	unsigned int SurfaceVertex::getNoOfGeometryEdges(void) const
+	/*unsigned int SurfaceVertex::getNoOfGeometryEdges(void) const
 	{
 		unsigned int uIsOnEdgeX = static_cast<unsigned int>(isOnGeometryEdgeX());
 		unsigned int uIsOnEdgeY = static_cast<unsigned int>(isOnGeometryEdgeY());
 		unsigned int uIsOnEdgeZ = static_cast<unsigned int>(isOnGeometryEdgeZ());
 		return uIsOnEdgeX + uIsOnEdgeY + uIsOnEdgeZ;
-	}
+	}*/
 
 	bool SurfaceVertex::isOnEdge(void) const
 	{
@@ -83,22 +83,40 @@ namespace PolyVox
 
 	bool SurfaceVertex::isOnGeometryEdge(void) const
 	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_X] || m_bFlags[VF_ON_GEOMETRY_EDGE_Y] || m_bFlags[VF_ON_GEOMETRY_EDGE_Z];
+		return 
+			m_bFlags [VF_ON_GEOMETRY_EDGE_NEG_X] || m_bFlags[VF_ON_GEOMETRY_EDGE_POS_X] ||
+			m_bFlags [VF_ON_GEOMETRY_EDGE_NEG_Y] || m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Y] ||
+			m_bFlags [VF_ON_GEOMETRY_EDGE_NEG_Z] || m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Z];
 	}
 
-	bool SurfaceVertex::isOnGeometryEdgeX(void) const
+	bool SurfaceVertex::isOnGeometryEdgeNegX(void) const
 	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_X];
+		return m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_X];
 	}
 
-	bool SurfaceVertex::isOnGeometryEdgeY(void) const
+	bool SurfaceVertex::isOnGeometryEdgePosX(void) const
 	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_Y];
+		return m_bFlags[VF_ON_GEOMETRY_EDGE_POS_X];
 	}
 
-	bool SurfaceVertex::isOnGeometryEdgeZ(void) const
+	bool SurfaceVertex::isOnGeometryEdgeNegY(void) const
 	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_Z];
+		return m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Y];
+	}
+
+	bool SurfaceVertex::isOnGeometryEdgePosY(void) const
+	{
+		return m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Y];
+	}
+
+	bool SurfaceVertex::isOnGeometryEdgeNegZ(void) const
+	{
+		return m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Z];
+	}
+
+	bool SurfaceVertex::isOnGeometryEdgePosZ(void) const
+	{
+		return m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Z];
 	}
 
 	void SurfaceVertex::setMaterial(float materialToSet)
@@ -116,19 +134,34 @@ namespace PolyVox
 		m_bFlags[VF_ON_MATERIAL_EDGE] = bOnMaterialEdge;
 	}
 
-	void SurfaceVertex::setOnGeometryEdgeX(bool bOnRegionEdge)
+	void SurfaceVertex::setOnGeometryEdgeNegX(bool bOnRegionEdge)
 	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_X] = bOnRegionEdge;
+		m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_X] = bOnRegionEdge;
 	}
 
-	void SurfaceVertex::setOnGeometryEdgeY(bool bOnRegionEdge)
+	void SurfaceVertex::setOnGeometryEdgePosX(bool bOnRegionEdge)
 	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_Y] = bOnRegionEdge;
+		m_bFlags[VF_ON_GEOMETRY_EDGE_POS_X] = bOnRegionEdge;
 	}
 
-	void SurfaceVertex::setOnGeometryEdgeZ(bool bOnRegionEdge)
+	void SurfaceVertex::setOnGeometryEdgeNegY(bool bOnRegionEdge)
 	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_Z] = bOnRegionEdge;
+		m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Y] = bOnRegionEdge;
+	}
+
+	void SurfaceVertex::setOnGeometryEdgePosY(bool bOnRegionEdge)
+	{
+		m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Y] = bOnRegionEdge;
+	}
+
+	void SurfaceVertex::setOnGeometryEdgeNegZ(bool bOnRegionEdge)
+	{
+		m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Z] = bOnRegionEdge;
+	}
+
+	void SurfaceVertex::setOnGeometryEdgePosZ(bool bOnRegionEdge)
+	{
+		m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Z] = bOnRegionEdge;
 	}
 
 	void SurfaceVertex::setPosition(const Vector3DFloat& positionToSet)

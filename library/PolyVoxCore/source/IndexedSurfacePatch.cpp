@@ -449,11 +449,11 @@ namespace PolyVox
 	}
 
 	/*Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.*/
-	bool IndexedSurfacePatch::isSubset(std::bitset<4> a, std::bitset<4> b)
+	bool IndexedSurfacePatch::isSubset(std::bitset<7> a, std::bitset<7> b)
 	{
 		bool result = true;
 
-		for(int ct = 0; ct < 4; ct++)
+		for(int ct = 1; ct < 7; ct++) //Start at '1' to skip material flag
 		{
 			if(a.test(ct))
 			{
