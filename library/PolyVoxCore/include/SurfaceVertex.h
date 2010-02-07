@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 #include "Vector.h"
 
 #include <bitset>
+#include <vector>
 
 namespace PolyVox
 {	
@@ -80,6 +81,9 @@ namespace PolyVox
 	public:		
 		Vector3DFloat position;
 		Vector3DFloat normal;
+		Vector3DFloat materialNormal;
+		int noOfMatchingNeighbours;
+		std::vector<uint8_t> neighbourMaterials;
 		float material; //FIXME: This shouldn't be float on CPU?
 		std::bitset<7> m_bFlags;	
 	};

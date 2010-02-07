@@ -313,6 +313,45 @@ namespace PolyVox
 		}
 	}
 
+	void IndexedSurfacePatch::generateMaterialWeightedNormals()
+	{
+		std::vector< std::set<int> > neighbouringVertices(m_vecVertices.size());
+		for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
+		{
+			int v0 = m_vecTriangleIndices[(triCt * 3 + 0)];
+			int v1 = m_vecTriangleIndices[(triCt * 3 + 1)];
+			int v2 = m_vecTriangleIndices[(triCt * 3 + 2)];
+
+			neighbouringVertices[v0].insert(v1);
+			neighbouringVertices[v0].insert(v2);
+
+			neighbouringVertices[v1].insert(v0);
+			neighbouringVertices[v1].insert(v2);
+
+			neighbouringVertices[v2].insert(v0);
+			neighbouringVertices[v2].insert(v1);
+		}
+
+		for(int vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
+		{
+			m_vecVertices[vertCt].noOfMatchingNeighbours = 0;
+			m_vecVertices[vertCt].neighbourMaterials.clear();
+			Vector3DFloat materialNormal(0,0,0);
+			for(std::set<int>::iterator iter = neighbouringVertices[vertCt].begin(); iter != neighbouringVertices[vertCt].end(); iter++)
+			{
+				m_vecVertices[vertCt].neighbourMaterials.push_back(m_vecVertices[*iter].getMaterial());
+
+				materialNormal += (m_vecVertices[*iter].getPosition() - m_vecVertices[vertCt].getPosition()) * m_vecVertices[vertCt].getMaterial();
+				if(m_vecVertices[vertCt].getMaterial() == m_vecVertices[*iter].getMaterial())
+				{
+					m_vecVertices[vertCt].noOfMatchingNeighbours++;
+				}
+			}
+			materialNormal.normalise();
+			m_vecVertices[vertCt].materialNormal = materialNormal;
+		}
+	}
+
 	POLYVOX_SHARED_PTR<IndexedSurfacePatch> IndexedSurfacePatch::extractSubset(std::set<uint8_t> setMaterials)
 	{
 		POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch);
@@ -420,11 +459,8 @@ namespace PolyVox
 
 	void IndexedSurfacePatch::decimate(float fMinDotProductForCollapse)
 	{
-		/*
-			Note for after holiday - This decimation is half working, but we get some undesirable collpses still. The face flip check
-			should stop these but doesn't quite seem to work. Also, note that before calling this function it is better if
-			'generateAveragedFaceNormals(true);' has been called first, as this seems to give better normals for our purposes.
-		*/
+		generateMaterialWeightedNormals();
+
 		uint32_t noOfEdgesCollapsed = 0;
 		do
 		{
@@ -532,10 +568,70 @@ namespace PolyVox
 					continue;
 				}
 
-				//For now, don't collapse vertices on mateial edges...
-				if(m_vecVertices[v0].isOnMaterialEdge() || m_vecVertices[v1].isOnMaterialEdge())
+				if(m_vecVertices[v0].getMaterial() != m_vecVertices[v1].getMaterial())
 				{
 					continue;
+				}
+
+				//For now, don't collapse vertices on material edges...
+				if(m_vecVertices[v0].isOnMaterialEdge() || m_vecVertices[v1].isOnMaterialEdge())
+				{
+					if(true)
+					{
+						bool pass = false;
+						//if(m_vecVertices[v0].materialNormal.dot(m_vecVertices[v1].materialNormal) < 0.9999)
+						/*if(m_vecVertices[v0].isOnMaterialEdge() && m_vecVertices[v1].isOnMaterialEdge())
+						{
+							if(m_vecVertices[v0].getMaterial() == m_vecVertices[v1].getMaterial())
+							{
+								pass = true;
+							}
+						}*/
+
+						
+
+						bool allMatch = false;
+
+						if(m_vecVertices[v0].noOfMatchingNeighbours == m_vecVertices[v1].noOfMatchingNeighbours)
+						{
+							if(m_vecVertices[v0].noOfMatchingNeighbours == 4)
+							{
+								allMatch = true;
+							}
+						}
+
+						bool movementValid = false;
+						Vector3DFloat movement = m_vecVertices[v1].getPosition() - m_vecVertices[v0].getPosition();
+						movement.normalise();
+						if(movement.dot(Vector3DFloat(0,0,1)) > 0.999)
+						{
+							movementValid = true;
+						}
+
+						if(movement.dot(Vector3DFloat(0,1,0)) > 0.999)
+						{
+							movementValid = true;
+						}
+
+						if(movement.dot(Vector3DFloat(1,0,0)) > 0.999)
+						{
+							movementValid = true;
+						}
+
+						if(movementValid && allMatch)
+						{
+							pass = true;
+						}
+
+						if(!pass)
+						{
+							continue;
+						}
+					}
+					else //Material collapses not allowed
+					{
+						continue;
+					}
 				}
 
 				//...or those on geometry (region) edges.

@@ -70,6 +70,7 @@ namespace PolyVox
 	   POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSubset(std::set<uint8_t> setMaterials);
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
+	   void generateMaterialWeightedNormals();
 
 	   //Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
 

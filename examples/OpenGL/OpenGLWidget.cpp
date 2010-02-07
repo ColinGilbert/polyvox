@@ -185,6 +185,8 @@ void OpenGLWidget::initializeGL()
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_LIGHT0);
 
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	glShadeModel(GL_SMOOTH);
 }
 
