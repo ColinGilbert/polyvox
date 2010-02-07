@@ -313,8 +313,11 @@ namespace PolyVox
 		}
 	}
 
-	void IndexedSurfacePatch::generateMaterialWeightedNormals()
+	//This function looks at every vertex in the mesh and determines
+	//how many of it's neighbours have the same material.
+	void IndexedSurfacePatch::countNoOfNeighboursUsingMaterial(void)
 	{
+		//Find all the neighbouring vertices for each vertex
 		std::vector< std::set<int> > neighbouringVertices(m_vecVertices.size());
 		for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
 		{
@@ -332,23 +335,18 @@ namespace PolyVox
 			neighbouringVertices[v2].insert(v1);
 		}
 
+		//For each vertex, check how many neighbours have the same material
+		m_vecNoOfNeighboursUsingMaterial.resize(m_vecVertices.size());
 		for(int vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
 		{
-			m_vecVertices[vertCt].noOfMatchingNeighbours = 0;
-			m_vecVertices[vertCt].neighbourMaterials.clear();
-			Vector3DFloat materialNormal(0,0,0);
+			m_vecNoOfNeighboursUsingMaterial[vertCt] = 0;
 			for(std::set<int>::iterator iter = neighbouringVertices[vertCt].begin(); iter != neighbouringVertices[vertCt].end(); iter++)
 			{
-				m_vecVertices[vertCt].neighbourMaterials.push_back(m_vecVertices[*iter].getMaterial());
-
-				materialNormal += (m_vecVertices[*iter].getPosition() - m_vecVertices[vertCt].getPosition()) * m_vecVertices[vertCt].getMaterial();
 				if(m_vecVertices[vertCt].getMaterial() == m_vecVertices[*iter].getMaterial())
 				{
-					m_vecVertices[vertCt].noOfMatchingNeighbours++;
+					m_vecNoOfNeighboursUsingMaterial[vertCt]++;
 				}
 			}
-			materialNormal.normalise();
-			m_vecVertices[vertCt].materialNormal = materialNormal;
 		}
 	}
 
@@ -459,22 +457,16 @@ namespace PolyVox
 
 	void IndexedSurfacePatch::decimate(float fMinDotProductForCollapse)
 	{
-		generateMaterialWeightedNormals();
+		// We will need the information from this function to
+		// determine when material boundary edges can collapse.
+		countNoOfNeighboursUsingMaterial();
 
-		uint32_t noOfEdgesCollapsed = 0;
+		uint32_t noOfEdgesCollapsed;
 		do
 		{
-			//generateAveragedFaceNormals(true);
 			noOfEdgesCollapsed = performDecimationPass(fMinDotProductForCollapse);
 			removeDegenerateTris();			
 		}while(noOfEdgesCollapsed > 0);
-
-		//cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
-		/*cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
-		cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
-		cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();
-		cout << "Collapsed " << performDecimationPass(fMinDotProductForCollapse) << " edges." << endl; removeDegenerateTris();*/
-
 
 		//Decimation will have invalidated LOD levels.
 		m_vecLodRecords.clear();
@@ -484,8 +476,8 @@ namespace PolyVox
 		m_vecLodRecords.push_back(lodRecord);
 	}
 
-	/*Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.*/
-	bool IndexedSurfacePatch::isSubset(std::bitset<7> a, std::bitset<7> b)
+	// Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.
+	bool IndexedSurfacePatch::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
 	{
 		bool result = true;
 
@@ -578,23 +570,17 @@ namespace PolyVox
 				{
 					if(true)
 					{
-						bool pass = false;
-						//if(m_vecVertices[v0].materialNormal.dot(m_vecVertices[v1].materialNormal) < 0.9999)
-						/*if(m_vecVertices[v0].isOnMaterialEdge() && m_vecVertices[v1].isOnMaterialEdge())
-						{
-							if(m_vecVertices[v0].getMaterial() == m_vecVertices[v1].getMaterial())
-							{
-								pass = true;
-							}
-						}*/
-
-						
+						bool pass = false;						
 
 						bool allMatch = false;
 
-						if(m_vecVertices[v0].noOfMatchingNeighbours == m_vecVertices[v1].noOfMatchingNeighbours)
+						// On the original undecimated mesh a material boundary vertex on a straight edge will
+						// have four neighbours with the same material. If it's on a corner it will have a
+						// different number. We only collapse straight edges to avoid changingthe shape of the
+						// material boundary.
+						if(m_vecNoOfNeighboursUsingMaterial[v0] == m_vecNoOfNeighboursUsingMaterial[v1])
 						{
-							if(m_vecVertices[v0].noOfMatchingNeighbours == 4)
+							if(m_vecNoOfNeighboursUsingMaterial[v0] == 4)
 							{
 								allMatch = true;
 							}
@@ -614,6 +600,21 @@ namespace PolyVox
 						}
 
 						if(movement.dot(Vector3DFloat(1,0,0)) > 0.999)
+						{
+							movementValid = true;
+						}
+
+						if(movement.dot(Vector3DFloat(0,0,-1)) > 0.999)
+						{
+							movementValid = true;
+						}
+
+						if(movement.dot(Vector3DFloat(0,-1,0)) > 0.999)
+						{
+							movementValid = true;
+						}
+
+						if(movement.dot(Vector3DFloat(-1,0,0)) > 0.999)
 						{
 							movementValid = true;
 						}

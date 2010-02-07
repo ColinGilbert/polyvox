@@ -70,14 +70,14 @@ namespace PolyVox
 	   POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSubset(std::set<uint8_t> setMaterials);
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
-	   void generateMaterialWeightedNormals();
+	   
 
 	   //Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
 
 	   /*void growMaterialBoundary(void);
 	   int countMaterialBoundary(void);*/
 
-	   bool isSubset(std::bitset<7> a, std::bitset<7> b);
+	   bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
 
 	   void decimate(float fMinDotProductForCollapse = 0.999f);
 
@@ -103,6 +103,12 @@ namespace PolyVox
 		//which cover a whole triangle are counted. Materials which only
 		//exist on a material boundary do not count.
 		std::set<uint8_t> m_mapUsedMaterials;
+
+	private:
+		void countNoOfNeighboursUsingMaterial(void);
+
+		//Data structures used during decimation
+		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
 	};	
 }
 

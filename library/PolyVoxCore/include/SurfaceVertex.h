@@ -36,13 +36,14 @@ namespace PolyVox
 {	
 	enum POLYVOXCORE_API VertexFlags
 	{
-		VF_ON_MATERIAL_EDGE =  0x00,
-		VF_ON_GEOMETRY_EDGE_NEG_X = 0x01,
-		VF_ON_GEOMETRY_EDGE_POS_X = 0x02,
-		VF_ON_GEOMETRY_EDGE_NEG_Y = 0x03,
-		VF_ON_GEOMETRY_EDGE_POS_Y = 0x04,
-		VF_ON_GEOMETRY_EDGE_NEG_Z = 0x05,
-		VF_ON_GEOMETRY_EDGE_POS_Z = 0x06,
+		VF_ON_MATERIAL_EDGE,
+		VF_ON_GEOMETRY_EDGE_NEG_X,
+		VF_ON_GEOMETRY_EDGE_POS_X ,
+		VF_ON_GEOMETRY_EDGE_NEG_Y ,
+		VF_ON_GEOMETRY_EDGE_POS_Y ,
+		VF_ON_GEOMETRY_EDGE_NEG_Z ,
+		VF_ON_GEOMETRY_EDGE_POS_Z,
+		VF_NO_OF_FLAGS
 	};
 
 	class POLYVOXCORE_API SurfaceVertex
@@ -81,11 +82,8 @@ namespace PolyVox
 	public:		
 		Vector3DFloat position;
 		Vector3DFloat normal;
-		Vector3DFloat materialNormal;
-		int noOfMatchingNeighbours;
-		std::vector<uint8_t> neighbourMaterials;
 		float material; //FIXME: This shouldn't be float on CPU?
-		std::bitset<7> m_bFlags;	
+		std::bitset<VF_NO_OF_FLAGS> m_bFlags;	
 	};
 
 	
