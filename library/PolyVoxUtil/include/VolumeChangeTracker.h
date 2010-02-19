@@ -57,7 +57,7 @@ namespace PolyVox
 		void unlockRegion(void);
 		//void markRegionChanged(uint16_t firstX, uint16_t firstY, uint16_t firstZ, uint16_t lastX, uint16_t lastY, uint16_t lastZ);
 
-	private:
+	public:
 		void incrementCurrentTime(void);
 		bool m_bIsLocked;
 		Region m_regLastLocked;

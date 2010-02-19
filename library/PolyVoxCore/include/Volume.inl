@@ -357,47 +357,6 @@ namespace PolyVox
 			}
 		}
 	}	
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// The returned value is not precise because it is hard to say how much memory
-	/// STL vectors and maps take iternally, but it accounts for all the block data
-	/// which is by far the most significant contributer. The returned value is in 
-	/// multiples of the basic type 'char', which is equal to a byte on most systems.
-	/// Important Note: The value returned by this function is only correct if there
-	/// is only one volume in memory. This is because blocks are shared between volumes
-	/// without any one volume being the real owner. 
-	/// \return The amount of memory used by the volume.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	uint32_t Volume<VoxelType>::calculateSizeInChars(void)
-	{
-		//The easy part
-		uint32_t uSize = sizeof(Volume<VoxelType>);
-
-		//Now determine the size of the non homogenous data. 
-		for(uint32_t ct = 0; ct < m_pBlocks.size(); ct++)
-		{
-			if(m_pBlocks[ct].unique()) //Check for non-homogenity
-			{
-				uSize += sizeof(POLYVOX_SHARED_PTR< Block<VoxelType> >); //The pointer
-				uSize += m_pBlocks[ct]->sizeInChars(); //The data it points to.
-			}
-		}
-
-		//The size of the m_vecBlockIsPotentiallyHomogenous vector
-		uSize += m_vecBlockIsPotentiallyHomogenous.size() * sizeof(bool);
-
-		//Now determine the size of the homogenous data. 
-		//We could just get the number of blocks in the map and multiply
-		//by the block size, but it feels safer to do it 'properly'.			
-		for(std::map<VoxelType, POLYVOX_SHARED_PTR< Block<VoxelType> > >::const_iterator iter = m_pHomogenousBlock.begin(); iter != m_pHomogenousBlock.end(); iter++)
-		{
-			uSize += sizeof(POLYVOX_SHARED_PTR< Block<VoxelType> >); //The pointer
-			uSize += iter->second->sizeInChars(); //The data it points to.
-		}
-
-		return uSize;
-	}
 	#pragma endregion
 
 	#pragma region Private Implementation

@@ -140,8 +140,6 @@ namespace PolyVox
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());
-		///Calculates roughly how much memory is used by the volume.
-		uint32_t calculateSizeInChars(void);
 
 	private:
 		POLYVOX_SHARED_PTR< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue);

@@ -11,11 +11,9 @@ SET(CORE_SRC_FILES
 	source/MeshEdge.cpp
 	source/MeshFace.cpp
 	source/MeshVertex.cpp
-	source/progmesh.cpp
 	source/Region.cpp
 	source/SurfaceExtractor.cpp 
 	source/SurfaceVertex.cpp
-	source/vector.cpp
 	source/VoxelFilters.cpp
 )
 
@@ -23,19 +21,16 @@ SET(CORE_SRC_FILES
 SET(CORE_INC_FILES
 	include/GradientEstimators.inl
 	include/IndexedSurfacePatch.h
-	include/list.h
 	include/Log.h
 	include/Mesh.h
 	include/MeshEdge.h
 	include/MeshFace.h
 	include/MeshVertex.h
 	include/PolyVoxForwardDeclarations.h
-	include/progmesh.h
 	include/Region.h
 	include/SurfaceExtractor.h
 	include/SurfaceVertex.h
 	include/Vector.h
-	include/vector_melax.h
 	include/Vector.inl
 	include/Volume.h
 	include/Volume.inl

@@ -85,8 +85,6 @@ namespace PolyVox
 	   int noOfDegenerateTris(void);
 	   void removeDegenerateTris(void);
 
-	   void makeProgressiveMesh(void);
-
 	   Region m_Region;
 
 	   int32_t m_iTimeStamp;

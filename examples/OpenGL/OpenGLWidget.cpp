@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 #include "GradientEstimators.h"
 #include "SurfaceExtractor.h"
 
-#include "RenderDynamicMesh.h"
 #include "Mesh.h"
 
 //Some namespaces we need

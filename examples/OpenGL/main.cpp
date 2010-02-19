@@ -112,7 +112,6 @@ int main(int argc, char *argv[])
 
 	//createCubeInVolume(volData, Vector3DUint16(1, 1, 1), Vector3DUint16(maxPos-1, maxPos-1, midPos/4), 255);
 
-	volData.calculateSizeInChars();
 	cout << "Tidying memory...";
 	volData.tidyUpMemory(0);
 	cout << "done." << endl; 
