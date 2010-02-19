@@ -633,27 +633,35 @@ namespace PolyVox
 					}
 				}
 
-				//...or those on geometry (region) edges.
-				/*if(m_vecVertices[v0].isOnGeometryEdge() || m_vecVertices[v1].isOnGeometryEdge())
+				// Vertices on the geometrical edge of surface meshes need special handling. 
+				// We check for this by whether any of the edge flags are set.
+				if(m_vecVertices[v0].m_bFlags.any() || m_vecVertices[v1].m_bFlags.any())
 				{
-					continue;
-				}*/
+					// Assume we can't collapse until we prove otherwise...
+					bool bCollapseGeometryEdgePair = false;
 
-				// In theory it seems we should also allow edge vertices to collapse onto other edge vertices,
-				// and also onto corner vertices.But a corner vertex shouldn't collapse onto another corner?
+					// We can collapse normal vertices onto edge vertices, and edge vertices
+					// onto corner vertices, but not vice-versa. Hence we check whether all
+					// the edge flags in the source vertex are also set in the destination vertex.
+					if(isSubset(m_vecVertices[v0].m_bFlags, m_vecVertices[v1].m_bFlags))
+					{
+						// In general adjacent regions surface meshes may collapse differently
+						// and this can cause cracks. We solve this by only allowing the collapse
+						// is the normals are exactly the same. We do not use the user provided
+						// tolerence here (but do allow for floating point error).
+						if(m_vecVertices[v0].getNormal().dot(m_vecVertices[v1].getNormal()) > 0.999)
+						{
+							// Ok, this pair can collapse.
+							bCollapseGeometryEdgePair = true;
+						}
+					}
 
-				//After holiday, consider using the following line so that 'internal' vertices can collapse onto
-				//edges (but not vice-versa) and edges can collapse onto corners (but not vice-versa).
-				//FIXME - Stop corners collapsing onto corners!
-				if(isSubset(m_vecVertices[v0].m_bFlags, m_vecVertices[v1].m_bFlags) == false)
-				{
-					continue;
+					// Use the result.
+					if(!bCollapseGeometryEdgePair)
+					{
+						continue;
+					}
 				}
-
-				/*if((m_vecVertices[v0].getNoOfGeometryEdges()) >= (m_vecVertices[v1].getNoOfGeometryEdges()))
-				{
-					continue;
-				}*/
 
 				//Check the normals are within the threashold.
 				if(m_vecVertices[v0].getNormal().dot(m_vecVertices[v1].getNormal()) < fMinDotProductForCollapse)
