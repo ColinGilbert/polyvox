@@ -46,7 +46,7 @@ namespace PolyVox
 	class MeshVertex;
 	//---------------------------------
 
-	class IndexedSurfacePatch;
+	class SurfaceMesh;
 	class Region;
 	class SurfaceVertex;
 	class SurfaceExtractor;

@@ -45,7 +45,7 @@ namespace PolyVox
 
 		void setLodLevel(uint8_t uLodLevel);
 
-		POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSurfaceForRegion(Region region);
+		POLYVOX_SHARED_PTR<SurfaceMesh> extractSurfaceForRegion(Region region);
 
 	private:
 		//Extract the surface for a particular LOD level
@@ -106,7 +106,7 @@ namespace PolyVox
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		IndexedSurfacePatch* m_ispCurrent;
+		SurfaceMesh* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regInputCropped;

@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "Log.h"
 #include "Volume.h"
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 #include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"

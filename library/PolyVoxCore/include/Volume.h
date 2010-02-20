@@ -46,7 +46,7 @@ namespace PolyVox
 	/// by a three dimensional (x,y,z) coordinate, rather than the two dimensional (x,y)
 	/// coordinate which is used to identify an element (pixel) in a normal image. Within
 	/// PolyVox, the Volume class is used to store and manipulate our data before we extract 
-	/// our SurfacePatch's from it.
+	/// our SurfaceMeshs from it.
 	/// 
 	/// <b>Data Representaion - feel free to skip</b>
 	/// If stored carelessly, volume data can take up a huge amount of memory. For example, a

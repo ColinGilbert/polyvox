@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 #pragma endregion
 
-#ifndef __PolyVox_IndexedSurfacePatch_H__
-#define __PolyVox_IndexedSurfacePatch_H__
+#ifndef __PolyVox_SurfaceMesh_H__
+#define __PolyVox_SurfaceMesh_H__
 
 #include <vector>
 #include <set>
@@ -45,11 +45,11 @@ namespace PolyVox
 		int endIndex; //Let's put it just past the end STL style
 	};
 
-	class POLYVOXCORE_API IndexedSurfacePatch
+	class POLYVOXCORE_API SurfaceMesh
 	{
 	public:
-	   IndexedSurfacePatch();
-	   ~IndexedSurfacePatch();	   
+	   SurfaceMesh();
+	   ~SurfaceMesh();	   
 
 	   const std::vector<uint32_t>& getIndices(void) const;
 	   uint32_t getNoOfIndices(void) const;
@@ -67,7 +67,7 @@ namespace PolyVox
 	   void smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices = false);
 	   void sumNearbyNormals(bool bNormaliseResult = true);
 
-	   POLYVOX_SHARED_PTR<IndexedSurfacePatch> extractSubset(std::set<uint8_t> setMaterials);
+	   POLYVOX_SHARED_PTR<SurfaceMesh> extractSubset(std::set<uint8_t> setMaterials);
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 	   
@@ -110,4 +110,4 @@ namespace PolyVox
 	};	
 }
 
-#endif /* __IndexedSurfacePatch_H__ */
+#endif /* __SurfaceMesh_H__ */

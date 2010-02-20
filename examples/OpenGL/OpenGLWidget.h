@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 #include <QTimer>
 
 #include "Volume.h"
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 #include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"
@@ -72,8 +72,8 @@ class OpenGLWidget : public QGLWidget
 	PolyVox::Volume<PolyVox::uint8_t>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
-	std::map<PolyVox::Vector3DUint8, OpenGLSurfacePatch> m_mapOpenGLSurfacePatches;
-	std::map<PolyVox::Vector3DUint8, POLYVOX_SHARED_PTR<PolyVox::IndexedSurfacePatch> > m_mapIndexedSurfacePatches;
+	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh> m_mapOpenGLSurfaceMeshes;
+	std::map<PolyVox::Vector3DUint8, POLYVOX_SHARED_PTR<PolyVox::SurfaceMesh> > m_mapSurfaceMeshes;
 
 	unsigned int m_uRegionSideLength;
 	unsigned int m_uVolumeWidthInRegions;

@@ -40,8 +40,8 @@ namespace PolyVox
 	{
 	public:
 
-		void buildFromISP(IndexedSurfacePatch* pIsp);
-		void fillISP(IndexedSurfacePatch* pIsp);
+		void buildFromMesh(SurfaceMesh* pMesh);
+		void fillMesh(SurfaceMesh* pMesh);
 		void matchEdgePairs(void);
 		void computeEdgeCosts(void);
 

@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "SurfaceExtractor.h"
 
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
 
@@ -49,7 +49,7 @@ namespace PolyVox
 		m_uStepSize = 1 << uLodLevel;
 	}
 
-	POLYVOX_SHARED_PTR<IndexedSurfacePatch> SurfaceExtractor::extractSurfaceForRegion(Region region)
+	POLYVOX_SHARED_PTR<SurfaceMesh> SurfaceExtractor::extractSurfaceForRegion(Region region)
 	{		
 		m_regInputUncropped = region;
 
@@ -62,7 +62,7 @@ namespace PolyVox
 		m_regInputCropped = region;
 		m_regInputCropped.cropTo(m_regVolumeCropped);
 
-		m_ispCurrent = new IndexedSurfacePatch();
+		m_meshCurrent = new SurfaceMesh();
 
 		m_uRegionWidth = m_regInputCropped.width();
 		m_uRegionHeight = m_regInputCropped.height();
@@ -111,15 +111,15 @@ namespace PolyVox
 		delete[] m_pPreviousVertexIndicesZ;
 		delete[] m_pCurrentVertexIndicesZ;		
 
-		m_ispCurrent->m_Region = m_regInputUncropped;
+		m_meshCurrent->m_Region = m_regInputUncropped;
 
-		m_ispCurrent->m_vecLodRecords.clear();
+		m_meshCurrent->m_vecLodRecords.clear();
 		LodRecord lodRecord;
 		lodRecord.beginIndex = 0;
-		lodRecord.endIndex = m_ispCurrent->getNoOfIndices();
-		m_ispCurrent->m_vecLodRecords.push_back(lodRecord);
+		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
+		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 
-		return POLYVOX_SHARED_PTR<IndexedSurfacePatch>(m_ispCurrent);
+		return POLYVOX_SHARED_PTR<SurfaceMesh>(m_meshCurrent);
 	}
 
 	template<uint8_t uLodLevel>
@@ -636,7 +636,7 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
 					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
-					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
 				if (edgeTable[iCubeIndex] & 8)
@@ -654,7 +654,7 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
 					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
-					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
 				if (edgeTable[iCubeIndex] & 256)
@@ -672,7 +672,7 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
 					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
-					uint32_t uLastVertexIndex = m_ispCurrent->addVertex(surfaceVertex);
+					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[getIndex(uXVolSpace - m_regInputCropped.getLowerCorner().getX(),uYVolSpace - m_regInputCropped.getLowerCorner().getY())] = uLastVertexIndex;
 				}
 			}//For each cell
@@ -785,7 +785,7 @@ namespace PolyVox
 						assert(ind0 < 1000000);
 						assert(ind1 < 1000000);
 						assert(ind2 < 1000000);
-						m_ispCurrent->addTriangle(ind0, ind1, ind2);
+						m_meshCurrent->addTriangle(ind0, ind1, ind2);
 					}
 				}//For each triangle
 			}//For each cell

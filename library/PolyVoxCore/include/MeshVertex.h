@@ -43,7 +43,7 @@ namespace PolyVox
 		//MeshEdge* m_pEdge;
 		//std::set<MeshFace*> m_faces;
 		//std::set<MeshEdge*> m_edges; //Edges which have this vertex as the src
-		long int m_index; //Bit wasteful to store this the whle time, as it's only used when converting to ISPs?
+		long int m_index; //Bit wasteful to store this the whle time, as it's only used when converting to Meshs?
 
 		bool isSane(void);
 	};

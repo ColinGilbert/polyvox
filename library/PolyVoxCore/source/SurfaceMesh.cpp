@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 #pragma endregion
 
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 
 #include <cstdlib>
 #include <list>
@@ -32,26 +32,26 @@ using namespace std;
 
 namespace PolyVox
 {
-	IndexedSurfacePatch::IndexedSurfacePatch()
+	SurfaceMesh::SurfaceMesh()
 	{
 		m_iTimeStamp = -1;
 	}
 
-	IndexedSurfacePatch::~IndexedSurfacePatch()	  
+	SurfaceMesh::~SurfaceMesh()	  
 	{
 	}
 
-	const std::vector<uint32_t>& IndexedSurfacePatch::getIndices(void) const
+	const std::vector<uint32_t>& SurfaceMesh::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}
 
-	uint32_t IndexedSurfacePatch::getNoOfIndices(void) const
+	uint32_t SurfaceMesh::getNoOfIndices(void) const
 	{
 		return m_vecTriangleIndices.size();
 	}	
 
-	uint32_t IndexedSurfacePatch::getNoOfNonUniformTrianges(void) const
+	uint32_t SurfaceMesh::getNoOfNonUniformTrianges(void) const
 	{
 		uint32_t result = 0;
 		for(uint32_t i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
@@ -68,7 +68,7 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32_t IndexedSurfacePatch::getNoOfUniformTrianges(void) const
+	uint32_t SurfaceMesh::getNoOfUniformTrianges(void) const
 	{
 		uint32_t result = 0;
 		for(uint32_t i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
@@ -82,22 +82,22 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32_t IndexedSurfacePatch::getNoOfVertices(void) const
+	uint32_t SurfaceMesh::getNoOfVertices(void) const
 	{
 		return m_vecVertices.size();
 	}
 
-	std::vector<SurfaceVertex>& IndexedSurfacePatch::getRawVertexData(void)
+	std::vector<SurfaceVertex>& SurfaceMesh::getRawVertexData(void)
 	{
 		return m_vecVertices;
 	}
 
-	const std::vector<SurfaceVertex>& IndexedSurfacePatch::getVertices(void) const
+	const std::vector<SurfaceVertex>& SurfaceMesh::getVertices(void) const
 	{
 		return m_vecVertices;
 	}		
 
-	void IndexedSurfacePatch::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
+	void SurfaceMesh::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
@@ -115,13 +115,13 @@ namespace PolyVox
 		}
 	}
 
-	uint32_t IndexedSurfacePatch::addVertex(const SurfaceVertex& vertex)
+	uint32_t SurfaceMesh::addVertex(const SurfaceVertex& vertex)
 	{
 		m_vecVertices.push_back(vertex);
 		return m_vecVertices.size() - 1;
 	}
 
-	void IndexedSurfacePatch::clear(void)
+	void SurfaceMesh::clear(void)
 	{
 		m_vecVertices.clear();
 		m_vecTriangleIndices.clear();
@@ -129,7 +129,7 @@ namespace PolyVox
 		m_mapUsedMaterials.clear();
 	}
 
-	const bool IndexedSurfacePatch::isEmpty(void) const
+	const bool SurfaceMesh::isEmpty(void) const
 	{
 		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
 	}
@@ -142,10 +142,10 @@ namespace PolyVox
 	/// \param fAmount A factor controlling how much the vertices move by. Find a good
 	/// value by experimentation, starting with something small such as 0.1f.
 	/// \param bIncludeGeometryEdgeVertices Indicates whether vertices on the edge of an
-	/// IndexedSurfacePatch should be smoothed. This can cause dicontinuities between
+	/// SurfaceMesh should be smoothed. This can cause dicontinuities between
 	/// neighbouring patches.
 	////////////////////////////////////////////////////////////////////////////////
-	void IndexedSurfacePatch::smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices)
+	void SurfaceMesh::smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -221,7 +221,7 @@ namespace PolyVox
 	/// vertex. Usually, the resulting normals should be renormalised afterwards.
 	/// Note: This function can cause lighting discontinuities accross region boundaries.
 	////////////////////////////////////////////////////////////////////////////////
-	void IndexedSurfacePatch::sumNearbyNormals(bool bNormaliseResult)
+	void SurfaceMesh::sumNearbyNormals(bool bNormaliseResult)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -262,7 +262,7 @@ namespace PolyVox
 		}
 	}
 
-	void IndexedSurfacePatch::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
+	void SurfaceMesh::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
 	{
 		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
 
@@ -313,7 +313,7 @@ namespace PolyVox
 
 	//This function looks at every vertex in the mesh and determines
 	//how many of it's neighbours have the same material.
-	void IndexedSurfacePatch::countNoOfNeighboursUsingMaterial(void)
+	void SurfaceMesh::countNoOfNeighboursUsingMaterial(void)
 	{
 		//Find all the neighbouring vertices for each vertex
 		std::vector< std::set<int> > neighbouringVertices(m_vecVertices.size());
@@ -348,9 +348,9 @@ namespace PolyVox
 		}
 	}
 
-	POLYVOX_SHARED_PTR<IndexedSurfacePatch> IndexedSurfacePatch::extractSubset(std::set<uint8_t> setMaterials)
+	POLYVOX_SHARED_PTR<SurfaceMesh> SurfaceMesh::extractSubset(std::set<uint8_t> setMaterials)
 	{
-		POLYVOX_SHARED_PTR<IndexedSurfacePatch> result(new IndexedSurfacePatch);
+		POLYVOX_SHARED_PTR<SurfaceMesh> result(new SurfaceMesh);
 
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -413,7 +413,7 @@ namespace PolyVox
 		return result;
 	}
 
-	/*int IndexedSurfacePatch::countMaterialBoundary(void)
+	/*int SurfaceMesh::countMaterialBoundary(void)
 	{
 		int count = 0;
 		for(int ct = 0; ct < m_vecVertices.size(); ct++)
@@ -426,7 +426,7 @@ namespace PolyVox
 		return count;
 	}
 
-	void IndexedSurfacePatch::growMaterialBoundary(void)
+	void SurfaceMesh::growMaterialBoundary(void)
 	{
 		std::vector<SurfaceVertex> vecNewVertices = m_vecVertices;
 
@@ -453,7 +453,7 @@ namespace PolyVox
 		m_vecVertices = vecNewVertices;
 	}*/
 
-	void IndexedSurfacePatch::decimate(float fMinDotProductForCollapse)
+	void SurfaceMesh::decimate(float fMinDotProductForCollapse)
 	{
 		// We will need the information from this function to
 		// determine when material boundary edges can collapse.
@@ -475,7 +475,7 @@ namespace PolyVox
 	}
 
 	// Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.
-	bool IndexedSurfacePatch::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
+	bool SurfaceMesh::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
 	{
 		bool result = true;
 
@@ -494,7 +494,7 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32_t IndexedSurfacePatch::performDecimationPass(float fMinDotProductForCollapse)
+	uint32_t SurfaceMesh::performDecimationPass(float fMinDotProductForCollapse)
 	{
 		// I'm using a vector of lists here, rather than a vector of sets,
 		// because I don't believe that duplicaes should occur. But this
@@ -783,7 +783,7 @@ namespace PolyVox
 		return noOfEdgesCollapsed;
 	}
 
-	int IndexedSurfacePatch::noOfDegenerateTris(void)
+	int SurfaceMesh::noOfDegenerateTris(void)
 	{
 		int count = 0;
 		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
@@ -803,7 +803,7 @@ namespace PolyVox
 		return count;
 	}
 
-	void IndexedSurfacePatch::removeDegenerateTris(void)
+	void SurfaceMesh::removeDegenerateTris(void)
 	{
 		int noOfNonDegenerate = 0;
 		int targetCt = 0;

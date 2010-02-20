@@ -24,22 +24,22 @@ freely, subject to the following restrictions:
 #include "OpenGLSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"
 
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 
 using namespace PolyVox;
 using namespace std;
 
-OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
+OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh& mesh)
 {
 	//Represents our filled in OpenGL vertex and index buffer objects.
-	OpenGLSurfacePatch result;
+	OpenGLSurfaceMesh result;
 
 	//The source
-	result.sourceISP = &isp;
+	result.sourceMesh = &mesh;
 
 	//Convienient access to the vertices and indices
-	const vector<SurfaceVertex>& vecVertices = isp.getVertices();
-	const vector<PolyVox::uint32_t>& vecIndices = isp.getIndices();
+	const vector<SurfaceVertex>& vecVertices = mesh.getVertices();
+	const vector<PolyVox::uint32_t>& vecIndices = mesh.getIndices();
 
 	//If we have any indices...
 	if(!vecIndices.empty())
@@ -67,7 +67,7 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 		const SurfaceVertex& vertex = *iterVertex;
 		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
 		//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
-		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(isp.m_Region.getLowerCorner());
+		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
 
 		*ptr = v3dFinalVertexPos.getX();
 		ptr++;
@@ -100,23 +100,23 @@ OpenGLSurfacePatch BuildOpenGLSurfacePatch(const IndexedSurfacePatch& isp)
 	return result;
 }
 
-void renderRegionVertexBufferObject(const OpenGLSurfacePatch& openGLSurfacePatch, unsigned int uLodLevel)
+void renderRegionVertexBufferObject(const OpenGLSurfaceMesh& openGLSurfaceMesh, unsigned int uLodLevel)
 {
-	int beginIndex = openGLSurfacePatch.sourceISP->m_vecLodRecords[uLodLevel].beginIndex;
-	int endIndex = openGLSurfacePatch.sourceISP->m_vecLodRecords[uLodLevel].endIndex;
-	glBindBuffer(GL_ARRAY_BUFFER, openGLSurfacePatch.vertexBuffer);
+	int beginIndex = openGLSurfaceMesh.sourceMesh->m_vecLodRecords[uLodLevel].beginIndex;
+	int endIndex = openGLSurfaceMesh.sourceMesh->m_vecLodRecords[uLodLevel].endIndex;
+	glBindBuffer(GL_ARRAY_BUFFER, openGLSurfaceMesh.vertexBuffer);
 	glVertexPointer(3, GL_FLOAT, 36, 0);
 	glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
 	glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openGLSurfacePatch.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openGLSurfaceMesh.indexBuffer);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 
-	//glDrawElements(GL_TRIANGLES, openGLSurfacePatch.noOfIndices, GL_UNSIGNED_INT, 0);
-	glDrawRangeElements(GL_TRIANGLES, beginIndex, endIndex-1, endIndex - beginIndex,/* openGLSurfacePatch.noOfIndices,*/ GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, openGLSurfaceMesh.noOfIndices, GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(GL_TRIANGLES, beginIndex, endIndex-1, endIndex - beginIndex,/* openGLSurfaceMesh.noOfIndices,*/ GL_UNSIGNED_INT, 0);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

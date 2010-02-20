@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 #include "VolumeChangeTracker.h"
 
 #include "GradientEstimators.h"
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
 #include "PolyVoxImpl/Utility.h"

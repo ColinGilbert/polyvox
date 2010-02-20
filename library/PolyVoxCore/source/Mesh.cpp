@@ -25,31 +25,31 @@ freely, subject to the following restrictions:
 
 #include "Mesh.h"
 
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 
 #include <vector>
 
 namespace PolyVox
 {
-	void Mesh::buildFromISP(IndexedSurfacePatch* pIsp)
+	void Mesh::buildFromMesh(SurfaceMesh* pMesh)
 	{
 		//First we copy the vertices across.
 		//We also keep track of where each vertex went
-		std::vector< std::set<MeshVertex*>::iterator > vertexMapper(pIsp->getNoOfVertices());
+		std::vector< std::set<MeshVertex*>::iterator > vertexMapper(pMesh->getNoOfVertices());
 
-		for(int ct = 0; ct < pIsp->getNoOfVertices(); ct++)
+		for(int ct = 0; ct < pMesh->getNoOfVertices(); ct++)
 		{
 			MeshVertex* pMeshVertex = new MeshVertex;
-			pMeshVertex->m_vertexData = pIsp->m_vecVertices[ct];
+			pMeshVertex->m_vertexData = pMesh->m_vecVertices[ct];
 			vertexMapper[ct] = m_vertices.insert(pMeshVertex).first;
 		}
 
 		//Next, we add each triangle to the mesh
-		for(int triCt = 0; triCt < pIsp->getNoOfIndices() / 3; triCt++)
+		for(int triCt = 0; triCt < pMesh->getNoOfIndices() / 3; triCt++)
 		{
-			int index0 = pIsp->m_vecTriangleIndices[triCt * 3];
-			int index1 = pIsp->m_vecTriangleIndices[triCt * 3 + 1];
-			int index2 = pIsp->m_vecTriangleIndices[triCt * 3 + 2];
+			int index0 = pMesh->m_vecTriangleIndices[triCt * 3];
+			int index1 = pMesh->m_vecTriangleIndices[triCt * 3 + 1];
+			int index2 = pMesh->m_vecTriangleIndices[triCt * 3 + 2];
 
 			MeshVertex* meshVertex0 = *(vertexMapper[index0]);
 			MeshVertex* meshVertex1 = *(vertexMapper[index1]);
@@ -188,14 +188,14 @@ namespace PolyVox
 		}
 	}
 
-	void Mesh::fillISP(IndexedSurfacePatch* pIsp)
+	void Mesh::fillMesh(SurfaceMesh* pMesh)
 	{
-		pIsp->clear();
+		pMesh->clear();
 
 		for(std::set<MeshVertex*>::iterator vertItor = m_vertices.begin(); vertItor != m_vertices.end(); vertItor++)
 		{
 			MeshVertex* meshVertex = *vertItor;
-			meshVertex->m_index = pIsp->addVertex(meshVertex->m_vertexData);
+			meshVertex->m_index = pMesh->addVertex(meshVertex->m_vertexData);
 		}
 
 		for(std::set<MeshFace*>::iterator faceItor = m_faces.begin(); faceItor != m_faces.end(); faceItor++)
@@ -205,14 +205,14 @@ namespace PolyVox
 			MeshVertex* v1 = meshFace->m_pEdge->m_pNextEdge->m_pSrc;
 			MeshVertex* v2 = meshFace->m_pEdge->m_pNextEdge->m_pNextEdge->m_pSrc;
 
-			pIsp->addTriangle(v0->m_index, v1->m_index, v2->m_index);
+			pMesh->addTriangle(v0->m_index, v1->m_index, v2->m_index);
 		}
 
-		pIsp->m_vecLodRecords.clear();
+		pMesh->m_vecLodRecords.clear();
 		LodRecord lodRecord;
 		lodRecord.beginIndex = 0;
-		lodRecord.endIndex = pIsp->getNoOfIndices();
-		pIsp->m_vecLodRecords.push_back(lodRecord);
+		lodRecord.endIndex = pMesh->getNoOfIndices();
+		pMesh->m_vecLodRecords.push_back(lodRecord);
 	}
 
 	void Mesh::removeEdge(MeshEdge* pMeshEdge)

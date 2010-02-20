@@ -5,7 +5,7 @@ PROJECT(PolyVoxCore)
 #Projects source files
 SET(CORE_SRC_FILES
 	source/GradientEstimators.cpp
-	source/IndexedSurfacePatch.cpp
+	source/SurfaceMesh.cpp
 	source/Log.cpp
 	source/Mesh.cpp
 	source/MeshEdge.cpp
@@ -20,7 +20,7 @@ SET(CORE_SRC_FILES
 #Projects headers files
 SET(CORE_INC_FILES
 	include/GradientEstimators.inl
-	include/IndexedSurfacePatch.h
+	include/SurfaceMesh.h
 	include/Log.h
 	include/Mesh.h
 	include/MeshEdge.h

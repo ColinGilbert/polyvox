@@ -51,8 +51,8 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 {
 	//First we free anything from the previous volume (if there was one).
-	m_mapOpenGLSurfacePatches.clear();
-	m_mapIndexedSurfacePatches.clear();
+	m_mapOpenGLSurfaceMeshes.clear();
+	m_mapSurfaceMeshes.clear();
 	m_volData = volData;
 
 	//If we have any volume data then generate the new surface patches.
@@ -89,63 +89,63 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 					Vector3DInt16 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
-					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), ispCurrent);
-					POLYVOX_SHARED_PTR<IndexedSurfacePatch> isp = surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner));
+					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
+					POLYVOX_SHARED_PTR<SurfaceMesh> mesh = surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner));
 
-					//computeNormalsForVertices(m_volData, *(isp.get()), SOBEL_SMOOTHED);
-					//*ispCurrent = getSmoothedSurface(*ispCurrent);
-					//isp->smooth(0.3f);
-					//ispCurrent->generateAveragedFaceNormals(true);
+					//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
+					//*meshCurrent = getSmoothedSurface(*meshCurrent);
+					//mesh->smooth(0.3f);
+					//meshCurrent->generateAveragedFaceNormals(true);
 
-					if(isp->m_vecTriangleIndices.size() > 0)
+					if(mesh->m_vecTriangleIndices.size() > 0)
 					{
-						//isp->makeProgressiveMesh();
+						//mesh->makeProgressiveMesh();
 
 						/*RenderDynamicMesh rdm;
-						rdm.buildFromIndexedSurfacePatch(*isp);*/
+						rdm.buildFromSurfaceMesh(*mesh);*/
 
-						//computeNormalsForVertices(m_volData, *(isp.get()), SOBEL_SMOOTHED);
+						//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
 
-						//isp->smoothPositions(0.3f);
-						//isp->generateAveragedFaceNormals(true);
+						//mesh->smoothPositions(0.3f);
+						//mesh->generateAveragedFaceNormals(true);
 						
 						/*for(int ct = 0; ct < 20; ct ++)
 						{
-						//cout << "Before: " << isp->noOfDegenerateTris() << endl;
-						isp->decimate();
-						//cout << "After: " << isp->noOfDegenerateTris() << endl;
-						isp->removeDegenerateTris();
-						//cout << "After Remove: " << isp->noOfDegenerateTris() << endl << endl;
+						//cout << "Before: " << mesh->noOfDegenerateTris() << endl;
+						mesh->decimate();
+						//cout << "After: " << mesh->noOfDegenerateTris() << endl;
+						mesh->removeDegenerateTris();
+						//cout << "After Remove: " << mesh->noOfDegenerateTris() << endl << endl;
 						}*/
 
 						////////////////////////////////////////////////////////////////////////////////
-						//For decimation built into ISP
-						//isp->generateAveragedFaceNormals(true);
+						//For decimation built into Mesh
+						//mesh->generateAveragedFaceNormals(true);
 
-						isp->decimate(0.999f);
+						mesh->decimate(0.999f);
 
-						//isp->generateAveragedFaceNormals(true);
+						//mesh->generateAveragedFaceNormals(true);
 						////////////////////////////////////////////////////////////////////////////////
 
-						/*isp->generateAveragedFaceNormals(true);
+						/*mesh->generateAveragedFaceNormals(true);
 						Mesh mesh;
-						mesh.buildFromISP(isp.get());
+						mesh.buildFromMesh(mesh.get());
 						//mesh.removeEdge(*(mesh.m_edges.begin()));
 						mesh.decimateAll();
-						mesh.fillISP(isp.get());*/
+						mesh.fillMesh(mesh.get());*/
 
 
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 						if(m_bUseOpenGLVertexBufferObjects)
 						{
-							OpenGLSurfacePatch openGLSurfacePatch = BuildOpenGLSurfacePatch(*(isp.get()));					
-							m_mapOpenGLSurfacePatches.insert(make_pair(v3dRegPos, openGLSurfacePatch));
+							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(mesh.get()));					
+							m_mapOpenGLSurfaceMeshes.insert(make_pair(v3dRegPos, openGLSurfaceMesh));
 						}
 						//else
 						//{
-							m_mapIndexedSurfacePatches.insert(make_pair(v3dRegPos, isp));
+							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, mesh));
 						//}
-						//delete ispCurrent;
+						//delete meshCurrent;
 					}
 				}
 			}
@@ -226,17 +226,17 @@ void OpenGLWidget::paintGL()
 				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
 				{
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-					if(m_mapIndexedSurfacePatches.find(v3dRegPos) != m_mapIndexedSurfacePatches.end())
+					if(m_mapSurfaceMeshes.find(v3dRegPos) != m_mapSurfaceMeshes.end())
 					{
-						POLYVOX_SHARED_PTR<IndexedSurfacePatch> ispCurrent = m_mapIndexedSurfacePatches[v3dRegPos];
-						unsigned int uLodLevel = 0; //ispCurrent->m_vecLodRecords.size() - 1;
+						POLYVOX_SHARED_PTR<SurfaceMesh> meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
+						unsigned int uLodLevel = 0; //meshCurrent->m_vecLodRecords.size() - 1;
 						if(m_bUseOpenGLVertexBufferObjects)
 						{													
-							renderRegionVertexBufferObject(m_mapOpenGLSurfacePatches[v3dRegPos], uLodLevel);
+							renderRegionVertexBufferObject(m_mapOpenGLSurfaceMeshes[v3dRegPos], uLodLevel);
 						}
 						else
 						{						
-							renderRegionImmediateMode(*ispCurrent, uLodLevel);
+							renderRegionImmediateMode(*meshCurrent, uLodLevel);
 						}
 					}
 				}

@@ -22,7 +22,7 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 
 #include "GradientEstimators.h"
-#include "IndexedSurfacePatch.h"
+#include "SurfaceMesh.h"
 #include "SurfaceVertex.h"
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -30,13 +30,13 @@ using namespace std;
 
 namespace PolyVox
 {
-	void computeNormalsForVertices(Volume<uint8_t>* volumeData, IndexedSurfacePatch& isp, NormalGenerationMethod normalGenerationMethod)
+	void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh& mesh, NormalGenerationMethod normalGenerationMethod)
 	{
-		std::vector<SurfaceVertex>& vecVertices = isp.getRawVertexData();
+		std::vector<SurfaceVertex>& vecVertices = mesh.getRawVertexData();
 		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
-			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(isp.m_Region.getLowerCorner());
+			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
 			const Vector3DInt16 v3dFloor = static_cast<Vector3DInt16>(v3dPos);
 
 			VolumeSampler<uint8_t> volIter(volumeData);
