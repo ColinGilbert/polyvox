@@ -1,0 +1,11 @@
+SET (CTEST_START_WITH_EMPTY_BINARY_DIRECTORY TRUE)
+
+#FIND_PACKAGE(Qt4)
+#SET(QT_USE_QTTEST TRUE)
+
+INCLUDE_DIRECTORIES("../library/PolyVoxCore/include")
+
+ADD_EXECUTABLE(checksize checksize.cpp)
+TARGET_LINK_LIBRARIES(checksize PolyVoxCore)
+
+ADD_TEST(VolumeSizeTest ${EXECUTABLE_OUTPUT_PATH}/checksize)
