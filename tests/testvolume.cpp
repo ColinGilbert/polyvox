@@ -1,5 +1,4 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
 Copyright (c) 2010 Matt Williams
 
 This software is provided 'as-is', without any express or implied
@@ -19,36 +18,26 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
+#include "testvector.h"
+
+#include <QtTest>
 #include "Volume.h"
 
-#ifdef WIN32
-#include <windows.h>   // Standard Header For Most Programs
-#endif
-
-//Some namespaces we need
-using namespace std;
 using namespace PolyVox;
 
-int main(int argc, char *argv[])
+void TestVolume::testSize()
 {
 	const PolyVox::uint16_t g_uVolumeSideLength = 128;
 	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
-
-	cout << "Tidying memory...";
-	volData.tidyUpMemory(0);
-	cout << "done." << endl;
 	
-	if(volData.getWidth() == g_uVolumeSideLength && volData.getHeight() == g_uVolumeSideLength && volData.getDepth() == g_uVolumeSideLength)
-	{
-		cout << "Success" << endl;
-		return EXIT_SUCCESS;
-	}
-	else
-	{
-		cout << "Failure" << endl;
-		return EXIT_FAILURE;
-	}
-} 
+	volData.tidyUpMemory(0);
+	
+	QCOMPARE(volData.getWidth(), g_uVolumeSideLength);
+	QCOMPARE(volData.getHeight(), g_uVolumeSideLength);
+	QCOMPARE(volData.getDepth(), g_uVolumeSideLength);
+}
+
+QTEST_MAIN(TestVolume)
