@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "testvector.h"
+#include "testvolume.h"
 
 #include <QtTest>
 #include "Volume.h"
