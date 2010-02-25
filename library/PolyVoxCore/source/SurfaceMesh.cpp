@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include <cstdlib>
 #include <list>
+#include <algorithm>
 
 using namespace std;
 
