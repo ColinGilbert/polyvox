@@ -23,8 +23,9 @@ freely, subject to the following restrictions:
 
 #include "testvolume.h"
 
+#include <Volume.h>
+
 #include <QtTest>
-#include "Volume.h"
 
 using namespace PolyVox;
 

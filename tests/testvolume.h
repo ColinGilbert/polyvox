@@ -21,6 +21,9 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
+#ifndef __PolyVox_TestVolume_H__
+#define __PolyVox_TestVolume_H__
+
 #include <QObject>
 
 class TestVolume: public QObject
@@ -30,3 +33,5 @@ class TestVolume: public QObject
 	private slots:
 		void testSize();
 };
+
+#endif
