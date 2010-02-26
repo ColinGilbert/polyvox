@@ -23,6 +23,6 @@ CREATE_TEST(testvolume.h testvolume.cpp testvolume)
 ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
 
 #Vector tests
-#CREATE_TEST(testvector.h testvector.cpp testvector)
-#ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
-#ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
+CREATE_TEST(testvector.h testvector.cpp testvector)
+ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
+ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
