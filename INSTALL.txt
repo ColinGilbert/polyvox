@@ -20,7 +20,7 @@ The ``..`` tells CMake to look in the parent directory for the source.
 
 By default this will set it to be installed in ``/usr/local`` so if you want to install it elsewhere, set the ``CMAKE_INSTALL_PREFIX`` variable to the path you want to install to. If you are using a relatively modern compiler (GCC > 4.3 seems to do) you can also set ``ENABLE_CPP0X`` to build in C++0x mode rather than using the bundled Boost libraries.
 
-You set CMake variable by passing -D<variable>:<type>=<value> cmake command. For example, to set the install prefix, pass::
+You can set CMake variables by passing -D<variable>:<type>=<value> cmake command (the ``:<type>`` part is optional but recommended). For example, to set the install prefix, pass::
 
 	-DCMAKE_INSTALL_PREFIX:PATH=/whatever/you/want
 
