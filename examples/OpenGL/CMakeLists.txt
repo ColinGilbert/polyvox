@@ -54,7 +54,7 @@ LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/debug ${C
 
 #Build
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
-TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} debug PolyVoxCore_d optimized PolyVoxCore)
+TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} debug PolyVoxCore_d optimized PolyVoxCore)
 
 #Install - Only install the example in Windows
 IF(WIN32)
