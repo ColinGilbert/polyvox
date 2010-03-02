@@ -1,0 +1,68 @@
+****************
+Building PolyVox
+****************
+
+Linux
+=====
+
+Navigate to the PolyVox source (the directory containing this file) directory with and then enter the build directory with::
+
+	cd build
+
+CMake
+-----
+
+Now, we use CMake to generate the makefiles with::
+
+	cmake ..
+
+The ``..`` tells CMake to look in the parent directory for the source. 
+
+By default this will set it to be installed in ``/usr/local`` so if you want to install it elsewhere, set the ``CMAKE_INSTALL_PREFIX`` variable to the path you want to install to. If you are using a relatively modern compiler (GCC > 4.3 seems to do) you can also set ``ENABLE_CPP0X`` to build in C++0x mode rather than using the bundled Boost libraries.
+
+You set CMake variable by passing -D<variable>:<type>=<value> cmake command. For example, to set the install prefix, pass::
+
+	-DCMAKE_INSTALL_PREFIX:PATH=/whatever/you/want
+
+The other available settings for PolyVox are:
+
+``ENABLE_CPP0X`` (ON or OFF)
+	Build PolyVox using your compilers built-in versions of the C++0x features. Defaults to OFF which uses the bundled Boost versions
+
+``ENABLE_EXAMPLES`` (ON or OFF)
+	Build the example applications that come with PolyVox. Defaults to ON.
+
+``BUILD_TESTING`` (ON or OFF)
+	Build the test applications that come with PolyVox. Running the tests is detailed in the next section. Defaults to ON.
+
+Building
+--------
+
+Once this has completed successfully, simply run::
+
+	make install
+
+and all should work.
+
+Testing
+-------
+
+To run the tests you do not need to have run ``make install``. Simply run::
+
+	make
+	make test
+
+Windows
+=======
+
+CMake
+-----
+
+You need CMake installed so get the binary distribution from `CMake.org <http://cmake.org/cmake/resources/software.html>`_. Install it and run the CMake GUI.
+
+Point the source directory to the directory holding this file and the build directory to the ``build`` subdirectory. Then, click the ``Configure`` button. Click through the dialog box that appears and once you've clicked ``Finish`` you should see text appearing in the bottom text area. Once this has finished, some options will appear in the top area. The purpose of these options in detailed in the Linux→CMake section above. Once you have set these options to what you please, click ``Configure`` again. If it completes without errors then you can click ``Generate`` which will generate your compilers project files.
+
+Building
+--------
+
+Open the project files in your IDE and build the project as you normally would.
