@@ -35,7 +35,7 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
-FIND_PACKAGE(Qt4)
+FIND_PACKAGE(Qt4 REQUIRED)
 SET(QT_USE_QTGUI 1)
 SET(QT_USE_QTOPENGL 1)
 INCLUDE(${QT_USE_FILE})
@@ -48,7 +48,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 #Also, glut32.dll goes in C:\Windows\System. Using C:\Windows\System32 doesn't seem to work
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS} ${OPENGL_INCLUDE_DIR} "../../library/PolyVoxCore/include")
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} "../../library/PolyVoxCore/include")
 #There has to be a better way!
 LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/debug ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/release)
 
