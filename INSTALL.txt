@@ -27,7 +27,7 @@ You can set CMake variables by passing -D<variable>:<type>=<value> cmake command
 The other available settings for PolyVox are:
 
 ``ENABLE_CPP0X`` (ON or OFF)
-	Build PolyVox using your compilers built-in versions of the C++0x features. Defaults to OFF which uses the bundled Boost versions
+	Build PolyVox using your compilers built-in versions of the C++0x features. Setting it to OFF will use the bundled Boost versions. Defaults to ON.
 
 ``ENABLE_EXAMPLES`` (ON or OFF)
 	Build the example applications that come with PolyVox. Defaults to ON.
