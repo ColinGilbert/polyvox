@@ -48,9 +48,9 @@ FIND_PACKAGE(OpenGL REQUIRED)
 #Also, glut32.dll goes in C:\Windows\System. Using C:\Windows\System32 doesn't seem to work
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} "../../library/PolyVoxCore/include")
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include)
 #There has to be a better way!
-LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/debug ${CMAKE_CURRENT_BINARY_DIR}/../../library/PolyVoxCore/release)
+LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/release)
 
 #Build
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})

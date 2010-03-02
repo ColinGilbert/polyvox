@@ -26,9 +26,9 @@ SOURCE_GROUP("Sources" FILES ${UTIL_SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${UTIL_INC_FILES})
 
 #Tell CMake the paths
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include ../PolyVoxCore/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include)
 #There has to be a better way!
-LINK_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/../PolyVoxCore/debug ${CMAKE_CURRENT_BINARY_DIR}/../PolyVoxCore/release)
+LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/release)
 
 #Util
 #Build
