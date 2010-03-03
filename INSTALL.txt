@@ -35,6 +35,18 @@ The other available settings for PolyVox are:
 ``BUILD_TESTING`` (ON or OFF)
 	Build the test applications that come with PolyVox. Running the tests is detailed in the next section. Defaults to ON.
 
+``CMAKE_BUILD_TYPE`` (Debug, Release, RelWithDebInfo or MinSizeRel)
+	String option to set the type of build. This will automatically set some compilation flags such as the optimisation level or define ``NDEBUG``.
+	
+	For development work against the library
+		Use Debug or RelWithDebInfo
+	
+	For your final version
+		Use Release
+	
+	For building packages (e.g. for Linux distributions)
+		Use RelWithDebInfo
+
 Building
 --------
 
@@ -51,6 +63,15 @@ To run the tests you do not need to have run ``make install``. Simply run::
 
 	make
 	make test
+
+API Documentation
+-----------------
+
+If you want to generate the API documentation, you'll need Doxygen installed. If you saw ``API Docs available: YES`` at the end of the CMake output then you're all set. To generate the docs, just run::
+
+	make doc
+
+and the documentation can be browsed from ``build/library/doc/html/index.html``.
 
 Windows
 =======
