@@ -9,12 +9,21 @@ SET(POLYVOX_VERSION "${POLYVOX_VERSION_MAJOR}.${POLYVOX_VERSION_MINOR}.${POLYVOX
 
 OPTION(ENABLE_CPP0X "Does the compiler support C++0x" ON) #Disable with -DENABLE_CPP0X=OFF or in the GUI
 IF(ENABLE_CPP0X)
+	INCLUDE(CheckCXXCompilerFlag)
 	IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
-		ADD_DEFINITIONS(-DC_PLUS_PLUS_ZERO_X_SUPPORTED -std=c++0x) #Will only work on GCC
+		CHECK_CXX_COMPILER_FLAG(-std=c++0x COMPILER_CPP0X_SUPPORTED) #Check if flag is supported...
+		IF(COMPILER_CPP0X_SUPPORTED)
+			ADD_DEFINITIONS(-DC_PLUS_PLUS_ZERO_X_SUPPORTED -std=c++0x) #...if so, add it...
+		ELSE(COMPILER_CPP0X_SUPPORTED)
+			SET(ENABLE_CPP0X OFF) #...if not, disable C++0x mode.
+			MESSAGE(STATUS "Your version of GCC does not support the -std=c++0x flag. C++0x mode is disabled.")
+		ENDIF(COMPILER_CPP0X_SUPPORTED)
 	ELSEIF(MSYS)
 		#ADD_DEFINITIONS(-DC_PLUS_PLUS_ZERO_X_SUPPORTED)
 	ENDIF()
 ENDIF()
+
+FIND_PACKAGE(Doxygen)
 
 ADD_SUBDIRECTORY(library)
 
@@ -27,15 +36,18 @@ ENDIF(ENABLE_EXAMPLES)
 INCLUDE(Packaging.cmake)
 
 INCLUDE(CTest)
+MARK_AS_ADVANCED(FORCE DART_TESTING_TIMEOUT) #This is only needed to hide the variable in the GUI (CMake bug)
 IF(BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
 ENDIF(BUILD_TESTING)
+
 
 # Option summary
 MESSAGE(STATUS "")
 MESSAGE(STATUS "Summary")
 MESSAGE(STATUS "-------")
-MESSAGE(STATUS "C++0x mode:     " ${ENABLE_CPP0X})
-MESSAGE(STATUS "Build examples: " ${ENABLE_EXAMPLES})
-MESSAGE(STATUS "Build tests:    " ${BUILD_TESTING})
+MESSAGE(STATUS "C++0x mode:         " ${ENABLE_CPP0X})
+MESSAGE(STATUS "Build examples:     " ${ENABLE_EXAMPLES})
+MESSAGE(STATUS "Build tests:        " ${BUILD_TESTING})
+MESSAGE(STATUS "API Docs available: " ${DOXYGEN_FOUND})
 MESSAGE(STATUS "")
