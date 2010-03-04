@@ -25,6 +25,14 @@ ENDIF()
 
 FIND_PACKAGE(Doxygen)
 
+IF(WIN32)
+	#These are used on Windows to ensure that the .exe's and .dll get placed in the ame directory, so that we can run them. 
+	#Note they are actually deprecated in favour of 'RUNTIME_OUTPUT_DIRECTORY' et al, but these replacements apparently don't
+	#work on Windows. See http://www.vtk.org/Bug/bug_view_advanced_page.php?bug_id=8366
+	SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+	SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+ENDIF(WIN32)
+
 ADD_SUBDIRECTORY(library)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
