@@ -31,6 +31,9 @@ IF(WIN32)
 	#work on Windows. See http://www.vtk.org/Bug/bug_view_advanced_page.php?bug_id=8366
 	SET(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
 	SET(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
+	#These are what _should_ be set. If we require 2.8 then test it with these.
+	#SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+	#SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 ENDIF(WIN32)
 
 ADD_SUBDIRECTORY(library)

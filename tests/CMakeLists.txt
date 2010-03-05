@@ -7,7 +7,12 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	QT4_WRAP_CPP(test_moc_SRCS ${headerfile})
 	ADD_EXECUTABLE(${executablename} ${sourcefile} ${test_moc_SRCS})
 	TARGET_LINK_LIBRARIES(${executablename} PolyVoxCore PolyVoxUtil ${QT_LIBRARIES})
-	SET(LATEST_TEST ${CMAKE_CURRENT_BINARY_DIR}/${executablename})
+	#HACK. This is needed since everything is built in the base dir in Windows. As of 2.8 we should change this.
+	IF(WIN32)
+		SET(LATEST_TEST ${EXECUTABLE_OUTPUT_PATH}/${executablename})
+	ELSE(WIN32)
+		SET(LATEST_TEST ${CMAKE_CURRENT_BINARY_DIR}/${executablename})
+	ENDIF(WIN32)
 ENDMACRO(CREATE_TEST)
 
 # Find the QTestLib stuff
