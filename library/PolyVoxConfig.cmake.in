@@ -13,7 +13,8 @@
 
 include(FindPackageMessage)
 
-set(PREFIX "@CMAKE_INSTALL_PREFIX@")
+get_filename_component(THIS_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+set(PREFIX ${THIS_DIR}/../../..)
 
 
 set(PolyVoxCore_LIBRARY_DIRS "${PREFIX}/@PolyVoxCore_LIBRARY_INSTALL_DIRS@")
