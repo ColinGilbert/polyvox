@@ -26,13 +26,15 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TypeDef_H__
 #define __PolyVox_TypeDef_H__
 
-#ifdef WIN32 //Should be is Visual studio (to allow MinGW)
+#ifdef _MSC_VER
+	//We are using a Microsoft compiler.
 	#ifdef POLYVOXCORE_EXPORT
 		#define POLYVOXCORE_API __declspec(dllexport)
 	#else
 		#define POLYVOXCORE_API __declspec(dllimport)
 	#endif
 #else
+	//Assume a GNU compiler.
 	#define POLYVOXCORE_API __attribute__ ((visibility("default")))
 #endif
 
