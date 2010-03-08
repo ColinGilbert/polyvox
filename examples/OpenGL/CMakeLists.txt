@@ -27,9 +27,6 @@ SET(INC_FILES
 
 ADD_DEFINITIONS(-DGLEW_STATIC)
 
-#Appends "_d" to the generated library when in debug mode
-SET(CMAKE_DEBUG_POSTFIX "_d")
-
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
@@ -40,11 +37,6 @@ INCLUDE(${QT_USE_FILE})
 
 FIND_PACKAGE(OpenGL REQUIRED)
 
-#NOTE:  In Windows I haven't had much luck getting the FindGLUT script to work correctly. 
-#The easiest solution has been  to install GLUT alongside OpenGL, which is already in the system path.
-#This means glut.h and glut32.lib go in the 'include' and 'lib' folders within  Microsoft Visual Studio 8\VC\PlatformSDK\ 
-#Also, glut32.dll goes in C:\Windows\System. Using C:\Windows\System32 doesn't seem to work
-
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include)
 #There has to be a better way!
@@ -52,7 +44,7 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/relea
 
 #Build
 ADD_EXECUTABLE(OpenGLExample ${SRC_FILES})
-TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} debug PolyVoxCore_d optimized PolyVoxCore)
+TARGET_LINK_LIBRARIES(OpenGLExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 
 #Install - Only install the example in Windows
 IF(WIN32)
@@ -66,6 +58,6 @@ IF(WIN32)
 	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../release/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
 	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../release/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
 	
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxCore_d.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxUtil_d.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
 ENDIF(WIN32)

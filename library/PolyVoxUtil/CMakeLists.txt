@@ -17,9 +17,6 @@ SET(UTIL_INC_FILES
 
 ADD_DEFINITIONS(-DPOLYVOXUTIL_EXPORT) #Export symbols in the .dll
 
-#Appends "_d" to the generated library when in debug mode
-SET(CMAKE_DEBUG_POSTFIX "_d")
-
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
 SOURCE_GROUP("Sources" FILES ${UTIL_SRC_FILES})
@@ -33,7 +30,7 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/relea
 #Util
 #Build
 ADD_LIBRARY(PolyVoxUtil SHARED ${UTIL_SRC_FILES} ${UTIL_INC_FILES})
-TARGET_LINK_LIBRARIES(PolyVoxUtil debug PolyVoxCore_d optimized PolyVoxCore)
+TARGET_LINK_LIBRARIES(PolyVoxUtil PolyVoxCore)
 SET_TARGET_PROPERTIES(PolyVoxUtil PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(PolyVoxUtil PROPERTIES COMPILE_FLAGS "/wd4251") #Disable warning on STL exports
@@ -54,7 +51,7 @@ IF(WIN32)
 	#On windows, we also install the debug information. It's unfortunate that we have to hard-code
 	#the 'Debug' part of the path, but CMake doesn't seem to provide a way around this. The best I
 	#found was: http://www.cmake.org/pipermail/cmake/2007-October/016924.html (and it is a bit ugly).
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/PolyVoxUtil_d.pdb DESTINATION PolyVoxUtil/lib CONFIGURATIONS Debug)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../Debug/PolyVoxUtil.pdb DESTINATION PolyVoxUtil/lib CONFIGURATIONS Debug)
 ELSE(WIN32)
 	INSTALL(TARGETS PolyVoxUtil
 		RUNTIME DESTINATION bin
@@ -63,6 +60,6 @@ ELSE(WIN32)
 		COMPONENT library
 	)
 
-	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
+	#Install the util header files.
 	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxUtil COMPONENT development PATTERN "*.svn*" EXCLUDE)
 ENDIF(WIN32)
