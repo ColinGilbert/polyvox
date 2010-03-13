@@ -41,23 +41,18 @@ namespace PolyVox
 	public:
 		SurfaceExtractor(Volume<uint8_t>& volData);
 
-		uint8_t getLodLevel(void);
-
-		void setLodLevel(uint8_t uLodLevel);
-
 		POLYVOX_SHARED_PTR<SurfaceMesh> extractSurfaceForRegion(Region region);
 
 	private:
 		//Extract the surface for a particular LOD level
-		template<uint8_t uLodLevel>
 		void extractSurfaceImpl(void);
 
 		//Compute the cell bitmask for a particular slice in z.
-		template<bool isPrevZAvail, uint8_t uLodLevel>
+		template<bool isPrevZAvail>
 		uint32_t computeBitmaskForSlice(void);
 
 		//Compute the cell bitmask for a given cell.
-		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel>
+		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
 		void computeBitmaskForCell(void);
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
@@ -71,10 +66,6 @@ namespace PolyVox
 		{
 			return x + (y * m_uScratchPadWidth);
 		}
-
-		//The lod level can step size.
-		uint8_t m_uLodLevel;
-		uint8_t m_uStepSize;
 
 		//The volume data and a sampler to access it.
 		Volume<uint8_t> m_volData;

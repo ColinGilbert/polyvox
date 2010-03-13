@@ -30,23 +30,9 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	SurfaceExtractor::SurfaceExtractor(Volume<uint8_t>& volData)
-		:m_uLodLevel(0)
-		,m_volData(volData)
+		:m_volData(volData)
 		,m_sampVolume(&volData)
 	{
-	}
-
-	uint8_t SurfaceExtractor::getLodLevel(void)
-	{
-		return m_uLodLevel;
-	}
-
-	void SurfaceExtractor::setLodLevel(uint8_t uLodLevel)
-	{
-		m_uLodLevel = uLodLevel;
-
-		//Step size is 2^uLodLevel
-		m_uStepSize = 1 << uLodLevel;
 	}
 
 	POLYVOX_SHARED_PTR<SurfaceMesh> SurfaceExtractor::extractSurfaceForRegion(Region region)
@@ -57,7 +43,7 @@ namespace PolyVox
 		// back, bottom, right direction. Protect against access violations by cropping region here
 		m_regVolumeCropped = m_volData.getEnclosingRegion();
 		m_regInputUncropped.cropTo(m_regVolumeCropped);
-		m_regVolumeCropped.setUpperCorner(m_regVolumeCropped.getUpperCorner() - Vector3DInt16(2*m_uStepSize-1,2*m_uStepSize-1,2*m_uStepSize-1));
+		m_regVolumeCropped.setUpperCorner(m_regVolumeCropped.getUpperCorner() - Vector3DInt16(1,1,1));
 	
 		m_regInputCropped = region;
 		m_regInputCropped.cropTo(m_regVolumeCropped);
@@ -67,8 +53,8 @@ namespace PolyVox
 		m_uRegionWidth = m_regInputCropped.width();
 		m_uRegionHeight = m_regInputCropped.height();
 
-		m_uScratchPadWidth = m_uRegionWidth+m_uStepSize+8;
-		m_uScratchPadHeight = m_uRegionHeight+m_uStepSize+8;
+		m_uScratchPadWidth = m_uRegionWidth+1;
+		m_uScratchPadHeight = m_uRegionHeight+1;
 
 		//For edge indices
 		m_pPreviousVertexIndicesX = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
@@ -89,18 +75,7 @@ namespace PolyVox
 		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
 		m_regSliceCurrent = m_regSlicePrevious;	
 
-		switch(m_uLodLevel)
-		{
-		case 0:
-			extractSurfaceImpl<0>();
-			break;
-		case 1:
-			extractSurfaceImpl<1>();
-			break;
-		case 2:
-			extractSurfaceImpl<2>();
-			break;
-		}
+		extractSurfaceImpl();
 
 		delete[] m_pPreviousBitmask;
 		delete[] m_pCurrentBitmask;
@@ -122,14 +97,13 @@ namespace PolyVox
 		return POLYVOX_SHARED_PTR<SurfaceMesh>(m_meshCurrent);
 	}
 
-	template<uint8_t uLodLevel>
 	void SurfaceExtractor::extractSurfaceImpl(void)
 	{	
 		uint32_t uNoOfNonEmptyCellsForSlice0 = 0;
 		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
 
 		//Process the first slice (previous slice not available)
-		computeBitmaskForSlice<false, uLodLevel>();
+		computeBitmaskForSlice<false>();
 		uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 		if(uNoOfNonEmptyCellsForSlice1 != 0)
@@ -147,12 +121,12 @@ namespace PolyVox
 		std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
-		m_regSliceCurrent.shift(Vector3DInt16(0,0,m_uStepSize));
+		m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
 
 		//Process the other slices (previous slice is available)
-		for(uint32_t uSlice = 1; uSlice <= m_regInputCropped.depth(); uSlice += m_uStepSize)
+		for(int16_t uSlice = 1; uSlice <= m_regInputCropped.depth(); uSlice++)
 		{	
-			computeBitmaskForSlice<true, uLodLevel>();
+			computeBitmaskForSlice<true>();
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
@@ -175,11 +149,11 @@ namespace PolyVox
 			std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
 
 			m_regSlicePrevious = m_regSliceCurrent;
-			m_regSliceCurrent.shift(Vector3DInt16(0,0,m_uStepSize));
+			m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
 		}
 
 		//A final slice just to close of the volume
-		m_regSliceCurrent.shift(Vector3DInt16(0,0,-m_uStepSize));
+		m_regSliceCurrent.shift(Vector3DInt16(0,0,-1));
 		if(m_regSliceCurrent.getLowerCorner().getZ() == m_regVolumeCropped.getUpperCorner().getZ())
 		{
 			memset(m_pCurrentVertexIndicesX, 0xff, m_uScratchPadWidth * m_uScratchPadHeight * 4);
@@ -189,7 +163,7 @@ namespace PolyVox
 		}
 	}
 
-	template<bool isPrevZAvail, uint8_t uLodLevel>
+	template<bool isPrevZAvail>
 	uint32_t SurfaceExtractor::computeBitmaskForSlice(void)
 	{
 		m_uNoOfOccupiedCells = 0;
@@ -208,75 +182,53 @@ namespace PolyVox
 		uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
 		m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-		computeBitmaskForCell<false, false, isPrevZAvail, uLodLevel>();
-
+		computeBitmaskForCell<false, false, isPrevZAvail>();
 
 		//Process the edge where x is minimal.
 		uXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
 		m_sampVolume.setPosition(uXVolSpace, m_regSliceCurrent.getLowerCorner().getY(), uZVolSpace);
-		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + 1; uYVolSpace <= uMaxYVolSpace; uYVolSpace++)
 		{
 			uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
 			uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
-			if(uLodLevel == 0)
-			{
-				m_sampVolume.movePositiveY();
-			}
-			else
-			{
-				m_sampVolume.setPosition(uXVolSpace, uYVolSpace, uZVolSpace);
-			}
+			m_sampVolume.movePositiveY();
 
-			computeBitmaskForCell<false, true, isPrevZAvail, uLodLevel>();
+			computeBitmaskForCell<false, true, isPrevZAvail>();
 		}
 
 		//Process the edge where y is minimal.
 		uYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
 		m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), uYVolSpace, uZVolSpace);
-		for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+		for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + 1; uXVolSpace <= uMaxXVolSpace; uXVolSpace++)
 		{	
 			uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
 			uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
-			if(uLodLevel == 0)
-			{
-				m_sampVolume.movePositiveX();
-			}
-			else
-			{
-				m_sampVolume.setPosition(uXVolSpace, uYVolSpace, uZVolSpace);
-			}
+			m_sampVolume.movePositiveX();
 
-			computeBitmaskForCell<true, false, isPrevZAvail, uLodLevel>();
+			computeBitmaskForCell<true, false, isPrevZAvail>();
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
-		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + m_uStepSize; uYVolSpace <= uMaxYVolSpace; uYVolSpace += m_uStepSize)
+		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + 1; uYVolSpace <= uMaxYVolSpace; uYVolSpace++)
 		{
 			m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), uYVolSpace, uZVolSpace);
-			for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + m_uStepSize; uXVolSpace <= uMaxXVolSpace; uXVolSpace += m_uStepSize)
+			for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + 1; uXVolSpace <= uMaxXVolSpace; uXVolSpace++)
 			{	
 				uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
 				uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 
-				if(uLodLevel == 0)
-				{
-					m_sampVolume.movePositiveX();
-				}
-				else
-				{
-					m_sampVolume.setPosition(uXVolSpace, uYVolSpace, uZVolSpace);
-				}
+				m_sampVolume.movePositiveX();
 
-				computeBitmaskForCell<true, true, isPrevZAvail, uLodLevel>();
+				computeBitmaskForCell<true, true, isPrevZAvail>();
 			}
 		}
 
 		return m_uNoOfOccupiedCells;
 	}
 
-	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail, uint8_t uLodLevel>
+	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
 	void SurfaceExtractor::computeBitmaskForCell(void)
 	{
 		uint8_t iCubeIndex = 0;
@@ -296,27 +248,19 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(uLodLevel == 0)
-					{
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
-					}
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//z
 					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
 					iPreviousCubeIndexZ >>= 4;
 
 					//y
-					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-1)];
 					iPreviousCubeIndexY &= 192; //192 = 128 + 64
 					iPreviousCubeIndexY >>= 2;
 
 					//x
-					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-1,uYRegSpace)];
 					iPreviousCubeIndexX &= 128;
 					iPreviousCubeIndexX >>= 1;
 
@@ -326,25 +270,15 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(uLodLevel == 0)
-					{
-						v011 = m_sampVolume.peekVoxel0px1py1pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
-					}
+					v011 = m_sampVolume.peekVoxel0px1py1pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//z
 					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
 					iPreviousCubeIndexZ >>= 4;
 
 					//y
-					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-1)];
 					iPreviousCubeIndexY &= 192; //192 = 128 + 64
 					iPreviousCubeIndexY >>= 2;
 
@@ -358,25 +292,15 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(uLodLevel == 0)
-					{
-						v101 = m_sampVolume.peekVoxel1px0py1pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
-					}
+					v101 = m_sampVolume.peekVoxel1px0py1pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//z
 					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
 					iPreviousCubeIndexZ >>= 4;
 
 					//x
-					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-1,uYRegSpace)];
 					iPreviousCubeIndexX &= 160; //160 = 128+32
 					iPreviousCubeIndexX >>= 1;
 
@@ -387,24 +311,10 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(uLodLevel == 0)
-					{
-						v001 = m_sampVolume.peekVoxel0px0py1pz();
-						v101 = m_sampVolume.peekVoxel1px0py1pz();
-						v011 = m_sampVolume.peekVoxel0px1py1pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
-						v001 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);	
-					}
+					v001 = m_sampVolume.peekVoxel0px0py1pz();
+					v101 = m_sampVolume.peekVoxel1px0py1pz();
+					v011 = m_sampVolume.peekVoxel0px1py1pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//z
 					uint8_t iPreviousCubeIndexZ = m_pPreviousBitmask[getIndex(uXRegSpace,uYRegSpace)];
@@ -423,27 +333,16 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(uLodLevel == 0)
-					{
-						v110 = m_sampVolume.peekVoxel1px1py0pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-					}
+					v110 = m_sampVolume.peekVoxel1px1py0pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//y
-					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-1)];
 					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 					iPreviousCubeIndexY >>= 2;
 
 					//x
-					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-1,uYRegSpace)];
 					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 					iPreviousCubeIndexX >>= 1;
 
@@ -454,29 +353,14 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(uLodLevel == 0)
-					{
-						v010 = m_sampVolume.peekVoxel0px1py0pz();
-						v110 = m_sampVolume.peekVoxel1px1py0pz();
+					v010 = m_sampVolume.peekVoxel0px1py0pz();
+					v110 = m_sampVolume.peekVoxel1px1py0pz();
 
-						v011 = m_sampVolume.peekVoxel0px1py1pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
-						v010 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-					}
+					v011 = m_sampVolume.peekVoxel0px1py1pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//y
-					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-m_uStepSize)];
+					uint8_t iPreviousCubeIndexY = m_pCurrentBitmask[getIndex(uXRegSpace,uYRegSpace-1)];
 					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 					iPreviousCubeIndexY >>= 2;
 
@@ -492,29 +376,14 @@ namespace PolyVox
 			{
 				if(isPrevXAvail)
 				{
-					if(uLodLevel == 0)
-					{
-						v100 = m_sampVolume.peekVoxel1px0py0pz();
-						v110 = m_sampVolume.peekVoxel1px1py0pz();
+					v100 = m_sampVolume.peekVoxel1px0py0pz();
+					v110 = m_sampVolume.peekVoxel1px1py0pz();
 
-						v101 = m_sampVolume.peekVoxel1px0py1pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
-						v100 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-					}
+					v101 = m_sampVolume.peekVoxel1px0py1pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					//x
-					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-m_uStepSize,uYRegSpace)];
+					uint8_t iPreviousCubeIndexX = m_pCurrentBitmask[getIndex(uXRegSpace-1,uYRegSpace)];
 					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 					iPreviousCubeIndexX >>= 1;
 
@@ -527,38 +396,15 @@ namespace PolyVox
 				}
 				else //previous X not available
 				{
-					if(uLodLevel == 0)
-					{
-						v000 = m_sampVolume.getVoxel();
-						v100 = m_sampVolume.peekVoxel1px0py0pz();
-						v010 = m_sampVolume.peekVoxel0px1py0pz();
-						v110 = m_sampVolume.peekVoxel1px1py0pz();
+					v000 = m_sampVolume.getVoxel();
+					v100 = m_sampVolume.peekVoxel1px0py0pz();
+					v010 = m_sampVolume.peekVoxel0px1py0pz();
+					v110 = m_sampVolume.peekVoxel1px1py0pz();
 
-						v001 = m_sampVolume.peekVoxel0px0py1pz();
-						v101 = m_sampVolume.peekVoxel1px0py1pz();
-						v011 = m_sampVolume.peekVoxel0px1py1pz();
-						v111 = m_sampVolume.peekVoxel1px1py1pz();
-					}
-					else
-					{
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-						v000 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace);
-						v100 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace);
-						v010 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace);
-						v110 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace+m_uStepSize);
-						v001 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace,uZVolSpace+m_uStepSize);
-						v101 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v011 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-						m_sampVolume.setPosition(uXVolSpace+m_uStepSize,uYVolSpace+m_uStepSize,uZVolSpace+m_uStepSize);
-						v111 = m_sampVolume.getSubSampledVoxel(uLodLevel);
-					}
+					v001 = m_sampVolume.peekVoxel0px0py1pz();
+					v101 = m_sampVolume.peekVoxel1px0py1pz();
+					v011 = m_sampVolume.peekVoxel0px1py1pz();
+					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					if (v000 == 0) iCubeIndex |= 1;
 					if (v100 == 0) iCubeIndex |= 2;
@@ -590,14 +436,14 @@ namespace PolyVox
 		bool isPosZEdge = (uZVolSpace == m_regInputCropped.getUpperCorner().getZ());
 
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace++)
 		{
 			const uint16_t uYRegSpace = uYVolSpace - m_regInputCropped.getLowerCorner().getY();
 			//bool isYEdge = ((uYVolSpace == m_regInputCropped.getLowerCorner().getY()) || (uYVolSpace == m_regInputCropped.getUpperCorner().getY()));
 			bool isNegYEdge = (uYVolSpace == m_regInputCropped.getLowerCorner().getY());
 			bool isPosYEdge = (uYVolSpace == m_regInputCropped.getUpperCorner().getY());
 
-			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace++)
 			{		
 				//Current position
 				const uint16_t uXRegSpace = uXVolSpace - m_regInputCropped.getLowerCorner().getX();
@@ -618,14 +464,14 @@ namespace PolyVox
 
 
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-				const uint8_t v000 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
+				const uint8_t v000 = m_sampVolume.getVoxel();
 
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
-					m_sampVolume.setPosition(uXVolSpace + m_uStepSize,uYVolSpace,uZVolSpace);
-					const uint8_t v100 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX() + 0.5f * m_uStepSize, uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ());
+					m_sampVolume.movePositiveX();
+					const uint8_t v100 = m_sampVolume.getVoxel();
+					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()) + 0.5f, static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()));
 					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
 					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
@@ -641,9 +487,9 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
-					m_sampVolume.setPosition(uXVolSpace,uYVolSpace + m_uStepSize,uZVolSpace);
-					const uint8_t v010 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY() + 0.5f * m_uStepSize, uZVolSpace - m_regInputCropped.getLowerCorner().getZ());
+					m_sampVolume.movePositiveY();
+					const uint8_t v010 = m_sampVolume.getVoxel();
+					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()) + 0.5f, static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()));
 					const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
 					const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
@@ -659,9 +505,9 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 256)
 				{
-					m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace + m_uStepSize);
-					const uint8_t v001 = m_sampVolume.getSubSampledVoxel(m_uLodLevel);
-					const Vector3DFloat v3dPosition(uXVolSpace - m_regInputCropped.getLowerCorner().getX(), uYVolSpace - m_regInputCropped.getLowerCorner().getY(), uZVolSpace - m_regInputCropped.getLowerCorner().getZ() + 0.5f * m_uStepSize);
+					m_sampVolume.movePositiveZ();
+					const uint8_t v001 = m_sampVolume.getVoxel();
+					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()) + 0.5f);
 					const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
 					const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
@@ -687,9 +533,9 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
-		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace < m_regInputUncropped.getUpperCorner().getY(); uYVolSpace += m_uStepSize)
+		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace < m_regInputUncropped.getUpperCorner().getY(); uYVolSpace++)
 		{
-			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace < m_regInputUncropped.getUpperCorner().getX(); uXVolSpace += m_uStepSize)
+			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace < m_regInputUncropped.getUpperCorner().getX(); uXVolSpace++)
 			{		
 				uint16_t uZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
@@ -716,12 +562,12 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 2)
 				{
-					indlist[1] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace)];
+					indlist[1] = m_pPreviousVertexIndicesY[getIndex(uXRegSpace+1,uYRegSpace)];
 					//assert(indlist[1] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 4)
 				{
-					indlist[2] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize)];
+					indlist[2] = m_pPreviousVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+1)];
 					//assert(indlist[2] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 8)
@@ -736,12 +582,12 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 32)
 				{
-					indlist[5] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace+m_uStepSize,uYRegSpace)];
+					indlist[5] = m_pCurrentVertexIndicesY[getIndex(uXRegSpace+1,uYRegSpace)];
 					//assert(indlist[5] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 64)
 				{
-					indlist[6] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+m_uStepSize)];
+					indlist[6] = m_pCurrentVertexIndicesX[getIndex(uXRegSpace,uYRegSpace+1)];
 					//assert(indlist[6] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 128)
@@ -756,17 +602,17 @@ namespace PolyVox
 				}
 				if (edgeTable[iCubeIndex] & 512)
 				{
-					indlist[9] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace)];
+					indlist[9] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+1,uYRegSpace)];
 					//assert(indlist[9] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 1024)
 				{
-					indlist[10] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+m_uStepSize,uYRegSpace+m_uStepSize)];
+					indlist[10] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace+1,uYRegSpace+1)];
 					//assert(indlist[10] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2048)
 				{
-					indlist[11] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace+m_uStepSize)];
+					indlist[11] = m_pPreviousVertexIndicesZ[getIndex(uXRegSpace,uYRegSpace+1)];
 					//assert(indlist[11] != -1);
 				}
 
