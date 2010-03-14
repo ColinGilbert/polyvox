@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	template <typename ElementType> class Array2D;
 	template <typename VoxelType> class Block;
 
 	//---------- Volume ----------
