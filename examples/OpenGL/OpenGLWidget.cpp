@@ -121,7 +121,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 						//For decimation built into Mesh
 						//mesh->generateAveragedFaceNormals(true);
 
-						mesh->decimate(0.999f);
+						//mesh->decimate(0.999f);
 
 						//mesh->generateAveragedFaceNormals(true);
 						////////////////////////////////////////////////////////////////////////////////

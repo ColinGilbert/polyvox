@@ -44,22 +44,28 @@ namespace PolyVox
 		POLYVOX_SHARED_PTR<SurfaceMesh> extractSurfaceForRegion(Region region);
 
 	private:
-		//Extract the surface for a particular LOD level
-		void extractSurfaceImpl(void);
-
 		//Compute the cell bitmask for a particular slice in z.
 		template<bool isPrevZAvail>
-		uint32_t computeBitmaskForSlice(void);
+		uint32_t computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask);
 
 		//Compute the cell bitmask for a given cell.
 		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-		void computeBitmaskForCell(void);
+		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask);
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
-		void generateVerticesForSlice();
+		void generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+			Array2DInt32& m_pCurrentVertexIndicesX,
+			Array2DInt32& m_pCurrentVertexIndicesY,
+			Array2DInt32& m_pCurrentVertexIndicesZ);
 
 		//Use the cell bitmasks to generate all the indices needed for that slice
-		void generateIndicesForSlice();
+		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+			const Array2DInt32& m_pPreviousVertexIndicesX,
+			const Array2DInt32& m_pPreviousVertexIndicesY,
+			const Array2DInt32& m_pPreviousVertexIndicesZ,
+			const Array2DInt32& m_pCurrentVertexIndicesX,
+			const Array2DInt32& m_pCurrentVertexIndicesY,
+			const Array2DInt32& m_pCurrentVertexIndicesZ);
 
 		//Converts a position into an index for accessing scratch areas.
 		inline uint32_t getIndex(uint32_t x, uint32_t y)
@@ -71,17 +77,20 @@ namespace PolyVox
 		Volume<uint8_t> m_volData;
 		VolumeSampler<uint8_t> m_sampVolume;
 
-		//Cell bitmasks for the current and previous slices.
-		uint8_t* m_pPreviousBitmask;
-		uint8_t* m_pCurrentBitmask;
-
 		//Used to keep track of where generated vertices have been placed.
-		int32_t* m_pPreviousVertexIndicesX;
+		/*int32_t* m_pPreviousVertexIndicesX;
 		int32_t* m_pPreviousVertexIndicesY; 
 		int32_t* m_pPreviousVertexIndicesZ; 
 		int32_t* m_pCurrentVertexIndicesX; 
 		int32_t* m_pCurrentVertexIndicesY; 
-		int32_t* m_pCurrentVertexIndicesZ;
+		int32_t* m_pCurrentVertexIndicesZ;*/
+
+		/*Array2DInt32 m_pPreviousVertexIndicesX;
+		Array2DInt32 m_pPreviousVertexIndicesY; 
+		Array2DInt32 m_pPreviousVertexIndicesZ; 
+		Array2DInt32 m_pCurrentVertexIndicesX; 
+		Array2DInt32 m_pCurrentVertexIndicesY; 
+		Array2DInt32 m_pCurrentVertexIndicesZ;*/
 
 		//Holds a position in volume space.
 		uint16_t uXVolSpace;

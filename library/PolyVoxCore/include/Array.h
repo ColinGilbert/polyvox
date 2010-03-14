@@ -154,6 +154,11 @@ namespace PolyVox
 			rhs.m_pData = temp;
 		}
 
+		void fillWithUint8(uint8_t value)
+		{
+			memset(m_pData, value, m_uWidth * m_uHeight * sizeof(ElementType));
+		}
+
 	private:
 		//Dimensions
 		uint32_t m_uWidth;
