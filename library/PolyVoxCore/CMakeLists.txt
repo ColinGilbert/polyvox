@@ -4,7 +4,6 @@ PROJECT(PolyVoxCore)
 
 #Projects source files
 SET(CORE_SRC_FILES
-	source/Array.cpp
 	source/GradientEstimators.cpp
 	source/SurfaceMesh.cpp
 	source/Log.cpp
@@ -21,6 +20,7 @@ SET(CORE_SRC_FILES
 #Projects headers files
 SET(CORE_INC_FILES
 	include/Array.h
+	include/Array.inl
 	include/GradientEstimators.inl
 	include/SurfaceMesh.h
 	include/Log.h

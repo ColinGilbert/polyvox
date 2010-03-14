@@ -33,18 +33,27 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<typename ElementType>
-	class POLYVOXCORE_API Array2D
+	template<uint32_t dimensions, typename ElementType>
+	class POLYVOXCORE_API Array
 	{
 	public:
-		Array2D()
+		Array()
 			:m_uWidth(0)
 			,m_uHeight(0)
 			,m_pData(0)
 		{
 		}
 
-		Array2D(uint32_t width, uint32_t height)
+		Array(uint32_t width)
+			:m_uWidth(width)
+			,m_uHeight(0)
+			,m_pData(0)
+		{
+			m_pData = new ElementType[width];
+			assert(m_pData);
+		}
+
+		Array(uint32_t width, uint32_t height)
 			:m_uWidth(width)
 			,m_uHeight(height)
 			,m_pData(0)
@@ -61,13 +70,13 @@ namespace PolyVox
 			*this = rhs;
 		}*/
 
-		~Array2D()
+		~Array()
 		{
-			/*if(m_pData)
+			if(m_pData)
 			{
 				delete[] m_pData;
 			}
-			m_pData = 0;*/
+			m_pData = 0;
 		}
 
 		/*Array2D& operator=(const Array2D& rhs)
@@ -109,11 +118,23 @@ namespace PolyVox
 			return m_pData[x * m_uWidth + y];
 		}*/
 
+		ElementType& getElement(uint32_t x) const
+		{
+			assert(x < m_uWidth);
+			return m_pData[x];
+		}
+
 		ElementType& getElement(uint32_t x, uint32_t y) const
 		{
 			assert(x < m_uWidth);
 			assert(y < m_uHeight);
 			return m_pData[x + y * m_uWidth];
+		}
+
+		void setElement(uint32_t x, ElementType value)
+		{
+			assert(x < m_uWidth);
+			m_pData[x] = value;
 		}
 
 		void setElement(uint32_t x, uint32_t y, ElementType value)
@@ -123,7 +144,7 @@ namespace PolyVox
 			m_pData[x + y * m_uWidth] = value;
 		}
 
-		void swap(Array2D& rhs)
+		void swap(Array& rhs)
 		{
 			assert(m_uWidth == rhs.m_uWidth);
 			assert(m_uHeight == rhs.m_uHeight);
@@ -141,6 +162,60 @@ namespace PolyVox
 		//Data
 		ElementType* m_pData;
 	};
+
+	//Some handy typedefs
+	///A 1D Array of floats.
+	typedef Array<1,float> Array1DFloat;
+	///A 1D Array of doubles.
+    typedef Array<1,double> Array1DDouble;
+	///A 1D Array of signed 8-bit values.
+	typedef Array<1,int8_t> Array1DInt8;
+	///A 1D Array of unsigned 8-bit values.
+	typedef Array<1,uint8_t> Array1DUint8;
+	///A 1D Array of signed 16-bit values.
+	typedef Array<1,int16_t> Array1DInt16;
+	///A 1D Array of unsigned 16-bit values.
+	typedef Array<1,uint16_t> Array1DUint16;
+	///A 1D Array of signed 32-bit values.
+	typedef Array<1,int32_t> Array1DInt32;
+	///A 1D Array of unsigned 32-bit values.
+	typedef Array<1,uint32_t> Array1DUint32;
+
+	///A 2D Array of floats.
+	typedef Array<2,float> Array2DFloat;
+	///A 2D Array of doubles.
+    typedef Array<2,double> Array2DDouble;
+	///A 2D Array of signed 8-bit values.
+	typedef Array<2,int8_t> Array2DInt8;
+	///A 2D Array of unsigned 8-bit values.
+	typedef Array<2,uint8_t> Array2DUint8;
+	///A 2D Array of signed 16-bit values.
+	typedef Array<2,int16_t> Array2DInt16;
+	///A 2D Array of unsigned 16-bit values.
+	typedef Array<2,uint16_t> Array2DUint16;
+	///A 2D Array of signed 32-bit values.
+	typedef Array<2,int32_t> Array2DInt32;
+	///A 2D Array of unsigned 32-bit values.
+	typedef Array<2,uint32_t> Array2DUint32;
+
+	///A 3D Array of floats.
+	typedef Array<3,float> Array3DFloat;
+	///A 3D Array of doubles.
+    typedef Array<3,double> Array3DDouble;
+	///A 3D Array of signed 8-bit values.
+	typedef Array<3,int8_t> Array3DInt8;
+	///A 3D Array of unsigned 8-bit values.
+	typedef Array<3,uint8_t> Array3DUint8;
+	///A 3D Array of signed 16-bit values.
+	typedef Array<3,int16_t> Array3DInt16;
+	///A 3D Array of unsigned 16-bit values.
+	typedef Array<3,uint16_t> Array3DUint16;
+	///A 3D Array of signed 32-bit values.
+	typedef Array<3,int32_t> Array3DInt32;
+	///A 3D Array of unsigned 32-bit values.
+	typedef Array<3,uint32_t> Array3DUint32;
 }//namespace Thermite
+
+#include "Array.inl"
 
 #endif
