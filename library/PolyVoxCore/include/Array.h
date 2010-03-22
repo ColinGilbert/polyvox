@@ -33,146 +33,128 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<uint32_t dimensions, typename ElementType>
-	class POLYVOXCORE_API Array
+	template <uint32_t noOfDims, typename ElementType>
+	class Array
 	{
+		friend class Array<noOfDims+1, ElementType>;
+
 	public:
-		Array()
-			:m_uWidth(0)
-			,m_uHeight(0)
-			,m_pData(0)
+		Array<noOfDims, ElementType>(const uint32_t (&Dimensions)[noOfDims])
+			: m_pElements(0)
+			,m_pDimensions(0)
+			,m_pOffsets(0)
+			,m_uNoOfElements(0)
 		{
-		}
-
-		Array(uint32_t width)
-			:m_uWidth(width)
-			,m_uHeight(0)
-			,m_pData(0)
-		{
-			m_pData = new ElementType[width];
-			assert(m_pData);
-		}
-
-		Array(uint32_t width, uint32_t height)
-			:m_uWidth(width)
-			,m_uHeight(height)
-			,m_pData(0)
-		{
-			m_pData = new ElementType[width * height];
-			assert(m_pData);
-		}
-
-		/*Array2D(const Array2D& rhs)
-			:m_uWidth(0)
-			,m_uHeight(0)
-			,m_pData(0)
-		{
-			*this = rhs;
-		}*/
-
-		~Array()
-		{
-			if(m_pData)
+			m_pDimensions = new uint32_t[noOfDims];
+			m_pOffsets = new uint32_t[noOfDims];
+			
+			// Calculate all the information you need to use the array
+			m_uNoOfElements=1;
+			for (uint32_t i=0; i<noOfDims; i++)
 			{
-				delete[] m_pData;
-			}
-			m_pData = 0;
+				assert(Dimensions[i] != 0);
+
+				m_uNoOfElements*=Dimensions[i]; 
+				m_pDimensions[i]=Dimensions[i];
+				m_pOffsets[i]=1; 
+				for (int k=noOfDims-1; k>i; k--)
+					m_pOffsets[i]*=Dimensions[k];
+			} 
+			// Allocate new elements, let exception propagate 
+			m_pElements=new ElementType[m_uNoOfElements];
+		} 
+
+		Array<noOfDims-1, ElementType> operator [](uint32_t uIndex)
+		{
+			assert(uIndex<m_pDimensions[0]);
+			return
+				Array<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
+				m_pDimensions+1, m_pOffsets+1);
+		}
+		const Array<noOfDims-1, ElementType>
+			operator [](uint32_t uIndex) const
+		{
+			assert(uIndex<m_pDimensions[0]);
+			return
+				Array<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
+				m_pDimensions+1, m_pOffsets+1);
 		}
 
-		/*Array2D& operator=(const Array2D& rhs)
+		ElementType* getRawData(void)
 		{
-			if(this == &rhs)
-			{
-				return *this;
-			}
-
-			if((m_uWidth != rhs.m_uWidth) || (m_uHeight != rhs.m_uHeight))
-			{
-				if(m_pData)
-				{
-					delete m_pData;
-				}
-				m_pData = 0;
-
-				m_uWidth = rhs.m_uWidth;
-				m_uHeight = rhs.m_uHeight;
-
-				m_pData = new ElementType[m_uWidth * m_uHeight];
-			}
-
-			std::memcpy(m_pData, rhs.m_pData, sizeof(ElementType) * m_uWidth * m_uHeight);
-			return *this;
-		}*/
-
-		/*ElementType& operator() (uint32_t x, uint32_t y)
-		{
-			assert(x < m_uWidth);
-			assert(y < m_uHeight);
-			return m_pData[x * m_uWidth + y];
+			return m_pElements;
 		}
 
-		ElementType  operator() (uint32_t x, uint32_t y) const
+		uint32_t getNoOfElements(void)
 		{
-			assert(x < m_uWidth);
-			assert(y < m_uHeight);
-			return m_pData[x * m_uWidth + y];
-		}*/
-
-		ElementType& getElement(uint32_t x) const
-		{
-			assert(x < m_uWidth);
-			return m_pData[x];
-		}
-
-		ElementType& getElement(uint32_t x, uint32_t y) const
-		{
-			assert(x < m_uWidth);
-			assert(y < m_uHeight);
-			return m_pData[x + y * m_uWidth];
-		}
-
-		void setElement(uint32_t x, ElementType value)
-		{
-			assert(x < m_uWidth);
-			m_pData[x] = value;
-		}
-
-		void setElement(uint32_t x, uint32_t y, ElementType value)
-		{
-			assert(x < m_uWidth);
-			assert(y < m_uHeight);
-			m_pData[x + y * m_uWidth] = value;
-		}
-
-		void swap(Array& rhs)
-		{
-			assert(m_uWidth == rhs.m_uWidth);
-			assert(m_uHeight == rhs.m_uHeight);
-
-			ElementType* temp = m_pData;
-			m_pData = rhs.m_pData;
-			rhs.m_pData = temp;
-		}
-
-		void fillWithUint8(uint8_t value)
-		{
-			memset(m_pData, value, m_uWidth * m_uHeight * sizeof(ElementType));
+			return m_uNoOfElements;
 		}
 
 	private:
-		//Dimensions
-		uint32_t m_uWidth;
-		uint32_t m_uHeight;
+		Array<noOfDims, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets)
+			:m_pElements(pElements)
+			,m_pDimensions(pDimensions)
+			,m_pOffsets(pOffsets)
+			,m_uNoOfElements(0)
+		{
+		} 
 
-		//Data
-		ElementType* m_pData;
+		uint32_t * m_pDimensions;
+		uint32_t * m_pOffsets;
+		uint32_t m_uNoOfElements;
+		ElementType * m_pElements;
+	};
+
+	template <typename ElementType>
+	class Array<1, ElementType>
+	{
+		friend class Array<2, ElementType>;
+
+	public:
+		ElementType & operator [] (uint32_t uIndex)
+		{
+			assert(uIndex<m_pDimensions[0]);
+			return m_pElements[uIndex];
+		}
+
+		const ElementType & operator [] (uint32_t uIndex) const
+		{
+			assert(uIndex<m_pDimensions[0]);
+			return m_pElements[uIndex];
+		}
+
+		ElementType* getRawData(void)
+		{
+			return m_pElements;
+		}
+
+		uint32_t getNoOfElements(void)
+		{
+			return m_pDimensions[0];
+		}
+		
+	private:
+		Array<1, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/)
+			:m_pDimensions(pDimensions)
+			,m_pElements(pElements)			
+		{
+		}
+
+		uint32_t * m_pDimensions;
+		ElementType * m_pElements;
+	};
+
+	template <typename ElementType>
+	class Array<0, ElementType>
+	{
+		//Zero dimensional array is meaningless.
 	};
 
 	//Some handy typedefs
 	///A 1D Array of floats.
 	typedef Array<1,float> Array1DFloat;
 	///A 1D Array of doubles.
-    typedef Array<1,double> Array1DDouble;
+	typedef Array<1,double> Array1DDouble;
 	///A 1D Array of signed 8-bit values.
 	typedef Array<1,int8_t> Array1DInt8;
 	///A 1D Array of unsigned 8-bit values.
