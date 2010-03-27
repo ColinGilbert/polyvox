@@ -21,8 +21,8 @@ SET(CORE_SRC_FILES
 SET(CORE_INC_FILES
 	include/Array.h
 	include/Array.inl
-	include/Dimensions.h
-	include/Dimensions.inl
+	include/ArraySizes.h
+	include/ArraySizes.inl
 	include/GradientEstimators.inl
 	include/SurfaceMesh.h
 	include/Log.h
@@ -49,6 +49,8 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
+	include/PolyVoxImpl/ArraySizesImpl.h
+	include/PolyVoxImpl/ArraySizesImpl.inl
 	include/PolyVoxImpl/Block.h
 	include/PolyVoxImpl/Block.inl
 	include/PolyVoxImpl/CPlusPlusZeroXSupport.h

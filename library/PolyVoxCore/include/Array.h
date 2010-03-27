@@ -27,6 +27,8 @@ freely, subject to the following restrictions:
 #define __PolyVox_Array_H__
 
 #pragma region Headers
+#include "ArraySizes.h" //Not strictly required, but convienient
+
 #include "PolyVoxImpl/TypeDef.h"
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion

@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #include "SurfaceExtractor.h"
 
 #include "Array.h"
-#include "Dimensions.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
