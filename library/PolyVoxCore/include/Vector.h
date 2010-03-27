@@ -152,7 +152,7 @@ namespace PolyVox
 
 
 
-}//namespace Thermite
+}//namespace PolyVox
 
 #include "Vector.inl"
 

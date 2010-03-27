@@ -21,6 +21,8 @@ SET(CORE_SRC_FILES
 SET(CORE_INC_FILES
 	include/Array.h
 	include/Array.inl
+	include/Dimensions.h
+	include/Dimensions.inl
 	include/GradientEstimators.inl
 	include/SurfaceMesh.h
 	include/Log.h

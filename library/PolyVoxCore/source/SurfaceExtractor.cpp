@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #include "SurfaceExtractor.h"
 
 #include "Array.h"
+#include "Dimensions.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
@@ -65,6 +66,7 @@ namespace PolyVox
 		m_pCurrentVertexIndicesY = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
 		m_pCurrentVertexIndicesZ = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];*/
 
+		//uint32_t Size1 [1]= {m_uScratchPadWidth}; // Array dimensions
 		uint32_t Size2 [2]= {m_uScratchPadWidth, m_uScratchPadHeight}; // Array dimensions
 
 		/*Array2DInt32 m_pPreviousVertexIndicesX(m_uScratchPadWidth, m_uScratchPadHeight);
@@ -74,12 +76,15 @@ namespace PolyVox
 		Array2DInt32 m_pCurrentVertexIndicesY(m_uScratchPadWidth, m_uScratchPadHeight);
 		Array2DInt32 m_pCurrentVertexIndicesZ(m_uScratchPadWidth, m_uScratchPadHeight);*/
 
-		Array2DInt32 m_pPreviousVertexIndicesX(Size2);
+		Array2DInt32 m_pPreviousVertexIndicesX(ArraySizes(m_uScratchPadWidth)(m_uScratchPadHeight));
 		Array2DInt32 m_pPreviousVertexIndicesY(Size2);
 		Array2DInt32 m_pPreviousVertexIndicesZ(Size2);
 		Array2DInt32 m_pCurrentVertexIndicesX(Size2);
 		Array2DInt32 m_pCurrentVertexIndicesY(Size2);
 		Array2DInt32 m_pCurrentVertexIndicesZ(Size2);
+
+		//Array1DFloat test1d(ArraySizes(10));
+		//Array2DFloat test2d(ArraySizes(10)(20));
 
 
 

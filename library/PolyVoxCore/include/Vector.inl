@@ -582,4 +582,4 @@ namespace PolyVox
 		}
     }
 	#pragma endregion	
-}//namespace Thermite
+}//namespace PolyVox

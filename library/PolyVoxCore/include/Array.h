@@ -49,19 +49,21 @@ namespace PolyVox
 			m_pOffsets = new uint32_t[noOfDims];
 			
 			// Calculate all the information you need to use the array
-			m_uNoOfElements=1;
-			for (uint32_t i=0; i<noOfDims; i++)
+			m_uNoOfElements = 1;
+			for (uint32_t i = 0; i<noOfDims; i++)
 			{
 				assert(Dimensions[i] != 0);
 
-				m_uNoOfElements*=Dimensions[i]; 
-				m_pDimensions[i]=Dimensions[i];
-				m_pOffsets[i]=1; 
+				m_uNoOfElements *= Dimensions[i]; 
+				m_pDimensions[i] = Dimensions[i];
+				m_pOffsets[i] = 1; 
 				for (int k=noOfDims-1; k>i; k--)
-					m_pOffsets[i]*=Dimensions[k];
+				{
+					m_pOffsets[i] *= Dimensions[k];
+				}
 			} 
 			// Allocate new elements, let exception propagate 
-			m_pElements=new ElementType[m_uNoOfElements];
+			m_pElements = new ElementType[m_uNoOfElements];
 		} 
 
 		Array<noOfDims-1, ElementType> operator [](uint32_t uIndex)
@@ -111,6 +113,17 @@ namespace PolyVox
 		friend class Array<2, ElementType>;
 
 	public:
+		Array<1, ElementType>(const uint32_t (&Dimensions)[1])
+			: m_pElements(0)
+			,m_pDimensions(0)
+		{
+			m_pDimensions = new uint32_t[1];			
+			m_pDimensions[0] = Dimensions[0];
+
+			// Allocate new elements, let exception propagate 
+			m_pElements = new ElementType[m_pDimensions[0]];
+		} 
+
 		ElementType & operator [] (uint32_t uIndex)
 		{
 			assert(uIndex<m_pDimensions[0]);
@@ -201,7 +214,7 @@ namespace PolyVox
 	typedef Array<3,int32_t> Array3DInt32;
 	///A 3D Array of unsigned 32-bit values.
 	typedef Array<3,uint32_t> Array3DUint32;
-}//namespace Thermite
+}//namespace PolyVox
 
 #include "Array.inl"
 
