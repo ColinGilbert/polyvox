@@ -32,6 +32,14 @@ distribution.
 
 namespace PolyVox
 {
+	/*
+	This class provides the implementation details behind ArraySizes. It is actually
+	quite similar to ArraySizes, but an important difference is that it is templatised
+	whereas ArraySizes is not. This allows us to use a recursive template pattern without
+	exposing the use of templates to the user.
+
+	It is based on the following article: http://www.drdobbs.com/cpp/184401319
+	*/
 	template <uint32_t N>
 	class ArraySizesImpl
 	{

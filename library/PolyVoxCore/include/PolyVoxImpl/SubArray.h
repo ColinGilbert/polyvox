@@ -34,6 +34,14 @@ namespace PolyVox
 {
 	template <uint32_t noOfDims, typename ElementType> class Array;
 
+	/*
+	This class forms part of the implementation of the Array class. The operator[]
+	return a SubArray of the next size down, so that multiple []'s can be chained
+	together. It is a seperate class from Array so that it can have a reduced interface,
+	and also so that it never takes ownership of the memory to which it points.
+
+	It is based on the following article: http://www.drdobbs.com/cpp/184401319
+	*/
 	template <uint32_t noOfDims, typename ElementType>
 	class SubArray
 	{
@@ -41,30 +49,12 @@ namespace PolyVox
 		friend class SubArray<noOfDims+1, ElementType>;
 
 	public:
-		SubArray<noOfDims-1, ElementType> operator [](uint32_t uIndex)
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return
-				SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
-				m_pDimensions+1, m_pOffsets+1);
-		}
+		SubArray<noOfDims-1, ElementType> operator [](uint32_t uIndex);
 
-		const SubArray<noOfDims-1, ElementType> operator [](uint32_t uIndex) const
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return
-				SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
-				m_pDimensions+1, m_pOffsets+1);
-		}
+		const SubArray<noOfDims-1, ElementType> operator [](uint32_t uIndex) const;
 
 	private:
-		SubArray<noOfDims, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets)
-			:m_pElements(pElements)
-			,m_pDimensions(pDimensions)
-			,m_pOffsets(pOffsets)
-			,m_uNoOfElements(0)
-		{
-		} 
+		SubArray<noOfDims, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets);
 
 		uint32_t * m_pDimensions;
 		uint32_t * m_pOffsets;
@@ -79,24 +69,12 @@ namespace PolyVox
 		friend class SubArray<2, ElementType>;
 
 	public:
-		ElementType & operator [] (uint32_t uIndex)
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return m_pElements[uIndex];
-		}
+		ElementType & operator [] (uint32_t uIndex);
 
-		const ElementType & operator [] (uint32_t uIndex) const
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return m_pElements[uIndex];
-		}
+		const ElementType & operator [] (uint32_t uIndex) const;
 		
 	private:
-		SubArray<1, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/)
-			:m_pDimensions(pDimensions)
-			,m_pElements(pElements)			
-		{
-		}
+		SubArray<1, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/);
 
 		uint32_t * m_pDimensions;
 		ElementType * m_pElements;
