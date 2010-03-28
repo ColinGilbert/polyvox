@@ -57,53 +57,18 @@ namespace PolyVox
 		m_uScratchPadWidth = m_uRegionWidth+1;
 		m_uScratchPadHeight = m_uRegionHeight+1;
 
+		uint32_t arraySizes[2]= {m_uScratchPadWidth, m_uScratchPadHeight}; // Array dimensions
+
 		//For edge indices
-		/*m_pPreviousVertexIndicesX = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
-		m_pPreviousVertexIndicesY = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
-		m_pPreviousVertexIndicesZ = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
-		m_pCurrentVertexIndicesX = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
-		m_pCurrentVertexIndicesY = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];
-		m_pCurrentVertexIndicesZ = new int32_t[m_uScratchPadWidth * m_uScratchPadHeight];*/
+		Array2DInt32 m_pPreviousVertexIndicesX(arraySizes);
+		Array2DInt32 m_pPreviousVertexIndicesY(arraySizes);
+		Array2DInt32 m_pPreviousVertexIndicesZ(arraySizes);
+		Array2DInt32 m_pCurrentVertexIndicesX(arraySizes);
+		Array2DInt32 m_pCurrentVertexIndicesY(arraySizes);
+		Array2DInt32 m_pCurrentVertexIndicesZ(arraySizes);
 
-		//uint32_t Size1 [1]= {m_uScratchPadWidth}; // Array dimensions
-		uint32_t Size2 [2]= {m_uScratchPadWidth, m_uScratchPadHeight}; // Array dimensions
-
-		/*Array2DInt32 m_pPreviousVertexIndicesX(m_uScratchPadWidth, m_uScratchPadHeight);
-		Array2DInt32 m_pPreviousVertexIndicesY(m_uScratchPadWidth, m_uScratchPadHeight);
-		Array2DInt32 m_pPreviousVertexIndicesZ(m_uScratchPadWidth, m_uScratchPadHeight);
-		Array2DInt32 m_pCurrentVertexIndicesX(m_uScratchPadWidth, m_uScratchPadHeight);
-		Array2DInt32 m_pCurrentVertexIndicesY(m_uScratchPadWidth, m_uScratchPadHeight);
-		Array2DInt32 m_pCurrentVertexIndicesZ(m_uScratchPadWidth, m_uScratchPadHeight);*/
-
-		Array2DInt32 m_pPreviousVertexIndicesX(ArraySizes(m_uScratchPadWidth)(m_uScratchPadHeight));
-		Array2DInt32 m_pPreviousVertexIndicesY(Size2);
-		Array2DInt32 m_pPreviousVertexIndicesZ(Size2);
-		Array2DInt32 m_pCurrentVertexIndicesX(Size2);
-		Array2DInt32 m_pCurrentVertexIndicesY(Size2);
-		Array2DInt32 m_pCurrentVertexIndicesZ(Size2);
-
-		//Array1DFloat test1d(ArraySizes(10));
-		//Array2DFloat test2d(ArraySizes(10)(20));
-
-
-
-		/*m_pPreviousVertexIndicesX.resize(Size2);
-		m_pPreviousVertexIndicesY.resize(Size2);
-		m_pPreviousVertexIndicesZ.resize(Size2);
-		m_pCurrentVertexIndicesX.resize(Size2);
-		m_pCurrentVertexIndicesY.resize(Size2);
-		m_pCurrentVertexIndicesZ.resize(Size2);*/
-
-
-		//Cell bitmasks
-		/*Array2DUint8 pPreviousBitmask(m_uScratchPadWidth, m_uScratchPadHeight);
-		Array2DUint8 pCurrentBitmask(m_uScratchPadWidth, m_uScratchPadHeight);*/
-
-		Array2DUint8 pPreviousBitmask(Size2);
-		Array2DUint8 pCurrentBitmask(Size2);
-
-		/*pPreviousBitmask.resize(Size2);
-		pCurrentBitmask.resize(Size2);*/
+		Array2DUint8 pPreviousBitmask(arraySizes);
+		Array2DUint8 pCurrentBitmask(arraySizes);
 
 		//Create a region corresponding to the first slice
 		m_regSlicePrevious = m_regInputCropped;
@@ -128,10 +93,10 @@ namespace PolyVox
 		}
 
 		std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-		std::swap(pPreviousBitmask, pCurrentBitmask);
-		std::swap(m_pPreviousVertexIndicesX, m_pCurrentVertexIndicesX);
-		std::swap(m_pPreviousVertexIndicesY, m_pCurrentVertexIndicesY);
-		std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
+		pPreviousBitmask.swap(pCurrentBitmask);
+		m_pPreviousVertexIndicesX.swap(m_pCurrentVertexIndicesX);
+		m_pPreviousVertexIndicesY.swap(m_pCurrentVertexIndicesY);
+		m_pPreviousVertexIndicesZ.swap(m_pCurrentVertexIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
 		m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
@@ -156,10 +121,10 @@ namespace PolyVox
 			}
 
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-			std::swap(pPreviousBitmask, pCurrentBitmask);
-			std::swap(m_pPreviousVertexIndicesX, m_pCurrentVertexIndicesX);
-			std::swap(m_pPreviousVertexIndicesY, m_pCurrentVertexIndicesY);
-			std::swap(m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesZ);
+			pPreviousBitmask.swap(pCurrentBitmask);
+			m_pPreviousVertexIndicesX.swap(m_pCurrentVertexIndicesX);
+			m_pPreviousVertexIndicesY.swap(m_pCurrentVertexIndicesY);
+			m_pPreviousVertexIndicesZ.swap(m_pCurrentVertexIndicesZ);
 
 			m_regSlicePrevious = m_regSliceCurrent;
 			m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
@@ -174,13 +139,6 @@ namespace PolyVox
 			memset(m_pCurrentVertexIndicesZ.getRawData(), 0xff, m_pCurrentVertexIndicesZ.getNoOfElements() * 4);
 			generateIndicesForSlice(pPreviousBitmask, m_pPreviousVertexIndicesX, m_pPreviousVertexIndicesY, m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesX, m_pCurrentVertexIndicesY, m_pCurrentVertexIndicesZ);
 		}
-
-		/*delete[] m_pPreviousVertexIndicesX;
-		delete[] m_pCurrentVertexIndicesX;
-		delete[] m_pPreviousVertexIndicesY;
-		delete[] m_pCurrentVertexIndicesY;
-		delete[] m_pPreviousVertexIndicesZ;
-		delete[] m_pCurrentVertexIndicesZ;	*/	
 
 		m_meshCurrent->m_Region = m_regInputUncropped;
 
