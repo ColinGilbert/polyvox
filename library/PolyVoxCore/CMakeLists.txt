@@ -55,6 +55,8 @@ SET(IMPL_INC_FILES
 	include/PolyVoxImpl/Block.inl
 	include/PolyVoxImpl/CPlusPlusZeroXSupport.h
 	include/PolyVoxImpl/MarchingCubesTables.h
+	include/PolyVoxImpl/SubArray.h
+	include/PolyVoxImpl/SubArray.inl
 	include/PolyVoxImpl/TypeDef.h
 	include/PolyVoxImpl/Utility.h
 )

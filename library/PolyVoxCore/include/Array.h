@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 #pragma region Headers
 #include "ArraySizes.h" //Not strictly required, but convienient
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "PolyVoxImpl/SubArray.h"
 #include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion
 
@@ -38,10 +38,8 @@ namespace PolyVox
 	template <uint32_t noOfDims, typename ElementType>
 	class Array
 	{
-		friend class Array<noOfDims+1, ElementType>;
-
 	public:
-		Array<noOfDims, ElementType>(const uint32_t (&Dimensions)[noOfDims])
+		Array<noOfDims, ElementType>(const uint32_t (&pDimensions)[noOfDims])
 			:m_pElements(0)
 			,m_pDimensions(0)
 			,m_pOffsets(0)
@@ -54,33 +52,40 @@ namespace PolyVox
 			m_uNoOfElements = 1;
 			for (uint32_t i = 0; i<noOfDims; i++)
 			{
-				assert(Dimensions[i] != 0);
+				assert(pDimensions[i] != 0);
 
-				m_uNoOfElements *= Dimensions[i]; 
-				m_pDimensions[i] = Dimensions[i];
+				m_uNoOfElements *= pDimensions[i]; 
+				m_pDimensions[i] = pDimensions[i];
 				m_pOffsets[i] = 1; 
 				for (int k=noOfDims-1; k>i; k--)
 				{
-					m_pOffsets[i] *= Dimensions[k];
+					m_pOffsets[i] *= pDimensions[k];
 				}
 			} 
 			// Allocate new elements, let exception propagate 
 			m_pElements = new ElementType[m_uNoOfElements];
 		} 
 
-		Array<noOfDims-1, ElementType> operator [](uint32_t uIndex)
+		~Array<noOfDims, ElementType>()
+		{
+			delete[] m_pDimensions;
+			delete[] m_pOffsets;
+			delete[] m_pElements;
+		}
+
+		SubArray<noOfDims-1, ElementType> operator [](uint32_t uIndex)
 		{
 			assert(uIndex<m_pDimensions[0]);
 			return
-				Array<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
+				SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 				m_pDimensions+1, m_pOffsets+1);
 		}
 
-		const Array<noOfDims-1, ElementType> operator [](uint32_t uIndex) const
+		const SubArray<noOfDims-1, ElementType> operator [](uint32_t uIndex) const
 		{
 			assert(uIndex<m_pDimensions[0]);
 			return
-				Array<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
+				SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 				m_pDimensions+1, m_pOffsets+1);
 		}
 
@@ -95,14 +100,6 @@ namespace PolyVox
 		}
 
 	private:
-		Array<noOfDims, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets)
-			:m_pElements(pElements)
-			,m_pDimensions(pDimensions)
-			,m_pOffsets(pOffsets)
-			,m_uNoOfElements(0)
-		{
-		} 
-
 		uint32_t * m_pDimensions;
 		uint32_t * m_pOffsets;
 		uint32_t m_uNoOfElements;
@@ -112,15 +109,13 @@ namespace PolyVox
 	template <typename ElementType>
 	class Array<1, ElementType>
 	{
-		friend class Array<2, ElementType>;
-
 	public:
-		Array<1, ElementType>(const uint32_t (&Dimensions)[1])
+		Array<1, ElementType>(const uint32_t (&pDimensions)[1])
 			: m_pElements(0)
 			,m_pDimensions(0)
 		{
 			m_pDimensions = new uint32_t[1];			
-			m_pDimensions[0] = Dimensions[0];
+			m_pDimensions[0] = pDimensions[0];
 
 			// Allocate new elements, let exception propagate 
 			m_pElements = new ElementType[m_pDimensions[0]];
@@ -149,12 +144,6 @@ namespace PolyVox
 		}
 		
 	private:
-		Array<1, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/)
-			:m_pDimensions(pDimensions)
-			,m_pElements(pElements)			
-		{
-		}
-
 		uint32_t * m_pDimensions;
 		ElementType * m_pElements;
 	};
