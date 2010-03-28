@@ -42,7 +42,7 @@ namespace PolyVox
 
 	public:
 		Array<noOfDims, ElementType>(const uint32_t (&Dimensions)[noOfDims])
-			: m_pElements(0)
+			:m_pElements(0)
 			,m_pDimensions(0)
 			,m_pOffsets(0)
 			,m_uNoOfElements(0)
@@ -75,8 +75,8 @@ namespace PolyVox
 				Array<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 				m_pDimensions+1, m_pOffsets+1);
 		}
-		const Array<noOfDims-1, ElementType>
-			operator [](uint32_t uIndex) const
+
+		const Array<noOfDims-1, ElementType> operator [](uint32_t uIndex) const
 		{
 			assert(uIndex<m_pDimensions[0]);
 			return
