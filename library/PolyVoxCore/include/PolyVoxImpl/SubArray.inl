@@ -23,6 +23,8 @@ distribution.
 *******************************************************************************/
 #pragma endregion
 
+#include <cassert>
+
 namespace PolyVox
 {
 	template <uint32_t noOfDims, typename ElementType>
@@ -44,7 +46,7 @@ namespace PolyVox
 	}
 
 	template <uint32_t noOfDims, typename ElementType>
-	SubArray<noOfDims, ElementType>::SubArray<noOfDims, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets)
+	SubArray<noOfDims, ElementType>::SubArray/*<noOfDims, ElementType>*/(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets)
 		:m_pElements(pElements)
 		,m_pDimensions(pDimensions)
 		,m_pOffsets(pOffsets)
@@ -68,9 +70,10 @@ namespace PolyVox
 	}
 
 	template <typename ElementType>
-	SubArray<1, ElementType>::SubArray<1, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/)
+	SubArray<1, ElementType>::SubArray/*<1, ElementType>*/(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/)
 		:m_pDimensions(pDimensions)
 		,m_pElements(pElements)			
 	{
 	}
 }//namespace PolyVox
+
