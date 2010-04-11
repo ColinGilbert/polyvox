@@ -143,7 +143,7 @@ namespace PolyVox
 			assert(false);
 		}
 
-		Array<noOfDims, ElementType>& /*Array<noOfDims, ElementType>::*/operator=(const Array<noOfDims, ElementType>& rhs)
+		Array<noOfDims, ElementType>& operator=(const Array<noOfDims, ElementType>& rhs)
 		{
 			//Not implemented
 			assert(false);
@@ -247,7 +247,7 @@ namespace PolyVox
 			assert(false);
 		}
 
-		Array<1, ElementType>& /*Array<1, ElementType>::*/operator=(const Array<1, ElementType>& rhs)
+		Array<1, ElementType>& operator=(const Array<1, ElementType>& rhs)
 		{
 			//Not implemented
 			assert(false);
@@ -329,4 +329,3 @@ namespace PolyVox
 #include "Array.inl"
 
 #endif
-
