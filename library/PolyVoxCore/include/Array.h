@@ -39,129 +39,30 @@ namespace PolyVox
 	class Array
 	{
 	public:
-		Array<noOfDims, ElementType>()
-			:m_pElements(0)
-			,m_pDimensions(0)
-			,m_pOffsets(0)
-			,m_uNoOfElements(0)
-		{
-		} 
+		Array<noOfDims, ElementType>();
 
-		Array<noOfDims, ElementType>(const uint32_t (&pDimensions)[noOfDims])
-			:m_pElements(0)
-			,m_pDimensions(0)
-			,m_pOffsets(0)
-			,m_uNoOfElements(0)
-		{
-			resize(pDimensions);
-		} 
+		Array<noOfDims, ElementType>(const uint32_t (&pDimensions)[noOfDims]);
 
-		~Array<noOfDims, ElementType>()
-		{
-			deallocate();
-		}
+		~Array<noOfDims, ElementType>();
 
-		SubArray<noOfDims-1, ElementType> operator[](uint32_t uIndex)
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return
-				SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
-				m_pDimensions+1, m_pOffsets+1);
-		}
+		SubArray<noOfDims-1, ElementType> operator[](uint32_t uIndex);
 
-		const SubArray<noOfDims-1, ElementType> operator[](uint32_t uIndex) const
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return
-				SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
-				m_pDimensions+1, m_pOffsets+1);
-		}
+		const SubArray<noOfDims-1, ElementType> operator[](uint32_t uIndex) const;
 
-		uint32_t getNoOfElements(void) const
-		{
-			return m_uNoOfElements;
-		}
+		uint32_t getNoOfElements(void) const;
 
-		ElementType* getRawData(void) const
-		{
-			return m_pElements;
-		}
+		ElementType* getRawData(void) const;
 
-		void resize(const uint32_t (&pDimensions)[noOfDims])
-		{
-			deallocate();
+		void resize(const uint32_t (&pDimensions)[noOfDims]);
 
-			m_pDimensions = new uint32_t[noOfDims];
-			m_pOffsets = new uint32_t[noOfDims];
-			
-			// Calculate all the information you need to use the array
-			m_uNoOfElements = 1;
-			for (uint32_t i = 0; i<noOfDims; i++)
-			{
-				assert(pDimensions[i] != 0);
-
-				m_uNoOfElements *= pDimensions[i]; 
-				m_pDimensions[i] = pDimensions[i];
-				m_pOffsets[i] = 1; 
-				for (int k=noOfDims-1; k>i; k--)
-				{
-					m_pOffsets[i] *= pDimensions[k];
-				}
-			} 
-			// Allocate new elements, let exception propagate 
-			m_pElements = new ElementType[m_uNoOfElements];
-		}
-
-		void swap(Array<noOfDims, ElementType>& rhs)
-		{
-			//Implement this function without temporary 'Array'
-			//objects, as the destructors will free the memory...
-			uint32_t* m_pTempDimensions = m_pDimensions;
-			uint32_t* m_pTempOffsets = m_pOffsets;
-			uint32_t m_uTempNoOfElements = m_uNoOfElements;
-			ElementType* m_pTempElements = m_pElements;
-
-			m_pDimensions = rhs.m_pDimensions;
-			m_pOffsets = rhs.m_pOffsets;
-			m_uNoOfElements = rhs.m_uNoOfElements;
-			m_pElements = rhs.m_pElements;
-
-			rhs.m_pDimensions = m_pTempDimensions;
-			rhs.m_pOffsets = m_pTempOffsets;
-			rhs.m_uNoOfElements = m_uTempNoOfElements;
-			rhs.m_pElements = m_pTempElements;
-		}
+		void swap(Array<noOfDims, ElementType>& rhs);
 
 	private:
-		Array<noOfDims, ElementType>(const Array<noOfDims, ElementType>& rhs)
-			:m_pElements(0)
-			,m_pDimensions(0)
-			,m_pOffsets(0)
-			,m_uNoOfElements(0)
-		{
-			//Not implemented
-			assert(false);
-		}
+		Array<noOfDims, ElementType>(const Array<noOfDims, ElementType>& rhs);
 
-		Array<noOfDims, ElementType>& operator=(const Array<noOfDims, ElementType>& rhs)
-		{
-			//Not implemented
-			assert(false);
+		Array<noOfDims, ElementType>& operator=(const Array<noOfDims, ElementType>& rhs);
 
-			return *this;
-		} 
-
-		void deallocate(void)
-		{
-			delete[] m_pDimensions;
-			m_pDimensions = 0;
-			delete[] m_pOffsets;
-			m_pOffsets = 0;
-			delete[] m_pElements;
-			m_pElements = 0;
-
-			m_uNoOfElements = 0;
-		}
+		void deallocate(void);
 
 		uint32_t * m_pDimensions;
 		uint32_t * m_pOffsets;
@@ -173,95 +74,30 @@ namespace PolyVox
 	class Array<1, ElementType>
 	{
 	public:
-		Array<1, ElementType>()
-			: m_pElements(0)
-			,m_pDimensions(0)
-		{
-		} 
+		Array<1, ElementType>();
 
-		Array<1, ElementType>(const uint32_t (&pDimensions)[1])
-			: m_pElements(0)
-			,m_pDimensions(0)
-		{
-			resize(pDimensions);
-		}
+		Array<1, ElementType>(const uint32_t (&pDimensions)[1]);
 
-		~Array<1, ElementType>()
-		{
-			deallocate();
-		}
+		~Array<1, ElementType>();
 
-		ElementType& operator[] (uint32_t uIndex)
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return m_pElements[uIndex];
-		}
+		ElementType& operator[] (uint32_t uIndex);
 
-		const ElementType& operator[] (uint32_t uIndex) const
-		{
-			assert(uIndex<m_pDimensions[0]);
-			return m_pElements[uIndex];
-		}
+		const ElementType& operator[] (uint32_t uIndex) const;
 
-		uint32_t getNoOfElements(void) const
-		{
-			return m_pDimensions[0];
-		}
+		uint32_t getNoOfElements(void) const;
 
-		ElementType* getRawData(void) const
-		{
-			return m_pElements;
-		}
+		ElementType* getRawData(void) const;
 
-		void resize(const uint32_t (&pDimensions)[1])
-		{
-			deallocate();
+		void resize(const uint32_t (&pDimensions)[1]);
 
-			m_pDimensions = new uint32_t[1];			
-			m_pDimensions[0] = pDimensions[0];
-
-			// Allocate new elements, let exception propagate 
-			m_pElements = new ElementType[m_pDimensions[0]];
-		}
-
-		void swap(Array<1, ElementType>& rhs)
-		{
-			//Implement this function without temporary 'Array'
-			//objects, as the destructors will free the memory...
-			uint32_t* m_pTempDimensions = m_pDimensions;
-			ElementType* m_pTempElements = m_pElements;
-
-			m_pDimensions = rhs.m_pDimensions;
-			m_pElements = rhs.m_pElements;
-
-			rhs.m_pDimensions = m_pTempDimensions;
-			rhs.m_pElements = m_pTempElements;
-		}
+		void swap(Array<1, ElementType>& rhs);
 		
 	private:
-		Array<1, ElementType>(const Array<1, ElementType>& rhs)
-			: m_pElements(0)
-			,m_pDimensions(0)
-		{
-			//Not implemented
-			assert(false);
-		}
+		Array<1, ElementType>(const Array<1, ElementType>& rhs);
 
-		Array<1, ElementType>& operator=(const Array<1, ElementType>& rhs)
-		{
-			//Not implemented
-			assert(false);
+		Array<1, ElementType>& operator=(const Array<1, ElementType>& rhs);
 
-			return *this;
-		} 
-
-		void deallocate(void)
-		{
-			delete[] m_pDimensions;
-			m_pDimensions = 0;
-			delete[] m_pElements;
-			m_pElements = 0;
-		}
+		void deallocate(void);
 
 		uint32_t * m_pDimensions;
 		ElementType * m_pElements;
