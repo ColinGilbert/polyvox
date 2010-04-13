@@ -23,6 +23,10 @@ distribution.
 
 namespace PolyVox
 {
+	////////////////////////////////////////////////////////////////////////////////
+	/// Creates an empty array with no elements. You will have to call resize() on this
+	/// array befire it can be used.
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>::Array()
 		:m_pElements(0)
@@ -32,6 +36,12 @@ namespace PolyVox
 	{
 	} 
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Creates an array with the specified dimensions.
+	/// \param pDimensions The dimensions of the array. You can also use the ArraySizes
+	/// class to construct this more easily.
+	/// \sa ArraySizes
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>::Array(const uint32_t (&pDimensions)[noOfDims])
 		:m_pElements(0)
@@ -42,12 +52,24 @@ namespace PolyVox
 		resize(pDimensions);
 	} 
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Destroys the array and releases all owned memory.
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>::~Array()
 	{
 		deallocate();
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// An N-dimensional array can be conceptually consists of N subarrays each of which
+	/// has N-1 dimensions. For example, a 3D array conceptually consists of three 2D
+	/// arrays. This operator is used to access the subarray at the specified index. 
+	/// Crucially, the subarray defines a similar operator allowing them to be chained 
+	/// together to convieniently access a particular element.
+	/// \param uIndex The zero-based index of the subarray to retrieve.
+	/// \return The requested SubArray
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	SubArray<noOfDims-1, ElementType> Array<noOfDims, ElementType>::operator[](uint32_t uIndex)
 	{
@@ -57,6 +79,15 @@ namespace PolyVox
 			m_pDimensions+1, m_pOffsets+1);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// An N-dimensional array can be conceptually consists of N subarrays each of which
+	/// has N-1 dimensions. For example, a 3D array conceptually consists of three 2D
+	/// arrays. This operator is used to access the subarray at the specified index. 
+	/// Crucially, the subarray defines a similar operator allowing them to be chained 
+	/// together to convieniently access a particular element.
+	/// \param uIndex The zero-based index of the subarray to retrieve.
+	/// \return The requested SubArray
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	const SubArray<noOfDims-1, ElementType> Array<noOfDims, ElementType>::operator[](uint32_t uIndex) const
 	{
@@ -66,18 +97,36 @@ namespace PolyVox
 			m_pDimensions+1, m_pOffsets+1);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \return The number of elements in the array.
+	/// \sa getRawData()
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	uint32_t Array<noOfDims, ElementType>::getNoOfElements(void) const
 	{
 		return m_uNoOfElements;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Sometimes it is useful to directly manipulate the underlying array without 
+	/// going through this classes interface. Although this does not honour the principle
+	/// of encapsulation it can be done safely if you are careful and can sometimes be
+	/// useful. Use getNoOfElements() to determine how far you can safely write.
+	/// \return A pointer to the first element of the array
+	/// \sa getNoOfElements()
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	ElementType* Array<noOfDims, ElementType>::getRawData(void) const
 	{
 		return m_pElements;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Please note that the existing contents of the array will be lost.
+	/// \param pDimensions The new dimensions of the array. You can also use the 
+	/// ArraySizes class to specify this more easily.
+	/// \sa ArraySizes
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	void Array<noOfDims, ElementType>::resize(const uint32_t (&pDimensions)[noOfDims])
 	{
@@ -104,6 +153,12 @@ namespace PolyVox
 		m_pElements = new ElementType[m_uNoOfElements];
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Because this class does not have a public assignment operator or copy constructor
+	/// it cnnot be used with the STL swap() function. This function provides an efficient
+	/// implementation of that feature.
+	/// \param rhs The array to swap this object with.
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	void Array<noOfDims, ElementType>::swap(Array<noOfDims, ElementType>& rhs)
 	{
@@ -158,7 +213,9 @@ namespace PolyVox
 		m_uNoOfElements = 0;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
+	//****************************************************************************//
+	// One dimensional specialisation begins here                                 //
+	//****************************************************************************//
 
 	template <typename ElementType>
 	Array<1, ElementType>::Array()

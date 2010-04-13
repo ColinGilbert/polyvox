@@ -35,26 +35,71 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	///Provides an efficient implementation of a multidimensional array.
+	////////////////////////////////////////////////////////////////////////////////
+	/// While C++ provides one-dimensional arrays as a language feature, it does not
+	/// provide a simple and intuitive way of working with multidimensional arrays
+	/// whose sizes are specified at runtime. Such a construct is very useful within
+	/// the context of PolyVox, and this Array class provides such functionality 
+	/// implemented via templates and partial specialisation.
+	///
+	/// The following code snippet illustrates the basic usage of the class by writing
+	/// a different value into each element:
+	///
+	/// \code
+	/// int width = 5;
+	/// int height = 10;
+	/// int depth = 20;
+	///
+	/// Array<3, int> myArray(ArraySizes(width)(height)(depth));
+	///
+	/// int ct = 1;
+	/// for(int z = 0; z < depth; z++)
+	/// {
+	/// 	for(int y = 0; y < height; y++)
+	/// 	{
+	/// 		for(int x = 0; x < width; x++)
+	/// 		{
+	/// 			myArray[x][y][z] = ct;
+	/// 			ct++;
+	/// 		}
+	/// 	}
+	/// }
+	/// \endcode
+	///
+	/// Although the constructor and resize() function both take the required dimensions
+	/// as an array of ints, note that the ArraySizes class can be used to build this
+	/// inline. This is a more convienient way of specifying these dimensions.
+	///
+	/// Note also that this class has a private assignment operator and copy constructor
+	/// in order to prevent copying. This is because a deep copy is a potentially slow
+	/// operation and can often be performed inadvertantly by functions such as std::swap,
+	/// while a shallow copy introduces confusion over memory ownership.
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	class Array
 	{
 	public:
+		///Constructor
 		Array<noOfDims, ElementType>();
-
+		///Constructor
 		Array<noOfDims, ElementType>(const uint32_t (&pDimensions)[noOfDims]);
-
+		///Destructor
 		~Array<noOfDims, ElementType>();
 
+		///Subarray access
 		SubArray<noOfDims-1, ElementType> operator[](uint32_t uIndex);
-
+		///Subarray access
 		const SubArray<noOfDims-1, ElementType> operator[](uint32_t uIndex) const;
 
+		///Gets the total number of elements in this array
 		uint32_t getNoOfElements(void) const;
-
+		///Gets a pointer to the first element of the array
 		ElementType* getRawData(void) const;
 
+		///Resize the array to the specified dimensions
 		void resize(const uint32_t (&pDimensions)[noOfDims]);
-
+		///Swaps the contents of this array with the one specified
 		void swap(Array<noOfDims, ElementType>& rhs);
 
 	private:
