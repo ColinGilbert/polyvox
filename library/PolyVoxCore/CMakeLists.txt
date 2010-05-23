@@ -53,7 +53,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxImpl/ArraySizesImpl.inl
 	include/PolyVoxImpl/Block.h
 	include/PolyVoxImpl/Block.inl
-	include/PolyVoxImpl/CPlusPlusZeroXSupport.h
 	include/PolyVoxImpl/MarchingCubesTables.h
 	include/PolyVoxImpl/SubArray.h
 	include/PolyVoxImpl/SubArray.inl

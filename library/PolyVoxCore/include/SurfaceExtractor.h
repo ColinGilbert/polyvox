@@ -31,7 +31,6 @@ freely, subject to the following restrictions:
 #include "VolumeSampler.h"
 
 #include "PolyVoxImpl/TypeDef.h"
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion
 
 namespace PolyVox
@@ -41,7 +40,7 @@ namespace PolyVox
 	public:
 		SurfaceExtractor(Volume<uint8_t>& volData);
 
-		POLYVOX_SHARED_PTR<SurfaceMesh> extractSurfaceForRegion(Region region);
+		std::shared_ptr<SurfaceMesh> extractSurfaceForRegion(Region region);
 
 	private:
 		//Compute the cell bitmask for a particular slice in z.

@@ -159,7 +159,7 @@ namespace PolyVox
 		const uint32_t uBlockIndexInVolume = uXBlock + 
 			uYBlock * mVolume->m_uWidthInBlocks + 
 			uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
-		const POLYVOX_SHARED_PTR< Block<VoxelType> >& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
+		const std::shared_ptr< Block<VoxelType> >& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
 
 		const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
 			uYPosInBlock * mVolume->m_uBlockSideLength + 

@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "Volume.h"
 
-void createSphereInVolume(PolyVox::Volume<PolyVox::uint8_t>& volData, float fRadius, PolyVox::uint8_t uValue);
-void createCubeInVolume(PolyVox::Volume<PolyVox::uint8_t>& volData, PolyVox::Vector3DUint16 lowerCorner, PolyVox::Vector3DUint16 upperCorner, PolyVox::uint8_t uValue);
+void createSphereInVolume(PolyVox::Volume<uint8_t>& volData, float fRadius, uint8_t uValue);
+void createCubeInVolume(PolyVox::Volume<uint8_t>& volData, PolyVox::Vector3DUint16 lowerCorner, PolyVox::Vector3DUint16 upperCorner, uint8_t uValue);
 
 #endif //__OpenGLExample_Shapes_H__

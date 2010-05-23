@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-OpenGLColour convertMaterialIDToColour(PolyVox::uint8_t materialID)
+OpenGLColour convertMaterialIDToColour(uint8_t materialID)
 {
 	OpenGLColour colour;
 

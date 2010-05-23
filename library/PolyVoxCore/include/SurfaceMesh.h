@@ -29,8 +29,6 @@ freely, subject to the following restrictions:
 #include <vector>
 #include <set>
 
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
-
 #include "PolyVoxForwardDeclarations.h"
 #include "Region.h"
 #include "SurfaceVertex.h"
@@ -67,7 +65,7 @@ namespace PolyVox
 	   void smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices = false);
 	   void sumNearbyNormals(bool bNormaliseResult = true);
 
-	   POLYVOX_SHARED_PTR<SurfaceMesh> extractSubset(std::set<uint8_t> setMaterials);
+	   std::shared_ptr<SurfaceMesh> extractSubset(std::set<uint8_t> setMaterials);
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 	   

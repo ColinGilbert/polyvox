@@ -37,7 +37,7 @@ freely, subject to the following restrictions:
 #include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
-const PolyVox::uint16_t g_uVolumeSideLength = 128;
+const uint16_t g_uVolumeSideLength = 128;
 
 class OpenGLWidget : public QGLWidget
  {
@@ -45,7 +45,7 @@ class OpenGLWidget : public QGLWidget
  public:
      OpenGLWidget(QWidget *parent);
 
-	 void setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData);
+	 void setVolume(PolyVox::Volume<uint8_t>* volData);
 
 	 void mouseMoveEvent(QMouseEvent* event);
 	 void mousePressEvent(QMouseEvent* event);
@@ -69,11 +69,11 @@ class OpenGLWidget : public QGLWidget
 	 bool m_bUseOpenGLVertexBufferObjects;
 
 	 //Creates a volume 128x128x128
-	PolyVox::Volume<PolyVox::uint8_t>* m_volData;
+	PolyVox::Volume<uint8_t>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh> m_mapOpenGLSurfaceMeshes;
-	std::map<PolyVox::Vector3DUint8, POLYVOX_SHARED_PTR<PolyVox::SurfaceMesh> > m_mapSurfaceMeshes;
+	std::map<PolyVox::Vector3DUint8, std::shared_ptr<PolyVox::SurfaceMesh> > m_mapSurfaceMeshes;
 
 	unsigned int m_uRegionSideLength;
 	unsigned int m_uVolumeWidthInRegions;

@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #define __PolyVox_SubArray_H__
 
 #pragma region Headers
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion
 
 namespace PolyVox

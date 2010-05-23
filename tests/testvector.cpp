@@ -40,7 +40,7 @@ void TestVector::testDotProduct()
 	Vector3DInt8 vecxy(3, 4, 0);
 	Vector3DInt8 vecz(0, 0, 1);
 	
-	QCOMPARE(vecxy.dot(vecz), PolyVox::int8_t(0)); //QCOMPARE is very strict on the types matching
+	QCOMPARE(vecxy.dot(vecz), int8_t(0)); //QCOMPARE is very strict on the types matching
 }
 
 QTEST_MAIN(TestVector)

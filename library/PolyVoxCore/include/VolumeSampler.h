@@ -28,8 +28,6 @@ freely, subject to the following restrictions:
 
 #pragma region Headers
 #include "PolyVoxForwardDeclarations.h"
-
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion
 
 namespace PolyVox

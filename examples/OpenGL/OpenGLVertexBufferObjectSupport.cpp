@@ -39,7 +39,7 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh& mesh)
 
 	//Convienient access to the vertices and indices
 	const vector<SurfaceVertex>& vecVertices = mesh.getVertices();
-	const vector<PolyVox::uint32_t>& vecIndices = mesh.getIndices();
+	const vector<uint32_t>& vecIndices = mesh.getIndices();
 
 	//If we have any indices...
 	if(!vecIndices.empty())
@@ -52,7 +52,7 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh& mesh)
 		GLvoid* pIndices = (GLvoid*)(&(vecIndices[0]));		
 
 		//Fill the OpenGL index buffer with our data. 
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(PolyVox::uint32_t), pIndices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), pIndices, GL_STATIC_DRAW);
 	}
 
 	result.noOfIndices = vecIndices.size();
@@ -83,7 +83,7 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh& mesh)
 		*ptr = vertex.getNormal().getZ();
 		ptr++;
 
-		PolyVox::uint8_t material = vertex.getMaterial() + 0.5;
+		uint8_t material = vertex.getMaterial() + 0.5;
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
 

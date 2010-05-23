@@ -26,10 +26,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Utility_H__
 #define __PolyVox_Utility_H__
 
-#include "CPlusPlusZeroXSupport.h"
 #include "TypeDef.h"
 
 #include <cassert>
+#include <cstdint>
 
 namespace PolyVox
 {

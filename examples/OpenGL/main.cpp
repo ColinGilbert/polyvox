@@ -70,12 +70,12 @@ void exampleLog(string message, int severity)
 int main(int argc, char *argv[])
 {
 	logHandler = &exampleLog;
-	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	Volume<uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
-	PolyVox::uint16_t minPos = 0;
-	PolyVox::uint16_t midPos = g_uVolumeSideLength / 2;
-	PolyVox::uint16_t maxPos = g_uVolumeSideLength - 1;
+	uint16_t minPos = 0;
+	uint16_t midPos = g_uVolumeSideLength / 2;
+	uint16_t maxPos = g_uVolumeSideLength - 1;
 	//createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(maxPos, maxPos, maxPos), 0);
 
 	cout << "Creating sphere 1" << std::endl;

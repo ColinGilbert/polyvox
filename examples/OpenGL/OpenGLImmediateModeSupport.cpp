@@ -26,13 +26,15 @@ freely, subject to the following restrictions:
 
 #include "SurfaceMesh.h"
 
+#include <cstdint>
+
 using namespace PolyVox;
 using namespace std;
 
 void renderRegionImmediateMode(PolyVox::SurfaceMesh& mesh, unsigned int uLodLevel)
 {
 	const vector<SurfaceVertex>& vecVertices = mesh.getVertices();
-	const vector<PolyVox::uint32_t>& vecIndices = mesh.getIndices();
+	const vector<uint32_t>& vecIndices = mesh.getIndices();
 
 	int beginIndex = mesh.m_vecLodRecords[uLodLevel].beginIndex;
 	int endIndex = mesh.m_vecLodRecords[uLodLevel].endIndex;
@@ -49,7 +51,7 @@ void renderRegionImmediateMode(PolyVox::SurfaceMesh& mesh, unsigned int uLodLeve
 
 
 
-		PolyVox::uint8_t material = vertex.getMaterial() + 0.5;
+		uint8_t material = vertex.getMaterial() + 0.5;
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
 

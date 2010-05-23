@@ -28,6 +28,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
 
+using namespace std;
+
 namespace PolyVox
 {
 	SurfaceExtractor::SurfaceExtractor(Volume<uint8_t>& volData)
@@ -36,7 +38,7 @@ namespace PolyVox
 	{
 	}
 
-	POLYVOX_SHARED_PTR<SurfaceMesh> SurfaceExtractor::extractSurfaceForRegion(Region region)
+	shared_ptr<SurfaceMesh> SurfaceExtractor::extractSurfaceForRegion(Region region)
 	{		
 		m_regInputUncropped = region;
 
@@ -148,7 +150,7 @@ namespace PolyVox
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 
-		return POLYVOX_SHARED_PTR<SurfaceMesh>(m_meshCurrent);
+		return shared_ptr<SurfaceMesh>(m_meshCurrent);
 	}
 
 	template<bool isPrevZAvail>

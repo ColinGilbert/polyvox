@@ -31,8 +31,8 @@ using namespace PolyVox;
 
 void TestVolume::testSize()
 {
-	const PolyVox::uint16_t g_uVolumeSideLength = 128;
-	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	const uint16_t g_uVolumeSideLength = 128;
+	Volume<uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
 	
 	volData.tidyUpMemory(0);
 	

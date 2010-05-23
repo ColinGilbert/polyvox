@@ -48,7 +48,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 	timer->start(0);
 }
 
-void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
+void OpenGLWidget::setVolume(PolyVox::Volume<uint8_t>* volData)
 {
 	//First we free anything from the previous volume (if there was one).
 	m_mapOpenGLSurfaceMeshes.clear();
@@ -66,30 +66,30 @@ void OpenGLWidget::setVolume(PolyVox::Volume<PolyVox::uint8_t>* volData)
 
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
-		for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
+		for(uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
 		{
 			std::cout << "uRegionZ = " << uRegionZ << " of " << m_uVolumeDepthInRegions << std::endl;
-			for(PolyVox::uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
+			for(uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
 			{
-				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
+				for(uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
 				{
 					//Compute the extents of the current region
 					//FIXME - This is a little complex? PolyVox could
 					//provide more functions for dealing with regions?
-					PolyVox::uint16_t regionStartX = uRegionX * m_uRegionSideLength;
-					PolyVox::uint16_t regionStartY = uRegionY * m_uRegionSideLength;
-					PolyVox::uint16_t regionStartZ = uRegionZ * m_uRegionSideLength;
+					uint16_t regionStartX = uRegionX * m_uRegionSideLength;
+					uint16_t regionStartY = uRegionY * m_uRegionSideLength;
+					uint16_t regionStartZ = uRegionZ * m_uRegionSideLength;
 
-					PolyVox::uint16_t regionEndX = regionStartX + m_uRegionSideLength;
-					PolyVox::uint16_t regionEndY = regionStartY + m_uRegionSideLength;
-					PolyVox::uint16_t regionEndZ = regionStartZ + m_uRegionSideLength;
+					uint16_t regionEndX = regionStartX + m_uRegionSideLength;
+					uint16_t regionEndY = regionStartY + m_uRegionSideLength;
+					uint16_t regionEndZ = regionStartZ + m_uRegionSideLength;
 
 					Vector3DInt16 regLowerCorner(regionStartX, regionStartY, regionStartZ);
 					Vector3DInt16 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
-					POLYVOX_SHARED_PTR<SurfaceMesh> mesh = surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner));
+					shared_ptr<SurfaceMesh> mesh = surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner));
 
 					//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
 					//*meshCurrent = getSmoothedSurface(*meshCurrent);
@@ -218,16 +218,16 @@ void OpenGLWidget::paintGL()
 		//Centre the volume on the origin
 		glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);
 
-		for(PolyVox::uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
+		for(uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
 		{
-			for(PolyVox::uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
+			for(uint16_t uRegionY = 0; uRegionY < m_uVolumeHeightInRegions; ++uRegionY)
 			{
-				for(PolyVox::uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
+				for(uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
 				{
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 					if(m_mapSurfaceMeshes.find(v3dRegPos) != m_mapSurfaceMeshes.end())
 					{
-						POLYVOX_SHARED_PTR<SurfaceMesh> meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
+						shared_ptr<SurfaceMesh> meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
 						unsigned int uLodLevel = 0; //meshCurrent->m_vecLodRecords.size() - 1;
 						if(m_bUseOpenGLVertexBufferObjects)
 						{													

@@ -30,7 +30,6 @@ freely, subject to the following restrictions:
 #include "ArraySizes.h" //Not strictly required, but convienient
 
 #include "PolyVoxImpl/SubArray.h"
-#include "PolyVoxImpl/CPlusPlusZeroXSupport.h"
 #pragma endregion
 
 namespace PolyVox
