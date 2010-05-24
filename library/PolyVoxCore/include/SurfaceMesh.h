@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 
 #include <vector>
 #include <set>
+#include <memory>
 
 #include "PolyVoxForwardDeclarations.h"
 #include "Region.h"

@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
 #include <limits>
 #include <map>
 #include <vector>
+#include <memory>
 
 #pragma endregion
 
