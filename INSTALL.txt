@@ -7,10 +7,13 @@ Requirements
 
 To build PolyVox you need:
 
-* CMake 2.6 or greater (http://cmake.org)
+* `CMake <http://cmake.org>`_ 2.6 or greater
 * A C++ compiler with support for some C++0x features (GCC 4.3 or VC 2010 seem to work)
-* Qt for building the tests (optional)
-* Docygen for building the documentation (optional)
+
+With the following options:
+
+* `Qt <http://qt.nokia.com>`_ for building the tests
+* `Doxygen <http://doxygen.org>`_ for building the documentation
 
 Linux
 =====
