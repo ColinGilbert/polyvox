@@ -1,3 +1,11 @@
+Short term
+==========
+Sort awkward use of 'offset'
+Replace float with uchar for material.
+Mesh smoothing (surface nets?)
+Mesh filters/modifiers - A 'translate' modifier?
+
+
 For Version 1.0
 ===============
 Implement Memory Pool

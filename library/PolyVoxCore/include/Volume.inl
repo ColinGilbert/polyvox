@@ -224,82 +224,99 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault) const
 	{
-		assert(uXPos < getWidth());
-		assert(uYPos < getHeight());
-		assert(uZPos < getDepth());
+		//We don't use getEnclosingRegion here because we care
+		//about speed and don't need to check the lower bound.
+		if((uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
+		{
+			const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+			const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+			const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
-		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+			const std::shared_ptr< Block< VoxelType > >& block = m_pBlocks
+				[
+					blockX + 
+					blockY * m_uWidthInBlocks + 
+					blockZ * m_uWidthInBlocks * m_uHeightInBlocks
+				];
 
-		const std::shared_ptr< Block< VoxelType > >& block = m_pBlocks
-			[
-				blockX + 
-				blockY * m_uWidthInBlocks + 
-				blockZ * m_uWidthInBlocks * m_uHeightInBlocks
-			];
-
-		return block->getVoxelAt(xOffset,yOffset,zOffset);
+			return block->getVoxelAt(xOffset,yOffset,zOffset);
+		}
+		else
+		{
+			return tDefault;
+		}
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault) const
 	{
-		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tDefault);
 	}
 	#pragma endregion	
 
 	#pragma region Setters
 	template <typename VoxelType>
-	void Volume<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	bool Volume<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
-		const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-		uint32_t uBlockIndex =
-			blockX + 
-			blockY * m_uWidthInBlocks + 
-			blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
-
-		std::shared_ptr< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
-
-		//It's quite possible that the user might attempt to set a voxel to it's current value.
-		//We test for this case firstly because it could help performance, but more importantly
-		//because it lets us avoid unsharing blocks unnecessarily.
-		if(block->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
+		//We don't use getEnclosingRegion here because we care
+		//about speed and don't need to check the lower bound.
+		if((uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
 		{
-			if(block.unique())
+			const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
+			const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
+			const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+
+			uint32_t uBlockIndex =
+				blockX + 
+				blockY * m_uWidthInBlocks + 
+				blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
+
+			std::shared_ptr< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
+
+			//It's quite possible that the user might attempt to set a voxel to it's current value.
+			//We test for this case firstly because it could help performance, but more importantly
+			//because it lets us avoid unsharing blocks unnecessarily.
+			if(block->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
 			{
-				block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-				//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
-				//But checking this will take some time, so for now just set a flag.
-				m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = true;
+				if(block.unique())
+				{
+					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+					//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
+					//But checking this will take some time, so for now just set a flag.
+					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = true;
+				}
+				else
+				{			
+					std::shared_ptr< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
+					block = pNewBlock;
+					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
+					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+				}
 			}
-			else
-			{			
-				std::shared_ptr< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
-				block = pNewBlock;
-				m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
-				block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-			}
+			//Return true to indicate that we modified a voxel.
+			return true;
+		}
+		else
+		{
+			//Return false to indicate that no voxel was modified.
+			return false;
 		}
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	bool Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
-		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
+		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 	#pragma endregion
 
