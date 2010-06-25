@@ -76,10 +76,13 @@ namespace PolyVox
 	class MeshVertex;
 	//---------------------------------
 
+	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits> class MaterialDensityPair;
+	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
+
 	class SurfaceMesh;
 	class Region;
 	class SurfaceVertex;
-	class SurfaceExtractor;
+	template <typename VoxelType> class SurfaceExtractor;
 
 	//---------- Vector ----------
 	template <uint32_t Size, typename Type> class Vector;

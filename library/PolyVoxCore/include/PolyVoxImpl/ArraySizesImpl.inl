@@ -23,6 +23,8 @@ distribution.
 *******************************************************************************/
 #pragma endregion
 
+#include <algorithm>
+
 namespace PolyVox
 {
 	template <uint32_t N>

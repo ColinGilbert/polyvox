@@ -35,10 +35,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	class POLYVOXCORE_API SurfaceExtractor
+	template <typename VoxelType>
+	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(Volume<uint8_t>& volData);
+		SurfaceExtractor(Volume<VoxelType>& volData);
 
 		std::shared_ptr<SurfaceMesh> extractSurfaceForRegion(Region region);
 
@@ -57,6 +58,9 @@ namespace PolyVox
 			Array2DInt32& m_pCurrentVertexIndicesY,
 			Array2DInt32& m_pCurrentVertexIndicesZ);
 
+		Vector3DFloat computeCentralDifferenceGradient(const VolumeSampler<VoxelType>& volIter);
+		Vector3DFloat computeSobelGradient(const VolumeSampler<VoxelType>& volIter);
+
 		//Use the cell bitmasks to generate all the indices needed for that slice
 		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 			const Array2DInt32& m_pPreviousVertexIndicesX,
@@ -73,8 +77,8 @@ namespace PolyVox
 		}
 
 		//The volume data and a sampler to access it.
-		Volume<uint8_t> m_volData;
-		VolumeSampler<uint8_t> m_sampVolume;
+		Volume<VoxelType> m_volData;
+		VolumeSampler<VoxelType> m_sampVolume;
 
 		//Used to keep track of where generated vertices have been placed.
 		/*int32_t* m_pPreviousVertexIndicesX;
@@ -124,5 +128,7 @@ namespace PolyVox
 		uint16_t m_uScratchPadHeight;		
 	};
 }
+
+#include "SurfaceExtractor.inl"
 
 #endif

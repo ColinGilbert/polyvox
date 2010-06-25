@@ -23,33 +23,47 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 #pragma endregion
 
+#ifndef __PolyVox_MaterialDensityPair_H__
+#define __PolyVox_MaterialDensityPair_H__
+
+#pragma region Headers
+#include "PolyVoxForwardDeclarations.h"
+#include "PolyVoxImpl/TypeDef.h"
+#pragma endregion
+
 namespace PolyVox
-{	
-	/**
-    \param uSize The size of the first dimension.
-    */
-	ArraySizes::ArraySizes(uint32_t uSize) 
-	{ 
-		m_pSizes[0]=uSize;
-	}
-
-	/**
-    This class only directly implements one dimensional sizes. Higher numbers
-	of dimensions are implemented via the ArraySisesImpl class. This function
-	create an object of the next dimensionality up.
-    \param uSize The size of the next dimension.
-    \return A higher dimension version of this class.
-    */
-	ArraySizesImpl<2> ArraySizes::operator () (uint32_t uSize) 
-	{ 
-		return ArraySizesImpl<2>(m_pSizes, uSize);
-	}
-
-	/**
-    \return The array of integers corresponding to this object.
-    */
-	ArraySizes::operator UIntArray1 () const
+{
+	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	class MaterialDensityPair
 	{
-		return m_pSizes;
-	}
+	public:
+		MaterialDensityPair();
+		MaterialDensityPair(Type uMaterial, Type uDensity);
+
+		//Why are both of these needed?!
+		bool operator==(const MaterialDensityPair& rhs) const throw();
+		bool operator!=(const MaterialDensityPair& rhs) const throw();
+
+		bool operator<(const MaterialDensityPair& rhs) const throw();
+
+		Type getDensity() const throw();
+		Type getMaterial() const throw();
+
+		void setDensity(Type uDensity);
+		void setMaterial(Type uMaterial);
+
+		static Type getMaxDensity() throw();
+		static Type getMinDensity() throw();
+		static Type getMidDensity() throw();
+
+	private:
+		Type m_uMaterial : NoOfMaterialBits;
+		Type m_uDensity : NoOfDensityBits;
+	};
+
+	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 }
+
+#include "MaterialDensityPair.inl"
+
+#endif

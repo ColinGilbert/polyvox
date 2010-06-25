@@ -4,15 +4,16 @@ PROJECT(PolyVoxUtil)
 
 #Projects source files
 SET(UTIL_SRC_FILES
-	source/Serialization.cpp
-	source/VolumeChangeTracker.cpp
+	source/Dummy.cpp
 )
 
 #Projects headers files
 SET(UTIL_INC_FILES
 	include/Export.h
 	include/Serialization.h
+	include/Serialization.inl
 	include/VolumeChangeTracker.h	
+	include/VolumeChangeTracker.inl
 )
 
 ADD_DEFINITIONS(-DPOLYVOXUTIL_EXPORT) #Export symbols in the .dll

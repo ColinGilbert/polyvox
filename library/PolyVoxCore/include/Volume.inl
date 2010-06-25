@@ -124,7 +124,7 @@ namespace PolyVox
 		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i] = getHomogenousBlock(0);
+			m_pBlocks[i] = getHomogenousBlock(VoxelType());
 			m_vecBlockIsPotentiallyHomogenous[i] = false;
 		}
 

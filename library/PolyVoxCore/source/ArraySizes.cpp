@@ -1,3 +1,4 @@
+#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -20,14 +21,37 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
+#pragma endregion
 
-#ifndef __OpenGLExample_Shapes_H__
-#define __OpenGLExample_Shapes_H__
+#include "ArraySizes.h"
 
-#include "PolyVoxForwardDeclarations.h"
-#include "Volume.h"
+namespace PolyVox
+{	
+	/**
+    \param uSize The size of the first dimension.
+    */
+	ArraySizes::ArraySizes(uint32_t uSize) 
+	{ 
+		m_pSizes[0]=uSize;
+	}
 
-void createSphereInVolume(PolyVox::Volume<PolyVox::MaterialDensityPair44>& volData, float fRadius, uint8_t uValue);
-void createCubeInVolume(PolyVox::Volume<PolyVox::MaterialDensityPair44>& volData, PolyVox::Vector3DUint16 lowerCorner, PolyVox::Vector3DUint16 upperCorner, uint8_t uValue);
+	/**
+    This class only directly implements one dimensional sizes. Higher numbers
+	of dimensions are implemented via the ArraySisesImpl class. This function
+	create an object of the next dimensionality up.
+    \param uSize The size of the next dimension.
+    \return A higher dimension version of this class.
+    */
+	ArraySizesImpl<2> ArraySizes::operator () (uint32_t uSize) 
+	{ 
+		return ArraySizesImpl<2>(m_pSizes, uSize);
+	}
 
-#endif //__OpenGLExample_Shapes_H__
+	/**
+    \return The array of integers corresponding to this object.
+    */
+	ArraySizes::operator UIntArray1 () const
+	{
+		return m_pSizes;
+	}
+}

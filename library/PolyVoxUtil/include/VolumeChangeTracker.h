@@ -35,22 +35,23 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {	
 	/// Voxel scene manager
-	class POLYVOXUTIL_API VolumeChangeTracker
+	template <typename VoxelType>
+	class VolumeChangeTracker
 	{
 	public:
 		//Constructors, etc
-		VolumeChangeTracker(Volume<uint8_t>* volumeDataToSet, uint16_t regionSideLength);
+		VolumeChangeTracker(Volume<VoxelType>* volumeDataToSet, uint16_t regionSideLength);
 		~VolumeChangeTracker();
 
 		//Getters
 		int32_t getCurrentTime(void) const;	
 		int32_t getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ);
-		Volume<uint8_t>* getWrappedVolume(void) const;
+		Volume<VoxelType>* getWrappedVolume(void) const;
 
 		//Setters
 		void setAllRegionsModified(void);
-		void setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value);
-		void setVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value);
+		void setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, VoxelType value);
+		void setVoxelAt(uint16_t x, uint16_t y, uint16_t z, VoxelType value);
 
 		//Others	
 		void lockRegion(const Region& regToLock);
@@ -61,7 +62,7 @@ namespace PolyVox
 		void incrementCurrentTime(void);
 		bool m_bIsLocked;
 		Region m_regLastLocked;
-		Volume<uint8_t>* volumeData;
+		Volume<VoxelType>* volumeData;
 
 		uint16_t m_uRegionSideLength;
 		uint8_t m_uRegionSideLengthPower;
@@ -77,5 +78,7 @@ namespace PolyVox
 		static uint32_t m_uCurrentTime;
 	};
 }
+
+#include "VolumeChangeTracker.inl"
 
 #endif

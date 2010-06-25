@@ -4,6 +4,7 @@ PROJECT(PolyVoxCore)
 
 #Projects source files
 SET(CORE_SRC_FILES
+	source/ArraySizes.cpp
 	source/GradientEstimators.cpp
 	source/SurfaceMesh.cpp
 	source/Log.cpp
@@ -12,7 +13,6 @@ SET(CORE_SRC_FILES
 	source/MeshFace.cpp
 	source/MeshVertex.cpp
 	source/Region.cpp
-	source/SurfaceExtractor.cpp 
 	source/SurfaceVertex.cpp
 	source/VoxelFilters.cpp
 )
@@ -22,10 +22,10 @@ SET(CORE_INC_FILES
 	include/Array.h
 	include/Array.inl
 	include/ArraySizes.h
-	include/ArraySizes.inl
 	include/GradientEstimators.inl
-	include/SurfaceMesh.h
 	include/Log.h
+	include/MaterialDensityPair.h
+	include/MaterialDensityPair.inl
 	include/Mesh.h
 	include/MeshEdge.h
 	include/MeshFace.h
@@ -33,6 +33,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxForwardDeclarations.h
 	include/Region.h
 	include/SurfaceExtractor.h
+	include/SurfaceExtractor.inl
+	include/SurfaceMesh.h
 	include/SurfaceVertex.h
 	include/Vector.h
 	include/Vector.inl

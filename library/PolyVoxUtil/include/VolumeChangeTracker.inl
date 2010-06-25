@@ -38,12 +38,14 @@ using namespace std;
 
 namespace PolyVox
 {
-	uint32_t VolumeChangeTracker::m_uCurrentTime = 0;
+	template <typename VoxelType>
+	uint32_t VolumeChangeTracker<VoxelType>::m_uCurrentTime = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// VolumeChangeTracker
 	//////////////////////////////////////////////////////////////////////////
-	VolumeChangeTracker::VolumeChangeTracker(Volume<uint8_t>* volumeDataToSet, uint16_t regionSideLength)
+	template <typename VoxelType>
+	VolumeChangeTracker<VoxelType>::VolumeChangeTracker(Volume<VoxelType>* volumeDataToSet, uint16_t regionSideLength)
 		:m_bIsLocked(false)
 		,volumeData(0)
 		,m_uRegionSideLength(regionSideLength)
@@ -57,11 +59,13 @@ namespace PolyVox
 		volRegionLastModified = new Volume<int32_t>(m_uVolumeWidthInRegions, m_uVolumeHeightInRegions, m_uVolumeDepthInRegions, 0);
 	}
 
-	VolumeChangeTracker::~VolumeChangeTracker()
+	template <typename VoxelType>
+	VolumeChangeTracker<VoxelType>::~VolumeChangeTracker()
 	{
 	}
 
-	void VolumeChangeTracker::setAllRegionsModified(void)
+	template <typename VoxelType>
+	void VolumeChangeTracker<VoxelType>::setAllRegionsModified(void)
 	{
 		incrementCurrentTime();
 		for(uint16_t blockZ = 0; blockZ < m_uVolumeDepthInRegions; ++blockZ)
@@ -76,22 +80,26 @@ namespace PolyVox
 		}
 	}
 
-	int32_t VolumeChangeTracker::getCurrentTime(void) const
+	template <typename VoxelType>
+	int32_t VolumeChangeTracker<VoxelType>::getCurrentTime(void) const
 	{
 		return m_uCurrentTime;
 	}
 
-	int32_t VolumeChangeTracker::getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ)
+	template <typename VoxelType>
+	int32_t VolumeChangeTracker<VoxelType>::getLastModifiedTimeForRegion(uint16_t uX, uint16_t uY, uint16_t uZ)
 	{
 		return volRegionLastModified->getVoxelAt(uX, uY, uZ);
 	}
 
-	Volume<uint8_t>* VolumeChangeTracker::getWrappedVolume(void) const
+	template <typename VoxelType>
+	Volume<VoxelType>* VolumeChangeTracker<VoxelType>::getWrappedVolume(void) const
 	{
 		return volumeData;
 	}
 
-	void VolumeChangeTracker::setVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value)
+	template <typename VoxelType>
+	void VolumeChangeTracker<VoxelType>::setVoxelAt(uint16_t x, uint16_t y, uint16_t z, VoxelType value)
 	{
 		//Note: We increase the time stamp both at the start and the end
 		//to avoid ambiguity about whether the timestamp comparison should
@@ -140,18 +148,20 @@ namespace PolyVox
 		incrementCurrentTime();
 	}
 
-	void VolumeChangeTracker::setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, uint8_t value)
+	template <typename VoxelType>
+	void VolumeChangeTracker<VoxelType>::setLockedVoxelAt(uint16_t x, uint16_t y, uint16_t z, VoxelType value)
 	{
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		/*VolumeSampler<uint8_t> iterVol(*volumeData);
+		/*VolumeSampler<VoxelType> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 		volumeData->setVoxelAt(x,y,z,value);
 	}
 
-	void VolumeChangeTracker::lockRegion(const Region& regToLock)
+	template <typename VoxelType>
+	void VolumeChangeTracker<VoxelType>::lockRegion(const Region& regToLock)
 	{
 		if(m_bIsLocked)
 		{
@@ -162,7 +172,8 @@ namespace PolyVox
 		m_bIsLocked = true;
 	}
 
-	void VolumeChangeTracker::unlockRegion(void)
+	template <typename VoxelType>
+	void VolumeChangeTracker<VoxelType>::unlockRegion(void)
 	{
 		if(!m_bIsLocked)
 		{
@@ -199,7 +210,8 @@ namespace PolyVox
 		incrementCurrentTime();
 	}
 
-	void VolumeChangeTracker::incrementCurrentTime(void)
+	template <typename VoxelType>
+	void VolumeChangeTracker<VoxelType>::incrementCurrentTime(void)
 	{
 		//Increment the current time.
 		uint32_t time = m_uCurrentTime++;

@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 #include <QMouseEvent>
 
 #include "GradientEstimators.h"
+#include "MaterialDensityPair.h"
 #include "SurfaceExtractor.h"
 
 #include "Mesh.h"
@@ -48,7 +49,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 	timer->start(0);
 }
 
-void OpenGLWidget::setVolume(PolyVox::Volume<uint8_t>* volData)
+void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 {
 	//First we free anything from the previous volume (if there was one).
 	m_mapOpenGLSurfaceMeshes.clear();
@@ -62,7 +63,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<uint8_t>* volData)
 		m_uVolumeHeightInRegions = volData->getHeight() / m_uRegionSideLength;
 		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
 
-		SurfaceExtractor surfaceExtractor(*volData);
+		SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(*volData);
 
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.

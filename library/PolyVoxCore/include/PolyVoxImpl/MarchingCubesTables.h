@@ -26,10 +26,12 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MarchingCubeTables_H__
 #define __PolyVox_MarchingCubeTables_H__
 
+#include "TypeDef.h"
+
 namespace PolyVox
 {
-	extern int edgeTable[256];
-	extern int triTable[256][16];
+	extern POLYVOXCORE_API int edgeTable[256];
+	extern POLYVOXCORE_API int triTable[256][16];
 }
 
 #endif

@@ -35,7 +35,8 @@ void TestArray::testReadWrite()
 	int height = 10;
 	int depth = 20;
 
-	Array<3, int> myArray(ArraySizes(width)(height)(depth));
+	uint32_t dimensions[3] = {width, height, depth}; // Array dimensions
+	Array<3, int> myArray(dimensions);
 
 	int ct = 1;
 	int expectedTotal = 0;

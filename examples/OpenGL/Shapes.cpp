@@ -23,9 +23,11 @@ freely, subject to the following restrictions:
 
 #include "Shapes.h"
 
+#include "MaterialDensityPair.h"
+
 using namespace PolyVox;
 
-void createSphereInVolume(Volume<uint8_t>& volData, float fRadius, uint8_t uValue)
+void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -46,14 +48,14 @@ void createSphereInVolume(Volume<uint8_t>& volData, float fRadius, uint8_t uValu
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, uValue);
+					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
 				}
 			}
 		}
 	}
 }
 
-void createCubeInVolume(Volume<uint8_t>& volData, Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8_t uValue)
+void createCubeInVolume(Volume<MaterialDensityPair44>& volData, Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8_t uValue)
 {
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
@@ -62,7 +64,7 @@ void createCubeInVolume(Volume<uint8_t>& volData, Vector3DUint16 lowerCorner, Ve
 		{
 			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
 			{
-				volData.setVoxelAt(x,y,z, uValue);
+				volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
 			}
 		}
 	}

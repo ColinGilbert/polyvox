@@ -132,8 +132,8 @@ namespace PolyVox
 		uint16_t getShortestSideLength(void) const;
 		///Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
-		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault = 0) const;
-		VoxelType getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault = 0) const;
+		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault = VoxelType()) const;
+		VoxelType getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault = VoxelType()) const;
 
 		bool setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		bool setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);

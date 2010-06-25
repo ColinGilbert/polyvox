@@ -21,9 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "SurfaceExtractor.h"
-
 #include "Array.h"
+#include "MaterialDensityPair.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
@@ -32,13 +31,15 @@ using namespace std;
 
 namespace PolyVox
 {
-	SurfaceExtractor::SurfaceExtractor(Volume<uint8_t>& volData)
+	template <typename VoxelType>
+	SurfaceExtractor<VoxelType>::SurfaceExtractor(Volume<VoxelType>& volData)
 		:m_volData(volData)
 		,m_sampVolume(&volData)
 	{
 	}
 
-	shared_ptr<SurfaceMesh> SurfaceExtractor::extractSurfaceForRegion(Region region)
+	template <typename VoxelType>
+	shared_ptr<SurfaceMesh> SurfaceExtractor<VoxelType>::extractSurfaceForRegion(Region region)
 	{		
 		m_regInputUncropped = region;
 
@@ -153,8 +154,9 @@ namespace PolyVox
 		return shared_ptr<SurfaceMesh>(m_meshCurrent);
 	}
 
+	template<typename VoxelType>
 	template<bool isPrevZAvail>
-	uint32_t SurfaceExtractor::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t SurfaceExtractor<VoxelType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -218,19 +220,20 @@ namespace PolyVox
 		return m_uNoOfOccupiedCells;
 	}
 
+	template<typename VoxelType>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void SurfaceExtractor::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	void SurfaceExtractor<VoxelType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		uint8_t iCubeIndex = 0;
 
-		uint8_t v000 = 0;
-		uint8_t v100 = 0;
-		uint8_t v010 = 0;
-		uint8_t v110 = 0;
-		uint8_t v001 = 0;
-		uint8_t v101 = 0;
-		uint8_t v011 = 0;
-		uint8_t v111 = 0;
+		VoxelType v000;
+		VoxelType v100;
+		VoxelType v010;
+		VoxelType v110;
+		VoxelType v001;
+		VoxelType v101;
+		VoxelType v011;
+		VoxelType v111;
 
 		if(isPrevZAvail)
 		{
@@ -256,7 +259,7 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -274,8 +277,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (v011 == 0) iCubeIndex |= 64;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v011.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 64;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 			}
 			else //previous Y not available
@@ -296,8 +299,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
 
-					if (v101 == 0) iCubeIndex |= 32;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v101.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 32;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -310,10 +313,10 @@ namespace PolyVox
 					uint8_t iPreviousCubeIndexZ = pPreviousBitmask[uXRegSpace][uYRegSpace];
 					iCubeIndex = iPreviousCubeIndexZ >> 4;
 
-					if (v001 == 0) iCubeIndex |= 16;
-					if (v101 == 0) iCubeIndex |= 32;
-					if (v011 == 0) iCubeIndex |= 64;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v001.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 16;
+					if (v101.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 32;
+					if (v011.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 64;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 			}
 		}
@@ -338,8 +341,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
 
-					if (v110 == 0) iCubeIndex |= 8;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v110.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 8;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -356,10 +359,10 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexY;
 
-					if (v010 == 0) iCubeIndex |= 4;
-					if (v110 == 0) iCubeIndex |= 8;
-					if (v011 == 0) iCubeIndex |= 64;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v010.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 4;
+					if (v110.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 8;
+					if (v011.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 64;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 			}
 			else //previous Y not available
@@ -379,10 +382,10 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX;
 
-					if (v100 == 0) iCubeIndex |= 2;	
-					if (v110 == 0) iCubeIndex |= 8;
-					if (v101 == 0) iCubeIndex |= 32;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v100.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 2;	
+					if (v110.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 8;
+					if (v101.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 32;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -396,14 +399,14 @@ namespace PolyVox
 					v011 = m_sampVolume.peekVoxel0px1py1pz();
 					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
-					if (v000 == 0) iCubeIndex |= 1;
-					if (v100 == 0) iCubeIndex |= 2;
-					if (v010 == 0) iCubeIndex |= 4;
-					if (v110 == 0) iCubeIndex |= 8;
-					if (v001 == 0) iCubeIndex |= 16;
-					if (v101 == 0) iCubeIndex |= 32;
-					if (v011 == 0) iCubeIndex |= 64;
-					if (v111 == 0) iCubeIndex |= 128;
+					if (v000.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 1;
+					if (v100.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 2;
+					if (v010.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 4;
+					if (v110.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 8;
+					if (v001.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 16;
+					if (v101.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 32;
+					if (v011.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 64;
+					if (v111.getDensity() < VoxelType::getMidDensity()) iCubeIndex |= 128;
 				}
 			}
 		}
@@ -417,7 +420,8 @@ namespace PolyVox
 		}
 	}
 
-	void SurfaceExtractor::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	template <typename VoxelType>
+	void SurfaceExtractor<VoxelType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -457,16 +461,28 @@ namespace PolyVox
 
 
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
-				const uint8_t v000 = m_sampVolume.getVoxel();
+				const VoxelType v000 = m_sampVolume.getVoxel();
+				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					m_sampVolume.movePositiveX();
-					const uint8_t v100 = m_sampVolume.getVoxel();
-					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()) + 0.5f, static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()));
-					const Vector3DFloat v3dNormal(v000 > v100 ? 1.0f : -1.0f,0.0,0.0);
-					const uint8_t uMaterial = v000 | v100; //Because one of these is 0, the or operation takes the max.
+					const VoxelType v100 = m_sampVolume.getVoxel();
+					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
+
+					//float fInterp = static_cast<float>(v100.getDensity() - VoxelType::getMinDensity()) / static_cast<float>(VoxelType::getMaxDensity() - VoxelType::getMinDensity());
+					float fInterp = static_cast<float>(VoxelType::getMidDensity() - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
+					//fInterp = 0.5f;
+
+					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()) + fInterp, static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()));
+					//const Vector3DFloat v3dNormal(v000.getDensity() > v100.getDensity() ? 1.0f : -1.0f,0.0,0.0);
+
+					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
+					v3dNormal.normalise();
+
+					const uint8_t uMaterial = v000.getMaterial() | v100.getMaterial(); //Because one of these is 0, the or operation takes the max.
+
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
 					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
@@ -481,10 +497,20 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 8)
 				{
 					m_sampVolume.movePositiveY();
-					const uint8_t v010 = m_sampVolume.getVoxel();
-					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()) + 0.5f, static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()));
-					const Vector3DFloat v3dNormal(0.0,v000 > v010 ? 1.0f : -1.0f,0.0);
-					const uint8_t uMaterial = v000 | v010; //Because one of these is 0, the or operation takes the max.
+					const VoxelType v010 = m_sampVolume.getVoxel();
+					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
+
+					float fInterp = static_cast<float>(VoxelType::getMidDensity() - v000.getDensity()) / static_cast<float>(v010.getDensity() - v000.getDensity());
+					//fInterp = 0.5f;
+
+					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()) + fInterp, static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()));
+					//const Vector3DFloat v3dNormal(0.0,v000.getDensity() > v010.getDensity() ? 1.0f : -1.0f,0.0);
+
+					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
+					v3dNormal.normalise();
+
+					const uint8_t uMaterial = v000.getMaterial() | v010.getMaterial(); //Because one of these is 0, the or operation takes the max.
+
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
 					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
@@ -499,10 +525,20 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 256)
 				{
 					m_sampVolume.movePositiveZ();
-					const uint8_t v001 = m_sampVolume.getVoxel();
-					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()) + 0.5f);
-					const Vector3DFloat v3dNormal(0.0,0.0,v000 > v001 ? 1.0f : -1.0f);
-					const uint8_t uMaterial = v000 | v001; //Because one of these is 0, the or operation takes the max.
+					const VoxelType v001 = m_sampVolume.getVoxel();
+					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
+
+					float fInterp = static_cast<float>(VoxelType::getMidDensity() - v000.getDensity()) / static_cast<float>(v001.getDensity() - v000.getDensity());
+					//fInterp = 0.5f;
+
+					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regInputCropped.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regInputCropped.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regInputCropped.getLowerCorner().getZ()) + fInterp);
+					//const Vector3DFloat v3dNormal(0.0,0.0,v000.getDensity() > v001.getDensity() ? 1.0f : -1.0f);
+
+					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
+					v3dNormal.normalise();
+
+					const uint8_t uMaterial = v000.getMaterial() | v001.getMaterial(); //Because one of these is 0, the or operation takes the max.
+
 					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
 					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
@@ -518,7 +554,111 @@ namespace PolyVox
 		}
 	}
 
-	void SurfaceExtractor::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	template <typename VoxelType>
+	Vector3DFloat SurfaceExtractor<VoxelType>::computeCentralDifferenceGradient(const VolumeSampler<VoxelType>& volIter)
+	{
+		uint8_t voxel1nx = volIter.peekVoxel1nx0py0pz().getDensity();
+		uint8_t voxel1px = volIter.peekVoxel1px0py0pz().getDensity();
+
+		uint8_t voxel1ny = volIter.peekVoxel0px1ny0pz().getDensity();
+		uint8_t voxel1py = volIter.peekVoxel0px1py0pz().getDensity();
+
+		uint8_t voxel1nz = volIter.peekVoxel0px0py1nz().getDensity();
+		uint8_t voxel1pz = volIter.peekVoxel0px0py1pz().getDensity();
+
+		return Vector3DFloat
+		(
+			static_cast<float>(voxel1nx) - static_cast<float>(voxel1px),
+			static_cast<float>(voxel1ny) - static_cast<float>(voxel1py),
+			static_cast<float>(voxel1nz) - static_cast<float>(voxel1pz)
+		);
+	}
+
+	template <typename VoxelType>
+	Vector3DFloat SurfaceExtractor<VoxelType>::computeSobelGradient(const VolumeSampler<VoxelType>& volIter)
+	{
+		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
+			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
+
+			const uint8_t pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz().getDensity();
+			const uint8_t pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz().getDensity();
+			const uint8_t pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz().getDensity();
+			const uint8_t pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz().getDensity();
+			const uint8_t pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz().getDensity();
+			const uint8_t pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz().getDensity();
+			const uint8_t pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz().getDensity();
+			const uint8_t pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz().getDensity();
+			const uint8_t pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz().getDensity();
+
+			const uint8_t pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz().getDensity();
+			const uint8_t pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz().getDensity();
+			const uint8_t pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz().getDensity();
+			const uint8_t pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz().getDensity();
+			//const uint8_t pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz().getDensity();
+			const uint8_t pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz().getDensity();
+			const uint8_t pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz().getDensity();
+			const uint8_t pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz().getDensity();
+			const uint8_t pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz().getDensity();
+
+			const uint8_t pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz().getDensity();
+			const uint8_t pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz().getDensity();
+			const uint8_t pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz().getDensity();
+			const uint8_t pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz().getDensity();
+			const uint8_t pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz().getDensity();
+			const uint8_t pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz().getDensity();
+			const uint8_t pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz().getDensity();
+			const uint8_t pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz().getDensity();
+			const uint8_t pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz().getDensity();
+
+			const int xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+				pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
+				weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
+				pVoxel1nx0py1pz - weights[0][2][0] * pVoxel1nx1py1nz -
+				weights[1][2][0] * pVoxel1nx1py0pz - weights[2][2][0] *
+				pVoxel1nx1py1pz + weights[0][0][2] * pVoxel1px1ny1nz +
+				weights[1][0][2] * pVoxel1px1ny0pz + weights[2][0][2] *
+				pVoxel1px1ny1pz + weights[0][1][2] * pVoxel1px0py1nz +
+				weights[1][1][2] * pVoxel1px0py0pz + weights[2][1][2] *
+				pVoxel1px0py1pz + weights[0][2][2] * pVoxel1px1py1nz +
+				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+				pVoxel1px1py1pz);
+
+			const int yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+				pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
+				weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
+				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz -
+				weights[1][0][1] * pVoxel0px1ny0pz - weights[2][0][1] *
+				pVoxel0px1ny1pz + weights[0][2][1] * pVoxel0px1py1nz +
+				weights[1][2][1] * pVoxel0px1py0pz + weights[2][2][1] *
+				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz -
+				weights[1][0][2] * pVoxel1px1ny0pz - weights[2][0][2] *
+				pVoxel1px1ny1pz + weights[0][2][2] * pVoxel1px1py1nz +
+				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+				pVoxel1px1py1pz);
+
+			const int zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
+				weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
+				pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
+				weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
+				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz +
+				weights[2][0][1] * pVoxel0px1ny1pz - weights[0][1][1] *
+				pVoxel0px0py1nz + weights[2][1][1] * pVoxel0px0py1pz -
+				weights[0][2][1] * pVoxel0px1py1nz + weights[2][2][1] *
+				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz +
+				weights[2][0][2] * pVoxel1px1ny1pz - weights[0][1][2] *
+				pVoxel1px0py1nz + weights[2][1][2] * pVoxel1px0py1pz -
+				weights[0][2][2] * pVoxel1px1py1nz + weights[2][2][2] *
+				pVoxel1px1py1pz);
+
+			//Note: The above actually give gradients going from low density to high density.
+			//For our normals we want the the other way around, so we switch the components as we return them.
+			return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
+	}
+
+	template <typename VoxelType>
+	void SurfaceExtractor<VoxelType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,

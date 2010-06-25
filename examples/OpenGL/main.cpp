@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 
 #include "Log.h"
+#include "MaterialDensityPair.h"
 #include "Volume.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/Utility.h"
@@ -70,7 +71,8 @@ void exampleLog(string message, int severity)
 int main(int argc, char *argv[])
 {
 	logHandler = &exampleLog;
-	Volume<uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	Volume<MaterialDensityPair44> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	Volume<MaterialDensityPair44> volDataAveraged(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
 	uint16_t minPos = 0;
@@ -106,14 +108,75 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
 	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
 
-	createCubeInVolume(volData, Vector3DUint16(1, midPos-10, midPos-10), Vector3DUint16(maxPos-1, midPos+10, midPos+10), 255);
-	createCubeInVolume(volData, Vector3DUint16(midPos-10, 1, midPos-10), Vector3DUint16(midPos+10, maxPos-1, midPos+10), 255);
-	createCubeInVolume(volData, Vector3DUint16(midPos-10, midPos-10 ,1), Vector3DUint16(midPos+10, midPos+10, maxPos-1), 255);
+	createCubeInVolume(volData, Vector3DUint16(1, midPos-10, midPos-10), Vector3DUint16(maxPos-1, midPos+10, midPos+10), MaterialDensityPair44::getMaxDensity());
+	createCubeInVolume(volData, Vector3DUint16(midPos-10, 1, midPos-10), Vector3DUint16(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
+	createCubeInVolume(volData, Vector3DUint16(midPos-10, midPos-10 ,1), Vector3DUint16(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
 	//createCubeInVolume(volData, Vector3DUint16(1, 1, 1), Vector3DUint16(maxPos-1, maxPos-1, midPos/4), 255);
 
+	for (int z = 1; z < volData.getWidth()-1; z++)
+	{
+		for (int y = 1; y < volData.getHeight()-1; y++)
+		{
+			for (int x = 1; x < volData.getDepth()-1; x++)
+			{
+				int uDensity = 0;
+				uDensity += volData.getVoxelAt(x-1,y-1,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y-1,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y-1,z+1).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y-0,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y-0,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y-0,z+1).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y+1,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y+1,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x-1,y+1,z+1).getDensity();
+
+				uDensity += volData.getVoxelAt(x-0,y-1,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y-1,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y-1,z+1).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y-0,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y-0,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y-0,z+1).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y+1,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y+1,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x-0,y+1,z+1).getDensity();
+
+				uDensity += volData.getVoxelAt(x+1,y-1,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y-1,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y-1,z+1).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y-0,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y-0,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y-0,z+1).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y+1,z-1).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y+1,z-0).getDensity();
+				uDensity += volData.getVoxelAt(x+1,y+1,z+1).getDensity();
+				uDensity /= 27;
+
+				MaterialDensityPair44 val = volData.getVoxelAt(x,y,z);
+				val.setDensity(uDensity);
+
+				volDataAveraged.setVoxelAt(x,y,z,val);
+			}
+		}
+	}
+
+	/*std::vector<long int> counts(256);
+	fill(counts.begin(), counts.end(), 0);
+
+	for (int z = 0; z < volData.getWidth(); z++)
+	{
+		for (int y = 0; y < volData.getHeight(); y++)
+		{
+			for (int x = 0; x < volData.getDepth(); x++)
+			{
+				counts[volData.getVoxelAt(x,y,z).getMaterial()]++;
+			}
+		}
+	}*/
+
 	cout << "Tidying memory...";
 	volData.tidyUpMemory(0);
+	volDataAveraged.tidyUpMemory(0);
 	cout << "done." << endl; 
 
 	QApplication app(argc, argv);
@@ -125,7 +188,7 @@ int main(int argc, char *argv[])
 
 	QTime time;
 	time.start();
-	openGLWidget.setVolume(&volData);
+	openGLWidget.setVolume(&volDataAveraged);
 	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
 
 	//return 0;

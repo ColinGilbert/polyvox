@@ -77,6 +77,4 @@ namespace PolyVox
 	};
 }//namespace PolyVox
 
-#include "ArraySizes.inl"
-
 #endif //__PolyVox_ArraySizes_H__
