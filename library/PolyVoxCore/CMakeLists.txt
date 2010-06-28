@@ -22,6 +22,8 @@ SET(CORE_INC_FILES
 	include/Array.h
 	include/Array.inl
 	include/ArraySizes.h
+	include/Filters.h
+	include/Filters.inl
 	include/GradientEstimators.inl
 	include/Log.h
 	include/MaterialDensityPair.h

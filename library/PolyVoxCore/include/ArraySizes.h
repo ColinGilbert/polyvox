@@ -28,6 +28,7 @@ distribution.
 
 #pragma region Headers
 #include "PolyVoxImpl/ArraySizesImpl.h"
+#include "PolyVoxImpl/Typedef.h"
 #pragma endregion
 
 namespace PolyVox
@@ -56,7 +57,7 @@ namespace PolyVox
 	/// behind it may appear complex. For reference, it is based upon the article here:
 	/// http://www.drdobbs.com/cpp/184401319/
 	////////////////////////////////////////////////////////////////////////////////
-	class ArraySizes
+	class POLYVOXCORE_API ArraySizes
 	{
 		typedef const uint32_t (&UIntArray1)[1];
 
