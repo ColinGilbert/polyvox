@@ -33,7 +33,7 @@ The ``..`` tells CMake to look in the parent directory for the source.
 
 By default this will set it to be installed in ``/usr/local`` so if you want to install it elsewhere, set the ``CMAKE_INSTALL_PREFIX`` variable to the path you want to install to.
 
-You can set CMake variables by passing -D<variable>:<type>=<value> cmake command (the ``:<type>`` part is optional but recommended). For example, to set the install prefix, pass::
+You can set CMake variables by passing ``-D<variable>:<type>=<value>`` to the ``cmake`` command (the ``:<type>`` part is optional but recommended). For example, to set the install prefix, pass::
 
 	-DCMAKE_INSTALL_PREFIX:PATH=/whatever/you/want
 
@@ -81,7 +81,7 @@ If you want to generate the API documentation, you'll need Doxygen installed. If
 
 	make doc
 
-and the documentation can be browsed from ``build/library/doc/html/index.html``.
+and the documentation can be browsed from ``{build directory}/library/doc/html/index.html``.
 
 Windows
 =======
@@ -91,7 +91,7 @@ CMake
 
 You need CMake installed so get the binary distribution from `CMake.org <http://cmake.org/cmake/resources/software.html>`_. Install it and run the CMake GUI.
 
-Point the source directory to the directory holding this file and the build directory to the ``build`` subdirectory. Then, click the ``Configure`` button. Click through the dialog box that appears and once you've clicked ``Finish`` you should see text appearing in the bottom text area. Once this has finished, some options will appear in the top area. The purpose of these options in detailed in the Linux→CMake section above. Once you have set these options to what you please, click ``Configure`` again. If it completes without errors then you can click ``Generate`` which will generate your compilers project files.
+Point the source directory to the directory holding this file and the build directory to the ``build`` subdirectory. Then, click the ``Configure`` button. Click through the dialog box that appears and once you've clicked ``Finish`` you should see text appearing in the bottom text area. Once this has finished, some options will appear in the top area. The purpose of these options in detailed in the Linux→CMake section above. Once you have set these options to what you please, click ``Configure`` again. If it completes without errors then you can click ``Generate`` which will generate your compilers project files in the build directory.
 
 Building
 --------
