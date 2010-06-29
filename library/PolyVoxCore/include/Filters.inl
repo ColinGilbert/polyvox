@@ -1,3 +1,5 @@
+#include "MaterialDensityPair.h"
+
 namespace PolyVox
 {
 	template <typename VoxelType>

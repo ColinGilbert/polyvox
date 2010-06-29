@@ -28,7 +28,7 @@ distribution.
 
 #pragma region Headers
 #include "PolyVoxImpl/ArraySizesImpl.h"
-#include "PolyVoxImpl/Typedef.h"
+#include "PolyVoxImpl/TypeDef.h"
 #pragma endregion
 
 namespace PolyVox

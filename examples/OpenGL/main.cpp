@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DUint16(midPos-10, midPos-10 ,1), Vector3DUint16(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
 	//Smooth part of the volume
-	smoothRegion<MaterialDensityPair44>(volData, Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
-	smoothRegion<MaterialDensityPair44>(volData, Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
+	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
+	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
 
 	cout << "Tidying memory...";
 	volData.tidyUpMemory(0);
