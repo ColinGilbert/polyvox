@@ -28,10 +28,20 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/PolyVoxConfig.cmake DESTINATION ${CONF
 if(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 	#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.css ${CMAKE_CURRENT_BINARY_DIR}/polyvox.css)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhcp)
-	add_custom_target(doc COMMAND ${DOXYGEN_EXECUTABLE} COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} doc/html/polyvox.qhcp -o doc/html/polyvox.qhc WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Building documentation" VERBATIM)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhcp) #The QtHelp config file
+	add_custom_target(doc
+		COMMAND ${DOXYGEN_EXECUTABLE}
+		COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} doc/html/polyvox.qhcp -o doc/html/polyvox.qhc
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		COMMENT "Building documentation"
+	)
 	set_target_properties(doc PROPERTIES PROJECT_LABEL "Documentation") #Set label seen in IDE
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhc ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qch DESTINATION ${PolyVox_DOC_INSTALL_DIR}/qthelp COMPONENT development)
+	install(FILES
+		${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhc
+		${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qch
+		DESTINATION ${PolyVox_DOC_INSTALL_DIR}/qthelp
+		COMPONENT development
+	)
 endif()
 
 #add_subdirectory(bindings)
