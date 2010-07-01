@@ -34,6 +34,7 @@ if(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 		COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} doc/html/polyvox.qhcp -o doc/html/polyvox.qhc
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		COMMENT "Building documentation"
+		VERBATIM
 	)
 	set_target_properties(doc PROPERTIES PROJECT_LABEL "Documentation") #Set label seen in IDE
 	install(FILES
