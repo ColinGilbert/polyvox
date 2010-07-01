@@ -934,7 +934,8 @@ GENERATE_QHP           = YES
 # be used to specify the file name of the resulting .qch file. 
 # The path specified is relative to the HTML output folder.
 
-QCH_FILE               = polyvox.qch
+#Comment this out since qcollectiongenerator handles this now
+#QCH_FILE               = polyvox.qch
 
 # The QHP_NAMESPACE tag specifies the namespace to use when generating 
 # Qt Help Project output. For more information please see 
@@ -953,8 +954,8 @@ QHP_VIRTUAL_FOLDER     = doc
 # If non-empty doxygen will try to run qhelpgenerator on the generated 
 # .qhp file .
 
-#TODO set by CMake
-QHG_LOCATION           = /usr/bin/qhelpgenerator
+#Set this to empty so that we can leave the compilation to qcollectiongenerator
+QHG_LOCATION           = 
 
 # The DISABLE_INDEX tag can be used to turn on/off the condensed index at 
 # top of each HTML page. The value NO (the default) enables the index and 

@@ -40,6 +40,13 @@ IF(BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
 ENDIF(BUILD_TESTING)
 
+#Check if we will be making the 'doc' target available
+IF(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
+	SET(BUILD_DOCS YES)
+ELSE()
+	SET(BUILD_DOCS NO)
+ENDIF()
+
 
 # Option summary
 MESSAGE(STATUS "")
@@ -47,5 +54,5 @@ MESSAGE(STATUS "Summary")
 MESSAGE(STATUS "-------")
 MESSAGE(STATUS "Build examples:     " ${ENABLE_EXAMPLES})
 MESSAGE(STATUS "Build tests:        " ${BUILD_TESTING})
-MESSAGE(STATUS "API Docs available: " ${DOXYGEN_FOUND})
+MESSAGE(STATUS "API Docs available: " ${BUILD_DOCS})
 MESSAGE(STATUS "")

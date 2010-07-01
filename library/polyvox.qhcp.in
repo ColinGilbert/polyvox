@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+	<assistant>
+		<title>PolyVox Documentation</title>
+		<homePage>qthelp://org.thermite3d.polyvox/doc/index.html</homePage>
+		<startPage>qthelp://org.thermite3d.polyvox/doc/index.html</startPage>
+		<enableDocumentationManager>false</enableDocumentationManager>
+	</assistant>
+	<docFiles>
+		<generate>
+			<file>
+				<input>index.qhp</input>
+				<output>polyvox.qch</output>
+			</file>
+		</generate>
+		<register>
+			<file>polyvox.qch</file>
+		</register>
+	</docFiles>
+</QHelpCollectionProject>

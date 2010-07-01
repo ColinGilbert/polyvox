@@ -13,6 +13,7 @@ To build PolyVox you need:
 With the following options:
 
 * `Qt <http://qt.nokia.com>`_ for building the tests
+	* ``qcollectiongenerator`` which comes with Qt Assistant is required for bundling the docs for installation
 * `Doxygen <http://doxygen.org>`_ for building the documentation
 
 Linux
@@ -77,11 +78,17 @@ To run the tests you do not need to have run ``make install``. Simply run::
 API Documentation
 -----------------
 
-If you want to generate the API documentation, you'll need Doxygen installed. If you saw ``API Docs available: YES`` at the end of the CMake output then you're all set. To generate the docs, just run::
+If you want to generate the API documentation, you'll need Doxygen and ``qcollectiongenerator`` installed. If you saw ``API Docs available: YES`` at the end of the CMake output then you're all set. To generate the docs, just run::
 
 	make doc
 
-and the documentation can be browsed from ``{build directory}/library/doc/html/index.html``.
+and the documentation can be browsed in plain HTML form at ``<build directory>/library/doc/html/index.html``.
+
+On top of this, PolyVox will also compile and install this documentation as a *Qt Help Collection* file to ``<prefix>/share/doc/packages/polyvox/qthelp/polyvox.qhc`` (this file is in the build directory as ``<build directory>/library/doc/html/polyvox.qhc``). To view this file you need Qt Assistant installed. You can open it with::
+
+	assistant -collectionFile library/doc/html/polyvox.qhc
+
+This allows indexed searching of the documentation and easier browsing.
 
 Windows
 =======
