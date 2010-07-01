@@ -19,6 +19,10 @@ ENDMACRO(CREATE_TEST)
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtTest REQUIRED)
 INCLUDE(${QT_USE_FILE})
 
+IF(NOT QT_QTTEST_FOUND)
+	MESSAGE(STATUS "QtTest not found. Either install it or disable tests by setting BUILD_TESTING to OFF")
+ENDIF()
+
 INCLUDE_DIRECTORIES(${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
 
 # Array tests
