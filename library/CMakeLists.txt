@@ -33,6 +33,7 @@ if(DOXYGEN_FOUND)
 		COMMAND ${DOXYGEN_EXECUTABLE}
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		COMMENT "Building documentation"
+		SOURCES Doxyfile.in polyvox.qhcp.in Mainpage.dox
 		VERBATIM
 	)
 	set_target_properties(doc PROPERTIES PROJECT_LABEL "Documentation") #Set label seen in IDE

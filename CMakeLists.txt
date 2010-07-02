@@ -9,8 +9,8 @@ SET(POLYVOX_VERSION "${POLYVOX_VERSION_MAJOR}.${POLYVOX_VERSION_MINOR}.${POLYVOX
 
 FIND_PACKAGE(Doxygen)
 
-# Qt is required for building the tests and optionally for bundling the documentation
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtTest REQUIRED)
+# Qt is required for building the tests, the example and optionally for bundling the documentation
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtTest)
 INCLUDE(${QT_USE_FILE})
 
 IF(WIN32)
@@ -44,11 +44,11 @@ IF(BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
 ENDIF(BUILD_TESTING)
 
-#Check if we will be making the 'doc' target available
+#Check if we will building _and_ bundling the docs
 IF(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
-	SET(BUILD_DOCS YES)
+	SET(BUILD_AND_BUNDLE_DOCS YES)
 ELSE()
-	SET(BUILD_DOCS NO)
+	SET(BUILD_AND_BUNDLE_DOCS NO)
 ENDIF()
 
 
@@ -59,5 +59,5 @@ MESSAGE(STATUS "-------")
 MESSAGE(STATUS "Build examples:      " ${ENABLE_EXAMPLES})
 MESSAGE(STATUS "Build tests:         " ${BUILD_TESTING})
 MESSAGE(STATUS "API Docs available:  " ${DOXYGEN_FOUND})
-MESSAGE(STATUS " - Qt Help bundling: " ${BUILD_DOCS})
+MESSAGE(STATUS " - Qt Help bundling: " ${BUILD_AND_BUNDLE_DOCS})
 MESSAGE(STATUS "")

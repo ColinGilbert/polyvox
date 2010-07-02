@@ -32,9 +32,6 @@ ADD_DEFINITIONS(-DGLEW_STATIC)
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
-INCLUDE(${QT_USE_FILE})
-
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
