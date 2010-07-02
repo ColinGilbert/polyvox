@@ -41,7 +41,7 @@ if(DOXYGEN_FOUND)
 	if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhcp) #The QtHelp config file
 		
-		#We attach this command to the doc target wo it will be run automatically
+		#We attach this command to the doc target so it will be run automatically
 		add_custom_command(TARGET doc POST_BUILD
 			COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} polyvox.qhcp -o polyvox.qhc
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html
