@@ -54,6 +54,7 @@ if(DOXYGEN_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qch
 			DESTINATION ${PolyVox_DOC_INSTALL_DIR}/qthelp
 			COMPONENT development
+			OPTIONAL
 		)
 	endif()
 endif()
