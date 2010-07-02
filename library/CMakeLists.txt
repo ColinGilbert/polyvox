@@ -25,24 +25,36 @@ endif(WIN32)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/PolyVoxConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/PolyVoxConfig.cmake @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/PolyVoxConfig.cmake DESTINATION ${CONFIG_FILE_DIR} COMPONENT development)
 
-if(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
+if(DOXYGEN_FOUND)
 	#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.css ${CMAKE_CURRENT_BINARY_DIR}/polyvox.css)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhcp) #The QtHelp config file
+	#This is just the default doc target which only runs Doxygen
 	add_custom_target(doc
 		COMMAND ${DOXYGEN_EXECUTABLE}
-		COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} doc/html/polyvox.qhcp -o doc/html/polyvox.qhc
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 		COMMENT "Building documentation"
 		VERBATIM
 	)
 	set_target_properties(doc PROPERTIES PROJECT_LABEL "Documentation") #Set label seen in IDE
-	install(FILES
-		${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhc
-		${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qch
-		DESTINATION ${PolyVox_DOC_INSTALL_DIR}/qthelp
-		COMPONENT development
-	)
+	
+	#If we found qcollectiongenerator then do more processing
+	if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhcp) #The QtHelp config file
+		
+		#We attach this command to the doc target wo it will be run automatically
+		add_custom_command(TARGET doc POST_BUILD
+			COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} polyvox.qhcp -o polyvox.qhc
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html
+			COMMENT "Compiling API documentation to Qt Help format"
+		)
+		
+		install(FILES
+			${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhc
+			${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qch
+			DESTINATION ${PolyVox_DOC_INSTALL_DIR}/qthelp
+			COMPONENT development
+		)
+	endif()
 endif()
 
 #add_subdirectory(bindings)
