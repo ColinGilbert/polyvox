@@ -15,10 +15,6 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	ENDIF(WIN32)
 ENDMACRO(CREATE_TEST)
 
-# Find the QTestLib stuff
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtTest REQUIRED)
-INCLUDE(${QT_USE_FILE})
-
 IF(NOT QT_QTTEST_FOUND)
 	MESSAGE(STATUS "QtTest not found. Either install it or disable tests by setting BUILD_TESTING to OFF")
 ENDIF()

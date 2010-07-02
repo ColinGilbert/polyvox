@@ -9,6 +9,10 @@ SET(POLYVOX_VERSION "${POLYVOX_VERSION_MAJOR}.${POLYVOX_VERSION_MINOR}.${POLYVOX
 
 FIND_PACKAGE(Doxygen)
 
+# Qt is required for building the tests and optionally for bundling the documentation
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtTest REQUIRED)
+INCLUDE(${QT_USE_FILE})
+
 IF(WIN32)
 	#These are used on Windows to ensure that the .exe's and .dll get placed in the ame directory, so that we can run them. 
 	#Note they are actually deprecated in favour of 'RUNTIME_OUTPUT_DIRECTORY' et al, but these replacements apparently don't
