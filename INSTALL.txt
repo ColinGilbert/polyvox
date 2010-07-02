@@ -84,9 +84,9 @@ If you want to generate the API documentation, you'll need Doxygen installed. If
 
 and the documentation can be browsed in plain HTML form at ``<build directory>/library/doc/html/index.html``.
 
-On top of this, if ``qcollectiongenerator`` is installed, PolyVox can also compile and install this documentation as a *Qt Help Collection* file to ``<prefix>/share/doc/packages/polyvox/qthelp/polyvox.qhc`` (this file is in the build directory as ``<build directory>/library/doc/html/polyvox.qhc``). To view this file you need Qt Assistant installed. You can open it with::
+On top of this, if ``qcollectiongenerator`` is installed, PolyVox can also compile and install this documentation as a *Qt Help Collection* file to ``<prefix>/share/doc/packages/polyvox/qthelp/polyvox.qhc`` (this file is in the build directory as ``<build directory>/library/doc/qthelp/polyvox.qhc``). To view this file you need Qt Assistant installed. You can open it with::
 
-	assistant -collectionFile library/doc/html/polyvox.qhc
+	assistant -collectionFile library/doc/qthelp/polyvox.qhc
 
 This allows indexed searching of the documentation and easier browsing.
 
