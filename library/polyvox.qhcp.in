@@ -13,7 +13,7 @@
 		<!-- This section says that polyvox.qch will be created from index.qhp when qcollectiongenerator is run -->
 		<generate>
 			<file>
-				<input>index.qhp</input>
+				<input>../html/index.qhp</input>
 				<output>polyvox.qch</output>
 			</file>
 		</generate>

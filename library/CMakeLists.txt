@@ -40,18 +40,18 @@ if(DOXYGEN_FOUND)
 	
 	#If we found qcollectiongenerator then do more processing
 	if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
-		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhcp) #The QtHelp config file
+		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.qhcp.in ${CMAKE_CURRENT_BINARY_DIR}/doc/qthelp/polyvox.qhcp) #The QtHelp config file
 		
 		#We attach this command to the doc target so it will be run automatically
 		add_custom_command(TARGET doc POST_BUILD
 			COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} polyvox.qhcp -o polyvox.qhc
-			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/html
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doc/qthelp
 			COMMENT "Compiling API documentation to Qt Help format"
 		)
 		
 		install(FILES
-			${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qhc
-			${CMAKE_CURRENT_BINARY_DIR}/doc/html/polyvox.qch
+			${CMAKE_CURRENT_BINARY_DIR}/doc/qthelp/polyvox.qhc
+			${CMAKE_CURRENT_BINARY_DIR}/doc/qthelp/polyvox.qch
 			DESTINATION ${PolyVox_DOC_INSTALL_DIR}/qthelp
 			COMPONENT development
 			OPTIONAL
