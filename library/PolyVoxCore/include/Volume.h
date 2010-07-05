@@ -70,7 +70,7 @@ namespace PolyVox
 	/// -# Homogeneous blocks (those which contain just a single voxel value) are easy to
 	/// spot and fairly common becuase volumes often contain large homogeous regions. Any time
 	/// you change the value of a voxel you have potentially made the block which contains
-	/// it homogeneous. PolyVox does not check the homogeneity immediatly as this would slow
+	/// it homogeneous. PolyVox does not check the homogeneity immediately as this would slow
 	/// down the process of modifying voxels, but you can use the tidyUpMemory() function
 	/// to check for and remove duplicate homogeneous regions whenever you have spare
 	/// processing time.
@@ -87,23 +87,33 @@ namespace PolyVox
 	/// so we will not dwell on them here.
 	/// 
 	/// <b>Usage</b>
-	/// Volumes are constructed by passing the desired width height and depth to the
+	/// Volumes are constructed by passing the desired width, height and depth to the
 	/// constructor. Note that for speed reasons only values which are a power of two
 	/// are permitted for these sidelengths.
 	/// 
-	/// Access to specific voxels is provided by the getVoxelAt() and setVoxelAt fuctions.
+	/// \code
+	/// Volume<uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	/// \endcode
+	/// 
+	/// Access to specific voxels is provided by the getVoxelAt() and setVoxelAt() fuctions.
 	/// Each of these has two forms so that voxels can be identified by integer triples
-	/// or by Vector3DUint16's.
+	/// or by Vector3DUint16%s.
+	/// 
+	/// \code
+	/// volData.setVoxelAt(12, 186, 281, 3);
+	/// uint8_t voxelValue = volData.getVoxelAt(12, 186, 281);
+	/// //voxelValue is now 3
+	/// \endcode
 	/// 
 	/// The tidyUpMemory() function should normally be called after you first populate
 	/// the volume with data, and then at periodic intervals as the volume is modified.
-	/// However, you don't actually <i>have</i> to call it at all. See the functions
+	/// However, you don't actually <i>have</i> to call it at all. See the function's
 	/// documentation for further details.
 	/// 
 	/// One further important point of note is that this class is templatised on the voxel
 	/// type. This allows you to store volumes of data types you might not normally expect,
-	/// for example theOpenGL example 'abuses' this class to store a 3D grid of pointers.
-	/// However, it is not guarentted that all functionality works correctly with non-integer
+	/// for example the OpenGL example 'abuses' this class to store a 3D grid of pointers.
+	/// However, it is not guaranteed that all functionality works correctly with non-integer
 	/// voxel types.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -132,10 +142,14 @@ namespace PolyVox
 		uint16_t getShortestSideLength(void) const;
 		///Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
+		///Gets a voxel by <tt>x,y,z</tt> position
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault = VoxelType()) const;
+		///Gets a voxel by 3D vector position
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault = VoxelType()) const;
 
+		///Sets the voxel at an <tt>x,y,z</tt> position
 		bool setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+		///Sets the voxel at a 3D vector position
 		bool setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());

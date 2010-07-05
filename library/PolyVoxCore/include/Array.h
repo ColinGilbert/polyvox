@@ -50,6 +50,7 @@ namespace PolyVox
 	/// int height = 10;
 	/// int depth = 20;
 	///
+	/// //Creates a 3D array of integers with dimensions 5x10x20
 	/// Array<3, int> myArray(ArraySizes(width)(height)(depth));
 	///
 	/// int ct = 1;
@@ -66,13 +67,13 @@ namespace PolyVox
 	/// }
 	/// \endcode
 	///
-	/// Although the constructor and resize() function both take the required dimensions
+	/// Although the constructor and resize() functions both take the required dimensions
 	/// as an array of ints, note that the ArraySizes class can be used to build this
 	/// inline. This is a more convienient way of specifying these dimensions.
 	///
 	/// Note also that this class has a private assignment operator and copy constructor
 	/// in order to prevent copying. This is because a deep copy is a potentially slow
-	/// operation and can often be performed inadvertantly by functions such as std::swap,
+	/// operation and can often be performed inadvertently by functions such as std::swap,
 	/// while a shallow copy introduces confusion over memory ownership.
 	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>

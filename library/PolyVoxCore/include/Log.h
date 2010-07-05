@@ -34,9 +34,12 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	////////////////////////////////////////////////////////////////////////////////
+	/// Log levels for filtering logging events
+	////////////////////////////////////////////////////////////////////////////////
 	enum LogSeverity
 	{
-		LS_DEBUG,
+		LS_DEBUG, ///< Only displayed if it is a debug build
 		LS_INFO,
 		LS_WARN,
 		LS_ERROR

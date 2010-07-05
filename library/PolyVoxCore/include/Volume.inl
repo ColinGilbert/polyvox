@@ -223,6 +223,13 @@ namespace PolyVox
 		return m_fDiagonalLength;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos the \c x position of the voxel
+	/// \param uYPos the \c y position of the voxel
+	/// \param uZPos the \c z position of the voxel
+	/// \param tDefault the voxel to be returned if the requested position is outside the volume
+	/// \return the voxel value
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault) const
 	{
@@ -253,6 +260,11 @@ namespace PolyVox
 		}
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos the 3D position of the voxel
+	/// \param tDefault the voxel to be returned if the requested position is outside the volume
+	/// \return the voxel value
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault) const
 	{
@@ -261,6 +273,13 @@ namespace PolyVox
 	#pragma endregion	
 
 	#pragma region Setters
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos the \c x position of the voxel
+	/// \param uYPos the \c y position of the voxel
+	/// \param uZPos the \c z position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \return whether the requested position is inside the volume
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	bool Volume<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
@@ -313,6 +332,11 @@ namespace PolyVox
 		}
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos the 3D position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \return whether the requested position is inside the volume
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	bool Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
@@ -321,6 +345,12 @@ namespace PolyVox
 	#pragma endregion
 
 	#pragma region Other
+	////////////////////////////////////////////////////////////////////////////////
+	/// Clean up the memory usage of the volume. Checks for any blocks which are
+	/// homogeneous and flags them as such for faster processing and reduced memory
+	/// usage.
+	/// \param uNoOfBlocksToProcess the number of blocks to process
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Volume<VoxelType>::tidyUpMemory(uint32_t uNoOfBlocksToProcess)
 	{

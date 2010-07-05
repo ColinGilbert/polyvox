@@ -25,7 +25,7 @@ namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
 	/// Creates an empty array with no elements. You will have to call resize() on this
-	/// array befire it can be used.
+	/// array before it can be used.
 	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>::Array()
