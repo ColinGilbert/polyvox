@@ -21,34 +21,19 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "Filters.h"
-#include "Log.h"
-#include "MaterialDensityPair.h"
-#include "Volume.h"
-#include "SurfaceExtractor.h"
-#include "SurfaceMesh.h"
-#include "PolyVoxImpl/Utility.h"
-
-
-
 #include "OpenGLWidget.h"
 
-#ifdef WIN32
-#include <windows.h>   // Standard Header For Most Programs
-#endif
+#include "MaterialDensityPair.h"
+#include "SurfaceExtractor.h"
+#include "SurfaceMesh.h"
+#include "Volume.h"
 
 #include <QApplication>
-
-#include <QTime>
 
 //Some namespaces we need
 using namespace std;
 using namespace PolyVox;
 using namespace std;
-
-
-
-
 
 void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
@@ -67,31 +52,25 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius,
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
-				//If the current voxel is less than 'radius' units from the center
-				//then we make it solid, otherwise we make it empty space.
+				//Default to values representing empty space.
+				uint8_t uMaterial = 0;
+				uint8_t uDensity = MaterialDensityPair44::getMinDensity();
+
+				//If the current voxel is less than 'radius' units from the center then we make it solid.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
+					uMaterial = 1;
+					uDensity = MaterialDensityPair44::getMaxDensity();
 				}
+
+				//Wrte the voxel value into the volume
+				MaterialDensityPair44 voxel(uMaterial, uDensity);
+				volData.setVoxelAt(x, y, z, voxel);
 			}
 		}
 	}
 }
 
-void createCubeInVolume(Volume<MaterialDensityPair44>& volData, Vector3DUint16 lowerCorner, Vector3DUint16 upperCorner, uint8_t uValue)
-{
-	//This three-level for loop iterates over every voxel between the specified corners
-	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
-	{
-		for (int y = lowerCorner.getY(); y <= upperCorner.getY(); y++)
-		{
-			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
-			{
-				volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
-			}
-		}
-	}
-}
 
 const uint16_t g_uVolumeSideLength = 64;
 
