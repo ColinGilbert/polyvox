@@ -5,14 +5,18 @@ PROJECT(BasicExample)
 #Projects source files
 SET(SRC_FILES
 	glew/glew.c
+	
 	main.cpp
+	OpenGLWidget.cpp
 	)
 
 #Projects headers files	
-SET(INC_FILES
+SET(INC_FILES	
 	glew/glew.h
 	glew/glxew.h
 	glew/wglew.h
+	
+	OpenGLWidget.h
 	)
 
 ADD_DEFINITIONS(-DGLEW_STATIC)

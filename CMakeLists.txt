@@ -32,7 +32,9 @@ ADD_SUBDIRECTORY(library)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 IF(ENABLE_EXAMPLES)
+	ADD_SUBDIRECTORY(examples/Basic)
 	ADD_SUBDIRECTORY(examples/OpenGL)
+	ADD_DEPENDENCIES(BasicExample PolyVoxCore PolyVoxUtil)
 	ADD_DEPENDENCIES(OpenGLExample PolyVoxCore PolyVoxUtil)
 ENDIF(ENABLE_EXAMPLES)
 

@@ -158,7 +158,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 
 void OpenGLWidget::initializeGL()
 {
-	m_bUseOpenGLVertexBufferObjects = false;
+	m_bUseOpenGLVertexBufferObjects = true;
 	if(m_bUseOpenGLVertexBufferObjects)
 	{
 #ifdef WIN32
