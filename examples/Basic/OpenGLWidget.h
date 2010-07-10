@@ -26,9 +26,7 @@ distribution.
 
 #include "SurfaceMesh.h"
 
-#ifdef WIN32
 #include "glew/glew.h"
-#endif
 
 #include <QGLWidget>
 
@@ -55,7 +53,7 @@ private:
 	//Index/vertex buffer data
 	GLuint m_uBeginIndex;
 	GLuint m_uEndIndex;
-	GLulong noOfIndices;
+	GLuint noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
 

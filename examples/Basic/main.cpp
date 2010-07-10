@@ -30,10 +30,8 @@ freely, subject to the following restrictions:
 
 #include <QApplication>
 
-//Some namespaces we need
-using namespace std;
+//Use the PolyVox namespace
 using namespace PolyVox;
-using namespace std;
 
 void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
@@ -71,28 +69,24 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius,
 	}
 }
 
-
-const uint16_t g_uVolumeSideLength = 64;
-
 int main(int argc, char *argv[])
 {
+	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
-	Volume<MaterialDensityPair44> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
-
+	//Create an empty volume and then place a sphere in it
+	Volume<MaterialDensityPair44> volData(64, 64, 64);
 	createSphereInVolume(volData, 30, 1);
 
+	//Extract the surface
 	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData);
-
 	shared_ptr<SurfaceMesh> surface = surfaceExtractor.extractSurfaceForRegion(volData.getEnclosingRegion());
 
-	//OpenGLSurfaceMesh mesh = BuildOpenGLSurfaceMesh(*surface);
-
-	
-	//openGLWidget.mesh = BuildOpenGLSurfaceMesh(*(surface.get()));
-	//openGLWidget.surfaceMesh = *surface;
+	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(*surface);
+
+	//Run the message pump.
 	return app.exec();
 } 
