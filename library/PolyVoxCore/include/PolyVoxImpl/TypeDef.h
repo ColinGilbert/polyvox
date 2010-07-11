@@ -38,4 +38,14 @@ freely, subject to the following restrictions:
 	#define POLYVOXCORE_API __attribute__ ((visibility("default")))
 #endif
 
+// To support non-C++0x compilers we use boost to replace the std::shared_ptr
+// and potentially other C++0x features. To use this capability you will need
+// to make sure you have boost installed on your system.
+#ifdef _MSC_VER
+	#if _MSC_VER < 1600 // Older than VS 2010
+		#include <boost/shared_ptr>
+		#define std::shared_ptr boost::shared_ptr
+	#endif
+#endif
+
 #endif
