@@ -107,7 +107,7 @@ namespace PolyVox
 	}
 
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
-	Type  MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMidDensity() throw()
+	Type  MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getThreshold() throw()
 	{
 		return  0x01 << (NoOfDensityBits - 1);
 	}

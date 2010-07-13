@@ -54,7 +54,7 @@ namespace PolyVox
 
 		static Type getMaxDensity() throw();
 		static Type getMinDensity() throw();
-		static Type getMidDensity() throw();
+		static Type getThreshold() throw();
 
 	private:
 		Type m_uMaterial : NoOfMaterialBits;
