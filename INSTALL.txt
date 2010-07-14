@@ -12,7 +12,7 @@ To build PolyVox you need:
 
 With the following optional packages:
 
-* `Qt <http://qt.nokia.com>`_ for building the tests
+* `Qt <http://qt.nokia.com>`_ for building the tests and the example applications
 	* ``qcollectiongenerator`` which comes with Qt Assistant is used for bundling the docs for installation
 * `Doxygen <http://doxygen.org>`_ for building the documentation. Version 1.5.7 is needed to build the Qt Assistant docs. 1.7.0 or greater is recommended
 * `Python <http://python.org>`_ and `Sphinx <http://sphinx.pocoo.org>`_ for generating the PolyVox manual in HTML
@@ -20,7 +20,7 @@ With the following optional packages:
 Linux
 =====
 
-Navigate to the PolyVox source (the directory containing this file) directory with and then enter the build directory with::
+Navigate to the PolyVox source directory (the directory containing ``INSTALL.txt`` etc.) with and then enter the build directory with::
 
 	cd build
 
@@ -41,26 +41,26 @@ You can set CMake variables by passing ``-D<variable>:<type>=<value>`` to the ``
 
 The other available settings for PolyVox are:
 
-``ENABLE_EXAMPLES`` (ON or OFF)
-	Build the example applications that come with PolyVox. Defaults to ON.
+``ENABLE_EXAMPLES`` (``ON`` or ``OFF``)
+	Build the example applications that come with PolyVox. Defaults to ``ON``.
 
-``BUILD_TESTING`` (ON or OFF)
-	Build the test applications that come with PolyVox. Running the tests is detailed in the next section. Defaults to ON.
+``BUILD_TESTING`` (``ON`` or ``OFF``)
+	Build the test applications that come with PolyVox. Running the tests is detailed in the next section. Defaults to ``ON``.
 
-``CMAKE_BUILD_TYPE`` (Debug, Release, RelWithDebInfo or MinSizeRel)
+``CMAKE_BUILD_TYPE`` (``Debug``, ``Release``, ``RelWithDebInfo`` or ``MinSizeRel``)
 	String option to set the type of build. This will automatically set some compilation flags such as the optimisation level or define ``NDEBUG``.
 	
 	For development work against the library
-		Use Debug or RelWithDebInfo
+		Use ``Debug`` or ``RelWithDebInfo``
 	
 	For your final version
-		Use Release
+		Use ``Release``
 	
 	For building packages (e.g. for Linux distributions)
-		Use RelWithDebInfo
+		Use ``RelWithDebInfo``
 
-Building
---------
+Building and installing
+-----------------------
 
 Once this has completed successfully, simply run::
 
@@ -100,12 +100,14 @@ As well as the API documentation, PolyVox also provides a user manual. This is w
 
 and the HTML manual will be available at ``<build directory>/documentation/index.html``.
 
-If you have Sphinx installed but you do not get the confirmation in the CMake output, you may need to set ``SPHINXBUILD_EXECUTABLE`` to the location of you ``sphinx-build`` executable.
+If you have Sphinx installed but you do not get the confirmation in the CMake output, you may need to set ``SPHINXBUILD_EXECUTABLE`` to the location of your ``sphinx-build`` executable.
 
 If you do not have Python and Sphinx installed and do not want to install them then the manual is just plain text (``.rst`` files) which are readable in their plain form.
 
 Windows
 =======
+
+For information about the dependencies, CMake configuration variables and buildable targets look at the Linux build information in the section above.
 
 CMake
 -----
