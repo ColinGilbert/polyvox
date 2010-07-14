@@ -10,11 +10,12 @@ To build PolyVox you need:
 * `CMake <http://cmake.org>`_ 2.6 or greater
 * A C++ compiler with support for some C++0x features (GCC 4.3 or VC 2010 seem to work)
 
-With the following options:
+With the following optional packages:
 
 * `Qt <http://qt.nokia.com>`_ for building the tests
 	* ``qcollectiongenerator`` which comes with Qt Assistant is used for bundling the docs for installation
-* `Doxygen <http://doxygen.org>`_ for building the documentation
+* `Doxygen <http://doxygen.org>`_ for building the documentation. Version 1.5.7 is needed to build the Qt Assistant docs. 1.7.0 or greater is recommended
+* `Python <http://python.org>`_ and `Sphinx <http://sphinx.pocoo.org>`_ for generating the PolyVox manual in HTML
 
 Linux
 =====
@@ -89,6 +90,19 @@ On top of this, if ``qcollectiongenerator`` is installed, PolyVox can also compi
 	assistant -collectionFile library/doc/qthelp/polyvox.qhc
 
 This allows indexed searching of the documentation and easier browsing.
+
+Manual
+------
+
+As well as the API documentation, PolyVox also provides a user manual. This is written using `Sphinx <http://sphinx.pocoo.org>`_ and so to convert the documentation sources to HTML requires Sphinx and Python to be installed. If these are installed and found then you will see ``Build manual: YES`` in the CMake summary output. If this is the case then just run::
+
+	make manual
+
+and the HTML manual will be available at ``<build directory>/documentation/index.html``.
+
+If you have Sphinx installed but you do not get the confirmation in the CMake output, you may need to set ``SPHINXBUILD_EXECUTABLE`` to the location of you ``sphinx-build`` executable.
+
+If you do not have Python and Sphinx installed and do not want to install them then the manual is just plain text (``.rst`` files) which are readable in their plain form.
 
 Windows
 =======

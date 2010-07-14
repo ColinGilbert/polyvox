@@ -9,4 +9,8 @@ if(SPHINXBUILD_EXECUTABLE AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 		-c ${CMAKE_CURRENT_BINARY_DIR} #Load the conf.py from the binary dir
 		${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 	)
+	set(BUILD_MANUAL YES PARENT_SCOPE)
+else()"
+	message(STATUS "`sphinx-build` was not found. Try setting SPHINXBUILD_EXECUTABLE to its location.")
+	set(BUILD_MANUAL NO PARENT_SCOPE)
 endif()
