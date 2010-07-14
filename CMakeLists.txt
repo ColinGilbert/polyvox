@@ -53,6 +53,7 @@ ELSE()
 	SET(BUILD_AND_BUNDLE_DOCS NO)
 ENDIF()
 
+ADD_SUBDIRECTORY(documentation)
 
 # Option summary
 MESSAGE(STATUS "")
