@@ -13,7 +13,7 @@ Contents:
 
 Introduction
 ------------
-This tutorial covers tha basic use of the PolyVox API. After reading this turorial you should have a good idea how to create a PolyVox volume and fill it with data, extract a triangle mesh representing the surface, and render the result. This tutorial assumes you are already familiar with the basic concepts behaind PolyVox (see *principes-of-polyvox* document if not), and are reasonably confident with 3D graphics and C++. It also assumes ou have already got PolyVox installed on your system, if this is not the case then please consult :ref:`installation guide <install>`.
+This tutorial covers tha basic use of the PolyVox API. After reading this turorial you should have a good idea how to create a PolyVox volume and fill it with data, extract a triangle mesh representing the surface, and render the result. This tutorial assumes you are already familiar with the basic concepts behaind PolyVox (see *principes-of-polyvox* document if not), and are reasonably confident with 3D graphics and C++. It also assumes ou have already got PolyVox installed on your system, if this is not the case then please consult :doc:`installation guide <install>`.
 
 The code samples and text in this tutorial correspond directly to the basic OpenGL example. This example uses the Qt toolkit for window and input handling, and for providing an OpenGL context to render into. In this tutorial we will omit code which performs these tasks and will intead focus on on the PolyVox code. You can consilt the Qt documentation if you want more information about these other aspects of the system.
 
