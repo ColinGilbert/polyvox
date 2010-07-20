@@ -9,7 +9,9 @@ Welcome to PolyVox's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+	:maxdepth: 1
+
+	install
 
 Introduction
 ------------
@@ -26,7 +28,7 @@ The most fundermental construct when working with PolyVox is that of the volume.
 
 .. code-block:: c++
 
-   Volume<MaterialDensityPair44> volData(64, 64, 64);
+	Volume<MaterialDensityPair44> volData(64, 64, 64);
 
 As can be seen, the Volume class is templated upon the voxel type. This means it is straight forward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`Volume documentation <PolyVox::Volume>` for more details). In this particular case we have created a volume in which each voxel is an instance of :polyvox:`MaterialDensityPair44`. Each instance of MaterialDensityPair44 holds both a material and a density and uses four bits of data for each. This means that both the material and the density have a range of 0-15, and each voxel requires one byte of storage. For more information about materials and densities please consult the *principles-of-polyvox* document.
 
@@ -45,6 +47,5 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
 
