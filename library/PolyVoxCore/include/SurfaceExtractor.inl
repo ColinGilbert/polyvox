@@ -57,10 +57,7 @@ namespace PolyVox
 		m_uRegionWidth = m_regInputCropped.width();
 		m_uRegionHeight = m_regInputCropped.height();
 
-		m_uScratchPadWidth = m_uRegionWidth+1;
-		m_uScratchPadHeight = m_uRegionHeight+1;
-
-		uint32_t arraySizes[2]= {m_uScratchPadWidth, m_uScratchPadHeight}; // Array dimensions
+		uint32_t arraySizes[2]= {m_uRegionWidth+1, m_uRegionHeight+1}; // Array dimensions
 
 		//For edge indices
 		Array2DInt32 m_pPreviousVertexIndicesX(arraySizes);

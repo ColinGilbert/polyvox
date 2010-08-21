@@ -70,30 +70,9 @@ namespace PolyVox
 			const Array2DInt32& m_pCurrentVertexIndicesY,
 			const Array2DInt32& m_pCurrentVertexIndicesZ);
 
-		//Converts a position into an index for accessing scratch areas.
-		inline uint32_t getIndex(uint32_t x, uint32_t y)
-		{
-			return x + (y * m_uScratchPadWidth);
-		}
-
 		//The volume data and a sampler to access it.
 		Volume<VoxelType> m_volData;
 		VolumeSampler<VoxelType> m_sampVolume;
-
-		//Used to keep track of where generated vertices have been placed.
-		/*int32_t* m_pPreviousVertexIndicesX;
-		int32_t* m_pPreviousVertexIndicesY; 
-		int32_t* m_pPreviousVertexIndicesZ; 
-		int32_t* m_pCurrentVertexIndicesX; 
-		int32_t* m_pCurrentVertexIndicesY; 
-		int32_t* m_pCurrentVertexIndicesZ;*/
-
-		/*Array2DInt32 m_pPreviousVertexIndicesX;
-		Array2DInt32 m_pPreviousVertexIndicesY; 
-		Array2DInt32 m_pPreviousVertexIndicesZ; 
-		Array2DInt32 m_pCurrentVertexIndicesX; 
-		Array2DInt32 m_pCurrentVertexIndicesY; 
-		Array2DInt32 m_pCurrentVertexIndicesZ;*/
 
 		//Holds a position in volume space.
 		uint16_t uXVolSpace;
@@ -121,11 +100,7 @@ namespace PolyVox
 		//Store the width and height because they are frequently
 		//used and have some overhead to compute.
 		uint16_t m_uRegionWidth;
-		uint16_t m_uRegionHeight;
-
-		//These are used in several places so best stored.
-		uint16_t m_uScratchPadWidth;
-		uint16_t m_uScratchPadHeight;		
+		uint16_t m_uRegionHeight;	
 	};
 }
 
