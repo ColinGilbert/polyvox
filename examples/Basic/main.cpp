@@ -82,11 +82,12 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface
-	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData);
-	shared_ptr<SurfaceMesh> surface = surfaceExtractor.extractSurfaceForRegion(volData.getEnclosingRegion());
+	SurfaceMesh mesh;
+	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(*surface);
+	openGLWidget.setSurfaceMeshToRender(mesh);
 
 	//Run the message pump.
 	return app.exec();

@@ -32,27 +32,29 @@ using namespace std;
 namespace PolyVox
 {
 	template <typename VoxelType>
-	SurfaceExtractor<VoxelType>::SurfaceExtractor(Volume<VoxelType>& volData)
+	SurfaceExtractor<VoxelType>::SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh* result)
 		:m_volData(volData)
-		,m_sampVolume(&volData)
+		,m_sampVolume(volData)
+		,m_regInput(region)
+		,m_meshCurrent(result)
 	{
 	}
 
 	template <typename VoxelType>
-	shared_ptr<SurfaceMesh> SurfaceExtractor<VoxelType>::extractSurfaceForRegion(Region region)
+	void SurfaceExtractor<VoxelType>::execute()
 	{		
-		m_regInputUncropped = region;
+		m_regInputUncropped = m_regInput;
 
 		//When generating the mesh for a region we actually look outside it in the
 		// back, bottom, right direction. Protect against access violations by cropping region here
-		m_regVolumeCropped = m_volData.getEnclosingRegion();
+		m_regVolumeCropped = m_volData->getEnclosingRegion();
 		m_regInputUncropped.cropTo(m_regVolumeCropped);
 		m_regVolumeCropped.setUpperCorner(m_regVolumeCropped.getUpperCorner() - Vector3DInt16(1,1,1));
 	
-		m_regInputCropped = region;
+		m_regInputCropped = m_regInput;
 		m_regInputCropped.cropTo(m_regVolumeCropped);
 
-		m_meshCurrent = new SurfaceMesh();
+		//m_meshCurrent = new SurfaceMesh();
 
 		m_uRegionWidth = m_regInputCropped.width();
 		m_uRegionHeight = m_regInputCropped.height();
@@ -147,8 +149,6 @@ namespace PolyVox
 		lodRecord.beginIndex = 0;
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
-
-		return shared_ptr<SurfaceMesh>(m_meshCurrent);
 	}
 
 	template<typename VoxelType>

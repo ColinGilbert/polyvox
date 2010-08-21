@@ -63,8 +63,6 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 		m_uVolumeHeightInRegions = volData->getHeight() / m_uRegionSideLength;
 		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
 
-		SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(*volData);
-
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
 		for(uint16_t uRegionZ = 0; uRegionZ < m_uVolumeDepthInRegions; ++uRegionZ)
@@ -90,7 +88,10 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
-					shared_ptr<SurfaceMesh> mesh = surfaceExtractor.extractSurfaceForRegion(PolyVox::Region(regLowerCorner, regUpperCorner));
+
+					shared_ptr<SurfaceMesh> mesh(new SurfaceMesh);
+					SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
+					surfaceExtractor.execute();
 
 					//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
 					//*meshCurrent = getSmoothedSurface(*meshCurrent);

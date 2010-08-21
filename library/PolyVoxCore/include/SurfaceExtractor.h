@@ -39,9 +39,9 @@ namespace PolyVox
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(Volume<VoxelType>& volData);
+		SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh* result);
 
-		std::shared_ptr<SurfaceMesh> extractSurfaceForRegion(Region region);
+		void execute();
 
 	private:
 		//Compute the cell bitmask for a particular slice in z.
@@ -71,7 +71,7 @@ namespace PolyVox
 			const Array2DInt32& m_pCurrentVertexIndicesZ);
 
 		//The volume data and a sampler to access it.
-		Volume<VoxelType> m_volData;
+		Volume<VoxelType>* m_volData;
 		VolumeSampler<VoxelType> m_sampVolume;
 
 		//Holds a position in volume space.
@@ -91,6 +91,7 @@ namespace PolyVox
 		SurfaceMesh* m_meshCurrent;
 
 		//Information about the region we are currently processing
+		Region m_regInput;
 		Region m_regInputCropped;
 		Region m_regInputUncropped;
 		Region m_regVolumeCropped;

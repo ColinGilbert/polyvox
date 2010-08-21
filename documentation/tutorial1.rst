@@ -82,17 +82,18 @@ Now that we have built our volume we need to convert it into a triangle mesh for
 
 .. code-block:: c++
 
-	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData);
+	SurfaceMesh mesh;
+	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	
-Again, note thiat this class is templatised on the voxel type. It also takes a reference to the Volume on which the surface extraction will be performed.
+The SurfaceExtractor takes a pointer to the volume data, and also it needs to be told which Region of the Volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the Volume class provides a convienient Volume::getEnclosingRegion() function which returns a Region representing the whole volume. The constructor also takes a pointer to a SurfaceMesh object whiere it will store the result, so we need to create one of these before we can construct the SurfaceExtractor.
 
-The actual extraction happens in the SurfaceExtractor::extractSurfaceForRegion() function. This function needs to be told which Region of the Volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction), but for our purposes the Volume class provides a convienient Volume::getEnclosingRegion() function which returns a Region representing the whole volume.
+The actual extraction happens in the SurfaceExtractor::execute() function. This means you can set up your SurfaceExtractor with the required parameters and then actually execute it later (on a different thread, perhaps). For this example we just call it straight away.
 
 .. code-block:: c++
 
-	shared_ptr<SurfaceMesh> surface = surfaceExtractor.extractSurfaceForRegion(volData.getEnclosingRegion());
+	surfaceExtractor.execute();
 	
-The result is a SurfaceMesh object, which basically contains an index and vertex buffer representing the desired triangle mesh. This is returned via a shared_ptr, meaning it will automatically be deleted once there are no remaining references to it.
+This fills in our SurfaceMesh object, which basically contains an index and vertex buffer representing the desired triangle mesh.
 
 Rendering the surface
 =====================
