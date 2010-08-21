@@ -4,10 +4,11 @@ Welcome to PolyVox's documentation!
 Contents:
 
 .. toctree::
-	:maxdepth: 1
+	:maxdepth: 2
 
 	install
-	basicexample
+	principles
+	tutorial1
 
 
 Indices and tables
