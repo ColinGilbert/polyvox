@@ -14,30 +14,24 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 
 void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh& surfaceMesh)
 {
-	//Sanity check that we have something to render.
-	if(surfaceMesh.getVertices().empty() || surfaceMesh.getIndices().empty())
-	{
-		return;
-	}
-
 	//Convienient access to the vertices and indices
-	vector<uint32_t>& vecIndices = const_cast<vector<uint32_t>&>(surfaceMesh.getIndices());
-	vector<SurfaceVertex>& vecVertices = const_cast<vector<SurfaceVertex>&>(surfaceMesh.getVertices());
+	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
+	const vector<SurfaceVertex>& vecVertices = surfaceMesh.getVertices();
 
 	//Build an OpenGL index buffer
 	glGenBuffers(1, &indexBuffer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	GLvoid* pIndices = static_cast<GLvoid*>(&(vecIndices[0]));		
+	const GLvoid* pIndices = static_cast<const GLvoid*>(&(vecIndices[0]));		
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), pIndices, GL_STATIC_DRAW);
 
 	//Build an OpenGL vertex buffer
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	GLvoid* pVertices = static_cast<GLvoid*>(&(vecVertices[0]));	
+	const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
 	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(SurfaceVertex), pVertices, GL_STATIC_DRAW);
 
-	m_uBeginIndex = surfaceMesh.m_vecLodRecords[0].beginIndex;
-	m_uEndIndex = surfaceMesh.m_vecLodRecords[0].endIndex;
+	m_uBeginIndex = 0;
+	m_uEndIndex = vecIndices.size();
 }
 
 void OpenGLWidget::initializeGL()

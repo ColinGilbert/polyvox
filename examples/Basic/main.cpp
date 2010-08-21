@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
+void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -50,20 +50,21 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius,
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
-				//Default to values representing empty space.
-				uint8_t uMaterial = 0;
-				uint8_t uDensity = MaterialDensityPair44::getMinDensity();
-
 				//If the current voxel is less than 'radius' units from the center then we make it solid.
 				if(fDistToCenter <= fRadius)
 				{
-					uMaterial = 1;
-					uDensity = MaterialDensityPair44::getMaxDensity();
-				}
+					//Our new density value
+					uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
 
-				//Wrte the voxel value into the volume
-				MaterialDensityPair44 voxel(uMaterial, uDensity);
-				volData.setVoxelAt(x, y, z, voxel);
+					//Get the old voxel
+					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
+
+					//Modify the density
+					voxel.setDensity(uDensity);
+
+					//Wrte the voxel value into the volume	
+					volData.setVoxelAt(x, y, z, voxel);
+				}
 			}
 		}
 	}
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
 
 	//Create an empty volume and then place a sphere in it
 	Volume<MaterialDensityPair44> volData(64, 64, 64);
-	createSphereInVolume(volData, 30, 1);
+	createSphereInVolume(volData, 30);
 
 	//Extract the surface
 	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData);
