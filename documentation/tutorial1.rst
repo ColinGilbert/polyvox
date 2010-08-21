@@ -19,9 +19,9 @@ The most fundamental construct when working with PolyVox is that of the volume. 
 
 	Volume<MaterialDensityPair44> volData(64, 64, 64);
 
-As can be seen, the Volume class is templated upon the voxel type. This means it is straight forward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`Volume documentation <PolyVox::Volume>` for more details). In this particular case we have created a volume in which each voxel is an instance of :polyvox:`MaterialDensityPair44`. Each instance of MaterialDensityPair44 holds both a material and a density and uses four bits of data for each. This means that both the material and the density have a range of 0-15, and each voxel requires one byte of storage. For more information about materials and densities please consult the :doc:`principles of polyvox <principles>` document.
+As can be seen, the Volume class is templated upon the voxel type. This means it is straight forward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`Volume documentation <PolyVox::Volume>` for more details). In this particular case we have created a volume in which each voxel is an instance of :polyvox:`MaterialDensityPair44`. Each instance of :polyvox: `MaterialDensityPair44` holds both a material and a density and uses four bits of data for each. This means that both the material and the density have a range of 0-15, and each voxel requires one byte of storage. For more information about materials and densities please consult the :doc:`principles of polyvox <principles>` document.
 
-Each voxel is initialised using its default constructor, which in the case of MaterialDensityPair44 will mean that both the material and the density are set to zero. This corresponds to a volume full of empty space because the density of each voxel is below the threshold.
+Each voxel is initialised using its default constructor, which in the case of :polyvox: `MaterialDensityPair44` will mean that both the material and the density are set to zero. This corresponds to a volume full of empty space because the density of each voxel is below the threshold.
 
 Next, we set some of the voxels in the volume to be 'solid' in order to create a large sphere in the centre of the volume. We do this with the following function call:
 
@@ -70,34 +70,34 @@ Note that this function is part of the basic OpenGL example (rather than being p
 		}
 	}
 	
-This function takes as input the Volume in which we want to create the sphere, and also a radius specifying how large we want the sphere to be. In our case we have specified a radius of 30 voxels, which will fit nicely inside our Volume of dimensions 64x64x64.
+This function takes as input the :polyvox:`Volume` in which we want to create the sphere, and also a radius specifying how large we want the sphere to be. In our case we have specified a radius of 30 voxels, which will fit nicely inside our :polyvox:`Volume` of dimensions 64x64x64.
 
-Because this is a simple example function it always places the sphere at the center of the volume. It computes this centre by halving the dimensions of the volume as given by the functions Volume::getWidth(), Volume::getHeight() and Volume::getDepth(). The resulting position is stored using a Vector3DFloat. This simply a typedef from our templatised Vector class, meaning that other sizes and storage types are available if you need them. 
+Because this is a simple example function it always places the sphere at the center of the volume. It computes this centre by halving the dimensions of the volume as given by the functions :polyvox:`Volume::getWidth()`, :polyvox:`Volume::getHeight()` and :polyvox:`Volume::getDepth()`. The resulting position is stored using a :polyvox:`Vector3DFloat`. This simply a typedef from our templatised :polyvox:`Vector` class, meaning that other sizes and storage types are available if you need them. 
 
-Next, the function uses a three-level 'for' loop to iterate over each voxel in the volume. For each voxel it computes the distance from the voxel to the centre of the volume. If this distance is less than or equal to the specified radius then the voxel form part of the sphere and is made solid. During surface extraction, the voxel will be considered solid if it's density is set to any value greater than its threshold, which can be obtained by calling MaterialDensityPair44::::getThreshold(). In our case we simply set it to the largest possible value by calling MaterialDensityPair44::getMaxDensity().
+Next, the function uses a three-level 'for' loop to iterate over each voxel in the volume. For each voxel it computes the distance from the voxel to the centre of the volume. If this distance is less than or equal to the specified radius then the voxel form part of the sphere and is made solid. During surface extraction, the voxel will be considered solid if it's density is set to any value greater than its threshold, which can be obtained by calling :polyvox:`MaterialDensityPair44::getThreshold()`. In our case we simply set it to the largest possible value by calling :polyvox:`MaterialDensityPair44::getMaxDensity()`.
 
 Extracting the surface
 ======================
-Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process is performed by the SurfaceExtractor class. An instance of the SurfaceExtractor is created as follows:
+Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process is performed by the :polyvox:`SurfaceExtractor` class. An instance of the :polyvox:`SurfaceExtractor` is created as follows:
 
 .. code-block:: c++
 
 	SurfaceMesh mesh;
 	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	
-The SurfaceExtractor takes a pointer to the volume data, and also it needs to be told which Region of the Volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the Volume class provides a convienient Volume::getEnclosingRegion() function which returns a Region representing the whole volume. The constructor also takes a pointer to a SurfaceMesh object whiere it will store the result, so we need to create one of these before we can construct the SurfaceExtractor.
+The :polyvox:`SurfaceExtractor` takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the :polyvox:`Volume` class provides a convienient :polyvox:`Volume::getEnclosingRegion()` function which returns a :polyvox:`Region` representing the whole volume. The constructor also takes a pointer to a :polyvox:`SurfaceMesh` object whiere it will store the result, so we need to create one of these before we can construct the :polyvox:`SurfaceExtractor`.
 
-The actual extraction happens in the SurfaceExtractor::execute() function. This means you can set up your SurfaceExtractor with the required parameters and then actually execute it later (on a different thread, perhaps). For this example we just call it straight away.
+The actual extraction happens in the :polyvox:`SurfaceExtractor::execute()` function. This means you can set up a :polyvox:`SurfaceExtractor` with the required parameters and then actually execute it later (on a different thread, perhaps). For this example we just call it straight away.
 
 .. code-block:: c++
 
 	surfaceExtractor.execute();
 	
-This fills in our SurfaceMesh object, which basically contains an index and vertex buffer representing the desired triangle mesh.
+This fills in our :polyvox:`SurfaceMesh` object, which basically contains an index and vertex buffer representing the desired triangle mesh.
 
 Rendering the surface
 =====================
-Rendering the surface with OpenGL is handled by the OpenGLWidget class. Again, this is not part of PolyVox, it is simply an example based on Qt and OpenGL which demonstrates how rendering can be performed. Within this class there are mainly two functions which are of interest - the OpenGLWidget::setSurfaceMeshToRender() function which constructs OpenGL buffers from our SurfaceMesh and the OpenGLWidget::paintGL() function which is called each frame to perform the rendering.
+Rendering the surface with OpenGL is handled by the OpenGLWidget class. Again, this is not part of PolyVox, it is simply an example based on Qt and OpenGL which demonstrates how rendering can be performed. Within this class there are mainly two functions which are of interest - the OpenGLWidget::setSurfaceMeshToRender() function which constructs OpenGL buffers from our :polyvox:`SurfaceMesh` and the OpenGLWidget::paintGL() function which is called each frame to perform the rendering.
 
 The OpenGLWidget::setSurfaceMeshToRender() function is impemented as follows:
 
@@ -125,9 +125,9 @@ The OpenGLWidget::setSurfaceMeshToRender() function is impemented as follows:
 		m_uEndIndex = vecIndices.size();
 	}
 	
-We begin by obtaining direct access to the index and vertex buffer in the SurfaceMesh class in order to make the following code slightly cleaner. Both the SurfaceMesh::getIndices() and SurfaceMesh::getVertices() functions return an std::vector containing the relevant data.
+We begin by obtaining direct access to the index and vertex buffer in the :polyvox:`SurfaceMesh` class in order to make the following code slightly cleaner. Both the :polyvox:`SurfaceMesh::getIndices()` and :polyvox:`SurfaceMesh::getVertices()` functions return an std::vector containing the relevant data.
 
-The OpenGL functions which are called to construct the index and vertex buffer are best explained by the OpenGL documentation. In both cases we are making an exact copy of the data stored in the SurfaceMesh.
+The OpenGL functions which are called to construct the index and vertex buffer are best explained by the OpenGL documentation. In both cases we are making an exact copy of the data stored in the :polyvox:`SurfaceMesh`.
 
 The begin and end indices are used in the OpenGLWidget::paintGL() to control what part of the index buffer is actually rendered. For this simple example we will the whole buffer from '0' to 'vecIndices.size()'.
 
