@@ -91,17 +91,13 @@ namespace PolyVox
 		SurfaceMesh* m_meshCurrent;
 
 		//Information about the region we are currently processing
-		Region m_regInput;
-		Region m_regInputCropped;
-		Region m_regInputUncropped;
-		Region m_regVolumeCropped;
+		Region m_regSizeInVoxels;
+		Region m_regSizeInCells;
+		/*Region m_regSizeInVoxelsCropped;
+		Region m_regSizeInVoxelsUncropped;
+		Region m_regVolumeCropped;*/
 		Region m_regSlicePrevious;
 		Region m_regSliceCurrent;
-
-		//Store the width and height because they are frequently
-		//used and have some overhead to compute.
-		uint16_t m_uRegionWidth;
-		uint16_t m_uRegionHeight;	
 	};
 }
 
