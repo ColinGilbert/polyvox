@@ -25,14 +25,12 @@ freely, subject to the following restrictions:
 #include "VolumeSampler.h"
 #include "PolyVoxImpl/Utility.h"
 
-using namespace std;
-
 namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
 	template <typename VoxelType>
-	shared_ptr< Volume<VoxelType> > loadVolumeRaw(istream& stream, VolumeSerializationProgressListener* progressListener)
+	std::shared_ptr< Volume<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -47,7 +45,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		shared_ptr< Volume<VoxelType> > volume(new Volume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
+		std::shared_ptr< Volume<VoxelType> > volume(new Volume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
 
 		//Read data
 		for(uint16_t z = 0; z < volumeDepth; ++z)
@@ -128,7 +126,7 @@ namespace PolyVox
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
 	template <typename VoxelType>
-	shared_ptr< Volume<VoxelType> > loadVolumeRle(istream& stream, VolumeSerializationProgressListener* progressListener)
+	std::shared_ptr< Volume<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
@@ -143,7 +141,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		shared_ptr< Volume<VoxelType> > volume(new Volume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
+		std::shared_ptr< Volume<VoxelType> > volume(new Volume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
 
 		//Read data
 		bool firstTime = true;

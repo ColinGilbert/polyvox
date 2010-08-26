@@ -34,8 +34,6 @@ freely, subject to the following restrictions:
 #include "Volume.h"
 #include "VolumeSampler.h"
 
-using namespace std;
-
 namespace PolyVox
 {
 	template <typename VoxelType>

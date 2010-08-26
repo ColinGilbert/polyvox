@@ -27,8 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/MarchingCubesTables.h"
 #include "SurfaceVertex.h"
 
-using namespace std;
-
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -41,6 +39,8 @@ namespace PolyVox
 		m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt16(1,1,1));
+
+		m_meshCurrent->clear();
 	}
 
 	template <typename VoxelType>
