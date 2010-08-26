@@ -91,7 +91,7 @@ namespace PolyVox
 		m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
 
 		//Process the other slices (previous slice is available)
-		for(int16_t uSlice = 1; uSlice < m_regSizeInVoxels.depth(); uSlice++)
+		for(int16_t uSlice = 1; uSlice <= m_regSizeInVoxels.depth(); uSlice++)
 		{	
 			computeBitmaskForSlice<true>(pPreviousBitmask, pCurrentBitmask);
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
@@ -117,15 +117,6 @@ namespace PolyVox
 
 			m_regSlicePrevious = m_regSliceCurrent;
 			m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
-		}
-
-		//A final slice just to close of the volume
-		if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
-		{
-			memset(m_pCurrentVertexIndicesX.getRawData(), 0xff, m_pCurrentVertexIndicesX.getNoOfElements() * 4);
-			memset(m_pCurrentVertexIndicesY.getRawData(), 0xff, m_pCurrentVertexIndicesY.getNoOfElements() * 4);
-			memset(m_pCurrentVertexIndicesZ.getRawData(), 0xff, m_pCurrentVertexIndicesZ.getNoOfElements() * 4);
-			generateIndicesForSlice(pPreviousBitmask, m_pPreviousVertexIndicesX, m_pPreviousVertexIndicesY, m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesX, m_pCurrentVertexIndicesY, m_pCurrentVertexIndicesZ);
 		}
 
 		m_meshCurrent->m_Region = m_regSizeInVoxels;
@@ -416,14 +407,14 @@ namespace PolyVox
 		bool isPosZEdge = (uZVolSpace == m_regSizeInVoxels.getUpperCorner().getZ());
 
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY()-1; uYVolSpace++)
+		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace++)
 		{
 			const uint16_t uYRegSpace = uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 			//bool isYEdge = ((uYVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getY()) || (uYVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getY()));
 			bool isNegYEdge = (uYVolSpace == m_regSizeInVoxels.getLowerCorner().getY());
 			bool isPosYEdge = (uYVolSpace == m_regSizeInVoxels.getUpperCorner().getY());
 
-			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX()-1; uXVolSpace++)
+			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace++)
 			{		
 				//Current position
 				const uint16_t uXRegSpace = uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
@@ -655,9 +646,9 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
-		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace < m_regSizeInVoxels.getUpperCorner().getY(); uYVolSpace++)
+		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace <= m_regSizeInCells.getUpperCorner().getY(); uYVolSpace++)
 		{
-			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace < m_regSizeInVoxels.getUpperCorner().getX(); uXVolSpace++)
+			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace <= m_regSizeInCells.getUpperCorner().getX(); uXVolSpace++)
 			{		
 				uint16_t uZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
 				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	

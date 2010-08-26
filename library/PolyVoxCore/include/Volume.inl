@@ -66,19 +66,12 @@ namespace PolyVox
 		}
 
 		//Debug mode validation
-		assert(isPowerOf2(uWidth));
-		assert(isPowerOf2(uHeight));
-		assert(isPowerOf2(uDepth));
 		assert(isPowerOf2(uBlockSideLength));
 		assert(uBlockSideLength <= uWidth);
 		assert(uBlockSideLength <= uHeight);
 		assert(uBlockSideLength <= uDepth);
 
 		//Release mode validation
-		if(!(isPowerOf2(uWidth) && isPowerOf2(uHeight) && isPowerOf2(uDepth)))
-		{
-			throw std::invalid_argument("Volume width, height, and depth must all be a power of two.");
-		}
 		if(!isPowerOf2(uBlockSideLength))
 		{
 			throw std::invalid_argument("Block side length must be a power of two.");
@@ -98,20 +91,19 @@ namespace PolyVox
 
 		//Compute the volume side lengths
 		m_uWidth = uWidth;
-		m_uWidthPower = logBase2(m_uWidth);
+		//m_uWidthPower = logBase2(m_uWidth);
 
 		m_uHeight = uHeight;
-		m_uHeightPower = logBase2(m_uHeight);
+		//m_uHeightPower = logBase2(m_uHeight);
 
 		m_uDepth = uDepth;
-		m_uDepthPower = logBase2(m_uDepth);
+		//m_uDepthPower = logBase2(m_uDepth);
 
 		//Compute the block side length
 		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
-		//Compute the side length in blocks
-		//m_uSideLengthInBlocks = m_uSideLength / m_uBlockSideLength;
+		//Compute the side lengths in blocks
 		m_uWidthInBlocks = m_uWidth / m_uBlockSideLength;
 		m_uHeightInBlocks = m_uHeight / m_uBlockSideLength;
 		m_uDepthInBlocks = m_uDepth / m_uBlockSideLength;
@@ -127,6 +119,11 @@ namespace PolyVox
 			m_pBlocks[i] = getHomogenousBlock(VoxelType());
 			m_vecBlockIsPotentiallyHomogenous[i] = false;
 		}
+
+		//Create the border block
+		std::shared_ptr< Block<VoxelType> > pTempBlock(new Block<VoxelType>(m_uBlockSideLength));
+		pTempBlock->fill(VoxelType());
+		m_pBorderBlock = pTempBlock;
 
 		//Other properties we might find useful later
 		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
@@ -147,6 +144,18 @@ namespace PolyVox
 	#pragma endregion		
 
 	#pragma region Getters
+
+	template <typename VoxelType>
+	////////////////////////////////////////////////////////////////////////////////
+	/// The border value is returned whenever an atempt is made to read a voxel which
+	/// is outside the extents of the volume.
+	/// \return The value used for voxels outside of the volume
+	////////////////////////////////////////////////////////////////////////////////
+	VoxelType Volume<VoxelType>::getBorderValue(void) const
+	{
+		return m_pBorderBlock->getVoxelAt(0,0,0);
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	/// The result will always have a lower corner at (0,0,0) and an upper corner at one
 	/// less than the side length. For example, if a volume has dimensions 256x512x1024
@@ -231,7 +240,7 @@ namespace PolyVox
 	/// \return the voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault) const
+	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
 		//We don't use getEnclosingRegion here because we care
 		//about speed and don't need to check the lower bound.
@@ -256,7 +265,7 @@ namespace PolyVox
 		}
 		else
 		{
-			return tDefault;
+			return getBorderValue();
 		}
 	}
 
@@ -273,6 +282,15 @@ namespace PolyVox
 	#pragma endregion	
 
 	#pragma region Setters
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param tBorder The value to use for voxels outside the volume.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
+	{
+		return m_pBorderBlock->fill(tBorder);
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param uXPos the \c x position of the voxel
 	/// \param uYPos the \c y position of the voxel

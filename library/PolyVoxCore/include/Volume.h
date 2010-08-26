@@ -32,8 +32,8 @@ freely, subject to the following restrictions:
 
 #include <limits>
 #include <map>
-#include <vector>
 #include <memory>
+#include <vector>
 
 #pragma endregion
 
@@ -128,6 +128,8 @@ namespace PolyVox
 		///Destructor
 		~Volume();	
 
+		///Gets the value used for voxels which are outside the volume
+		VoxelType getBorderValue(void) const;
 		///Gets a Region representing the extents of the Volume.
 		Region getEnclosingRegion(void) const;
 		///Gets the width of the volume in voxels.
@@ -143,10 +145,12 @@ namespace PolyVox
 		///Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
 		///Gets a voxel by <tt>x,y,z</tt> position
-		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tDefault = VoxelType()) const;
+		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		///Gets a voxel by 3D vector position
 		VoxelType getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault = VoxelType()) const;
 
+		///Sets the value used for voxels which are outside the volume
+		void setBorderValue(const VoxelType& tBorder);
 		///Sets the voxel at an <tt>x,y,z</tt> position
 		bool setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		///Sets the voxel at a 3D vector position
@@ -157,6 +161,7 @@ namespace PolyVox
 	private:
 		std::shared_ptr< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue);
 
+		std::shared_ptr< Block<VoxelType> > m_pBorderBlock;
 		std::vector< std::shared_ptr< Block<VoxelType> > > m_pBlocks;
 		std::vector<bool> m_vecBlockIsPotentiallyHomogenous;
 
@@ -174,20 +179,14 @@ namespace PolyVox
 		uint16_t m_uDepthInBlocks;
 
 		uint16_t m_uWidth;
-		uint8_t m_uWidthPower;		
-
-		uint16_t m_uHeight;
-		uint8_t m_uHeightPower;	
-
+		uint16_t m_uHeight;	
 		uint16_t m_uDepth;
-		uint8_t m_uDepthPower;	
 
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
 
 		uint16_t m_uLongestSideLength;
 		uint16_t m_uShortestSideLength;
-
 		float m_fDiagonalLength;
 
 		uint32_t m_uCurrentBlockForTidying;

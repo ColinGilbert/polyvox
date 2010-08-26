@@ -156,15 +156,23 @@ namespace PolyVox
 		const uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume->m_uBlockSideLengthPower);
 		const uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << mVolume->m_uBlockSideLengthPower);
 
-		const uint32_t uBlockIndexInVolume = uXBlock + 
-			uYBlock * mVolume->m_uWidthInBlocks + 
-			uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
-		const std::shared_ptr< Block<VoxelType> >& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
-
 		const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
-			uYPosInBlock * mVolume->m_uBlockSideLength + 
-			uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
-		mCurrentVoxel = currentBlock->m_tData + uVoxelIndexInBlock;
+				uYPosInBlock * mVolume->m_uBlockSideLength + 
+				uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+
+		if((uXBlock < mVolume->m_uWidthInBlocks) && (uYBlock < mVolume->m_uHeightInBlocks) && (uZBlock < mVolume->m_uDepthInBlocks))
+		{
+			const uint32_t uBlockIndexInVolume = uXBlock + 
+				uYBlock * mVolume->m_uWidthInBlocks + 
+				uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
+			const std::shared_ptr< Block<VoxelType> >& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
+
+			mCurrentVoxel = currentBlock->m_tData + uVoxelIndexInBlock;
+		}
+		else
+		{
+			mCurrentVoxel = mVolume->m_pBorderBlock->m_tData + uVoxelIndexInBlock;
+		}
 	}
 	#pragma endregion
 
@@ -172,8 +180,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::movePositiveX(void)
 	{
-		assert(mXPosInVolume < mVolume->m_uWidth - 1);
-
 		//Note the *pre* increament here
 		if((++mXPosInVolume) % mVolume->m_uBlockSideLength != 0)
 		{
@@ -190,8 +196,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::movePositiveY(void)
 	{
-		assert(mYPosInVolume < mVolume->m_uHeight - 1);
-
 		//Note the *pre* increament here
 		if((++mYPosInVolume) % mVolume->m_uBlockSideLength != 0)
 		{
@@ -208,8 +212,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::movePositiveZ(void)
 	{
-		assert(mZPosInVolume < mVolume->m_uDepth - 1);
-
 		//Note the *pre* increament here
 		if((++mZPosInVolume) % mVolume->m_uBlockSideLength != 0)
 		{
@@ -226,8 +228,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::moveNegativeX(void)
 	{
-		assert(mXPosInVolume > 0);
-
 		//Note the *post* increament here
 		if((mXPosInVolume--) % mVolume->m_uBlockSideLength != 0)
 		{
@@ -244,8 +244,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::moveNegativeY(void)
 	{
-		assert(mYPosInVolume > 0);
-
 		//Note the *post* increament here
 		if((mYPosInVolume--) % mVolume->m_uBlockSideLength != 0)
 		{
@@ -262,8 +260,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::moveNegativeZ(void)
 	{
-		assert(mZPosInVolume > 0);
-
 		//Note the *post* increament here
 		if((mZPosInVolume--) % mVolume->m_uBlockSideLength != 0)
 		{
