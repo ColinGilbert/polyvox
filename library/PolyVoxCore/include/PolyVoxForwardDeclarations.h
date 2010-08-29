@@ -82,6 +82,7 @@ namespace PolyVox
 	class SurfaceMesh;
 	class Region;
 	class SurfaceVertex;
+	template <typename VoxelType> class CubicSurfaceExtractor;
 	template <typename VoxelType> class SurfaceExtractor;
 
 	//---------- Vector ----------

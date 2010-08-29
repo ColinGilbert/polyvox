@@ -22,6 +22,8 @@ SET(CORE_INC_FILES
 	include/Array.h
 	include/Array.inl
 	include/ArraySizes.h
+	include/CubicSurfaceExtractor.h
+	include/CubicSurfaceExtractor.inl
 	include/Filters.h
 	include/Filters.inl
 	include/GradientEstimators.inl
