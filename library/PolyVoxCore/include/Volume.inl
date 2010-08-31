@@ -236,7 +236,6 @@ namespace PolyVox
 	/// \param uXPos the \c x position of the voxel
 	/// \param uYPos the \c y position of the voxel
 	/// \param uZPos the \c z position of the voxel
-	/// \param tDefault the voxel to be returned if the requested position is outside the volume
 	/// \return the voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -271,13 +270,12 @@ namespace PolyVox
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dPos the 3D position of the voxel
-	/// \param tDefault the voxel to be returned if the requested position is outside the volume
 	/// \return the voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault) const
+	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
 	{
-		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tDefault);
+		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 	#pragma endregion	
 

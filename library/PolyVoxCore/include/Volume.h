@@ -147,7 +147,7 @@ namespace PolyVox
 		///Gets a voxel by <tt>x,y,z</tt> position
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		///Gets a voxel by 3D vector position
-		VoxelType getVoxelAt(const Vector3DUint16& v3dPos, VoxelType tDefault = VoxelType()) const;
+		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
 
 		///Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
