@@ -349,9 +349,9 @@ namespace PolyVox
 		}
 	}
 
-	shared_ptr<SurfaceMesh> SurfaceMesh::extractSubset(std::set<uint8_t> setMaterials)
+	polyvox_shared_ptr<SurfaceMesh> SurfaceMesh::extractSubset(std::set<uint8_t> setMaterials)
 	{
-		shared_ptr<SurfaceMesh> result(new SurfaceMesh);
+		polyvox_shared_ptr<SurfaceMesh> result(new SurfaceMesh);
 
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{

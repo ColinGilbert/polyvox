@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TypeDef_H__
 #define __PolyVox_TypeDef_H__
 
+//Definitions needed to make library functions accessable
 #ifdef _MSC_VER
 	//We are using a Microsoft compiler.
 	#ifdef POLYVOXCORE_EXPORT
@@ -38,14 +39,26 @@ freely, subject to the following restrictions:
 	#define POLYVOXCORE_API __attribute__ ((visibility("default")))
 #endif
 
-// To support non-C++0x compilers we use boost to replace the std::shared_ptr
-// and potentially other C++0x features. To use this capability you will need
-// to make sure you have boost installed on your system.
-#ifdef _MSC_VER
-	#if _MSC_VER < 1600 // Older than VS 2010
-		#include <boost/shared_ptr>
-		#define std::shared_ptr boost::shared_ptr
-	#endif
+//Check which compiler we are using and work around unsupported features as necessary.
+#if defined(_MSC_VER) && (_MSC_VER < 1600) 
+	//To support old Microsoft compilers we use boost to replace the std::shared_ptr
+	//and potentially other C++0x features. To use this capability you will need to
+	//make sure you have boost installed on your system.
+	#include "boost/smart_ptr.hpp"
+	#define polyvox_shared_ptr boost::shared_ptr
+
+	//We also need to define these types as cstdint isn't available
+	typedef char int8_t;
+	typedef short int16_t;
+	typedef long int32_t;
+	typedef unsigned char uint8_t;
+	typedef unsigned short uint16_t;
+	typedef unsigned long uint32_t;
+#else
+	//We have a decent compiler - use real C++0x features
+	#include <cstdint>
+	#include <memory>
+	#define polyvox_shared_ptr std::shared_ptr
 #endif
 
 #endif

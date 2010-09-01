@@ -26,8 +26,6 @@ freely, subject to the following restrictions:
 
 #include "SurfaceMesh.h"
 
-#include <cstdint>
-
 using namespace PolyVox;
 using namespace std;
 

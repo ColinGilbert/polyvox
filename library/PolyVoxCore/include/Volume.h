@@ -159,10 +159,10 @@ namespace PolyVox
 		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());
 
 	private:
-		std::shared_ptr< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue);
+		polyvox_shared_ptr< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue);
 
-		std::shared_ptr< Block<VoxelType> > m_pBorderBlock;
-		std::vector< std::shared_ptr< Block<VoxelType> > > m_pBlocks;
+		polyvox_shared_ptr< Block<VoxelType> > m_pBorderBlock;
+		std::vector< polyvox_shared_ptr< Block<VoxelType> > > m_pBlocks;
 		std::vector<bool> m_vecBlockIsPotentiallyHomogenous;
 
 		//Note: We were once storing weak_ptr's in this map, so that the blocks would be deleted once they
@@ -170,7 +170,7 @@ namespace PolyVox
 		//shared. A call to shared_ptr::unique() from within setVoxel was not sufficient as weak_ptr's did
 		//not contribute to the reference count. Instead we store shared_ptr's here, and check if they
 		//are used by anyone else (i.e are non-unique) when we tidy the volume.
-		std::map<VoxelType, std::shared_ptr< Block<VoxelType> > > m_pHomogenousBlock;
+		std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > > m_pHomogenousBlock;
 
 		uint32_t m_uNoOfBlocksInVolume;
 

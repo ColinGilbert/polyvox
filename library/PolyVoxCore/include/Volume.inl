@@ -121,7 +121,7 @@ namespace PolyVox
 		}
 
 		//Create the border block
-		std::shared_ptr< Block<VoxelType> > pTempBlock(new Block<VoxelType>(m_uBlockSideLength));
+		polyvox_shared_ptr< Block<VoxelType> > pTempBlock(new Block<VoxelType>(m_uBlockSideLength));
 		pTempBlock->fill(VoxelType());
 		m_pBorderBlock = pTempBlock;
 
@@ -253,7 +253,7 @@ namespace PolyVox
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			const std::shared_ptr< Block< VoxelType > >& block = m_pBlocks
+			const polyvox_shared_ptr< Block< VoxelType > >& block = m_pBlocks
 				[
 					blockX + 
 					blockY * m_uWidthInBlocks + 
@@ -316,7 +316,7 @@ namespace PolyVox
 				blockY * m_uWidthInBlocks + 
 				blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
 
-			std::shared_ptr< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
+			polyvox_shared_ptr< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
 
 			//It's quite possible that the user might attempt to set a voxel to it's current value.
 			//We test for this case firstly because it could help performance, but more importantly
@@ -332,7 +332,7 @@ namespace PolyVox
 				}
 				else
 				{			
-					std::shared_ptr< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
+					polyvox_shared_ptr< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
 					block = pNewBlock;
 					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
 					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
@@ -407,7 +407,7 @@ namespace PolyVox
 		}
 
 		//Identify and remove any homogeneous blocks which are not actually in use.
-		typename std::map<VoxelType, std::shared_ptr< Block<VoxelType> > >::iterator iter = m_pHomogenousBlock.begin();
+		typename std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > >::iterator iter = m_pHomogenousBlock.begin();
 		while(iter != m_pHomogenousBlock.end())
 		{
 			if(iter->second.unique())
@@ -424,13 +424,13 @@ namespace PolyVox
 
 	#pragma region Private Implementation
 	template <typename VoxelType>
-	std::shared_ptr< Block<VoxelType> > Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) 
+	polyvox_shared_ptr< Block<VoxelType> > Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) 
 	{
-		typename std::map<VoxelType, std::shared_ptr< Block<VoxelType> > >::iterator iterResult = m_pHomogenousBlock.find(tHomogenousValue);
+		typename std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > >::iterator iterResult = m_pHomogenousBlock.find(tHomogenousValue);
 		if(iterResult == m_pHomogenousBlock.end())
 		{
 			//Block<VoxelType> block;
-			std::shared_ptr< Block<VoxelType> > pHomogeneousBlock(new Block<VoxelType>(m_uBlockSideLength));
+			polyvox_shared_ptr< Block<VoxelType> > pHomogeneousBlock(new Block<VoxelType>(m_uBlockSideLength));
 			//block.m_pBlock = temp;
 			//block.m_uReferenceCount++;
 			pHomogeneousBlock->fill(tHomogenousValue);
@@ -440,7 +440,7 @@ namespace PolyVox
 		else
 		{
 			//iterResult->second.m_uReferenceCount++;
-			//std::shared_ptr< Block<VoxelType> > result(iterResult->second);
+			//polyvox_shared_ptr< Block<VoxelType> > result(iterResult->second);
 			return iterResult->second;
 		}
 	}

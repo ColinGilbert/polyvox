@@ -42,12 +42,12 @@ namespace PolyVox
 	};
 
 	template <typename VoxelType>
-	std::shared_ptr< Volume<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	polyvox_shared_ptr< Volume<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
 	template <typename VoxelType>
 	void saveVolumeRaw(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
 
 	template <typename VoxelType>
-	std::shared_ptr< Volume<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	polyvox_shared_ptr< Volume<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
 	template <typename VoxelType>
 	void saveVolumeRle(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
 }

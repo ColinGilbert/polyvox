@@ -27,7 +27,7 @@ distribution.
 #define __PolyVox_ArraySizesImpl_H__
 
 #pragma region Headers
-#include <cstdint>
+#include "typedef.h"
 #pragma endregion
 
 namespace PolyVox

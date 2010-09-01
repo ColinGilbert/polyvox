@@ -66,7 +66,7 @@ namespace PolyVox
 	   void smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices = false);
 	   void sumNearbyNormals(bool bNormaliseResult = true);
 
-	   std::shared_ptr<SurfaceMesh> extractSubset(std::set<uint8_t> setMaterials);
+	   polyvox_shared_ptr<SurfaceMesh> extractSubset(std::set<uint8_t> setMaterials);
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 	   

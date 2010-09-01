@@ -73,7 +73,7 @@ class OpenGLWidget : public QGLWidget
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh> m_mapOpenGLSurfaceMeshes;
-	std::map<PolyVox::Vector3DUint8, std::shared_ptr<PolyVox::SurfaceMesh> > m_mapSurfaceMeshes;
+	std::map<PolyVox::Vector3DUint8, polyvox_shared_ptr<PolyVox::SurfaceMesh> > m_mapSurfaceMeshes;
 
 	unsigned int m_uRegionSideLength;
 	unsigned int m_uVolumeWidthInRegions;
