@@ -228,11 +228,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::moveNegativeX(void)
 	{
-		//Note the *post* increament here
+		//Note the *post* decreament here
 		if((mXPosInVolume--) % mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			++mCurrentVoxel;			
+			--mCurrentVoxel;			
 		}
 		else
 		{
@@ -244,11 +244,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::moveNegativeY(void)
 	{
-		//Note the *post* increament here
+		//Note the *post* decreament here
 		if((mYPosInVolume--) % mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel += mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= mVolume->m_uBlockSideLength;
 		}
 		else
 		{
@@ -260,11 +260,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::moveNegativeZ(void)
 	{
-		//Note the *post* increament here
+		//Note the *post* decreament here
 		if((mZPosInVolume--) % mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel += mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
 		}
 		else
 		{

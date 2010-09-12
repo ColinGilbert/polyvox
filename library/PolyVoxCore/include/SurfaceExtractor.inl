@@ -467,6 +467,8 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
+
+					m_sampVolume.moveNegativeX();
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
@@ -495,6 +497,8 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
+
+					m_sampVolume.moveNegativeY();
 				}
 				if (edgeTable[iCubeIndex] & 256)
 				{
@@ -523,6 +527,8 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
+
+					m_sampVolume.moveNegativeZ();
 				}
 			}//For each cell
 		}
