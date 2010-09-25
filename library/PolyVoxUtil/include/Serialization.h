@@ -41,6 +41,9 @@ namespace PolyVox
 		virtual void onProgressUpdated(float fProgress) = 0;
 	};
 
+	////////////////////////////////////////////////////////////////////////////////
+	// THESE FUNCTIONS ARE DEPRECATED. USE VERSIONED 'loadVolume' AND 'saveVolume' INSTEAD.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	polyvox_shared_ptr< Volume<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
 	template <typename VoxelType>
@@ -50,6 +53,20 @@ namespace PolyVox
 	polyvox_shared_ptr< Volume<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
 	template <typename VoxelType>
 	void saveVolumeRle(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+
+	////////////////////////////////////////////////////////////////////////////////
+	// END OF DEPRECATED FUNCTIONS
+	////////////////////////////////////////////////////////////////////////////////
+
+	template <typename VoxelType>
+	bool loadVolume(std::istream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template <typename VoxelType>
+	bool saveVolume(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+
+	template <typename VoxelType>
+	bool loadVersion0(std::istream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template <typename VoxelType>
+	bool saveVersion0(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
 }
 
 #include "Serialization.inl"

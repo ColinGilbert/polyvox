@@ -48,87 +48,19 @@ namespace PolyVox
 	/// blocks are more likely to be homogeneous (so more easily shared) and have better
 	/// cache behaviour. However, there is a memory overhead per block so if they are
 	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Specifying
-	/// '0' for	the block side length will cause the blocks to be as large as possible,
-	/// which will basically be the length of the shortest side. Accept the default if
-	/// you are not sure what to choose here.
+	/// The size of the volume may also be a factor when choosing block size. Accept 
+	/// the default if you are not sure what to choose here.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
-		:m_pBlocks(0)
-		,m_uCurrentBlockForTidying(0)
 	{
-		//A values of zero for a block side length is a special value to indicate 
-		//that the block side length should simply be made as large as possible.
-		if(uBlockSideLength == 0)
-		{
-			uBlockSideLength = (std::min)((std::min)(uWidth,uHeight),uDepth);
-		}
-
-		//Debug mode validation
-		assert(isPowerOf2(uBlockSideLength));
-		assert(uBlockSideLength <= uWidth);
-		assert(uBlockSideLength <= uHeight);
-		assert(uBlockSideLength <= uDepth);
-
-		//Release mode validation
-		if(!isPowerOf2(uBlockSideLength))
-		{
-			throw std::invalid_argument("Block side length must be a power of two.");
-		}
-		if(uBlockSideLength > uWidth)
-		{
-			throw std::invalid_argument("Block side length cannot be greater than volume width.");
-		}
-		if(uBlockSideLength > uHeight)
-		{
-			throw std::invalid_argument("Block side length cannot be greater than volume height.");
-		}
-		if(uBlockSideLength > uDepth)
-		{
-			throw std::invalid_argument("Block side length cannot be greater than volume depth.");
-		}
-
-		//Compute the volume side lengths
-		m_uWidth = uWidth;
-		//m_uWidthPower = logBase2(m_uWidth);
-
-		m_uHeight = uHeight;
-		//m_uHeightPower = logBase2(m_uHeight);
-
-		m_uDepth = uDepth;
-		//m_uDepthPower = logBase2(m_uDepth);
-
-		//Compute the block side length
-		m_uBlockSideLength = uBlockSideLength;
-		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
-
-		//Compute the side lengths in blocks
-		m_uWidthInBlocks = m_uWidth / m_uBlockSideLength;
-		m_uHeightInBlocks = m_uHeight / m_uBlockSideLength;
-		m_uDepthInBlocks = m_uDepth / m_uBlockSideLength;
-
-		//Compute number of blocks in the volume
-		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
-
-		//Create the blocks
-		m_pBlocks.resize(m_uNoOfBlocksInVolume);
-		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
-		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
-		{
-			m_pBlocks[i] = getHomogenousBlock(VoxelType());
-			m_vecBlockIsPotentiallyHomogenous[i] = false;
-		}
+		//Create a volume of the right size.
+		resize(uWidth, uHeight, uDepth, uBlockSideLength);
 
 		//Create the border block
 		polyvox_shared_ptr< Block<VoxelType> > pTempBlock(new Block<VoxelType>(m_uBlockSideLength));
 		pTempBlock->fill(VoxelType());
 		m_pBorderBlock = pTempBlock;
-
-		//Other properties we might find useful later
-		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
-		m_uShortestSideLength = (std::min)((std::min)(m_uWidth,m_uHeight),m_uDepth);
-		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -361,6 +293,91 @@ namespace PolyVox
 	#pragma endregion
 
 	#pragma region Other
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note: Calling this function will destroy all existing data in the volume.
+	/// \param uWidth The desired width in voxels. This must be a power of two.
+	/// \param uHeight The desired height in voxels. This must be a power of two.
+	/// \param uDepth The desired depth in voxels. This must be a power of two.
+	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
+	/// blocks are more likely to be homogeneous (so more easily shared) and have better
+	/// cache behaviour. However, there is a memory overhead per block so if they are
+	/// not shared it could actually be less efficient (this will depend on the data).
+	/// The size of the volume may also be a factor when choosing block size. Accept 
+	/// the default if you are not sure what to choose here.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
+	{
+		//Debug mode validation
+		assert(uBlockSideLength > 0);
+		assert(isPowerOf2(uBlockSideLength));
+		assert(uBlockSideLength <= uWidth);
+		assert(uBlockSideLength <= uHeight);
+		assert(uBlockSideLength <= uDepth);
+
+		//Release mode validation
+		if(uBlockSideLength == 0)
+		{
+			throw std::invalid_argument("Block side length cannot be zero.");
+		}
+		if(!isPowerOf2(uBlockSideLength))
+		{
+			throw std::invalid_argument("Block side length must be a power of two.");
+		}
+		if(uBlockSideLength > uWidth)
+		{
+			throw std::invalid_argument("Block side length cannot be greater than volume width.");
+		}
+		if(uBlockSideLength > uHeight)
+		{
+			throw std::invalid_argument("Block side length cannot be greater than volume height.");
+		}
+		if(uBlockSideLength > uDepth)
+		{
+			throw std::invalid_argument("Block side length cannot be greater than volume depth.");
+		}
+
+		//Empty the previous data
+		m_pBlocks.empty();
+		m_vecBlockIsPotentiallyHomogenous.empty();
+		m_pHomogenousBlock.empty();
+
+		//Compute the volume side lengths
+		m_uWidth = uWidth;
+		m_uHeight = uHeight;
+		m_uDepth = uDepth;
+
+		//Compute the block side length
+		m_uBlockSideLength = uBlockSideLength;
+		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
+
+		//Compute the side lengths in blocks
+		m_uWidthInBlocks = m_uWidth / m_uBlockSideLength;
+		m_uHeightInBlocks = m_uHeight / m_uBlockSideLength;
+		m_uDepthInBlocks = m_uDepth / m_uBlockSideLength;
+
+		//Compute number of blocks in the volume
+		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
+
+		//Create the blocks
+		m_pBlocks.resize(m_uNoOfBlocksInVolume);
+		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		{
+			m_pBlocks[i] = getHomogenousBlock(VoxelType());
+			m_vecBlockIsPotentiallyHomogenous[i] = false;
+		}		
+
+		//Other properties we might find useful later
+		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
+		m_uShortestSideLength = (std::min)((std::min)(m_uWidth,m_uHeight),m_uDepth);
+		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
+
+		//Reset the counter for tidying
+		m_uCurrentBlockForTidying = 0;
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	/// Clean up the memory usage of the volume. Checks for any blocks which are
 	/// homogeneous and flags them as such for faster processing and reduced memory

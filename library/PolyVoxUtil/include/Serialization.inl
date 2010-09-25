@@ -32,6 +32,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	polyvox_shared_ptr< Volume<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
+		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'loadVolume()' ASAP.
+
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
 		uint8_t volumeHeightPower = 0;
@@ -81,6 +83,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void saveVolumeRaw(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
+		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'saveVolume()' ASAP.
+
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
 		uint16_t volumeHeight = volume.getHeight();
@@ -128,6 +132,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	polyvox_shared_ptr< Volume<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
+		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'loadVolume()' ASAP.
+
 		//Read volume dimensions
 		uint8_t volumeWidthPower = 0;
 		uint8_t volumeHeightPower = 0;
@@ -191,6 +197,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void saveVolumeRle(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
+		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'saveVolume()' ASAP.
+
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
 		uint16_t volumeHeight = volume.getHeight();
@@ -255,5 +263,174 @@ namespace PolyVox
 		{
 			progressListener->onProgressUpdated(1.0f);
 		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	// New version of load/save code with versioning
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	template <typename VoxelType>
+	bool loadVolume(std::istream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	{
+		char pIdentifier[8];
+		stream.read(pIdentifier, 7);
+		pIdentifier[7] = '\0'; //Set the null terminator
+		if(strcmp(pIdentifier, "PolyVox") != 0)
+		{
+			return false;
+		}
+
+		uint16_t uVersion;
+		stream.read(reinterpret_cast<char*>(&uVersion), sizeof(uVersion));
+
+		switch(uVersion)
+		{
+			case 0:
+				return loadVersion0(stream, volume, progressListener);
+				//Return means no need to break...
+			default:
+				return false;
+		}
+		
+	}
+
+	template <typename VoxelType>
+	bool saveVolume(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	{
+		char pIdentifier[] = "PolyVox";
+		stream.write(pIdentifier, 7);
+
+		uint16_t uVersion = 0;
+		stream.write(reinterpret_cast<const char*>(&uVersion), sizeof(uVersion));
+
+		return saveVersion0(stream, volume, progressListener);
+	}
+
+	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
+	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
+	template <typename VoxelType>
+	bool loadVersion0(std::istream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	{
+		//Read volume dimensions
+		uint16_t volumeWidth = 0;
+		uint16_t volumeHeight = 0;
+		uint16_t volumeDepth = 0;
+		stream.read(reinterpret_cast<char*>(&volumeWidth), sizeof(volumeWidth));
+		stream.read(reinterpret_cast<char*>(&volumeHeight), sizeof(volumeHeight));
+		stream.read(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
+
+		//Resize the volume
+		volume.resize(volumeWidth, volumeHeight, volumeDepth);
+
+		//Read data
+		bool firstTime = true;
+		uint32_t runLength = 0;
+		VoxelType value;
+		stream.read(reinterpret_cast<char*>(&value), sizeof(value));
+		stream.read(reinterpret_cast<char*>(&runLength), sizeof(runLength));
+		for(uint16_t z = 0; z < volumeDepth; ++z)
+		{
+			//Update progress once per slice.
+			if(progressListener)
+			{
+				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
+				progressListener->onProgressUpdated(fProgress);
+			}
+
+			for(uint16_t y = 0; y < volumeHeight; ++y)
+			{
+				for(uint16_t x = 0; x < volumeWidth; ++x)
+				{	
+					if(runLength != 0)
+					{
+						volume.setVoxelAt(x,y,z,value);
+						runLength--;
+					}
+					else
+					{
+						stream.read(reinterpret_cast<char*>(&value), sizeof(value));
+						stream.read(reinterpret_cast<char*>(&runLength), sizeof(runLength));
+
+						volume.setVoxelAt(x,y,z,value);
+						runLength--;
+					}
+				}
+			}			
+		}
+
+		//Finished
+		if(progressListener)
+		{
+			progressListener->onProgressUpdated(1.0f);
+		}
+
+		return true;
+	}
+
+	template <typename VoxelType>
+	bool saveVersion0(std::ostream& stream, Volume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	{
+		//Write volume dimensions
+		uint16_t volumeWidth = volume.getWidth();
+		uint16_t volumeHeight = volume.getHeight();
+		uint16_t volumeDepth  = volume.getDepth();
+
+		stream.write(reinterpret_cast<char*>(&volumeWidth), sizeof(volumeWidth));
+		stream.write(reinterpret_cast<char*>(&volumeHeight), sizeof(volumeHeight));
+		stream.write(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
+
+		//Write data
+		VolumeSampler<VoxelType> volIter(&volume);
+		VoxelType current;
+		uint32_t runLength = 0;
+		bool firstTime = true;
+		for(uint16_t z = 0; z < volumeDepth; ++z)
+		{
+			//Update progress once per slice.
+			if(progressListener)
+			{
+				float fProgress = static_cast<float>(z) / static_cast<float>(volumeDepth);
+				progressListener->onProgressUpdated(fProgress);
+			}
+
+			for(uint16_t y = 0; y < volumeHeight; ++y)
+			{
+				for(uint16_t x = 0; x < volumeWidth; ++x)
+				{		
+					volIter.setPosition(x,y,z);
+					VoxelType value = volIter.getVoxel();
+					if(firstTime)
+					{
+						current = value;
+						runLength = 1;
+						firstTime = false;
+					}
+					else
+					{
+						if(value == current)
+						{
+							runLength++;
+						}
+						else
+						{
+							stream.write(reinterpret_cast<char*>(&current), sizeof(current));
+							stream.write(reinterpret_cast<char*>(&runLength), sizeof(runLength));
+							current = value;
+							runLength = 1;
+						}
+					}					
+				}
+			}
+		}
+		stream.write(reinterpret_cast<char*>(&current), sizeof(current));
+		stream.write(reinterpret_cast<char*>(&runLength), sizeof(runLength));
+
+		//Finished
+		if(progressListener)
+		{
+			progressListener->onProgressUpdated(1.0f);
+		}
+
+		return true;
 	}
 }

@@ -156,6 +156,8 @@ namespace PolyVox
 		///Sets the voxel at a 3D vector position
 		bool setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
+		///Resises the volume to the specified dimensions
+		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());
 
 	private:
