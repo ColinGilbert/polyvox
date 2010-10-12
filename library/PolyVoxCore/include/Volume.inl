@@ -1,4 +1,3 @@
-#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -21,9 +20,7 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
-#pragma endregion
 
-#pragma region Headers
 #include "PolyVoxImpl/Block.h"
 #include "Log.h"
 #include "VolumeSampler.h"
@@ -34,11 +31,9 @@ freely, subject to the following restrictions:
 #include <cstring> //For memcpy
 #include <list>
 #include <stdexcept> //For invalid_argument
-#pragma endregion
 
 namespace PolyVox
 {
-	#pragma region Constructors/Destructors
 	////////////////////////////////////////////////////////////////////////////////
 	/// Builds a volume of the desired dimensions
 	/// \param uWidth The desired width in voxels. This must be a power of two.
@@ -70,12 +65,6 @@ namespace PolyVox
 	Volume<VoxelType>::~Volume()
 	{
 	}
-	#pragma endregion
-
-	#pragma region Operators
-	#pragma endregion		
-
-	#pragma region Getters
 
 	template <typename VoxelType>
 	////////////////////////////////////////////////////////////////////////////////
@@ -209,9 +198,7 @@ namespace PolyVox
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
-	#pragma endregion	
 
-	#pragma region Setters
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
@@ -290,9 +277,6 @@ namespace PolyVox
 	{
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
-	#pragma endregion
-
-	#pragma region Other
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Note: Calling this function will destroy all existing data in the volume.
@@ -437,9 +421,7 @@ namespace PolyVox
 			}
 		}
 	}	
-	#pragma endregion
 
-	#pragma region Private Implementation
 	template <typename VoxelType>
 	polyvox_shared_ptr< Block<VoxelType> > Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) 
 	{
@@ -461,5 +443,4 @@ namespace PolyVox
 			return iterResult->second;
 		}
 	}
-	#pragma endregion
 }

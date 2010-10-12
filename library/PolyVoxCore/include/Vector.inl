@@ -1,4 +1,3 @@
-#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -21,7 +20,6 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
-#pragma endregion
 
 #include <cassert>
 #include <cmath>
@@ -30,7 +28,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	#pragma region Constructors/Destructors
     //-------------------------- Constructors, etc ---------------------------------
     /**
     Creates a Vector object and initialises it with given values.
@@ -120,9 +117,7 @@ namespace PolyVox
         Vector<Size, Type>::~Vector(void) throw()
     {
     }
-	#pragma endregion
 
-	#pragma region Operators
     /**
     Assignment operator copies each element of first Vector to the second.
     \param rhs Vector to assign to.
@@ -317,9 +312,7 @@ namespace PolyVox
 		os << ")";
         return os;
     }		
-	#pragma endregion
 
-	#pragma region Getters
 	/**
 	Returns the element at the given position.
 	\param index The index of the element to return.
@@ -366,9 +359,7 @@ namespace PolyVox
 	{
 		return m_tElements[3];
 	}  
-	#pragma endregion
 
-	#pragma region Setters
 	/**
 	\param index The index of the element to set.
 	\param tValue The new value for the element.
@@ -458,9 +449,7 @@ namespace PolyVox
     {
         m_tElements[3] = tW;
     }
-	#pragma endregion
 
-	#pragma region Others
 	/**
 	NOTE: This function does not make much sense on integer Vectors.
     \return Length of the Vector.
@@ -559,5 +548,4 @@ namespace PolyVox
 			m_tElements[ct] /= static_cast<Type>(length);
 		}
     }
-	#pragma endregion	
 }//namespace PolyVox

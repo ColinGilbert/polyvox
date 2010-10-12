@@ -1,4 +1,3 @@
-#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -21,7 +20,6 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
-#pragma endregion
 
 //These tables were based on the article "Polygonising a scalar field".
 //They have been optimised to allow a more efficient algorithm via bitwise operations.

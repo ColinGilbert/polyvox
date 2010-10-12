@@ -1,4 +1,3 @@
-#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -21,12 +20,10 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
-#pragma endregion
 
 #ifndef __PolyVox_Volume_H__
 #define __PolyVox_Volume_H__
 
-#pragma region Headers
 #include "PolyVoxImpl/Block.h"
 #include "PolyVoxForwardDeclarations.h"
 
@@ -34,8 +31,6 @@ freely, subject to the following restrictions:
 #include <map>
 #include <memory>
 #include <vector>
-
-#pragma endregion
 
 namespace PolyVox
 {

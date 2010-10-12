@@ -1,4 +1,3 @@
-#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -21,20 +20,15 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
-#pragma endregion
 
-#pragma region Headers
 #include "PolyVoxImpl/Block.h"
 #include "Volume.h"
 #include "Vector.h"
 #include "Region.h"
 
 #include <limits>
-#pragma endregion
-
 namespace PolyVox
 {
-	#pragma region Constructors/Destructors
 	template <typename VoxelType>
 	VolumeSampler<VoxelType>::VolumeSampler(Volume<VoxelType>* volume)
 		:mVolume(volume)
@@ -45,9 +39,7 @@ namespace PolyVox
 	VolumeSampler<VoxelType>::~VolumeSampler()
 	{
 	}
-	#pragma endregion
 
-	#pragma region Operators
 	template <typename VoxelType>
 	VolumeSampler<VoxelType>& VolumeSampler<VoxelType>::operator=(const VolumeSampler<VoxelType>& rhs) throw()
 	{
@@ -62,9 +54,7 @@ namespace PolyVox
 		mCurrentVoxel = rhs.mCurrentVoxel;
         return *this;
 	}
-	#pragma endregion
 
-	#pragma region Getters
 	template <typename VoxelType>
 	uint16_t VolumeSampler<VoxelType>::getPosX(void) const
 	{
@@ -132,9 +122,7 @@ namespace PolyVox
 	{
 		return *mCurrentVoxel;
 	}
-	#pragma endregion
 
-	#pragma region Setters
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::setPosition(const Vector3DInt16& v3dNewPos)
 	{
@@ -174,9 +162,7 @@ namespace PolyVox
 			mCurrentVoxel = mVolume->m_pBorderBlock->m_tData + uVoxelIndexInBlock;
 		}
 	}
-	#pragma endregion
 
-	#pragma region Other
 	template <typename VoxelType>
 	void VolumeSampler<VoxelType>::movePositiveX(void)
 	{
@@ -272,9 +258,7 @@ namespace PolyVox
 			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
 		}
 	}
-	#pragma endregion
 
-	#pragma region Peekers
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1ny1nz(void) const
 	{
@@ -544,5 +528,4 @@ namespace PolyVox
 		}
 		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
 	}
-	#pragma endregion
 }

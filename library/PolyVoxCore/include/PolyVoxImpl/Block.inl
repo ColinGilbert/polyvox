@@ -1,4 +1,3 @@
-#pragma region License
 /*******************************************************************************
 Copyright (c) 2005-2009 David Williams
 
@@ -21,9 +20,7 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
-#pragma endregion
 
-#pragma region Headers
 #include "PolyVoxImpl/Utility.h"
 #include "Vector.h"
 #include "Volume.h"
@@ -31,11 +28,9 @@ freely, subject to the following restrictions:
 #include <cassert>
 #include <cstring> //For memcpy
 #include <stdexcept> //for std::invalid_argument
-#pragma endregion
 
 namespace PolyVox
 {
-	#pragma region Constructors/Destructors
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength)
 		:m_tData(0)
@@ -70,9 +65,7 @@ namespace PolyVox
 		delete[] m_tData;
 		m_tData = 0;
 	}
-	#pragma endregion
 
-	#pragma region Operators
 	template <typename VoxelType>
 	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
 	{
@@ -92,9 +85,7 @@ namespace PolyVox
 
 		return *this;
 	}
-	#pragma endregion
 
-	#pragma region Getters
 	template <typename VoxelType>
 	uint16_t Block<VoxelType>::getSideLength(void) const
 	{
@@ -121,9 +112,7 @@ namespace PolyVox
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
-	#pragma endregion
 
-	#pragma region Setters
 	template <typename VoxelType>
 	void Block<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
@@ -144,9 +133,7 @@ namespace PolyVox
 	{
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
-	#pragma endregion
 
-	#pragma region Other
 	template <typename VoxelType>
 	void Block<VoxelType>::fill(VoxelType tValue)
 	{
@@ -187,5 +174,4 @@ namespace PolyVox
 
 		return  uSizeInChars;
 	}
-	#pragma endregion
 }
