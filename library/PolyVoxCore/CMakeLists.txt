@@ -12,7 +12,7 @@ SET(CORE_SRC_FILES
 	source/MeshFace.cpp
 	source/MeshVertex.cpp
 	source/Region.cpp
-	source/SurfaceVertex.cpp
+	source/VertexTypes.cpp
 	source/VoxelFilters.cpp
 )
 
@@ -41,9 +41,9 @@ SET(CORE_INC_FILES
 	include/SurfaceExtractor.inl
 	include/SurfaceMesh.h
 	include/SurfaceMesh.inl
-	include/SurfaceVertex.h
 	include/Vector.h
 	include/Vector.inl
+	include/VertexTypes.h
 	include/Volume.h
 	include/Volume.inl
 	include/VolumeSampler.h

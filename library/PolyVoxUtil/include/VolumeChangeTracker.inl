@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 #include "GradientEstimators.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
-#include "SurfaceVertex.h"
+#include "VertexTypes.h"
 #include "PolyVoxImpl/Utility.h"
 #include "Vector.h"
 #include "Volume.h"

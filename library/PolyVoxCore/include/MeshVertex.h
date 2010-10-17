@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_MeshVertex_H__
 
 #include "PolyVoxForwardDeclarations.h"
-#include "SurfaceVertex.h"
+#include "VertexTypes.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 

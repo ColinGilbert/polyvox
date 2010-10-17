@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 #include "Mesh.h"
 #include "MeshFace.h"
 #include "MeshVertex.h"
-#include "SurfaceVertex.h"
+#include "VertexTypes.h"
 
 #include <set>
 

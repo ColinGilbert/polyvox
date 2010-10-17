@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxForwardDeclarations.h"
 #include "Region.h"
-#include "SurfaceVertex.h"
+#include "VertexTypes.h"
 #include "PolyVoxImpl/TypeDef.h"
 
 namespace PolyVox

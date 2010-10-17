@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include "MaterialDensityPair.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/MarchingCubesTables.h"
-#include "SurfaceVertex.h"
+#include "VertexTypes.h"
 
 namespace PolyVox
 {

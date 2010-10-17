@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "GradientEstimators.h"
 #include "SurfaceMesh.h"
-#include "SurfaceVertex.h"
+#include "VertexTypes.h"
 #include "PolyVoxImpl/TypeDef.h"
 
 using namespace std;
