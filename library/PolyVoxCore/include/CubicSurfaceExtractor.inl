@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	CubicSurfaceExtractor<VoxelType>::CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh* result)
+	CubicSurfaceExtractor<VoxelType>::CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
@@ -63,25 +63,25 @@ namespace PolyVox
 					{
 						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
 
-						uint32_t v0 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
+						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
 
-						m_meshCurrent->addTriangle(v0,v2,v1);
-						m_meshCurrent->addTriangle(v1,v2,v3);
+						m_meshCurrent->addTriangleCubic(v0,v2,v1);
+						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
 					if(currentVoxel < plusXVoxel)
 					{
 						int material = m_volData->getVoxelAt(x+1,y,z).getMaterial();
 
-						uint32_t v0 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
+						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
 
-						m_meshCurrent->addTriangle(v0,v1,v2);
-						m_meshCurrent->addTriangle(v1,v3,v2);
+						m_meshCurrent->addTriangleCubic(v0,v1,v2);
+						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
 
 					int plusYVoxel = m_volData->getVoxelAt(x,y+1,z).getDensity()  >= VoxelType::getThreshold();
@@ -89,25 +89,25 @@ namespace PolyVox
 					{
 						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
 
-						uint32_t v0 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
+						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
 
-						m_meshCurrent->addTriangle(v0,v1,v2);
-						m_meshCurrent->addTriangle(v1,v3,v2);
+						m_meshCurrent->addTriangleCubic(v0,v1,v2);
+						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
 					if(currentVoxel < plusYVoxel)
 					{
 						int material = m_volData->getVoxelAt(x,y+1,z).getMaterial();
 
-						uint32_t v0 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
+						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
 
-						m_meshCurrent->addTriangle(v0,v2,v1);
-						m_meshCurrent->addTriangle(v1,v2,v3);
+						m_meshCurrent->addTriangleCubic(v0,v2,v1);
+						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
 
 					int plusZVoxel = m_volData->getVoxelAt(x,y,z+1).getDensity()  >= VoxelType::getThreshold();
@@ -115,25 +115,25 @@ namespace PolyVox
 					{
 						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
 
-						uint32_t v0 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
+						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
 
-						m_meshCurrent->addTriangle(v0,v2,v1);
-						m_meshCurrent->addTriangle(v1,v2,v3);
+						m_meshCurrent->addTriangleCubic(v0,v2,v1);
+						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
 					if(currentVoxel < plusZVoxel)
 					{
 						int material = m_volData->getVoxelAt(x,y,z+1).getMaterial();
 
-						uint32_t v0 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(SurfaceVertex(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
+						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
 
-						m_meshCurrent->addTriangle(v0,v1,v2);
-						m_meshCurrent->addTriangle(v1,v3,v2);
+						m_meshCurrent->addTriangleCubic(v0,v1,v2);
+						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
 				}
 			}

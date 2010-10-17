@@ -33,10 +33,10 @@ struct OpenGLSurfaceMesh
 	GLulong noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
-	const PolyVox::SurfaceMesh* sourceMesh;
+	const PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>* sourceMesh;
 };
 
-OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const PolyVox::SurfaceMesh& mesh);
+OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& mesh);
 void renderRegionVertexBufferObject(const OpenGLSurfaceMesh& openGLSurfaceMesh, unsigned int uLodLevel);
 
 #endif //__OpenGLExample_OpenGLVertexBufferObjectSupport_H__

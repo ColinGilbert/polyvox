@@ -89,7 +89,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
 
-					polyvox_shared_ptr<SurfaceMesh> mesh(new SurfaceMesh);
+					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > mesh(new SurfaceMesh<PositionMaterialNormal>);
 					SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
@@ -229,7 +229,7 @@ void OpenGLWidget::paintGL()
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 					if(m_mapSurfaceMeshes.find(v3dRegPos) != m_mapSurfaceMeshes.end())
 					{
-						polyvox_shared_ptr<SurfaceMesh> meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
+						polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
 						unsigned int uLodLevel = 0; //meshCurrent->m_vecLodRecords.size() - 1;
 						if(m_bUseOpenGLVertexBufferObjects)
 						{													

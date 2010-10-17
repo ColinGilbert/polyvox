@@ -55,7 +55,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Vector3DFloat computeSmoothSobelGradient(VolumeSampler<VoxelType>& volIter);
 
-	POLYVOXCORE_API void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh& mesh, NormalGenerationMethod normalGenerationMethod);
+	POLYVOXCORE_API void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod);
 	POLYVOXCORE_API Vector3DFloat computeNormal(Volume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod);
 }
 

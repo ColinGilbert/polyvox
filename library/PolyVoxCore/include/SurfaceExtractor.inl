@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	SurfaceExtractor<VoxelType>::SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh* result)
+	SurfaceExtractor<VoxelType>::SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
@@ -457,7 +457,7 @@ namespace PolyVox
 
 					const uint8_t uMaterial = v000.getMaterial() | v100.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
-					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
 					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
 					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
@@ -487,7 +487,7 @@ namespace PolyVox
 
 					const uint8_t uMaterial = v000.getMaterial() | v010.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
-					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
 					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
 					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
@@ -517,7 +517,7 @@ namespace PolyVox
 
 					const uint8_t uMaterial = v000.getMaterial() | v001.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
-					SurfaceVertex surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
 					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
 					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);

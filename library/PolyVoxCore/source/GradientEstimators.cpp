@@ -30,10 +30,10 @@ using namespace std;
 
 namespace PolyVox
 {
-	void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh& mesh, NormalGenerationMethod normalGenerationMethod)
+	void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod)
 	{
-		std::vector<SurfaceVertex>& vecVertices = mesh.getRawVertexData();
-		std::vector<SurfaceVertex>::iterator iterSurfaceVertex = vecVertices.begin();
+		std::vector<PositionMaterialNormal>& vecVertices = mesh.getRawVertexData();
+		std::vector<PositionMaterialNormal>::iterator iterSurfaceVertex = vecVertices.begin();
 		while(iterSurfaceVertex != vecVertices.end())
 		{
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());

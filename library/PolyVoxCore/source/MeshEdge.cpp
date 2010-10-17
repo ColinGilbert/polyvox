@@ -72,8 +72,8 @@ namespace PolyVox
 
 	void MeshEdge::computeEdgeCost(Mesh* pParentMesh)
 	{
-		SurfaceVertex v0Data = m_pSrc->m_vertexData;
-		SurfaceVertex v1Data = m_pDest->m_vertexData;
+		PositionMaterialNormal v0Data = m_pSrc->m_vertexData;
+		PositionMaterialNormal v1Data = m_pDest->m_vertexData;
 
 		m_fCost = 1000000.0f;
 

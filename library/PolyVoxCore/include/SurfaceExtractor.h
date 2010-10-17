@@ -35,7 +35,7 @@ namespace PolyVox
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh* result);
+		SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
 
 		void execute();
 
@@ -84,7 +84,7 @@ namespace PolyVox
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh* m_meshCurrent;
+		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;

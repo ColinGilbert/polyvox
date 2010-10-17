@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "SurfaceMesh.h"
-
 #include <cstdlib>
 #include <list>
 #include <algorithm>
@@ -31,26 +29,31 @@ using namespace std;
 
 namespace PolyVox
 {
-	SurfaceMesh::SurfaceMesh()
+	template <typename VertexType>
+	SurfaceMesh<VertexType>::SurfaceMesh()
 	{
 		m_iTimeStamp = -1;
 	}
 
-	SurfaceMesh::~SurfaceMesh()	  
+	template <typename VertexType>
+	SurfaceMesh<VertexType>::~SurfaceMesh()	  
 	{
 	}
 
-	const std::vector<uint32_t>& SurfaceMesh::getIndices(void) const
+	template <typename VertexType>
+	const std::vector<uint32_t>& SurfaceMesh<VertexType>::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}
 
-	uint32_t SurfaceMesh::getNoOfIndices(void) const
+	template <typename VertexType>
+	uint32_t SurfaceMesh<VertexType>::getNoOfIndices(void) const
 	{
 		return m_vecTriangleIndices.size();
 	}	
 
-	uint32_t SurfaceMesh::getNoOfNonUniformTrianges(void) const
+	template <typename VertexType>
+	uint32_t SurfaceMesh<VertexType>::getNoOfNonUniformTrianges(void) const
 	{
 		uint32_t result = 0;
 		for(uint32_t i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
@@ -67,7 +70,8 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32_t SurfaceMesh::getNoOfUniformTrianges(void) const
+	template <typename VertexType>
+	uint32_t SurfaceMesh<VertexType>::getNoOfUniformTrianges(void) const
 	{
 		uint32_t result = 0;
 		for(uint32_t i = 0; i < m_vecTriangleIndices.size() - 2; i += 3)
@@ -81,22 +85,26 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32_t SurfaceMesh::getNoOfVertices(void) const
+	template <typename VertexType>
+	uint32_t SurfaceMesh<VertexType>::getNoOfVertices(void) const
 	{
 		return m_vecVertices.size();
 	}
 
-	std::vector<SurfaceVertex>& SurfaceMesh::getRawVertexData(void)
+	template <typename VertexType>
+	std::vector<VertexType>& SurfaceMesh<VertexType>::getRawVertexData(void)
 	{
 		return m_vecVertices;
 	}
 
-	const std::vector<SurfaceVertex>& SurfaceMesh::getVertices(void) const
+	template <typename VertexType>
+	const std::vector<VertexType>& SurfaceMesh<VertexType>::getVertices(void) const
 	{
 		return m_vecVertices;
 	}		
 
-	void SurfaceMesh::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
@@ -114,13 +122,23 @@ namespace PolyVox
 		}
 	}
 
-	uint32_t SurfaceMesh::addVertex(const SurfaceVertex& vertex)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2)
+	{
+		m_vecTriangleIndices.push_back(index0);
+		m_vecTriangleIndices.push_back(index1);
+		m_vecTriangleIndices.push_back(index2);
+	}
+
+	template <typename VertexType>
+	uint32_t SurfaceMesh<VertexType>::addVertex(const VertexType& vertex)
 	{
 		m_vecVertices.push_back(vertex);
 		return m_vecVertices.size() - 1;
 	}
 
-	void SurfaceMesh::clear(void)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::clear(void)
 	{
 		m_vecVertices.clear();
 		m_vecTriangleIndices.clear();
@@ -128,7 +146,8 @@ namespace PolyVox
 		m_mapUsedMaterials.clear();
 	}
 
-	const bool SurfaceMesh::isEmpty(void) const
+	template <typename VertexType>
+	const bool SurfaceMesh<VertexType>::isEmpty(void) const
 	{
 		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
 	}
@@ -144,7 +163,8 @@ namespace PolyVox
 	/// SurfaceMesh should be smoothed. This can cause dicontinuities between
 	/// neighbouring patches.
 	////////////////////////////////////////////////////////////////////////////////
-	void SurfaceMesh::smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -162,13 +182,13 @@ namespace PolyVox
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
 		{
 			//Get the vertex data for the triangle
-			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v0 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v0New = newPositions[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v1 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v1New = newPositions[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v2 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v2New = newPositions[*iterIndex];
 			iterIndex++;
 
@@ -220,7 +240,8 @@ namespace PolyVox
 	/// vertex. Usually, the resulting normals should be renormalised afterwards.
 	/// Note: This function can cause lighting discontinuities accross region boundaries.
 	////////////////////////////////////////////////////////////////////////////////
-	void SurfaceMesh::sumNearbyNormals(bool bNormaliseResult)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::sumNearbyNormals(bool bNormaliseResult)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -234,13 +255,13 @@ namespace PolyVox
 
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
 		{
-			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v0 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v0New = summedNormals[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v1 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v1New = summedNormals[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v2 = m_vecVertices[*iterIndex];
 			Vector3DFloat& v2New = summedNormals[*iterIndex];
 			iterIndex++;
 
@@ -261,12 +282,13 @@ namespace PolyVox
 		}
 	}
 
-	void SurfaceMesh::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
 	{
 		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
 
 		//Initially zero the normals
-		for(vector<SurfaceVertex>::iterator iterVertex = m_vecVertices.begin(); iterVertex != m_vecVertices.end(); iterVertex++)
+		for(vector<PositionMaterialNormal>::iterator iterVertex = m_vecVertices.begin(); iterVertex != m_vecVertices.end(); iterVertex++)
 		{
 			if(m_Region.containsPoint(iterVertex->getPosition() + offset, 0.001))
 			{
@@ -276,11 +298,11 @@ namespace PolyVox
 
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
 		{
-			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v0 = m_vecVertices[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v1 = m_vecVertices[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v2 = m_vecVertices[*iterIndex];
 			iterIndex++;
 
 			Vector3DFloat triangleNormal = (v1.getPosition()-v0.getPosition()).cross(v2.getPosition()-v0.getPosition());
@@ -301,7 +323,7 @@ namespace PolyVox
 
 		if(bNormalise)
 		{
-			for(vector<SurfaceVertex>::iterator iterVertex = m_vecVertices.begin(); iterVertex != m_vecVertices.end(); iterVertex++)
+			for(vector<PositionMaterialNormal>::iterator iterVertex = m_vecVertices.begin(); iterVertex != m_vecVertices.end(); iterVertex++)
 			{
 				Vector3DFloat normal = iterVertex->getNormal();
 				normal.normalise();
@@ -312,7 +334,8 @@ namespace PolyVox
 
 	//This function looks at every vertex in the mesh and determines
 	//how many of it's neighbours have the same material.
-	void SurfaceMesh::countNoOfNeighboursUsingMaterial(void)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::countNoOfNeighboursUsingMaterial(void)
 	{
 		//Find all the neighbouring vertices for each vertex
 		std::vector< std::set<int> > neighbouringVertices(m_vecVertices.size());
@@ -347,9 +370,10 @@ namespace PolyVox
 		}
 	}
 
-	polyvox_shared_ptr<SurfaceMesh> SurfaceMesh::extractSubset(std::set<uint8_t> setMaterials)
+	template <typename VertexType>
+	polyvox_shared_ptr< SurfaceMesh<VertexType> > SurfaceMesh<VertexType>::extractSubset(std::set<uint8_t> setMaterials)
 	{
-		polyvox_shared_ptr<SurfaceMesh> result(new SurfaceMesh);
+		polyvox_shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
 
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -369,9 +393,9 @@ namespace PolyVox
 		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt += 3)
 		{
 
-			SurfaceVertex& v0 = m_vecVertices[m_vecTriangleIndices[triCt]];
-			SurfaceVertex& v1 = m_vecVertices[m_vecTriangleIndices[triCt + 1]];
-			SurfaceVertex& v2 = m_vecVertices[m_vecTriangleIndices[triCt + 2]];
+			PositionMaterialNormal& v0 = m_vecVertices[m_vecTriangleIndices[triCt]];
+			PositionMaterialNormal& v1 = m_vecVertices[m_vecTriangleIndices[triCt + 1]];
+			PositionMaterialNormal& v2 = m_vecVertices[m_vecTriangleIndices[triCt + 2]];
 
 			if(
 				(setMaterials.find(v0.getMaterial()) != setMaterials.end()) || 
@@ -427,18 +451,18 @@ namespace PolyVox
 
 	void SurfaceMesh::growMaterialBoundary(void)
 	{
-		std::vector<SurfaceVertex> vecNewVertices = m_vecVertices;
+		std::vector<PositionMaterialNormal> vecNewVertices = m_vecVertices;
 
 		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
 		{
-			SurfaceVertex& v0 = m_vecVertices[*iterIndex];
-			SurfaceVertex& v0New = vecNewVertices[*iterIndex];
+			PositionMaterialNormal& v0 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v0New = vecNewVertices[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v1 = m_vecVertices[*iterIndex];
-			SurfaceVertex& v1New = vecNewVertices[*iterIndex];
+			PositionMaterialNormal& v1 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v1New = vecNewVertices[*iterIndex];
 			iterIndex++;
-			SurfaceVertex& v2 = m_vecVertices[*iterIndex];
-			SurfaceVertex& v2New = vecNewVertices[*iterIndex];
+			PositionMaterialNormal& v2 = m_vecVertices[*iterIndex];
+			PositionMaterialNormal& v2New = vecNewVertices[*iterIndex];
 			iterIndex++;
 
 			if(v0.m_bIsMaterialEdgeVertex || v1.m_bIsMaterialEdgeVertex || v2.m_bIsMaterialEdgeVertex)
@@ -452,7 +476,8 @@ namespace PolyVox
 		m_vecVertices = vecNewVertices;
 	}*/
 
-	void SurfaceMesh::decimate(float fMinDotProductForCollapse)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::decimate(float fMinDotProductForCollapse)
 	{
 		// We will need the information from this function to
 		// determine when material boundary edges can collapse.
@@ -474,7 +499,8 @@ namespace PolyVox
 	}
 
 	// Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.
-	bool SurfaceMesh::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
+	template <typename VertexType>
+	bool SurfaceMesh<VertexType>::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
 	{
 		bool result = true;
 
@@ -493,7 +519,8 @@ namespace PolyVox
 		return result;
 	}
 
-	uint32_t SurfaceMesh::performDecimationPass(float fMinDotProductForCollapse)
+	template <typename VertexType>
+	uint32_t SurfaceMesh<VertexType>::performDecimationPass(float fMinDotProductForCollapse)
 	{
 		// I'm using a vector of lists here, rather than a vector of sets,
 		// because I don't believe that duplicaes should occur. But this
@@ -782,7 +809,8 @@ namespace PolyVox
 		return noOfEdgesCollapsed;
 	}
 
-	int SurfaceMesh::noOfDegenerateTris(void)
+	template <typename VertexType>
+	int SurfaceMesh<VertexType>::noOfDegenerateTris(void)
 	{
 		int count = 0;
 		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
@@ -802,7 +830,8 @@ namespace PolyVox
 		return count;
 	}
 
-	void SurfaceMesh::removeDegenerateTris(void)
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::removeDegenerateTris(void)
 	{
 		int noOfNonDegenerate = 0;
 		int targetCt = 0;

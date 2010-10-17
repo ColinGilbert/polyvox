@@ -42,7 +42,8 @@ namespace PolyVox
 		int endIndex; //Let's put it just past the end STL style
 	};
 
-	class POLYVOXCORE_API SurfaceMesh
+	template <typename VertexType>
+	class SurfaceMesh
 	{
 	public:
 	   SurfaceMesh();
@@ -53,26 +54,21 @@ namespace PolyVox
 	   uint32_t getNoOfNonUniformTrianges(void) const;
 	   uint32_t getNoOfUniformTrianges(void) const;
 	   uint32_t getNoOfVertices(void) const;	   
-	   std::vector<SurfaceVertex>& getRawVertexData(void); //FIXME - this should be removed
-	   const std::vector<SurfaceVertex>& getVertices(void) const;
+	   std::vector<VertexType>& getRawVertexData(void); //FIXME - this should be removed
+	   const std::vector<VertexType>& getVertices(void) const;
 
 	   void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
-	   uint32_t addVertex(const SurfaceVertex& vertex);
+	   void addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2);
+	   uint32_t addVertex(const VertexType& vertex);
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
 	   void smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices = false);
 	   void sumNearbyNormals(bool bNormaliseResult = true);
 
-	   polyvox_shared_ptr<SurfaceMesh> extractSubset(std::set<uint8_t> setMaterials);
+	   polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
-	   
-
-	   //Vector3DInt32 m_v3dRegionPosition; //FIXME - remove this?
-
-	   /*void growMaterialBoundary(void);
-	   int countMaterialBoundary(void);*/
 
 	   bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
 
@@ -90,7 +86,7 @@ namespace PolyVox
 	
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
-		std::vector<SurfaceVertex> m_vecVertices;
+		std::vector<VertexType> m_vecVertices;
 
 		std::vector<LodRecord> m_vecLodRecords;
 
@@ -106,5 +102,7 @@ namespace PolyVox
 		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
 	};	
 }
+
+#include "SurfaceMesh.inl"
 
 #endif /* __SurfaceMesh_H__ */

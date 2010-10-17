@@ -37,7 +37,7 @@ namespace PolyVox
 	{
 	public:
 		MeshVertex();
-		SurfaceVertex m_vertexData;
+		PositionMaterialNormal m_vertexData;
 		//MeshEdge* m_pEdge;
 		//std::set<MeshFace*> m_faces;
 		//std::set<MeshEdge*> m_edges; //Edges which have this vertex as the src

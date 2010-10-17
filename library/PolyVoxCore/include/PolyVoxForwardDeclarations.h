@@ -77,9 +77,10 @@ namespace PolyVox
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits> class MaterialDensityPair;
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 
-	class SurfaceMesh;
+	template <typename VertexType> class SurfaceMesh;
 	class Region;
-	class SurfaceVertex;
+	class PositionMaterial;
+	class PositionMaterialNormal;
 	template <typename VoxelType> class CubicSurfaceExtractor;
 	template <typename VoxelType> class SurfaceExtractor;
 

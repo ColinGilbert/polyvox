@@ -44,12 +44,28 @@ namespace PolyVox
 		VF_NO_OF_FLAGS
 	};
 
-	class POLYVOXCORE_API SurfaceVertex
+	class POLYVOXCORE_API PositionMaterial
 	{
 	public:	
-		SurfaceVertex();
-		SurfaceVertex(Vector3DFloat positionToSet, float materialToSet);
-		SurfaceVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet);	
+		PositionMaterial();
+		PositionMaterial(Vector3DFloat positionToSet, float materialToSet);
+
+		float getMaterial(void) const;
+		const Vector3DFloat& getPosition(void) const;
+
+		void setMaterial(float materialToSet);
+		void setPosition(const Vector3DFloat& positionToSet);
+	public:		
+		Vector3DFloat position;
+		float material;
+	};	
+
+	class POLYVOXCORE_API PositionMaterialNormal
+	{
+	public:	
+		PositionMaterialNormal();
+		PositionMaterialNormal(Vector3DFloat positionToSet, float materialToSet);
+		PositionMaterialNormal(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet);	
 
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
@@ -83,11 +99,6 @@ namespace PolyVox
 		float material; //FIXME: This shouldn't be float on CPU?
 		std::bitset<VF_NO_OF_FLAGS> m_bFlags;	
 	};
-
-	
-	
-
-	//bool operator < (const SurfaceVertexIterator& lhs, const SurfaceVertexIterator& rhs);
 }
 
 #endif

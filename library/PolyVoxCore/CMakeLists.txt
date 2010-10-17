@@ -6,7 +6,6 @@ PROJECT(PolyVoxCore)
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/GradientEstimators.cpp
-	source/SurfaceMesh.cpp
 	source/Log.cpp
 	source/Mesh.cpp
 	source/MeshEdge.cpp
@@ -24,6 +23,8 @@ SET(CORE_INC_FILES
 	include/ArraySizes.h
 	include/CubicSurfaceExtractor.h
 	include/CubicSurfaceExtractor.inl
+	include/CubicSurfaceExtractorWithNormals.h
+	include/CubicSurfaceExtractorWithNormals.inl
 	include/Filters.h
 	include/Filters.inl
 	include/GradientEstimators.inl
@@ -39,6 +40,7 @@ SET(CORE_INC_FILES
 	include/SurfaceExtractor.h
 	include/SurfaceExtractor.inl
 	include/SurfaceMesh.h
+	include/SurfaceMesh.inl
 	include/SurfaceVertex.h
 	include/Vector.h
 	include/Vector.inl

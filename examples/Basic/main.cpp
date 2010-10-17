@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #include "OpenGLWidget.h"
 
 #include "MaterialDensityPair.h"
-#include "SurfaceExtractor.h"
+#include "CubicSurfaceExtractorWithNormals.h"
 #include "SurfaceMesh.h"
 #include "Volume.h"
 
@@ -82,8 +82,8 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface
-	SurfaceMesh mesh;
-	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	SurfaceMesh<PositionMaterialNormal> mesh;
+	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window

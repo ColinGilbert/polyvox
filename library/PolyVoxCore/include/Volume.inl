@@ -66,12 +66,12 @@ namespace PolyVox
 	{
 	}
 
-	template <typename VoxelType>
 	////////////////////////////////////////////////////////////////////////////////
 	/// The border value is returned whenever an atempt is made to read a voxel which
 	/// is outside the extents of the volume.
 	/// \return The value used for voxels outside of the volume
 	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getBorderValue(void) const
 	{
 		return m_pBorderBlock->getVoxelAt(0,0,0);

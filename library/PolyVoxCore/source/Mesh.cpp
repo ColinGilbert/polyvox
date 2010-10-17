@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	void Mesh::buildFromMesh(SurfaceMesh* pMesh)
+	void Mesh::buildFromMesh(SurfaceMesh<PositionMaterialNormal>* pMesh)
 	{
 		//First we copy the vertices across.
 		//We also keep track of where each vertex went
@@ -186,7 +186,7 @@ namespace PolyVox
 		}
 	}
 
-	void Mesh::fillMesh(SurfaceMesh* pMesh)
+	void Mesh::fillMesh(SurfaceMesh<PositionMaterialNormal>* pMesh)
 	{
 		pMesh->clear();
 

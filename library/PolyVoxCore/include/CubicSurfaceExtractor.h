@@ -35,7 +35,7 @@ namespace PolyVox
 	class CubicSurfaceExtractor
 	{
 	public:
-		CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh* result);
+		CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
 
 		void execute();
 
@@ -45,7 +45,7 @@ namespace PolyVox
 		VolumeSampler<VoxelType> m_sampVolume;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh* m_meshCurrent;
+		SurfaceMesh<PositionMaterial>* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;

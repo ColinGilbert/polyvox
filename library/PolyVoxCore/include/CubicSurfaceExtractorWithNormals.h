@@ -21,39 +21,38 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Mesh_H__
-#define __PolyVox_Mesh_H__
+#ifndef __PolyVox_CubicSurfaceExtractorWithNormals_H__
+#define __PolyVox_CubicSurfaceExtractorWithNormals_H__
 
-#include "MeshEdge.h"
-#include "MeshFace.h"
-#include "MeshVertex.h"
+#include "PolyVoxForwardDeclarations.h"
+#include "VolumeSampler.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 
-#include <set>
-
 namespace PolyVox
 {
-	class POLYVOXCORE_API Mesh
+	template <typename VoxelType>
+	class CubicSurfaceExtractorWithNormals
 	{
 	public:
+		CubicSurfaceExtractorWithNormals(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
 
-		void buildFromMesh(SurfaceMesh<PositionMaterialNormal>* pMesh);
-		void fillMesh(SurfaceMesh<PositionMaterialNormal>* pMesh);
-		void matchEdgePairs(void);
-		void computeEdgeCosts(void);
+		void execute();
 
-		void removeEdge(MeshEdge* pMeshEdge);
+	private:
+		//The volume data and a sampler to access it.
+		Volume<VoxelType>* m_volData;
+		VolumeSampler<VoxelType> m_sampVolume;
 
-		void decimateAll(void);
-		bool decimateOne(void);
+		//The surface patch we are currently filling.
+		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;
 
-		bool isSane(void);
-
-		std::set<MeshEdge*> m_edges;
-		std::set<MeshFace*> m_faces;
-		std::set<MeshVertex*> m_vertices;
+		//Information about the region we are currently processing
+		Region m_regSizeInVoxels;
+		Region m_regSizeInCells;
 	};
 }
+
+#include "CubicSurfaceExtractorWithNormals.inl"
 
 #endif
