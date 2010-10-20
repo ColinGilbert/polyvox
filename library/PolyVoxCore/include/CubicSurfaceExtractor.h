@@ -45,7 +45,7 @@ namespace PolyVox
 
 		void execute();
 
-		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial);
+		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
 
 	private:
 		//The volume data and a sampler to access it.
@@ -59,7 +59,14 @@ namespace PolyVox
 		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
 
-		Array<4, IndexAndMaterial> m_vertices;
+		//Array<4, IndexAndMaterial> m_vertices;
+		Array<3, IndexAndMaterial> m_previousSliceVertices;
+		Array<3, IndexAndMaterial> m_currentSliceVertices;
+
+		//Although we try to avoid creating multiple vertices at the same location, sometimes this is unavoidable
+		//if they have different materials. For example, four different materials next to each other would mean
+		//four quads (though more triangles) sharing the vertex. As far as I can tell, four is the worst case scenario.
+		static const uint32_t MaxQuadsSharingVertex;
 	};
 }
 

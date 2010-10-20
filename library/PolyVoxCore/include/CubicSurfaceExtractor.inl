@@ -30,6 +30,9 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
+	const uint32_t CubicSurfaceExtractor<VoxelType>::MaxQuadsSharingVertex = 4;
+
+	template <typename VoxelType>
 	CubicSurfaceExtractor<VoxelType>::CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
@@ -46,9 +49,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void CubicSurfaceExtractor<VoxelType>::execute()
 	{		
-		uint32_t arraySize[4]= {m_regSizeInVoxels.width()+2, m_regSizeInVoxels.height()+2, m_regSizeInVoxels.depth()+2, 4};
-		m_vertices.resize(arraySize);
-		memset(m_vertices.getRawData(), 0xff, m_vertices.getNoOfElements() * sizeof(IndexAndMaterial));
+		uint32_t arraySize[3]= {m_regSizeInVoxels.width()+2, m_regSizeInVoxels.height()+2, MaxQuadsSharingVertex};
+		m_previousSliceVertices.resize(arraySize);
+		m_currentSliceVertices.resize(arraySize);
+		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
+		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 
 		for(uint16_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
 		{
@@ -79,10 +84,10 @@ namespace PolyVox
 						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
 						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));*/
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material);
-						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material);
-						uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material);
-						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material);
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+						uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
 
 						if(currentVoxelIsSolid > negXVoxelIsSolid)
 						{
@@ -103,10 +108,10 @@ namespace PolyVox
 					{
 						int material = std::max(currentVoxel.getMaterial(),negYVoxel.getMaterial());
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material);
-						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material);
-						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material);
-						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material);
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
 
 						if(currentVoxelIsSolid > negYVoxelIsSolid)
 						{
@@ -127,10 +132,10 @@ namespace PolyVox
 					{
 						int material = std::max(currentVoxel.getMaterial(), negZVoxel.getMaterial());
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material);
-						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material);
-						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material);
-						uint32_t v3 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material);
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v3 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
 
 						if(currentVoxelIsSolid > negZVoxelIsSolid)
 						{		
@@ -145,6 +150,9 @@ namespace PolyVox
 					}
 				}
 			}
+
+			m_previousSliceVertices.swap(m_currentSliceVertices);
+			memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		}
 
 		m_meshCurrent->m_Region = m_regSizeInVoxels;
@@ -157,15 +165,15 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn)
+	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		uint16_t uX = static_cast<uint16_t>(fX + 0.75f);
 		uint16_t uY = static_cast<uint16_t>(fY + 0.75f);
 		uint16_t uZ = static_cast<uint16_t>(fZ + 0.75f);
 
-		for(int ct = 0; ct < 16; ct++)
+		for(int ct = 0; ct < MaxQuadsSharingVertex; ct++)
 		{
-			IndexAndMaterial& rEntry = m_vertices[uX][uY][uZ][ct];
+			IndexAndMaterial& rEntry = existingVertices[uX][uY][ct];
 
 			int32_t iIndex = static_cast<int32_t>(rEntry.iIndex);
 			uint8_t uMaterial = static_cast<uint8_t>(rEntry.uMaterial);
