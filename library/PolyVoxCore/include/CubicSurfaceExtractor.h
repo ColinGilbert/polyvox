@@ -33,8 +33,8 @@ namespace PolyVox
 {
 	struct IndexAndMaterial
 	{
-		int32_t iIndex;
-		uint8_t uMaterial;
+		int32_t iIndex    : 24;
+		int32_t uMaterial : 8;
 	};
 
 	template <typename VoxelType>

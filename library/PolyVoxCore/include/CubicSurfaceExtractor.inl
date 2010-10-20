@@ -157,31 +157,34 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterial)
+	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn)
 	{
 		uint16_t uX = static_cast<uint16_t>(fX + 0.75f);
 		uint16_t uY = static_cast<uint16_t>(fY + 0.75f);
 		uint16_t uZ = static_cast<uint16_t>(fZ + 0.75f);
 
-		//uint32_t index = uX + (uY * (m_regSizeInVoxels.width()+2)) + (uZ * (m_regSizeInVoxels.height()+2) * (m_regSizeInVoxels.height()+2));
-
 		for(int ct = 0; ct < 16; ct++)
 		{
-			if(m_vertices[uX][uY][uZ][ct].iIndex != -1)
-			{
-				//We have a vertex here, check if the material matches
-				if(m_vertices[uX][uY][uZ][ct].uMaterial == uMaterial)
-				{
-					//Yep, this is our vertex. Return it.
-					return m_vertices[uX][uY][uZ][ct].iIndex;
-				}
+			IndexAndMaterial& rEntry = m_vertices[uX][uY][uZ][ct];
+
+			int32_t iIndex = static_cast<int32_t>(rEntry.iIndex);
+			uint8_t uMaterial = static_cast<uint8_t>(rEntry.uMaterial);
+
+			//If we have an existing vertex and the material matches then we can return it.
+			if((iIndex != -1) && (uMaterial == uMaterialIn))
+			{				
+				return iIndex;
 			}
 			else
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex.
-				uint32_t temp = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(fX, fY, fZ), uMaterial));
-				m_vertices[uX][uY][uZ][ct].iIndex = temp;
-				m_vertices[uX][uY][uZ][ct].uMaterial = uMaterial;
+				uint32_t temp = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(fX, fY, fZ), uMaterialIn));
+
+				//Note - Slightly dodgy casting taking place here. No proper way to convert to 24-bit int though?
+				//If problematic in future then fix IndexAndMaterial to contain variables rather than bitfield.
+				rEntry.iIndex = temp;
+				rEntry.uMaterial = uMaterialIn;
+
 				return temp;
 			}
 		}
