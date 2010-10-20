@@ -31,6 +31,12 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	struct IndexAndMaterial
+	{
+		int32_t iIndex;
+		uint8_t uMaterial;
+	};
+
 	template <typename VoxelType>
 	class CubicSurfaceExtractor
 	{
@@ -38,6 +44,8 @@ namespace PolyVox
 		CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
 
 		void execute();
+
+		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial);
 
 	private:
 		//The volume data and a sampler to access it.
@@ -50,6 +58,8 @@ namespace PolyVox
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
+
+		Array<4, IndexAndMaterial> m_vertices;
 	};
 }
 

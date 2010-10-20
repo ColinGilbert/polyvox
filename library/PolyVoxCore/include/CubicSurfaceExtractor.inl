@@ -46,94 +46,102 @@ namespace PolyVox
 	template <typename VoxelType>
 	void CubicSurfaceExtractor<VoxelType>::execute()
 	{		
-		for(uint16_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z < m_regSizeInVoxels.getUpperCorner().getZ(); z++)
+		uint32_t arraySize[4]= {m_regSizeInVoxels.width()+2, m_regSizeInVoxels.height()+2, m_regSizeInVoxels.depth()+2, 4};
+		m_vertices.resize(arraySize);
+		memset(m_vertices.getRawData(), 0xff, m_vertices.getNoOfElements() * sizeof(IndexAndMaterial));
+
+		for(uint16_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
 		{
-			for(uint16_t y = m_regSizeInVoxels.getLowerCorner().getY(); y < m_regSizeInVoxels.getUpperCorner().getY(); y++)
+			for(uint16_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY() + 1; y++)
 			{
-				for(uint16_t x = m_regSizeInVoxels.getLowerCorner().getX(); x < m_regSizeInVoxels.getUpperCorner().getX(); x++)
+				for(uint16_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX() + 1; x++)
 				{
 					uint16_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
 					uint16_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
 					uint16_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
 
-					int currentVoxel = m_volData->getVoxelAt(x,y,z).getDensity() >= VoxelType::getThreshold();
+					bool finalX = (x == m_regSizeInVoxels.getUpperCorner().getX() + 1);
+					bool finalY = (y == m_regSizeInVoxels.getUpperCorner().getY() + 1);
+					bool finalZ = (z == m_regSizeInVoxels.getUpperCorner().getZ() + 1);
 
-					int plusXVoxel = m_volData->getVoxelAt(x+1,y,z).getDensity()  >= VoxelType::getThreshold();
-					if(currentVoxel > plusXVoxel)
+					VoxelType currentVoxel = m_volData->getVoxelAt(x,y,z);
+					bool currentVoxelIsSolid = currentVoxel.getDensity() >= VoxelType::getThreshold();
+
+					VoxelType negXVoxel = m_volData->getVoxelAt(x-1,y,z);
+					bool negXVoxelIsSolid = negXVoxel.getDensity()  >= VoxelType::getThreshold();
+
+					if((currentVoxelIsSolid != negXVoxelIsSolid) && (finalY == false) && (finalZ == false))
 					{
-						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
+						int material = std::max(currentVoxel.getMaterial(), negXVoxel.getMaterial());
 
-						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
+						/*uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ - 0.5f), material));
+						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), material));
+						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
+						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));*/
 
-						m_meshCurrent->addTriangleCubic(v0,v2,v1);
-						m_meshCurrent->addTriangleCubic(v1,v2,v3);
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material);
+						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material);
+						uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material);
+						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material);
+
+						if(currentVoxelIsSolid > negXVoxelIsSolid)
+						{
+							m_meshCurrent->addTriangleCubic(v0,v1,v2);
+							m_meshCurrent->addTriangleCubic(v1,v3,v2);
+						}
+						else
+						{
+							m_meshCurrent->addTriangleCubic(v0,v2,v1);
+							m_meshCurrent->addTriangleCubic(v1,v2,v3);
+						}
+					}	
+
+					VoxelType negYVoxel = m_volData->getVoxelAt(x,y-1,z);
+					bool negYVoxelIsSolid = negYVoxel.getDensity()  >= VoxelType::getThreshold();
+
+					if((currentVoxelIsSolid != negYVoxelIsSolid) && (finalX == false) && (finalZ == false))
+					{
+						int material = std::max(currentVoxel.getMaterial(),negYVoxel.getMaterial());
+
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material);
+						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material);
+						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material);
+						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material);
+
+						if(currentVoxelIsSolid > negYVoxelIsSolid)
+						{
+							m_meshCurrent->addTriangleCubic(v0,v2,v1);
+							m_meshCurrent->addTriangleCubic(v1,v2,v3);
+						}
+						else
+						{
+							m_meshCurrent->addTriangleCubic(v0,v1,v2);
+							m_meshCurrent->addTriangleCubic(v1,v3,v2);
+						}
 					}
-					if(currentVoxel < plusXVoxel)
+
+					VoxelType negZVoxel = m_volData->getVoxelAt(x,y,z-1);
+					bool negZVoxelIsSolid = negZVoxel.getDensity()  >= VoxelType::getThreshold();
+
+					if((currentVoxelIsSolid != negZVoxelIsSolid) && (finalX == false) && (finalY == false))
 					{
-						int material = m_volData->getVoxelAt(x+1,y,z).getMaterial();
+						int material = std::max(currentVoxel.getMaterial(), negZVoxel.getMaterial());
 
-						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material);
+						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material);
+						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material);
+						uint32_t v3 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material);
 
-						m_meshCurrent->addTriangleCubic(v0,v1,v2);
-						m_meshCurrent->addTriangleCubic(v1,v3,v2);
-					}
-
-					int plusYVoxel = m_volData->getVoxelAt(x,y+1,z).getDensity()  >= VoxelType::getThreshold();
-					if(currentVoxel > plusYVoxel)
-					{
-						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
-
-						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
-
-						m_meshCurrent->addTriangleCubic(v0,v1,v2);
-						m_meshCurrent->addTriangleCubic(v1,v3,v2);
-					}
-					if(currentVoxel < plusYVoxel)
-					{
-						int material = m_volData->getVoxelAt(x,y+1,z).getMaterial();
-
-						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ - 0.5f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
-
-						m_meshCurrent->addTriangleCubic(v0,v2,v1);
-						m_meshCurrent->addTriangleCubic(v1,v2,v3);
-					}
-
-					int plusZVoxel = m_volData->getVoxelAt(x,y,z+1).getDensity()  >= VoxelType::getThreshold();
-					if(currentVoxel > plusZVoxel)
-					{
-						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
-
-						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
-
-						m_meshCurrent->addTriangleCubic(v0,v2,v1);
-						m_meshCurrent->addTriangleCubic(v1,v2,v3);
-					}
-					if(currentVoxel < plusZVoxel)
-					{
-						int material = m_volData->getVoxelAt(x,y,z+1).getMaterial();
-
-						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), material));
-						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));
-						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), material));
-						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX + 0.5f, regY + 0.5f, regZ + 0.5f), material));
-
-						m_meshCurrent->addTriangleCubic(v0,v1,v2);
-						m_meshCurrent->addTriangleCubic(v1,v3,v2);
+						if(currentVoxelIsSolid > negZVoxelIsSolid)
+						{		
+							m_meshCurrent->addTriangleCubic(v0,v1,v2);
+							m_meshCurrent->addTriangleCubic(v1,v3,v2);
+						}
+						else
+						{
+							m_meshCurrent->addTriangleCubic(v0,v2,v1);
+							m_meshCurrent->addTriangleCubic(v1,v2,v3);
+						}
 					}
 				}
 			}
@@ -146,5 +154,41 @@ namespace PolyVox
 		lodRecord.beginIndex = 0;
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
+	}
+
+	template <typename VoxelType>
+	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterial)
+	{
+		uint16_t uX = static_cast<uint16_t>(fX + 0.75f);
+		uint16_t uY = static_cast<uint16_t>(fY + 0.75f);
+		uint16_t uZ = static_cast<uint16_t>(fZ + 0.75f);
+
+		//uint32_t index = uX + (uY * (m_regSizeInVoxels.width()+2)) + (uZ * (m_regSizeInVoxels.height()+2) * (m_regSizeInVoxels.height()+2));
+
+		for(int ct = 0; ct < 16; ct++)
+		{
+			if(m_vertices[uX][uY][uZ][ct].iIndex != -1)
+			{
+				//We have a vertex here, check if the material matches
+				if(m_vertices[uX][uY][uZ][ct].uMaterial == uMaterial)
+				{
+					//Yep, this is our vertex. Return it.
+					return m_vertices[uX][uY][uZ][ct].iIndex;
+				}
+			}
+			else
+			{
+				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex.
+				uint32_t temp = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(fX, fY, fZ), uMaterial));
+				m_vertices[uX][uY][uZ][ct].iIndex = temp;
+				m_vertices[uX][uY][uZ][ct].uMaterial = uMaterial;
+				return temp;
+			}
+		}
+
+		//If we exit the loop here then apparently all the slots were full but none of
+		//them matched. I don't think this can happen so let's put an assert to make sure.
+		assert(false); 
+		return 0;
 	}
 }
