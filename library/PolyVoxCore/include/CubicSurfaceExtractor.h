@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_CubicSurfaceExtractor_H__
 #define __PolyVox_CubicSurfaceExtractor_H__
 
+#include "Array.h"
 #include "PolyVoxForwardDeclarations.h"
 #include "VolumeSampler.h"
 

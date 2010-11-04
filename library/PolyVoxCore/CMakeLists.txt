@@ -25,12 +25,13 @@ SET(CORE_INC_FILES
 	include/CubicSurfaceExtractor.inl
 	include/CubicSurfaceExtractorWithNormals.h
 	include/CubicSurfaceExtractorWithNormals.inl
+	include/Density.h
 	include/Filters.h
 	include/Filters.inl
 	include/GradientEstimators.inl
 	include/Log.h
+	include/Material.h
 	include/MaterialDensityPair.h
-	include/MaterialDensityPair.inl
 	include/Mesh.h
 	include/MeshEdge.h
 	include/MeshFace.h

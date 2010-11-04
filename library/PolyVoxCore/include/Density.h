@@ -36,36 +36,30 @@ namespace PolyVox
 	/// function is used to determine if a voxel is 'solid', and if it is then the getMaterial()
 	/// funtion is used to determine what material should be assigned to the resulting mesh.
 	///
-	/// This class meets these requirements, and does so by storing and returning both a material
-	/// and a density value. Via the template parameters it is possible to control how much
-	/// precision is given to each. For example, if you create a class with 8 bits of storage,
-	/// you might choose to allocate 6 bits for the density and 2 bits for the material.
+	/// This class meets these requirements, although it only actually stores a density value.
+	/// For the getMaterial() function it just returens a constant value of '1'.
 	///
-	/// \sa Density, Material
+	/// \sa Material, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
-	class MaterialDensityPair
+	template <typename Type>
+	class Density
 	{
 	public:
-		MaterialDensityPair() : m_uMaterial(0), m_uDensity(0) {}
-		MaterialDensityPair(Type uMaterial, Type uDensity) : m_uMaterial(uMaterial), m_uDensity(uDensity) {}
+		Density() : m_uDensity(0) {}
+		Density(Type uDensity) : m_uDensity(uDensity) {}
 
-		bool operator==(const MaterialDensityPair& rhs) const throw()
+		bool operator==(const Density& rhs) const throw()
 		{
-			return (m_uMaterial == rhs.m_uMaterial) && (m_uDensity == rhs.m_uDensity);
+			return (m_uDensity == rhs.m_uDensity);
 		};
 
-		bool operator!=(const MaterialDensityPair& rhs) const throw()
+		bool operator!=(const Density& rhs) const throw()
 		{
 			return !(*this == rhs);
 		}
 
-		bool operator<(const MaterialDensityPair& rhs) const throw()
+		bool operator<(const Density& rhs) const throw()
 		{
-			if (m_uMaterial < rhs.m_uMaterial)
-				return true;
-			if (rhs.m_uMaterial < m_uMaterial)
-				return false;
 			if (m_uDensity < rhs.m_uDensity)
 				return true;
 			if (rhs.m_uDensity < m_uDensity)
@@ -75,21 +69,20 @@ namespace PolyVox
 		}
 
 		Type getDensity() const throw() { return m_uDensity; }
-		Type getMaterial() const throw() { return m_uMaterial; }
+		Type getMaterial() const throw() { return 1; }
 
 		void setDensity(Type uDensity) { m_uDensity = uDensity; }
-		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
+		void setMaterial(Type uMaterial) { assert("Cannot set material on voxel of type 'Density'"); }
 
-		static Type getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
+		static Type getMaxDensity() throw() { return (0x01 << (sizeof(Type) * 8)) - 1; } 
 		static Type getMinDensity() throw() { return 0; }
-		static Type getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
+		static Type getThreshold() throw() {return  0x01 << ((sizeof(Type) * 8) - 1);}
 
 	private:
-		Type m_uMaterial : NoOfMaterialBits;
-		Type m_uDensity : NoOfDensityBits;
+		Type m_uDensity;
 	};
 
-	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
+	typedef Density<uint8_t> Density8;
 }
 
 #endif
