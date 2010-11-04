@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
 #ifndef __PolyVox_SubArray_H__
@@ -66,7 +66,7 @@ namespace PolyVox
 		ElementType & operator [] (uint32_t uIndex);
 
 		const ElementType & operator [] (uint32_t uIndex) const;
-		
+
 	private:
 		SubArray<1, ElementType>(ElementType * pElements, uint32_t * pDimensions, uint32_t * /*pOffsets*/);
 

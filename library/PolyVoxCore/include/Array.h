@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
 #ifndef __PolyVox_Array_H__
@@ -35,7 +35,7 @@ namespace PolyVox
 	/// While C++ provides one-dimensional arrays as a language feature, it does not
 	/// provide a simple and intuitive way of working with multidimensional arrays
 	/// whose sizes are specified at runtime. Such a construct is very useful within
-	/// the context of PolyVox, and this Array class provides such functionality 
+	/// the context of PolyVox, and this Array class provides such functionality
 	/// implemented via templates and partial specialisation.
 	///
 	/// The following code snippet illustrates the basic usage of the class by writing
@@ -132,7 +132,7 @@ namespace PolyVox
 		void resize(const uint32_t (&pDimensions)[1]);
 
 		void swap(Array<1, ElementType>& rhs);
-		
+
 	private:
 		Array<1, ElementType>(const Array<1, ElementType>& rhs);
 

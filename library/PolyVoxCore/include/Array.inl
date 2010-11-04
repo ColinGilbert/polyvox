@@ -18,7 +18,7 @@ appreciated but is not required.
 misrepresented as being the original software.
 
 3. This notice may not be removed or altered from any source
-distribution. 	
+distribution.
 *******************************************************************************/
 
 namespace PolyVox
@@ -29,12 +29,12 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>::Array()
-		:m_pElements(0)
-		,m_pDimensions(0)
+		:m_pDimensions(0)
 		,m_pOffsets(0)
 		,m_uNoOfElements(0)
+		,m_pElements(0)
 	{
-	} 
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Creates an array with the specified dimensions.
@@ -44,13 +44,13 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>::Array(const uint32_t (&pDimensions)[noOfDims])
-		:m_pElements(0)
-		,m_pDimensions(0)
+		:m_pDimensions(0)
 		,m_pOffsets(0)
 		,m_uNoOfElements(0)
+		,m_pElements(0)
 	{
 		resize(pDimensions);
-	} 
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Destroys the array and releases all owned memory.
@@ -64,8 +64,8 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// An N-dimensional array can be conceptually consists of N subarrays each of which
 	/// has N-1 dimensions. For example, a 3D array conceptually consists of three 2D
-	/// arrays. This operator is used to access the subarray at the specified index. 
-	/// Crucially, the subarray defines a similar operator allowing them to be chained 
+	/// arrays. This operator is used to access the subarray at the specified index.
+	/// Crucially, the subarray defines a similar operator allowing them to be chained
 	/// together to convieniently access a particular element.
 	/// \param uIndex The zero-based index of the subarray to retrieve.
 	/// \return The requested SubArray
@@ -82,8 +82,8 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// An N-dimensional array can be conceptually consists of N subarrays each of which
 	/// has N-1 dimensions. For example, a 3D array conceptually consists of three 2D
-	/// arrays. This operator is used to access the subarray at the specified index. 
-	/// Crucially, the subarray defines a similar operator allowing them to be chained 
+	/// arrays. This operator is used to access the subarray at the specified index.
+	/// Crucially, the subarray defines a similar operator allowing them to be chained
 	/// together to convieniently access a particular element.
 	/// \param uIndex The zero-based index of the subarray to retrieve.
 	/// \return The requested SubArray
@@ -108,7 +108,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Sometimes it is useful to directly manipulate the underlying array without 
+	/// Sometimes it is useful to directly manipulate the underlying array without
 	/// going through this classes interface. Although this does not honour the principle
 	/// of encapsulation it can be done safely if you are careful and can sometimes be
 	/// useful. Use getNoOfElements() to determine how far you can safely write.
@@ -123,7 +123,7 @@ namespace PolyVox
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Please note that the existing contents of the array will be lost.
-	/// \param pDimensions The new dimensions of the array. You can also use the 
+	/// \param pDimensions The new dimensions of the array. You can also use the
 	/// ArraySizes class to specify this more easily.
 	/// \sa ArraySizes
 	////////////////////////////////////////////////////////////////////////////////
@@ -141,15 +141,15 @@ namespace PolyVox
 		{
 			assert(pDimensions[i] != 0);
 
-			m_uNoOfElements *= pDimensions[i]; 
+			m_uNoOfElements *= pDimensions[i];
 			m_pDimensions[i] = pDimensions[i];
-			m_pOffsets[i] = 1; 
-			for (int k=noOfDims-1; k>i; k--)
+			m_pOffsets[i] = 1;
+			for (uint32_t k=noOfDims-1; k>i; k--)
 			{
 				m_pOffsets[i] *= pDimensions[k];
 			}
-		} 
-		// Allocate new elements, let exception propagate 
+		}
+		// Allocate new elements, let exception propagate
 		m_pElements = new ElementType[m_uNoOfElements];
 	}
 
@@ -198,7 +198,7 @@ namespace PolyVox
 		assert(false);
 
 		return *this;
-	} 
+	}
 
 	template <uint32_t noOfDims, typename ElementType>
 	void Array<noOfDims, ElementType>::deallocate(void)
@@ -222,7 +222,7 @@ namespace PolyVox
 		: m_pElements(0)
 		,m_pDimensions(0)
 	{
-	} 
+	}
 
 	template <typename ElementType>
 	Array<1, ElementType>::Array(const uint32_t (&pDimensions)[1])
@@ -269,10 +269,10 @@ namespace PolyVox
 	{
 		deallocate();
 
-		m_pDimensions = new uint32_t[1];			
+		m_pDimensions = new uint32_t[1];
 		m_pDimensions[0] = pDimensions[0];
 
-		// Allocate new elements, let exception propagate 
+		// Allocate new elements, let exception propagate
 		m_pElements = new ElementType[m_pDimensions[0]];
 	}
 
@@ -307,7 +307,7 @@ namespace PolyVox
 		assert(false);
 
 		return *this;
-	} 
+	}
 
 	template <typename ElementType>
 	void Array<1, ElementType>::deallocate(void)

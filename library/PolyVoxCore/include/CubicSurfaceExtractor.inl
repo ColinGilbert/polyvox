@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
 #include "Array.h"
@@ -48,7 +48,7 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	void CubicSurfaceExtractor<VoxelType>::execute()
-	{		
+	{
 		uint32_t arraySize[3]= {m_regSizeInVoxels.width()+2, m_regSizeInVoxels.height()+2, MaxQuadsSharingVertex};
 		m_previousSliceVertices.resize(arraySize);
 		m_currentSliceVertices.resize(arraySize);
@@ -99,7 +99,7 @@ namespace PolyVox
 							m_meshCurrent->addTriangleCubic(v0,v2,v1);
 							m_meshCurrent->addTriangleCubic(v1,v2,v3);
 						}
-					}	
+					}
 
 					VoxelType negYVoxel = m_volData->getVoxelAt(x,y-1,z);
 					bool negYVoxelIsSolid = negYVoxel.getDensity()  >= VoxelType::getThreshold();
@@ -138,7 +138,7 @@ namespace PolyVox
 						uint32_t v3 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
 
 						if(currentVoxelIsSolid > negZVoxelIsSolid)
-						{		
+						{
 							m_meshCurrent->addTriangleCubic(v0,v1,v2);
 							m_meshCurrent->addTriangleCubic(v1,v3,v2);
 						}
@@ -169,9 +169,8 @@ namespace PolyVox
 	{
 		uint16_t uX = static_cast<uint16_t>(fX + 0.75f);
 		uint16_t uY = static_cast<uint16_t>(fY + 0.75f);
-		uint16_t uZ = static_cast<uint16_t>(fZ + 0.75f);
 
-		for(int ct = 0; ct < MaxQuadsSharingVertex; ct++)
+		for(uint32_t ct = 0; ct < MaxQuadsSharingVertex; ct++)
 		{
 			IndexAndMaterial& rEntry = existingVertices[uX][uY][ct];
 
@@ -180,7 +179,7 @@ namespace PolyVox
 
 			//If we have an existing vertex and the material matches then we can return it.
 			if((iIndex != -1) && (uMaterial == uMaterialIn))
-			{				
+			{
 				return iIndex;
 			}
 			else
@@ -199,7 +198,7 @@ namespace PolyVox
 
 		//If we exit the loop here then apparently all the slots were full but none of
 		//them matched. I don't think this can happen so let's put an assert to make sure.
-		assert(false); 
+		assert(false);
 		return 0;
 	}
 }

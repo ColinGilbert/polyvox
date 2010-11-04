@@ -45,10 +45,10 @@ namespace PolyVox
 
 	template <uint32_t noOfDims, typename ElementType>
 	SubArray<noOfDims, ElementType>::SubArray(ElementType * pElements, uint32_t * pDimensions, uint32_t * pOffsets)
-		:m_pElements(pElements)
-		,m_pDimensions(pDimensions)
+		:m_pDimensions(pDimensions)
 		,m_pOffsets(pOffsets)
 		,m_uNoOfElements(0)
+		,m_pElements(pElements)
 	{
 	} 
 

@@ -18,7 +18,7 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
 #ifndef __PolyVox_CubicSurfaceExtractor_H__
@@ -53,12 +53,12 @@ namespace PolyVox
 		Volume<VoxelType>* m_volData;
 		VolumeSampler<VoxelType> m_sampVolume;
 
-		//The surface patch we are currently filling.
-		SurfaceMesh<PositionMaterial>* m_meshCurrent;
-
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
+
+		//The surface patch we are currently filling.
+		SurfaceMesh<PositionMaterial>* m_meshCurrent;
 
 		//Array<4, IndexAndMaterial> m_vertices;
 		Array<3, IndexAndMaterial> m_previousSliceVertices;
