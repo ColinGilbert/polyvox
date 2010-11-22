@@ -322,10 +322,10 @@ namespace PolyVox
 			throw std::invalid_argument("Block side length cannot be greater than volume depth.");
 		}
 
-		//Empty the previous data
-		m_pBlocks.empty();
-		m_vecBlockIsPotentiallyHomogenous.empty();
-		m_pHomogenousBlock.empty();
+		//Clear the previous data
+		m_pBlocks.clear();
+		m_vecBlockIsPotentiallyHomogenous.clear();
+		m_pHomogenousBlock.clear();
 
 		//Compute the volume side lengths
 		m_uWidth = uWidth;
