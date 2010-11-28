@@ -27,6 +27,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
 
+#include <cassert>
+
 namespace PolyVox
 {
 	///This class represents a voxel storing only a material.
