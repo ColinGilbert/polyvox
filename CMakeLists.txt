@@ -24,6 +24,13 @@ IF(WIN32)
 	#SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 ENDIF(WIN32)
 
+if(MSVC AND (MSVC_VERSION LESS 1600))
+	# Require boost for older (pre-vc2010) Visual Studio compilers
+	# See library/include/polyvoximpl/TypeDef.h
+	find_package(Boost REQUIRED)
+	include_directories(${Boost_INCLUDE_DIRS})
+endif()
+
 IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 ENDIF()

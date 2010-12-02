@@ -39,19 +39,21 @@ freely, subject to the following restrictions:
 
 //Check which compiler we are using and work around unsupported features as necessary.
 #if defined(_MSC_VER) && (_MSC_VER < 1600) 
-	//To support old Microsoft compilers we use boost to replace the std::shared_ptr
-	//and potentially other C++0x features. To use this capability you will need to
-	//make sure you have boost installed on your system.
-	#include "boost/smart_ptr.hpp"
+	//To support old (pre-vc2010) Microsoft compilers we use boost to replace the
+	//std::shared_ptr and potentially other C++0x features. To use this capability you
+	//will need to make sure you have boost installed on your system.
+	#include <boost/smart_ptr.hpp>
 	#define polyvox_shared_ptr boost::shared_ptr
 
-	//We also need to define these types as cstdint isn't available
-	typedef char int8_t;
-	typedef short int16_t;
-	typedef long int32_t;
-	typedef unsigned char uint8_t;
-	typedef unsigned short uint16_t;
-	typedef unsigned long uint32_t;
+	//As long as we're requiring boost, we'll use it to compensate
+	//for the missing cstdint header too.
+	#include <boost/cstdint.hpp>
+	using boost::int8_t;
+	using boost::int16_t;
+	using boost::int32_t;
+	using boost::uint8_t;
+	using boost::uint16_t;
+	using boost::uint32_t;
 #else
 	//We have a decent compiler - use real C++0x features
 	#include <cstdint>
