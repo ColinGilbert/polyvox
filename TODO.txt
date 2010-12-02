@@ -1,3 +1,10 @@
+Discussed on forums
+===================
+Implement RLE compressor, and use it for blocks in memory and saving to disk.
+Replace shared_ptr's with intrinsic_ptrs?
+Make decimator work with cubic mesh
+Raycaster.
+
 Short term
 ==========
 Sort awkward use of 'offset'
