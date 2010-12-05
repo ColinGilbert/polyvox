@@ -41,8 +41,8 @@ namespace PolyVox
 		void setLowerCorner(const Vector3DInt16& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt16& v3dUpperCorner);
 
-		bool containsPoint(const Vector3DFloat& pos, float boundary) const;
-		bool containsPoint(const Vector3DInt16& pos, uint8_t boundary) const;
+		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
+		bool containsPoint(const Vector3DInt16& pos, uint8_t boundary = 0) const;
 		void cropTo(const Region& other);
 		int16_t depth(void) const;
 		int16_t height(void) const;
