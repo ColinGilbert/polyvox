@@ -5,6 +5,7 @@ PROJECT(PolyVoxCore)
 #Projects source files
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
+	source/AStarPathfinder.cpp
 	source/GradientEstimators.cpp
 	source/Log.cpp
 	source/Mesh.cpp
@@ -21,6 +22,8 @@ SET(CORE_INC_FILES
 	include/Array.h
 	include/Array.inl
 	include/ArraySizes.h
+	include/AStarPathfinder.h
+	include/AStarPathfinder.inl
 	include/CubicSurfaceExtractor.h
 	include/CubicSurfaceExtractor.inl
 	include/CubicSurfaceExtractorWithNormals.h
@@ -60,6 +63,7 @@ SET(IMPL_SRC_FILES
 SET(IMPL_INC_FILES
 	include/PolyVoxImpl/ArraySizesImpl.h
 	include/PolyVoxImpl/ArraySizesImpl.inl
+	include/PolyVoxImpl/AStarPathfinderImpl.h
 	include/PolyVoxImpl/Block.h
 	include/PolyVoxImpl/Block.inl
 	include/PolyVoxImpl/MarchingCubesTables.h
