@@ -45,6 +45,13 @@ freely, subject to the following restrictions:
 	#include <boost/smart_ptr.hpp>
 	#define polyvox_shared_ptr boost::shared_ptr
 
+	#include <boost/functional.hpp>
+	#define polyvox_function boost::function
+
+	#include <boost/functional/hash.hpp>
+	#define polyvox_hash boost::hash
+
+
 	//As long as we're requiring boost, we'll use it to compensate
 	//for the missing cstdint header too.
 	#include <boost/cstdint.hpp>
@@ -57,8 +64,11 @@ freely, subject to the following restrictions:
 #else
 	//We have a decent compiler - use real C++0x features
 	#include <cstdint>
+	#include <functional>
 	#include <memory>
 	#define polyvox_shared_ptr std::shared_ptr
+	#define polyvox_function std::function
+	#define polyvox_hash std::hash
 #endif
 
 #endif

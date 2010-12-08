@@ -264,7 +264,10 @@ namespace PolyVox
 		array[0] = abs(a.getX() - b.getX());
 		array[1] = abs(a.getY() - b.getY());
 		array[2] = abs(a.getZ() - b.getZ());
-
+		
+		//Maybe this is better implemented directly
+		//using three compares and two swaps... but not
+		//until the profiler says so.
 		std::sort(&array[0], &array[3]);
 
 		uint16_t cornerSteps = array[0];
@@ -303,20 +306,22 @@ namespace PolyVox
 		//Apply the bias to the computed h value;
 		hVal *= m_params.hBias;
 
-		std::hash<uint32_t> uint32Hash;
-
+		//Having computed hVal, we now apply some random bias to break ties.
+		//This needs to be deterministic on the input position. This random
+		//bias means it is much les likely that two paths are exactly the same
+		//length, and so far fewer nodes must be expanded to find the shortest path.
+		//See http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S12
+		polyvox_hash<uint32_t> uint32Hash;
 		uint32_t hashValX = uint32Hash(a.getX());
 		uint32_t hashValY = uint32Hash(a.getY());
 		uint32_t hashValZ = uint32Hash(a.getZ());
-
 		uint32_t hashVal = hashValX ^ hashValY ^ hashValZ;
-
+		//Stop hashVal going over 65535, and divide by 1000000 to make sure it is small.
 		hashVal &= 0x0000FFFF;
-
 		float fHash = hashVal / 1000000.0f;
 
+		//Apply the hash and return
 		hVal += fHash;
-
 		return hVal;
 	}
 }

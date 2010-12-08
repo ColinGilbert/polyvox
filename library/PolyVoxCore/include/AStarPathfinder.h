@@ -32,8 +32,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxImpl/TypeDef.h"
 
-#include <functional>
-
 namespace PolyVox
 {
 	const float sqrt_1 = 1.0f;
@@ -60,8 +58,8 @@ namespace PolyVox
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
 			Connectivity connectivity = TwentySixConnected,
-			std::function<bool (const Volume<VoxelType>*, const Vector3DInt16&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
-			std::function<void (float)> funcProgressCallback = 0
+			polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt16&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
+			polyvox_function<void (float)> funcProgressCallback = 0
 		)
 			:volume(volData)
 			,start(v3dStart)
@@ -94,10 +92,10 @@ namespace PolyVox
 		uint32_t maxNumberOfNodes;
 
 		//Used to determine whether a given voxel is valid.
-		std::function<bool (const Volume<VoxelType>*, const Vector3DInt16&)> isVoxelValidForPath;
+		polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt16&)> isVoxelValidForPath;
 
 		//Progress callback
-		std::function<void (float)> progressCallback;
+		polyvox_function<void (float)> progressCallback;
 	};
 
 	template <typename VoxelType>
