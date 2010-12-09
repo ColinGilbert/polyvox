@@ -69,13 +69,15 @@ namespace PolyVox
 		//Clear the result
 		m_params.result->clear();
 
+		//Iterators to start and end node.
 		AllNodesContainer::iterator startNode = allNodes.insert(Node(m_params.start.getX(), m_params.start.getY(), m_params.start.getZ())).first;
 		AllNodesContainer::iterator endNode = allNodes.insert(Node(m_params.end.getX(), m_params.end.getY(), m_params.end.getZ())).first;
 
-		/*Node::startPos = startNode->position;
-		Node::endPos = endNode->position;
-		Node::m_eConnectivity = m_eConnectivity;*/
-
+		//Regarding the const_cast - normally you should not modify an object which is in an sdt::set.
+		//The reason is that objects in a set are stored sorted in a tree so they can be accessed quickly,
+		//and changing the object directly can break the sorting. However, in our case we have provided a
+		//custom sort operator for the set which we know only uses the position to sort. Hence we can safely
+		//modify other properties of the object while it is in the set.
 		Node* tempStart = const_cast<Node*>(&(*startNode));
 		tempStart->gVal = 0;
 		tempStart->hVal = computeH(startNode->position, endNode->position);
@@ -170,6 +172,11 @@ namespace PolyVox
 		}
 		else
 		{
+			//Regarding the const_cast - normally you should not modify an object which is in an sdt::set.
+			//The reason is that objects in a set are stored sorted in a tree so they can be accessed quickly,
+			//and changing the object directly can break the sorting. However, in our case we have provided a
+			//custom sort operator for the set which we know only uses the position to sort. Hence we can safely
+			//modify other properties of the object while it is in the set.
 			Node* n = const_cast<Node*>(&(*endNode));
 			while(n != 0)
 			{
@@ -228,12 +235,14 @@ namespace PolyVox
 
 		if((openIter == openNodes.end()) && (closedIter == closedNodes.end()))
 		{
+			//Regarding the const_cast - normally you should not modify an object which is in an sdt::set.
+			//The reason is that objects in a set are stored sorted in a tree so they can be accessed quickly,
+			//and changing the object directly can break the sorting. However, in our case we have provided a
+			//custom sort operator for the set which we know only uses the position to sort. Hence we can safely
+			//modify other properties of the object while it is in the set.
 			Node* temp = const_cast<Node*>(&(*neighbour));
-
 			temp->gVal = cost;
-
 			openNodes.insert(neighbour);
-
 			temp->parent = const_cast<Node*>(&(*current));
 		}
 	}
