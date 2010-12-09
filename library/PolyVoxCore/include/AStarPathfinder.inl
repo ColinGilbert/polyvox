@@ -26,7 +26,9 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	// aStarDefaultVoxelValidator free function
+	/// Using this function, a voxel is considered valid for the path if it is inside the
+	/// volume and if its density is below that returned by the voxel's getDensity() function.
+	/// \return true is the voxel is valid for the path
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt16& v3dPos)
