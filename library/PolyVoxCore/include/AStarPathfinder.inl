@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 
 #include <cfloat> //For numeric_limits
 
+#include <Material.h>
+
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -168,7 +170,7 @@ namespace PolyVox
 		if((openNodes.empty()) || (openNodes.getFirst() != endNode))
 		{
 			//In this case we failed to find a valid path.
-			throw runtime_error("No path found");
+			throw std::runtime_error("No path found");
 		}
 		else
 		{
