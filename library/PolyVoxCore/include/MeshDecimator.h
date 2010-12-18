@@ -53,6 +53,10 @@ namespace PolyVox
 		vector< list<uint32_t> > trianglesUsingVertex;
 		vector<int> noOfDifferentNormals;
 
+		vector<uint64_t> materialKey;
+
+		vector<bool> hasDuplicate;
+
 		float fMinDotProductForCollapse;
 	};
 }

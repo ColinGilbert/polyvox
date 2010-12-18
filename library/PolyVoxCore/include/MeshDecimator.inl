@@ -57,8 +57,47 @@ namespace PolyVox
 	template <typename VertexType>
 	uint32_t MeshDecimator<VertexType>::performDecimationPass(float fMinDotProductForCollapse)
 	{
+		hasDuplicate.clear();
+		hasDuplicate.resize(m_pInputMesh->m_vecVertices.size());
+		std::fill(hasDuplicate.begin(), hasDuplicate.end(), false);
+		for(int outerCt = 0; outerCt < m_pInputMesh->m_vecVertices.size()-1; outerCt++)
+		{
+			for(int innerCt = outerCt+1; innerCt < m_pInputMesh->m_vecVertices.size(); innerCt++)
+			{
+				if((m_pInputMesh->m_vecVertices[innerCt].position - m_pInputMesh->m_vecVertices[outerCt].position).lengthSquared() < 0.001f)
+				{
+					hasDuplicate[innerCt] = true;
+					hasDuplicate[outerCt] = true;
+				}
+			}
+		}
+
+		int duplicates = 0;
+		for(int ct = 0; ct < hasDuplicate.size(); ct++)
+		{
+			if(hasDuplicate[ct])
+			{
+				duplicates++;
+			}
+		}
+		std::cout << duplicates << std::endl;
+		
+		materialKey.clear();
+		materialKey.resize(m_pInputMesh->m_vecVertices.size());
+		std::fill(materialKey.begin(), materialKey.end(), 0);
+		for(int ct = 0; ct < m_pInputMesh->m_vecTriangleIndices.size(); ct++)
+		{
+			uint32_t vertex = m_pInputMesh->m_vecTriangleIndices[ct];
+
+			//NOTE: uint8_t may not always be large engouh?
+			uint8_t uMaterial = m_pInputMesh->m_vecVertices[vertex].material;
+			materialKey[vertex] <<= 8;
+			materialKey[vertex] |= uMaterial;
+		}
+
+
 		// I'm using a vector of lists here, rather than a vector of sets,
-		// because I don't believe that duplicaes should occur. But this
+		// because I don't believe that duplicates should occur. But this
 		// might be worth checking if we have problems in the future.
 		trianglesUsingVertex.clear();
 		trianglesUsingVertex.resize(m_pInputMesh->m_vecVertices.size());
@@ -476,9 +515,45 @@ namespace PolyVox
 					return false;
 				}
 
+				/*if(materialKey[v0] != materialKey[v1])
+				{
+					return false;
+				}*/
+
+				/*if((hasDuplicate[v0]) || (hasDuplicate[v1]))
+				{
+					return false;
+				}*/
+
+				if(hasDuplicate[v0])
+				{
+					//if(!hasDuplicate[v1])
+					{
+						return false;
+					}
+				}
+
 				if(noOfDifferentNormals[v0] > noOfDifferentNormals[v1])
 				{
 					return false;
+				}
+
+				Vector3DFloat offset = static_cast<Vector3DFloat>(m_pInputMesh->m_Region.getLowerCorner());
+				bool v0Inside = m_pInputMesh->m_Region.containsPoint(m_pInputMesh->m_vecVertices[v0].getPosition() + offset);
+				bool v1Inside = m_pInputMesh->m_Region.containsPoint(m_pInputMesh->m_vecVertices[v1].getPosition() + offset);
+				if(v0Inside == false)
+				{
+					/*if(v1Inside == false)
+					{
+						if(noOfDifferentNormals[v0] > 1)
+						{
+							return false;
+						}
+					}
+					else*/
+					{
+						return false;
+					}
 				}
 
 				////////////////////////////////////////////////////////////////////////////////
