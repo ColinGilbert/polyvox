@@ -77,7 +77,7 @@ namespace PolyVox
 
 					if((currentVoxelIsSolid != negXVoxelIsSolid) && (finalY == false) && (finalZ == false))
 					{
-						int material = std::max(currentVoxel.getMaterial(), negXVoxel.getMaterial());
+						int material = (std::max)(currentVoxel.getMaterial(), negXVoxel.getMaterial());
 
 						/*uint32_t v0 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ - 0.5f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), material));
@@ -106,7 +106,7 @@ namespace PolyVox
 
 					if((currentVoxelIsSolid != negYVoxelIsSolid) && (finalX == false) && (finalZ == false))
 					{
-						int material = std::max(currentVoxel.getMaterial(),negYVoxel.getMaterial());
+						int material = (std::max)(currentVoxel.getMaterial(),negYVoxel.getMaterial());
 
 						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
 						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
@@ -130,7 +130,7 @@ namespace PolyVox
 
 					if((currentVoxelIsSolid != negZVoxelIsSolid) && (finalX == false) && (finalY == false))
 					{
-						int material = std::max(currentVoxel.getMaterial(), negZVoxel.getMaterial());
+						int material = (std::max)(currentVoxel.getMaterial(), negZVoxel.getMaterial());
 
 						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
 						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);

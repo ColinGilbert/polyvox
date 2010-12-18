@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include <cfloat> //For numeric_limits
-
 #include <Material.h>
 
 namespace PolyVox

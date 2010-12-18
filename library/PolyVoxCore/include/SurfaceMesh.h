@@ -70,13 +70,9 @@ namespace PolyVox
 
 	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 
-	   bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
-
-	   void decimate(float fMinDotProductForCollapse = 0.999f);
-
-	   uint32_t performDecimationPass(float fMinDotProductForCollapse);
 	   int noOfDegenerateTris(void);
 	   void removeDegenerateTris(void);
+	   void removeUnusedVertices(void);
 
 	   Region m_Region;
 
