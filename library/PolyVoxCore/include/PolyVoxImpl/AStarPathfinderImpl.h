@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "Vector.h"
 
-#include <cfloat> //For numeric_limits
+#include <limits> //For numeric_limits
 #include <set>
 #include <vector>
 
