@@ -34,3 +34,7 @@ ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
 # Volume tests
 CREATE_TEST(testvolume.h testvolume.cpp testvolume)
 ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
+
+# Material tests
+CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
+ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
