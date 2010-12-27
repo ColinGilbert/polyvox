@@ -1,10 +1,10 @@
 %module Vector
 %{
-#include "PolyVoxCore/Vector.h"
-//#include "PolyVoxCore/PolyVoxCStdInt.h"
+#include "Vector.h"
+//#include "PolyVoxCore/include/PolyVoxCStdInt.h"
 %}
 
-%include "PolyVoxCore/Vector.h"
+%include "Vector.h"
 
 %template(Vector3DFloat) PolyVox::Vector<3,float>;
 %template(Vector3DDouble) PolyVox::Vector<3,double>;
