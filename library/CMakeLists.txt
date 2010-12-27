@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(PolyVox)
 
+add_subdirectory(bindings)
 add_subdirectory(PolyVoxCore)
 add_subdirectory(PolyVoxUtil)
 

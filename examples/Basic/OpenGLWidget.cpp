@@ -36,15 +36,13 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 
 void OpenGLWidget::initializeGL()
 {
-#ifdef WIN32
-	//If we are on Windows we will need GLEW to access recent OpenGL functionality
+	//We need GLEW to access recent OpenGL functionality
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
 		/* Problem: glewInit failed, something is seriously wrong. */
-		std::cout << "Error: " << glewGetErrorString(err) << std::endl;
+		std::cout << "GLEW Error: " << glewGetErrorString(err) << std::endl;
 	}
-#endif
 
 	//Set up the clear colour
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);		

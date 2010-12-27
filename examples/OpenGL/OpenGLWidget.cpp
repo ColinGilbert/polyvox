@@ -162,15 +162,13 @@ void OpenGLWidget::initializeGL()
 	m_bUseOpenGLVertexBufferObjects = true;
 	if(m_bUseOpenGLVertexBufferObjects)
 	{
-#ifdef WIN32
-		//If we are on Windows we will need GLEW to access recent OpenGL functionality
+		//We need GLEW to access recent OpenGL functionality
 		GLenum err = glewInit();
 		if (GLEW_OK != err)
 		{
 			/* Problem: glewInit failed, something is seriously wrong. */
-			cout << "Error: " << glewGetErrorString(err) << endl;
+			cout << "GLEW Error: " << glewGetErrorString(err) << endl;
 		}
-#endif
 	}
 
 	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
