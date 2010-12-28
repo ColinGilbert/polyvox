@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MaterialDensityPair_H__
-#define __PolyVox_MaterialDensityPair_H__
+#ifndef __PolyVox_Material_H__
+#define __PolyVox_Material_H__
 
 #include "PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
@@ -100,4 +100,4 @@ namespace PolyVox
 	typedef Material<uint8_t> Material8;
 }
 
-#endif
+#endif //__PolyVox_Material_H__
