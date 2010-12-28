@@ -8,4 +8,8 @@
 //%include "PolyVoxCStdInt.i"
 //%include "Utility.i"
 //%include "PolyVoxForwardDeclarations.i" //Shouldn't be needed
+//
+%include "stdint.i"
 %include "Vector.i"
+%include "Region.i"
+%include "Volume.i"

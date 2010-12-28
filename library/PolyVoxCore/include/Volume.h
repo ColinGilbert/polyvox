@@ -153,7 +153,7 @@ namespace PolyVox
 
 		///Resises the volume to the specified dimensions
 		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
-		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = (std::numeric_limits<uint32_t>::max)());
+		void tidyUpMemory(uint32_t uNoOfBlocksToProcess = 1000000);
 
 	private:
 		polyvox_shared_ptr< Block<VoxelType> > getHomogenousBlock(VoxelType tHomogenousValue);

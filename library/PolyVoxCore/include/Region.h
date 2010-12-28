@@ -29,7 +29,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+#ifdef SWIG
+	class Region
+#else
 	class POLYVOXCORE_API Region
+#endif
 	{
 	public:
 		Region();
