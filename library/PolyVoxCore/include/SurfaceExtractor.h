@@ -71,9 +71,9 @@ namespace PolyVox
 		VolumeSampler<VoxelType> m_sampVolume;
 
 		//Holds a position in volume space.
-		uint16_t uXVolSpace;
-		uint16_t uYVolSpace;
-		uint16_t uZVolSpace;
+		int16_t iXVolSpace;
+		int16_t iYVolSpace;
+		int16_t iZVolSpace;
 
 		//Holds a position in region space.
 		uint16_t uXRegSpace;

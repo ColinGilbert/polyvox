@@ -36,7 +36,7 @@ namespace PolyVox
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
 	{
-		m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
+		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt16(1,1,1));
 
@@ -134,29 +134,29 @@ namespace PolyVox
 	{
 		m_uNoOfOccupiedCells = 0;
 
-		const uint16_t uMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
-		const uint16_t uMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
+		const int16_t iMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
+		const int16_t iMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
 
-		uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-		uZRegSpace = uZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
+		iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
+		uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
 
 		//Process the lower left corner
-		uYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
-		uXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
+		iYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
+		iXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
 
-		uXRegSpace = uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-		uYRegSpace = uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+		uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+		uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
-		m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+		m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
 		computeBitmaskForCell<false, false, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask);
 
 		//Process the edge where x is minimal.
-		uXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
-		m_sampVolume.setPosition(uXVolSpace, m_regSliceCurrent.getLowerCorner().getY(), uZVolSpace);
-		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + 1; uYVolSpace <= uMaxYVolSpace; uYVolSpace++)
+		iXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
+		m_sampVolume.setPosition(iXVolSpace, m_regSliceCurrent.getLowerCorner().getY(), iZVolSpace);
+		for(iYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + 1; iYVolSpace <= iMaxYVolSpace; iYVolSpace++)
 		{
-			uXRegSpace = uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-			uYRegSpace = uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+			uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+			uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
 			m_sampVolume.movePositiveY();
 
@@ -164,12 +164,12 @@ namespace PolyVox
 		}
 
 		//Process the edge where y is minimal.
-		uYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
-		m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), uYVolSpace, uZVolSpace);
-		for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + 1; uXVolSpace <= uMaxXVolSpace; uXVolSpace++)
+		iYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
+		m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), iYVolSpace, iZVolSpace);
+		for(iXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + 1; iXVolSpace <= iMaxXVolSpace; iXVolSpace++)
 		{	
-			uXRegSpace = uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-			uYRegSpace = uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+			uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+			uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
 			m_sampVolume.movePositiveX();
 
@@ -177,13 +177,13 @@ namespace PolyVox
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
-		for(uYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + 1; uYVolSpace <= uMaxYVolSpace; uYVolSpace++)
+		for(iYVolSpace = m_regSliceCurrent.getLowerCorner().getY() + 1; iYVolSpace <= iMaxYVolSpace; iYVolSpace++)
 		{
-			m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), uYVolSpace, uZVolSpace);
-			for(uXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + 1; uXVolSpace <= uMaxXVolSpace; uXVolSpace++)
+			m_sampVolume.setPosition(m_regSliceCurrent.getLowerCorner().getX(), iYVolSpace, iZVolSpace);
+			for(iXVolSpace = m_regSliceCurrent.getLowerCorner().getX() + 1; iXVolSpace <= iMaxXVolSpace; iXVolSpace++)
 			{	
-				uXRegSpace = uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-				uYRegSpace = uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+				uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+				uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
 				m_sampVolume.movePositiveX();
 
@@ -386,7 +386,7 @@ namespace PolyVox
 		}
 
 		//Save the bitmask
-		pCurrentBitmask[uXRegSpace][uYVolSpace- m_regSizeInVoxels.getLowerCorner().getY()] = iCubeIndex;
+		pCurrentBitmask[uXRegSpace][iYVolSpace- m_regSizeInVoxels.getLowerCorner().getY()] = iCubeIndex;
 
 		if(edgeTable[iCubeIndex] != 0)
 		{
@@ -400,27 +400,27 @@ namespace PolyVox
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
 	{
-		uint16_t uZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-		const uint16_t uZRegSpace = uZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
-		//bool isZEdge = ((uZVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getZ()) || (uZVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getZ()));
-		bool isNegZEdge = (uZVolSpace == m_regSizeInVoxels.getLowerCorner().getZ());
-		bool isPosZEdge = (uZVolSpace == m_regSizeInVoxels.getUpperCorner().getZ());
+		int16_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
+		const uint16_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
+		//bool isZEdge = ((iZVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getZ()) || (iZVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getZ()));
+		bool isNegZEdge = (iZVolSpace == m_regSizeInVoxels.getLowerCorner().getZ());
+		bool isPosZEdge = (iZVolSpace == m_regSizeInVoxels.getUpperCorner().getZ());
 
 		//Iterate over each cell in the region
-		for(uint16_t uYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); uYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); uYVolSpace++)
+		for(int16_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); iYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); iYVolSpace++)
 		{
-			const uint16_t uYRegSpace = uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
-			//bool isYEdge = ((uYVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getY()) || (uYVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getY()));
-			bool isNegYEdge = (uYVolSpace == m_regSizeInVoxels.getLowerCorner().getY());
-			bool isPosYEdge = (uYVolSpace == m_regSizeInVoxels.getUpperCorner().getY());
+			const uint16_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+			//bool isYEdge = ((iYVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getY()) || (iYVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getY()));
+			bool isNegYEdge = (iYVolSpace == m_regSizeInVoxels.getLowerCorner().getY());
+			bool isPosYEdge = (iYVolSpace == m_regSizeInVoxels.getUpperCorner().getY());
 
-			for(uint16_t uXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); uXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); uXVolSpace++)
+			for(int16_t iXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); iXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); iXVolSpace++)
 			{		
 				//Current position
-				const uint16_t uXRegSpace = uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-				//bool isXEdge = ((uXVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getX()) || (uXVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getX()));
-				bool isNegXEdge = (uXVolSpace == m_regSizeInVoxels.getLowerCorner().getX());
-				bool isPosXEdge = (uXVolSpace == m_regSizeInVoxels.getUpperCorner().getX());
+				const uint16_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+				//bool isXEdge = ((iXVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getX()) || (iXVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getX()));
+				bool isNegXEdge = (iXVolSpace == m_regSizeInVoxels.getLowerCorner().getX());
+				bool isPosXEdge = (iXVolSpace == m_regSizeInVoxels.getUpperCorner().getX());
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = pCurrentBitmask[uXRegSpace][uYRegSpace];
@@ -434,7 +434,7 @@ namespace PolyVox
 				//Check whether the generated vertex will lie on the edge of the region
 
 
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);
+				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
 				const VoxelType v000 = m_sampVolume.getVoxel();
 				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
@@ -449,7 +449,7 @@ namespace PolyVox
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
-					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()) + fInterp, static_cast<float>(uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regSizeInCells.getLowerCorner().getZ()));
+					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerCorner().getZ()));
 					//const Vector3DFloat v3dNormal(v000.getDensity() > v100.getDensity() ? 1.0f : -1.0f,0.0,0.0);
 
 					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
@@ -466,7 +466,7 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-					m_pCurrentVertexIndicesX[uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
+					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeX();
 				}
@@ -479,7 +479,7 @@ namespace PolyVox
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v010.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
-					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()) + fInterp, static_cast<float>(uZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()));
+					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()));
 					//const Vector3DFloat v3dNormal(0.0,v000.getDensity() > v010.getDensity() ? 1.0f : -1.0f,0.0);
 
 					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
@@ -496,7 +496,7 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-					m_pCurrentVertexIndicesY[uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
+					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeY();
 				}
@@ -509,7 +509,7 @@ namespace PolyVox
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v001.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
-					const Vector3DFloat v3dPosition(static_cast<float>(uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(uZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()) + fInterp);
+					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()) + fInterp);
 					//const Vector3DFloat v3dNormal(0.0,0.0,v000.getDensity() > v001.getDensity() ? 1.0f : -1.0f);
 
 					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
@@ -526,7 +526,7 @@ namespace PolyVox
 					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
 					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-					m_pCurrentVertexIndicesZ[uXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][uYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
+					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeZ();
 				}
@@ -652,12 +652,12 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
-		for(uint16_t uYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); uYVolSpace <= m_regSizeInCells.getUpperCorner().getY(); uYVolSpace++)
+		for(int16_t iYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); iYVolSpace <= m_regSizeInCells.getUpperCorner().getY(); iYVolSpace++)
 		{
-			for(uint16_t uXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); uXVolSpace <= m_regSizeInCells.getUpperCorner().getX(); uXVolSpace++)
+			for(int16_t iXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); iXVolSpace <= m_regSizeInCells.getUpperCorner().getX(); iXVolSpace++)
 			{		
-				uint16_t uZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
-				m_sampVolume.setPosition(uXVolSpace,uYVolSpace,uZVolSpace);	
+				int16_t iZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
+				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);	
 
 				//Current position
 				const uint16_t uXRegSpace = m_sampVolume.getPosX() - m_regSizeInVoxels.getLowerCorner().getX();
