@@ -36,6 +36,8 @@ SET(CORE_INC_FILES
 	include/Material.h
 	include/MaterialDensityPair.h
 	include/Mesh.h
+	include/MeshDecimator.h
+	include/MeshDecimator.inl
 	include/MeshEdge.h
 	include/MeshFace.h
 	include/MeshVertex.h

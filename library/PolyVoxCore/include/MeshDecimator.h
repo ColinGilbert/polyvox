@@ -24,8 +24,38 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MeshDecimator_H__
 #define __PolyVox_MeshDecimator_H__
 
+#include <bitset>
+
 namespace PolyVox
 {
+	enum POLYVOXCORE_API NormalFlags
+	{
+		NF_NORMAL_NEG_X,
+		NF_NORMAL_POS_X,
+		NF_NORMAL_NEG_Y,
+		NF_NORMAL_POS_Y,
+		NF_NORMAL_NEG_Z,
+		NF_NORMAL_POS_Z,
+		NF_NO_OF_FLAGS
+	};
+
+	enum Stages
+	{
+		STAGE_FACE,
+		STAGE_EDGE,
+		NO_OF_STAGES
+	};
+
+	struct VertexMetadata
+	{
+		bool hasDuplicate;
+		uint64_t materialKey;
+		list<uint32_t> trianglesUsingVertex;
+		int noOfDifferentNormals;
+		Vector3DFloat normal;
+		std::bitset<NF_NO_OF_FLAGS> m_bNormalFlags;
+	};
+
 	template <typename VertexType>
 	class MeshDecimator
 	{
@@ -35,12 +65,18 @@ namespace PolyVox
 		void execute();
 
 	private:
+
+		void fillVertexMetadata(std::vector<VertexMetadata>& vecVertexMetadata);
+
+		int countZeros(void);
+
 		SurfaceMesh<VertexType>* m_pInputMesh;
 		//SurfaceMesh<PositionMaterial>* pMeshOutput;
 
 		void countNoOfNeighboursUsingMaterial(void);
 		uint32_t performDecimationPass(float fMinDotProductForCollapse);
 		bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
+		bool isSubsetCubic(std::bitset<NF_NO_OF_FLAGS> a, std::bitset<NF_NO_OF_FLAGS> b);
 
 		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
 
@@ -50,14 +86,21 @@ namespace PolyVox
 		vector<bool> vertexLocked;
 		vector<uint32_t> vertexMapper;
 
-		vector< list<uint32_t> > trianglesUsingVertex;
-		vector<int> noOfDifferentNormals;
+		//vector< list<uint32_t> > trianglesUsingVertexCurrently;
 
-		vector<uint64_t> materialKey;
+		vector<int> vecOfTriCts;
+		vector<Vector3DFloat> vecOfTriNormals;
 
-		vector<bool> hasDuplicate;
+		int m_NoOfZeros;
+
+		//vector<int> noOfDifferentNormals;
+
+		vector<VertexMetadata> m_vecInitialVertexMetadata;
+		vector<VertexMetadata> m_vecCurrentVertexMetadata;
 
 		float fMinDotProductForCollapse;
+
+		uint8_t m_uStage;
 	};
 }
 
