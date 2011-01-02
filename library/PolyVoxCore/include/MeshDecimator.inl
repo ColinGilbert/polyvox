@@ -475,7 +475,7 @@ namespace PolyVox
 
 		////////////////////////////////////////////////////////////////////////////////
 		//The last test is whether we will flip any of the faces
-		if(collapseCausesFaceFlip(uSrc,uDst))
+		if(collapseChangesFaceNormals(uSrc,uDst, 0.9f))
 		{
 			return false;
 		}
@@ -519,25 +519,30 @@ namespace PolyVox
 	template <typename VertexType>
 	bool MeshDecimator<VertexType>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
+		if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 1) //Face
+		{
+			return true;
+		}
+
 		if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 3) //Corner
 		{
 			return false;
 		}
 
-		if(isSubsetCubic(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags, m_vecInitialVertexMetadata[uDst].m_bNormalFlags) == false)
+		if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 2) //Edge
 		{
-			return false;
-		}
+			if(isSubsetCubic(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags, m_vecInitialVertexMetadata[uDst].m_bNormalFlags) == false)
+			{
+				return false;
+			}
 
-		if(collapseCausesFaceFlip(uSrc, uDst))
-		{
-			return false;
-		}
+			if(collapseChangesFaceNormals(uSrc, uDst, 0.999f))
+			{
+				return false;
+			}
 
-		/*if(m_vecInitialVertexMetadata[uSrc].normal.dot(m_vecInitialVertexMetadata[v1].normal) < 0.999f)
-		{
-			return false;
-		}*/
+			return true;
+		}
 
 		return true;
 	}
@@ -545,6 +550,51 @@ namespace PolyVox
 	template <typename VertexType>
 	bool MeshDecimator<VertexType>::canCollapseRegionEdge(uint32_t uSrc, uint32_t uDst)
 	{
+		//return false;
+
+		if(m_vecInitialVertexMetadata[uDst].isOnRegionEdge)
+		{
+
+			int matchingCoordinates = 0;
+			if(abs(m_pInputMesh->m_vecVertices[uSrc].getPosition().getX() - m_pInputMesh->m_vecVertices[uDst].getPosition().getX()) < 0.001)
+			{
+				matchingCoordinates++;
+			}
+			if(abs(m_pInputMesh->m_vecVertices[uSrc].getPosition().getY() - m_pInputMesh->m_vecVertices[uDst].getPosition().getY()) < 0.001)
+			{
+				matchingCoordinates++;
+			}
+			if(abs(m_pInputMesh->m_vecVertices[uSrc].getPosition().getZ() - m_pInputMesh->m_vecVertices[uDst].getPosition().getZ()) < 0.001)
+			{
+				matchingCoordinates++;
+			}
+			if(matchingCoordinates != 2)
+			{
+				return false;
+			}
+
+			if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 3) //Corner
+			{
+				return false;
+			}
+
+			if(m_vecInitialVertexMetadata[uSrc].trianglesUsingVertex.size() != m_vecInitialVertexMetadata[uDst].trianglesUsingVertex.size()) //Corner
+			{
+				return false;
+			}
+
+			if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() != m_vecInitialVertexMetadata[uDst].m_bNormalFlags.count()) //Corner
+			{
+				return false;
+			}
+
+			if(isSubsetCubic(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags, m_vecInitialVertexMetadata[uDst].m_bNormalFlags) == false)
+			{
+				return false;
+			}
+
+			return !collapseChangesFaceNormals(uSrc, uDst, 0.999f);
+		}
 		return false;
 	}
 
@@ -555,7 +605,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType>
-	bool MeshDecimator<VertexType>::collapseCausesFaceFlip(uint32_t uSrc, uint32_t uDst)
+	bool MeshDecimator<VertexType>::collapseChangesFaceNormals(uint32_t uSrc, uint32_t uDst, float fThreshold)
 	{
 		bool faceFlipped = false;
 		//list<uint32_t> triangles = trianglesUsingVertexCurrently[v0];
@@ -596,7 +646,7 @@ namespace PolyVox
 				continue;
 			}
 
-			Vector3DFloat v0OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v0Old]].getPosition();
+			Vector3DFloat v0OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v0Old]].getPosition(); //Note: we need the vertex mapper here. These neighbouring vertices may have been moved.
 			Vector3DFloat v1OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v1Old]].getPosition();
 			Vector3DFloat v2OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v2Old]].getPosition();
 
@@ -622,7 +672,7 @@ namespace PolyVox
 			// the 0.0 to 0.9 (which should still let coplanar faces merge) but oddly nothing then merged. Investigate this.
 			float dotProduct = OldNormal.dot(NewNormal);
 			//cout << dotProduct << endl;
-			if(dotProduct < 0.9f)
+			if(dotProduct < fThreshold)
 			{
 				//cout << "   Face flipped!!" << endl;
 

@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 #include "GradientEstimators.h"
 #include "MaterialDensityPair.h"
 #include "SurfaceExtractor.h"
+#include "MeshDecimator.h"
 
 #include "Mesh.h"
 
@@ -124,6 +125,9 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 						//mesh->generateAveragedFaceNormals(true);
 
 						//mesh->decimate(0.999f);
+
+						MeshDecimator<PositionMaterialNormal> decimator(mesh.get());
+						decimator.execute();
 
 						//mesh->generateAveragedFaceNormals(true);
 						////////////////////////////////////////////////////////////////////////////////

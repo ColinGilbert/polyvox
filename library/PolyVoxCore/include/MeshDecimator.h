@@ -72,10 +72,10 @@ namespace PolyVox
 		bool isSubsetCubic(std::bitset<NF_NO_OF_FLAGS> a, std::bitset<NF_NO_OF_FLAGS> b);
 
 		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
-		bool canCollapseNormalEdge(uint32_t uSrc, uint32_t uDest);
-		bool canCollapseRegionEdge(uint32_t uSrc, uint32_t uDest);
-		bool canCollapseMaterialEdge(uint32_t uSrc, uint32_t uDest);
-		bool collapseCausesFaceFlip(uint32_t uSrc, uint32_t uDest);
+		bool canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst);
+		bool canCollapseRegionEdge(uint32_t uSrc, uint32_t uDst);
+		bool canCollapseMaterialEdge(uint32_t uSrc, uint32_t uDst);
+		bool collapseChangesFaceNormals(uint32_t uSrc, uint32_t uDst, float fThreshold);
 
 		//Data structures used during decimation
 		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
