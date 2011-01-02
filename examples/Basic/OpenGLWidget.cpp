@@ -52,19 +52,14 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);					
 	glDepthFunc(GL_LEQUAL);						
 
-	//Enable smooth lighting
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
+	//Anable smooth lighting
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 	glShadeModel(GL_SMOOTH);
 
 	//We'll be rendering with index/vertex arrays
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -75,7 +70,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 	//Set up the projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	float frustumSize = 16.0f; //Half the volume size
+	float frustumSize = 32.0f; //Half the volume size
 	float aspect = static_cast<float>(width()) / static_cast<float>(height());
 	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 1.0, 1000);
 }
@@ -91,7 +86,7 @@ void OpenGLWidget::paintGL()
 	glTranslatef(0.0f,0.0f,-100.0f); //Centre volume and move back
 	glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
 	glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
-	glTranslatef(-16.0f,-16.0f,-16.0f); //Centre volume and move back
+	glTranslatef(-32.0f,-32.0f,-32.0f); //Centre volume and move back
 
 	//Bind the index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
