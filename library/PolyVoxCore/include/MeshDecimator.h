@@ -39,13 +39,6 @@ namespace PolyVox
 		NF_NO_OF_FLAGS
 	};
 
-	enum Stages
-	{
-		STAGE_FACE,
-		STAGE_EDGE,
-		NO_OF_STAGES
-	};
-
 	struct VertexMetadata
 	{
 		bool hasDuplicate;
@@ -54,6 +47,8 @@ namespace PolyVox
 		int noOfDifferentNormals;
 		Vector3DFloat normal;
 		std::bitset<NF_NO_OF_FLAGS> m_bNormalFlags;
+		bool isOnRegionEdge;
+		bool isOnMaterialEdge;
 	};
 
 	template <typename VertexType>
@@ -68,8 +63,6 @@ namespace PolyVox
 
 		void fillVertexMetadata(std::vector<VertexMetadata>& vecVertexMetadata);
 
-		int countZeros(void);
-
 		SurfaceMesh<VertexType>* m_pInputMesh;
 		//SurfaceMesh<PositionMaterial>* pMeshOutput;
 
@@ -79,6 +72,10 @@ namespace PolyVox
 		bool isSubsetCubic(std::bitset<NF_NO_OF_FLAGS> a, std::bitset<NF_NO_OF_FLAGS> b);
 
 		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
+		bool canCollapseNormalEdge(uint32_t uSrc, uint32_t uDest);
+		bool canCollapseRegionEdge(uint32_t uSrc, uint32_t uDest);
+		bool canCollapseMaterialEdge(uint32_t uSrc, uint32_t uDest);
+		bool collapseCausesFaceFlip(uint32_t uSrc, uint32_t uDest);
 
 		//Data structures used during decimation
 		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
@@ -91,16 +88,12 @@ namespace PolyVox
 		vector<int> vecOfTriCts;
 		vector<Vector3DFloat> vecOfTriNormals;
 
-		int m_NoOfZeros;
-
 		//vector<int> noOfDifferentNormals;
 
 		vector<VertexMetadata> m_vecInitialVertexMetadata;
 		vector<VertexMetadata> m_vecCurrentVertexMetadata;
 
 		float fMinDotProductForCollapse;
-
-		uint8_t m_uStage;
 	};
 }
 
