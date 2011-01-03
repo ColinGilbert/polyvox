@@ -332,44 +332,6 @@ namespace PolyVox
 		}
 	}
 
-	//This function looks at every vertex in the mesh and determines
-	//how many of it's neighbours have the same material.
-	template <typename VertexType>
-	void SurfaceMesh<VertexType>::countNoOfNeighboursUsingMaterial(void)
-	{
-		//Find all the neighbouring vertices for each vertex
-		std::vector< std::set<int> > neighbouringVertices(m_vecVertices.size());
-		for(int triCt = 0; triCt < m_vecTriangleIndices.size() / 3; triCt++)
-		{
-			int v0 = m_vecTriangleIndices[(triCt * 3 + 0)];
-			int v1 = m_vecTriangleIndices[(triCt * 3 + 1)];
-			int v2 = m_vecTriangleIndices[(triCt * 3 + 2)];
-
-			neighbouringVertices[v0].insert(v1);
-			neighbouringVertices[v0].insert(v2);
-
-			neighbouringVertices[v1].insert(v0);
-			neighbouringVertices[v1].insert(v2);
-
-			neighbouringVertices[v2].insert(v0);
-			neighbouringVertices[v2].insert(v1);
-		}
-
-		//For each vertex, check how many neighbours have the same material
-		m_vecNoOfNeighboursUsingMaterial.resize(m_vecVertices.size());
-		for(int vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
-		{
-			m_vecNoOfNeighboursUsingMaterial[vertCt] = 0;
-			for(std::set<int>::iterator iter = neighbouringVertices[vertCt].begin(); iter != neighbouringVertices[vertCt].end(); iter++)
-			{
-				if(m_vecVertices[vertCt].getMaterial() == m_vecVertices[*iter].getMaterial())
-				{
-					m_vecNoOfNeighboursUsingMaterial[vertCt]++;
-				}
-			}
-		}
-	}
-
 	template <typename VertexType>
 	polyvox_shared_ptr< SurfaceMesh<VertexType> > SurfaceMesh<VertexType>::extractSubset(std::set<uint8_t> setMaterials)
 	{

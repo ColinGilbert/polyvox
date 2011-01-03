@@ -90,12 +90,6 @@ namespace PolyVox
 		//which cover a whole triangle are counted. Materials which only
 		//exist on a material boundary do not count.
 		std::set<uint8_t> m_mapUsedMaterials;
-
-	private:
-		void countNoOfNeighboursUsingMaterial(void);
-
-		//Data structures used during decimation
-		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
 	};	
 }
 

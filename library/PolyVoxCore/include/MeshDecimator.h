@@ -30,15 +30,9 @@ namespace PolyVox
 {
 	struct InitialVertexMetadata
 	{
-		list<uint32_t> trianglesUsingVertex;
 		Vector3DFloat normal;
-		bool isOnRegionEdge;
 		bool isOnMaterialEdge;
-	};
-
-	struct CurrentVertexMetadata
-	{
-		list<uint32_t> trianglesUsingVertex;
+		std::bitset<VF_NO_OF_FLAGS> vertexFlags;
 	};
 
 	struct Triangle
@@ -60,16 +54,14 @@ namespace PolyVox
 	private:
 
 		void fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecInitialVertexMetadata);
-		void fillCurrentVertexMetadata(std::vector<CurrentVertexMetadata>& vecCurrentVertexMetadata);
 
-		void buildTriangles(void);
+		void buildConnectivityData(void);
 
 		bool attemptEdgeCollapse(uint32_t uSrc, uint32_t uDest);
 
 		SurfaceMesh<VertexType>* m_pInputMesh;
 		//SurfaceMesh<PositionMaterial>* pMeshOutput;
 
-		void countNoOfNeighboursUsingMaterial(void);
 		uint32_t performDecimationPass(float fMinDotProductForCollapse);
 		bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
 
@@ -80,19 +72,14 @@ namespace PolyVox
 		bool collapseChangesFaceNormals(uint32_t uSrc, uint32_t uDst, float fThreshold);
 
 		//Data structures used during decimation
-		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
 
 		std::vector<bool> vertexLocked;
 		std::vector<uint32_t> vertexMapper;
 
-		//vector< list<uint32_t> > trianglesUsingVertexCurrently;
-
-		std::vector<int> vecOfTriCts;
-		std::vector<Vector3DFloat> vecOfTriNormals;
 		std::vector<Triangle> m_vecTriangles;
+		std::vector< list<uint32_t> > trianglesUsingVertex;
 
 		std::vector<InitialVertexMetadata> m_vecInitialVertexMetadata;
-		std::vector<CurrentVertexMetadata> m_vecCurrentVertexMetadata;
 
 		float fMinDotProductForCollapse;
 	};
