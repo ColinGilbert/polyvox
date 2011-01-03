@@ -38,7 +38,8 @@ namespace PolyVox
 		// determine when material boundary edges can collapse.
 		countNoOfNeighboursUsingMaterial();
 
-		fillVertexMetadata(m_vecInitialVertexMetadata);
+		buildTriangles();
+		fillInitialVertexMetadata(m_vecInitialVertexMetadata);
 
 		uint32_t noOfEdgesCollapsed;
 		do
@@ -57,64 +58,8 @@ namespace PolyVox
 	}
 
 	template <typename VertexType>
-	void MeshDecimator<VertexType>::fillVertexMetadata(std::vector<VertexMetadata>& vecVertexMetadata)
+	void MeshDecimator<VertexType>::buildTriangles(void)
 	{
-		vecVertexMetadata.clear();
-		vecVertexMetadata.resize(m_pInputMesh->m_vecVertices.size());
-		//Initialise the metadata
-		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
-		{
-			vecVertexMetadata[ct].hasDuplicate = false;
-			vecVertexMetadata[ct].materialKey = 0;
-			vecVertexMetadata[ct].trianglesUsingVertex.clear();
-			vecVertexMetadata[ct].noOfDifferentNormals = 0;
-			vecVertexMetadata[ct].normal.setElements(0,0,0);
-			vecVertexMetadata[ct].m_bNormalFlags.reset();
-			vecVertexMetadata[ct].isOnRegionEdge = false;
-			vecVertexMetadata[ct].isOnMaterialEdge = false;
-		}
-
-		//Determine triangles using each vertex
-		/*trianglesUsingVertex.clear();
-		trianglesUsingVertex.resize(m_pInputMesh->m_vecVertices.size());*/
-		for(int ct = 0; ct < m_pInputMesh->m_vecTriangleIndices.size(); ct++)
-		{
-			int triangle = ct / 3;
-
-			vecVertexMetadata[m_pInputMesh->m_vecTriangleIndices[ct]].trianglesUsingVertex.push_back(triangle);
-		}
-
-		/*hasDuplicate.clear();
-		hasDuplicate.resize(m_pInputMesh->m_vecVertices.size());
-		std::fill(hasDuplicate.begin(), hasDuplicate.end(), false);*/
-		for(int outerCt = 0; outerCt < m_pInputMesh->m_vecVertices.size()-1; outerCt++)
-		{
-			for(int innerCt = outerCt+1; innerCt < m_pInputMesh->m_vecVertices.size(); innerCt++)
-			{
-				if((m_pInputMesh->m_vecVertices[innerCt].position - m_pInputMesh->m_vecVertices[outerCt].position).lengthSquared() < 0.001f)
-				{
-					vecVertexMetadata[innerCt].hasDuplicate = true;
-					vecVertexMetadata[outerCt].hasDuplicate = true;
-
-					vecVertexMetadata[innerCt].isOnMaterialEdge = true;
-					vecVertexMetadata[outerCt].isOnMaterialEdge = true;
-				}
-			}
-		}
-		
-		/*materialKey.clear();
-		materialKey.resize(m_pInputMesh->m_vecVertices.size());
-		std::fill(materialKey.begin(), materialKey.end(), 0);*/
-		for(int ct = 0; ct < m_pInputMesh->m_vecTriangleIndices.size(); ct++)
-		{
-			uint32_t vertex = m_pInputMesh->m_vecTriangleIndices[ct];
-
-			//NOTE: uint8_t may not always be large engouh?
-			uint8_t uMaterial = m_pInputMesh->m_vecVertices[vertex].material;
-			vecVertexMetadata[vertex].materialKey <<= 8;
-			vecVertexMetadata[vertex].materialKey |= uMaterial;
-		}
-
 		// Each triangle exists in this vector once.
 		vecOfTriCts.clear();
 		vecOfTriCts.resize(m_pInputMesh->m_vecTriangleIndices.size() / 3);
@@ -143,6 +88,58 @@ namespace PolyVox
 			vecOfTriNormals[ct] = normal;
 		}
 
+		m_vecTriangles.clear();
+		m_vecTriangles.resize(m_pInputMesh->m_vecTriangleIndices.size() / 3);
+		for(int triCt = 0; triCt < m_vecTriangles.size(); triCt++)
+		{
+			m_vecTriangles[triCt].v0 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + 0];
+			m_vecTriangles[triCt].v1 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + 1];
+			m_vecTriangles[triCt].v2 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + 2];
+
+			Vector3DFloat v0Pos = m_pInputMesh->m_vecVertices[m_vecTriangles[triCt].v0].position;
+			Vector3DFloat v1Pos = m_pInputMesh->m_vecVertices[m_vecTriangles[triCt].v1].position;
+			Vector3DFloat v2Pos = m_pInputMesh->m_vecVertices[m_vecTriangles[triCt].v2].position;
+
+			Vector3DFloat v0v1 = v1Pos - v0Pos;
+			Vector3DFloat v0v2 = v2Pos - v0Pos;
+			Vector3DFloat normal = v0v1.cross(v0v2);
+			normal.normalise();
+
+			m_vecTriangles[triCt].normal = normal;
+		}
+	}
+
+	template <typename VertexType>
+	void MeshDecimator<VertexType>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
+	{
+		vecVertexMetadata.clear();
+		vecVertexMetadata.resize(m_pInputMesh->m_vecVertices.size());
+		//Initialise the metadata
+		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
+		{
+			vecVertexMetadata[ct].trianglesUsingVertex.clear();
+			vecVertexMetadata[ct].normal.setElements(0,0,0);
+			vecVertexMetadata[ct].isOnRegionEdge = false;
+			vecVertexMetadata[ct].isOnMaterialEdge = false;
+		}
+		
+		for(int ct = 0; ct < m_vecTriangles.size(); ct++)
+		{
+			vecVertexMetadata[m_vecTriangles[ct].v0].trianglesUsingVertex.push_back(ct);
+		}
+
+		for(int outerCt = 0; outerCt < m_pInputMesh->m_vecVertices.size()-1; outerCt++)
+		{
+			for(int innerCt = outerCt+1; innerCt < m_pInputMesh->m_vecVertices.size(); innerCt++)
+			{
+				if((m_pInputMesh->m_vecVertices[innerCt].position - m_pInputMesh->m_vecVertices[outerCt].position).lengthSquared() < 0.001f)
+				{							
+					vecVertexMetadata[innerCt].isOnMaterialEdge = true;
+					vecVertexMetadata[outerCt].isOnMaterialEdge = true;
+				}
+			}
+		}
+
 		//noOfDifferentNormals.clear();
 		//noOfDifferentNormals.resize(m_pInputMesh->m_vecVertices.size());
 		//std::fill(vecVertexMetadata.noOfDifferentNormals.begin(), vecVertexMetadata.noOfDifferentNormals.end(), 0);
@@ -151,29 +148,8 @@ namespace PolyVox
 			Vector3DFloat sumOfNormals(0.0f,0.0f,0.0f);
 			for(list<uint32_t>::const_iterator iter = vecVertexMetadata[ct].trianglesUsingVertex.cbegin(); iter != vecVertexMetadata[ct].trianglesUsingVertex.cend(); iter++)
 			{
-				sumOfNormals += vecOfTriNormals[*iter];
+				sumOfNormals += m_vecTriangles[*iter].normal;
 			}
-
-			vecVertexMetadata[ct].noOfDifferentNormals = 0;
-			if(abs(sumOfNormals.getX()) > 0.001)
-				vecVertexMetadata[ct].noOfDifferentNormals++;
-			if(abs(sumOfNormals.getY()) > 0.001)
-				vecVertexMetadata[ct].noOfDifferentNormals++;
-			if(abs(sumOfNormals.getZ()) > 0.001)
-				vecVertexMetadata[ct].noOfDifferentNormals++;
-
-			if(sumOfNormals.getX() < -0.001)
-				vecVertexMetadata[ct].m_bNormalFlags.set(NF_NORMAL_NEG_X);
-			if(sumOfNormals.getX() > 0.001)
-				vecVertexMetadata[ct].m_bNormalFlags.set(NF_NORMAL_POS_X);
-			if(sumOfNormals.getY() < -0.001)
-				vecVertexMetadata[ct].m_bNormalFlags.set(NF_NORMAL_NEG_Y);
-			if(sumOfNormals.getY() > 0.001)
-				vecVertexMetadata[ct].m_bNormalFlags.set(NF_NORMAL_POS_Y);
-			if(sumOfNormals.getZ() < -0.001)
-				vecVertexMetadata[ct].m_bNormalFlags.set(NF_NORMAL_NEG_Z);
-			if(sumOfNormals.getZ() > 0.001)
-				vecVertexMetadata[ct].m_bNormalFlags.set(NF_NORMAL_POS_Z);
 
 			vecVertexMetadata[ct].normal = sumOfNormals;
 			vecVertexMetadata[ct].normal.normalise();
@@ -185,8 +161,28 @@ namespace PolyVox
 			bool bInside = m_pInputMesh->m_Region.containsPoint(m_pInputMesh->m_vecVertices[ct].getPosition() + offset);
 			vecVertexMetadata[ct].isOnRegionEdge = !bInside;
 		}
+	}
 
-		//std::cout << "----------" <<std::endl;
+	template <typename VertexType>
+	void MeshDecimator<VertexType>::fillCurrentVertexMetadata(std::vector<CurrentVertexMetadata>& vecVertexMetadata)
+	{
+		vecVertexMetadata.clear();
+		vecVertexMetadata.resize(m_pInputMesh->m_vecVertices.size());
+		//Initialise the metadata
+		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
+		{
+			vecVertexMetadata[ct].trianglesUsingVertex.clear();
+		}
+
+		//Determine triangles using each vertex
+		/*trianglesUsingVertex.clear();
+		trianglesUsingVertex.resize(m_pInputMesh->m_vecVertices.size());*/
+		for(int ct = 0; ct < m_pInputMesh->m_vecTriangleIndices.size(); ct++)
+		{
+			int triangle = ct / 3;
+
+			vecVertexMetadata[m_pInputMesh->m_vecTriangleIndices[ct]].trianglesUsingVertex.push_back(triangle);
+		}
 	}
 
 	template <typename VertexType>
@@ -227,33 +223,26 @@ namespace PolyVox
 			vertexLocked[ct] = false;
 		}
 
-		fillVertexMetadata(m_vecCurrentVertexMetadata);
+		buildTriangles();
+		fillCurrentVertexMetadata(m_vecCurrentVertexMetadata);
 
 		//For each triange...
-		for(int ctIter = 0; ctIter < vecOfTriCts.size(); ctIter++)
+		for(int ctIter = 0; ctIter < m_vecTriangles.size(); ctIter++)
 		{
-			int triCt = vecOfTriCts[ctIter];
 
-			//For each edge in each triangle
-			for(int edgeCt = 0; edgeCt < 3; edgeCt++)
+			if(attemptEdgeCollapse(m_vecTriangles[ctIter].v0, m_vecTriangles[ctIter].v1))
 			{
-				int v0 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + (edgeCt)];
-				int v1 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + ((edgeCt +1) % 3)];
+				++noOfEdgesCollapsed;
+			}
 
-				bool bCanCollapseEdge = canCollapseEdge(v0, v1);
+			if(attemptEdgeCollapse(m_vecTriangles[ctIter].v1, m_vecTriangles[ctIter].v2))
+			{
+				++noOfEdgesCollapsed;
+			}
 
-				////////////////////////////////////////////////////////////////////////////////
-
-				if(bCanCollapseEdge)
-				{
-					//Move v0 onto v1
-					vertexMapper[v0] = v1; //vertexMapper[v1];
-					vertexLocked[v0] = true;
-					vertexLocked[v1] = true;
-
-					//Increment the counter
-					++noOfEdgesCollapsed;
-				}
+			if(attemptEdgeCollapse(m_vecTriangles[ctIter].v2, m_vecTriangles[ctIter].v0))
+			{
+				++noOfEdgesCollapsed;
 			}
 		}
 
@@ -272,6 +261,23 @@ namespace PolyVox
 		}
 
 		return noOfEdgesCollapsed;
+	}
+
+	template <typename VertexType>
+	bool MeshDecimator<VertexType>::attemptEdgeCollapse(uint32_t uSrc, uint32_t uDst)
+	{
+		if(canCollapseEdge(uSrc, uDst))
+		{
+			//Move v0 onto v1
+			vertexMapper[uSrc] = uDst; //vertexMapper[v1];
+			vertexLocked[uSrc] = true;
+			vertexLocked[uDst] = true;
+
+			//Increment the counter
+			return true;
+		}
+		
+		return false;
 	}
 
 	//This function looks at every vertex in the mesh and determines
@@ -319,26 +325,6 @@ namespace PolyVox
 		bool result = true;
 
 		for(int ct = 1; ct < 7; ct++) //Start at '1' to skip material flag
-		{
-			if(a.test(ct))
-			{
-				if(b.test(ct) == false)
-				{
-					result = false;
-					break;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	template <typename VertexType>
-	bool MeshDecimator<VertexType>::isSubsetCubic(std::bitset<NF_NO_OF_FLAGS> a, std::bitset<NF_NO_OF_FLAGS> b)
-	{
-		bool result = true;
-
-		for(int ct = 0; ct < NF_NO_OF_FLAGS; ct++) //Start at '1' to skip material flag
 		{
 			if(a.test(ct))
 			{
@@ -519,38 +505,13 @@ namespace PolyVox
 	template <typename VertexType>
 	bool MeshDecimator<VertexType>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
-		if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 1) //Face
-		{
-			return true;
-		}
-
-		if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 3) //Corner
-		{
-			return false;
-		}
-
-		if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 2) //Edge
-		{
-			if(isSubsetCubic(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags, m_vecInitialVertexMetadata[uDst].m_bNormalFlags) == false)
-			{
-				return false;
-			}
-
-			if(collapseChangesFaceNormals(uSrc, uDst, 0.999f))
-			{
-				return false;
-			}
-
-			return true;
-		}
-
-		return true;
+		return !collapseChangesFaceNormals(uSrc, uDst, 0.999f);
 	}
 
 	template <typename VertexType>
 	bool MeshDecimator<VertexType>::canCollapseRegionEdge(uint32_t uSrc, uint32_t uDst)
 	{
-		//return false;
+		return false;
 
 		if(m_vecInitialVertexMetadata[uDst].isOnRegionEdge)
 		{
@@ -573,22 +534,12 @@ namespace PolyVox
 				return false;
 			}
 
-			if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() == 3) //Corner
-			{
-				return false;
-			}
-
 			if(m_vecInitialVertexMetadata[uSrc].trianglesUsingVertex.size() != m_vecInitialVertexMetadata[uDst].trianglesUsingVertex.size()) //Corner
 			{
 				return false;
 			}
 
-			if(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags.count() != m_vecInitialVertexMetadata[uDst].m_bNormalFlags.count()) //Corner
-			{
-				return false;
-			}
-
-			if(isSubsetCubic(m_vecInitialVertexMetadata[uSrc].m_bNormalFlags, m_vecInitialVertexMetadata[uDst].m_bNormalFlags) == false)
+			if(m_vecInitialVertexMetadata[uSrc].normal.dot(m_vecInitialVertexMetadata[uDst].normal) < 0.999f)
 			{
 				return false;
 			}

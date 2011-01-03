@@ -28,27 +28,25 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	enum POLYVOXCORE_API NormalFlags
+	struct InitialVertexMetadata
 	{
-		NF_NORMAL_NEG_X,
-		NF_NORMAL_POS_X,
-		NF_NORMAL_NEG_Y,
-		NF_NORMAL_POS_Y,
-		NF_NORMAL_NEG_Z,
-		NF_NORMAL_POS_Z,
-		NF_NO_OF_FLAGS
-	};
-
-	struct VertexMetadata
-	{
-		bool hasDuplicate;
-		uint64_t materialKey;
 		list<uint32_t> trianglesUsingVertex;
-		int noOfDifferentNormals;
 		Vector3DFloat normal;
-		std::bitset<NF_NO_OF_FLAGS> m_bNormalFlags;
 		bool isOnRegionEdge;
 		bool isOnMaterialEdge;
+	};
+
+	struct CurrentVertexMetadata
+	{
+		list<uint32_t> trianglesUsingVertex;
+	};
+
+	struct Triangle
+	{
+		uint32_t v0;
+		uint32_t v1;
+		uint32_t v2;
+		Vector3DFloat normal;
 	};
 
 	template <typename VertexType>
@@ -61,7 +59,12 @@ namespace PolyVox
 
 	private:
 
-		void fillVertexMetadata(std::vector<VertexMetadata>& vecVertexMetadata);
+		void fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecInitialVertexMetadata);
+		void fillCurrentVertexMetadata(std::vector<CurrentVertexMetadata>& vecCurrentVertexMetadata);
+
+		void buildTriangles(void);
+
+		bool attemptEdgeCollapse(uint32_t uSrc, uint32_t uDest);
 
 		SurfaceMesh<VertexType>* m_pInputMesh;
 		//SurfaceMesh<PositionMaterial>* pMeshOutput;
@@ -69,7 +72,6 @@ namespace PolyVox
 		void countNoOfNeighboursUsingMaterial(void);
 		uint32_t performDecimationPass(float fMinDotProductForCollapse);
 		bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
-		bool isSubsetCubic(std::bitset<NF_NO_OF_FLAGS> a, std::bitset<NF_NO_OF_FLAGS> b);
 
 		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
 		bool canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst);
@@ -80,18 +82,17 @@ namespace PolyVox
 		//Data structures used during decimation
 		std::vector<uint8_t> m_vecNoOfNeighboursUsingMaterial;
 
-		vector<bool> vertexLocked;
-		vector<uint32_t> vertexMapper;
+		std::vector<bool> vertexLocked;
+		std::vector<uint32_t> vertexMapper;
 
 		//vector< list<uint32_t> > trianglesUsingVertexCurrently;
 
-		vector<int> vecOfTriCts;
-		vector<Vector3DFloat> vecOfTriNormals;
+		std::vector<int> vecOfTriCts;
+		std::vector<Vector3DFloat> vecOfTriNormals;
+		std::vector<Triangle> m_vecTriangles;
 
-		//vector<int> noOfDifferentNormals;
-
-		vector<VertexMetadata> m_vecInitialVertexMetadata;
-		vector<VertexMetadata> m_vecCurrentVertexMetadata;
+		std::vector<InitialVertexMetadata> m_vecInitialVertexMetadata;
+		std::vector<CurrentVertexMetadata> m_vecCurrentVertexMetadata;
 
 		float fMinDotProductForCollapse;
 	};
