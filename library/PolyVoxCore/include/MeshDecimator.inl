@@ -281,85 +281,11 @@ namespace PolyVox
 		return false;
 	}
 
-	// Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.
 	template <typename VertexType>
-	bool MeshDecimator<VertexType>::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
-	{
-		bool result = true;
-
-		for(int ct = 0; ct < VF_NO_OF_FLAGS; ct++)
-		{
-			if(a.test(ct))
-			{
-				if(b.test(ct) == false)
-				{
-					result = false;
-					break;
-				}
-			}
-		}
-
-		return result;
-	}
-
-	//template <typename VertexType>
-	bool MeshDecimator<PositionMaterialNormal>::canCollapseEdge(uint32_t uSrc, uint32_t uDst)
-	{
-		//For now, don't collapse vertices on material edges...
-		if(m_vecInitialVertexMetadata[uSrc].isOnMaterialEdge || m_vecInitialVertexMetadata[uDst].isOnMaterialEdge)
-		{			
-			return false;
-		}
-
-		// Vertices on the geometrical edge of surface meshes need special handling. 
-		// We check for this by whether any of the edge flags are set.
-		if(m_vecInitialVertexMetadata[uSrc].vertexFlags.any() || m_vecInitialVertexMetadata[uDst].vertexFlags.any())
-		{
-			// Assume we can't collapse until we prove otherwise...
-			bool bCollapseGeometryEdgePair = false;
-
-			// We can collapse normal vertices onto edge vertices, and edge vertices
-			// onto corner vertices, but not vice-versa. Hence we check whether all
-			// the edge flags in the source vertex are also set in the destination vertex.
-			if(isSubset(m_vecInitialVertexMetadata[uSrc].vertexFlags, m_vecInitialVertexMetadata[uDst].vertexFlags))
-			{
-				// In general adjacent regions surface meshes may collapse differently
-				// and this can cause cracks. We solve this by only allowing the collapse
-				// is the normals are exactly the same. We do not use the user provided
-				// tolerence here (but do allow for floating point error).
-				if(m_pInputMesh->m_vecVertices[uSrc].getNormal().dot(m_pInputMesh->m_vecVertices[uDst].getNormal()) > 0.999)
-				{
-					// Ok, this pair can collapse.
-					bCollapseGeometryEdgePair = true;
-				}
-			}
-
-			// Use the result.
-			if(!bCollapseGeometryEdgePair)
-			{
-				return false;
-			}
-		}
-
-		//Check the normals are within the threashold.
-		if(m_pInputMesh->m_vecVertices[uSrc].getNormal().dot(m_pInputMesh->m_vecVertices[uDst].getNormal()) < fMinDotProductForCollapse)
-		{
-			return false;
-		}
-
-		////////////////////////////////////////////////////////////////////////////////
-		//The last test is whether we will flip any of the faces
-		if(collapseChangesFaceNormals(uSrc,uDst, 0.9f))
-		{
-			return false;
-		}
-		return true;
-	}
-
-	bool MeshDecimator<PositionMaterial>::canCollapseEdge(uint32_t uSrc, uint32_t uDst)
+	bool MeshDecimator<VertexType>::canCollapseEdge(uint32_t uSrc, uint32_t uDst)
 	{
 		bool bCanCollapse = true;
-
+		
 		if(m_vecInitialVertexMetadata[uSrc].isOnMaterialEdge)
 		{
 			bCanCollapse &= canCollapseMaterialEdge(uSrc, uDst);
@@ -370,7 +296,7 @@ namespace PolyVox
 			bCanCollapse &= canCollapseRegionEdge(uSrc, uDst);
 		}
 
-		if(bCanCollapse) //Only bother with this is the earlier tests passed.
+		if(bCanCollapse) //Only bother with this if the earlier tests passed.
 		{
 			bCanCollapse &= canCollapseNormalEdge(uSrc, uDst);
 		}
@@ -378,8 +304,14 @@ namespace PolyVox
 		return bCanCollapse;
 	}
 
-	template <typename VertexType>
-	bool MeshDecimator<VertexType>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
+	template<> 
+	bool MeshDecimator<PositionMaterialNormal>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
+	{
+		return !collapseChangesFaceNormals(uSrc, uDst, fMinDotProductForCollapse);
+	}
+
+	template<> 
+	bool MeshDecimator<PositionMaterial>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
 		return !collapseChangesFaceNormals(uSrc, uDst, 0.999f);
 	}
@@ -387,11 +319,18 @@ namespace PolyVox
 	template <typename VertexType>
 	bool MeshDecimator<VertexType>::canCollapseRegionEdge(uint32_t uSrc, uint32_t uDst)
 	{		
+		// We can collapse normal vertices onto edge vertices, and edge vertices
+		// onto corner vertices, but not vice-versa. Hence we check whether all
+		// the edge flags in the source vertex are also set in the destination vertex.
 		if(isSubset(m_vecInitialVertexMetadata[uSrc].vertexFlags, m_vecInitialVertexMetadata[uDst].vertexFlags) == false)
 		{
 			return false;
 		}
 
+		// In general adjacent regions surface meshes may collapse differently
+		// and this can cause cracks. We solve this by only allowing the collapse
+		// is the normals are exactly the same. We do not use the user provided
+		// tolerence here (but do allow for floating point error).
 		if(m_vecInitialVertexMetadata[uSrc].normal.dot(m_vecInitialVertexMetadata[uDst].normal) < 0.999f)
 		{
 			return false;
@@ -483,5 +422,26 @@ namespace PolyVox
 		}
 
 		return faceFlipped;
+	}
+
+	// Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.
+	template <typename VertexType>
+	bool MeshDecimator<VertexType>::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
+	{
+		bool result = true;
+
+		for(int ct = 0; ct < VF_NO_OF_FLAGS; ct++)
+		{
+			if(a.test(ct))
+			{
+				if(b.test(ct) == false)
+				{
+					result = false;
+					break;
+				}
+			}
+		}
+
+		return result;
 	}
 }
