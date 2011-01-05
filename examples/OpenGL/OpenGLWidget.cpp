@@ -126,7 +126,8 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 
 						//mesh->decimate(0.999f);
 
-						MeshDecimator<PositionMaterialNormal> decimator(mesh.get());
+						polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > decimatedMesh(new SurfaceMesh<PositionMaterialNormal>);
+						MeshDecimator<PositionMaterialNormal> decimator(mesh.get(), decimatedMesh.get());
 						decimator.execute();
 
 						//mesh->generateAveragedFaceNormals(true);
@@ -143,12 +144,12 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 						if(m_bUseOpenGLVertexBufferObjects)
 						{
-							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(mesh.get()));					
+							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(decimatedMesh.get()));					
 							m_mapOpenGLSurfaceMeshes.insert(make_pair(v3dRegPos, openGLSurfaceMesh));
 						}
 						//else
 						//{
-							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, mesh));
+							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, decimatedMesh));
 						//}
 						//delete meshCurrent;
 					}
@@ -216,8 +217,8 @@ void OpenGLWidget::paintGL()
 		//Moves the camera back so we can see the volume
 		glTranslatef(0.0f, 0.0f, -m_volData->getDiagonalLength());	
 
-		glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
-		glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
+		glRotatef(10, 1.0f, 0.0f, 0.0f);
+		glRotatef(20, 0.0f, 1.0f, 0.0f);
 
 		//Centre the volume on the origin
 		glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);

@@ -62,7 +62,7 @@ namespace PolyVox
 			Vector3DFloat normal;
 		};
 	public:
-		MeshDecimator(SurfaceMesh<VertexType>* pInputMesh/*, SurfaceMesh<PositionMaterial>* pMeshOutput*/);
+		MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold = 0.95f);
 
 		void execute();
 
@@ -74,10 +74,10 @@ namespace PolyVox
 
 		bool attemptEdgeCollapse(uint32_t uSrc, uint32_t uDest);
 
-		SurfaceMesh<VertexType>* m_pInputMesh;
-		//SurfaceMesh<PositionMaterial>* pMeshOutput;
+		const SurfaceMesh<VertexType>* m_pInputMesh;
+		SurfaceMesh<VertexType>* m_pOutputMesh;
 
-		uint32_t performDecimationPass(float fMinDotProductForCollapse);
+		uint32_t performDecimationPass(float m_fMinDotProductForCollapse);
 		bool isSubset(std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> a, std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> b);
 
 		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
@@ -92,11 +92,11 @@ namespace PolyVox
 		std::vector<uint32_t> vertexMapper;
 
 		std::vector<Triangle> m_vecTriangles;
-		std::vector< list<uint32_t> > trianglesUsingVertex;
+		std::vector< list<uint32_t> > trianglesUsingVertex; //Should probably use vector of vectors, and resise in advance.
 
 		std::vector<InitialVertexMetadata> m_vecInitialVertexMetadata;
 
-		float fMinDotProductForCollapse;
+		float m_fMinDotProductForCollapse;
 	};
 }
 

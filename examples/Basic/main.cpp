@@ -32,6 +32,7 @@ freely, subject to the following restrictions:
 #include "MeshDecimator.h"
 
 #include <QApplication>
+#include <QTime>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
@@ -41,7 +42,7 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius)
 	//This vector hold the position of the center of the volume
 	//Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
 
-	Vector3DFloat v3dVolCenter(16, 16, 16);
+	Vector3DFloat v3dVolCenter(16, 16, 1);
 
 	//This three-level for loop iterates over every voxel in the volume
 	for (int z = 0; z < volData.getWidth(); z++)
@@ -155,25 +156,35 @@ int main(int argc, char *argv[])
 		}
 	}*/
 
-	createSphereInVolume(volData, 10);
+	createSphereInVolume(volData, 24);
 
 	//Extract the surface
-	Region region(Vector3DInt16(0,0,0), Vector3DInt16(20,20,20));
+	Region region(Vector3DInt16(-1,-1,-1), Vector3DInt16(32,32,32));
 	SurfaceMesh<PositionMaterial> mesh;
 	//CubicSurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+
+	QTime t;
+	t.start();
+
 	CubicSurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, region, &mesh);
 	surfaceExtractor.execute();
+
+	cout << "E: " << t.elapsed();
+	t.restart();
 
 	/*SurfaceMesh<PositionMaterialNormal> meshWithNormals;
 	addNormals(mesh, meshWithNormals);
 
 	meshWithNormals.decimate(0.99);*/
 
-	MeshDecimator<PositionMaterial> decimator(&mesh);
+	SurfaceMesh<PositionMaterial> decimatedMesh;
+	MeshDecimator<PositionMaterial> decimator(&mesh, &decimatedMesh);
 	decimator.execute();
 
+	cout << "D: " << t.elapsed();
+
 	SurfaceMesh<PositionMaterialNormal> meshWithNormals;
-	addNormals(mesh, meshWithNormals);
+	addNormals(decimatedMesh, meshWithNormals);
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(meshWithNormals);

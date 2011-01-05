@@ -24,55 +24,64 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VertexType>
-	MeshDecimator<VertexType>::MeshDecimator(SurfaceMesh<VertexType>* pInputMesh/*, SurfaceMesh<PositionMaterial>* pMeshOutput*/)
+	MeshDecimator<VertexType>::MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold)
 		:m_pInputMesh(pInputMesh)
-		//,m_pOutputMesh(pOutputMesh)
+		,m_pOutputMesh(pOutputMesh)
+		,m_fMinDotProductForCollapse(fEdgeCollapseThreshold)
 	{
-		fMinDotProductForCollapse = 0.999;
+		*m_pOutputMesh = *m_pInputMesh;
 	}
 
 	template <typename VertexType>
 	void MeshDecimator<VertexType>::execute()
 	{
+		//Sanity check.
+		if((m_pOutputMesh->m_vecVertices.empty()) || (m_pOutputMesh->m_vecTriangleIndices.empty()))
+		{
+			return;
+		}
+
 		buildConnectivityData();
 		fillInitialVertexMetadata(m_vecInitialVertexMetadata);
 
 		uint32_t noOfEdgesCollapsed;
 		do
 		{
-			noOfEdgesCollapsed = performDecimationPass(fMinDotProductForCollapse);
-			m_pInputMesh->removeDegenerateTris();	
+			noOfEdgesCollapsed = performDecimationPass(m_fMinDotProductForCollapse);
+			m_pOutputMesh->removeDegenerateTris();	
 			if(noOfEdgesCollapsed > 0)
 			{
 				//Build the connectivity data for the next pass. If this is slow, then look
 				//at adjusting it (based on vertex mapper?) rather than bulding from scratch.
 				buildConnectivityData();
 			}
-			//m_pInputMesh->removeUnusedVertices();
 		}while(noOfEdgesCollapsed > 0);
 
+		m_pOutputMesh->removeUnusedVertices();
+
 		//Decimation will have invalidated LOD levels.
-		m_pInputMesh->m_vecLodRecords.clear();
+		m_pOutputMesh->m_vecLodRecords.clear();
 		LodRecord lodRecord;
 		lodRecord.beginIndex = 0;
-		lodRecord.endIndex = m_pInputMesh->getNoOfIndices();
-		m_pInputMesh->m_vecLodRecords.push_back(lodRecord);
+		lodRecord.endIndex = m_pOutputMesh->getNoOfIndices();
+		m_pOutputMesh->m_vecLodRecords.push_back(lodRecord);
 	}
 
 	template <typename VertexType>
 	void MeshDecimator<VertexType>::buildConnectivityData(void)
 	{
+		//Build a list of all the triangles, complete with face normals.
 		m_vecTriangles.clear();
-		m_vecTriangles.resize(m_pInputMesh->m_vecTriangleIndices.size() / 3);
+		m_vecTriangles.resize(m_pOutputMesh->m_vecTriangleIndices.size() / 3);
 		for(int triCt = 0; triCt < m_vecTriangles.size(); triCt++)
 		{
-			m_vecTriangles[triCt].v0 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + 0];
-			m_vecTriangles[triCt].v1 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + 1];
-			m_vecTriangles[triCt].v2 = m_pInputMesh->m_vecTriangleIndices[triCt * 3 + 2];
+			m_vecTriangles[triCt].v0 = m_pOutputMesh->m_vecTriangleIndices[triCt * 3 + 0];
+			m_vecTriangles[triCt].v1 = m_pOutputMesh->m_vecTriangleIndices[triCt * 3 + 1];
+			m_vecTriangles[triCt].v2 = m_pOutputMesh->m_vecTriangleIndices[triCt * 3 + 2];
 
-			Vector3DFloat v0Pos = m_pInputMesh->m_vecVertices[m_vecTriangles[triCt].v0].position;
-			Vector3DFloat v1Pos = m_pInputMesh->m_vecVertices[m_vecTriangles[triCt].v1].position;
-			Vector3DFloat v2Pos = m_pInputMesh->m_vecVertices[m_vecTriangles[triCt].v2].position;
+			Vector3DFloat v0Pos = m_pOutputMesh->m_vecVertices[m_vecTriangles[triCt].v0].position;
+			Vector3DFloat v1Pos = m_pOutputMesh->m_vecVertices[m_vecTriangles[triCt].v1].position;
+			Vector3DFloat v2Pos = m_pOutputMesh->m_vecVertices[m_vecTriangles[triCt].v2].position;
 
 			Vector3DFloat v0v1 = v1Pos - v0Pos;
 			Vector3DFloat v0v2 = v2Pos - v0Pos;
@@ -82,8 +91,9 @@ namespace PolyVox
 			m_vecTriangles[triCt].normal = normal;
 		}
 
+		//For each vertex, determine which triangles are using it.
 		trianglesUsingVertex.clear();
-		trianglesUsingVertex.resize(m_pInputMesh->m_vecVertices.size());
+		trianglesUsingVertex.resize(m_pOutputMesh->m_vecVertices.size());
 		for(int ct = 0; ct < m_vecTriangles.size(); ct++)
 		{
 			trianglesUsingVertex[m_vecTriangles[ct].v0].push_back(ct);
@@ -95,7 +105,7 @@ namespace PolyVox
 	void MeshDecimator<PositionMaterial>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
 	{
 		vecVertexMetadata.clear();
-		vecVertexMetadata.resize(m_pInputMesh->m_vecVertices.size());
+		vecVertexMetadata.resize(m_pOutputMesh->m_vecVertices.size());
 		//Initialise the metadata
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
@@ -104,11 +114,15 @@ namespace PolyVox
 			vecVertexMetadata[ct].isOnRegionFace.reset();
 		}
 
-		for(int outerCt = 0; outerCt < m_pInputMesh->m_vecVertices.size()-1; outerCt++)
+		//Identify duplicate vertices, as they lie on the material edge. Note that this is a particularly slow way of
+		//findong the duplicates. Better to hash into integer (with upper bits being z and lower bits being x) and sort 
+		//the resulting integers. The should be mostly in order as this is the order they come out of the
+		//CubicSurfaceExtractor in. Duplicates are now neighbours in the resulting list so just scan through for pairs.
+		for(int outerCt = 0; outerCt < m_pOutputMesh->m_vecVertices.size()-1; outerCt++)
 		{
-			for(int innerCt = outerCt+1; innerCt < m_pInputMesh->m_vecVertices.size(); innerCt++)
+			for(int innerCt = outerCt+1; innerCt < m_pOutputMesh->m_vecVertices.size(); innerCt++)
 			{
-				if((m_pInputMesh->m_vecVertices[innerCt].position - m_pInputMesh->m_vecVertices[outerCt].position).lengthSquared() < 0.001f)
+				if((m_pOutputMesh->m_vecVertices[innerCt].position - m_pOutputMesh->m_vecVertices[outerCt].position).lengthSquared() < 0.001f)
 				{							
 					vecVertexMetadata[innerCt].isOnMaterialEdge = true;
 					vecVertexMetadata[outerCt].isOnMaterialEdge = true;
@@ -116,7 +130,8 @@ namespace PolyVox
 			}
 		}
 
-		for(int ct = 0; ct < m_pInputMesh->m_vecVertices.size(); ct++)
+		//Compute an approcimation to the normal, used when deciding if an edge can collapse.
+		for(int ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
 			Vector3DFloat sumOfNormals(0.0f,0.0f,0.0f);
 			for(list<uint32_t>::const_iterator iter = trianglesUsingVertex[ct].cbegin(); iter != trianglesUsingVertex[ct].cend(); iter++)
@@ -128,50 +143,52 @@ namespace PolyVox
 			vecVertexMetadata[ct].normal.normalise();
 		}
 
+		//Identify those vertices on the edge of a region. Care will need to be taken when moving them.
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
-			Region regTransformed = m_pInputMesh->m_Region;
+			Region regTransformed = m_pOutputMesh->m_Region;
 			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int16_t>(-1));
 
 			//Plus and minus X
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pOutputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_X, m_pOutputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
 			//Plus and minus Y
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Y, m_pOutputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Y, m_pOutputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
 			//Plus and minus Z
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Z, m_pOutputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Z, m_pOutputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
 		}
 	}
 
 	void MeshDecimator<PositionMaterialNormal>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
 	{
 		vecVertexMetadata.clear();
-		vecVertexMetadata.resize(m_pInputMesh->m_vecVertices.size());
+		vecVertexMetadata.resize(m_pOutputMesh->m_vecVertices.size());
 
 		//Initialise the metadata
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{			
 			vecVertexMetadata[ct].isOnRegionFace.reset();
 			vecVertexMetadata[ct].isOnMaterialEdge = false;
-			vecVertexMetadata[ct].normal = m_pInputMesh->m_vecVertices[ct].normal;
+			vecVertexMetadata[ct].normal = m_pOutputMesh->m_vecVertices[ct].normal;
 		}
 
+		//Identify those vertices on the edge of a region. Care will need to be taken when moving them.
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
-			Region regTransformed = m_pInputMesh->m_Region;
+			Region regTransformed = m_pOutputMesh->m_Region;
 			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int16_t>(-1));
 
 			//Plus and minus X
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pOutputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_X, m_pOutputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
 			//Plus and minus Y
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Y, m_pOutputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Y, m_pOutputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
 			//Plus and minus Z
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
-			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Z, m_pOutputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Z, m_pOutputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
 		}
 
 		//If all three vertices have the same material then we are not on a material edge. If any vertex has a different
@@ -184,8 +201,8 @@ namespace PolyVox
 			uint32_t v2 = m_vecTriangles[ct].v2;
 
 			bool allMatch = 
-				(m_pInputMesh->m_vecVertices[v0].material == m_pInputMesh->m_vecVertices[v1].material) && 
-				(m_pInputMesh->m_vecVertices[v1].material == m_pInputMesh->m_vecVertices[v2].material);
+				(m_pOutputMesh->m_vecVertices[v0].material == m_pOutputMesh->m_vecVertices[v1].material) && 
+				(m_pOutputMesh->m_vecVertices[v1].material == m_pOutputMesh->m_vecVertices[v2].material);
 
 			if(!allMatch)
 			{
@@ -197,24 +214,24 @@ namespace PolyVox
 	}
 
 	template <typename VertexType>
-	uint32_t MeshDecimator<VertexType>::performDecimationPass(float fMinDotProductForCollapse)
+	uint32_t MeshDecimator<VertexType>::performDecimationPass(float m_fMinDotProductForCollapse)
 	{
 		// Count how many edges we have collapsed
 		uint32_t noOfEdgesCollapsed = 0;
 
 		// The vertex mapper track whick vertices collapse onto which.
 		vertexMapper.clear();
-		vertexMapper.resize(m_pInputMesh->m_vecVertices.size());
+		vertexMapper.resize(m_pOutputMesh->m_vecVertices.size());
 
 		// Once a vertex is involved in a collapse (either because it
 		// moves onto a different vertex, or because a different vertex
 		// moves onto it) it is forbidden to take part in another collapse
 		// this pass. We enforce this by setting the vertex locked flag.
 		vertexLocked.clear();
-		vertexLocked.resize(m_pInputMesh->m_vecVertices.size());
+		vertexLocked.resize(m_pOutputMesh->m_vecVertices.size());
 
 		// Initialise the vectors
-		for(uint32_t ct = 0; ct < m_pInputMesh->m_vecVertices.size(); ct++)
+		for(uint32_t ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
 			// Initiall all vertices points to themselves
 			vertexMapper[ct] = ct;
@@ -244,13 +261,13 @@ namespace PolyVox
 		if(noOfEdgesCollapsed > 0)
 		{
 			//Fix up the indices
-			for(int triCt = 0; triCt < m_pInputMesh->m_vecTriangleIndices.size(); triCt++)
+			for(int triCt = 0; triCt < m_pOutputMesh->m_vecTriangleIndices.size(); triCt++)
 			{
-				uint32_t before = m_pInputMesh->m_vecTriangleIndices[triCt];
-				uint32_t after = vertexMapper[m_pInputMesh->m_vecTriangleIndices[triCt]];
+				uint32_t before = m_pOutputMesh->m_vecTriangleIndices[triCt];
+				uint32_t after = vertexMapper[m_pOutputMesh->m_vecTriangleIndices[triCt]];
 				if(before != after)
 				{
-					m_pInputMesh->m_vecTriangleIndices[triCt] = vertexMapper[m_pInputMesh->m_vecTriangleIndices[triCt]];
+					m_pOutputMesh->m_vecTriangleIndices[triCt] = vertexMapper[m_pOutputMesh->m_vecTriangleIndices[triCt]];
 				}
 			}
 		}
@@ -307,12 +324,15 @@ namespace PolyVox
 	template<> 
 	bool MeshDecimator<PositionMaterialNormal>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
-		return !collapseChangesFaceNormals(uSrc, uDst, fMinDotProductForCollapse);
+		//With the marching cubes surface we honour the user specified threshold
+		return !collapseChangesFaceNormals(uSrc, uDst, m_fMinDotProductForCollapse);
 	}
 
 	template<> 
 	bool MeshDecimator<PositionMaterial>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
+		//User specified threshold is not used for cubic surface, any
+		//movement is too much (but allow for floating point error).
 		return !collapseChangesFaceNormals(uSrc, uDst, 0.999f);
 	}
 
@@ -355,9 +375,9 @@ namespace PolyVox
 		{
 			uint32_t tri = *triIter;
 					
-			uint32_t v0Old = m_pInputMesh->m_vecTriangleIndices[tri * 3];
-			uint32_t v1Old = m_pInputMesh->m_vecTriangleIndices[tri * 3 + 1];
-			uint32_t v2Old = m_pInputMesh->m_vecTriangleIndices[tri * 3 + 2];
+			uint32_t v0Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3];
+			uint32_t v1Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3 + 1];
+			uint32_t v2Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3 + 2];
 
 			//Check if degenerate
 			if((v0Old == v1Old) || (v1Old == v2Old) || (v2Old == v0Old))
@@ -382,13 +402,13 @@ namespace PolyVox
 				continue;
 			}
 
-			Vector3DFloat v0OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v0Old]].getPosition(); //Note: we need the vertex mapper here. These neighbouring vertices may have been moved.
-			Vector3DFloat v1OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v1Old]].getPosition();
-			Vector3DFloat v2OldPos = m_pInputMesh->m_vecVertices[vertexMapper[v2Old]].getPosition();
+			Vector3DFloat v0OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0Old]].getPosition(); //Note: we need the vertex mapper here. These neighbouring vertices may have been moved.
+			Vector3DFloat v1OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1Old]].getPosition();
+			Vector3DFloat v2OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2Old]].getPosition();
 
-			Vector3DFloat v0NewPos = m_pInputMesh->m_vecVertices[vertexMapper[v0New]].getPosition();
-			Vector3DFloat v1NewPos = m_pInputMesh->m_vecVertices[vertexMapper[v1New]].getPosition();
-			Vector3DFloat v2NewPos = m_pInputMesh->m_vecVertices[vertexMapper[v2New]].getPosition();
+			Vector3DFloat v0NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0New]].getPosition();
+			Vector3DFloat v1NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1New]].getPosition();
+			Vector3DFloat v2NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2New]].getPosition();
 
 			/*Vector3DFloat v0OldPos = m_vecVertices[v0Old].getPosition();
 			Vector3DFloat v1OldPos = m_vecVertices[v1Old].getPosition();
