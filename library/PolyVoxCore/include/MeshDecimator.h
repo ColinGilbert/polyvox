@@ -28,24 +28,39 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	struct InitialVertexMetadata
-	{
-		Vector3DFloat normal;
-		bool isOnMaterialEdge;
-		std::bitset<VF_NO_OF_FLAGS> vertexFlags;
-	};
-
-	struct Triangle
-	{
-		uint32_t v0;
-		uint32_t v1;
-		uint32_t v2;
-		Vector3DFloat normal;
-	};
-
 	template <typename VertexType>
 	class MeshDecimator
 	{
+		//Used to keep track of when a vertex is
+		//on one or more faces of  the region
+		enum POLYVOXCORE_API RegionFaceFlags
+		{
+			RFF_ON_REGION_FACE_NEG_X,
+			RFF_ON_REGION_FACE_POS_X ,
+			RFF_ON_REGION_FACE_NEG_Y ,
+			RFF_ON_REGION_FACE_POS_Y ,
+			RFF_ON_REGION_FACE_NEG_Z ,
+			RFF_ON_REGION_FACE_POS_Z,
+			RFF_NO_OF_REGION_FACE_FLAGS
+		};
+
+		//Data about the initial mesh - this
+		//will be fill in once at the start
+		struct InitialVertexMetadata
+		{
+			Vector3DFloat normal;
+			bool isOnMaterialEdge;
+			std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> isOnRegionFace;
+		};
+
+		//Representing a triangle for decimation purposes.
+		struct Triangle
+		{
+			uint32_t v0;
+			uint32_t v1;
+			uint32_t v2;
+			Vector3DFloat normal;
+		};
 	public:
 		MeshDecimator(SurfaceMesh<VertexType>* pInputMesh/*, SurfaceMesh<PositionMaterial>* pMeshOutput*/);
 
@@ -63,7 +78,7 @@ namespace PolyVox
 		//SurfaceMesh<PositionMaterial>* pMeshOutput;
 
 		uint32_t performDecimationPass(float fMinDotProductForCollapse);
-		bool isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b);
+		bool isSubset(std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> a, std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> b);
 
 		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
 		bool canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst);

@@ -101,7 +101,7 @@ namespace PolyVox
 		{
 			vecVertexMetadata[ct].normal.setElements(0,0,0);
 			vecVertexMetadata[ct].isOnMaterialEdge = false;
-			vecVertexMetadata[ct].vertexFlags.reset();
+			vecVertexMetadata[ct].isOnRegionFace.reset();
 		}
 
 		for(int outerCt = 0; outerCt < m_pInputMesh->m_vecVertices.size()-1; outerCt++)
@@ -134,14 +134,14 @@ namespace PolyVox
 			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int16_t>(-1));
 
 			//Plus and minus X
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_NEG_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_POS_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
 			//Plus and minus Y
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_NEG_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_POS_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
 			//Plus and minus Z
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_NEG_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_POS_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
 		}
 	}
 
@@ -153,7 +153,7 @@ namespace PolyVox
 		//Initialise the metadata
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{			
-			vecVertexMetadata[ct].vertexFlags.reset();
+			vecVertexMetadata[ct].isOnRegionFace.reset();
 			vecVertexMetadata[ct].isOnMaterialEdge = false;
 			vecVertexMetadata[ct].normal = m_pInputMesh->m_vecVertices[ct].normal;
 		}
@@ -164,14 +164,14 @@ namespace PolyVox
 			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int16_t>(-1));
 
 			//Plus and minus X
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_NEG_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_POS_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_X, m_pInputMesh->m_vecVertices[ct].getPosition().getX() > regTransformed.getUpperCorner().getX() - 0.001f);
 			//Plus and minus Y
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_NEG_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_POS_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() < regTransformed.getLowerCorner().getY() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Y, m_pInputMesh->m_vecVertices[ct].getPosition().getY() > regTransformed.getUpperCorner().getY() - 0.001f);
 			//Plus and minus Z
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_NEG_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
-			vecVertexMetadata[ct].vertexFlags.set(VF_ON_GEOMETRY_EDGE_POS_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() < regTransformed.getLowerCorner().getZ() + 0.001f);
+			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_POS_Z, m_pInputMesh->m_vecVertices[ct].getPosition().getZ() > regTransformed.getUpperCorner().getZ() - 0.001f);
 		}
 
 		//If all three vertices have the same material then we are not on a material edge. If any vertex has a different
@@ -291,7 +291,7 @@ namespace PolyVox
 			bCanCollapse &= canCollapseMaterialEdge(uSrc, uDst);
 		}
 
-		if(m_vecInitialVertexMetadata[uSrc].vertexFlags.any())
+		if(m_vecInitialVertexMetadata[uSrc].isOnRegionFace.any())
 		{
 			bCanCollapse &= canCollapseRegionEdge(uSrc, uDst);
 		}
@@ -322,7 +322,7 @@ namespace PolyVox
 		// We can collapse normal vertices onto edge vertices, and edge vertices
 		// onto corner vertices, but not vice-versa. Hence we check whether all
 		// the edge flags in the source vertex are also set in the destination vertex.
-		if(isSubset(m_vecInitialVertexMetadata[uSrc].vertexFlags, m_vecInitialVertexMetadata[uDst].vertexFlags) == false)
+		if(isSubset(m_vecInitialVertexMetadata[uSrc].isOnRegionFace, m_vecInitialVertexMetadata[uDst].isOnRegionFace) == false)
 		{
 			return false;
 		}
@@ -426,11 +426,11 @@ namespace PolyVox
 
 	// Returns true if every bit which is set in 'a' is also set in 'b'. The reverse does not need to be true.
 	template <typename VertexType>
-	bool MeshDecimator<VertexType>::isSubset(std::bitset<VF_NO_OF_FLAGS> a, std::bitset<VF_NO_OF_FLAGS> b)
+	bool MeshDecimator<VertexType>::isSubset(std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> a, std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> b)
 	{
 		bool result = true;
 
-		for(int ct = 0; ct < VF_NO_OF_FLAGS; ct++)
+		for(int ct = 0; ct < RFF_NO_OF_REGION_FACE_FLAGS; ct++)
 		{
 			if(a.test(ct))
 			{
