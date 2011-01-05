@@ -23,6 +23,16 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	////////////////////////////////////////////////////////////////////////////////
+	/// Builds a MeshDecimator.
+	/// \param pInputMesh A pointer to the mesh to be decimated.
+	/// \param pOutputMesh A pointer to where the result should be stored. Any existing
+	/// contents will be deleted.
+	/// \param fEdgeCollapseThreshold This is only use in the case of a Marching Cubes
+	/// surface and controls how close two normals must be to collapse. The dot product
+	/// between the normals is computed and compared to this threshold. A threshold of
+	/// 1.0 means nothing will collapse, a threshold of 0.0 means everything will collapse.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VertexType>
 	MeshDecimator<VertexType>::MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold)
 		:m_pInputMesh(pInputMesh)
@@ -324,6 +334,11 @@ namespace PolyVox
 	template<> 
 	bool MeshDecimator<PositionMaterialNormal>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
+		if(m_vecInitialVertexMetadata[uSrc].normal.dot(m_vecInitialVertexMetadata[uDst].normal) < m_fMinDotProductForCollapse)
+		{
+			return false;
+		}
+
 		//With the marching cubes surface we honour the user specified threshold
 		return !collapseChangesFaceNormals(uSrc, uDst, m_fMinDotProductForCollapse);
 	}
@@ -331,6 +346,10 @@ namespace PolyVox
 	template<> 
 	bool MeshDecimator<PositionMaterial>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
+		//We don't actually use the normal here, because we want to allow face
+		//vertices to collapse onto edge vertices. Simply checking whether anything
+		//has flipped has proved to be the most robust approach, though rather slow...
+
 		//User specified threshold is not used for cubic surface, any
 		//movement is too much (but allow for floating point error).
 		return !collapseChangesFaceNormals(uSrc, uDst, 0.999f);
@@ -365,11 +384,13 @@ namespace PolyVox
 		return false;
 	}
 
+	//This function should really use some work. For a start we already have the
+	//faces normals for the input mesh yet we are computing them on the fly here.
 	template <typename VertexType>
 	bool MeshDecimator<VertexType>::collapseChangesFaceNormals(uint32_t uSrc, uint32_t uDst, float fThreshold)
 	{
 		bool faceFlipped = false;
-		list<uint32_t> triangles = trianglesUsingVertex[uSrc];
+		list<uint32_t>& triangles = trianglesUsingVertex[uSrc];
 
 		for(list<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
 		{
@@ -409,14 +430,6 @@ namespace PolyVox
 			Vector3DFloat v0NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0New]].getPosition();
 			Vector3DFloat v1NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1New]].getPosition();
 			Vector3DFloat v2NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2New]].getPosition();
-
-			/*Vector3DFloat v0OldPos = m_vecVertices[v0Old].getPosition();
-			Vector3DFloat v1OldPos = m_vecVertices[v1Old].getPosition();
-			Vector3DFloat v2OldPos = m_vecVertices[v2Old].getPosition();
-
-			Vector3DFloat v0NewPos = m_vecVertices[v0New].getPosition();
-			Vector3DFloat v1NewPos = m_vecVertices[v1New].getPosition();
-			Vector3DFloat v2NewPos = m_vecVertices[v2New].getPosition();*/
 
 			Vector3DFloat OldNormal = (v1OldPos - v0OldPos).cross(v2OldPos - v1OldPos);
 			Vector3DFloat NewNormal = (v1NewPos - v0NewPos).cross(v2NewPos - v1NewPos);
