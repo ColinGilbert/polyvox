@@ -30,8 +30,6 @@ freely, subject to the following restrictions:
 #include "MeshDecimator.h"
 #include "SurfaceExtractor.h"
 
-#include "Mesh.h"
-
 //Some namespaces we need
 using namespace std;
 using namespace PolyVox;
@@ -98,47 +96,15 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 					MeshDecimator<PositionMaterialNormal> decimator(mesh.get(), decimatedMesh.get(), 0.95f);
 					decimator.execute();
 
-					//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
+					decimatedMesh->generateAveragedFaceNormals(true);
+
+					//computeNormalsForVertices(m_volData, *(decimatedMesh.get()), SOBEL_SMOOTHED);
 					//*meshCurrent = getSmoothedSurface(*meshCurrent);
 					//mesh->smooth(0.3f);
 					//meshCurrent->generateAveragedFaceNormals(true);
 
 					if(mesh->m_vecTriangleIndices.size() > 0)
 					{
-						//mesh->makeProgressiveMesh();
-
-						/*RenderDynamicMesh rdm;
-						rdm.buildFromSurfaceMesh(*mesh);*/
-
-						//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
-
-						//mesh->smoothPositions(0.3f);
-						//mesh->generateAveragedFaceNormals(true);
-						
-						/*for(int ct = 0; ct < 20; ct ++)
-						{
-						//cout << "Before: " << mesh->noOfDegenerateTris() << endl;
-						mesh->decimate();
-						//cout << "After: " << mesh->noOfDegenerateTris() << endl;
-						mesh->removeDegenerateTris();
-						//cout << "After Remove: " << mesh->noOfDegenerateTris() << endl << endl;
-						}*/
-
-						////////////////////////////////////////////////////////////////////////////////
-						//For decimation built into Mesh
-						//mesh->generateAveragedFaceNormals(true);
-
-						//mesh->decimate(0.999f);
-
-						//mesh->generateAveragedFaceNormals(true);
-						////////////////////////////////////////////////////////////////////////////////
-
-						/*mesh->generateAveragedFaceNormals(true);
-						Mesh mesh;
-						mesh.buildFromMesh(mesh.get());
-						//mesh.removeEdge(*(mesh.m_edges.begin()));
-						mesh.decimateAll();
-						mesh.fillMesh(mesh.get());*/
 
 
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);

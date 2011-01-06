@@ -8,10 +8,6 @@ SET(CORE_SRC_FILES
 	source/AStarPathfinder.cpp
 	source/GradientEstimators.cpp
 	source/Log.cpp
-	source/Mesh.cpp
-	source/MeshEdge.cpp
-	source/MeshFace.cpp
-	source/MeshVertex.cpp
 	source/Region.cpp
 	source/VertexTypes.cpp
 	source/VoxelFilters.cpp
@@ -35,12 +31,8 @@ SET(CORE_INC_FILES
 	include/Log.h
 	include/Material.h
 	include/MaterialDensityPair.h
-	include/Mesh.h
 	include/MeshDecimator.h
 	include/MeshDecimator.inl
-	include/MeshEdge.h
-	include/MeshFace.h
-	include/MeshVertex.h
 	include/PolyVoxForwardDeclarations.h
 	include/Region.h
 	include/SurfaceExtractor.h
