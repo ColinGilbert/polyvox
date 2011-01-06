@@ -112,6 +112,7 @@ namespace PolyVox
 		}
 	}
 
+	template<>
 	void MeshDecimator<PositionMaterial>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
 	{
 		vecVertexMetadata.clear();
@@ -171,6 +172,7 @@ namespace PolyVox
 		}
 	}
 
+	template<>
 	void MeshDecimator<PositionMaterialNormal>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
 	{
 		vecVertexMetadata.clear();

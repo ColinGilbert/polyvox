@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 24);
 
 	//Extract the surface
-	Region region(Vector3DInt16(-1,-1,-1), Vector3DInt16(32,32,32));
+	PolyVox::Region region(Vector3DInt16(-1,-1,-1), Vector3DInt16(32,32,32));
 	SurfaceMesh<PositionMaterial> mesh;
 	//CubicSurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 
