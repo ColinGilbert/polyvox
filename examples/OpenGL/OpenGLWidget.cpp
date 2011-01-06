@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 #include "GradientEstimators.h"
 #include "MaterialDensityPair.h"
 #include "SurfaceExtractor.h"
-#include "MeshDecimator.h"
 
 #include "Mesh.h"
 
@@ -126,10 +125,6 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 
 						//mesh->decimate(0.999f);
 
-						polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > decimatedMesh(new SurfaceMesh<PositionMaterialNormal>);
-						MeshDecimator<PositionMaterialNormal> decimator(mesh.get(), decimatedMesh.get());
-						decimator.execute();
-
 						//mesh->generateAveragedFaceNormals(true);
 						////////////////////////////////////////////////////////////////////////////////
 
@@ -144,12 +139,12 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 						if(m_bUseOpenGLVertexBufferObjects)
 						{
-							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(decimatedMesh.get()));					
+							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(mesh.get()));					
 							m_mapOpenGLSurfaceMeshes.insert(make_pair(v3dRegPos, openGLSurfaceMesh));
 						}
 						//else
 						//{
-							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, decimatedMesh));
+							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, mesh));
 						//}
 						//delete meshCurrent;
 					}
@@ -188,7 +183,7 @@ void OpenGLWidget::initializeGL()
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	glEnable(GL_LIGHT0);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	glShadeModel(GL_SMOOTH);
 }
@@ -217,8 +212,8 @@ void OpenGLWidget::paintGL()
 		//Moves the camera back so we can see the volume
 		glTranslatef(0.0f, 0.0f, -m_volData->getDiagonalLength());	
 
-		glRotatef(10, 1.0f, 0.0f, 0.0f);
-		glRotatef(20, 0.0f, 1.0f, 0.0f);
+		glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
+		glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
 
 		//Centre the volume on the origin
 		glTranslatef(-g_uVolumeSideLength/2,-g_uVolumeSideLength/2,-g_uVolumeSideLength/2);

@@ -24,15 +24,11 @@ freely, subject to the following restrictions:
 #include "OpenGLWidget.h"
 
 #include "MaterialDensityPair.h"
-#include "CubicSurfaceExtractor.h"
 #include "CubicSurfaceExtractorWithNormals.h"
 #include "SurfaceMesh.h"
 #include "Volume.h"
 
-#include "MeshDecimator.h"
-
 #include <QApplication>
-#include <QTime>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
@@ -40,9 +36,7 @@ using namespace PolyVox;
 void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
-	//Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
-
-	Vector3DFloat v3dVolCenter(16, 16, 1);
+	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
 
 	//This three-level for loop iterates over every voxel in the volume
 	for (int z = 0; z < volData.getWidth(); z++)
@@ -61,43 +55,19 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius)
 				{
 					//Our new density value
 					uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
-					uint8_t uMaterial = 3;
 
 					//Get the old voxel
 					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
 
 					//Modify the density
 					voxel.setDensity(uDensity);
-					voxel.setMaterial(uMaterial);
 
-					//Write the voxel value into the volume	
+					//Wrte the voxel value into the volume	
 					volData.setVoxelAt(x, y, z, voxel);
 				}
 			}
 		}
 	}
-}
-
-void addNormals(const PolyVox::SurfaceMesh<PolyVox::PositionMaterial>& inputMesh,  PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& outputMesh)
-{
-	outputMesh.m_Region = inputMesh.m_Region;
-
-	outputMesh.m_vecTriangleIndices.clear();
-	for(int ct = 0; ct < inputMesh.m_vecTriangleIndices.size(); ++ct)
-	{
-		outputMesh.m_vecTriangleIndices.push_back(inputMesh.m_vecTriangleIndices[ct]);
-	}
-
-	outputMesh.m_vecVertices.clear();
-	for(int ct = 0; ct < inputMesh.m_vecVertices.size(); ++ct)
-	{
-		PositionMaterialNormal vertex;
-		vertex.position = inputMesh.m_vecVertices[ct].position;
-		vertex.material = inputMesh.m_vecVertices[ct].material;
-		outputMesh.m_vecVertices.push_back(vertex);
-	}
-
-	outputMesh.generateAveragedFaceNormals(true, true);
 }
 
 int main(int argc, char *argv[])
@@ -108,87 +78,16 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(32, 32, 32, 32);
-	//createSphereInVolume(volData, 30);
-
-	//This three-level for loop iterates over every voxel in the volume
-	/*for (int z = 8; z < 24; z++)
-	{
-		for (int y = 8; y < 24; y++)
-		{
-			for (int x = 8; x < 16; x++)
-			{				
-				//Our new density value
-				uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
-
-				//Get the old voxel
-				MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
-
-				//Modify the density
-				voxel.setDensity(uDensity);
-				voxel.setMaterial(3);
-
-				//Write the voxel value into the volume	
-				volData.setVoxelAt(x, y, z, voxel);
-			}
-		}
-	}
-
-	for (int z = 8; z < 24; z++)
-	{
-		for (int y = 8; y < 24; y++)
-		{
-			for (int x = 16; x < 24; x++)
-			{				
-				//Our new density value
-				uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
-
-				//Get the old voxel
-				MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
-
-				//Modify the density
-				voxel.setDensity(uDensity);
-				voxel.setMaterial(5);
-
-				//Write the voxel value into the volume	
-				volData.setVoxelAt(x, y, z, voxel);
-			}
-		}
-	}*/
-
-	createSphereInVolume(volData, 24);
+	Volume<MaterialDensityPair44> volData(64, 64, 64);
+	createSphereInVolume(volData, 30);
 
 	//Extract the surface
-	PolyVox::Region region(Vector3DInt16(-1,-1,-1), Vector3DInt16(32,32,32));
-	SurfaceMesh<PositionMaterial> mesh;
-	//CubicSurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-
-	QTime t;
-	t.start();
-
-	CubicSurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, region, &mesh);
+	SurfaceMesh<PositionMaterialNormal> mesh;
+	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
-	cout << "E: " << t.elapsed();
-	t.restart();
-
-	/*SurfaceMesh<PositionMaterialNormal> meshWithNormals;
-	addNormals(mesh, meshWithNormals);
-
-	meshWithNormals.decimate(0.99);*/
-
-	SurfaceMesh<PositionMaterial> decimatedMesh;
-	MeshDecimator<PositionMaterial> decimator(&mesh, &decimatedMesh);
-	decimator.execute();
-
-	cout << "D: " << t.elapsed();
-
-	SurfaceMesh<PositionMaterialNormal> meshWithNormals;
-	addNormals(decimatedMesh, meshWithNormals);
-
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(meshWithNormals);
-	//openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setSurfaceMeshToRender(mesh);
 
 	//Run the message pump.
 	return app.exec();
