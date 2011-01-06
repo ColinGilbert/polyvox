@@ -104,6 +104,10 @@ namespace PolyVox
 		//For each vertex, determine which triangles are using it.
 		trianglesUsingVertex.clear();
 		trianglesUsingVertex.resize(m_pOutputMesh->m_vecVertices.size());
+		for(int ct = 0; ct < trianglesUsingVertex.size(); ct++)
+		{
+			trianglesUsingVertex[ct].reserve(6);
+		}
 		for(int ct = 0; ct < m_vecTriangles.size(); ct++)
 		{
 			trianglesUsingVertex[m_vecTriangles[ct].v0].push_back(ct);
@@ -125,19 +129,31 @@ namespace PolyVox
 			vecVertexMetadata[ct].isOnRegionFace.reset();
 		}
 
-		//Identify duplicate vertices, as they lie on the material edge. Note that this is a particularly slow way of
-		//findong the duplicates. Better to hash into integer (with upper bits being z and lower bits being x) and sort 
-		//the resulting integers. The should be mostly in order as this is the order they come out of the
+		//Identify duplicate vertices, as they lie on the material edge. To do this we convert into integers and sort 
+		//(first on z, then y, then x). They should be mostly in order as this is the order they come out of the
 		//CubicSurfaceExtractor in. Duplicates are now neighbours in the resulting list so just scan through for pairs.
-		for(int outerCt = 0; outerCt < m_pOutputMesh->m_vecVertices.size()-1; outerCt++)
+		std::vector<IntVertex> intVertices;
+		intVertices.reserve(m_pOutputMesh->m_vecVertices.size());
+		for(int ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
-			for(int innerCt = outerCt+1; innerCt < m_pOutputMesh->m_vecVertices.size(); innerCt++)
+			const Vector3DFloat& floatPos = m_pOutputMesh->m_vecVertices[ct].position;
+			IntVertex intVertex(static_cast<uint32_t>(floatPos.getX()), static_cast<uint32_t>(floatPos.getY()), static_cast<uint32_t>(floatPos.getZ()), ct);
+			intVertices.push_back(intVertex);
+		}
+
+		//Do the sorting so that duplicate become neighbours
+		sort(intVertices.begin(), intVertices.end());
+
+		//Find neighbours which are duplicates.
+		for(int ct = 0; ct < intVertices.size() - 1; ct++)
+		{
+			const IntVertex& v0 = intVertices[ct+0];
+			const IntVertex& v1 = intVertices[ct+1];
+
+			if((v0.x == v1.x) && (v0.y == v1.y) && (v0.z == v1.z))
 			{
-				if((m_pOutputMesh->m_vecVertices[innerCt].position - m_pOutputMesh->m_vecVertices[outerCt].position).lengthSquared() < 0.001f)
-				{							
-					vecVertexMetadata[innerCt].isOnMaterialEdge = true;
-					vecVertexMetadata[outerCt].isOnMaterialEdge = true;
-				}
+				vecVertexMetadata[v0.index].isOnMaterialEdge = true;
+				vecVertexMetadata[v1.index].isOnMaterialEdge = true;
 			}
 		}
 
@@ -145,7 +161,7 @@ namespace PolyVox
 		for(int ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
 			Vector3DFloat sumOfNormals(0.0f,0.0f,0.0f);
-			for(list<uint32_t>::const_iterator iter = trianglesUsingVertex[ct].cbegin(); iter != trianglesUsingVertex[ct].cend(); iter++)
+			for(vector<uint32_t>::const_iterator iter = trianglesUsingVertex[ct].cbegin(); iter != trianglesUsingVertex[ct].cend(); iter++)
 			{
 				sumOfNormals += m_vecTriangles[*iter].normal;
 			}
@@ -392,15 +408,15 @@ namespace PolyVox
 	bool MeshDecimator<VertexType>::collapseChangesFaceNormals(uint32_t uSrc, uint32_t uDst, float fThreshold)
 	{
 		bool faceFlipped = false;
-		list<uint32_t>& triangles = trianglesUsingVertex[uSrc];
+		vector<uint32_t>& triangles = trianglesUsingVertex[uSrc];
 
-		for(list<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
+		for(vector<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
 		{
 			uint32_t tri = *triIter;
 					
-			uint32_t v0Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3];
-			uint32_t v1Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3 + 1];
-			uint32_t v2Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3 + 2];
+			const uint32_t& v0Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3];
+			const uint32_t& v1Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3 + 1];
+			const uint32_t& v2Old = m_pOutputMesh->m_vecTriangleIndices[tri * 3 + 2];
 
 			//Check if degenerate
 			if((v0Old == v1Old) || (v1Old == v2Old) || (v2Old == v0Old))
@@ -425,13 +441,13 @@ namespace PolyVox
 				continue;
 			}
 
-			Vector3DFloat v0OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0Old]].getPosition(); //Note: we need the vertex mapper here. These neighbouring vertices may have been moved.
-			Vector3DFloat v1OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1Old]].getPosition();
-			Vector3DFloat v2OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2Old]].getPosition();
+			const Vector3DFloat& v0OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0Old]].getPosition(); //Note: we need the vertex mapper here. These neighbouring vertices may have been moved.
+			const Vector3DFloat& v1OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1Old]].getPosition();
+			const Vector3DFloat& v2OldPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2Old]].getPosition();
 
-			Vector3DFloat v0NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0New]].getPosition();
-			Vector3DFloat v1NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1New]].getPosition();
-			Vector3DFloat v2NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2New]].getPosition();
+			const Vector3DFloat& v0NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v0New]].getPosition();
+			const Vector3DFloat& v1NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v1New]].getPosition();
+			const Vector3DFloat& v2NewPos = m_pOutputMesh->m_vecVertices[vertexMapper[v2New]].getPosition();
 
 			Vector3DFloat OldNormal = (v1OldPos - v0OldPos).cross(v2OldPos - v1OldPos);
 			Vector3DFloat NewNormal = (v1NewPos - v0NewPos).cross(v2NewPos - v1NewPos);

@@ -92,6 +92,48 @@ namespace PolyVox
 			uint32_t v2;
 			Vector3DFloat normal;
 		};
+
+		struct IntVertex
+		{			
+			int32_t x;
+			int32_t y;
+			int32_t z;
+			uint32_t index;
+
+			IntVertex(int32_t xVal, int32_t yVal, int32_t zVal, uint32_t indexVal)
+				:x(xVal)
+				,y(yVal)
+				,z(zVal)
+				,index(indexVal)
+			{
+			}
+
+			bool operator==(const IntVertex& rhs) const
+			{
+				return (x == rhs.x) && (y == rhs.y) && (z == rhs.z);
+			}
+
+			bool operator<(const IntVertex& rhs) const
+			{
+				if (z < rhs.z)
+					return true;
+				if (rhs.z < z)
+					return false;
+
+				if (y < rhs.y)
+					return true;
+				if (rhs.y < y)
+					return false;
+
+				if (x < rhs.x)
+					return true;
+				if (rhs.x < x)
+					return false;
+
+				return false;
+			}
+		};
+
 	public:
 		///Constructor
 		MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold = 0.95f);
@@ -125,7 +167,7 @@ namespace PolyVox
 		std::vector<uint32_t> vertexMapper;
 
 		std::vector<Triangle> m_vecTriangles;
-		std::vector< list<uint32_t> > trianglesUsingVertex; //Should probably use vector of vectors, and resise in advance.
+		std::vector< std::vector<uint32_t> > trianglesUsingVertex; //Should probably use vector of vectors, and resise in advance.
 
 		std::vector<InitialVertexMetadata> m_vecInitialVertexMetadata;
 
