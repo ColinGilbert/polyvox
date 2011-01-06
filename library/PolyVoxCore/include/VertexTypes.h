@@ -32,18 +32,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {	
-	enum POLYVOXCORE_API VertexFlags
-	{
-		VF_ON_MATERIAL_EDGE,
-		VF_ON_GEOMETRY_EDGE_NEG_X,
-		VF_ON_GEOMETRY_EDGE_POS_X ,
-		VF_ON_GEOMETRY_EDGE_NEG_Y ,
-		VF_ON_GEOMETRY_EDGE_POS_Y ,
-		VF_ON_GEOMETRY_EDGE_NEG_Z ,
-		VF_ON_GEOMETRY_EDGE_POS_Z,
-		VF_NO_OF_FLAGS
-	};
-
 	class POLYVOXCORE_API PositionMaterial
 	{
 	public:	
@@ -56,6 +44,7 @@ namespace PolyVox
 		void setMaterial(float materialToSet);
 		void setPosition(const Vector3DFloat& positionToSet);
 	public:		
+		//Nicely fits into four floats.
 		Vector3DFloat position;
 		float material;
 	};	
@@ -70,34 +59,17 @@ namespace PolyVox
 		float getMaterial(void) const;
 		const Vector3DFloat& getNormal(void) const;
 		const Vector3DFloat& getPosition(void) const;	
-		//unsigned int getNoOfGeometryEdges(void) const;
-
-		bool isOnEdge(void) const;
-		bool isOnGeometryEdge(void) const;
-		bool isOnGeometryEdgeNegX(void) const;
-		bool isOnGeometryEdgePosX(void) const;
-		bool isOnGeometryEdgeNegY(void) const;
-		bool isOnGeometryEdgePosY(void) const;
-		bool isOnGeometryEdgeNegZ(void) const;
-		bool isOnGeometryEdgePosZ(void) const;
-		bool isOnMaterialEdge(void) const;
 
 		void setMaterial(float materialToSet);
 		void setNormal(const Vector3DFloat& normalToSet);
-		void setOnGeometryEdgeNegX(bool bOnRegionEdge);
-		void setOnGeometryEdgePosX(bool bOnRegionEdge);
-		void setOnGeometryEdgeNegY(bool bOnRegionEdge);
-		void setOnGeometryEdgePosY(bool bOnRegionEdge);
-		void setOnGeometryEdgeNegZ(bool bOnRegionEdge);
-		void setOnGeometryEdgePosZ(bool bOnRegionEdge);
-		void setOnMaterialEdge(bool bOnMaterialEdge);
 		void setPosition(const Vector3DFloat& positionToSet);
 
 	public:		
+		//Nicely fits into seven floats, meaning we
+		//can squeeze in one more for material blending.
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		float material; //FIXME: This shouldn't be float on CPU?
-		std::bitset<VF_NO_OF_FLAGS> m_bFlags;	
 	};
 }
 

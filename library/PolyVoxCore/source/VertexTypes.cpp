@@ -59,63 +59,6 @@ namespace PolyVox
 	{
 		return position;
 	}
-	
-	//Returns a value between 0-3, for how many geometry edges (X,Y,Z) this vertex is on.
-	/*unsigned int PositionMaterialNormal::getNoOfGeometryEdges(void) const
-	{
-		unsigned int uIsOnEdgeX = static_cast<unsigned int>(isOnGeometryEdgeX());
-		unsigned int uIsOnEdgeY = static_cast<unsigned int>(isOnGeometryEdgeY());
-		unsigned int uIsOnEdgeZ = static_cast<unsigned int>(isOnGeometryEdgeZ());
-		return uIsOnEdgeX + uIsOnEdgeY + uIsOnEdgeZ;
-	}*/
-
-	bool PositionMaterialNormal::isOnEdge(void) const
-	{
-		return (isOnMaterialEdge() || isOnGeometryEdge());
-	}
-
-	bool PositionMaterialNormal::isOnMaterialEdge(void) const
-	{
-		return m_bFlags[VF_ON_MATERIAL_EDGE];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdge(void) const
-	{
-		return 
-			m_bFlags [VF_ON_GEOMETRY_EDGE_NEG_X] || m_bFlags[VF_ON_GEOMETRY_EDGE_POS_X] ||
-			m_bFlags [VF_ON_GEOMETRY_EDGE_NEG_Y] || m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Y] ||
-			m_bFlags [VF_ON_GEOMETRY_EDGE_NEG_Z] || m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Z];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdgeNegX(void) const
-	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_X];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdgePosX(void) const
-	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_POS_X];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdgeNegY(void) const
-	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Y];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdgePosY(void) const
-	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Y];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdgeNegZ(void) const
-	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Z];
-	}
-
-	bool PositionMaterialNormal::isOnGeometryEdgePosZ(void) const
-	{
-		return m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Z];
-	}
 
 	void PositionMaterialNormal::setMaterial(float materialToSet)
 	{
@@ -126,41 +69,6 @@ namespace PolyVox
 	{
 		normal = normalToSet;
 	}	
-
-	void PositionMaterialNormal::setOnMaterialEdge(bool bOnMaterialEdge)
-	{
-		m_bFlags[VF_ON_MATERIAL_EDGE] = bOnMaterialEdge;
-	}
-
-	void PositionMaterialNormal::setOnGeometryEdgeNegX(bool bOnRegionEdge)
-	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_X] = bOnRegionEdge;
-	}
-
-	void PositionMaterialNormal::setOnGeometryEdgePosX(bool bOnRegionEdge)
-	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_POS_X] = bOnRegionEdge;
-	}
-
-	void PositionMaterialNormal::setOnGeometryEdgeNegY(bool bOnRegionEdge)
-	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Y] = bOnRegionEdge;
-	}
-
-	void PositionMaterialNormal::setOnGeometryEdgePosY(bool bOnRegionEdge)
-	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Y] = bOnRegionEdge;
-	}
-
-	void PositionMaterialNormal::setOnGeometryEdgeNegZ(bool bOnRegionEdge)
-	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_NEG_Z] = bOnRegionEdge;
-	}
-
-	void PositionMaterialNormal::setOnGeometryEdgePosZ(bool bOnRegionEdge)
-	{
-		m_bFlags[VF_ON_GEOMETRY_EDGE_POS_Z] = bOnRegionEdge;
-	}
 
 	void PositionMaterialNormal::setPosition(const Vector3DFloat& positionToSet)
 	{

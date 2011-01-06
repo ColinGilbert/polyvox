@@ -58,7 +58,6 @@ namespace PolyVox
 	   const std::vector<VertexType>& getVertices(void) const;
 
 	   void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
-	   void addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2);
 	   uint32_t addVertex(const VertexType& vertex);
 	   void clear(void);
 	   const bool isEmpty(void) const;
@@ -85,11 +84,6 @@ namespace PolyVox
 		std::vector<VertexType> m_vecVertices;
 
 		std::vector<LodRecord> m_vecLodRecords;
-
-		//The set of materials which are in this mesh. Only those materials
-		//which cover a whole triangle are counted. Materials which only
-		//exist on a material boundary do not count.
-		std::set<uint8_t> m_mapUsedMaterials;
 	};	
 }
 

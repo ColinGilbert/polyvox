@@ -402,25 +402,16 @@ namespace PolyVox
 	{
 		int16_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 		const uint16_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
-		//bool isZEdge = ((iZVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getZ()) || (iZVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getZ()));
-		bool isNegZEdge = (iZVolSpace == m_regSizeInVoxels.getLowerCorner().getZ());
-		bool isPosZEdge = (iZVolSpace == m_regSizeInVoxels.getUpperCorner().getZ());
 
 		//Iterate over each cell in the region
 		for(int16_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); iYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); iYVolSpace++)
 		{
 			const uint16_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
-			//bool isYEdge = ((iYVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getY()) || (iYVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getY()));
-			bool isNegYEdge = (iYVolSpace == m_regSizeInVoxels.getLowerCorner().getY());
-			bool isPosYEdge = (iYVolSpace == m_regSizeInVoxels.getUpperCorner().getY());
 
 			for(int16_t iXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); iXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); iXVolSpace++)
 			{		
 				//Current position
 				const uint16_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-				//bool isXEdge = ((iXVolSpace == m_regSizeInVoxelsCropped.getLowerCorner().getX()) || (iXVolSpace == m_regSizeInVoxelsCropped.getUpperCorner().getX()));
-				bool isNegXEdge = (iXVolSpace == m_regSizeInVoxels.getLowerCorner().getX());
-				bool isPosXEdge = (iXVolSpace == m_regSizeInVoxels.getUpperCorner().getX());
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = pCurrentBitmask[uXRegSpace][uYRegSpace];
@@ -458,13 +449,6 @@ namespace PolyVox
 					const uint8_t uMaterial = v000.getMaterial() | v100.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
-					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
-					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
-					surfaceVertex.setOnGeometryEdgeNegY(isNegYEdge);
-					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
-					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
-					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
@@ -488,13 +472,6 @@ namespace PolyVox
 					const uint8_t uMaterial = v000.getMaterial() | v010.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
-					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
-					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
-					surfaceVertex.setOnGeometryEdgeNegY(isNegYEdge);
-					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
-					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
-					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
@@ -518,13 +495,6 @@ namespace PolyVox
 					const uint8_t uMaterial = v000.getMaterial() | v001.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
-					//surfaceVertex.setOnGeometryEdge(isXEdge || isYEdge || isZEdge);
-					surfaceVertex.setOnGeometryEdgeNegX(isNegXEdge);
-					surfaceVertex.setOnGeometryEdgePosX(isPosXEdge);
-					surfaceVertex.setOnGeometryEdgeNegY(isNegYEdge);
-					surfaceVertex.setOnGeometryEdgePosY(isPosYEdge);
-					surfaceVertex.setOnGeometryEdgeNegZ(isNegZEdge);
-					surfaceVertex.setOnGeometryEdgePosZ(isPosZEdge);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
