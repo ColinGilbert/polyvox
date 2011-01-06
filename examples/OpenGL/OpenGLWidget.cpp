@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include "GradientEstimators.h"
 #include "MaterialDensityPair.h"
+#include "MeshDecimator.h"
 #include "SurfaceExtractor.h"
 
 #include "Mesh.h"
@@ -93,6 +94,10 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 					SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
+					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > decimatedMesh(new SurfaceMesh<PositionMaterialNormal>);
+					MeshDecimator<PositionMaterialNormal> decimator(mesh.get(), decimatedMesh.get(), 0.95f);
+					decimator.execute();
+
 					//computeNormalsForVertices(m_volData, *(mesh.get()), SOBEL_SMOOTHED);
 					//*meshCurrent = getSmoothedSurface(*meshCurrent);
 					//mesh->smooth(0.3f);
@@ -139,12 +144,12 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 						if(m_bUseOpenGLVertexBufferObjects)
 						{
-							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(mesh.get()));					
+							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(decimatedMesh.get()));					
 							m_mapOpenGLSurfaceMeshes.insert(make_pair(v3dRegPos, openGLSurfaceMesh));
 						}
 						//else
 						//{
-							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, mesh));
+							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, decimatedMesh));
 						//}
 						//delete meshCurrent;
 					}

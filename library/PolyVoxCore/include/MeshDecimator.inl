@@ -366,7 +366,9 @@ namespace PolyVox
 	{
 		//We don't actually use the normal here, because we want to allow face
 		//vertices to collapse onto edge vertices. Simply checking whether anything
-		//has flipped has proved to be the most robust approach, though rather slow...
+		//has flipped has proved to be the most robust approach, though rather slow.
+		//It's not sufficient to just check the normals, there can be holes in the middle
+		//of the mesh for example.
 
 		//User specified threshold is not used for cubic surface, any
 		//movement is too much (but allow for floating point error).
@@ -455,10 +457,8 @@ namespace PolyVox
 			OldNormal.normalise();
 			NewNormal.normalise();
 
-			// Note for after holiday - We are still getting faces flipping despite the following test. I tried changing
-			// the 0.0 to 0.9 (which should still let coplanar faces merge) but oddly nothing then merged. Investigate this.
 			float dotProduct = OldNormal.dot(NewNormal);
-			//cout << dotProduct << endl;
+			//NOTE: I don't think we should be using the threshold here, we're just checking for a complete face flip
 			if(dotProduct < fThreshold)
 			{
 				//cout << "   Face flipped!!" << endl;
