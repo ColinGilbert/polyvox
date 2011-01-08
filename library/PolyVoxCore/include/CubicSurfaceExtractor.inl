@@ -90,13 +90,13 @@ namespace PolyVox
 
 						if(currentVoxelIsSolid > negXVoxelIsSolid)
 						{
-							m_meshCurrent->addTriangle(v0,v1,v2);
-							m_meshCurrent->addTriangle(v1,v3,v2);
+							m_meshCurrent->addTriangleCubic(v0,v1,v2);
+							m_meshCurrent->addTriangleCubic(v1,v3,v2);
 						}
 						else
 						{
-							m_meshCurrent->addTriangle(v0,v2,v1);
-							m_meshCurrent->addTriangle(v1,v2,v3);
+							m_meshCurrent->addTriangleCubic(v0,v2,v1);
+							m_meshCurrent->addTriangleCubic(v1,v2,v3);
 						}
 					}
 
@@ -114,13 +114,13 @@ namespace PolyVox
 
 						if(currentVoxelIsSolid > negYVoxelIsSolid)
 						{
-							m_meshCurrent->addTriangle(v0,v2,v1);
-							m_meshCurrent->addTriangle(v1,v2,v3);
+							m_meshCurrent->addTriangleCubic(v0,v2,v1);
+							m_meshCurrent->addTriangleCubic(v1,v2,v3);
 						}
 						else
 						{
-							m_meshCurrent->addTriangle(v0,v1,v2);
-							m_meshCurrent->addTriangle(v1,v3,v2);
+							m_meshCurrent->addTriangleCubic(v0,v1,v2);
+							m_meshCurrent->addTriangleCubic(v1,v3,v2);
 						}
 					}
 
@@ -138,13 +138,13 @@ namespace PolyVox
 
 						if(currentVoxelIsSolid > negZVoxelIsSolid)
 						{
-							m_meshCurrent->addTriangle(v0,v1,v2);
-							m_meshCurrent->addTriangle(v1,v3,v2);
+							m_meshCurrent->addTriangleCubic(v0,v1,v2);
+							m_meshCurrent->addTriangleCubic(v1,v3,v2);
 						}
 						else
 						{
-							m_meshCurrent->addTriangle(v0,v2,v1);
-							m_meshCurrent->addTriangle(v1,v2,v3);
+							m_meshCurrent->addTriangleCubic(v0,v2,v1);
+							m_meshCurrent->addTriangleCubic(v1,v2,v3);
 						}
 					}
 				}
