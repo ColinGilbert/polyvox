@@ -34,6 +34,8 @@ SET(CORE_INC_FILES
 	include/MeshDecimator.h
 	include/MeshDecimator.inl
 	include/PolyVoxForwardDeclarations.h
+	include/Raycast.h
+	include/Raycast.inl
 	include/Region.h
 	include/SurfaceExtractor.h
 	include/SurfaceExtractor.inl
