@@ -25,6 +25,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Raycast<VoxelType>::Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, float fMaxDistance)
 		:m_volData(volData)
+		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
 		,m_v3dDirection(v3dDirection)
 		,m_fMaxDistance(fMaxDistance)
@@ -34,42 +35,42 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Raycast<VoxelType>::execute(void)
 	{
-		Vector3DFloat v3dEnd = m_v3dStart + m_v3dDirection;
-		hit = doRaycast(m_v3dStart.getX(), m_v3dStart.getY(), m_v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());
+		Vector3DFloat v3dStart = m_v3dStart + Vector3DFloat(0.5f, 0.5f, 0.5f);
+		Vector3DFloat v3dEnd = v3dStart + m_v3dDirection;
+		hit = doRaycast(v3dStart.getX(), v3dStart.getY(), v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());
 	}
 
 	template <typename VoxelType>
 	bool Raycast<VoxelType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
-		const float CELL_SIDE = 1.0f;
+		int i = (int)floorf(x1);
+		int j = (int)floorf(y1);
+		int k = (int)floorf(z1);
 
-		int i = (int)floorf(x1 / CELL_SIDE);
-		int j = (int)floorf(y1 / CELL_SIDE);
-		int k = (int)floorf(z1 / CELL_SIDE);
-
-		int iend = (int)floorf(x2 / CELL_SIDE);
-		int jend = (int)floorf(y2 / CELL_SIDE);
-		int kend = (int)floorf(z2 / CELL_SIDE);
+		int iend = (int)floorf(x2);
+		int jend = (int)floorf(y2);
+		int kend = (int)floorf(z2);
 
 		int di = ((x1 < x2) ? 1 : ((x1 > x2) ? -1 : 0));
 		int dj = ((y1 < y2) ? 1 : ((y1 > y2) ? -1 : 0));
 		int dk = ((z1 < z2) ? 1 : ((z1 > z2) ? -1 : 0));
 
-		float minx = CELL_SIDE * floorf(x1/CELL_SIDE), maxx = minx + CELL_SIDE;
+		float minx = floorf(x1), maxx = minx + 1.0f;
 		float tx = ((x1 > x2) ? (x1 - minx) : (maxx - x1)) / abs(x2 - x1);
-		float miny = CELL_SIDE * floorf(y1/CELL_SIDE), maxy = miny + CELL_SIDE;
+		float miny = floorf(y1), maxy = miny + 1.0f;
 		float ty = ((y1 > y2) ? (y1 - miny) : (maxy - y1)) / abs(y2 - y1);
-		float minz = CELL_SIDE * floorf(z1/CELL_SIDE), maxz = minz + CELL_SIDE;
+		float minz = floorf(z1), maxz = minz + 1.0f;
 		float tz = ((z1 > z2) ? (z1 - minz) : (maxz - z1)) / abs(z2 - z1);
 
-		float deltatx = CELL_SIDE / abs(x2 - x1);
-		float deltaty = CELL_SIDE / abs(y2 - y1);
-		float deltatz = CELL_SIDE / abs(z2 - z1);
+		float deltatx = 1.0f / abs(x2 - x1);
+		float deltaty = 1.0f / abs(y2 - y1);
+		float deltatz = 1.0f / abs(z2 - z1);
+
+		m_sampVolume.setPosition(i,j,k);
 
 		for(;;)
 		{
-			//cout << i << ", " << j << ", " << k << endl;
-			if(m_volData->getVoxelAt(i,j,k).getDensity() > VoxelType::getThreshold())
+			if(m_sampVolume.getVoxel().getDensity() > VoxelType::getThreshold())
 			{
 				x = i;
 				y = j;
@@ -77,18 +78,30 @@ namespace PolyVox
 				return true;
 			}
 
-			if(tx <= ty && tx <= tz) {
+			if(tx <= ty && tx <= tz)
+			{
 				if(i == iend) break;
 				tx += deltatx;
 				i += di;
-			} else if (ty <= tz){
+
+				if(di == 1) m_sampVolume.movePositiveX();
+				if(di == -1) m_sampVolume.moveNegativeX();
+			} else if (ty <= tz)
+			{
 				if(j == jend) break;
 				ty += deltaty;
 				j += dj;
-			} else {
+
+				if(dj == 1) m_sampVolume.movePositiveY();
+				if(dj == -1) m_sampVolume.moveNegativeY();
+			} else 
+			{
 				if(k == kend) break;
 				tz += deltatz;
 				k += dk;
+
+				if(dk == 1) m_sampVolume.movePositiveZ();
+				if(dk == -1) m_sampVolume.moveNegativeZ();
 			}
 		}
 
