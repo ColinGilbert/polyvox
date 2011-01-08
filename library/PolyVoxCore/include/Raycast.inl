@@ -23,25 +23,61 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Raycast<VoxelType>::Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, float fMaxDistance)
+	Raycast<VoxelType>::Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
 		,m_v3dDirection(v3dDirection)
-		,m_fMaxDistance(fMaxDistance)
+		,m_result(result)
 	{
 	}
 
 	template <typename VoxelType>
 	void Raycast<VoxelType>::execute(void)
 	{
+		//The doRaycast function is assuming that it is iterating over the areas defined between
+		//voxels. We actually want to define the areas as being centered on voxels (as this is
+		//what the CubicSurfaceExtractor generates). We add (0.5,0.5,0.5) here to adjust for this.
 		Vector3DFloat v3dStart = m_v3dStart + Vector3DFloat(0.5f, 0.5f, 0.5f);
+
+		//Compute the end point
 		Vector3DFloat v3dEnd = v3dStart + m_v3dDirection;
-		hit = doRaycast(v3dStart.getX(), v3dStart.getY(), v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());
+
+		//Do the raycast
+		doRaycast(v3dStart.getX(), v3dStart.getY(), v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());
 	}
 
+	// This function is based on Christer Ericson's code and description of the 'Uniform Grid Intersection Test' in
+	// 'Real Time Collision Detection'. The following information from the errata on the book website is also relevent:
+	//
+	//	pages 326-327. In the function VisitCellsOverlapped() the two lines calculating tx and ty are incorrect.
+	//  The less-than sign in each line should be a greater-than sign. That is, the two lines should read:
+	//
+	//	float tx = ((x1 > x2) ? (x1 - minx) : (maxx - x1)) / Abs(x2 - x1);
+	//	float ty = ((y1 > y2) ? (y1 - miny) : (maxy - y1)) / Abs(y2 - y1);
+	//
+	//	Thanks to Jetro Lauha of Fathammer in Helsinki, Finland for reporting this error.
+	//
+	//	Jetro also points out that the computations of i, j, iend, and jend are incorrectly rounded if the line
+	//  coordinates are allowed to go negative. While that was not really the intent of the code — that is, I
+	//  assumed grids to be numbered from (0, 0) to (m, n) — I'm at fault for not making my assumption clear.
+	//  Where it is important to handle negative line coordinates the computation of these variables should be
+	//  changed to something like this:
+	//
+	//	// Determine start grid cell coordinates (i, j)
+	//	int i = (int)floorf(x1 / CELL_SIDE);
+	//	int j = (int)floorf(y1 / CELL_SIDE);
+	//
+	//	// Determine end grid cell coordinates (iend, jend)
+	//	int iend = (int)floorf(x2 / CELL_SIDE);
+	//	int jend = (int)floorf(y2 / CELL_SIDE);
+	//
+	//	page 328. The if-statement that reads "if (ty <= tx && ty <= tz)" has a superfluous condition.
+	//  It should simply read "if (ty <= tz)".
+	//
+	//	This error was reported by Joey Hammer (PixelActive). 
 	template <typename VoxelType>
-	bool Raycast<VoxelType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
+	void Raycast<VoxelType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
 		int i = (int)floorf(x1);
 		int j = (int)floorf(y1);
@@ -72,10 +108,9 @@ namespace PolyVox
 		{
 			if(m_sampVolume.getVoxel().getDensity() > VoxelType::getThreshold())
 			{
-				x = i;
-				y = j;
-				z = k;
-				return true;
+				m_result.foundIntersection = true;
+				m_result.intersectionVoxel = Vector3DInt16(i,j,k);
+				return;
 			}
 
 			if(tx <= ty && tx <= tz)
@@ -105,6 +140,8 @@ namespace PolyVox
 			}
 		}
 
-		return false;
+		//Didn't hit anything
+		m_result.foundIntersection = false;
+		m_result.intersectionVoxel = Vector3DInt16(0,0,0);
 	}
 }

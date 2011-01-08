@@ -26,21 +26,24 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	struct RaycastResult
+	{
+		bool foundIntersection;
+		Vector3DInt16 intersectionVoxel;
+	};
+
 	template <typename VoxelType>
 	class Raycast
 	{
 	public:
-		Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, float fMaxDistance = 1000.0f);
+		Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result);
 
 		void execute();
 
-		int x;
-		int y;
-		int z;
-		bool hit;
+		RaycastResult& m_result;
 
 	private:
-		bool doRaycast(float x1, float y1, float z1, float x2, float y2, float z2);
+		void doRaycast(float x1, float y1, float z1, float x2, float y2, float z2);
 
 		Volume<VoxelType>* m_volData;
 		VolumeSampler<VoxelType> m_sampVolume;
