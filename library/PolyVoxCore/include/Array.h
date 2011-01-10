@@ -97,6 +97,8 @@ namespace PolyVox
 		void resize(const uint32_t (&pDimensions)[noOfDims]);
 		///Swaps the contents of this array with the one specified
 		void swap(Array<noOfDims, ElementType>& rhs);
+		///Get the size of the Array along the specified dimension
+		uint32_t getDimension(uint32_t uDimension);
 
 	private:
 		Array<noOfDims, ElementType>(const Array<noOfDims, ElementType>& rhs);

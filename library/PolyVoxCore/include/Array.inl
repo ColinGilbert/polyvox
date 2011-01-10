@@ -155,7 +155,7 @@ namespace PolyVox
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Because this class does not have a public assignment operator or copy constructor
-	/// it cnnot be used with the STL swap() function. This function provides an efficient
+	/// it cannot be used with the STL swap() function. This function provides an efficient
 	/// implementation of that feature.
 	/// \param rhs The array to swap this object with.
 	////////////////////////////////////////////////////////////////////////////////
@@ -178,6 +178,16 @@ namespace PolyVox
 		rhs.m_pOffsets = m_pTempOffsets;
 		rhs.m_uNoOfElements = m_uTempNoOfElements;
 		rhs.m_pElements = m_pTempElements;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uDimension The dimension to get the size of.
+	////////////////////////////////////////////////////////////////////////////////
+	template <uint32_t noOfDims, typename ElementType>
+	uint32_t Array<noOfDims, ElementType>::getDimension(uint32_t uDimension)
+	{
+		assert(uDimension < noOfDims);
+		return m_pDimensions[uDimension];
 	}
 
 	template <uint32_t noOfDims, typename ElementType>

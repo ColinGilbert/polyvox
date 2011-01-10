@@ -84,6 +84,10 @@ namespace PolyVox
         Vector<Size,Type>& operator+=(const Vector<Size,Type> &rhs) throw();
         ///Subtraction and Assignment Operator.
         Vector<Size,Type>& operator-=(const Vector<Size,Type> &rhs) throw();
+		///Multiplication and Assignment Operator.
+        Vector<Size,Type>& operator*=(const Vector<Size,Type> &rhs) throw();
+        ///Division and Assignment Operator.
+        Vector<Size,Type>& operator/=(const Vector<Size,Type> &rhs) throw();
         ///Multiplication and Assignment Operator.
         Vector<Size,Type>& operator*=(const Type& rhs) throw();
         ///Division and Assignment Operator.
@@ -142,6 +146,12 @@ namespace PolyVox
 	///Subtraction operator.
 	template <uint32_t Size,typename Type>
 	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
+	///Multiplication operator.
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
+	///Division operator.
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw();
 	///Multiplication operator.
 	template <uint32_t Size,typename Type>
 	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw();

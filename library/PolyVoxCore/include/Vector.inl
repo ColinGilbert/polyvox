@@ -191,20 +191,6 @@ namespace PolyVox
     }
 
 	/**
-    Addition operator adds corresponding elements of the two Vectors.
-	\param lhs Vector to add to.
-    \param rhs Vector to add.
-    \return The resulting Vector.
-    */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result += rhs;
-		return result;
-	}
-
-	/**
     Subtraction operator subtracts corresponding elements of one Vector from the other.
     \param rhs Vector to subtract
     \return The resulting Vector.
@@ -220,18 +206,34 @@ namespace PolyVox
     }
 
 	/**
-    Subtraction operator subtracts corresponding elements of one Vector from the other.
-	\param lhs Vector to subtract from.
-    \param rhs Vector to subtract.
+    Multiplication operator multiplies corresponding elements of the two Vectors.
+    \param rhs Vector to multiply by
     \return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result -= rhs;
-		return result;
-	}
+    template <uint32_t Size, typename Type>
+        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Vector<Size, Type>& rhs) throw()
+    {
+		for(uint32_t ct = 0; ct < Size; ++ct)
+		{
+			m_tElements[ct] *= rhs.m_tElements[ct];
+		}
+        return *this;
+    }
+
+	/**
+    Division operator divides corresponding elements of one Vector by the other.
+    \param rhs Vector to divide by
+    \return The resulting Vector.
+    */
+    template <uint32_t Size, typename Type>
+        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Vector<Size, Type>& rhs) throw()
+    {
+		for(uint32_t ct = 0; ct < Size; ++ct)
+		{
+			m_tElements[ct] /= rhs.m_tElements[ct];
+		}
+        return *this;
+    }
 
     /**
     Multiplication operator multiplies each element of the Vector by a number.
@@ -248,20 +250,6 @@ namespace PolyVox
         return *this;
     }
 
-	/**
-    Multiplication operator multiplies each element of the Vector by a number.
-	\param lhs the Vector to multiply.
-    \param rhs the number the Vector is multiplied by.
-    \return The resulting Vector.
-    */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw()
-	{
-		Vector<Size,Type> result = lhs;
-		result *= rhs;
-		return result;
-	}
-
     /**
 	Division operator divides each element of the Vector by a number.
 	\param rhs the number the Vector is divided by.
@@ -276,6 +264,76 @@ namespace PolyVox
 		}
         return *this;
     }
+
+	/**
+    Addition operator adds corresponding elements of the two Vectors.
+	\param lhs Vector to add to.
+    \param rhs Vector to add.
+    \return The resulting Vector.
+    */
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result += rhs;
+		return result;
+	}
+
+	/**
+    Subtraction operator subtracts corresponding elements of one Vector from the other.
+	\param lhs Vector to subtract from.
+    \param rhs Vector to subtract.
+    \return The resulting Vector.
+    */
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result -= rhs;
+		return result;
+	}
+
+	/**
+    Multiplication operator mulitplies corresponding elements of the two Vectors.
+	\param lhs Vector to multiply.
+    \param rhs Vector to multiply by.
+    \return The resulting Vector.
+    */
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result *= rhs;
+		return result;
+	}
+
+	/**
+    Division operator divides corresponding elements of one Vector by the other.
+	\param lhs Vector to divide.
+    \param rhs Vector to divide by.
+    \return The resulting Vector.
+    */
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result /= rhs;
+		return result;
+	}
+
+	/**
+    Multiplication operator multiplies each element of the Vector by a number.
+	\param lhs the Vector to multiply.
+    \param rhs the number the Vector is multiplied by.
+    \return The resulting Vector.
+    */
+	template <uint32_t Size,typename Type>
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	{
+		Vector<Size,Type> result = lhs;
+		result *= rhs;
+		return result;
+	}
 
 	/**
 	Division operator divides each element of the Vector by a number.
