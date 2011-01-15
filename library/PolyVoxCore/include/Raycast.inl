@@ -33,6 +33,18 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	void Raycast<VoxelType>::setStart(const Vector3DFloat& v3dStart)
+	{
+		m_v3dStart = v3dStart;
+	}
+
+	template <typename VoxelType>
+	void Raycast<VoxelType>::setDirection(const Vector3DFloat& v3dDirection)
+	{
+		m_v3dDirection = v3dDirection;
+	}
+
+	template <typename VoxelType>
 	void Raycast<VoxelType>::execute(void)
 	{
 		//The doRaycast function is assuming that it is iterating over the areas defined between

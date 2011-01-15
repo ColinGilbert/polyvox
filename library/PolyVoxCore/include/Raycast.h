@@ -38,6 +38,9 @@ namespace PolyVox
 	public:
 		Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result);
 
+		void setStart(const Vector3DFloat& v3dStart);
+		void setDirection(const Vector3DFloat& v3dDirection);
+
 		void execute();
 
 		RaycastResult& m_result;
