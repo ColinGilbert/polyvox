@@ -63,7 +63,6 @@ namespace PolyVox
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
-	   void smoothPositions(float fAmount, bool bIncludeGeometryEdgeVertices = false);
 	   void sumNearbyNormals(bool bNormaliseResult = true);
 
 	   polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);

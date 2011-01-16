@@ -32,7 +32,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {	
+#ifdef SWIG
+	class PositionMaterial
+#else
 	class POLYVOXCORE_API PositionMaterial
+#endif
 	{
 	public:	
 		PositionMaterial();
@@ -49,7 +53,11 @@ namespace PolyVox
 		float material;
 	};	
 
+#ifdef SWIG
+	class PositionMaterialNormal
+#else
 	class POLYVOXCORE_API PositionMaterialNormal
+#endif
 	{
 	public:	
 		PositionMaterialNormal();
