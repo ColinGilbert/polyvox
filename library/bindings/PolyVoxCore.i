@@ -15,6 +15,7 @@
 %rename(divisionAssignment) operator/=;
 
 %include "stdint.i"
+%include "std_vector.i"
 %include "Material.i"
 %include "Density.i"
 %include "Vector.i"
