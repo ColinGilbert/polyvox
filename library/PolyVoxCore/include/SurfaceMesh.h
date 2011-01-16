@@ -63,11 +63,14 @@ namespace PolyVox
 	   void clear(void);
 	   const bool isEmpty(void) const;
 
-	   void sumNearbyNormals(bool bNormaliseResult = true);
-
-	   polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
-
-	   void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
+	   //THESE FUNCTIONS TO BE REMOVED IN THE FUTURE. OR AT LEAST MOVED OUT OF THIS CLASS INTO FREE FUNCTIONS.
+	   //THEY ARE CAUSING PROBLEMS WITH THE SWIG BINDINGS. THE FUNCTIONS REGARDING NORMALS MAKE NO SENSE WHEN
+	   //A VERTEX MIGHT NOT HAVE NORMALS. THE EXTRACT SUBSET FUNCTION SHOULD MAYBE BE APPLICATION CODE, AT ANY
+	   //RATE THE STD::SET CAUSES PROBLEMS WITH SWIG. IF YOU UNCOMMENT ANY OF THESE FUNCTIONS, PLEASE POST ON
+	   //THE FORUM SO WE CAN KNOW THE FUNCTIONALITY IS STILL NEEDED IN SOME FORM.
+	   //void sumNearbyNormals(bool bNormaliseResult = true);
+	   //polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
+	   //void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 
 	   int noOfDegenerateTris(void);
 	   void removeDegenerateTris(void);

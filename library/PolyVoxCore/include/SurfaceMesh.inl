@@ -154,7 +154,7 @@ namespace PolyVox
 	/// vertex. Usually, the resulting normals should be renormalised afterwards.
 	/// Note: This function can cause lighting discontinuities accross region boundaries.
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VertexType>
+	/*template <typename VertexType>
 	void SurfaceMesh<VertexType>::sumNearbyNormals(bool bNormaliseResult)
 	{
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
@@ -194,9 +194,9 @@ namespace PolyVox
 			}
 			m_vecVertices[uIndex].setNormal(summedNormals[uIndex]);
 		}
-	}
+	}*/
 
-	template <typename VertexType>
+	/*template <typename VertexType>
 	void SurfaceMesh<VertexType>::generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices)
 	{
 		Vector3DFloat offset = static_cast<Vector3DFloat>(m_Region.getLowerCorner());
@@ -244,9 +244,9 @@ namespace PolyVox
 				iterVertex->setNormal(normal);
 			}
 		}
-	}
+	}*/
 
-	template <typename VertexType>
+	/*template <typename VertexType>
 	polyvox_shared_ptr< SurfaceMesh<VertexType> > SurfaceMesh<VertexType>::extractSubset(std::set<uint8_t> setMaterials)
 	{
 		polyvox_shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
@@ -310,46 +310,6 @@ namespace PolyVox
 		result->m_vecLodRecords.push_back(lodRecord);
 
 		return result;
-	}
-
-	/*int SurfaceMesh::countMaterialBoundary(void)
-	{
-		int count = 0;
-		for(int ct = 0; ct < m_vecVertices.size(); ct++)
-		{
-			if(m_vecVertices[ct].m_bIsMaterialEdgeVertex)
-			{
-				count++;
-			}
-		}
-		return count;
-	}
-
-	void SurfaceMesh::growMaterialBoundary(void)
-	{
-		std::vector<PositionMaterialNormal> vecNewVertices = m_vecVertices;
-
-		for(vector<uint32_t>::iterator iterIndex = m_vecTriangleIndices.begin(); iterIndex != m_vecTriangleIndices.end();)
-		{
-			PositionMaterialNormal& v0 = m_vecVertices[*iterIndex];
-			PositionMaterialNormal& v0New = vecNewVertices[*iterIndex];
-			iterIndex++;
-			PositionMaterialNormal& v1 = m_vecVertices[*iterIndex];
-			PositionMaterialNormal& v1New = vecNewVertices[*iterIndex];
-			iterIndex++;
-			PositionMaterialNormal& v2 = m_vecVertices[*iterIndex];
-			PositionMaterialNormal& v2New = vecNewVertices[*iterIndex];
-			iterIndex++;
-
-			if(v0.m_bIsMaterialEdgeVertex || v1.m_bIsMaterialEdgeVertex || v2.m_bIsMaterialEdgeVertex)
-			{
-				v0New.m_bIsMaterialEdgeVertex = true;
-				v1New.m_bIsMaterialEdgeVertex = true;
-				v2New.m_bIsMaterialEdgeVertex = true;
-			}
-		}
-
-		m_vecVertices = vecNewVertices;
 	}*/
 
 	template <typename VertexType>

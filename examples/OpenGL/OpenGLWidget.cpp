@@ -96,7 +96,7 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 					MeshDecimator<PositionMaterialNormal> decimator(mesh.get(), decimatedMesh.get(), 0.95f);
 					decimator.execute();
 
-					decimatedMesh->generateAveragedFaceNormals(true);
+					//decimatedMesh->generateAveragedFaceNormals(true);
 
 					//computeNormalsForVertices(m_volData, *(decimatedMesh.get()), SOBEL_SMOOTHED);
 					//*meshCurrent = getSmoothedSurface(*meshCurrent);
