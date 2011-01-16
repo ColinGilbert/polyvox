@@ -15,6 +15,8 @@ SET(CORE_SRC_FILES
 
 #Projects headers files
 SET(CORE_INC_FILES
+	include/AmbientOcclusionCalculator.h
+	include/AmbientOcclusionCalculator.inl
 	include/Array.h
 	include/Array.inl
 	include/ArraySizes.h
@@ -53,6 +55,8 @@ SET(CORE_INC_FILES
 
 SET(IMPL_SRC_FILES
 	source/PolyVoxImpl/MarchingCubesTables.cpp
+	source/PolyVoxImpl/RandomUnitVectors.cpp
+	source/PolyVoxImpl/RandomVectors.cpp
 	source/PolyVoxImpl/Utility.cpp
 )
 
@@ -63,6 +67,8 @@ SET(IMPL_INC_FILES
 	include/PolyVoxImpl/Block.h
 	include/PolyVoxImpl/Block.inl
 	include/PolyVoxImpl/MarchingCubesTables.h
+	include/PolyVoxImpl/RandomUnitVectors.h
+	include/PolyVoxImpl/RandomVectors.h
 	include/PolyVoxImpl/SubArray.h
 	include/PolyVoxImpl/SubArray.inl
 	include/PolyVoxImpl/TypeDef.h
