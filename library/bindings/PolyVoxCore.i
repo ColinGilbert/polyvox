@@ -2,7 +2,7 @@
 
 #define POLYVOX_API
 
-%rename(equalTo) operator==;
+%rename(equals) operator==;
 %rename(notEqualTo) operator!=;
 %rename(lessThan) operator<;
 %rename(greaterThan) operator>;
@@ -13,6 +13,7 @@
 %rename(subtractionAssignment) operator-=;
 %rename(multiplicationAssignment) operator*=;
 %rename(divisionAssignment) operator/=;
+%rename(arrayOperator) operator[];
 
 %include "stdint.i"
 %include "std_vector.i"
@@ -22,7 +23,12 @@
 %include "Region.i"
 %include "Volume.i"
 %include "TypeDef.i"
+//%include "SubArray.i"
+//%include "Array.i"
 %include "VertexTypes.i"
 %include "SurfaceMesh.i"
 %include "VolumeSampler.i"
 %include "SurfaceExtractor.i"
+%include "CubicSurfaceExtractor.i"
+%include "CubicSurfaceExtractorWithNormals.i"
+//%include "MeshDecimator.i"
