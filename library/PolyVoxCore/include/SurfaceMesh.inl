@@ -394,4 +394,71 @@ namespace PolyVox
 			m_vecTriangleIndices[triCt] = newPos[m_vecTriangleIndices[triCt]];
 		}
 	}
+
+	//Currently a free function - think where this needs to go.
+	template <typename VertexType>
+	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials)
+	{
+		polyvox_shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
+
+		if(inputMesh.m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
+		{
+			return result;
+		}
+
+		assert(inputMesh.m_vecLodRecords.size() == 1);
+		if(inputMesh.m_vecLodRecords.size() != 1)
+		{
+			//If we have done progressive LOD then it's too late to split into subsets.
+			return result;
+		}
+
+		std::vector<int32_t> indexMap(inputMesh.m_vecVertices.size());
+		std::fill(indexMap.begin(), indexMap.end(), -1);
+
+		for(uint32_t triCt = 0; triCt < inputMesh.m_vecTriangleIndices.size(); triCt += 3)
+		{
+
+			VertexType& v0 = inputMesh.m_vecVertices[inputMesh.m_vecTriangleIndices[triCt]];
+			VertexType& v1 = inputMesh.m_vecVertices[inputMesh.m_vecTriangleIndices[triCt + 1]];
+			VertexType& v2 = inputMesh.m_vecVertices[inputMesh.m_vecTriangleIndices[triCt + 2]];
+
+			if(
+				(setMaterials.find(v0.getMaterial()) != setMaterials.end()) || 
+				(setMaterials.find(v1.getMaterial()) != setMaterials.end()) || 
+				(setMaterials.find(v2.getMaterial()) != setMaterials.end()))
+			{
+				uint32_t i0;
+				if(indexMap[inputMesh.m_vecTriangleIndices[triCt]] == -1)
+				{
+					indexMap[inputMesh.m_vecTriangleIndices[triCt]] = result->addVertex(v0);
+				}
+				i0 = indexMap[inputMesh.m_vecTriangleIndices[triCt]];
+
+				uint32_t i1;
+				if(indexMap[inputMesh.m_vecTriangleIndices[triCt+1]] == -1)
+				{
+					indexMap[inputMesh.m_vecTriangleIndices[triCt+1]] = result->addVertex(v1);
+				}
+				i1 = indexMap[inputMesh.m_vecTriangleIndices[triCt+1]];
+
+				uint32_t i2;
+				if(indexMap[inputMesh.m_vecTriangleIndices[triCt+2]] == -1)
+				{
+					indexMap[inputMesh.m_vecTriangleIndices[triCt+2]] = result->addVertex(v2);
+				}
+				i2 = indexMap[inputMesh.m_vecTriangleIndices[triCt+2]];
+
+				result->addTriangle(i0,i1,i2);
+			}
+		}
+
+		result->m_vecLodRecords.clear();
+		LodRecord lodRecord;
+		lodRecord.beginIndex = 0;
+		lodRecord.endIndex = result->getNoOfIndices();
+		result->m_vecLodRecords.push_back(lodRecord);
+
+		return result;
+	}
 }

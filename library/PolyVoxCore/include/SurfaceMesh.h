@@ -93,6 +93,9 @@ namespace PolyVox
 		//exist on a material boundary do not count.
 		std::set<uint8_t> m_mapUsedMaterials;
 	};	
+
+	template <typename VertexType>
+	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
 }
 
 #include "SurfaceMesh.inl"

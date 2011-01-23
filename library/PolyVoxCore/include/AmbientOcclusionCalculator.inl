@@ -40,9 +40,9 @@ namespace PolyVox
 		,m_fRayLength(fRayLength)
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
-		assert(m_volInput.getWidth() % arrayResult.getDimension(0) == 0);
-		assert(m_volInput.getHeight() % arrayResult.getDimension(1) == 0);
-		assert(m_volInput.getDepth() % arrayResult.getDimension(2) == 0);
+		assert(m_volInput->getWidth() % arrayResult->getDimension(0) == 0);
+		assert(m_volInput->getHeight() % arrayResult->getDimension(1) == 0);
+		assert(m_volInput->getDepth() % arrayResult->getDimension(2) == 0);
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
 		//sure they are different for different regions which helps reduce tiling patterns is the results.
