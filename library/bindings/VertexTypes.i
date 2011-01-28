@@ -1,11 +1,11 @@
 %module VertexTypes
 %{
-#include "PolyVoxImpl\TypeDef.h"
+#include "PolyVoxImpl/TypeDef.h"
 #include "Vector.h"
 #include "VertexTypes.h"
 %}
 
-%include "PolyVoxImpl\TypeDef.h"
+%include "PolyVoxImpl/TypeDef.h"
 %include "Vector.h"
 %include "VertexTypes.h"
 
