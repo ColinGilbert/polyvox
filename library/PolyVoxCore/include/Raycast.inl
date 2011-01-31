@@ -22,6 +22,14 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 namespace PolyVox
 {
+	////////////////////////////////////////////////////////////////////////////////
+	/// Builds a Raycast object.
+	/// \param volData A pointer to the volume through which the ray will be cast.
+	/// \param v3dStart The starting position of the ray.
+	/// \param v3dDirection The direction of the ray. The length of this vector also
+	/// represents the length of the ray.
+	/// \param result An instance of RaycastResult in which the result will be stored.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Raycast<VoxelType>::Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result)
 		:m_volData(volData)
@@ -32,18 +40,28 @@ namespace PolyVox
 	{
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dStart The starting position of the ray.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Raycast<VoxelType>::setStart(const Vector3DFloat& v3dStart)
 	{
 		m_v3dStart = v3dStart;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dDirection The direction of the ray. The length of this vector also
+	/// represents the length of the ray.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Raycast<VoxelType>::setDirection(const Vector3DFloat& v3dDirection)
 	{
 		m_v3dDirection = v3dDirection;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The result is stored in the RaycastResult instance which was passed to the constructor.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Raycast<VoxelType>::execute(void)
 	{
