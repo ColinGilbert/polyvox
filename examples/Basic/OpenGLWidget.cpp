@@ -70,9 +70,9 @@ void OpenGLWidget::resizeGL(int w, int h)
 	//Set up the projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	float frustumSize = 32.0f; //Half the volume size
+	float frustumSize = 128.0f * 1.7f; //Half the volume diagonal
 	float aspect = static_cast<float>(width()) / static_cast<float>(height());
-	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 1.0, 1000);
+	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 10.0, 10000);
 }
 
 void OpenGLWidget::paintGL()
@@ -83,10 +83,10 @@ void OpenGLWidget::paintGL()
 	//Set up the viewing transformation
 	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity();
-	glTranslatef(0.0f,0.0f,-100.0f); //Centre volume and move back
+	glTranslatef(0.0f,0.0f,-5000.0f); //Centre volume and move back
 	glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
 	glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
-	glTranslatef(-32.0f,-32.0f,-32.0f); //Centre volume and move back
+	glTranslatef(-128.0f,-128.0f,-128.0f); //Centre volume and move back
 
 	//Bind the index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
