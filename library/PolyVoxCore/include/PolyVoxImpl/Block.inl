@@ -33,24 +33,14 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength)
-		:m_tData(0)
+		:m_uSideLength(0)
+		,m_uSideLengthPower(0)
+		,m_tData(0)
 	{
-		//Debug mode validation
-		assert(isPowerOf2(uSideLength));
-
-		//Release mode validation
-		if(!isPowerOf2(uSideLength))
+		if(uSideLength != 0)
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			resize(uSideLength);
 		}
-
-		//Compute the side length		
-		m_uSideLength = uSideLength;
-		m_uSideLengthPower = logBase2(uSideLength);
-
-		//If this fails an exception will be thrown. Memory is not   
-		//allocated and there is nothing else in this class to clean up
-		m_tData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 	}
 
 	template <typename VoxelType>
@@ -146,19 +136,28 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool Block<VoxelType>::isHomogeneous(void)
+	void Block<VoxelType>::resize(uint16_t uSideLength)
 	{
-		const VoxelType tFirstVoxel = m_tData[0];
-		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		//Debug mode validation
+		assert(isPowerOf2(uSideLength));
 
-		for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
+		//Release mode validation
+		if(!isPowerOf2(uSideLength))
 		{
-			if(m_tData[ct] != tFirstVoxel)
-			{
-				return false;
-			}
+			throw std::invalid_argument("Block side length must be a power of two.");
 		}
-		return true;
+
+		//Compute the side length		
+		m_uSideLength = uSideLength;
+		m_uSideLengthPower = logBase2(uSideLength);
+
+		//Delete the old data
+		delete[] m_tData;
+		m_tData = 0;
+
+		//If this fails an exception will be thrown. Memory is not   
+		//allocated and there is nothing else in this class to clean up
+		m_tData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 	}
 
 	template <typename VoxelType>

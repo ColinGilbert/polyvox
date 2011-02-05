@@ -104,10 +104,6 @@ int main(int argc, char *argv[])
 	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
 	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
 
-	cout << "Tidying memory...";
-	volData.tidyUpMemory(0);
-	cout << "done." << endl; 
-
 	QApplication app(argc, argv);
 
 	OpenGLWidget openGLWidget(0);

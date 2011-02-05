@@ -421,7 +421,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(256, 256, 256);
+	Volume<MaterialDensityPair44> volData(128, 128, 128);
 	//createSphereInVolume(volData, 30);
 	createPerlinVolume(volData);
 

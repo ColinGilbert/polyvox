@@ -153,13 +153,13 @@ namespace PolyVox
 			const uint32_t uBlockIndexInVolume = uXBlock + 
 				uYBlock * mVolume->m_uWidthInBlocks + 
 				uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
-			const polyvox_shared_ptr< Block<VoxelType> >& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
+			const Block<VoxelType>& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
 
-			mCurrentVoxel = currentBlock->m_tData + uVoxelIndexInBlock;
+			mCurrentVoxel = currentBlock.m_tData + uVoxelIndexInBlock;
 		}
 		else
 		{
-			mCurrentVoxel = mVolume->m_pBorderBlock->m_tData + uVoxelIndexInBlock;
+			mCurrentVoxel = mVolume->m_pBorderBlock.m_tData + uVoxelIndexInBlock;
 		}
 	}
 

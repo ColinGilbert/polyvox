@@ -53,9 +53,7 @@ namespace PolyVox
 		resize(uWidth, uHeight, uDepth, uBlockSideLength);
 
 		//Create the border block
-		polyvox_shared_ptr< Block<VoxelType> > pTempBlock(new Block<VoxelType>(m_uBlockSideLength));
-		pTempBlock->fill(VoxelType());
-		m_pBorderBlock = pTempBlock;
+		m_pBorderBlock.fill(VoxelType());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +72,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getBorderValue(void) const
 	{
-		return m_pBorderBlock->getVoxelAt(0,0,0);
+		return m_pBorderBlock.getVoxelAt(0,0,0);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -174,14 +172,14 @@ namespace PolyVox
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			const polyvox_shared_ptr< Block< VoxelType > >& block = m_pBlocks
+			const Block<VoxelType>& block = m_pBlocks
 				[
 					blockX + 
 					blockY * m_uWidthInBlocks + 
 					blockZ * m_uWidthInBlocks * m_uHeightInBlocks
 				];
 
-			return block->getVoxelAt(xOffset,yOffset,zOffset);
+			return block.getVoxelAt(xOffset,yOffset,zOffset);
 		}
 		else
 		{
@@ -205,7 +203,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
-		return m_pBorderBlock->fill(tBorder);
+		return m_pBorderBlock.fill(tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -235,28 +233,10 @@ namespace PolyVox
 				blockY * m_uWidthInBlocks + 
 				blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
 
-			polyvox_shared_ptr< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
+			Block<VoxelType>& block = m_pBlocks[uBlockIndex];
 
-			//It's quite possible that the user might attempt to set a voxel to it's current value.
-			//We test for this case firstly because it could help performance, but more importantly
-			//because it lets us avoid unsharing blocks unnecessarily.
-			if(block->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
-			{
-				if(block.unique())
-				{
-					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-					//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
-					//But checking this will take some time, so for now just set a flag.
-					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = true;
-				}
-				else
-				{			
-					polyvox_shared_ptr< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
-					block = pNewBlock;
-					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
-					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-				}
-			}
+			block.setVoxelAt(xOffset,yOffset,zOffset, tValue);
+
 			//Return true to indicate that we modified a voxel.
 			return true;
 		}
@@ -324,8 +304,6 @@ namespace PolyVox
 
 		//Clear the previous data
 		m_pBlocks.clear();
-		m_vecBlockIsPotentiallyHomogenous.clear();
-		m_pHomogenousBlock.clear();
 
 		//Compute the volume side lengths
 		m_uWidth = uWidth;
@@ -346,101 +324,14 @@ namespace PolyVox
 
 		//Create the blocks
 		m_pBlocks.resize(m_uNoOfBlocksInVolume);
-		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i] = getHomogenousBlock(VoxelType());
-			m_vecBlockIsPotentiallyHomogenous[i] = false;
-		}		
+			m_pBlocks[i].resize(m_uBlockSideLength);
+		}	
 
 		//Other properties we might find useful later
 		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
 		m_uShortestSideLength = (std::min)((std::min)(m_uWidth,m_uHeight),m_uDepth);
 		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
-
-		//Reset the counter for tidying
-		m_uCurrentBlockForTidying = 0;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Clean up the memory usage of the volume. Checks for any blocks which are
-	/// homogeneous and flags them as such for faster processing and reduced memory
-	/// usage.
-	/// \param uNoOfBlocksToProcess the number of blocks to process
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void Volume<VoxelType>::tidyUpMemory(uint32_t uNoOfBlocksToProcess)
-	{
-		//Track the number of blocks we have processed.
-		uint32_t m_uNoOfProcessedBlocks = 0;
-
-		//We will loop around, and finish if we get back to our start position
-		uint32_t uFinishBlock = m_uCurrentBlockForTidying;
-
-		//Increment the current block, looping around if necessary
-		++m_uCurrentBlockForTidying;
-		m_uCurrentBlockForTidying %= m_uNoOfBlocksInVolume;
-
-		//While we have not reached the user specified limit and there are more blocks to process...
-		while((m_uNoOfProcessedBlocks < uNoOfBlocksToProcess) && (m_uCurrentBlockForTidying != uFinishBlock))
-		{
-			//We only do any work if the block is flagged as potentially homogeneous.
-			if(m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying])
-			{
-				//Check if it's really homogeneous (this can be slow).
-				if(m_pBlocks[m_uCurrentBlockForTidying]->isHomogeneous())
-				{
-					//If so, replace is with a block from out homogeneous collection.
-					VoxelType homogeneousValue = m_pBlocks[m_uCurrentBlockForTidying]->getVoxelAt(0,0,0);
-					m_pBlocks[m_uCurrentBlockForTidying] = getHomogenousBlock(homogeneousValue);
-				}
-
-				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
-				m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying] = false;
-
-				//We've processed a block. This is inside the 'if' because the path outside the 'if' is trivially fast.
-				++m_uNoOfProcessedBlocks;
-			}
-
-			//Increment the current block, looping around if necessary
-			++m_uCurrentBlockForTidying;
-			m_uCurrentBlockForTidying %= m_uNoOfBlocksInVolume;
-		}
-
-		//Identify and remove any homogeneous blocks which are not actually in use.
-		typename std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > >::iterator iter = m_pHomogenousBlock.begin();
-		while(iter != m_pHomogenousBlock.end())
-		{
-			if(iter->second.unique())
-			{
-				m_pHomogenousBlock.erase(iter++); //Increments the iterator and returns the previous position to be erased.
-			}
-			else
-			{
-				++iter; //Just increments the iterator.
-			}
-		}
-	}	
-
-	template <typename VoxelType>
-	polyvox_shared_ptr< Block<VoxelType> > Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) 
-	{
-		typename std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > >::iterator iterResult = m_pHomogenousBlock.find(tHomogenousValue);
-		if(iterResult == m_pHomogenousBlock.end())
-		{
-			//Block<VoxelType> block;
-			polyvox_shared_ptr< Block<VoxelType> > pHomogeneousBlock(new Block<VoxelType>(m_uBlockSideLength));
-			//block.m_pBlock = temp;
-			//block.m_uReferenceCount++;
-			pHomogeneousBlock->fill(tHomogenousValue);
-			m_pHomogenousBlock.insert(std::make_pair(tHomogenousValue, pHomogeneousBlock));
-			return pHomogeneousBlock;
-		}
-		else
-		{
-			//iterResult->second.m_uReferenceCount++;
-			//polyvox_shared_ptr< Block<VoxelType> > result(iterResult->second);
-			return iterResult->second;
-		}
 	}
 }

@@ -46,8 +46,6 @@ void TestVolume::testSize()
 		}
 	}
 	
-	volData.tidyUpMemory(0);
-	
 	QCOMPARE(volData.getWidth(), g_uVolumeSideLength);
 	QCOMPARE(volData.getHeight(), g_uVolumeSideLength);
 	QCOMPARE(volData.getDepth(), g_uVolumeSideLength);

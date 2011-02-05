@@ -34,7 +34,7 @@ namespace PolyVox
 		//Make VolumeSampler a friend
 		friend class VolumeSampler<VoxelType>;
 	public:
-		Block(uint16_t uSideLength);
+		Block(uint16_t uSideLength = 0);
 		Block(const Block& rhs);
 		~Block();
 
@@ -48,7 +48,7 @@ namespace PolyVox
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void fill(VoxelType tValue);
-		bool isHomogeneous(void);
+		void resize(uint16_t uSideLength);
 		uint32_t sizeInChars(void);
 
 	private:
