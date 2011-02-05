@@ -7,6 +7,9 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
+	,m_uBeginIndex(0)
+	,m_uEndIndex(0)
+	,noOfIndices(0)
 	,m_xRotation(0)
 	,m_yRotation(0)
 {
@@ -14,6 +17,12 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 
 void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
 {
+	if((surfaceMesh.getNoOfIndices() == 0) || (surfaceMesh.getNoOfVertices() == 0))
+	{
+		//We don't have a valid mesh
+		return;
+	}
+
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
 	const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
@@ -77,6 +86,12 @@ void OpenGLWidget::resizeGL(int w, int h)
 
 void OpenGLWidget::paintGL()
 {
+	if(noOfIndices == 0)
+	{
+		//Nothing to render
+		return;
+	}
+
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

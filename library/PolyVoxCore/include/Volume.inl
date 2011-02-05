@@ -51,9 +51,6 @@ namespace PolyVox
 	{
 		//Create a volume of the right size.
 		resize(uWidth, uHeight, uDepth, uBlockSideLength);
-
-		//Create the border block
-		m_pBorderBlock.fill(VoxelType());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -327,7 +324,11 @@ namespace PolyVox
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].resize(m_uBlockSideLength);
-		}	
+		}
+
+		//Create the border block
+		m_pBorderBlock.resize(uBlockSideLength);
+		m_pBorderBlock.fill(VoxelType());
 
 		//Other properties we might find useful later
 		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
