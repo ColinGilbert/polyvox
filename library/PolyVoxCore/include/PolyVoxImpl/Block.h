@@ -59,10 +59,9 @@ namespace PolyVox
 
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
-		VoxelType* m_tCompressedData;
 		VoxelType* m_tUncompressedData;
 		bool m_bIsCompressed;
-		uint32_t m_uTimestamp;
+		uint64_t m_uTimestamp;
 
 		std::vector<uint32_t> runlengths;
 		std::vector<VoxelType> values;

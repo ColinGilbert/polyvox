@@ -35,7 +35,6 @@ namespace PolyVox
 	Block<VoxelType>::Block(uint16_t uSideLength)
 		:m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_tCompressedData(0)
 		,m_tUncompressedData(0)
 		,m_bIsCompressed(true)
 		,m_uTimestamp(0)
@@ -55,33 +54,37 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>::~Block()
 	{
-		delete[] m_tCompressedData;
-		m_tCompressedData = 0;
+		delete[] m_tUncompressedData;
+		m_tUncompressedData = 0;
 	}
 
 	template <typename VoxelType>
 	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
 	{
+		//We don't often need to assign blocks as they should be passed around by pointer.
+		//And I'm pretty sure we don't want to be passing around uncompressed ones becauses
+		//it means duplicating the uncompressed data which is expensive. This assert is to
+		//make sure that uncompressed blocks don't get assigned by accident.
+		assert(rhs.m_bIsCompressed == true);
+
 		if (this == &rhs)
 		{
 			return *this;
 		}
 
-		//If this fails an exception will be thrown. Memory is not   
-		//allocated and there is nothing else in this class to clean up
-		m_tCompressedData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
-
 		//Copy the data
 		m_uSideLength = rhs.m_uSideLength;
-		m_uSideLengthPower = rhs.m_uSideLengthPower;		
-		memcpy(m_tCompressedData, rhs.m_tCompressedData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
-
+		m_uSideLengthPower = rhs.m_uSideLengthPower;	
 		m_bIsCompressed = rhs.m_bIsCompressed;
+		m_uTimestamp = rhs.m_uTimestamp;
+		runlengths = rhs.runlengths;
+		values = rhs.values;
+
 		if(m_bIsCompressed == false)
 		{
+			m_tUncompressedData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
 			memcpy(m_tUncompressedData, rhs.m_tUncompressedData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 		}
-		m_uTimestamp = rhs.m_uTimestamp;
 
 		return *this;
 	}
@@ -146,7 +149,6 @@ namespace PolyVox
 
 		assert(m_tUncompressedData);
 
-		//memset(m_tCompressedData, (int)tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
 	}
@@ -167,13 +169,17 @@ namespace PolyVox
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
-		//Delete the old data
-		delete[] m_tCompressedData;
-		m_tCompressedData = 0;
 
-		//If this fails an exception will be thrown. Memory is not   
-		//allocated and there is nothing else in this class to clean up
-		m_tCompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		if(m_bIsCompressed == false)
+		{
+			//Delete the old data
+			delete[] m_tUncompressedData;
+			m_tUncompressedData = 0;
+
+			//If this fails an exception will be thrown. Memory is not   
+			//allocated and there is nothing else in this class to clean up
+			m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		}
 	}
 
 	template <typename VoxelType>
@@ -181,7 +187,7 @@ namespace PolyVox
 	{
 		uint32_t uSizeInChars = sizeof(Block<VoxelType>);
 
-		if(m_tCompressedData != 0)
+		if(m_tUncompressedData != 0)
 		{
 			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 			uSizeInChars += uNoOfVoxels * sizeof(VoxelType);
@@ -193,7 +199,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
-		//memcpy(m_tCompressedData, m_tUncompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
 		VoxelType current;
 		uint32_t runLength = 0;
 		uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
@@ -241,7 +246,6 @@ namespace PolyVox
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
 
-		//memcpy(m_tUncompressedData, m_tCompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
 		VoxelType* pUncompressedData = m_tUncompressedData;
 		for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
 		{

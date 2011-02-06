@@ -179,7 +179,7 @@ namespace PolyVox
 		uint16_t m_uLongestSideLength;
 		uint16_t m_uShortestSideLength;
 		float m_fDiagonalLength;
-		mutable uint32_t m_uTimestamper;
+		mutable uint64_t m_uTimestamper;
 	};
 
 	//Some handy typedefs
