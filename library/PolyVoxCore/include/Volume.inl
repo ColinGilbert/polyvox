@@ -388,10 +388,10 @@ namespace PolyVox
 			return block;
 		}
 
-		const uint32_t MaxUncompressedBlocks = 4;
+		const uint32_t MaxUncompressedBlocks = 10;
 		if(m_pUncompressedBlocks.size() == MaxUncompressedBlocks)
 		{
-			Block<VoxelType>* pLeastRecentlyUsedBlock;
+			Block<VoxelType>* pLeastRecentlyUsedBlock = 0;
 			uint32_t uLeastRecentTimestamp = 100000000;
 			for(std::set<Block<VoxelType>*>::iterator iter = m_pUncompressedBlocks.begin(); iter != m_pUncompressedBlocks.end(); iter++)
 			{

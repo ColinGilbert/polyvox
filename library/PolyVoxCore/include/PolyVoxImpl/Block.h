@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxForwardDeclarations.h"
 
+#include <vector>
+
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -61,6 +63,9 @@ namespace PolyVox
 		VoxelType* m_tUncompressedData;
 		bool m_bIsCompressed;
 		uint32_t m_uTimestamp;
+
+		std::vector<uint32_t> runlengths;
+		std::vector<VoxelType> values;
 	};
 }
 

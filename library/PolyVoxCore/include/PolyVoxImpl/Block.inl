@@ -76,6 +76,13 @@ namespace PolyVox
 		m_uSideLengthPower = rhs.m_uSideLengthPower;		
 		memcpy(m_tCompressedData, rhs.m_tCompressedData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 
+		m_bIsCompressed = rhs.m_bIsCompressed;
+		if(m_bIsCompressed == false)
+		{
+			memcpy(m_tUncompressedData, rhs.m_tUncompressedData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		}
+		m_uTimestamp = rhs.m_uTimestamp;
+
 		return *this;
 	}
 
@@ -186,7 +193,43 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
-		memcpy(m_tCompressedData, m_tUncompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
+		//memcpy(m_tCompressedData, m_tUncompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
+		VoxelType current;
+		uint32_t runLength = 0;
+		uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		bool firstTime = true;
+		//uint32_t runlengthCounter = 0;
+		runlengths.clear();
+		values.clear();
+
+		for(uint32_t ct = 0; ct < uNoOfVoxels; ++ct)
+		{		
+			VoxelType value = *(m_tUncompressedData + ct);
+			if(firstTime)
+			{
+				current = value;
+				runLength = 1;
+				firstTime = false;
+			}
+			else
+			{
+				if(value == current)
+				{
+					runLength++;
+				}
+				else
+				{
+					//stream.write(reinterpret_cast<char*>(&current), sizeof(current));
+					//stream.write(reinterpret_cast<char*>(&runLength), sizeof(runLength));
+					runlengths.push_back(runLength);
+					values.push_back(current);
+					current = value;
+					runLength = 1;
+				}
+			}	
+		}
+
+
 		delete[] m_tUncompressedData;
 		m_tUncompressedData = 0;
 		m_bIsCompressed = true;
@@ -196,7 +239,20 @@ namespace PolyVox
 	void Block<VoxelType>::uncompress(void)
 	{
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-		memcpy(m_tUncompressedData, m_tCompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
+
+
+		//memcpy(m_tUncompressedData, m_tCompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
+		VoxelType* pUncompressedData = m_tUncompressedData;
+		for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
+		{
+			for(uint32_t i = 0; i < runlengths[ct]; ++i)
+			{
+				*pUncompressedData = values[ct];
+				++pUncompressedData;
+			}
+		}
+
+
 		m_bIsCompressed = false;
 	}
 }
