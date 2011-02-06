@@ -35,7 +35,10 @@ namespace PolyVox
 	Block<VoxelType>::Block(uint16_t uSideLength)
 		:m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_tData(0)
+		,m_tCompressedData(0)
+		,m_tUncompressedData(0)
+		,m_bIsCompressed(true)
+		,m_uTimestamp(0)
 	{
 		if(uSideLength != 0)
 		{
@@ -52,8 +55,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>::~Block()
 	{
-		delete[] m_tData;
-		m_tData = 0;
+		delete[] m_tCompressedData;
+		m_tCompressedData = 0;
 	}
 
 	template <typename VoxelType>
@@ -66,12 +69,12 @@ namespace PolyVox
 
 		//If this fails an exception will be thrown. Memory is not   
 		//allocated and there is nothing else in this class to clean up
-		m_tData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
+		m_tCompressedData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
 
 		//Copy the data
 		m_uSideLength = rhs.m_uSideLength;
 		m_uSideLengthPower = rhs.m_uSideLengthPower;		
-		memcpy(m_tData, rhs.m_tData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		memcpy(m_tCompressedData, rhs.m_tCompressedData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 
 		return *this;
 	}
@@ -89,7 +92,9 @@ namespace PolyVox
 		assert(uYPos < m_uSideLength);
 		assert(uZPos < m_uSideLength);
 
-		return m_tData
+		assert(m_tUncompressedData);
+
+		return m_tUncompressedData
 			[
 				uXPos + 
 				uYPos * m_uSideLength + 
@@ -110,7 +115,9 @@ namespace PolyVox
 		assert(uYPos < m_uSideLength);
 		assert(uZPos < m_uSideLength);
 
-		m_tData
+		assert(m_tUncompressedData);
+
+		m_tUncompressedData
 		[
 			uXPos + 
 			uYPos * m_uSideLength + 
@@ -130,9 +137,11 @@ namespace PolyVox
 		//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
 		//in 64-bit mode as casting the pointer to an int causes a loss of precision.
 
-		//memset(m_tData, (int)tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		assert(m_tUncompressedData);
+
+		//memset(m_tCompressedData, (int)tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		std::fill(m_tData, m_tData + uNoOfVoxels, tValue);
+		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
 	}
 
 	template <typename VoxelType>
@@ -152,12 +161,12 @@ namespace PolyVox
 		m_uSideLengthPower = logBase2(uSideLength);
 
 		//Delete the old data
-		delete[] m_tData;
-		m_tData = 0;
+		delete[] m_tCompressedData;
+		m_tCompressedData = 0;
 
 		//If this fails an exception will be thrown. Memory is not   
 		//allocated and there is nothing else in this class to clean up
-		m_tData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		m_tCompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 	}
 
 	template <typename VoxelType>
@@ -165,12 +174,29 @@ namespace PolyVox
 	{
 		uint32_t uSizeInChars = sizeof(Block<VoxelType>);
 
-		if(m_tData != 0)
+		if(m_tCompressedData != 0)
 		{
 			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 			uSizeInChars += uNoOfVoxels * sizeof(VoxelType);
 		}
 
 		return  uSizeInChars;
+	}
+
+	template <typename VoxelType>
+	void Block<VoxelType>::compress(void)
+	{
+		memcpy(m_tCompressedData, m_tUncompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
+		delete[] m_tUncompressedData;
+		m_tUncompressedData = 0;
+		m_bIsCompressed = true;
+	}
+
+	template <typename VoxelType>
+	void Block<VoxelType>::uncompress(void)
+	{
+		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		memcpy(m_tUncompressedData, m_tCompressedData, sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength);
+		m_bIsCompressed = false;
 	}
 }

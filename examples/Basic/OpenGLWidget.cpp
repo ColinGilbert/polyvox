@@ -41,6 +41,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 
 	m_uBeginIndex = 0;
 	m_uEndIndex = vecIndices.size();
+	noOfIndices = surfaceMesh.getNoOfIndices();
 }
 
 void OpenGLWidget::initializeGL()

@@ -51,10 +51,16 @@ namespace PolyVox
 		void resize(uint16_t uSideLength);
 		uint32_t sizeInChars(void);
 
-	private:
+	public:
+		void compress(void);
+		void uncompress(void);
+
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
-		VoxelType* m_tData;
+		VoxelType* m_tCompressedData;
+		VoxelType* m_tUncompressedData;
+		bool m_bIsCompressed;
+		uint32_t m_uTimestamp;
 	};
 }
 

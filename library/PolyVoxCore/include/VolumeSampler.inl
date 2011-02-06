@@ -155,11 +155,14 @@ namespace PolyVox
 				uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
 			const Block<VoxelType>& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
 
-			mCurrentVoxel = currentBlock.m_tData + uVoxelIndexInBlock;
+			Block<VoxelType>* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(const_cast<Block<VoxelType>*>(&currentBlock));
+
+			mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
 		}
 		else
 		{
-			mCurrentVoxel = mVolume->m_pBorderBlock.m_tData + uVoxelIndexInBlock;
+			Block<VoxelType>* pUncompressedBorderBlock = mVolume->getUncompressedBlock(&(mVolume->m_pBorderBlock));
+			mCurrentVoxel = pUncompressedBorderBlock->m_tUncompressedData + uVoxelIndexInBlock;
 		}
 	}
 

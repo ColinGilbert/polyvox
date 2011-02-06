@@ -48,6 +48,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
+		:m_uTimestamper(0)
 	{
 		//Create a volume of the right size.
 		resize(uWidth, uHeight, uDepth, uBlockSideLength);
@@ -69,7 +70,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getBorderValue(void) const
 	{
-		return m_pBorderBlock.getVoxelAt(0,0,0);
+		Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(const_cast<Block<VoxelType>*>(&m_pBorderBlock));
+		return pUncompressedBorderBlock->getVoxelAt(0,0,0);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +178,9 @@ namespace PolyVox
 					blockZ * m_uWidthInBlocks * m_uHeightInBlocks
 				];
 
-			return block.getVoxelAt(xOffset,yOffset,zOffset);
+			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(const_cast<Block<VoxelType>*>(&block));
+
+			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
 		}
 		else
 		{
@@ -200,7 +204,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
-		return m_pBorderBlock.fill(tBorder);
+		Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
+		return pUncompressedBorderBlock->fill(tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +237,9 @@ namespace PolyVox
 
 			Block<VoxelType>& block = m_pBlocks[uBlockIndex];
 
-			block.setVoxelAt(xOffset,yOffset,zOffset, tValue);
+			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(&block);
+
+			pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 
 			//Return true to indicate that we modified a voxel.
 			return true;
@@ -328,11 +335,80 @@ namespace PolyVox
 
 		//Create the border block
 		m_pBorderBlock.resize(uBlockSideLength);
-		m_pBorderBlock.fill(VoxelType());
+		Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
+		pUncompressedBorderBlock->fill(VoxelType());
 
 		//Other properties we might find useful later
 		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
 		m_uShortestSideLength = (std::min)((std::min)(m_uWidth,m_uHeight),m_uDepth);
 		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
+	}
+
+	/*template <typename VoxelType>
+	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
+	{
+		if(block == m_pUncompressedBlock)
+		{
+			return m_pUncompressedBlock;
+		}
+
+		if(m_pUncompressedBlock)
+		{
+			m_pUncompressedBlock->compress();
+		}
+
+		m_pUncompressedBlock = block;
+		m_pUncompressedBlock->uncompress();
+
+		return m_pUncompressedBlock;
+	}*/
+
+	/*template <typename VoxelType>
+	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
+	{
+		std::set<Block<VoxelType>*>::iterator iterBlock = m_pUncompressedBlocks.find(block);
+		if(iterBlock != m_pUncompressedBlocks.end())
+		{
+			return block;
+		}
+
+		block->uncompress();
+		m_pUncompressedBlocks.insert(block);
+
+		return block;
+	}*/
+
+	template <typename VoxelType>
+	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
+	{
+		block->m_uTimestamp = ++m_uTimestamper;
+
+		if(block->m_bIsCompressed == false)
+		{ 
+			return block;
+		}
+
+		const uint32_t MaxUncompressedBlocks = 4;
+		if(m_pUncompressedBlocks.size() == MaxUncompressedBlocks)
+		{
+			Block<VoxelType>* pLeastRecentlyUsedBlock;
+			uint32_t uLeastRecentTimestamp = 100000000;
+			for(std::set<Block<VoxelType>*>::iterator iter = m_pUncompressedBlocks.begin(); iter != m_pUncompressedBlocks.end(); iter++)
+			{
+				if((*iter)->m_uTimestamp < uLeastRecentTimestamp)
+				{
+					uLeastRecentTimestamp = (*iter)->m_uTimestamp;
+					pLeastRecentlyUsedBlock = *iter;
+				}
+			}
+
+			pLeastRecentlyUsedBlock->compress();
+			m_pUncompressedBlocks.erase(pLeastRecentlyUsedBlock);
+		}
+
+		block->uncompress();
+		m_pUncompressedBlocks.insert(block);
+
+		return block;
 	}
 }

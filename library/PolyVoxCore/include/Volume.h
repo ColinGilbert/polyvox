@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 
 #include <limits>
 #include <map>
+#include <set>
 #include <memory>
 #include <vector>
 
@@ -155,8 +156,12 @@ namespace PolyVox
 		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 
 	private:
+		Block<VoxelType>* getUncompressedBlock(Block<VoxelType>* block) const;
+
 		Block<VoxelType> m_pBorderBlock;
 		std::vector< Block<VoxelType> > m_pBlocks;
+		//mutable Block<VoxelType>* m_pUncompressedBlock;
+		mutable std::set<Block<VoxelType>*> m_pUncompressedBlocks;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
@@ -174,6 +179,7 @@ namespace PolyVox
 		uint16_t m_uLongestSideLength;
 		uint16_t m_uShortestSideLength;
 		float m_fDiagonalLength;
+		mutable uint32_t m_uTimestamper;
 	};
 
 	//Some handy typedefs
