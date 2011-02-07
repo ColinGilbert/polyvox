@@ -344,40 +344,6 @@ namespace PolyVox
 		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
 	}
 
-	/*template <typename VoxelType>
-	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
-	{
-		if(block == m_pUncompressedBlock)
-		{
-			return m_pUncompressedBlock;
-		}
-
-		if(m_pUncompressedBlock)
-		{
-			m_pUncompressedBlock->compress();
-		}
-
-		m_pUncompressedBlock = block;
-		m_pUncompressedBlock->uncompress();
-
-		return m_pUncompressedBlock;
-	}*/
-
-	/*template <typename VoxelType>
-	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
-	{
-		std::set<Block<VoxelType>*>::iterator iterBlock = m_pUncompressedBlocks.find(block);
-		if(iterBlock != m_pUncompressedBlocks.end())
-		{
-			return block;
-		}
-
-		block->uncompress();
-		m_pUncompressedBlocks.insert(block);
-
-		return block;
-	}*/
-
 	template <typename VoxelType>
 	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
 	{
@@ -391,23 +357,26 @@ namespace PolyVox
 		const uint32_t MaxUncompressedBlocks = 10;
 		if(m_pUncompressedBlocks.size() == MaxUncompressedBlocks)
 		{
-			Block<VoxelType>* pLeastRecentlyUsedBlock = 0;
+			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = 1000000000000000;
-			for(std::set<Block<VoxelType>*>::iterator iter = m_pUncompressedBlocks.begin(); iter != m_pUncompressedBlocks.end(); iter++)
+			for(uint32_t ct = 0; ct < m_pUncompressedBlocks.size(); ct++)
 			{
-				if((*iter)->m_uTimestamp < uLeastRecentTimestamp)
+				if(m_pUncompressedBlocks[ct]->m_uTimestamp < uLeastRecentTimestamp)
 				{
-					uLeastRecentTimestamp = (*iter)->m_uTimestamp;
-					pLeastRecentlyUsedBlock = *iter;
+					uLeastRecentTimestamp = m_pUncompressedBlocks[ct]->m_uTimestamp;
+					leastRecentlyUsedBlockIndex = ct;
 				}
 			}
 
-			pLeastRecentlyUsedBlock->compress();
-			m_pUncompressedBlocks.erase(pLeastRecentlyUsedBlock);
+			m_pUncompressedBlocks[leastRecentlyUsedBlockIndex]->compress();
+			m_pUncompressedBlocks[leastRecentlyUsedBlockIndex] = block;
+		}
+		else
+		{
+			m_pUncompressedBlocks.push_back(block);
 		}
 
 		block->uncompress();
-		m_pUncompressedBlocks.insert(block);
 
 		return block;
 	}
