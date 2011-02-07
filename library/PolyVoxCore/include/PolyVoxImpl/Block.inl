@@ -38,6 +38,7 @@ namespace PolyVox
 		,m_uSideLengthPower(0)
 		,m_tUncompressedData(0)
 		,m_bIsCompressed(true)
+		,m_bIsUncompressedDataModified(true)
 		,m_uTimestamp(0)
 	{
 		if(uSideLength != 0)
@@ -77,6 +78,7 @@ namespace PolyVox
 		m_uSideLength = rhs.m_uSideLength;
 		m_uSideLengthPower = rhs.m_uSideLengthPower;	
 		m_bIsCompressed = rhs.m_bIsCompressed;
+		m_bIsUncompressedDataModified = rhs.m_bIsUncompressedDataModified;
 		m_uTimestamp = rhs.m_uTimestamp;
 		runlengths = rhs.runlengths;
 		values = rhs.values;
@@ -134,6 +136,8 @@ namespace PolyVox
 			uYPos * m_uSideLength + 
 			uZPos * m_uSideLength * m_uSideLength
 		] = tValue;
+
+		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>
@@ -152,6 +156,8 @@ namespace PolyVox
 
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
+
+		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>
@@ -180,6 +186,8 @@ namespace PolyVox
 			//If this fails an exception will be thrown. Memory is not   
 			//allocated and there is nothing else in this class to clean up
 			m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
+			m_bIsUncompressedDataModified = true;
 		}
 	}
 
@@ -200,37 +208,42 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
-		uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		runlengths.clear();
-		values.clear();
+		//If the uncompressed data hasn't actually been
+		//modified then we don't need to redo the compression.
+		if(m_bIsUncompressedDataModified)
+		{
+			uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+			runlengths.clear();
+			values.clear();
 
-		VoxelType current = m_tUncompressedData[0];
-		uint8_t runLength = 1;
+			VoxelType current = m_tUncompressedData[0];
+			uint8_t runLength = 1;
 
-		for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
-		{		
-			VoxelType value = m_tUncompressedData[ct];
-			if((value == current) && (runLength < (std::numeric_limits<uint8_t>::max)()))
-			{
-				runLength++;
+			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
+			{		
+				VoxelType value = m_tUncompressedData[ct];
+				if((value == current) && (runLength < (std::numeric_limits<uint8_t>::max)()))
+				{
+					runLength++;
+				}
+				else
+				{
+					runlengths.push_back(runLength);
+					values.push_back(current);
+					current = value;
+					runLength = 1;
+				}
 			}
-			else
-			{
-				runlengths.push_back(runLength);
-				values.push_back(current);
-				current = value;
-				runLength = 1;
-			}
+
+			runlengths.push_back(runLength);
+			values.push_back(current);
+
+			//Shrink the vectors to their contents (seems slow?):
+			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
+			//C++0x may have a shrink_to_fit() function?
+			//std::vector<uint8_t>(runlengths).swap(runlengths);
+			//std::vector<VoxelType>(values).swap(values);
 		}
-
-		runlengths.push_back(runLength);
-		values.push_back(current);
-
-		//Shrink the vectors to their contents (seems slow?):
-		//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
-		//C++0x may have a shrink_to_fit() function?
-		//std::vector<uint8_t>(runlengths).swap(runlengths);
-		//std::vector<VoxelType>(values).swap(values);
 
 		delete[] m_tUncompressedData;
 		m_tUncompressedData = 0;
@@ -270,5 +283,6 @@ namespace PolyVox
 		}
 
 		m_bIsCompressed = false;
+		m_bIsUncompressedDataModified = false;
 	}
 }

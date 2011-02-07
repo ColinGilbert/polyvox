@@ -343,7 +343,7 @@ Perlin::Perlin(int octaves,float freq,float amp,int seed)
   mStart = true;
 }
 
-void createPerlinVolume(Volume<MaterialDensityPair44>& volData)
+void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,8,1,234);
 
@@ -371,6 +371,54 @@ void createPerlinVolume(Volume<MaterialDensityPair44>& volData)
 				volData.setVoxelAt(x, y, z, voxel);
 			}
 		}
+	}
+}
+
+void createPerlinVolumeFast(Volume<MaterialDensityPair44>& volData)
+{
+	Perlin perlin(2,8,1,234);
+
+	for(int blockZ = 0; blockZ < volData.m_uDepthInBlocks; blockZ++)
+	{		
+		std::cout << blockZ << std::endl;
+		for(int blockY = 0; blockY < volData.m_uHeightInBlocks; blockY++)
+		{
+			for(int blockX = 0; blockX < volData.m_uWidthInBlocks; blockX++)
+			{
+				for(int offsetz = 0; offsetz < volData.m_uBlockSideLength; offsetz++)
+				{
+					for(int offsety = 0; offsety < volData.m_uBlockSideLength; offsety++)
+					{
+						for(int offsetx = 0; offsetx < volData.m_uBlockSideLength; offsetx++) 
+						{							
+							int x = blockX * volData.m_uBlockSideLength + offsetx;
+							int y = blockY * volData.m_uBlockSideLength + offsety;
+							int z = blockZ * volData.m_uBlockSideLength + offsetz;
+
+							if((x == 0) || (x == volData.getWidth()-1)) continue;
+							if((y == 0) || (y == volData.getHeight()-1)) continue;
+							if((z == 0) || (z == volData.getDepth()-1)) continue;
+
+							float perlinVal = perlin.Get3D(x /static_cast<float>(volData.getWidth()-1), (y) / static_cast<float>(volData.getHeight()-1), z / static_cast<float>(volData.getDepth()-1));
+
+							MaterialDensityPair44 voxel;
+							if(perlinVal < 0.0f)
+							{
+								voxel.setMaterial(245);
+								voxel.setDensity(MaterialDensityPair44::getMaxDensity());
+							}
+							else
+							{
+								voxel.setMaterial(0);
+								voxel.setDensity(MaterialDensityPair44::getMinDensity());
+							}
+
+							volData.setVoxelAt(x, y, z, voxel);
+						}
+					}
+				}
+			}
+		}			
 	}
 }
 
@@ -421,9 +469,9 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(128, 128, 128);
+	Volume<MaterialDensityPair44> volData(1024, 1024, 1024);
 	//createSphereInVolume(volData, 30);
-	createPerlinVolume(volData);
+	createPerlinVolumeFast(volData);
 
 	/*srand(12345);
 	for(int ct = 0; ct < 1000; ct++)
@@ -439,12 +487,12 @@ int main(int argc, char *argv[])
 	}*/
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> mesh;
+	/*SurfaceMesh<PositionMaterialNormal> mesh;
 	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setSurfaceMeshToRender(mesh);*/
 
 	//Run the message pump.
 	return app.exec();

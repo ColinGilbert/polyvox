@@ -155,7 +155,7 @@ namespace PolyVox
 		///Resises the volume to the specified dimensions
 		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 
-	private:
+	public:
 		Block<VoxelType>* getUncompressedBlock(Block<VoxelType>* block) const;
 
 		Block<VoxelType> m_pBorderBlock;

@@ -61,6 +61,7 @@ namespace PolyVox
 		uint8_t m_uSideLengthPower;	
 		VoxelType* m_tUncompressedData;
 		bool m_bIsCompressed;
+		bool m_bIsUncompressedDataModified;
 		uint64_t m_uTimestamp;
 
 		std::vector<uint8_t> runlengths;
