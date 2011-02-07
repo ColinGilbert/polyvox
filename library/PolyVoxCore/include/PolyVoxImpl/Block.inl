@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 
 #include <cassert>
 #include <cstring> //For memcpy
+#include <limits>
 #include <stdexcept> //for std::invalid_argument
 
 namespace PolyVox
@@ -199,41 +200,37 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
-		VoxelType current;
-		uint32_t runLength = 0;
 		uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		bool firstTime = true;
-		//uint32_t runlengthCounter = 0;
 		runlengths.clear();
 		values.clear();
 
-		for(uint32_t ct = 0; ct < uNoOfVoxels; ++ct)
+		VoxelType current = m_tUncompressedData[0];
+		uint8_t runLength = 1;
+
+		for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
 		{		
-			VoxelType value = *(m_tUncompressedData + ct);
-			if(firstTime)
+			VoxelType value = m_tUncompressedData[ct];
+			if((value == current) && (runLength < (std::numeric_limits<uint8_t>::max)()))
 			{
-				current = value;
-				runLength = 1;
-				firstTime = false;
+				runLength++;
 			}
 			else
 			{
-				if(value == current)
-				{
-					runLength++;
-				}
-				else
-				{
-					//stream.write(reinterpret_cast<char*>(&current), sizeof(current));
-					//stream.write(reinterpret_cast<char*>(&runLength), sizeof(runLength));
-					runlengths.push_back(runLength);
-					values.push_back(current);
-					current = value;
-					runLength = 1;
-				}
-			}	
+				runlengths.push_back(runLength);
+				values.push_back(current);
+				current = value;
+				runLength = 1;
+			}
 		}
 
+		runlengths.push_back(runLength);
+		values.push_back(current);
+
+		//Shrink the vectors to their contents (seems slow?):
+		//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
+		//C++0x may have a shrink_to_fit() function?
+		//std::vector<uint8_t>(runlengths).swap(runlengths);
+		//std::vector<VoxelType>(values).swap(values);
 
 		delete[] m_tUncompressedData;
 		m_tUncompressedData = 0;
@@ -245,17 +242,32 @@ namespace PolyVox
 	{
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
-
 		VoxelType* pUncompressedData = m_tUncompressedData;
-		for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
+		
+		//memset should provide the fastest way of expanding the data, but it works
+		//on unsigned chars so is only possible if our voxel type is the right size.
+		//Nore that memset takes an int type, but sonverts it to unsiogned char:
+		//http://www.cplusplus.com/reference/clibrary/cstring/memset/
+		if(sizeof(VoxelType) == sizeof(unsigned char))
 		{
-			for(uint32_t i = 0; i < runlengths[ct]; ++i)
+			for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
 			{
-				*pUncompressedData = values[ct];
-				++pUncompressedData;
+				memset(pUncompressedData, *((int*)(&values[ct])), runlengths[ct]);
+				pUncompressedData += runlengths[ct];
 			}
 		}
-
+		//Otherwise we fall back on a loop.
+		else
+		{
+			for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
+			{
+				for(uint32_t i = 0; i < runlengths[ct]; ++i)
+				{
+					*pUncompressedData = values[ct];
+					++pUncompressedData;
+				}
+			}
+		}
 
 		m_bIsCompressed = false;
 	}

@@ -388,7 +388,7 @@ namespace PolyVox
 			return block;
 		}
 
-		const uint32_t MaxUncompressedBlocks = 1000;
+		const uint32_t MaxUncompressedBlocks = 10;
 		if(m_pUncompressedBlocks.size() == MaxUncompressedBlocks)
 		{
 			Block<VoxelType>* pLeastRecentlyUsedBlock = 0;

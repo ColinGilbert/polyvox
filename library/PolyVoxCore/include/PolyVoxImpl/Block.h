@@ -63,7 +63,7 @@ namespace PolyVox
 		bool m_bIsCompressed;
 		uint64_t m_uTimestamp;
 
-		std::vector<uint32_t> runlengths;
+		std::vector<uint8_t> runlengths;
 		std::vector<VoxelType> values;
 	};
 }
