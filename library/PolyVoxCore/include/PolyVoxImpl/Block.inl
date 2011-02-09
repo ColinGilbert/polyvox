@@ -208,6 +208,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
+		assert(m_bIsCompressed == false);
+
 		//If the uncompressed data hasn't actually been
 		//modified then we don't need to redo the compression.
 		if(m_bIsUncompressedDataModified)
@@ -217,12 +219,12 @@ namespace PolyVox
 			values.clear();
 
 			VoxelType current = m_tUncompressedData[0];
-			uint8_t runLength = 1;
+			uint16_t runLength = 1;
 
 			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
 			{		
 				VoxelType value = m_tUncompressedData[ct];
-				if((value == current) && (runLength < (std::numeric_limits<uint8_t>::max)()))
+				if((value == current) && (runLength < (std::numeric_limits<uint16_t>::max)()))
 				{
 					runLength++;
 				}
@@ -245,6 +247,7 @@ namespace PolyVox
 			//std::vector<VoxelType>(values).swap(values);
 		}
 
+		assert(m_tUncompressedData != 0);
 		delete[] m_tUncompressedData;
 		m_tUncompressedData = 0;
 		m_bIsCompressed = true;
@@ -253,6 +256,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::uncompress(void)
 	{
+		assert(m_bIsCompressed == true);
+		assert(m_tUncompressedData == 0);
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
 		VoxelType* pUncompressedData = m_tUncompressedData;
@@ -261,7 +266,7 @@ namespace PolyVox
 		//on unsigned chars so is only possible if our voxel type is the right size.
 		//Nore that memset takes an int type, but sonverts it to unsiogned char:
 		//http://www.cplusplus.com/reference/clibrary/cstring/memset/
-		if(sizeof(VoxelType) == sizeof(unsigned char))
+		/*if(sizeof(VoxelType) == sizeof(unsigned char))
 		{
 			for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
 			{
@@ -271,7 +276,7 @@ namespace PolyVox
 		}
 		//Otherwise we fall back on a loop.
 		else
-		{
+		{*/
 			for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
 			{
 				for(uint32_t i = 0; i < runlengths[ct]; ++i)
@@ -280,7 +285,7 @@ namespace PolyVox
 					++pUncompressedData;
 				}
 			}
-		}
+		//}
 
 		m_bIsCompressed = false;
 		m_bIsUncompressedDataModified = false;

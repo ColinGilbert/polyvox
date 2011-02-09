@@ -422,6 +422,39 @@ void createPerlinVolumeFast(Volume<MaterialDensityPair44>& volData)
 	}
 }
 
+void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
+{
+	Perlin perlin(2,2,1,234);
+
+	for(int x = 1; x < volData.getWidth()-1; x++)
+	{
+		std::cout << x << std::endl;
+		for(int y = 1; y < volData.getHeight()-1; y++)
+		{
+			float perlinVal = perlin.Get(x / static_cast<float>(volData.getHeight()-1), y / static_cast<float>(volData.getDepth()-1));
+			perlinVal += 1.0f;
+			perlinVal *= 0.5f;
+			perlinVal *= volData.getWidth();
+			for(int z = 1; z < volData.getDepth()-1; z++) 
+			{							
+				MaterialDensityPair44 voxel;
+				if(z < perlinVal)
+				{
+					voxel.setMaterial(245);
+					voxel.setDensity(MaterialDensityPair44::getMaxDensity());
+				}
+				else
+				{
+					voxel.setMaterial(0);
+					voxel.setDensity(MaterialDensityPair44::getMinDensity());
+				}
+
+				volData.setVoxelAt(x, y, z, voxel);
+			}
+		}
+	}
+}
+
 void createSphereInVolume(Volume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
 {
 	//This vector hold the position of the center of the volume
@@ -469,9 +502,10 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(256, 256, 256);
+	Volume<MaterialDensityPair44> volData(1024, 1280, 256);
 	//createSphereInVolume(volData, 30);
-	createPerlinVolumeFast(volData);
+	createPerlinTerrain(volData);
+	volData.setBlockCacheSize(8);
 
 	/*srand(12345);
 	for(int ct = 0; ct < 1000; ct++)
@@ -487,12 +521,12 @@ int main(int argc, char *argv[])
 	}*/
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> mesh;
+	/*SurfaceMesh<PositionMaterialNormal> mesh;
 	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setSurfaceMeshToRender(mesh);*/
 
 	//Run the message pump.
 	return app.exec();

@@ -120,7 +120,7 @@ namespace PolyVox
 
 	public:		
 		///Constructor
-		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 64);
+		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 		///Destructor
 		~Volume();	
 
@@ -155,12 +155,16 @@ namespace PolyVox
 		///Resizes the volume to the specified dimensions
 		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 
+		void setBlockCacheSize(uint16_t uBlockCacheSize);
+		void clearBlockCache(void);
+
 	public:
 		Block<VoxelType>* getUncompressedBlock(Block<VoxelType>* block) const;
 
 		Block<VoxelType> m_pBorderBlock;
 		std::vector< Block<VoxelType> > m_pBlocks;
 		mutable std::vector<Block<VoxelType>*> m_pUncompressedBlocks;
+		uint16_t m_uBlockCacheSize;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
@@ -179,6 +183,9 @@ namespace PolyVox
 		uint16_t m_uShortestSideLength;
 		float m_fDiagonalLength;
 		mutable uint64_t m_uTimestamper;
+
+		mutable uint32_t m_uCompressions;
+		mutable uint32_t m_uUncompressions;
 	};
 
 	//Some handy typedefs

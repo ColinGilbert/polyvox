@@ -49,7 +49,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
 		:m_uTimestamper(0)
+		,m_uBlockCacheSize(1024)
+		,m_uCompressions(0)
+		,m_uUncompressions(0)
+		,m_uBlockSideLength(uBlockSideLength)
 	{
+		setBlockCacheSize(m_uBlockCacheSize);
+
 		//Create a volume of the right size.
 		resize(uWidth, uHeight, uDepth, uBlockSideLength);
 	}
@@ -262,6 +268,18 @@ namespace PolyVox
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
+	template <typename VoxelType>
+	void Volume<VoxelType>::clearBlockCache(void)
+	{
+		for(uint32_t ct = 0; ct < m_pUncompressedBlocks.size(); ct++)
+		{
+			m_pUncompressedBlocks[ct]->compress();
+			m_uCompressions++;
+		}
+
+		m_pUncompressedBlocks.clear();
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	/// Note: Calling this function will destroy all existing data in the volume.
 	/// \param uWidth The desired width in voxels. This must be a power of two.
@@ -345,6 +363,14 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	void Volume<VoxelType>::setBlockCacheSize(uint16_t uBlockCacheSize)
+	{
+		clearBlockCache();
+
+		m_uBlockCacheSize = uBlockCacheSize;
+	}
+
+	template <typename VoxelType>
 	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(Block<VoxelType>* block) const
 	{
 		block->m_uTimestamp = ++m_uTimestamper;
@@ -354,8 +380,10 @@ namespace PolyVox
 			return block;
 		}
 
-		const uint32_t MaxUncompressedBlocks = 10;
-		if(m_pUncompressedBlocks.size() == MaxUncompressedBlocks)
+		uint32_t uUncompressedBlockIndex = 100000000;
+
+		assert(m_pUncompressedBlocks.size() <= m_uBlockCacheSize);
+		if(m_pUncompressedBlocks.size() == m_uBlockCacheSize)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = 1000000000000000;
@@ -369,6 +397,7 @@ namespace PolyVox
 			}
 
 			m_pUncompressedBlocks[leastRecentlyUsedBlockIndex]->compress();
+			m_uCompressions++;
 			m_pUncompressedBlocks[leastRecentlyUsedBlockIndex] = block;
 		}
 		else
@@ -377,6 +406,7 @@ namespace PolyVox
 		}
 
 		block->uncompress();
+		m_uUncompressions++;
 
 		return block;
 	}
