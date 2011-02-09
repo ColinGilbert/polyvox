@@ -158,11 +158,13 @@ namespace PolyVox
 		void setBlockCacheSize(uint16_t uBlockCacheSize);
 		void clearBlockCache(void);
 
+		uint32_t sizeInChars(void);
+
 	public:
 		Block<VoxelType>* getUncompressedBlock(Block<VoxelType>* block) const;
 
 		Block<VoxelType> m_pBorderBlock;
-		std::vector< Block<VoxelType> > m_pBlocks;
+		Block<VoxelType>* m_pBlocks;
 		mutable std::vector<Block<VoxelType>*> m_pUncompressedBlocks;
 		uint16_t m_uBlockCacheSize;
 

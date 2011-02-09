@@ -50,7 +50,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>::Block(const Block<VoxelType>& rhs)
 	{
-		*this = rhs;
+		assert(false);
 	}
 
 	template <typename VoxelType>
@@ -63,33 +63,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
 	{
-		//We don't often need to assign blocks as they should be passed around by pointer.
-		//And I'm pretty sure we don't want to be passing around uncompressed ones becauses
-		//it means duplicating the uncompressed data which is expensive. This assert is to
-		//make sure that uncompressed blocks don't get assigned by accident.
-		assert(rhs.m_bIsCompressed == true);
-
-		if (this == &rhs)
-		{
-			return *this;
-		}
-
-		//Copy the data
-		m_uSideLength = rhs.m_uSideLength;
-		m_uSideLengthPower = rhs.m_uSideLengthPower;	
-		m_bIsCompressed = rhs.m_bIsCompressed;
-		m_bIsUncompressedDataModified = rhs.m_bIsUncompressedDataModified;
-		m_uTimestamp = rhs.m_uTimestamp;
-		runlengths = rhs.runlengths;
-		values = rhs.values;
-
-		if(m_bIsCompressed == false)
-		{
-			m_tUncompressedData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
-			memcpy(m_tUncompressedData, rhs.m_tUncompressedData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
-		}
-
-		return *this;
+		assert(false);
+		return 0;
 	}
 
 	template <typename VoxelType>
@@ -194,13 +169,16 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t Block<VoxelType>::sizeInChars(void)
 	{
-		uint32_t uSizeInChars = sizeof(Block<VoxelType>);
+		uint32_t uSizeInChars = 0; //sizeof(Block<VoxelType>);
 
 		if(m_tUncompressedData != 0)
 		{
 			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 			uSizeInChars += uNoOfVoxels * sizeof(VoxelType);
 		}
+
+		uSizeInChars += values.size() * sizeof(VoxelType);
+		uSizeInChars += runlengths.size() * sizeof(uint16_t);
 
 		return  uSizeInChars;
 	}

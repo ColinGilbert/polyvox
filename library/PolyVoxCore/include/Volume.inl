@@ -49,10 +49,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
 		:m_uTimestamper(0)
-		,m_uBlockCacheSize(1024)
+		,m_uBlockCacheSize(256)
 		,m_uCompressions(0)
 		,m_uUncompressions(0)
 		,m_uBlockSideLength(uBlockSideLength)
+		,m_pBlocks(0)
 	{
 		setBlockCacheSize(m_uBlockCacheSize);
 
@@ -325,7 +326,8 @@ namespace PolyVox
 		}
 
 		//Clear the previous data
-		m_pBlocks.clear();
+		delete[] m_pBlocks;
+		m_pBlocks = 0;
 
 		//Compute the volume side lengths
 		m_uWidth = uWidth;
@@ -345,7 +347,7 @@ namespace PolyVox
 		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
 
 		//Create the blocks
-		m_pBlocks.resize(m_uNoOfBlocksInVolume);
+		m_pBlocks = new Block<VoxelType>[m_uNoOfBlocksInVolume];
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].resize(m_uBlockSideLength);
@@ -386,7 +388,7 @@ namespace PolyVox
 		if(m_pUncompressedBlocks.size() == m_uBlockCacheSize)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
-			uint32_t uLeastRecentTimestamp = 1000000000000000;
+			uint64_t uLeastRecentTimestamp = 1000000000000000;
 			for(uint32_t ct = 0; ct < m_pUncompressedBlocks.size(); ct++)
 			{
 				if(m_pUncompressedBlocks[ct]->m_uTimestamp < uLeastRecentTimestamp)
@@ -409,5 +411,16 @@ namespace PolyVox
 		m_uUncompressions++;
 
 		return block;
+	}
+
+	template <typename VoxelType>
+	uint32_t Volume<VoxelType>::sizeInChars(void)
+	{
+		uint32_t uSizeInChars = 0;
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
+		{
+			uSizeInChars += m_pBlocks[i].sizeInChars();
+		}
+		return uSizeInChars;
 	}
 }

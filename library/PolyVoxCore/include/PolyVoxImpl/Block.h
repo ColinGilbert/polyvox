@@ -37,10 +37,7 @@ namespace PolyVox
 		friend class VolumeSampler<VoxelType>;
 	public:
 		Block(uint16_t uSideLength = 0);
-		Block(const Block& rhs);
 		~Block();
-
-		Block& operator=(const Block& rhs);
 
 		uint16_t getSideLength(void) const;
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
@@ -66,6 +63,11 @@ namespace PolyVox
 
 		std::vector<uint16_t> runlengths;
 		std::vector<VoxelType> values;
+
+	private:
+		Block(const Block& rhs);
+		Block& operator=(const Block& rhs);
+		
 	};
 }
 
