@@ -502,9 +502,10 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(1024, 1280, 256);
+	Volume<MaterialDensityPair44> volData(4096, 4096, 256);
 	//createSphereInVolume(volData, 30);
 	createPerlinTerrain(volData);
+	//createPerlinVolumeSlow(volData);
 	volData.setBlockCacheSize(8);
 
 	/*srand(12345);

@@ -43,7 +43,7 @@ namespace PolyVox
 	{
 		if(uSideLength != 0)
 		{
-			resize(uSideLength);
+			initialise(uSideLength);
 		}
 	}
 
@@ -51,13 +51,6 @@ namespace PolyVox
 	Block<VoxelType>::Block(const Block<VoxelType>& rhs)
 	{
 		assert(false);
-	}
-
-	template <typename VoxelType>
-	Block<VoxelType>::~Block()
-	{
-		delete[] m_tUncompressedData;
-		m_tUncompressedData = 0;
 	}
 
 	template <typename VoxelType>
@@ -124,11 +117,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::fill(VoxelType tValue)
 	{
-		//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
-		//in 64-bit mode as casting the pointer to an int causes a loss of precision.
-
 		assert(m_tUncompressedData);
 
+		//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
+		//in 64-bit mode as casting the pointer to an int causes a loss of precision.
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
 
@@ -136,7 +128,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::resize(uint16_t uSideLength)
+	void Block<VoxelType>::initialise(uint16_t uSideLength)
 	{
 		//Debug mode validation
 		assert(isPowerOf2(uSideLength));
@@ -150,120 +142,77 @@ namespace PolyVox
 		//Compute the side length		
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
-
-
-		if(m_bIsCompressed == false)
-		{
-			//Delete the old data
-			delete[] m_tUncompressedData;
-			m_tUncompressedData = 0;
-
-			//If this fails an exception will be thrown. Memory is not   
-			//allocated and there is nothing else in this class to clean up
-			m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-
-			m_bIsUncompressedDataModified = true;
-		}
 	}
 
 	template <typename VoxelType>
-	uint32_t Block<VoxelType>::sizeInChars(void)
+	uint32_t Block<VoxelType>::sizeInBytes(void)
 	{
-		uint32_t uSizeInChars = 0; //sizeof(Block<VoxelType>);
-
-		if(m_tUncompressedData != 0)
-		{
-			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			uSizeInChars += uNoOfVoxels * sizeof(VoxelType);
-		}
-
-		uSizeInChars += values.size() * sizeof(VoxelType);
-		uSizeInChars += runlengths.size() * sizeof(uint16_t);
-
-		return  uSizeInChars;
+		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
+		uSizeInBytes += m_vecCompressedData.size() * sizeof(RunlengthEntry);
+		return  uSizeInBytes;
 	}
 
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
 		assert(m_bIsCompressed == false);
+		assert(m_tUncompressedData != 0);
 
 		//If the uncompressed data hasn't actually been
 		//modified then we don't need to redo the compression.
 		if(m_bIsUncompressedDataModified)
 		{
 			uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			runlengths.clear();
-			values.clear();
+			m_vecCompressedData.clear();
 
-			VoxelType current = m_tUncompressedData[0];
-			uint16_t runLength = 1;
+			RunlengthEntry<uint16_t> entry;
+			entry.length = 1;
+			entry.value = m_tUncompressedData[0];
 
 			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
 			{		
 				VoxelType value = m_tUncompressedData[ct];
-				if((value == current) && (runLength < (std::numeric_limits<uint16_t>::max)()))
+				if((value == entry.value) && (entry.length < entry.maxRunlength()))
 				{
-					runLength++;
+					entry.length++;
 				}
 				else
 				{
-					runlengths.push_back(runLength);
-					values.push_back(current);
-					current = value;
-					runLength = 1;
+					m_vecCompressedData.push_back(entry);
+					entry.value = value;
+					entry.length = 1;
 				}
 			}
 
-			runlengths.push_back(runLength);
-			values.push_back(current);
+			m_vecCompressedData.push_back(entry);
 
 			//Shrink the vectors to their contents (seems slow?):
 			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
 			//C++0x may have a shrink_to_fit() function?
-			//std::vector<uint8_t>(runlengths).swap(runlengths);
-			//std::vector<VoxelType>(values).swap(values);
+			//std::vector<RunlengthEntry>(m_vecCompressedData).swap(m_vecCompressedData);
 		}
 
-		assert(m_tUncompressedData != 0);
-		delete[] m_tUncompressedData;
+		//Flag the uncompressed data as no longer being used but don't delete it (we don't own it).
 		m_tUncompressedData = 0;
 		m_bIsCompressed = true;
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::uncompress(void)
+	void Block<VoxelType>::uncompress(VoxelType* pData)
 	{
 		assert(m_bIsCompressed == true);
 		assert(m_tUncompressedData == 0);
-		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		m_tUncompressedData = pData;
 
-		VoxelType* pUncompressedData = m_tUncompressedData;
-		
-		//memset should provide the fastest way of expanding the data, but it works
-		//on unsigned chars so is only possible if our voxel type is the right size.
-		//Nore that memset takes an int type, but sonverts it to unsiogned char:
-		//http://www.cplusplus.com/reference/clibrary/cstring/memset/
-		/*if(sizeof(VoxelType) == sizeof(unsigned char))
+		VoxelType* pUncompressedData = m_tUncompressedData;		
+		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
 		{
-			for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
+			for(uint32_t i = 0; i < m_vecCompressedData[ct].length; ++i)
 			{
-				memset(pUncompressedData, *((int*)(&values[ct])), runlengths[ct]);
-				pUncompressedData += runlengths[ct];
+				*pUncompressedData = m_vecCompressedData[ct].value;
+				++pUncompressedData;
 			}
 		}
-		//Otherwise we fall back on a loop.
-		else
-		{*/
-			for(uint32_t ct = 0; ct < runlengths.size(); ++ct)
-			{
-				for(uint32_t i = 0; i < runlengths[ct]; ++i)
-				{
-					*pUncompressedData = values[ct];
-					++pUncompressedData;
-				}
-			}
-		//}
 
 		m_bIsCompressed = false;
 		m_bIsUncompressedDataModified = false;

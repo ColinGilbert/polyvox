@@ -49,13 +49,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
 		:m_uTimestamper(0)
-		,m_uBlockCacheSize(256)
+		,m_uMaxUncompressedBlockCacheSize(256)
 		,m_uCompressions(0)
 		,m_uUncompressions(0)
 		,m_uBlockSideLength(uBlockSideLength)
 		,m_pBlocks(0)
 	{
-		setBlockCacheSize(m_uBlockCacheSize);
+		setBlockCacheSize(m_uMaxUncompressedBlockCacheSize);
 
 		//Create a volume of the right size.
 		resize(uWidth, uHeight, uDepth, uBlockSideLength);
@@ -272,13 +272,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::clearBlockCache(void)
 	{
-		for(uint32_t ct = 0; ct < m_pUncompressedBlocks.size(); ct++)
+		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 		{
-			m_pUncompressedBlocks[ct]->compress();
+			m_vecUncompressedBlockCache[ct].block->compress();
+			delete[] m_vecUncompressedBlockCache[ct].data;
 			m_uCompressions++;
 		}
-
-		m_pUncompressedBlocks.clear();
+		m_vecUncompressedBlockCache.clear();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -350,11 +350,11 @@ namespace PolyVox
 		m_pBlocks = new Block<VoxelType>[m_uNoOfBlocksInVolume];
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			m_pBlocks[i].resize(m_uBlockSideLength);
+			m_pBlocks[i].initialise(m_uBlockSideLength);
 		}
 
 		//Create the border block
-		m_pBorderBlock.resize(uBlockSideLength);
+		m_pBorderBlock.initialise(uBlockSideLength);
 		Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
 		pUncompressedBorderBlock->fill(VoxelType());
 
@@ -369,7 +369,19 @@ namespace PolyVox
 	{
 		clearBlockCache();
 
-		m_uBlockCacheSize = uBlockCacheSize;
+		m_uMaxUncompressedBlockCacheSize = uBlockCacheSize;
+
+		/*m_pUncompressedBlockCache.resize(uBlockCacheSize);
+		for(uint32_t ct = 0; ct < m_pUncompressedBlockData.size(); ct++)
+		{
+			m_pUncompressedBlockData[ct].data
+			VoxelType empty;
+			empty.setMaterial(0);
+			empty.setDensity(0);
+			std::fill(m_pUncompressedBlockData[ct].begin(), m_pUncompressedBlockData[ct].end(), empty);
+		}
+		m_pUncompressedBlockData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * m_uBlockCacheSize];
+		memset(m_pUncompressedBlockData, 0, m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * m_uBlockCacheSize);*/
 	}
 
 	template <typename VoxelType>
@@ -384,43 +396,52 @@ namespace PolyVox
 
 		uint32_t uUncompressedBlockIndex = 100000000;
 
-		assert(m_pUncompressedBlocks.size() <= m_uBlockCacheSize);
-		if(m_pUncompressedBlocks.size() == m_uBlockCacheSize)
+		assert(m_vecUncompressedBlockCache.size() <= m_uMaxUncompressedBlockCacheSize);
+		if(m_vecUncompressedBlockCache.size() == m_uMaxUncompressedBlockCacheSize)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint64_t uLeastRecentTimestamp = 1000000000000000;
-			for(uint32_t ct = 0; ct < m_pUncompressedBlocks.size(); ct++)
+			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 			{
-				if(m_pUncompressedBlocks[ct]->m_uTimestamp < uLeastRecentTimestamp)
+				if(m_vecUncompressedBlockCache[ct].block->m_uTimestamp < uLeastRecentTimestamp)
 				{
-					uLeastRecentTimestamp = m_pUncompressedBlocks[ct]->m_uTimestamp;
+					uLeastRecentTimestamp = m_vecUncompressedBlockCache[ct].block->m_uTimestamp;
 					leastRecentlyUsedBlockIndex = ct;
 				}
 			}
 
-			m_pUncompressedBlocks[leastRecentlyUsedBlockIndex]->compress();
+			uUncompressedBlockIndex = leastRecentlyUsedBlockIndex;
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex].block->compress();
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex].block->m_tUncompressedData = 0;
 			m_uCompressions++;
-			m_pUncompressedBlocks[leastRecentlyUsedBlockIndex] = block;
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex].block = block;
 		}
 		else
 		{
-			m_pUncompressedBlocks.push_back(block);
+			UncompressedBlock uncompressedBlock;
+			uncompressedBlock.block = block;
+			uncompressedBlock.data = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+			m_vecUncompressedBlockCache.push_back(uncompressedBlock);
+			uUncompressedBlockIndex = m_vecUncompressedBlockCache.size() - 1;
 		}
 
-		block->uncompress();
+		//VoxelType* pData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+		//VoxelType* pData = &(m_pUncompressedBlockData[uUncompressedBlockIndex][0]);
+		//VoxelType* pData = m_pUncompressedBlockData + (m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * uUncompressedBlockIndex);
+		block->uncompress(m_vecUncompressedBlockCache[uUncompressedBlockIndex].data);
 		m_uUncompressions++;
 
 		return block;
 	}
 
 	template <typename VoxelType>
-	uint32_t Volume<VoxelType>::sizeInChars(void)
+	uint32_t Volume<VoxelType>::sizeInBytes(void)
 	{
-		uint32_t uSizeInChars = 0;
+		uint32_t uSizeInBytes = 0;
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			uSizeInChars += m_pBlocks[i].sizeInChars();
+			uSizeInBytes += m_pBlocks[i].sizeInBytes();
 		}
-		return uSizeInChars;
+		return uSizeInBytes;
 	}
 }

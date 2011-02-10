@@ -118,6 +118,13 @@ namespace PolyVox
 		//Make VolumeSampler a friend
 		friend class VolumeSampler<VoxelType>;
 
+		struct UncompressedBlock
+		{
+			Block<VoxelType>* block;
+			VoxelType* data;
+
+		};
+
 	public:		
 		///Constructor
 		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
@@ -158,15 +165,18 @@ namespace PolyVox
 		void setBlockCacheSize(uint16_t uBlockCacheSize);
 		void clearBlockCache(void);
 
-		uint32_t sizeInChars(void);
+		uint32_t sizeInBytes(void);
 
 	public:
 		Block<VoxelType>* getUncompressedBlock(Block<VoxelType>* block) const;
 
 		Block<VoxelType> m_pBorderBlock;
 		Block<VoxelType>* m_pBlocks;
-		mutable std::vector<Block<VoxelType>*> m_pUncompressedBlocks;
-		uint16_t m_uBlockCacheSize;
+		//mutable std::vector<Block<VoxelType>*> m_pUncompressedBlocks;
+		//mutable std::vector< std::vector<VoxelType> > m_pUncompressedBlockData;
+		//mutable VoxelType* m_pUncompressedBlockData;
+		mutable std::vector< UncompressedBlock > m_vecUncompressedBlockCache;
+		uint16_t m_uMaxUncompressedBlockCacheSize;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
