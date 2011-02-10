@@ -502,7 +502,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(4096, 4096, 256);
+	Volume<MaterialDensityPair44> volData(256, 256, 256);
 	//createSphereInVolume(volData, 30);
 	createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
@@ -522,12 +522,12 @@ int main(int argc, char *argv[])
 	}*/
 
 	//Extract the surface
-	/*SurfaceMesh<PositionMaterialNormal> mesh;
+	SurfaceMesh<PositionMaterialNormal> mesh;
 	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);*/
+	openGLWidget.setSurfaceMeshToRender(mesh);
 
 	//Run the message pump.
 	return app.exec();
