@@ -510,10 +510,10 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(256, 256, 256);
+	Volume<MaterialDensityPair44> volData(2048, 2048, 256);
 	//createSphereInVolume(volData, 30);
-	//createPerlinTerrain(volData);
-	createPerlinVolumeSlow(volData);
+	createPerlinTerrain(volData);
+	//createPerlinVolumeSlow(volData);
 	std::cout << "Memory usage: " << volData.sizeInBytes() << std::endl;
 	volData.setBlockCacheSize(8);
 	std::cout << "Memory usage: " << volData.sizeInBytes() << std::endl;

@@ -172,10 +172,10 @@ namespace PolyVox
 
 			m_vecCompressedData.push_back(entry);
 
-			//Shrink the vectors to their contents (seems slow?):
+			//Shrink the vectors to their contents (maybe slow?):
 			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
 			//C++0x may have a shrink_to_fit() function?
-			//std::vector<RunlengthEntry>(m_vecCompressedData).swap(m_vecCompressedData);
+			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);
 		}
 
 		//Flag the uncompressed data as no longer being used but don't delete it (we don't own it).

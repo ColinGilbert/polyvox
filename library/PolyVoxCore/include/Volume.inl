@@ -50,8 +50,6 @@ namespace PolyVox
 	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
 		:m_uTimestamper(0)
 		,m_uMaxUncompressedBlockCacheSize(256)
-		,m_uCompressions(0)
-		,m_uUncompressions(0)
 		,m_uBlockSideLength(uBlockSideLength)
 		,m_pUncompressedBorderData(0)
 		,m_ulastAccessedBlockIndex((std::numeric_limits<uint32_t>::max)()) //An invalid index
@@ -265,7 +263,6 @@ namespace PolyVox
 		{
 			m_pBlocks[m_vecUncompressedBlockCache[ct].uBlockIndex].compress();
 			delete[] m_vecUncompressedBlockCache[ct].data;
-			m_uCompressions++;
 		}
 		m_vecUncompressedBlockCache.clear();
 	}
@@ -409,7 +406,6 @@ namespace PolyVox
 			uUncompressedBlockIndex = leastRecentlyUsedBlockIndex;
 			m_pBlocks[m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex].uBlockIndex].compress();
 			m_pBlocks[m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex].uBlockIndex].m_tUncompressedData = 0;
-			m_uCompressions++;
 			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex].uBlockIndex = uBlockIndex;
 		}
 		else
@@ -422,11 +418,7 @@ namespace PolyVox
 			uUncompressedBlockIndex = m_vecUncompressedBlockCache.size() - 1;
 		}
 
-		//VoxelType* pData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-		//VoxelType* pData = &(m_pUncompressedBlockData[uUncompressedBlockIndex][0]);
-		//VoxelType* pData = m_pUncompressedBlockData + (m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * uUncompressedBlockIndex);
 		block->uncompress(m_vecUncompressedBlockCache[uUncompressedBlockIndex].data);
-		m_uUncompressions++;
 
 		return block;
 	}

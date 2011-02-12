@@ -170,13 +170,24 @@ namespace PolyVox
 	public:
 		Block<VoxelType>* getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const;
 
-		VoxelType* m_pUncompressedBorderData;
-
+		//The block data
 		mutable std::vector< Block<VoxelType> > m_pBlocks;
-		mutable std::vector<uint32_t> m_pUncompressedTimestamps;
+
+		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
+		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
+		//of blocks. However, this could mean the same block data is uncompressed and modified in more than one
+		//location in memory... could be messy with threading.
 		mutable std::vector< UncompressedBlock > m_vecUncompressedBlockCache;
-		uint16_t m_uMaxUncompressedBlockCacheSize;
+		mutable std::vector<uint32_t> m_pUncompressedTimestamps;
+		mutable uint32_t m_uTimestamper;
 		uint32_t m_ulastAccessedBlockIndex;
+		uint32_t m_uMaxUncompressedBlockCacheSize;
+
+		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
+		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
+		//good chance we'll often hit it anyway. It's a chunk of homogenous data (rather than a single value) so that
+		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
+		VoxelType* m_pUncompressedBorderData;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
@@ -194,10 +205,6 @@ namespace PolyVox
 		uint16_t m_uLongestSideLength;
 		uint16_t m_uShortestSideLength;
 		float m_fDiagonalLength;
-		mutable uint64_t m_uTimestamper;
-
-		mutable uint32_t m_uCompressions;
-		mutable uint32_t m_uUncompressions;
 	};
 
 	//Some handy typedefs
