@@ -39,7 +39,6 @@ namespace PolyVox
 		,m_tUncompressedData(0)
 		,m_bIsCompressed(true)
 		,m_bIsUncompressedDataModified(true)
-		,m_uTimestamp(0)
 	{
 		if(uSideLength != 0)
 		{
@@ -148,7 +147,7 @@ namespace PolyVox
 	uint32_t Block<VoxelType>::sizeInBytes(void)
 	{
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
-		uSizeInBytes += m_vecCompressedData.size() * sizeof(RunlengthEntry);
+		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry);
 		return  uSizeInBytes;
 	}
 
@@ -207,11 +206,8 @@ namespace PolyVox
 		VoxelType* pUncompressedData = m_tUncompressedData;		
 		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
 		{
-			for(uint32_t i = 0; i < m_vecCompressedData[ct].length; ++i)
-			{
-				*pUncompressedData = m_vecCompressedData[ct].value;
-				++pUncompressedData;
-			}
+			std::fill(pUncompressedData, pUncompressedData + m_vecCompressedData[ct].length, m_vecCompressedData[ct].value);
+			pUncompressedData += m_vecCompressedData[ct].length;
 		}
 
 		m_bIsCompressed = false;

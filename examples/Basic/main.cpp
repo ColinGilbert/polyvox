@@ -356,8 +356,16 @@ void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 			{							
 				float perlinVal = perlin.Get3D(x /static_cast<float>(volData.getWidth()-1), (y) / static_cast<float>(volData.getHeight()-1), z / static_cast<float>(volData.getDepth()-1));
 
+				perlinVal += 1.0f;
+				perlinVal *= 0.5f;
+				perlinVal *= MaterialDensityPair44::getMaxDensity();
+
 				MaterialDensityPair44 voxel;
-				if(perlinVal < 0.0f)
+
+				voxel.setMaterial(245);
+				voxel.setDensity(perlinVal);
+
+				/*if(perlinVal < 0.0f)
 				{
 					voxel.setMaterial(245);
 					voxel.setDensity(MaterialDensityPair44::getMaxDensity());
@@ -366,7 +374,7 @@ void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 				{
 					voxel.setMaterial(0);
 					voxel.setDensity(MaterialDensityPair44::getMinDensity());
-				}
+				}*/
 
 				volData.setVoxelAt(x, y, z, voxel);
 			}
@@ -504,8 +512,8 @@ int main(int argc, char *argv[])
 	//Create an empty volume and then place a sphere in it
 	Volume<MaterialDensityPair44> volData(256, 256, 256);
 	//createSphereInVolume(volData, 30);
-	createPerlinTerrain(volData);
-	//createPerlinVolumeSlow(volData);
+	//createPerlinTerrain(volData);
+	createPerlinVolumeSlow(volData);
 	volData.setBlockCacheSize(8);
 
 	/*srand(12345);

@@ -120,7 +120,7 @@ namespace PolyVox
 
 		struct UncompressedBlock
 		{
-			Block<VoxelType>* block;
+			uint32_t uBlockIndex;
 			VoxelType* data;
 
 		};
@@ -168,15 +168,16 @@ namespace PolyVox
 		uint32_t sizeInBytes(void);
 
 	public:
-		Block<VoxelType>* getUncompressedBlock(Block<VoxelType>* block) const;
+		Block<VoxelType>* getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const;
 
-		Block<VoxelType> m_pBorderBlock;
+		//Block<VoxelType> m_pBorderBlock;
+		VoxelType* m_pUncompressedBorderData;
+
 		Block<VoxelType>* m_pBlocks;
-		//mutable std::vector<Block<VoxelType>*> m_pUncompressedBlocks;
-		//mutable std::vector< std::vector<VoxelType> > m_pUncompressedBlockData;
-		//mutable VoxelType* m_pUncompressedBlockData;
+		uint32_t* m_pUncompressedTimestamps;
 		mutable std::vector< UncompressedBlock > m_vecUncompressedBlockCache;
 		uint16_t m_uMaxUncompressedBlockCacheSize;
+		uint32_t m_ulastAccessedBlockIndex;
 
 		uint32_t m_uNoOfBlocksInVolume;
 
