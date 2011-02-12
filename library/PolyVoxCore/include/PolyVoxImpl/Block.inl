@@ -47,19 +47,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>::Block(const Block<VoxelType>& rhs)
-	{
-		assert(false);
-	}
-
-	template <typename VoxelType>
-	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
-	{
-		assert(false);
-		return 0;
-	}
-
-	template <typename VoxelType>
 	uint16_t Block<VoxelType>::getSideLength(void) const
 	{
 		return m_uSideLength;
@@ -147,7 +134,7 @@ namespace PolyVox
 	uint32_t Block<VoxelType>::sizeInBytes(void)
 	{
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
-		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry);
+		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);
 		return  uSizeInBytes;
 	}
 

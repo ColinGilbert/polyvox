@@ -53,8 +53,6 @@ namespace PolyVox
 		,m_uCompressions(0)
 		,m_uUncompressions(0)
 		,m_uBlockSideLength(uBlockSideLength)
-		,m_pBlocks(0)
-		,m_pUncompressedTimestamps(0)
 		,m_pUncompressedBorderData(0)
 		,m_ulastAccessedBlockIndex((std::numeric_limits<uint32_t>::max)()) //An invalid index
 	{
@@ -182,13 +180,6 @@ namespace PolyVox
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			/*const Block<VoxelType>& block = m_pBlocks
-				[
-					blockX + 
-					blockY * m_uWidthInBlocks + 
-					blockZ * m_uWidthInBlocks * m_uHeightInBlocks
-				];*/
-
 			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
@@ -241,13 +232,6 @@ namespace PolyVox
 			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-			/*uint32_t uBlockIndex =
-				blockX + 
-				blockY * m_uWidthInBlocks + 
-				blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
-
-			Block<VoxelType>& block = m_pBlocks[uBlockIndex];*/
 
 			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
@@ -331,11 +315,8 @@ namespace PolyVox
 		}
 
 		//Clear the previous data
-		delete[] m_pBlocks;
-		m_pBlocks = 0;
-
-		delete[] m_pUncompressedTimestamps;
-		m_pUncompressedTimestamps = 0;
+		m_pBlocks.clear();
+		m_pUncompressedTimestamps.clear();
 
 		//Compute the volume side lengths
 		m_uWidth = uWidth;
@@ -355,18 +336,16 @@ namespace PolyVox
 		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
 
 		//Create the blocks
-		m_pBlocks = new Block<VoxelType>[m_uNoOfBlocksInVolume];
-		m_pUncompressedTimestamps = new uint32_t[m_uNoOfBlocksInVolume];
+		m_pBlocks.resize(m_uNoOfBlocksInVolume);
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].initialise(m_uBlockSideLength);
-			m_pUncompressedTimestamps[i] = 0; //Use memset/std::fill
 		}
 
+		m_pUncompressedTimestamps.resize(m_uNoOfBlocksInVolume);
+		std::fill(m_pUncompressedTimestamps.begin(), m_pUncompressedTimestamps.end(), 0);
+
 		//Create the border block
-		/*m_pBorderBlock.initialise(uBlockSideLength);
-		Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
-		pUncompressedBorderBlock->fill(VoxelType());*/
 		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
 		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
 
@@ -421,10 +400,8 @@ namespace PolyVox
 			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 			{
 				if(m_pUncompressedTimestamps[m_vecUncompressedBlockCache[ct].uBlockIndex] < uLeastRecentTimestamp)
-				//if(m_pBlocks[m_vecUncompressedBlockCache[ct].uBlockIndex].m_uTimestamp < uLeastRecentTimestamp)
 				{
 					uLeastRecentTimestamp = m_pUncompressedTimestamps[m_vecUncompressedBlockCache[ct].uBlockIndex];
-					//uLeastRecentTimestamp = m_pBlocks[m_vecUncompressedBlockCache[ct].uBlockIndex].m_uTimestamp;
 					leastRecentlyUsedBlockIndex = ct;
 				}
 			}
@@ -457,11 +434,25 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t Volume<VoxelType>::sizeInBytes(void)
 	{
-		uint32_t uSizeInBytes = 0;
+		uint32_t uSizeInBytes = sizeof(Volume);
+
+		//Memory used by the blocks
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			uSizeInBytes += m_pBlocks[i].sizeInBytes();
 		}
+
+		//Memory used by the block cache.
+		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(UncompressedBlock);
+		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		uSizeInBytes += m_pUncompressedTimestamps.capacity() * sizeof(uint32_t);
+
+		//Memory used by border data.
+		if(m_pUncompressedBorderData)
+		{
+			uSizeInBytes += m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		}
+
 		return uSizeInBytes;
 	}
 }

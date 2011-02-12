@@ -514,7 +514,9 @@ int main(int argc, char *argv[])
 	//createSphereInVolume(volData, 30);
 	//createPerlinTerrain(volData);
 	createPerlinVolumeSlow(volData);
+	std::cout << "Memory usage: " << volData.sizeInBytes() << std::endl;
 	volData.setBlockCacheSize(8);
+	std::cout << "Memory usage: " << volData.sizeInBytes() << std::endl;
 
 	/*srand(12345);
 	for(int ct = 0; ct < 1000; ct++)

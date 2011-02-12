@@ -170,11 +170,10 @@ namespace PolyVox
 	public:
 		Block<VoxelType>* getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const;
 
-		//Block<VoxelType> m_pBorderBlock;
 		VoxelType* m_pUncompressedBorderData;
 
-		Block<VoxelType>* m_pBlocks;
-		uint32_t* m_pUncompressedTimestamps;
+		mutable std::vector< Block<VoxelType> > m_pBlocks;
+		mutable std::vector<uint32_t> m_pUncompressedTimestamps;
 		mutable std::vector< UncompressedBlock > m_vecUncompressedBlockCache;
 		uint16_t m_uMaxUncompressedBlockCacheSize;
 		uint32_t m_ulastAccessedBlockIndex;

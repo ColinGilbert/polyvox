@@ -161,9 +161,6 @@ namespace PolyVox
 		}
 		else
 		{
-			/*Block<VoxelType>* pUncompressedBorderBlock = mVolume->getUncompressedBlock(&(mVolume->m_pBorderBlock));
-			mCurrentVoxel = pUncompressedBorderBlock->m_tUncompressedData + uVoxelIndexInBlock;*/
-
 			mCurrentVoxel = mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
 		}
 	}

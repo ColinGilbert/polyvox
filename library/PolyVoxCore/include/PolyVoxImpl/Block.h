@@ -70,10 +70,6 @@ namespace PolyVox
 		uint8_t m_uSideLengthPower;	
 		bool m_bIsCompressed;
 		bool m_bIsUncompressedDataModified;		
-
-	private:
-		Block(const Block& rhs);
-		Block& operator=(const Block& rhs);
 		
 	};
 }
