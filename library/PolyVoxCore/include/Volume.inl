@@ -393,8 +393,10 @@ namespace PolyVox
 			return block;
 		}
 
+		//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
+		//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
+		//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
 		uint32_t uUncompressedBlockIndex = 100000000;
-
 		assert(m_vecUncompressedBlockCache.size() <= m_uMaxUncompressedBlockCacheSize);
 		if(m_vecUncompressedBlockCache.size() == m_uMaxUncompressedBlockCacheSize)
 		{
