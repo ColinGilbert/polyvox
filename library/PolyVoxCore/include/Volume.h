@@ -159,11 +159,11 @@ namespace PolyVox
 		void clearBlockCache(void);
 		float calculateCompressionRatio(void);
 		uint32_t calculateSizeInBytes(void);
+		/// Resizes the volume to the specified dimensions
+		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 
 	private:
 		Block<VoxelType>* getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const;
-		/// Resizes the volume to the specified dimensions
-		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 
 		//The block data
 		mutable std::vector< Block<VoxelType> > m_pBlocks;
