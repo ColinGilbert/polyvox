@@ -199,6 +199,20 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// Increasing the size of the block cache will increase memory but may improve performance.
+	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
+	/// volume data and then set it to a smaller value (e.g.64) for general processing.
+	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::setBlockCacheSize(uint16_t uBlockCacheSize)
+	{
+		clearBlockCache();
+
+		m_uMaxUncompressedBlockCacheSize = uBlockCacheSize;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -353,14 +367,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::setBlockCacheSize(uint16_t uBlockCacheSize)
-	{
-		clearBlockCache();
-
-		m_uMaxUncompressedBlockCacheSize = uBlockCacheSize;
-	}
-
-	template <typename VoxelType>
 	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const
 	{
 		//Compute the block's index from it's position.
@@ -424,14 +430,22 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t Volume<VoxelType>::sizeInBytes(void)
+	float Volume<VoxelType>::calculateCompressionRatio(void)
+	{
+		float fRawSize = m_uWidth * m_uHeight * m_uDepth * sizeof(VoxelType);
+		float fCompressedSize = calculateSizeInBytes();
+		return fCompressedSize/fRawSize;
+	}
+
+	template <typename VoxelType>
+	uint32_t Volume<VoxelType>::calculateSizeInBytes(void)
 	{
 		uint32_t uSizeInBytes = sizeof(Volume);
 
 		//Memory used by the blocks
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
-			uSizeInBytes += m_pBlocks[i].sizeInBytes();
+			uSizeInBytes += m_pBlocks[i].calculateSizeInBytes();
 		}
 
 		//Memory used by the block cache.

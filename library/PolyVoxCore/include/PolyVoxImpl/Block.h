@@ -58,7 +58,7 @@ namespace PolyVox
 
 		void fill(VoxelType tValue);
 		void initialise(uint16_t uSideLength);
-		uint32_t sizeInBytes(void);
+		uint32_t calculateSizeInBytes(void);
 
 	public:
 		void compress(void);

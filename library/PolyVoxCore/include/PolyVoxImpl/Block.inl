@@ -131,7 +131,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t Block<VoxelType>::sizeInBytes(void)
+	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
 	{
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
 		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);

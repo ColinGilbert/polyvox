@@ -382,7 +382,7 @@ void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 	}
 }
 
-void createPerlinVolumeFast(Volume<MaterialDensityPair44>& volData)
+/*void createPerlinVolumeFast(Volume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,8,1,234);
 
@@ -428,7 +428,7 @@ void createPerlinVolumeFast(Volume<MaterialDensityPair44>& volData)
 			}
 		}			
 	}
-}
+}*/
 
 void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
 {
@@ -510,13 +510,14 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(2048, 2048, 256);
+	Volume<MaterialDensityPair44> volData(256, 256, 256);
 	//createSphereInVolume(volData, 30);
 	createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
-	std::cout << "Memory usage: " << volData.sizeInBytes() << std::endl;
+	std::cout << "Memory usage: " << volData.calculateSizeInBytes() << std::endl;
 	volData.setBlockCacheSize(8);
-	std::cout << "Memory usage: " << volData.sizeInBytes() << std::endl;
+	std::cout << "Memory usage: " << volData.calculateSizeInBytes() << std::endl;
+	std::cout << "Compression ratio: " << volData.calculateCompressionRatio() << std::endl;
 
 	/*srand(12345);
 	for(int ct = 0; ct < 1000; ct++)
