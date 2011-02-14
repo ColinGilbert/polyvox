@@ -463,4 +463,21 @@ namespace PolyVox
 
 		return uSizeInBytes;
 	}
+
+	template <typename VoxelType>
+	void Volume<VoxelType>::useCompatibilityMode(void)
+	{
+		setBlockCacheSize(m_uNoOfBlocksInVolume * 2); //Times two gives space to spare
+
+		for(uint32_t z = 0; z < m_uDepthInBlocks; z++)
+		{
+			for(uint32_t y = 0; y < m_uHeightInBlocks; y++)
+			{
+				for(uint32_t x = 0; x < m_uWidthInBlocks; x++)
+				{
+					getUncompressedBlock(x,y,z);
+				}
+			}
+		}
+	}
 }

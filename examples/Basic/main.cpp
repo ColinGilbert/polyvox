@@ -511,11 +511,12 @@ int main(int argc, char *argv[])
 
 	//Create an empty volume and then place a sphere in it
 	Volume<MaterialDensityPair44> volData(256, 256, 256);
+	volData.useCompatibilityMode();
 	//createSphereInVolume(volData, 30);
 	createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
 	std::cout << "Memory usage: " << volData.calculateSizeInBytes() << std::endl;
-	volData.setBlockCacheSize(8);
+	//volData.setBlockCacheSize(8);
 	std::cout << "Memory usage: " << volData.calculateSizeInBytes() << std::endl;
 	std::cout << "Compression ratio: " << volData.calculateCompressionRatio() << std::endl;
 

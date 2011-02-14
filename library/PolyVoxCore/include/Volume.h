@@ -159,6 +159,7 @@ namespace PolyVox
 		void clearBlockCache(void);
 		float calculateCompressionRatio(void);
 		uint32_t calculateSizeInBytes(void);
+		void useCompatibilityMode(void);
 		/// Resizes the volume to the specified dimensions
 		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
 
