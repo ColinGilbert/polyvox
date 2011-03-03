@@ -29,41 +29,41 @@ using namespace PolyVox;
 
 namespace PolyVox
 {
-	const Vector3DInt16 arrayPathfinderFaces[6] =
+	const Vector3DInt32 arrayPathfinderFaces[6] =
 	{
-		Vector3DInt16(0, 0, -1),
-		Vector3DInt16(0, 0, +1),
-		Vector3DInt16(0, -1, 0),
-		Vector3DInt16(0, +1, 0),
-		Vector3DInt16(-1, 0, 0),
-		Vector3DInt16(+1, 0, 0)
+		Vector3DInt32(0, 0, -1),
+		Vector3DInt32(0, 0, +1),
+		Vector3DInt32(0, -1, 0),
+		Vector3DInt32(0, +1, 0),
+		Vector3DInt32(-1, 0, 0),
+		Vector3DInt32(+1, 0, 0)
 	};
 
-	const Vector3DInt16 arrayPathfinderEdges[12] =
+	const Vector3DInt32 arrayPathfinderEdges[12] =
 	{
-		Vector3DInt16(0, -1, -1),
-		Vector3DInt16(0, -1, +1),
-		Vector3DInt16(0, +1, -1),
-		Vector3DInt16(0, +1, +1),
-		Vector3DInt16(-1, 0, -1),
-		Vector3DInt16(-1, 0, +1),
-		Vector3DInt16(+1, 0, -1),
-		Vector3DInt16(+1, 0, +1),
-		Vector3DInt16(-1, -1, 0),
-		Vector3DInt16(-1, +1, 0),
-		Vector3DInt16(+1, -1, 0),
-		Vector3DInt16(+1, +1, 0)
+		Vector3DInt32(0, -1, -1),
+		Vector3DInt32(0, -1, +1),
+		Vector3DInt32(0, +1, -1),
+		Vector3DInt32(0, +1, +1),
+		Vector3DInt32(-1, 0, -1),
+		Vector3DInt32(-1, 0, +1),
+		Vector3DInt32(+1, 0, -1),
+		Vector3DInt32(+1, 0, +1),
+		Vector3DInt32(-1, -1, 0),
+		Vector3DInt32(-1, +1, 0),
+		Vector3DInt32(+1, -1, 0),
+		Vector3DInt32(+1, +1, 0)
 	};
 
-	const Vector3DInt16 arrayPathfinderCorners[8] =
+	const Vector3DInt32 arrayPathfinderCorners[8] =
 	{
-		Vector3DInt16(-1, -1, -1),
-		Vector3DInt16(-1, -1, +1),
-		Vector3DInt16(-1, +1, -1),
-		Vector3DInt16(-1, +1, +1),
-		Vector3DInt16(+1, -1, -1),
-		Vector3DInt16(+1, -1, +1),
-		Vector3DInt16(+1, +1, -1),
-		Vector3DInt16(+1, +1, +1)
+		Vector3DInt32(-1, -1, -1),
+		Vector3DInt32(-1, -1, +1),
+		Vector3DInt32(-1, +1, -1),
+		Vector3DInt32(-1, +1, +1),
+		Vector3DInt32(+1, -1, -1),
+		Vector3DInt32(+1, -1, +1),
+		Vector3DInt32(+1, +1, -1),
+		Vector3DInt32(+1, +1, +1)
 	};
 }

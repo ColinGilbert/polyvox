@@ -37,13 +37,13 @@ namespace PolyVox
 		while(iterSurfaceVertex != vecVertices.end())
 		{
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
-			const Vector3DInt16 v3dFloor = static_cast<Vector3DInt16>(v3dPos);
+			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
 			VolumeSampler<uint8_t> volIter(volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
-			bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt16(1,1,1),2);
+			bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt32(1,1,1),2);
 
 			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
 			{
@@ -69,7 +69,7 @@ namespace PolyVox
 
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
+			volIter.setPosition(static_cast<Vector3DInt32>(v3dFloor));
 			Vector3DFloat gradFloor;
 			switch(normalGenerationMethod)
 			{
@@ -89,15 +89,15 @@ namespace PolyVox
 
 			if((v3dPos.getX() - v3dFloor.getX()) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(1,0,0)));
+				volIter.setPosition(static_cast<Vector3DInt32>(v3dFloor+Vector3DInt32(1,0,0)));
 			}
 			if((v3dPos.getY() - v3dFloor.getY()) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,1,0)));
+				volIter.setPosition(static_cast<Vector3DInt32>(v3dFloor+Vector3DInt32(0,1,0)));
 			}
 			if((v3dPos.getZ() - v3dFloor.getZ()) > 0.25) //The result should be 0.0 or 0.5
 			{			
-				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor+Vector3DInt32(0,0,1)));					
+				volIter.setPosition(static_cast<Vector3DInt32>(v3dFloor+Vector3DInt32(0,0,1)));					
 			}
 
 			Vector3DFloat gradCeil;
@@ -126,7 +126,7 @@ namespace PolyVox
 
 			if(normalGenerationMethod == SIMPLE)
 			{
-				volIter.setPosition(static_cast<Vector3DInt16>(v3dFloor));
+				volIter.setPosition(static_cast<Vector3DInt32>(v3dFloor));
 				const uint8_t uFloor = volIter.getVoxel() > 0 ? 1 : 0;
 				if((v3dPos.getX() - v3dFloor.getX()) > 0.25) //The result should be 0.0 or 0.5
 				{					

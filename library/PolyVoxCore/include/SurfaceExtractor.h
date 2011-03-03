@@ -71,14 +71,14 @@ namespace PolyVox
 		VolumeSampler<VoxelType> m_sampVolume;
 
 		//Holds a position in volume space.
-		int16_t iXVolSpace;
-		int16_t iYVolSpace;
-		int16_t iZVolSpace;
+		int32_t iXVolSpace;
+		int32_t iYVolSpace;
+		int32_t iZVolSpace;
 
 		//Holds a position in region space.
-		uint16_t uXRegSpace;
-		uint16_t uYRegSpace;
-		uint16_t uZRegSpace;
+		uint32_t uXRegSpace;
+		uint32_t uYRegSpace;
+		uint32_t uZRegSpace;
 
 		//Used to return the number of cells in a slice which contain triangles.
 		uint32_t m_uNoOfOccupiedCells;

@@ -56,19 +56,19 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint16_t VolumeSampler<VoxelType>::getPosX(void) const
+	int32_t VolumeSampler<VoxelType>::getPosX(void) const
 	{
 		return mXPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16_t VolumeSampler<VoxelType>::getPosY(void) const
+	int32_t VolumeSampler<VoxelType>::getPosY(void) const
 	{
 		return mYPosInVolume;
 	}
 
 	template <typename VoxelType>
-	uint16_t VolumeSampler<VoxelType>::getPosZ(void) const
+	int32_t VolumeSampler<VoxelType>::getPosZ(void) const
 	{
 		return mZPosInVolume;
 	}
@@ -124,21 +124,21 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void VolumeSampler<VoxelType>::setPosition(const Vector3DInt16& v3dNewPos)
+	void VolumeSampler<VoxelType>::setPosition(const Vector3DInt32& v3dNewPos)
 	{
 		setPosition(v3dNewPos.getX(), v3dNewPos.getY(), v3dNewPos.getZ());
 	}
 
 	template <typename VoxelType>
-	void VolumeSampler<VoxelType>::setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos)
+	void VolumeSampler<VoxelType>::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
 	{
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		const uint16_t uXBlock = mXPosInVolume >> mVolume->m_uBlockSideLengthPower;
-		const uint16_t uYBlock = mYPosInVolume >> mVolume->m_uBlockSideLengthPower;
-		const uint16_t uZBlock = mZPosInVolume >> mVolume->m_uBlockSideLengthPower;
+		const int32_t uXBlock = mXPosInVolume >> mVolume->m_uBlockSideLengthPower;
+		const int32_t uYBlock = mYPosInVolume >> mVolume->m_uBlockSideLengthPower;
+		const int32_t uZBlock = mZPosInVolume >> mVolume->m_uBlockSideLengthPower;
 
 		const uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << mVolume->m_uBlockSideLengthPower);
 		const uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume->m_uBlockSideLengthPower);
@@ -148,7 +148,7 @@ namespace PolyVox
 				uYPosInBlock * mVolume->m_uBlockSideLength + 
 				uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
 
-		if((uXBlock < mVolume->m_uWidthInBlocks) && (uYBlock < mVolume->m_uHeightInBlocks) && (uZBlock < mVolume->m_uDepthInBlocks))
+		if((uXBlock < mVolume->m_uWidthInBlocks) && (uYBlock < mVolume->m_uHeightInBlocks) && (uZBlock < mVolume->m_uDepthInBlocks) && (uXBlock >= 0) && (uYBlock >= 0) && (uZBlock >=0))
 		{
 			const uint32_t uBlockIndexInVolume = uXBlock + 
 				uYBlock * mVolume->m_uWidthInBlocks + 

@@ -75,9 +75,9 @@ int main(int argc, char *argv[])
 	Volume<MaterialDensityPair44> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
 
 	//Make our volume contain a sphere in the center.
-	uint16_t minPos = 0;
-	uint16_t midPos = g_uVolumeSideLength / 2;
-	uint16_t maxPos = g_uVolumeSideLength - 1;
+	int32_t minPos = 0;
+	int32_t midPos = g_uVolumeSideLength / 2;
+	int32_t maxPos = g_uVolumeSideLength - 1;
 
 	cout << "Creating sphere 1" << std::endl;
 	createSphereInVolume(volData, 60.0f, 5);
@@ -91,18 +91,18 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 20.0f, 1);
 
 	cout << "Creating cubes" << std::endl;
-	createCubeInVolume(volData, Vector3DUint16(minPos, minPos, minPos), Vector3DUint16(midPos-1, midPos-1, midPos-1), 0);
-	createCubeInVolume(volData, Vector3DUint16(midPos+1, midPos+1, minPos), Vector3DUint16(maxPos, maxPos, midPos-1), 0);
-	createCubeInVolume(volData, Vector3DUint16(midPos+1, minPos, midPos+1), Vector3DUint16(maxPos, midPos-1, maxPos), 0);
-	createCubeInVolume(volData, Vector3DUint16(minPos, midPos+1, midPos+1), Vector3DUint16(midPos-1, maxPos, maxPos), 0);
+	createCubeInVolume(volData, Vector3DInt32(minPos, minPos, minPos), Vector3DInt32(midPos-1, midPos-1, midPos-1), 0);
+	createCubeInVolume(volData, Vector3DInt32(midPos+1, midPos+1, minPos), Vector3DInt32(maxPos, maxPos, midPos-1), 0);
+	createCubeInVolume(volData, Vector3DInt32(midPos+1, minPos, midPos+1), Vector3DInt32(maxPos, midPos-1, maxPos), 0);
+	createCubeInVolume(volData, Vector3DInt32(minPos, midPos+1, midPos+1), Vector3DInt32(midPos-1, maxPos, maxPos), 0);
 
-	createCubeInVolume(volData, Vector3DUint16(1, midPos-10, midPos-10), Vector3DUint16(maxPos-1, midPos+10, midPos+10), MaterialDensityPair44::getMaxDensity());
-	createCubeInVolume(volData, Vector3DUint16(midPos-10, 1, midPos-10), Vector3DUint16(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
-	createCubeInVolume(volData, Vector3DUint16(midPos-10, midPos-10 ,1), Vector3DUint16(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
+	createCubeInVolume(volData, Vector3DInt32(1, midPos-10, midPos-10), Vector3DInt32(maxPos-1, midPos+10, midPos+10), MaterialDensityPair44::getMaxDensity());
+	createCubeInVolume(volData, Vector3DInt32(midPos-10, 1, midPos-10), Vector3DInt32(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
+	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
 	//Smooth part of the volume
-	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
-	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt16(62, 62, 62), Vector3DInt16(130, 130, 130)));
+	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(130, 130, 130)));
+	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(130, 130, 130)));
 
 	QApplication app(argc, argv);
 

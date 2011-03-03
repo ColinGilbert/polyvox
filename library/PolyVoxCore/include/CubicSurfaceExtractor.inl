@@ -40,7 +40,7 @@ namespace PolyVox
 		,m_meshCurrent(result)
 	{
 		m_regSizeInCells = m_regSizeInVoxels;
-		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt16(1,1,1));
+		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 
 		m_meshCurrent->clear();
 	}
@@ -54,15 +54,16 @@ namespace PolyVox
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 
-		for(int16_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
+		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
 		{
-			for(int16_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY() + 1; y++)
+			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY() + 1; y++)
 			{
-				for(int16_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX() + 1; x++)
+				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX() + 1; x++)
 				{
-					uint16_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
-					uint16_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
-					uint16_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
+					// these are always positive anyway
+					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
+					uint32_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
+					uint32_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
 
 					bool finalX = (x == m_regSizeInVoxels.getUpperCorner().getX() + 1);
 					bool finalY = (y == m_regSizeInVoxels.getUpperCorner().getY() + 1);
@@ -166,8 +167,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
-		uint16_t uX = static_cast<uint16_t>(fX + 0.75f);
-		uint16_t uY = static_cast<uint16_t>(fY + 0.75f);
+		uint32_t uX = static_cast<uint32_t>(fX + 0.75f);
+		uint32_t uY = static_cast<uint32_t>(fY + 0.75f);
 
 		for(uint32_t ct = 0; ct < MaxQuadsSharingVertex; ct++)
 		{

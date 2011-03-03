@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_Block_H__
 
 #include "PolyVoxForwardDeclarations.h"
-
+#include <limits>
 #include <vector>
 
 namespace PolyVox

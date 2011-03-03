@@ -38,7 +38,7 @@ namespace PolyVox
 	{
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
-		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt16(1,1,1));
+		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 
 		m_meshCurrent->clear();
 	}
@@ -61,7 +61,7 @@ namespace PolyVox
 
 		//Create a region corresponding to the first slice
 		m_regSlicePrevious = m_regSizeInVoxels;
-		Vector3DInt16 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
+		Vector3DInt32 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
 		v3dUpperCorner.setZ(m_regSlicePrevious.getLowerCorner().getZ()); //Set the upper z to the lower z to make it one slice thick.
 		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
 		m_regSliceCurrent = m_regSlicePrevious;	
@@ -88,10 +88,10 @@ namespace PolyVox
 		m_pPreviousVertexIndicesZ.swap(m_pCurrentVertexIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
-		m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
+		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
 
 		//Process the other slices (previous slice is available)
-		for(int16_t uSlice = 1; uSlice <= m_regSizeInVoxels.depth(); uSlice++)
+		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.depth(); uSlice++)
 		{	
 			computeBitmaskForSlice<true>(pPreviousBitmask, pCurrentBitmask);
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
@@ -116,7 +116,7 @@ namespace PolyVox
 			m_pPreviousVertexIndicesZ.swap(m_pCurrentVertexIndicesZ);
 
 			m_regSlicePrevious = m_regSliceCurrent;
-			m_regSliceCurrent.shift(Vector3DInt16(0,0,1));
+			m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
 		}
 
 		m_meshCurrent->m_Region = m_regSizeInVoxels;
@@ -134,8 +134,8 @@ namespace PolyVox
 	{
 		m_uNoOfOccupiedCells = 0;
 
-		const int16_t iMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
-		const int16_t iMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
+		const int32_t iMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
+		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
 
 		iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 		uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
@@ -400,18 +400,18 @@ namespace PolyVox
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
 	{
-		int16_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-		const uint16_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
+		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
+		const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
 
 		//Iterate over each cell in the region
-		for(int16_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); iYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); iYVolSpace++)
+		for(int32_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); iYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); iYVolSpace++)
 		{
-			const uint16_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+			const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
-			for(int16_t iXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); iXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); iXVolSpace++)
+			for(int32_t iXVolSpace = m_regSliceCurrent.getLowerCorner().getX(); iXVolSpace <= m_regSliceCurrent.getUpperCorner().getX(); iXVolSpace++)
 			{		
 				//Current position
-				const uint16_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+				const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = pCurrentBitmask[uXRegSpace][uYRegSpace];
@@ -622,17 +622,17 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
-		for(int16_t iYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); iYVolSpace <= m_regSizeInCells.getUpperCorner().getY(); iYVolSpace++)
+		for(int32_t iYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); iYVolSpace <= m_regSizeInCells.getUpperCorner().getY(); iYVolSpace++)
 		{
-			for(int16_t iXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); iXVolSpace <= m_regSizeInCells.getUpperCorner().getX(); iXVolSpace++)
+			for(int32_t iXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); iXVolSpace <= m_regSizeInCells.getUpperCorner().getX(); iXVolSpace++)
 			{		
-				int16_t iZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
+				int32_t iZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);	
 
 				//Current position
-				const uint16_t uXRegSpace = m_sampVolume.getPosX() - m_regSizeInVoxels.getLowerCorner().getX();
-				const uint16_t uYRegSpace = m_sampVolume.getPosY() - m_regSizeInVoxels.getLowerCorner().getY();
-				const uint16_t uZRegSpace = m_sampVolume.getPosZ() - m_regSizeInVoxels.getLowerCorner().getZ();
+				const uint32_t uXRegSpace = m_sampVolume.getPosX() - m_regSizeInVoxels.getLowerCorner().getX();
+				const uint32_t uYRegSpace = m_sampVolume.getPosY() - m_regSizeInVoxels.getLowerCorner().getY();
+				const uint32_t uZRegSpace = m_sampVolume.getPosZ() - m_regSizeInVoxels.getLowerCorner().getZ();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = pPreviousBitmask[uXRegSpace][uYRegSpace];
@@ -717,9 +717,6 @@ namespace PolyVox
 						assert(ind1 >= 0);
 						assert(ind2 >= 0);
 
-						assert(ind0 < 1000000);
-						assert(ind1 < 1000000);
-						assert(ind2 < 1000000);
 						m_meshCurrent->addTriangle(ind0, ind1, ind2);
 					}
 				}//For each triangle

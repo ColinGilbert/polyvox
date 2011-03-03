@@ -37,7 +37,7 @@ namespace PolyVox
 		,m_meshCurrent(result)
 	{
 		m_regSizeInCells = m_regSizeInVoxels;
-		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt16(1,1,1));
+		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 
 		m_meshCurrent->clear();
 	}
@@ -45,15 +45,16 @@ namespace PolyVox
 	template <typename VoxelType>
 	void CubicSurfaceExtractorWithNormals<VoxelType>::execute()
 	{		
-		for(int16_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z < m_regSizeInVoxels.getUpperCorner().getZ(); z++)
+		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z < m_regSizeInVoxels.getUpperCorner().getZ(); z++)
 		{
-			for(int16_t y = m_regSizeInVoxels.getLowerCorner().getY(); y < m_regSizeInVoxels.getUpperCorner().getY(); y++)
+			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y < m_regSizeInVoxels.getUpperCorner().getY(); y++)
 			{
-				for(int16_t x = m_regSizeInVoxels.getLowerCorner().getX(); x < m_regSizeInVoxels.getUpperCorner().getX(); x++)
+				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x < m_regSizeInVoxels.getUpperCorner().getX(); x++)
 				{
-					uint16_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
-					uint16_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
-					uint16_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
+					// these are always positive anyway
+					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
+					uint32_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
+					uint32_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
 
 					int currentVoxel = m_volData->getVoxelAt(x,y,z).getDensity() >= VoxelType::getThreshold();
 

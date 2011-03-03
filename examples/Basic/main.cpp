@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 
 #include "MaterialDensityPair.h"
 #include "CubicSurfaceExtractorWithNormals.h"
+#include "SurfaceExtractor.h"
 #include "SurfaceMesh.h"
 #include "Volume.h"
 
@@ -436,13 +437,15 @@ void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
 
 	for(int x = 1; x < volData.getWidth()-1; x++)
 	{
-		std::cout << x << std::endl;
+		if(x%(volData.getWidth()/100) == 0) {
+			std::cout << "." << std::flush;
+		}
 		for(int y = 1; y < volData.getHeight()-1; y++)
 		{
 			float perlinVal = perlin.Get(x / static_cast<float>(volData.getHeight()-1), y / static_cast<float>(volData.getDepth()-1));
 			perlinVal += 1.0f;
 			perlinVal *= 0.5f;
-			perlinVal *= volData.getWidth();
+			perlinVal *= volData.getShortestSideLength();
 			for(int z = 1; z < volData.getDepth()-1; z++) 
 			{							
 				MaterialDensityPair44 voxel;
@@ -461,6 +464,7 @@ void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
 			}
 		}
 	}
+	std::cout << std::endl;
 }
 
 void createSphereInVolume(Volume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
@@ -510,15 +514,15 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(256, 256, 256);
+	Volume<MaterialDensityPair44> volData(1024*128,16,16,16);
 	volData.useCompatibilityMode();
 	//createSphereInVolume(volData, 30);
 	createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
-	std::cout << "Memory usage: " << volData.calculateSizeInBytes() << std::endl;
-	//volData.setBlockCacheSize(8);
-	std::cout << "Memory usage: " << volData.calculateSizeInBytes() << std::endl;
-	std::cout << "Compression ratio: " << volData.calculateCompressionRatio() << std::endl;
+	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
+	volData.setBlockCacheSize(64);
+	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
+	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
 	/*srand(12345);
 	for(int ct = 0; ct < 1000; ct++)
@@ -535,7 +539,8 @@ int main(int argc, char *argv[])
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window

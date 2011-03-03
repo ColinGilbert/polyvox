@@ -31,15 +31,15 @@ using namespace PolyVox;
 
 void TestVolume::testSize()
 {
-	const uint16_t g_uVolumeSideLength = 128;
+	const int32_t g_uVolumeSideLength = 128;
 	Volume<uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
 
 	//Note: Deliberatly go past each edge by one to test if the bounds checking works.
-	for (uint16_t z = 0; z < g_uVolumeSideLength + 1; z++)
+	for (int32_t z = 0; z < g_uVolumeSideLength + 1; z++)
 	{
-		for (uint16_t y = 0; y < g_uVolumeSideLength + 1; y++)
+		for (int32_t y = 0; y < g_uVolumeSideLength + 1; y++)
 		{
-			for (uint16_t x = 0; x < g_uVolumeSideLength + 1; x++)
+			for (int32_t x = 0; x < g_uVolumeSideLength + 1; x++)
 			{
 				volData.setVoxelAt(x,y,z,255);
 			}

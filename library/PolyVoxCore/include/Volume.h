@@ -122,7 +122,7 @@ namespace PolyVox
 
 	public:		
 		/// Constructor
-		Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
+		Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
 		/// Destructor
 		~Volume();	
 
@@ -131,40 +131,40 @@ namespace PolyVox
 		/// Gets a Region representing the extents of the Volume.
 		Region getEnclosingRegion(void) const;
 		/// Gets the width of the volume in voxels.
-		uint16_t getWidth(void) const;
+		int32_t getWidth(void) const;
 		/// Gets the height of the volume in voxels.
-		uint16_t getHeight(void) const;
+		int32_t getHeight(void) const;
 		/// Gets the depth of the volume in voxels.
-		uint16_t getDepth(void) const;
+		int32_t getDepth(void) const;
 		/// Gets the length of the longest side in voxels
-		uint16_t getLongestSideLength(void) const;
+		int32_t getLongestSideLength(void) const;
 		/// Gets the length of the shortest side in voxels
-		uint16_t getShortestSideLength(void) const;
+		int32_t getShortestSideLength(void) const;
 		/// Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
 		/// Gets a voxel by <tt>x,y,z</tt> position
-		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel by 3D vector position
-		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
+		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
 		/// Sets the number of blocks for which uncompressed data is stored.
 		void setBlockCacheSize(uint16_t uBlockCacheSize);
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at an <tt>x,y,z</tt> position
-		bool setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at a 3D vector position
-		bool setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
 
 		void clearBlockCache(void);
 		float calculateCompressionRatio(void);
 		uint32_t calculateSizeInBytes(void);
 		void useCompatibilityMode(void);
 		/// Resizes the volume to the specified dimensions
-		void resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength = 32);
+		void resize(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
 
 	private:
-		Block<VoxelType>* getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const;
+		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
 		//The block data
 		mutable std::vector< Block<VoxelType> > m_pBlocks;
@@ -187,19 +187,19 @@ namespace PolyVox
 
 		uint32_t m_uNoOfBlocksInVolume;
 
-		uint16_t m_uWidthInBlocks;
-		uint16_t m_uHeightInBlocks;
-		uint16_t m_uDepthInBlocks;
+		int32_t m_uWidthInBlocks;
+		int32_t m_uHeightInBlocks;
+		int32_t m_uDepthInBlocks;
 
-		uint16_t m_uWidth;
-		uint16_t m_uHeight;	
-		uint16_t m_uDepth;
+		int32_t m_uWidth;
+		int32_t m_uHeight;	
+		int32_t m_uDepth;
 
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
 
-		uint16_t m_uLongestSideLength;
-		uint16_t m_uShortestSideLength;
+		int32_t m_uLongestSideLength;
+		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;
 	};
 

@@ -174,7 +174,7 @@ namespace PolyVox
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
 			Region regTransformed = m_pOutputMesh->m_Region;
-			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int16_t>(-1));
+			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int32_t>(-1));
 
 			//Plus and minus X
 			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pOutputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);
@@ -206,7 +206,7 @@ namespace PolyVox
 		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
 			Region regTransformed = m_pOutputMesh->m_Region;
-			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int16_t>(-1));
+			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int32_t>(-1));
 
 			//Plus and minus X
 			vecVertexMetadata[ct].isOnRegionFace.set(RFF_ON_REGION_FACE_NEG_X, m_pOutputMesh->m_vecVertices[ct].getPosition().getX() < regTransformed.getLowerCorner().getX() + 0.001f);

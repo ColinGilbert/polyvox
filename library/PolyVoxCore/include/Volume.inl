@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "Region.h"
 #include "Vector.h"
 
+#include <limits>
 #include <cassert>
 #include <cstring> //For memcpy
 #include <list>
@@ -47,7 +48,7 @@ namespace PolyVox
 	/// the default if you are not sure what to choose here.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
+	Volume<VoxelType>::Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength)
 		:m_uTimestamper(0)
 		,m_uMaxUncompressedBlockCacheSize(256)
 		,m_uBlockSideLength(uBlockSideLength)
@@ -90,7 +91,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Region Volume<VoxelType>::getEnclosingRegion(void) const
 	{
-		return Region(Vector3DInt16(0,0,0), Vector3DInt16(m_uWidth-1,m_uHeight-1,m_uDepth-1));
+		return Region(Vector3DInt32(0,0,0), Vector3DInt32(m_uWidth-1,m_uHeight-1,m_uDepth-1));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +99,7 @@ namespace PolyVox
 	/// \sa getHeight(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getWidth(void) const
+	int32_t Volume<VoxelType>::getWidth(void) const
 	{
 		return m_uWidth;
 	}
@@ -108,7 +109,7 @@ namespace PolyVox
 	/// \sa getWidth(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getHeight(void) const
+	int32_t Volume<VoxelType>::getHeight(void) const
 	{
 		return m_uHeight;
 	}
@@ -118,7 +119,7 @@ namespace PolyVox
 	/// \sa getWidth(), getHeight()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getDepth(void) const
+	int32_t Volume<VoxelType>::getDepth(void) const
 	{
 		return m_uDepth;
 	}
@@ -129,7 +130,7 @@ namespace PolyVox
 	/// \sa getLongestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getShortestSideLength(void) const
+	int32_t Volume<VoxelType>::getShortestSideLength(void) const
 	{
 		return m_uShortestSideLength;
 	}
@@ -140,7 +141,7 @@ namespace PolyVox
 	/// \sa getShortestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getLongestSideLength(void) const
+	int32_t Volume<VoxelType>::getLongestSideLength(void) const
 	{
 		return m_uLongestSideLength;
 	}	
@@ -164,15 +165,15 @@ namespace PolyVox
 	/// \return the voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
 		//We don't use getEnclosingRegion here because we care
-		//about speed and don't need to check the lower bound.
-		if((uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
+		//about speed
+		if((uXPos >=0) && (uYPos >=0) && (uZPos >=0) && (uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
 		{
-			const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-			const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-			const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+			const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+			const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
 			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
@@ -193,7 +194,7 @@ namespace PolyVox
 	/// \return the voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
@@ -231,15 +232,15 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	bool Volume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
 		//We don't use getEnclosingRegion here because we care
-		//about speed and don't need to check the lower bound.
-		if((uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
+		//about speed
+		if((uXPos >=0) && (uYPos >=0) && (uZPos >=0) && (uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
 		{
-			const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-			const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-			const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+			const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+			const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
 			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
@@ -265,7 +266,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	bool Volume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
 	{
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
@@ -294,7 +295,7 @@ namespace PolyVox
 	/// the default if you are not sure what to choose here.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
+	void Volume<VoxelType>::resize(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
 		assert(uBlockSideLength > 0);
@@ -302,6 +303,9 @@ namespace PolyVox
 		assert(uBlockSideLength <= uWidth);
 		assert(uBlockSideLength <= uHeight);
 		assert(uBlockSideLength <= uDepth);
+		assert(0 < uWidth);
+		assert(0 < uHeight);
+		assert(0 < uDepth);
 
 		//Release mode validation
 		if(uBlockSideLength == 0)
@@ -323,6 +327,18 @@ namespace PolyVox
 		if(uBlockSideLength > uDepth)
 		{
 			throw std::invalid_argument("Block side length cannot be greater than volume depth.");
+		}
+		if(0 >= uWidth)
+		{
+			throw std::invalid_argument("Volume width cannot be smaller than 1.");
+		}
+		if(0 >= uHeight)
+		{
+			throw std::invalid_argument("Volume height cannot be smaller than 1.");
+		}
+		if(0 >= uDepth)
+		{
+			throw std::invalid_argument("Volume depth cannot be smaller than 1.");
 		}
 
 		//Clear the previous data
@@ -367,14 +383,21 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(uint16_t uBlockX, uint16_t uBlockY, uint16_t uBlockZ) const
+	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
+		assert(uBlockX >= 0);
+		assert(uBlockY >= 0);
+		assert(uBlockZ >= 0);
+		assert(uBlockX < m_uWidthInBlocks);
+		assert(uBlockY < m_uHeightInBlocks);
+		assert(uBlockZ < m_uDepthInBlocks);
 		//Compute the block's index from it's position.
-		uint32_t uBlockIndex =
+		const int32_t uBlockIndex =
 				uBlockX + 
 				uBlockY * m_uWidthInBlocks + 
 				uBlockZ * m_uWidthInBlocks * m_uHeightInBlocks;
-
+		assert(uBlockIndex < m_uNoOfBlocksInVolume);
+		assert(uBlockIndex >= 0);
 		//Get the block
 		Block<VoxelType>* block = &(m_pBlocks[uBlockIndex]);
 
@@ -396,12 +419,12 @@ namespace PolyVox
 		//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
 		//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
 		//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
-		uint32_t uUncompressedBlockIndex = 100000000;
+		uint32_t uUncompressedBlockIndex = (std::numeric_limits<uint32_t>::max)();
 		assert(m_vecUncompressedBlockCache.size() <= m_uMaxUncompressedBlockCacheSize);
 		if(m_vecUncompressedBlockCache.size() == m_uMaxUncompressedBlockCacheSize)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
-			uint64_t uLeastRecentTimestamp = 1000000000000000;
+			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)(); // you said not int64 ;)
 			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 			{
 				if(m_pUncompressedTimestamps[m_vecUncompressedBlockCache[ct].uBlockIndex] < uLeastRecentTimestamp)
@@ -469,11 +492,11 @@ namespace PolyVox
 	{
 		setBlockCacheSize(m_uNoOfBlocksInVolume * 2); //Times two gives space to spare
 
-		for(uint32_t z = 0; z < m_uDepthInBlocks; z++)
+		for(int32_t z = 0; z < m_uDepthInBlocks; z++)
 		{
-			for(uint32_t y = 0; y < m_uHeightInBlocks; y++)
+			for(int32_t y = 0; y < m_uHeightInBlocks; y++)
 			{
-				for(uint32_t x = 0; x < m_uWidthInBlocks; x++)
+				for(int32_t x = 0; x < m_uWidthInBlocks; x++)
 				{
 					getUncompressedBlock(x,y,z);
 				}
