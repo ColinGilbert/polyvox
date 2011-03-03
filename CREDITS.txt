@@ -1,0 +1,2 @@
+David Williams - Lead programmer.
+Matthew Williams - Linux port, build system, support and maintainence.
