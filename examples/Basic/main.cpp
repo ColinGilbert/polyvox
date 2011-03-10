@@ -551,8 +551,6 @@ void unload(const Volume<MaterialDensityPair44>& vol, PolyVox::Region reg)
 	std::cout << "warning unloading region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 }
 
-#include <boost/bind.hpp>
-
 int main(int argc, char *argv[])
 {
 	//Create and show the Qt OpenGL window
@@ -562,8 +560,15 @@ int main(int argc, char *argv[])
 
 	//Create an empty volume and then place a sphere in it
 	Volume<MaterialDensityPair44> volData(128);
-	volData.m_LoadCallback = std::bind(&load, std::placeholders::_1, std::placeholders::_2);
-	volData.m_UnloadCallback = boost::bind(&unload, _1, _2);
+
+	//If these two lines don't compile, please try commenting them out and using the two lines after
+	//(you will need Boost for this). If you have to do this then please let us know in the forums as
+	//we rely on community feedback to keep the Boost version running.
+	volData.m_LoadCallback = &load;
+	volData.m_UnloadCallback = &unload;
+	//volData.m_LoadCallback = polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2);
+	//volData.m_UnloadCallback = polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2);
+
 	volData.setBlockCacheSize(4096);
 	//createSphereInVolume(volData, 30);
 	//createPerlinTerrain(volData);

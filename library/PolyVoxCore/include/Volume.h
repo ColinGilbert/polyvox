@@ -151,14 +151,14 @@ namespace PolyVox
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		std::function<void(const Volume<VoxelType>&, Region)> m_LoadCallback;
+		polyvox_function<void(const Volume<VoxelType>&, Region)> m_LoadCallback;
 		/// this function can be called by m_LoadCallback without causing any weird effects
 		bool load_setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 		/// gets called when a Region needs to be stored by the user, because Volume will erase it right after
 		/// this function returns
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		std::function<void(const Volume<VoxelType>&, Region)> m_UnloadCallback;
+		polyvox_function<void(const Volume<VoxelType>&, Region)> m_UnloadCallback;
 	private:
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itBlock) const;
