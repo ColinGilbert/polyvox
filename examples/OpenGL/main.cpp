@@ -72,7 +72,7 @@ void exampleLog(string message, int severity)
 int main(int argc, char *argv[])
 {
 	logHandler = &exampleLog;
-	Volume<MaterialDensityPair44> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	Volume<MaterialDensityPair44> volData;
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;

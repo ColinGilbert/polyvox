@@ -348,14 +348,14 @@ void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,8,1,234);
 
-	for(int z = 1; z < volData.getDepth()-1; z++)
+	for(int z = 1; z < 256-1; z++)
 	{
 		std::cout << z << std::endl;
-		for(int y = 1; y < volData.getHeight()-1; y++)
+		for(int y = 1; y < 256-1; y++)
 		{
-			for(int x = 1; x < volData.getWidth()-1; x++) 
+			for(int x = 1; x < 256-1; x++)
 			{							
-				float perlinVal = perlin.Get3D(x /static_cast<float>(volData.getWidth()-1), (y) / static_cast<float>(volData.getHeight()-1), z / static_cast<float>(volData.getDepth()-1));
+				float perlinVal = perlin.Get3D(x /static_cast<float>(256-1), (y) / static_cast<float>(256-1), z / static_cast<float>(256-1));
 
 				perlinVal += 1.0f;
 				perlinVal *= 0.5f;
@@ -435,18 +435,18 @@ void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,2,1,234);
 
-	for(int x = 1; x < volData.getWidth()-1; x++)
+	for(int x = 1; x < 255-1; x++)
 	{
-		if(x%(volData.getWidth()/100) == 0) {
+		if(x%(255/100) == 0) {
 			std::cout << "." << std::flush;
 		}
-		for(int y = 1; y < volData.getHeight()-1; y++)
+		for(int y = 1; y < 255-1; y++)
 		{
-			float perlinVal = perlin.Get(x / static_cast<float>(volData.getHeight()-1), y / static_cast<float>(volData.getDepth()-1));
+			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
 			perlinVal += 1.0f;
 			perlinVal *= 0.5f;
-			perlinVal *= volData.getShortestSideLength();
-			for(int z = 1; z < volData.getDepth()-1; z++) 
+			perlinVal *= 255;
+			for(int z = 1; z < 255-1; z++)
 			{							
 				MaterialDensityPair44 voxel;
 				if(z < perlinVal)
@@ -506,6 +506,53 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, Vector3DFloat 
 	}
 }
 
+void load(const Volume<MaterialDensityPair44>& volume, PolyVox::Region reg)
+{
+	Perlin perlin(2,2,1,234);
+
+	for(int x = reg.getLowerCorner().getX(); x <= reg.getUpperCorner().getX(); x++)
+	{
+		for(int y = reg.getLowerCorner().getY(); y <= reg.getUpperCorner().getY(); y++)
+		{
+			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
+			perlinVal += 1.0f;
+			perlinVal *= 0.5f;
+			perlinVal *= 255;
+			for(int z = reg.getLowerCorner().getZ(); z <= reg.getUpperCorner().getZ(); z++)
+			{
+				MaterialDensityPair44 voxel;
+				if(z < perlinVal)
+				{
+					const int xpos = 50;
+					const int zpos = 100;
+					if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
+						// tunnel
+						voxel.setMaterial(0);
+						voxel.setDensity(MaterialDensityPair44::getMinDensity());
+					} else {
+						// solid
+						voxel.setMaterial(245);
+						voxel.setDensity(MaterialDensityPair44::getMaxDensity());
+					}
+				}
+				else
+				{
+					voxel.setMaterial(0);
+					voxel.setDensity(MaterialDensityPair44::getMinDensity());
+				}
+
+				volume.load_setVoxelAt(x, y, z, voxel);
+			}
+		}
+	}
+}
+void unload(const Volume<MaterialDensityPair44>& vol, PolyVox::Region reg)
+{
+	std::cout << "warning unloading region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
+}
+
+#include <boost/bind.hpp>
+
 int main(int argc, char *argv[])
 {
 	//Create and show the Qt OpenGL window
@@ -514,13 +561,15 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(1024*128,16,16,16);
-	volData.useCompatibilityMode();
+	Volume<MaterialDensityPair44> volData(128);
+	volData.m_LoadCallback = std::bind(&load, std::placeholders::_1, std::placeholders::_2);
+	volData.m_UnloadCallback = boost::bind(&unload, _1, _2);
+	volData.setBlockCacheSize(4096);
 	//createSphereInVolume(volData, 30);
-	createPerlinTerrain(volData);
+	//createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	volData.setBlockCacheSize(64);
+	//volData.setBlockCacheSize(64);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
@@ -540,8 +589,11 @@ int main(int argc, char *argv[])
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
 	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,1024,255));
+	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
+	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
 	surfaceExtractor.execute();
+	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);

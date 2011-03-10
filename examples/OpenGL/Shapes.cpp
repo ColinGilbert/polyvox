@@ -27,17 +27,19 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+const uint16_t g_uVolumeSideLength = 128;
+
 void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
-	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
+	Vector3DFloat v3dVolCenter( g_uVolumeSideLength / 2, g_uVolumeSideLength / 2, g_uVolumeSideLength / 2);
 
 	//This three-level for loop iterates over every voxel in the volume
-	for (int z = 0; z < volData.getWidth(); z++)
+	for (int z = 0; z < g_uVolumeSideLength ; z++)
 	{
-		for (int y = 0; y < volData.getHeight(); y++)
+		for (int y = 0; y < g_uVolumeSideLength; y++)
 		{
-			for (int x = 0; x < volData.getDepth(); x++)
+			for (int x = 0; x < g_uVolumeSideLength; x++)
 			{
 				//Store our current position as a vector...
 				Vector3DFloat v3dCurrentPos(x,y,z);	

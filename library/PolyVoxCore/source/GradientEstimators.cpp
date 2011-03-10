@@ -41,22 +41,15 @@ namespace PolyVox
 
 			VolumeSampler<uint8_t> volIter(volumeData);
 
-			//Check all corners are within the volume, allowing a boundary for gradient estimation
-			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
-			bool upperCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor+Vector3DInt32(1,1,1),2);
+			Vector3DFloat v3dGradient = computeNormal(volumeData, v3dPos, normalGenerationMethod);
 
-			if(lowerCornerInside && upperCornerInside) //If this test fails the vertex will be left as it was
+			if(v3dGradient.lengthSquared() > 0.0001)
 			{
-				Vector3DFloat v3dGradient = computeNormal(volumeData, v3dPos, normalGenerationMethod);
-				
-				if(v3dGradient.lengthSquared() > 0.0001)
-				{
-					//If we got a normal of significant length then update it.
-					//Otherwise leave it as it was (should be the 'simple' version)
-					v3dGradient.normalise();
-					iterSurfaceVertex->setNormal(v3dGradient);
-				}
-			} //(lowerCornerInside && upperCornerInside)
+				//If we got a normal of significant length then update it.
+				//Otherwise leave it as it was (should be the 'simple' version)
+				v3dGradient.normalise();
+				iterSurfaceVertex->setNormal(v3dGradient);
+			}
 			++iterSurfaceVertex;
 		}
 	}

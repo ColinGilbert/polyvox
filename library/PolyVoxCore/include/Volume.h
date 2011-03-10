@@ -32,6 +32,7 @@ freely, subject to the following restrictions:
 #include <set>
 #include <memory>
 #include <vector>
+#include <functional>
 
 namespace PolyVox
 {
@@ -115,33 +116,17 @@ namespace PolyVox
 
 		struct UncompressedBlock
 		{
-			uint32_t uBlockIndex;
+			Vector3DInt32 v3dBlockIndex;
 			VoxelType* data;
 
 		};
 
 	public:		
 		/// Constructor
-		Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
+		Volume(uint16_t uBlockSideLength = 32);
 		/// Destructor
-		~Volume();	
+		~Volume();
 
-		/// Gets the value used for voxels which are outside the volume
-		VoxelType getBorderValue(void) const;
-		/// Gets a Region representing the extents of the Volume.
-		Region getEnclosingRegion(void) const;
-		/// Gets the width of the volume in voxels.
-		int32_t getWidth(void) const;
-		/// Gets the height of the volume in voxels.
-		int32_t getHeight(void) const;
-		/// Gets the depth of the volume in voxels.
-		int32_t getDepth(void) const;
-		/// Gets the length of the longest side in voxels
-		int32_t getLongestSideLength(void) const;
-		/// Gets the length of the shortest side in voxels
-		int32_t getShortestSideLength(void) const;
-		/// Gets the length of the diagonal in voxels
-		float getDiagonalLength(void) const;
 		/// Gets a voxel by <tt>x,y,z</tt> position
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel by 3D vector position
@@ -149,6 +134,8 @@ namespace PolyVox
 
 		/// Sets the number of blocks for which uncompressed data is stored.
 		void setBlockCacheSize(uint16_t uBlockCacheSize);
+		/// Sets the number of blocks which can be in memory before unload is called
+		void setMaxBlocksLoaded(uint16_t uBlockCacheSize);
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at an <tt>x,y,z</tt> position
@@ -159,15 +146,25 @@ namespace PolyVox
 		void clearBlockCache(void);
 		float calculateCompressionRatio(void);
 		uint32_t calculateSizeInBytes(void);
-		void useCompatibilityMode(void);
 		/// Resizes the volume to the specified dimensions
-		void resize(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
-
+		void resize(uint16_t uBlockSideLength = 32);
+		/// gets called when a new region is allocated and needs to be filled
+		/// NOTE: accessing ANY voxels outside this region during the process of this function
+		/// is absolutely unsafe
+		std::function<void(const Volume<VoxelType>&, Region)> m_LoadCallback;
+		/// this function can be called by m_LoadCallback without causing any weird effects
+		bool load_setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
+		/// gets called when a Region needs to be stored by the user, because Volume will erase it right after
+		/// this function returns
+		/// NOTE: accessing ANY voxels outside this region during the process of this function
+		/// is absolutely unsafe
+		std::function<void(const Volume<VoxelType>&, Region)> m_UnloadCallback;
 	private:
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itBlock) const;
 
 		//The block data
-		mutable std::vector< Block<VoxelType> > m_pBlocks;
+		mutable std::map<Vector3DInt32, Block<VoxelType> > m_pBlocks;
 
 		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
 		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
@@ -176,8 +173,10 @@ namespace PolyVox
 		mutable std::vector< UncompressedBlock > m_vecUncompressedBlockCache;
 		mutable std::vector<uint32_t> m_pUncompressedTimestamps;
 		mutable uint32_t m_uTimestamper;
-		uint32_t m_ulastAccessedBlockIndex;
+		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
+		mutable Vector3DInt32 m_v3dLoadBlockPos;
 		uint32_t m_uMaxUncompressedBlockCacheSize;
+		uint32_t m_uMaxBlocksLoaded;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
 		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
@@ -185,22 +184,8 @@ namespace PolyVox
 		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
 		VoxelType* m_pUncompressedBorderData;
 
-		uint32_t m_uNoOfBlocksInVolume;
-
-		int32_t m_uWidthInBlocks;
-		int32_t m_uHeightInBlocks;
-		int32_t m_uDepthInBlocks;
-
-		int32_t m_uWidth;
-		int32_t m_uHeight;	
-		int32_t m_uDepth;
-
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
-
-		int32_t m_uLongestSideLength;
-		int32_t m_uShortestSideLength;
-		float m_fDiagonalLength;
 	};
 
 	//Some handy typedefs

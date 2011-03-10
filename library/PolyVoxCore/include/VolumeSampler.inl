@@ -26,6 +26,11 @@ freely, subject to the following restrictions:
 #include "Vector.h"
 #include "Region.h"
 
+#define BORDER_LOW(x) ((( x >> mVolume->m_uBlockSideLengthPower) << mVolume->m_uBlockSideLengthPower) != x)
+#define BORDER_HIGH(x) ((( (x+1) >> mVolume->m_uBlockSideLengthPower) << mVolume->m_uBlockSideLengthPower) != (x+1))
+//#define BORDER_LOW(x) (( x % mVolume->m_uBlockSideLength) != 0)
+//#define BORDER_HIGH(x) (( x % mVolume->m_uBlockSideLength) != mVolume->m_uBlockSideLength - 1)
+
 #include <limits>
 namespace PolyVox
 {
@@ -148,21 +153,9 @@ namespace PolyVox
 				uYPosInBlock * mVolume->m_uBlockSideLength + 
 				uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
 
-		if((uXBlock < mVolume->m_uWidthInBlocks) && (uYBlock < mVolume->m_uHeightInBlocks) && (uZBlock < mVolume->m_uDepthInBlocks) && (uXBlock >= 0) && (uYBlock >= 0) && (uZBlock >=0))
-		{
-			const uint32_t uBlockIndexInVolume = uXBlock + 
-				uYBlock * mVolume->m_uWidthInBlocks + 
-				uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
-			const Block<VoxelType>& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];
+		Block<VoxelType>* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
 
-			Block<VoxelType>* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
-
-			mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
-		}
-		else
-		{
-			mCurrentVoxel = mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
-		}
+		mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
 	}
 
 	template <typename VoxelType>
@@ -264,7 +257,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1ny1nz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mYPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -274,7 +267,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1ny0pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mYPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength);
 		}
@@ -284,7 +277,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1ny1pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mYPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -294,7 +287,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx0py1nz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -304,7 +297,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx0py0pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_LOW(mXPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1);
 		}
@@ -314,7 +307,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx0py1pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -324,7 +317,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1py1nz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -334,7 +327,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1py0pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength);
 		}
@@ -344,7 +337,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1nx1py1pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != 0) && (mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -356,7 +349,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px1ny1nz(void) const
 	{
-		if((mYPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -366,7 +359,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px1ny0pz(void) const
 	{
-		if((mYPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_LOW(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - mVolume->m_uBlockSideLength);
 		}
@@ -376,7 +369,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px1ny1pz(void) const
 	{
-		if((mYPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -386,7 +379,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px0py1nz(void) const
 	{
-		if((mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -402,7 +395,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px0py1pz(void) const
 	{
-		if((mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -412,7 +405,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px1py1nz(void) const
 	{
-		if((mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -422,7 +415,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px1py0pz(void) const
 	{
-		if((mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + mVolume->m_uBlockSideLength);
 		}
@@ -432,7 +425,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel0px1py1pz(void) const
 	{
-		if((mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -444,7 +437,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px1ny1nz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mYPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -454,7 +447,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px1ny0pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mYPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength);
 		}
@@ -464,7 +457,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px1ny1pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mYPosInVolume%mVolume->m_uBlockSideLength != 0) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -474,7 +467,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px0py1nz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -484,7 +477,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px0py0pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mXPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1);
 		}
@@ -494,7 +487,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px0py1pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -504,7 +497,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px1py1nz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != 0))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}
@@ -514,7 +507,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px1py0pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength);
 		}
@@ -524,7 +517,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType VolumeSampler<VoxelType>::peekVoxel1px1py1pz(void) const
 	{
-		if((mXPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mYPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1) && (mZPosInVolume%mVolume->m_uBlockSideLength != mVolume->m_uBlockSideLength-1))
+		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
 		}

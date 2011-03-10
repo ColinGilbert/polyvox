@@ -6,7 +6,6 @@ namespace PolyVox
 	void smoothRegion(Volume<VoxelType>& volData, const Region& regionToSmooth)
 	{
 		Region croppedRegion = regionToSmooth;
-		croppedRegion.cropTo(volData.getEnclosingRegion());
 
 		Array<3, uint16_t> temp(ArraySizes(croppedRegion.width())(croppedRegion.height())(croppedRegion.depth()));
 

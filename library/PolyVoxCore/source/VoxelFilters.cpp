@@ -29,13 +29,6 @@ namespace PolyVox
 {
 	float computeSmoothedVoxel(VolumeSampler<uint8_t>& volIter)
 	{
-		assert(volIter.getPosX() >= 1);
-		assert(volIter.getPosY() >= 1);
-		assert(volIter.getPosZ() >= 1);
-		assert(volIter.getPosX() <= volIter.getVolume()->getWidth() - 2);
-		assert(volIter.getPosY() <= volIter.getVolume()->getHeight() - 2);
-		assert(volIter.getPosZ() <= volIter.getVolume()->getDepth() - 2);
-
 		float sum = 0.0;
 
 		if(volIter.peekVoxel1nx1ny1nz() != 0) sum += 1.0f;

@@ -69,7 +69,9 @@ namespace PolyVox
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
 		bool m_bIsCompressed;
-		bool m_bIsUncompressedDataModified;		
+		bool m_bIsUncompressedDataModified;
+		uint32_t m_uTimestamp;
+		uint32_t m_uUncompressedIndex;
 		
 	};
 }
