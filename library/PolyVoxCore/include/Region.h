@@ -44,6 +44,7 @@ namespace PolyVox
 
 		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
+		void setToMaxSize(void);
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
 		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;

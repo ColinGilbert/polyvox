@@ -58,9 +58,9 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 	//If we have any volume data then generate the new surface patches.
 	if(m_volData != 0)
 	{
-		m_uVolumeWidthInRegions = g_uVolumeSideLength / m_uRegionSideLength;
-		m_uVolumeHeightInRegions = g_uVolumeSideLength / m_uRegionSideLength;
-		m_uVolumeDepthInRegions = g_uVolumeSideLength / m_uRegionSideLength;
+		m_uVolumeWidthInRegions = volData->getWidth() / m_uRegionSideLength;
+		m_uVolumeHeightInRegions = volData->getHeight() / m_uRegionSideLength;
+		m_uVolumeDepthInRegions = volData->getDepth() / m_uRegionSideLength;
 
 		//Our volume is broken down into cuboid regions, and we create one mesh for each region.
 		//This three-level for loop iterates over each region.
@@ -180,9 +180,8 @@ void OpenGLWidget::paintGL()
 		glMatrixMode(GL_MODELVIEW);  // Select The Model View Matrix
 		glLoadIdentity();									// Reset The Current Modelview Matrix
 
-		float diag_len = sqrtf(static_cast<float>(255 * 255 * 3));
 		//Moves the camera back so we can see the volume
-		glTranslatef(0.0f, 0.0f, -diag_len);
+		glTranslatef(0.0f, 0.0f, -m_volData->getDiagonalLength());	
 
 		glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
 		glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
@@ -249,8 +248,7 @@ void OpenGLWidget::setupProjectionMatrix(void)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	float diag_len = sqrtf(static_cast<float>(255 * 255 * 3));
-	float frustumSize = diag_len / 2.0f;
+	float frustumSize = m_volData->getDiagonalLength() / 2.0f;
 	float aspect = static_cast<float>(width()) / static_cast<float>(height());
 
 	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 1.0, 5000);

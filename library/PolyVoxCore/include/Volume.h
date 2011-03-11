@@ -32,7 +32,6 @@ freely, subject to the following restrictions:
 #include <set>
 #include <memory>
 #include <vector>
-#include <functional>
 
 namespace PolyVox
 {
@@ -124,9 +123,27 @@ namespace PolyVox
 	public:		
 		/// Constructor
 		Volume(uint16_t uBlockSideLength = 32);
+		/// Constructor
+		Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
 		/// Destructor
 		~Volume();
 
+		/// Gets the value used for voxels which are outside the volume
+		VoxelType getBorderValue(void) const;
+		/// Gets a Region representing the extents of the Volume.
+		Region getEnclosingRegion(void) const;
+		/// Gets the width of the volume in voxels.
+		int32_t getWidth(void) const;
+		/// Gets the height of the volume in voxels.
+		int32_t getHeight(void) const;
+		/// Gets the depth of the volume in voxels.
+		int32_t getDepth(void) const;
+		/// Gets the length of the longest side in voxels
+		int32_t getLongestSideLength(void) const;
+		/// Gets the length of the shortest side in voxels
+		int32_t getShortestSideLength(void) const;
+		/// Gets the length of the diagonal in voxels
+		float getDiagonalLength(void) const;
 		/// Gets a voxel by <tt>x,y,z</tt> position
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel by 3D vector position
@@ -148,6 +165,7 @@ namespace PolyVox
 		uint32_t calculateSizeInBytes(void);
 		/// Resizes the volume to the specified dimensions
 		void resize(uint16_t uBlockSideLength = 32);
+		void resize(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength);
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
@@ -184,8 +202,40 @@ namespace PolyVox
 		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
 		VoxelType* m_pUncompressedBorderData;
 
+		/*int32_t m_uMinX;
+		int32_t m_uMinY;
+		int32_t m_uMinZ;
+
+		int32_t m_uMaxX;
+		int32_t m_uMaxY;
+		int32_t m_uMaxZ;*/
+
+		Region m_regValidRegion;
+
+		/*int32_t m_uBlockMinX;
+		int32_t m_uBlockMinY;
+		int32_t m_uBlockMinZ;
+
+		int32_t m_uBlockMaxX;
+		int32_t m_uBlockMaxY;
+		int32_t m_uBlockMaxZ;*/
+
+		Region m_regValidRegionInBlocks;
+
+		int32_t m_uWidthInBlocks;
+		int32_t m_uHeightInBlocks;
+		int32_t m_uDepthInBlocks;
+
+		int32_t m_uWidth;
+		int32_t m_uHeight;	
+		int32_t m_uDepth;
+
 		uint8_t m_uBlockSideLengthPower;
 		uint16_t m_uBlockSideLength;
+
+		int32_t m_uLongestSideLength;
+		int32_t m_uShortestSideLength;
+		float m_fDiagonalLength;
 	};
 
 	//Some handy typedefs

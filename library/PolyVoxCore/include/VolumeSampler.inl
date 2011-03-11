@@ -153,9 +153,23 @@ namespace PolyVox
 				uYPosInBlock * mVolume->m_uBlockSideLength + 
 				uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
 
-		Block<VoxelType>* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
+		//if((uXBlock < mVolume->m_uWidthInBlocks) && (uYBlock < mVolume->m_uHeightInBlocks) && (uZBlock < mVolume->m_uDepthInBlocks) && (uXBlock >= 0) && (uYBlock >= 0) && (uZBlock >=0))
+		//if((uXBlock <= mVolume->m_uBlockMaxX) && (uYBlock <= mVolume->m_uBlockMaxY) && (uZBlock <= mVolume->m_uBlockMaxZ) && (uXBlock >= mVolume->m_uBlockMinX) && (uYBlock >= mVolume->m_uBlockMinY) && (uZBlock >= mVolume->m_uBlockMinZ))
+		if(mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
+		{
+			/*const uint32_t uBlockIndexInVolume = uXBlock + 
+				uYBlock * mVolume->m_uWidthInBlocks + 
+				uZBlock * mVolume->m_uWidthInBlocks * mVolume->m_uHeightInBlocks;
+			const Block<VoxelType>& currentBlock = mVolume->m_pBlocks[uBlockIndexInVolume];*/
 
-		mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
+			Block<VoxelType>* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
+
+			mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
+		}
+		else
+		{
+			mCurrentVoxel = mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
+		}
 	}
 
 	template <typename VoxelType>

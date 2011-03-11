@@ -57,6 +57,14 @@ namespace PolyVox
 		m_v3dUpperCorner = v3dUpperCorner;
 	}
 
+	void Region::setToMaxSize(void)
+	{
+		int32_t iMin = (std::numeric_limits<int32_t>::min)();
+		int32_t iMax = (std::numeric_limits<int32_t>::max)();
+		m_v3dLowerCorner = Vector3DInt32(iMin, iMin,iMin);
+		m_v3dUpperCorner = Vector3DInt32(iMax, iMax,iMax);
+	}
+
 	bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
 		return (pos.getX() <= m_v3dUpperCorner.getX() - boundary)
