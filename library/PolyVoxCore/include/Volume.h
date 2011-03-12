@@ -124,6 +124,8 @@ namespace PolyVox
 		/// Constructor
 		Volume(uint16_t uBlockSideLength = 32);
 		/// Constructor
+		Volume(const Region& regValid, uint16_t uBlockSideLength = 32);
+		/// Constructor
 		Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
 		/// Destructor
 		~Volume();
@@ -163,9 +165,9 @@ namespace PolyVox
 		void clearBlockCache(void);
 		float calculateCompressionRatio(void);
 		uint32_t calculateSizeInBytes(void);
-		/// Resizes the volume to the specified dimensions
-		void resize(uint16_t uBlockSideLength = 32);
-		void resize(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength);
+
+		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
+		void resize(const Region& regValidRegion, uint16_t uBlockSideLength);
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
@@ -202,37 +204,15 @@ namespace PolyVox
 		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
 		VoxelType* m_pUncompressedBorderData;
 
-		/*int32_t m_uMinX;
-		int32_t m_uMinY;
-		int32_t m_uMinZ;
-
-		int32_t m_uMaxX;
-		int32_t m_uMaxY;
-		int32_t m_uMaxZ;*/
-
+		//The size of the volume
 		Region m_regValidRegion;
-
-		/*int32_t m_uBlockMinX;
-		int32_t m_uBlockMinY;
-		int32_t m_uBlockMinZ;
-
-		int32_t m_uBlockMaxX;
-		int32_t m_uBlockMaxY;
-		int32_t m_uBlockMaxZ;*/
-
 		Region m_regValidRegionInBlocks;
 
-		int32_t m_uWidthInBlocks;
-		int32_t m_uHeightInBlocks;
-		int32_t m_uDepthInBlocks;
-
-		int32_t m_uWidth;
-		int32_t m_uHeight;	
-		int32_t m_uDepth;
-
-		uint8_t m_uBlockSideLengthPower;
+		//The size of the blocks
 		uint16_t m_uBlockSideLength;
+		uint8_t m_uBlockSideLengthPower;
 
+		//Some useful sizes
 		int32_t m_uLongestSideLength;
 		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;

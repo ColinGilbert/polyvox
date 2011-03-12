@@ -48,7 +48,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void CubicSurfaceExtractor<VoxelType>::execute()
 	{
-		uint32_t arraySize[3]= {m_regSizeInVoxels.width()+2, m_regSizeInVoxels.height()+2, MaxQuadsSharingVertex};
+		uint32_t arraySize[3]= {m_regSizeInVoxels.getWidth()+2, m_regSizeInVoxels.getHeight()+2, MaxQuadsSharingVertex};
 		m_previousSliceVertices.resize(arraySize);
 		m_currentSliceVertices.resize(arraySize);
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));

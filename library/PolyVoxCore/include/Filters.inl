@@ -7,7 +7,7 @@ namespace PolyVox
 	{
 		Region croppedRegion = regionToSmooth;
 
-		Array<3, uint16_t> temp(ArraySizes(croppedRegion.width())(croppedRegion.height())(croppedRegion.depth()));
+		Array<3, uint16_t> temp(ArraySizes(croppedRegion.getWidth())(croppedRegion.getHeight())(croppedRegion.getDepth()));
 
 		for (int z = croppedRegion.getLowerCorner().getZ(); z < croppedRegion.getUpperCorner().getZ(); z++)
 		{

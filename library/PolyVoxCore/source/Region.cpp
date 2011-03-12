@@ -25,6 +25,13 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	const Region Region::MaxRegion
+	(
+		Vector3DInt32((std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)()),
+		Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)())
+	);
+
+
 	Region::Region()
 		:m_v3dLowerCorner(0,0,0)
 		,m_v3dUpperCorner(0,0,0)
@@ -35,6 +42,36 @@ namespace PolyVox
 		:m_v3dLowerCorner(v3dLowerCorner)
 		,m_v3dUpperCorner(v3dUpperCorner)
 	{
+		//Check the region is valid.
+		assert(m_v3dUpperCorner.getX() >= m_v3dLowerCorner.getX());
+		assert(m_v3dUpperCorner.getY() >= m_v3dLowerCorner.getY());
+		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
+	}
+
+	uint32_t Region::getDepth(void) const
+	{
+		//We're returning the result as unsigned, so ensure that
+		//the upper value is at least as big as the lower value.
+		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
+		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ() + 1;
+	}
+
+	Vector3DUint32 Region::getDimensions(void)
+	{
+		//We're returning the result as unsigned, so ensure that
+		//the upper value is at least as big as the lower value.
+		assert(m_v3dUpperCorner.getX() >= m_v3dLowerCorner.getX());
+		assert(m_v3dUpperCorner.getY() >= m_v3dLowerCorner.getY());
+		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
+		return static_cast<Vector3DUint32>(m_v3dUpperCorner - m_v3dLowerCorner) + Vector3DUint32(1,1,1);
+	}
+
+	uint32_t Region::getHeight(void) const
+	{
+		//We're returning the result as unsigned, so ensure that
+		//the upper value is at least as big as the lower value.
+		assert(m_v3dUpperCorner.getY() >= m_v3dLowerCorner.getY());
+		return m_v3dUpperCorner.getY() - m_v3dLowerCorner.getY() + 1;
 	}
 
 	const Vector3DInt32& Region::getLowerCorner(void) const
@@ -47,6 +84,14 @@ namespace PolyVox
 		return m_v3dUpperCorner;
 	}	
 
+	uint32_t Region::getWidth(void) const
+	{
+		//We're returning the result as unsigned, so ensure that
+		//the upper value is at least as big as the lower value.
+		assert(m_v3dUpperCorner.getX() >= m_v3dLowerCorner.getX());
+		return m_v3dUpperCorner.getX() - m_v3dLowerCorner.getX() + 1;
+	}	
+
 	void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)
 	{
 		m_v3dLowerCorner = v3dLowerCorner;
@@ -55,14 +100,6 @@ namespace PolyVox
 	void Region::setUpperCorner(const Vector3DInt32& v3dUpperCorner)
 	{
 		m_v3dUpperCorner = v3dUpperCorner;
-	}
-
-	void Region::setToMaxSize(void)
-	{
-		int32_t iMin = (std::numeric_limits<int32_t>::min)();
-		int32_t iMax = (std::numeric_limits<int32_t>::max)();
-		m_v3dLowerCorner = Vector3DInt32(iMin, iMin,iMin);
-		m_v3dUpperCorner = Vector3DInt32(iMax, iMax,iMax);
 	}
 
 	bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
@@ -97,11 +134,15 @@ namespace PolyVox
 
 	int32_t Region::depth(void) const
 	{
+		//This function is deprecated and wrong. Use getDepth() instead.
+		assert(false);
 		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ();
 	}
 
 	int32_t Region::height(void) const
 	{
+		//This function is deprecated and wrong. Use getHeight() instead.
+		assert(false);
 		return m_v3dUpperCorner.getY() - m_v3dLowerCorner.getY();
 	}
 
@@ -123,11 +164,15 @@ namespace PolyVox
 
 	Vector3DInt32 Region::dimensions(void)
 	{
+		//This function is deprecated and wrong. Use getDimensions() instead.
+		assert(false);
 		return m_v3dUpperCorner - m_v3dLowerCorner;
 	}
 
 	int32_t Region::width(void) const
 	{
+		//This function is deprecated and wrong. Use getWidth() instead.
+		assert(false);
 		return m_v3dUpperCorner.getX() - m_v3dLowerCorner.getX();
 	}
 }

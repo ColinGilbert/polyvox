@@ -46,7 +46,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SurfaceExtractor<VoxelType>::execute()
 	{		
-		uint32_t arraySizes[2]= {m_regSizeInVoxels.width()+1, m_regSizeInVoxels.height()+1}; // Array dimensions
+		uint32_t arraySizes[2]= {m_regSizeInVoxels.getWidth(), m_regSizeInVoxels.getHeight()}; // Array dimensions
 
 		//For edge indices
 		Array2DInt32 m_pPreviousVertexIndicesX(arraySizes);

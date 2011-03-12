@@ -36,25 +36,35 @@ namespace PolyVox
 #endif
 	{
 	public:
+
+		const static Region MaxRegion;
+
 		Region();
 		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);
 
+		uint32_t getDepth(void) const;
+		Vector3DUint32 getDimensions(void);
+		uint32_t getHeight(void) const;
 		const Vector3DInt32& getLowerCorner(void) const;
 		const Vector3DInt32& getUpperCorner(void) const;
+		uint32_t getWidth(void) const;		
 
 		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
-		void setToMaxSize(void);
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
 		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;
 		void cropTo(const Region& other);
+		/// Deprecated and wrong by 1 - use getDepth() instead.
 		int32_t depth(void) const;
+		/// Deprecated and wrong by 1 - use getHeight() instead.
 		int32_t height(void) const;
 		void shift(const Vector3DInt32& amount);
 		void shiftLowerCorner(const Vector3DInt32& amount);
 		void shiftUpperCorner(const Vector3DInt32& amount);
+		/// Deprecated and wrong by 1 - use getDimensions() instead.
 		Vector3DInt32 dimensions(void);
+		/// Deprecated and wrong by 1 - use getWidth() instead.
 		int32_t width(void) const;
 
 	private:

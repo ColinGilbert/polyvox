@@ -320,7 +320,8 @@ namespace PolyVox
 		stream.read(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
 
 		//Resize the volume
-		volume.resize(volumeWidth, volumeHeight, volumeDepth);
+		//HACK - Forces block size to 32. This functions needs reworking anyway due to large volume support.
+		volume.resize(Region(Vector3DInt32(0,0,0), Vector3DInt32(volumeWidth, volumeHeight, volumeDepth)), 32);
 
 		//Read data
 		bool firstTime = true;
