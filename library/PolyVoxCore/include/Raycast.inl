@@ -139,7 +139,7 @@ namespace PolyVox
 			if(m_sampVolume.getVoxel().getDensity() > VoxelType::getThreshold())
 			{
 				m_result.foundIntersection = true;
-				m_result.intersectionVoxel = Vector3DInt16(i,j,k);
+				m_result.intersectionVoxel = Vector3DInt32(i,j,k);
 				return;
 			}
 
@@ -172,6 +172,6 @@ namespace PolyVox
 
 		//Didn't hit anything
 		m_result.foundIntersection = false;
-		m_result.intersectionVoxel = Vector3DInt16(0,0,0);
+		m_result.intersectionVoxel = Vector3DInt32(0,0,0);
 	}
 }
