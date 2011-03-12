@@ -363,6 +363,7 @@ namespace PolyVox
 		m_pUncompressedBorderData = 0;
 		m_uMaxBlocksLoaded = 4096;
 		m_v3dLastAccessedBlockPos = Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)()); //An invalid index
+		m_pLastAccessedBlock = 0;
 
 		m_regValidRegion = regValidRegion;
 
@@ -438,16 +439,29 @@ namespace PolyVox
 	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
+
+		//Check if we have the same block as last time, if so there's no need to even update
+		//the time stamp. If we updated it everytime then that would be every time we touched
+		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
+		//This check should also provide a significant speed boost as usually it is true.
+		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
+		{
+			return m_pLastAccessedBlock;
+		}		
+
 		typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
-		if(itBlock == m_pBlocks.end()) {
+		if(itBlock == m_pBlocks.end())
+		{
 			// it is not loaded
 			// check wether another block needs to be unloaded before this one can be loaded
-			if(m_pBlocks.size() == m_uMaxBlocksLoaded) {
+			if(m_pBlocks.size() == m_uMaxBlocksLoaded)
+			{
 				// find the least recently used block
 				typename std::map<Vector3DInt32, Block<VoxelType> >::iterator i;
 				typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itUnloadBlock = m_pBlocks.begin();
-				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++) {
+				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+				{
 					if(i->second.m_uTimestamp < itUnloadBlock->second.m_uTimestamp) {
 						itUnloadBlock = i;
 					}
@@ -458,8 +472,9 @@ namespace PolyVox
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 			Region reg(v3dLower, v3dUpper);
 			// create the new block
-			m_pBlocks[v3dBlockPos] = Block<VoxelType>(m_uBlockSideLength);
-			itBlock = m_pBlocks.find(v3dBlockPos);
+			Block<VoxelType> newBlock(m_uBlockSideLength);
+			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
+
 			// fill it with data (well currently fill it with nothingness)
 			// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
 			// so this if(itBlock == m_pBlocks.end()) never is entered
@@ -471,17 +486,10 @@ namespace PolyVox
 			m_v3dLoadBlockPos = Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)());
 		}
 
+		m_v3dLastAccessedBlockPos = v3dBlockPos;
+
 		//Get the block
 		Block<VoxelType>* block = &(itBlock->second);
-
-		//Check if we have the same block as last time, if so there's no need to even update
-		//the time stamp. If we updated it everytime then that would be every time we touched
-		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
-		if(v3dBlockPos == m_v3dLastAccessedBlockPos)
-		{
-			return block;
-		}
-		m_v3dLastAccessedBlockPos = v3dBlockPos;
 
 		m_uTimestamper++;
 		block->m_uTimestamp = m_uTimestamper;
@@ -489,6 +497,7 @@ namespace PolyVox
 		if(block->m_bIsCompressed == false)
 		{ 
 			m_pUncompressedTimestamps[block->m_uUncompressedIndex] = m_uTimestamper;
+			m_pLastAccessedBlock = block;
 			return block;
 		}
 
@@ -526,6 +535,7 @@ namespace PolyVox
 		block->m_uUncompressedIndex = uUncompressedBlockIndex;
 		block->uncompress(m_vecUncompressedBlockCache[uUncompressedBlockIndex].data);
 
+		m_pLastAccessedBlock = block;
 		return block;
 	}
 

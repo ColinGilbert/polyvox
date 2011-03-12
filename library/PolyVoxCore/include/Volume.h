@@ -194,6 +194,7 @@ namespace PolyVox
 		mutable std::vector<uint32_t> m_pUncompressedTimestamps;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
+		mutable Block<VoxelType>* m_pLastAccessedBlock;
 		mutable Vector3DInt32 m_v3dLoadBlockPos;
 		uint32_t m_uMaxUncompressedBlockCacheSize;
 		uint32_t m_uMaxBlocksLoaded;
