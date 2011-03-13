@@ -112,6 +112,8 @@ namespace PolyVox
 	{
 		// Make VolumeSampler a friend
 		friend class VolumeSampler<VoxelType>;
+		// Make the ConstVolumeProxy a friend
+		friend class ConstVolumeProxy<VoxelType>;
 
 		struct UncompressedBlock
 		{
@@ -171,17 +173,17 @@ namespace PolyVox
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		polyvox_function<void(const Volume<VoxelType>&, Region)> m_LoadCallback;
-		/// this function can be called by m_LoadCallback without causing any weird effects
-		bool load_setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler;
 		/// gets called when a Region needs to be stored by the user, because Volume will erase it right after
 		/// this function returns
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		polyvox_function<void(const Volume<VoxelType>&, Region)> m_UnloadCallback;
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler;
 	private:
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itBlock) const;
+		/// this function can be called by dataRequiredHandler without causing any weird effects
+		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
 		mutable std::map<Vector3DInt32, Block<VoxelType> > m_pBlocks;
@@ -195,7 +197,6 @@ namespace PolyVox
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable Block<VoxelType>* m_pLastAccessedBlock;
-		mutable Vector3DInt32 m_v3dLoadBlockPos;
 		uint32_t m_uMaxUncompressedBlockCacheSize;
 		uint32_t m_uMaxBlocksLoaded;
 

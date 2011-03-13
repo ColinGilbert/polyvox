@@ -506,7 +506,7 @@ void createSphereInVolume(Volume<MaterialDensityPair44>& volData, Vector3DFloat 
 	}
 }
 
-void load(const Volume<MaterialDensityPair44>& volume, PolyVox::Region reg)
+void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
 {
 	Perlin perlin(2,2,1,234);
 
@@ -541,12 +541,12 @@ void load(const Volume<MaterialDensityPair44>& volume, PolyVox::Region reg)
 					voxel.setDensity(MaterialDensityPair44::getMinDensity());
 				}
 
-				volume.load_setVoxelAt(x, y, z, voxel);
+				volume.setVoxelAt(x, y, z, voxel);
 			}
 		}
 	}
 }
-void unload(const Volume<MaterialDensityPair44>& vol, PolyVox::Region reg)
+void unload(const ConstVolumeProxy<MaterialDensityPair44>& vol, const PolyVox::Region& reg)
 {
 	std::cout << "warning unloading region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 }
@@ -564,10 +564,10 @@ int main(int argc, char *argv[])
 	//If these two lines don't compile, please try commenting them out and using the two lines after
 	//(you will need Boost for this). If you have to do this then please let us know in the forums as
 	//we rely on community feedback to keep the Boost version running.
-	volData.m_LoadCallback = &load;
-	volData.m_UnloadCallback = &unload;
-	//volData.m_LoadCallback = polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2);
-	//volData.m_UnloadCallback = polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2);
+	volData.dataRequiredHandler = &load;
+	volData.dataOverflowHandler = &unload;
+	//volData.dataRequiredHandler = polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2);
+	//volData.dataOverflowHandler = polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2);
 
 	volData.setBlockCacheSize(4096);
 	//createSphereInVolume(volData, 30);

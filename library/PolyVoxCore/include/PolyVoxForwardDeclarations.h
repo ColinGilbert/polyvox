@@ -60,6 +60,8 @@ namespace PolyVox
 
 	template <typename VoxelType> class Block;
 
+	template <typename VoxelType> class ConstVolumeProxy;
+
 	//---------- Volume ----------
 	template <typename VoxelType> class Volume;
 	typedef Volume<float> FloatVolume;

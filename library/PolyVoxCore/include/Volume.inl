@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "ConstVolumeProxy.h"
 #include "PolyVoxImpl/Block.h"
 #include "Log.h"
 #include "VolumeSampler.h"
@@ -399,28 +400,30 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itBlock) const
 	{
-		Vector3DInt32 v3dPos = itBlock->first;
-		Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
-		Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
-		Region reg(v3dLower, v3dUpper);
-		if(m_UnloadCallback) {
-			m_UnloadCallback(std::ref(*this), reg);
+		if(dataOverflowHandler)
+		{
+			Vector3DInt32 v3dPos = itBlock->first;
+			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
+			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
+
+			Region reg(v3dLower, v3dUpper);
+			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+
+			dataOverflowHandler(ConstVolumeProxy, reg);
 		}
 		m_pBlocks.erase(itBlock);
 	}
 
 	template <typename VoxelType>
-	bool Volume<VoxelType>::load_setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
+	bool Volume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
 	{
+		//We don't have any range checks in this function because it
+		//is a private function only called by the ConstVolumeProxy. The
+		//ConstVolumeProxy takes care of ensuring the range is appropriate.
+
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
 		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-		assert(blockX == m_v3dLoadBlockPos.getX());
-		assert(blockY == m_v3dLoadBlockPos.getY());
-		assert(blockZ == m_v3dLoadBlockPos.getZ());
-		if(blockX != m_v3dLoadBlockPos.getX() && blockY != m_v3dLoadBlockPos.getY() && blockZ != m_v3dLoadBlockPos.getZ()) {
-			throw(std::invalid_argument("you are not allowed to write to any voxels outside the designated region"));
-		}
 
 		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
 		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
@@ -462,7 +465,8 @@ namespace PolyVox
 				typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itUnloadBlock = m_pBlocks.begin();
 				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 				{
-					if(i->second.m_uTimestamp < itUnloadBlock->second.m_uTimestamp) {
+					if(i->second.m_uTimestamp < itUnloadBlock->second.m_uTimestamp)
+					{
 						itUnloadBlock = i;
 					}
 				}
@@ -470,20 +474,21 @@ namespace PolyVox
 			}
 			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
-			Region reg(v3dLower, v3dUpper);
+			
 			// create the new block
 			Block<VoxelType> newBlock(m_uBlockSideLength);
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			// fill it with data (well currently fill it with nothingness)
 			// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
-			// so this if(itBlock == m_pBlocks.end()) never is entered
+			// so this if(itBlock == m_pBlocks.end()) never is entered		
 
-			m_v3dLoadBlockPos = v3dBlockPos;
-			if(m_LoadCallback) {
-				m_LoadCallback(std::ref(*this), reg);
+			if(dataRequiredHandler)
+			{
+				Region reg(v3dLower, v3dUpper);
+				ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+				dataRequiredHandler(ConstVolumeProxy, reg);
 			}
-			m_v3dLoadBlockPos = Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)());
 		}
 
 		m_v3dLastAccessedBlockPos = v3dBlockPos;

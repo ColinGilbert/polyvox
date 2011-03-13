@@ -22,6 +22,7 @@ SET(CORE_INC_FILES
 	include/ArraySizes.h
 	include/AStarPathfinder.h
 	include/AStarPathfinder.inl
+	include/ConstVolumeProxy.h
 	include/CubicSurfaceExtractor.h
 	include/CubicSurfaceExtractor.inl
 	include/CubicSurfaceExtractorWithNormals.h
