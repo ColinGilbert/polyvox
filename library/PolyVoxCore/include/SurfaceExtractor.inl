@@ -91,7 +91,7 @@ namespace PolyVox
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
 
 		//Process the other slices (previous slice is available)
-		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.depth(); uSlice++)
+		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getDepth()-1; uSlice++)
 		{	
 			computeBitmaskForSlice<true>(pPreviousBitmask, pCurrentBitmask);
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
