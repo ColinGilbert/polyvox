@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_Volume_H__
 
 #include "PolyVoxImpl/Block.h"
+#include "Region.h"
 #include "PolyVoxForwardDeclarations.h"
 
 #include <limits>

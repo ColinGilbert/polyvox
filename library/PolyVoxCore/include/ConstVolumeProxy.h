@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_ConstVolumeProxy_H__
 
 #include "PolyVoxForwardDeclarations.h"
+#include "Region.h"
 
 namespace PolyVox
 {

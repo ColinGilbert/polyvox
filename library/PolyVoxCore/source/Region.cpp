@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 
 #include "Region.h"
 
+#include <limits>
+
 namespace PolyVox
 {
 	const Region Region::MaxRegion
