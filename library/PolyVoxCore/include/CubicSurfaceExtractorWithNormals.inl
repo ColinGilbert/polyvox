@@ -36,9 +36,6 @@ namespace PolyVox
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
 	{
-		m_regSizeInCells = m_regSizeInVoxels;
-		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
-
 		m_meshCurrent->clear();
 	}
 

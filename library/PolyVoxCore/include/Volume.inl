@@ -135,7 +135,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	int32_t Volume<VoxelType>::getWidth(void) const
 	{
-		return m_regValidRegion.getWidth();
+		return m_regValidRegion.getUpperCorner().getX() - m_regValidRegion.getLowerCorner().getX() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	int32_t Volume<VoxelType>::getHeight(void) const
 	{
-		return m_regValidRegion.getHeight();
+		return m_regValidRegion.getUpperCorner().getY() - m_regValidRegion.getLowerCorner().getY() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	int32_t Volume<VoxelType>::getDepth(void) const
 	{
-		return m_regValidRegion.getDepth();
+		return m_regValidRegion.getUpperCorner().getZ() - m_regValidRegion.getLowerCorner().getZ() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

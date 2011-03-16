@@ -50,14 +50,6 @@ namespace PolyVox
 		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
 	}
 
-	uint32_t Region::getDepth(void) const
-	{
-		//We're returning the result as unsigned, so ensure that
-		//the upper value is at least as big as the lower value.
-		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
-		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ() + 1;
-	}
-
 	Vector3DUint32 Region::getDimensions(void)
 	{
 		//We're returning the result as unsigned, so ensure that
@@ -68,14 +60,6 @@ namespace PolyVox
 		return static_cast<Vector3DUint32>(m_v3dUpperCorner - m_v3dLowerCorner) + Vector3DUint32(1,1,1);
 	}
 
-	uint32_t Region::getHeight(void) const
-	{
-		//We're returning the result as unsigned, so ensure that
-		//the upper value is at least as big as the lower value.
-		assert(m_v3dUpperCorner.getY() >= m_v3dLowerCorner.getY());
-		return m_v3dUpperCorner.getY() - m_v3dLowerCorner.getY() + 1;
-	}
-
 	const Vector3DInt32& Region::getLowerCorner(void) const
 	{
 		return m_v3dLowerCorner;
@@ -84,14 +68,6 @@ namespace PolyVox
 	const Vector3DInt32& Region::getUpperCorner(void) const
 	{
 		return m_v3dUpperCorner;
-	}	
-
-	uint32_t Region::getWidth(void) const
-	{
-		//We're returning the result as unsigned, so ensure that
-		//the upper value is at least as big as the lower value.
-		assert(m_v3dUpperCorner.getX() >= m_v3dLowerCorner.getX());
-		return m_v3dUpperCorner.getX() - m_v3dLowerCorner.getX() + 1;
 	}	
 
 	void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)

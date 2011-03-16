@@ -39,16 +39,15 @@ namespace PolyVox
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
 	{
-		m_regSizeInCells = m_regSizeInVoxels;
-		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
-
 		m_meshCurrent->clear();
 	}
 
 	template <typename VoxelType>
 	void CubicSurfaceExtractor<VoxelType>::execute()
 	{
-		uint32_t arraySize[3]= {m_regSizeInVoxels.getWidth()+2, m_regSizeInVoxels.getHeight()+2, MaxQuadsSharingVertex};
+		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2;
+		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2;
+		uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxQuadsSharingVertex};
 		m_previousSliceVertices.resize(arraySize);
 		m_currentSliceVertices.resize(arraySize);
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));

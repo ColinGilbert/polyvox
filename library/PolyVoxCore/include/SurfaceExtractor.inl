@@ -46,7 +46,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SurfaceExtractor<VoxelType>::execute()
 	{		
-		uint32_t arraySizes[2]= {m_regSizeInVoxels.getWidth(), m_regSizeInVoxels.getHeight()}; // Array dimensions
+		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
+		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
+		uint32_t arraySizes[2]= {uArrayWidth, uArrayHeight}; // Array dimensions
 
 		//For edge indices
 		Array2DInt32 m_pPreviousVertexIndicesX(arraySizes);
@@ -91,7 +93,7 @@ namespace PolyVox
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
 
 		//Process the other slices (previous slice is available)
-		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getDepth()-1; uSlice++)
+		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ(); uSlice++)
 		{	
 			computeBitmaskForSlice<true>(pPreviousBitmask, pCurrentBitmask);
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
