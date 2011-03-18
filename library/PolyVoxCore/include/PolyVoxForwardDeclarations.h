@@ -64,9 +64,6 @@ namespace PolyVox
 
 	//---------- Volume ----------
 	template <typename VoxelType> class Volume;
-	typedef Volume<float> FloatVolume;
-	typedef Volume<uint8_t> UInt8Volume;
-	typedef Volume<uint16_t> UInt16Volume;
 	//---------------------------------
 
 	//---------- Mesh ----------

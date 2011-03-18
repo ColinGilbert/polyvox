@@ -116,11 +116,19 @@ namespace PolyVox
 		// Make the ConstVolumeProxy a friend
 		friend class ConstVolumeProxy<VoxelType>;
 
-		struct UncompressedBlock
+		struct LoadedBlock
 		{
-			Vector3DInt32 v3dBlockIndex;
-			VoxelType* data;
+		public:
+			LoadedBlock(uint16_t uSideLength = 0)
+				:block(uSideLength)
+				,uncompressedData(0)
+				,timestamp(0)
+			{
+			}
 
+			Block<VoxelType> block;
+			VoxelType* uncompressedData;
+			uint32_t timestamp;
 		};
 
 	public:		
@@ -182,22 +190,21 @@ namespace PolyVox
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler;
 	private:
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType> >::iterator itBlock) const;
+		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const;
 		/// this function can be called by dataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
-		mutable std::map<Vector3DInt32, Block<VoxelType> > m_pBlocks;
+		mutable std::map<Vector3DInt32, LoadedBlock > m_pBlocks;
 
 		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
 		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
 		//of blocks. However, this could mean the same block data is uncompressed and modified in more than one
 		//location in memory... could be messy with threading.
-		mutable std::vector< UncompressedBlock > m_vecUncompressedBlockCache;
-		mutable std::vector<uint32_t> m_pUncompressedTimestamps;
+		mutable std::vector< LoadedBlock* > m_vecUncompressedBlockCache;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable Block<VoxelType>* m_pLastAccessedBlock;
+		mutable LoadedBlock* m_pLastAccessedBlock;
 		uint32_t m_uMaxUncompressedBlockCacheSize;
 		uint32_t m_uMaxBlocksLoaded;
 
@@ -220,11 +227,6 @@ namespace PolyVox
 		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;
 	};
-
-	//Some handy typedefs
-	typedef Volume<float> FloatVolume;
-	typedef Volume<uint8_t> UInt8Volume;
-	typedef Volume<uint16_t> UInt16Volume;	
 }
 
 #include "Volume.inl"

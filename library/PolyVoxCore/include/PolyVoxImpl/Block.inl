@@ -39,8 +39,6 @@ namespace PolyVox
 		,m_tUncompressedData(NULL)
 		,m_bIsCompressed(true)
 		,m_bIsUncompressedDataModified(true)
-		,m_uTimestamp(0)
-		,m_uUncompressedIndex((std::numeric_limits<uint32_t>::max)())
 	{
 		if(uSideLength != 0)
 		{
