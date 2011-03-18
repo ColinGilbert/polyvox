@@ -24,7 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MeshDecimator_H__
 #define __PolyVox_MeshDecimator_H__
 
+#include "Vector.h"
+
 #include <bitset>
+#include <vector>
 
 namespace PolyVox
 {
@@ -64,7 +67,7 @@ namespace PolyVox
 	{
 		//Used to keep track of when a vertex is
 		//on one or more faces of  the region
-		enum POLYVOXCORE_API RegionFaceFlags
+		enum RegionFaceFlags
 		{
 			RFF_ON_REGION_FACE_NEG_X,
 			RFF_ON_REGION_FACE_POS_X ,

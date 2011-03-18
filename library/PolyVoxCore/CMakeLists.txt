@@ -8,6 +8,7 @@ SET(CORE_SRC_FILES
 	source/AStarPathfinder.cpp
 	source/GradientEstimators.cpp
 	source/Log.cpp
+	source/MeshDecimator.cpp
 	source/Region.cpp
 	source/VertexTypes.cpp
 	source/VoxelFilters.cpp
