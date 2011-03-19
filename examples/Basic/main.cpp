@@ -559,17 +559,17 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(128);
+	Volume<MaterialDensityPair44> volData(&load, &unload, 128);
 
 	//If these two lines don't compile, please try commenting them out and using the two lines after
 	//(you will need Boost for this). If you have to do this then please let us know in the forums as
 	//we rely on community feedback to keep the Boost version running.
-	volData.dataRequiredHandler = &load;
-	volData.dataOverflowHandler = &unload;
+	//volData.dataRequiredHandler = &load;
+	//volData.dataOverflowHandler = &unload;
 	//volData.dataRequiredHandler = polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2);
 	//volData.dataOverflowHandler = polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2);
 
-	volData.setBlockCacheSize(4096);
+	//volData.setMaxNumberOfUncompressedBlocks(4096);
 	//createSphereInVolume(volData, 30);
 	//createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);

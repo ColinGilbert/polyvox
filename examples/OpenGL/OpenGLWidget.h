@@ -37,7 +37,7 @@ freely, subject to the following restrictions:
 #include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
-const uint16_t g_uVolumeSideLength = 128;
+const int32_t g_uVolumeSideLength = 128;
 
 class OpenGLWidget : public QGLWidget
  {

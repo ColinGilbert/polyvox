@@ -49,8 +49,16 @@ namespace PolyVox
 	/// the default if you are not sure what to choose here.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(uint16_t uBlockSideLength)
+	Volume<VoxelType>::Volume
+	(
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+		uint16_t uBlockSideLength
+	)
 	{
+		m_funcDataRequiredHandler = dataRequiredHandler;
+		m_funcDataOverflowHandler = dataOverflowHandler;
+		m_bStreamingEnabled = true;
 		//Create a volume of the right size.
 		resize(Region::MaxRegion,uBlockSideLength);
 	}
@@ -68,8 +76,19 @@ namespace PolyVox
 	/// the default if you are not sure what to choose here.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength)
+	Volume<VoxelType>::Volume
+	(
+		int32_t uWidth, int32_t uHeight, int32_t uDepth,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+		bool bStreamingEnabled,
+		uint16_t uBlockSideLength
+	)
 	{
+		m_funcDataRequiredHandler = dataRequiredHandler;
+		m_funcDataOverflowHandler = dataOverflowHandler;
+		m_bStreamingEnabled = bStreamingEnabled;
+
 		Region regValid(Vector3DInt32(0,0,0), Vector3DInt32(uWidth - 1,uHeight - 1,uDepth - 1));
 		resize(Region(Vector3DInt32(0,0,0), Vector3DInt32(uWidth - 1,uHeight - 1,uDepth - 1)), uBlockSideLength);
 	}
@@ -87,8 +106,19 @@ namespace PolyVox
 	/// the default if you are not sure what to choose here.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(const Region& regValid, uint16_t uBlockSideLength)
+	Volume<VoxelType>::Volume
+	(
+		const Region& regValid,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+		bool bStreamingEnabled,
+		uint16_t uBlockSideLength
+	)
 	{
+		m_funcDataRequiredHandler = dataRequiredHandler;
+		m_funcDataOverflowHandler = dataOverflowHandler;
+		m_bStreamingEnabled = bStreamingEnabled;
+
 		//Create a volume of the right size.
 		resize(regValid,uBlockSideLength);
 	}
@@ -99,7 +129,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		std::map<Vector3DInt32, LoadedBlock >::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i = m_pBlocks.begin()) {
 			eraseBlock(i);
 		}
@@ -238,11 +268,11 @@ namespace PolyVox
 	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::setBlockCacheSize(uint16_t uBlockCacheSize)
+	void Volume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks)
 	{
 		clearBlockCache();
 
-		m_uMaxUncompressedBlockCacheSize = uBlockCacheSize;
+		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -250,15 +280,18 @@ namespace PolyVox
 	/// \param uMaxBlocks The number of blocks
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::setMaxBlocksLoaded(uint16_t uMaxBlocks)
+	void Volume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
 	{
-		if(uMaxBlocks < m_pBlocks.size()) {
-			std::cout << uMaxBlocks << ", " << m_pBlocks.size() << ", " << m_pBlocks.size() - uMaxBlocks << std::endl;
+		//FIXME? - I'm concerned about the logic in here... particularly the
+		//way timestamps are handled. Perhaps extract all timestamps, sort them,
+		//identify the cut-off point, and then discard those above it?
+		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
+		{
 			// we need to unload some blocks
-			for(int j = 0; j < m_pBlocks.size() - uMaxBlocks; j++)
+			for(int j = 0; j < m_pBlocks.size() - uMaxNumberOfBlocksInMemory; j++)
 			{
-				typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-				typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
+				std::map<Vector3DInt32, LoadedBlock >::iterator i;
+				std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
 				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 				{
 					if(i->second.timestamp < itUnloadBlock->second.timestamp)
@@ -269,7 +302,7 @@ namespace PolyVox
 				eraseBlock(itUnloadBlock);
 			}
 		}
-		m_uMaxBlocksLoaded  = uMaxBlocks;
+		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -328,7 +361,6 @@ namespace PolyVox
 		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 		{
 			m_vecUncompressedBlockCache[ct]->block.compress();
-			delete[] m_vecUncompressedBlockCache[ct]->uncompressedData;
 		}
 		m_vecUncompressedBlockCache.clear();
 	}
@@ -362,10 +394,10 @@ namespace PolyVox
 		}
 
 		m_uTimestamper = 0;
-		m_uMaxUncompressedBlockCacheSize = 256;
+		m_uMaxNumberOfUncompressedBlocks = 16;
 		m_uBlockSideLength = uBlockSideLength;
 		m_pUncompressedBorderData = 0;
-		m_uMaxBlocksLoaded = 4096;
+		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)()); //An invalid index
 		m_pLastAccessedBlock = 0;
 
@@ -374,7 +406,7 @@ namespace PolyVox
 		m_regValidRegionInBlocks.setLowerCorner(m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
 		m_regValidRegionInBlocks.setUpperCorner(m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
 
-		setBlockCacheSize(m_uMaxUncompressedBlockCacheSize);
+		setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
 
 		//Clear the previous data
 		m_pBlocks.clear();
@@ -399,7 +431,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
 	{
-		if(dataOverflowHandler)
+		if(m_funcDataOverflowHandler)
 		{
 			Vector3DInt32 v3dPos = itBlock->first;
 			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
@@ -408,7 +440,7 @@ namespace PolyVox
 			Region reg(v3dLower, v3dUpper);
 			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
 
-			dataOverflowHandler(ConstVolumeProxy, reg);
+			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
 		}
 		m_pBlocks.erase(itBlock);
 	}
@@ -448,68 +480,76 @@ namespace PolyVox
 		//This check should also provide a significant speed boost as usually it is true.
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			return &(m_pLastAccessedBlock->block);
+			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			return m_pLastAccessedBlock;
 		}		
 
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
-			// it is not loaded
-			// check wether another block needs to be unloaded before this one can be loaded
-			if(m_pBlocks.size() == m_uMaxBlocksLoaded)
+			//The block is not in the map, so we will have to create a new block and add it.
+			//Before we do so, we might want to dump some existing data to make space. We 
+			//Only do this if paging is enabled.
+			if(m_bStreamingEnabled)
 			{
-				// find the least recently used block
-				typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-				typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
-				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+				// check wether another block needs to be unloaded before this one can be loaded
+				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
 				{
-					if(i->second.timestamp < itUnloadBlock->second.timestamp)
+					// find the least recently used block
+					std::map<Vector3DInt32, LoadedBlock >::iterator i;
+					std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
+					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 					{
-						itUnloadBlock = i;
+						if(i->second.timestamp < itUnloadBlock->second.timestamp)
+						{
+							itUnloadBlock = i;
+						}
 					}
+					eraseBlock(itUnloadBlock);
 				}
-				eraseBlock(itUnloadBlock);
 			}
-			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
-			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 			
 			// create the new block
 			LoadedBlock newBlock(m_uBlockSideLength);
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
-			// fill it with data (well currently fill it with nothingness)
-			// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
-			// so this if(itBlock == m_pBlocks.end()) never is entered		
-
-			if(dataRequiredHandler)
+			//We have created the new block. If paging is enabled it should be used to
+			//fill in the required data. Otherwise it is just left in the default state.
+			if(m_bStreamingEnabled)
 			{
-				Region reg(v3dLower, v3dUpper);
-				ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-				dataRequiredHandler(ConstVolumeProxy, reg);
+				if(m_funcDataRequiredHandler)
+				{
+					// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
+					// so this if(itBlock == m_pBlocks.end()) never is entered		
+					//FIXME - can we pass the block around so that we don't have to find  it again when we recursively call this function?
+					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
+					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
+					Region reg(v3dLower, v3dUpper);
+					ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+					m_funcDataRequiredHandler(ConstVolumeProxy, reg);
+				}
 			}
-		}
+		}		
 
+		//Get the block and mark that we accessed it
+		LoadedBlock& loadedBlock = itBlock->second;
+		loadedBlock.timestamp = ++m_uTimestamper;
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
+		m_pLastAccessedBlock = &(loadedBlock.block);
 
-		//Get the block
-		LoadedBlock* block = &(itBlock->second);
-
-		m_uTimestamper++;
-		block->timestamp = m_uTimestamper;
-
-		if(block->block.m_bIsCompressed == false)
-		{ 
-			m_pLastAccessedBlock = block;
-			return &(block->block);
+		if(loadedBlock.block.m_bIsCompressed == false)
+		{ 			
+			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			return m_pLastAccessedBlock;
 		}
 
 		//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
 		//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
 		//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
 		uint32_t uUncompressedBlockIndex = (std::numeric_limits<uint32_t>::max)();
-		assert(m_vecUncompressedBlockCache.size() <= m_uMaxUncompressedBlockCacheSize);
-		if(m_vecUncompressedBlockCache.size() == m_uMaxUncompressedBlockCacheSize)
+		assert(m_vecUncompressedBlockCache.size() <= m_uMaxNumberOfUncompressedBlocks);
+		if(m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)(); // you said not int64 ;)
@@ -524,18 +564,22 @@ namespace PolyVox
 
 			uUncompressedBlockIndex = leastRecentlyUsedBlockIndex;
 			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress();
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->uncompressedData = 0;
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex] = &loadedBlock;
+			//m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.m_tUncompressedData = 0;
 		}
 		else
 		{
-			block->uncompressedData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-			m_vecUncompressedBlockCache.push_back(block);
+			//loadedBlock.block.m_tUncompressedData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+			m_vecUncompressedBlockCache.push_back(&loadedBlock);
 			uUncompressedBlockIndex = m_vecUncompressedBlockCache.size() - 1;
 		}
-		block->block.uncompress(block->uncompressedData);
+		
+		loadedBlock.block.uncompress();
+		//m_vecUncompressedBlockCache.push_back(&loadedBlock);
 
-		m_pLastAccessedBlock = block;
-		return &(block->block);
+		m_pLastAccessedBlock = &(loadedBlock.block);
+		assert(m_pLastAccessedBlock->m_tUncompressedData);
+		return m_pLastAccessedBlock;
 	}
 
 	template <typename VoxelType>
@@ -552,7 +596,7 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(Volume);
 
 		//Memory used by the blocks
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		std::map<Vector3DInt32, LoadedBlock >::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.

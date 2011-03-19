@@ -62,7 +62,7 @@ namespace PolyVox
 
 	public:
 		void compress(void);
-		void uncompress(VoxelType* pData);
+		void uncompress(void);
 
 		std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
 		VoxelType* m_tUncompressedData;

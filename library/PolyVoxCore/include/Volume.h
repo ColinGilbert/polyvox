@@ -121,23 +121,40 @@ namespace PolyVox
 		public:
 			LoadedBlock(uint16_t uSideLength = 0)
 				:block(uSideLength)
-				,uncompressedData(0)
 				,timestamp(0)
 			{
 			}
 
 			Block<VoxelType> block;
-			VoxelType* uncompressedData;
 			uint32_t timestamp;
 		};
 
 	public:		
 		/// Constructor
-		Volume(uint16_t uBlockSideLength = 32);
+		Volume
+		(
+			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
+			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+			uint16_t uBlockSideLength = 32
+		);
 		/// Constructor
-		Volume(const Region& regValid, uint16_t uBlockSideLength = 32);
+		Volume
+		(
+			const Region& regValid,
+			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
+			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
+			bool bStreamingEnabled = false,
+			uint16_t uBlockSideLength = 32
+		);
 		/// Constructor
-		Volume(int32_t uWidth, int32_t uHeight, int32_t uDepth, uint16_t uBlockSideLength = 32);
+		Volume
+		(
+			int32_t uWidth, int32_t uHeight, int32_t uDepth,
+			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
+			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
+			bool bStreamingEnabled = false,
+			uint16_t uBlockSideLength = 32
+		);
 		/// Destructor
 		~Volume();
 
@@ -163,9 +180,9 @@ namespace PolyVox
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
 		/// Sets the number of blocks for which uncompressed data is stored.
-		void setBlockCacheSize(uint16_t uBlockCacheSize);
+		void setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before unload is called
-		void setMaxBlocksLoaded(uint16_t uBlockCacheSize);
+		void setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory);
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at an <tt>x,y,z</tt> position
@@ -179,19 +196,21 @@ namespace PolyVox
 
 		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
 		void resize(const Region& regValidRegion, uint16_t uBlockSideLength);
+
+private:
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler;
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataRequiredHandler;
 		/// gets called when a Region needs to be stored by the user, because Volume will erase it right after
 		/// this function returns
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler;
-	private:
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
+	
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const;
-		/// this function can be called by dataRequiredHandler without causing any weird effects
+		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
@@ -204,9 +223,9 @@ namespace PolyVox
 		mutable std::vector< LoadedBlock* > m_vecUncompressedBlockCache;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable LoadedBlock* m_pLastAccessedBlock;
-		uint32_t m_uMaxUncompressedBlockCacheSize;
-		uint32_t m_uMaxBlocksLoaded;
+		mutable Block<VoxelType>* m_pLastAccessedBlock;
+		uint32_t m_uMaxNumberOfUncompressedBlocks;
+		uint32_t m_uMaxNumberOfBlocksInMemory;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
 		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
@@ -226,6 +245,8 @@ namespace PolyVox
 		int32_t m_uLongestSideLength;
 		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;
+
+		bool m_bStreamingEnabled;
 	};
 }
 
