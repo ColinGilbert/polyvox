@@ -7,6 +7,9 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
+	,m_uBeginIndex(0)
+	,m_uEndIndex(0)
+	,noOfIndices(0)
 	,m_xRotation(0)
 	,m_yRotation(0)
 {
@@ -14,6 +17,12 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 
 void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
 {
+	if((surfaceMesh.getNoOfIndices() == 0) || (surfaceMesh.getNoOfVertices() == 0))
+	{
+		//We don't have a valid mesh
+		return;
+	}
+
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
 	const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
@@ -32,6 +41,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 
 	m_uBeginIndex = 0;
 	m_uEndIndex = vecIndices.size();
+	noOfIndices = surfaceMesh.getNoOfIndices();
 }
 
 void OpenGLWidget::initializeGL()
@@ -70,23 +80,29 @@ void OpenGLWidget::resizeGL(int w, int h)
 	//Set up the projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	float frustumSize = 32.0f; //Half the volume size
+	float frustumSize = 128.0f * 1.7f; //Half the volume diagonal
 	float aspect = static_cast<float>(width()) / static_cast<float>(height());
-	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 1.0, 1000);
+	glOrtho(frustumSize*aspect, -frustumSize*aspect, frustumSize, -frustumSize, 10.0, 10000);
 }
 
 void OpenGLWidget::paintGL()
 {
+	if(noOfIndices == 0)
+	{
+		//Nothing to render
+		return;
+	}
+
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Set up the viewing transformation
 	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity();
-	glTranslatef(0.0f,0.0f,-100.0f); //Centre volume and move back
+	glTranslatef(0.0f,0.0f,-5000.0f); //Centre volume and move back
 	glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
 	glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
-	glTranslatef(-32.0f,-32.0f,-32.0f); //Centre volume and move back
+	glTranslatef(-128.0f,-128.0f,-128.0f); //Centre volume and move back
 
 	//Bind the index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
