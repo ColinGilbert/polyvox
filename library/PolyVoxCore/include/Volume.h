@@ -143,7 +143,7 @@ namespace PolyVox
 			const Region& regValid,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
-			bool bStreamingEnabled = false,
+			bool bPagingEnabled = false,
 			uint16_t uBlockSideLength = 32
 		);
 		/// Constructor
@@ -152,7 +152,7 @@ namespace PolyVox
 			int32_t uWidth, int32_t uHeight, int32_t uDepth,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
-			bool bStreamingEnabled = false,
+			bool bPagingEnabled = false,
 			uint16_t uBlockSideLength = 32
 		);
 		/// Destructor
@@ -179,6 +179,7 @@ namespace PolyVox
 		/// Gets a voxel by 3D vector position
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
+		void setCompressionEnabled(bool bCompressionEnabled);
 		/// Sets the number of blocks for which uncompressed data is stored.
 		void setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before unload is called
@@ -246,7 +247,8 @@ private:
 		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;
 
-		bool m_bStreamingEnabled;
+		bool m_bCompressionEnabled;
+		bool m_bPagingEnabled;
 	};
 }
 
