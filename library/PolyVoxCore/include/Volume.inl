@@ -129,7 +129,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
-		std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i = m_pBlocks.begin()) {
 			eraseBlock(i);
 		}
@@ -290,8 +290,8 @@ namespace PolyVox
 			// we need to unload some blocks
 			for(int j = 0; j < m_pBlocks.size() - uMaxNumberOfBlocksInMemory; j++)
 			{
-				std::map<Vector3DInt32, LoadedBlock >::iterator i;
-				std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
+				typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+				typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
 				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 				{
 					if(i->second.timestamp < itUnloadBlock->second.timestamp)
@@ -484,7 +484,7 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}		
 
-		std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
@@ -497,8 +497,8 @@ namespace PolyVox
 				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
 				{
 					// find the least recently used block
-					std::map<Vector3DInt32, LoadedBlock >::iterator i;
-					std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
+					typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+					typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
 					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 					{
 						if(i->second.timestamp < itUnloadBlock->second.timestamp)
@@ -596,7 +596,7 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(Volume);
 
 		//Memory used by the blocks
-		std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
