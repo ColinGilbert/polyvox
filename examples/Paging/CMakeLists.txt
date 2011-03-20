@@ -8,6 +8,7 @@ SET(SRC_FILES
 	
 	main.cpp
 	OpenGLWidget.cpp
+	Perlin.cpp
 	)
 
 #Projects headers files	
@@ -17,6 +18,7 @@ SET(INC_FILES
 	glew/wglew.h
 	
 	OpenGLWidget.h
+	Perlin.h
 	)
 
 ADD_DEFINITIONS(-DGLEW_STATIC)
