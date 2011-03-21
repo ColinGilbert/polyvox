@@ -146,14 +146,10 @@ namespace PolyVox
 			bool bPagingEnabled = false,
 			uint16_t uBlockSideLength = 32
 		);
-		/// Constructor
+		/// Deprecated constructor - do not use.
 		Volume
 		(
-			int32_t uWidth, int32_t uHeight, int32_t uDepth,
-			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
-			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
-			bool bPagingEnabled = false,
-			uint16_t uBlockSideLength = 32
+			int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
 		);
 		/// Destructor
 		~Volume();

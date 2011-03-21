@@ -78,19 +78,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume
 	(
-		int32_t uWidth, int32_t uHeight, int32_t uDepth,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
-		bool bPagingEnabled,
-		uint16_t uBlockSideLength
+		int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
 	)
 	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = bPagingEnabled;
-
-		Region regValid(Vector3DInt32(0,0,0), Vector3DInt32(uWidth - 1,uHeight - 1,uDepth - 1));
-		resize(Region(Vector3DInt32(0,0,0), Vector3DInt32(uWidth - 1,uHeight - 1,uDepth - 1)), uBlockSideLength);
+		//In earlier verions of PolyVox the constructor took three values indicating width, height, and depth. However, this
+		//causes confusion because these three parameters can be interpreted as two function pointers and a block size instead,
+		//hence calling a different constructor. And simply removing this constructor will cause confusion because existing
+		//code with three parameters will then always resolve to the constructor with two function pointers and a block size.
+		//
+		//Eventually this constructor will be removed, it's just here to make people change their code to the new version.
+		//
+		//IF YOU HIT THIS ASSERT/ABORT, CHANGE YOUR CODE TO USE THE CONSTRUCTOR TAKING A 'Region' INSTEAD.
+		assert(false);
+		abort();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
