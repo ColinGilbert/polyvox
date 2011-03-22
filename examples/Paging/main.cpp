@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(&load, &unload, 128);
+	Volume<MaterialDensityPair44> volData(&load, &unload, 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
 
@@ -267,7 +267,19 @@ int main(int argc, char *argv[])
 	//createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
+	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	//volData.setBlockCacheSize(64);
+	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,1024,255));
+	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
+	volData.prefetchRegion(reg);
+	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
+	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+	PolyVox::Region reg2(Vector3DInt32(0,0,0), Vector3DInt32(500,500,500));
+	std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
+	uint32_t voxelsFlushed = volData.flushRegion(reg2);
+	Vector3DInt32 size = reg2.getUpperCorner() - reg2.getLowerCorner() + Vector3DInt32(1,1,1);
+	uint32_t voxelsFlushed2 = size.getX()*size.getY()*size.getZ();
+	std::cout << voxelsFlushed << " Voxels were unloaded, while " << voxelsFlushed2 << " should have been unloaded" << std::endl;
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
@@ -287,7 +299,6 @@ int main(int argc, char *argv[])
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
 	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,1024,255));
 	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
 	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
 	surfaceExtractor.execute();

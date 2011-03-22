@@ -72,7 +72,7 @@ void exampleLog(string message, int severity)
 int main(int argc, char *argv[])
 {
 	logHandler = &exampleLog;
-	Volume<MaterialDensityPair44> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
+	Volume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;

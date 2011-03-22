@@ -186,6 +186,17 @@ namespace PolyVox
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at a 3D vector position
 		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
+		/// makes sure all the voxels in the given region are loaded
+		/// if MaxNumberOfBlocksInMemory is not large enough to support the region
+		/// this function will return false and the volume is unchanged
+		/// if all the voxels in the given region are already loaded, this function will not do anything but still return true.
+		/// other blocks might be unloaded to make space for the new blocks
+		bool prefetchRegion(Region regPrefetch);
+		/// attempts to unload all the voxels in the given region.
+		/// there is no guarantee that any voxels are unloaded
+		/// try unloading a region whose sidelengths are multiples of BlockSideLength
+		/// returns the number of voxels that were actually unloaded
+		uint32_t flushRegion(Region regFlush);
 
 		void clearBlockCache(void);
 		float calculateCompressionRatio(void);

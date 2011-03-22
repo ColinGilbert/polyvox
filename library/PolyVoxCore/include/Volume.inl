@@ -376,6 +376,63 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	bool Volume<VoxelType>::prefetchRegion(Region regPrefetch)
+	{
+		Vector3DInt32 start;
+		for(int i = 0; i < 3; i++) start.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+		Vector3DInt32 end;
+		for(int i = 0; i < 3; i++) end.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+		Vector3DInt32 size = end-start + Vector3DInt32(1,1,1);
+		int32_t numblocks = size.getX() * size.getY() * size.getZ();
+		if(numblocks > m_uMaxNumberOfBlocksInMemory) {
+			return false;
+		}
+		if(numblocks > (m_uMaxNumberOfBlocksInMemory - m_pBlocks.size())) {
+			// TODO: unload enough blocks to support the blocks that will be loaded.
+		}
+		for(int32_t x = start.getX(); x <= end.getX(); x++) {
+			for(int32_t y = start.getY(); y <= end.getY(); y++) {
+				for(int32_t z = start.getZ(); z <= end.getZ(); z++) {
+					Block<VoxelType>* block = getUncompressedBlock(x,y,z);
+				}
+			}
+		}
+		return true;
+	}
+
+	template <typename VoxelType>
+	uint32_t Volume<VoxelType>::flushRegion(Region regFlush)
+	{
+		Vector3DInt32 start;
+		for(int i = 0; i < 3; i++) start.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+		Vector3DInt32 end;
+		for(int i = 0; i < 3; i++) end.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+		uint32_t count = 0;
+		for(int32_t x = start.getX(); x <= end.getX(); x++) {
+			for(int32_t y = start.getY(); y <= end.getY(); y++) {
+				for(int32_t z = start.getZ(); z <= end.getZ(); z++) {
+					Vector3DInt32 pos(x,y,z);
+					if(m_v3dLastAccessedBlockPos == pos) {
+						m_pLastAccessedBlock = NULL;
+					}
+					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
+					if(itBlock == m_pBlocks.end()) {
+						// not loaded, not unloading
+						continue;
+					}
+					eraseBlock(itBlock);
+					count++;
+				}
+			}
+		}
+		if(count > ((std::numeric_limits<uint32_t>::max)() >> (m_uBlockSideLengthPower*3))) {
+			// eh, this will overflow... I have no idea what to do here
+			return (std::numeric_limits<uint32_t>::max)();
+		}
+		return count << (m_uBlockSideLengthPower*3);
+	}
+
+	template <typename VoxelType>
 	void Volume<VoxelType>::clearBlockCache(void)
 	{
 		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
@@ -462,6 +519,22 @@ namespace PolyVox
 			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
 
 			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
+		}
+		if(m_bCompressionEnabled) {
+			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+			{
+				// find the block in the uncompressed cache
+				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
+				{
+					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
+					itBlock->second.block.compress();
+					// put last object in cache here
+					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
+					// decrease cache size by one since last element is now in here twice
+					m_vecUncompressedBlockCache.resize(m_vecUncompressedBlockCache.size()-1);
+					break;
+				}
+			}
 		}
 		m_pBlocks.erase(itBlock);
 	}
