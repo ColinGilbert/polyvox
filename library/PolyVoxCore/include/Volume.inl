@@ -386,13 +386,13 @@ namespace PolyVox
 				{
 					Vector3DInt32 pos(x,y,z);
 					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
-
-					// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
-					// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
-					// This might be nice, but on the prefetch region could be bigger than the uncompressed cache size.
-					// This would limit the amount of prefetching we could do.
+					
 					if(itBlock != m_pBlocks.end())
 					{
+						// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
+						// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
+						// This might be nice, but on the prefetch region could be bigger than the uncompressed cache size.
+						// This would limit the amount of prefetching we could do.
 						continue;
 					}
 
