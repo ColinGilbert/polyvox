@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include "SurfaceExtractor.h"
 #include "SurfaceMesh.h"
 #include "Volume.h"
+#include "Filters.h"
 
 #include <QApplication>
 
@@ -249,18 +250,17 @@ int main(int argc, char *argv[])
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
-	//Create an empty volume and then place a sphere in it
+	//If these lines don't compile, please try commenting them out and using the two lines after
+	//(you will need Boost for this). If you have to do this then please let us know in the forums as
+	//we rely on community feedback to keep the Boost version running.
 	Volume<MaterialDensityPair44> volData(&load, &unload, 256);
+	//Volume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
+	//	polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2), 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
 
-	//If these two lines don't compile, please try commenting them out and using the two lines after
-	//(you will need Boost for this). If you have to do this then please let us know in the forums as
-	//we rely on community feedback to keep the Boost version running.
 	//volData.dataRequiredHandler = &load;
 	//volData.dataOverflowHandler = &unload;
-	//volData.dataRequiredHandler = polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2);
-	//volData.dataOverflowHandler = polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2);
 
 	//volData.setMaxNumberOfUncompressedBlocks(4096);
 	//createSphereInVolume(volData, 30);
@@ -271,30 +271,38 @@ int main(int argc, char *argv[])
 	//volData.setBlockCacheSize(64);
 	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,1024,255));
 	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
-	volData.prefetchRegion(reg);
+	volData.prefetch(reg);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	PolyVox::Region reg2(Vector3DInt32(0,0,0), Vector3DInt32(500,500,500));
 	std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
-	uint32_t voxelsFlushed = volData.flushRegion(reg2);
-	Vector3DInt32 size = reg2.getUpperCorner() - reg2.getLowerCorner() + Vector3DInt32(1,1,1);
-	uint32_t voxelsFlushed2 = size.getX()*size.getY()*size.getZ();
-	std::cout << voxelsFlushed << " Voxels were unloaded, while " << voxelsFlushed2 << " should have been unloaded" << std::endl;
+	volData.flush(reg2);
+	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
+	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+	std::cout << "Flushing entire volume" << std::endl;
+	volData.flushAll();
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
-	/*srand(12345);
-	for(int ct = 0; ct < 1000; ct++)
+	srand(12345);
+	for(int ct = 0; ct < 100; ct++)
 	{
 		std::cout << ct << std::endl;
-		int x = rand() % volData.getWidth();
-		int y = rand() % volData.getHeight();
-		int z = rand() % volData.getDepth();
+		int x = rand() % 256;
+		int y = rand() % 256;
+		int z = rand() % 256;
 
 		int r = rand() % 20;
 
 		createSphereInVolume(volData, Vector3DFloat(x,y,z), r);
-	}*/
+	}
+
+	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(128,256,256)));
+	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(128,256,256)));
+	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(128,256,256)));
+	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(256,128,256)));
+	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(256,128,256)));
+	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(256,128,256)));
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;

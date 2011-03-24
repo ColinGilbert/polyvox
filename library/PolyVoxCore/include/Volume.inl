@@ -129,10 +129,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i = m_pBlocks.begin()) {
-			eraseBlock(i);
-		}
+		flushAll();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -302,25 +299,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
 	{
-		//FIXME? - I'm concerned about the logic in here... particularly the
-		//way timestamps are handled. Perhaps extract all timestamps, sort them,
-		//identify the cut-off point, and then discard those above it?
 		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
 		{
-			// we need to unload some blocks
-			for(int j = 0; j < m_pBlocks.size() - uMaxNumberOfBlocksInMemory; j++)
-			{
-				typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-				typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
-				for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
-				{
-					if(i->second.timestamp < itUnloadBlock->second.timestamp)
-					{
-						itUnloadBlock = i;
-					}
-				}
-				eraseBlock(itUnloadBlock);
-			}
+			flushAll();
 		}
 		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
 	}
@@ -376,60 +357,106 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool Volume<VoxelType>::prefetchRegion(Region regPrefetch)
+	void Volume<VoxelType>::prefetch(Region regPrefetch)
 	{
-		Vector3DInt32 start;
-		for(int i = 0; i < 3; i++) start.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
-		Vector3DInt32 end;
-		for(int i = 0; i < 3; i++) end.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
-		Vector3DInt32 size = end-start + Vector3DInt32(1,1,1);
-		int32_t numblocks = size.getX() * size.getY() * size.getZ();
-		if(numblocks > m_uMaxNumberOfBlocksInMemory) {
-			return false;
+		Vector3DInt32 v3dStart;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dStart.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
 		}
-		if(numblocks > (m_uMaxNumberOfBlocksInMemory - m_pBlocks.size())) {
-			// TODO: unload enough blocks to support the blocks that will be loaded.
+
+		Vector3DInt32 v3dEnd;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
 		}
-		for(int32_t x = start.getX(); x <= end.getX(); x++) {
-			for(int32_t y = start.getY(); y <= end.getY(); y++) {
-				for(int32_t z = start.getZ(); z <= end.getZ(); z++) {
+
+		Vector3DInt32 v3dSize = v3dEnd - v3dStart + Vector3DInt32(1,1,1);
+		int32_t numblocks = v3dSize.getX() * v3dSize.getY() * v3dSize.getZ();
+		if(numblocks > m_uMaxNumberOfBlocksInMemory)
+		{
+			// cannot support the amount of blocks... so only load the maximum possible
+			numblocks = m_uMaxNumberOfBlocksInMemory;
+		}
+		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
+		{
+			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
+			{
+				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
+				{
+					Vector3DInt32 pos(x,y,z);
+					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
+
+					// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
+					// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
+					// This might be nice, but on the prefetch region could be bigger than the uncompressed cache size.
+					// This would limit the amount of prefetching we could do.
+					if(itBlock != m_pBlocks.end())
+					{
+						continue;
+					}
+
+					if(numblocks == 0)
+					{
+						// Loading any more blocks would attempt to overflow the memory and therefore erase blocks
+						// we loaded in the beginning. This wouldn't cause logic problems but would be wasteful.
+						return;
+					}
+					// load a block
+					numblocks--;
 					Block<VoxelType>* block = getUncompressedBlock(x,y,z);
-				}
-			}
-		}
-		return true;
+				} // for z
+			} // for y
+		} // for x
 	}
 
 	template <typename VoxelType>
-	uint32_t Volume<VoxelType>::flushRegion(Region regFlush)
+	void Volume<VoxelType>::flushAll()
 	{
-		Vector3DInt32 start;
-		for(int i = 0; i < 3; i++) start.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
-		Vector3DInt32 end;
-		for(int i = 0; i < 3; i++) end.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
-		uint32_t count = 0;
-		for(int32_t x = start.getX(); x <= end.getX(); x++) {
-			for(int32_t y = start.getY(); y <= end.getY(); y++) {
-				for(int32_t z = start.getZ(); z <= end.getZ(); z++) {
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+		{
+			eraseBlock(i);
+		}
+	}
+
+	template <typename VoxelType>
+	void Volume<VoxelType>::flush(Region regFlush)
+	{
+		Vector3DInt32 v3dStart;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+		}
+
+		Vector3DInt32 v3dEnd;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+		}
+
+		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
+		{
+			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
+			{
+				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
+				{
 					Vector3DInt32 pos(x,y,z);
-					if(m_v3dLastAccessedBlockPos == pos) {
-						m_pLastAccessedBlock = NULL;
-					}
 					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
-					if(itBlock == m_pBlocks.end()) {
+					if(itBlock == m_pBlocks.end())
+					{
 						// not loaded, not unloading
 						continue;
 					}
 					eraseBlock(itBlock);
-					count++;
-				}
-			}
-		}
-		if(count > ((std::numeric_limits<uint32_t>::max)() >> (m_uBlockSideLengthPower*3))) {
-			// eh, this will overflow... I have no idea what to do here
-			return (std::numeric_limits<uint32_t>::max)();
-		}
-		return count << (m_uBlockSideLengthPower*3);
+					// eraseBlock might cause a call to getUncompressedBlock, which again sets m_pLastAccessedBlock
+					if(m_v3dLastAccessedBlockPos == pos)
+					{
+						m_pLastAccessedBlock = 0;
+					}
+				} // for z
+			} // for y
+		} // for x
 	}
 
 	template <typename VoxelType>
