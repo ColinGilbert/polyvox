@@ -45,7 +45,7 @@ freely, subject to the following restrictions:
 	#include <boost/smart_ptr.hpp>
 	#define polyvox_shared_ptr boost::shared_ptr
 
-	#include <boost/functional.hpp>
+	#include <boost/function.hpp>
 	#define polyvox_function boost::function
 
 	#include <boost/functional/hash.hpp>
