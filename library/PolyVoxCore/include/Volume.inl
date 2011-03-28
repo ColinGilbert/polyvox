@@ -414,9 +414,11 @@ namespace PolyVox
 	void Volume<VoxelType>::flushAll()
 	{
 		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+		//Replaced the for loop here as the call to
+		//eraseBlock was invalidating the iterator.
+		while(m_pBlocks.size() > 0)
 		{
-			eraseBlock(i);
+			eraseBlock(m_pBlocks.begin());
 		}
 	}
 

@@ -38,9 +38,31 @@ namespace PolyVox
 {
 	///The Volume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// A Volume is essentially a '3D image' in which each element (voxel) is identified by a three dimensional (x,y,z) coordinate,
-	/// rather than the two dimensional (x,y) coordinate which is used to identify an element (pixel) in a normal image. Within PolyVox,
-	/// the Volume class is used to store and manipulate our data before we extract our SurfaceMeshs from it.
+	/// A Volume is essentially a 3D array in which each element (or <i>voxel</i>) is identified by a three dimensional (x,y,z) coordinate.
+	/// We use the Volume class to store our data in an efficient way, and it is the input to many of the algorithms (such as the surface
+	/// extractors) which form the heart of PolyVox. The Volume class is templatised so that different types of data can be stored with each voxel.
+	///
+	/// <b> Basic usage</b>
+	/// The following code snippet shows how to construct a volume and demonstrates basic usage:
+	///
+	/// Volume<Material8> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
+	/// volume.setVoxelAt(15, 90, 42, Material8(5));
+	/// std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxelAt(15, 90, 42).getMaterial() << std::endl;
+	/// std::cout << "Width = " << volume.getWidth() << ", Height = " << volume.getHeight() << ", Depth = " << volume.getDepth() << std::endl;
+	/// 
+	/// The Volume constructor takes a Region as a parameter. This specifies the valid range of voxels which can be held in the volume, so in this
+	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). Attempts to access voxels outside this range can result in a crash
+	/// (or an assert() if running in debug mode). PolyVox also has support for near infinite volumes which will be discussed later.
+	/// 
+	/// In this particular example each voxel in the Volume is of type 'Material', as specified by the template parameter. This is one of several
+	/// predefined voxel types, and it is also possible to define your own. The Material type simply holds an integer value where zero represents
+	/// empty space and any other value represents a solid material.
+	/// 
+	/// Access to individual voxels is provided via the setVoxelAt() and getVoxelAt() member functions. Advanced users may also be interested in
+	/// the VolumeSampler class for faster read-only access to a large number of voxels.
+	/// 
+	/// Lastly the example prints out some properties of the Volume. Note that the dimentsions width(), height(), and depth() are inclusive, such
+	/// that the width is 64 when the range of valid x coordinates goes from 0 to 63.
 	/// 
 	/// <b>Data Representaion</b>
 	/// If stored carelessly, volume data can take up a huge amount of memory. For example, a volume of dimensions 1024x1024x1024 with
@@ -53,9 +75,16 @@ namespace PolyVox
 	/// memory but it is hard to modify the data. Therefore, before any given voxel can be modified, its corresponding block must be uncompressed.
 	///
 	/// The compression and decompression of block is a relatively slow process and so we aim to do this as rarely as possible. In order
-	/// to achive this, the volume class store a cache of recently used blocks and their associated uncompressed data. Each time a voxel
+	/// to achive this, the volume class stores a cache of recently used blocks and their associated uncompressed data. Each time a voxel
 	/// is touched a timestamp is updated on the corresponding block, when the cache becomes full the block with the oldest timestamp is
 	/// recompressed and moved out of the cache.
+	///
+	/// This compression scheme will typically allow you to load several billion voxels into a few hundred megabytes of memory, though the exact
+	/// compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a mechanism by which parts of
+	/// the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a potentially unlimited amount
+	/// of data to be loaded, provided the user is able to take responsibility for storing any data which PolyVox cannot fit in memory, and then
+	/// returning it back to PolyVox on demand. For example, the user might choose to temporarilly store this data on disk or stream it to a
+	/// remote database.
 	///
 	/// <b>Achieving high compression rates</b>
 	/// Note: This section is theorectical and not well tested. Please let us know if you find the tips below do or do not work.
