@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #include "OpenGLWidget.h"
 
 #include "MaterialDensityPair.h"
-#include "Material.h"
 #include "CubicSurfaceExtractorWithNormals.h"
 #include "SurfaceMesh.h"
 #include "Volume.h"
@@ -89,11 +88,6 @@ int main(int argc, char *argv[])
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);
-
-	Volume<Material8> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
-	volume.setVoxelAt(15, 90, 42, Material8(5));
-	std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxelAt(15, 90, 42).getMaterial() << std::endl;
-	std::cout << "Width = " << volume.getWidth() << ", Height = " << volume.getHeight() << ", Depth = " << volume.getDepth() << std::endl;
 
 	//Run the message pump.
 	return app.exec();
