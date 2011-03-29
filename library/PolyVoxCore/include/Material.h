@@ -61,16 +61,6 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
-		bool operator<(const Material& rhs) const throw()
-		{
-			if (m_uMaterial < rhs.m_uMaterial)
-				return true;
-			if (rhs.m_uMaterial < m_uMaterial)
-				return false;
-
-			return false;
-		}
-
 		Type getDensity() const throw()
 		{
 			//We don't actually have a density, so make one up based on the material.

@@ -60,20 +60,6 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
-		bool operator<(const MaterialDensityPair& rhs) const throw()
-		{
-			if (m_uMaterial < rhs.m_uMaterial)
-				return true;
-			if (rhs.m_uMaterial < m_uMaterial)
-				return false;
-			if (m_uDensity < rhs.m_uDensity)
-				return true;
-			if (rhs.m_uDensity < m_uDensity)
-				return false;
-
-			return false;
-		}
-
 		Type getDensity() const throw() { return m_uDensity; }
 		Type getMaterial() const throw() { return m_uMaterial; }
 
