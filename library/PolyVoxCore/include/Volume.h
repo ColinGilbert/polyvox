@@ -40,15 +40,17 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// A Volume is essentially a 3D array in which each element (or <i>voxel</i>) is identified by a three dimensional (x,y,z) coordinate.
 	/// We use the Volume class to store our data in an efficient way, and it is the input to many of the algorithms (such as the surface
-	/// extractors) which form the heart of PolyVox. The Volume class is templatised so that different types of data can be stored with each voxel.
+	/// extractors) which form the heart of PolyVox. The Volume class is templatised so that different types of data can be stored within each voxel.
 	///
 	/// <b> Basic usage</b>
 	/// The following code snippet shows how to construct a volume and demonstrates basic usage:
 	///
+	/// \code
 	/// Volume<Material8> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
 	/// volume.setVoxelAt(15, 90, 42, Material8(5));
 	/// std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxelAt(15, 90, 42).getMaterial() << std::endl;
 	/// std::cout << "Width = " << volume.getWidth() << ", Height = " << volume.getHeight() << ", Depth = " << volume.getDepth() << std::endl;
+	/// \endcode
 	/// 
 	/// The Volume constructor takes a Region as a parameter. This specifies the valid range of voxels which can be held in the volume, so in this
 	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). Attempts to access voxels outside this range can result in a crash
@@ -76,15 +78,8 @@ namespace PolyVox
 	///
 	/// The compression and decompression of block is a relatively slow process and so we aim to do this as rarely as possible. In order
 	/// to achive this, the volume class stores a cache of recently used blocks and their associated uncompressed data. Each time a voxel
-	/// is touched a timestamp is updated on the corresponding block, when the cache becomes full the block with the oldest timestamp is
+	/// is touched a timestamp is updated on the corresponding block. When the cache becomes full the block with the oldest timestamp is
 	/// recompressed and moved out of the cache.
-	///
-	/// This compression scheme will typically allow you to load several billion voxels into a few hundred megabytes of memory, though the exact
-	/// compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a mechanism by which parts of
-	/// the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a potentially unlimited amount
-	/// of data to be loaded, provided the user is able to take responsibility for storing any data which PolyVox cannot fit in memory, and then
-	/// returning it back to PolyVox on demand. For example, the user might choose to temporarilly store this data on disk or stream it to a
-	/// remote database.
 	///
 	/// <b>Achieving high compression rates</b>
 	/// Note: This section is theorectical and not well tested. Please let us know if you find the tips below do or do not work.
@@ -92,25 +87,34 @@ namespace PolyVox
 	/// The compression rates which can be achieved can vary significantly depending the nature of the data you are storing, but you can
 	/// encourage high compression rates by making your data as homogenous as possible. If you are simply storing a material with each
 	/// voxel then this will probably happen naturally. Games such as Minecraft which use this approach will typically involve large ares
-	/// of th same material which will compress down well.
+	/// of the same material which will compress down well.
 	///
 	/// However, if you are storing density values then you may want to take some care. The advantage of storing smoothly changing values
 	/// is that you can get smooth surfaces extracted, but storing smoothly changing values inside or outside objects (rather than just
-	/// on the boundary) does not benefit the surface and is very hard to compress effectively. You should apply some thresholding to your
-	/// density values to reduce this problem (this threasholding should only be applied to voxels who don't contribute to the surface).
-	/// 
-	/// For example, suppose you are using layers of 3D Perlin noise to create a 3D terrain (not a heightmap). If you store the raw Perlin
-	/// noise value at each voxel then a slice through the volume might look like the following:
+	/// on the boundary) does not benefit the surface and is very hard to compress effectively. You may wish to apply some thresholding to 
+	/// your density values to reduce this problem (this threasholding should only be applied to voxels who don't contribute to the surface).
 	///
-	/// <insert image here>
+	/// <b>Paging large volumes</b>
+	/// The compression scheme described previously will typically allow you to load several billion voxels into a few hundred megabytes of memory, 
+	/// though as explained the exact compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a mechanism by which parts of
+	/// the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a potentially unlimited amount
+	/// of data to be loaded, provided the user is able to take responsibility for storing any data which PolyVox cannot fit in memory, and then
+	/// returning it back to PolyVox on demand. For example, the user might choose to temporarily store this data on disk or stream it to a
+	/// remote database.
 	///
-	/// However, by setting high values to be fixed to one and low values to be fixed to zero you can make a slice through your volume look more like this:
+	/// You can construct such a Volume as follows:
+
+	/// void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
+	/// {
+	///		//This function should store 
+	/// }
+	///	Volume<Density>volData(&loadFunction, &unloadFunction);
 	///
-	/// <insert image here>
-	///
-	/// The boundary is in the same place and is still smooth, but the large homogenous regions mean the data should compress much more effectively.
-	/// Although it may look like you have lost some precision in this process this is only because the images above are constrained to 256
-	/// greyscale values, where as true Perlin noise will give you floating point values.
+	/// The constructor takes two functions as parameters. These functions must be defined elsewhere in your program and have the following signatures (although you can name them whatever you wish):
+
+	///Essentially you are providing an extension to the Volume class - a way for data to be stored once PolyVox has run out of memory for it. Note that you don't actually have to do anything with the data - you could simply decide that once it gets removed from memory it doesn't matter anymore. But you still need to be ready to then provide something to PolyVox (even if it's just default data) in the event that it is requested.
+
+	///	
 	///
 	/// <b>Cache-aware traversal</b>
 	/// You might be suprised at just how many cache misses can occur when you traverse the volume in a naive manner. Consider a 1024x1024x1024 volume
@@ -126,16 +130,9 @@ namespace PolyVox
 	/// is your cache sise is only one. Of course the logic is more complex, but writing code in such a cache-aware manner may be beneficial in some situations.
 	///
 	/// <b>Threading</b>
-	/// The volume class does not provide any thread safety constructs and can therefore not be assumed to be thread safe. To be safe you should only allow
-	/// one thread to access the volume at a time. Even if you have several threads just reading data from the volume they can cause blocks to be pushed
-	/// out of the cache, potentially invalidating any pointers other threads might be using.
-	///
-	/// That said, we believe that if care is taken then multiple threads can be used, and are currently experimenting with this.
-	///
-	/// <b>Use of templates</b>
-	/// Although this class is templatised on the voxel type it is not expected that you can use any primative type to represent your voxels. It is only
-	/// intended for PolyVox's voxel types such as Material, Density, and MarterialDensityPair. If you need to store 3D grids of ints, floats, or pointers
-	/// you should look ar the Array class instead.
+	/// The Volume class does not make any guarentees about thread safety. You should ensure that all accesses are performed from the same thread.
+	/// This is true even if you are only reading data from the volume, as concurrently reading from different threads can invalidate the contents
+	/// of the block cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	class Volume
