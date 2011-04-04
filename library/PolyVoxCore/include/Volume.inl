@@ -37,16 +37,10 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// Builds a volume of the desired dimensions
-	/// \param uWidth The desired width in voxels. This must be a power of two.
-	/// \param uHeight The desired height in voxels. This must be a power of two.
-	/// \param uDepth The desired depth in voxels. This must be a power of two.
-	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
-	/// blocks are more likely to be homogeneous (so more easily shared) and have better
-	/// cache behaviour. However, there is a memory overhead per block so if they are
-	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Accept 
-	/// the default if you are not sure what to choose here.
+	/// When construncting a very large volume you need to be prepared to handle the scenario where there is so much data that PolyVox cannot fit it all in memory. When PolyVox runs out of memory, it identifies the least recently used data and hands it back to the application via a callback function. It is then the responsibility of the application to store this data until PolyVox needs it again (as signalled by another callback function). Please see the Volume  class documentation for a full description of this process and the required function signatures. If you really don't want to handle these events then you can provide null pointers here, in which case the data will be discarded and/or filled with default values.
+	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
+	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
+	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume
@@ -64,16 +58,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Builds a volume of the desired dimensions
-	/// \param uWidth The desired width in voxels. This must be a power of two.
-	/// \param uHeight The desired height in voxels. This must be a power of two.
-	/// \param uDepth The desired depth in voxels. This must be a power of two.
-	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
-	/// blocks are more likely to be homogeneous (so more easily shared) and have better
-	/// cache behaviour. However, there is a memory overhead per block so if they are
-	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Accept 
-	/// the default if you are not sure what to choose here.
+	/// Deprecated - do not use this constructor.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume
@@ -94,16 +79,12 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Builds a volume of the desired dimensions
-	/// \param uWidth The desired width in voxels. This must be a power of two.
-	/// \param uHeight The desired height in voxels. This must be a power of two.
-	/// \param uDepth The desired depth in voxels. This must be a power of two.
-	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
-	/// blocks are more likely to be homogeneous (so more easily shared) and have better
-	/// cache behaviour. However, there is a memory overhead per block so if they are
-	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Accept 
-	/// the default if you are not sure what to choose here.
+	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other Volume constructor).
+	/// \param regValid Specifies the minimum and maximum valid voxel positions.
+	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
+	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
+	/// \param bPagingEnabled Controls whether or not paging is enabled for this Volume.
+	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::Volume
@@ -124,7 +105,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Destroys the volume and frees any blocks which are not in use by other volumes.
+	/// Destroys the volume The destructor will call flushAll() to ensure that a paging volume has the chance to save it's data via the dataOverflowHandler() if desired.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
@@ -144,9 +125,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The result will always have a lower corner at (0,0,0) and an upper corner at one
-	/// less than the side length. For example, if a volume has dimensions 256x512x1024
-	/// then the upper corner of the enclosing region will be at (255,511,1023).
 	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -156,7 +134,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The width of the volume in voxels
+	/// \return The width of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the width is 64.
 	/// \sa getHeight(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -166,7 +144,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The height of the volume in voxels
+	/// \return The height of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the height is 64.
 	/// \sa getWidth(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -176,7 +154,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The depth of the volume in voxels
+	/// \return The depth of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the depth is 64.
 	/// \sa getWidth(), getHeight()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -220,10 +198,10 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos the \c x position of the voxel
-	/// \param uYPos the \c y position of the voxel
-	/// \param uZPos the \c z position of the voxel
-	/// \return the voxel value
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
@@ -249,8 +227,8 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos the 3D position of the voxel
-	/// \return the voxel value
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
@@ -258,6 +236,10 @@ namespace PolyVox
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Enabling compression allows significantly more data to be stored in memory.
+	/// \param bCompressionEnabled Specifies whether compression is enabled.
+	////////////////////////////////////////////////////////////////////////////////	
 	template <typename VoxelType>
 	void Volume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
 	{
@@ -293,7 +275,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Increasing the number of blocks in memory causes fewer calls to load/unload
+	/// Increasing the number of blocks in memory causes fewer calls to dataRequiredHandler()/dataOverflowHandler()
 	/// \param uMaxBlocks The number of blocks
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -356,6 +338,11 @@ namespace PolyVox
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note that if MaxNumberOfBlocksInMemory is not large enough to support the region this function will only load part of the region. In this case it is undefined which parts will actually be loaded. If all the voxels in the given region are already loaded, this function will not do anything. Other voxels might be unloaded to make space for the new voxels.
+	/// \param regPrefetch The Region of voxels to prefetch into memory.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Volume<VoxelType>::prefetch(Region regPrefetch)
 	{
@@ -410,6 +397,9 @@ namespace PolyVox
 		} // for x
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Removes all voxels from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Volume<VoxelType>::flushAll()
 	{
@@ -422,6 +412,9 @@ namespace PolyVox
 		}
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Volume<VoxelType>::flush(Region regFlush)
 	{
@@ -461,6 +454,9 @@ namespace PolyVox
 		} // for x
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	///
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Volume<VoxelType>::clearBlockCache(void)
 	{
@@ -472,16 +468,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Note: Calling this function will destroy all existing data in the volume.
-	/// \param uWidth The desired width in voxels. This must be a power of two.
-	/// \param uHeight The desired height in voxels. This must be a power of two.
-	/// \param uDepth The desired depth in voxels. This must be a power of two.
-	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
-	/// blocks are more likely to be homogeneous (so more easily shared) and have better
-	/// cache behaviour. However, there is a memory overhead per block so if they are
-	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Accept 
-	/// the default if you are not sure what to choose here.
+	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void Volume<VoxelType>::resize(const Region& regValidRegion, uint16_t uBlockSideLength)
@@ -704,6 +691,9 @@ namespace PolyVox
 		return m_pLastAccessedBlock;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note: This function needs reviewing for accuracy...
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	float Volume<VoxelType>::calculateCompressionRatio(void)
 	{
@@ -712,6 +702,9 @@ namespace PolyVox
 		return fCompressedSize/fRawSize;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note: This function needs reviewing for accuracy...
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	uint32_t Volume<VoxelType>::calculateSizeInBytes(void)
 	{
@@ -739,3 +732,4 @@ namespace PolyVox
 	}
 
 }
+

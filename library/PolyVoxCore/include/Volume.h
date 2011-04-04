@@ -51,14 +51,14 @@ namespace PolyVox
 	/// std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxelAt(15, 90, 42).getMaterial() << std::endl;
 	/// std::cout << "Width = " << volume.getWidth() << ", Height = " << volume.getHeight() << ", Depth = " << volume.getDepth() << std::endl;
 	/// \endcode
+	///
+	/// In this particular example each voxel in the Volume is of type 'Material8', as specified by the template parameter. This is one of several
+	/// predefined voxel types, and it is also possible to define your own. The Material8 type simply holds an integer value where zero represents
+	/// empty space and any other value represents a solid material.
 	/// 
 	/// The Volume constructor takes a Region as a parameter. This specifies the valid range of voxels which can be held in the volume, so in this
-	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). Attempts to access voxels outside this range can result in a crash
-	/// (or an assert() if running in debug mode). PolyVox also has support for near infinite volumes which will be discussed later.
-	/// 
-	/// In this particular example each voxel in the Volume is of type 'Material', as specified by the template parameter. This is one of several
-	/// predefined voxel types, and it is also possible to define your own. The Material type simply holds an integer value where zero represents
-	/// empty space and any other value represents a solid material.
+	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). Attempts to access voxels outside this range will result is accessing the
+	/// border value (see getBorderValue() and setBorderValue()). PolyVox also has support for near infinite volumes which will be discussed later.
 	/// 
 	/// Access to individual voxels is provided via the setVoxelAt() and getVoxelAt() member functions. Advanced users may also be interested in
 	/// the VolumeSampler class for faster read-only access to a large number of voxels.
@@ -82,11 +82,9 @@ namespace PolyVox
 	/// recompressed and moved out of the cache.
 	///
 	/// <b>Achieving high compression rates</b>
-	/// Note: This section is theorectical and not well tested. Please let us know if you find the tips below do or do not work.
-	///
 	/// The compression rates which can be achieved can vary significantly depending the nature of the data you are storing, but you can
 	/// encourage high compression rates by making your data as homogenous as possible. If you are simply storing a material with each
-	/// voxel then this will probably happen naturally. Games such as Minecraft which use this approach will typically involve large ares
+	/// voxel then this will probably happen naturally. Games such as Minecraft which use this approach will typically involve large areas
 	/// of the same material which will compress down well.
 	///
 	/// However, if you are storing density values then you may want to take some care. The advantage of storing smoothly changing values
@@ -96,25 +94,33 @@ namespace PolyVox
 	///
 	/// <b>Paging large volumes</b>
 	/// The compression scheme described previously will typically allow you to load several billion voxels into a few hundred megabytes of memory, 
-	/// though as explained the exact compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a mechanism by which parts of
-	/// the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a potentially unlimited amount
-	/// of data to be loaded, provided the user is able to take responsibility for storing any data which PolyVox cannot fit in memory, and then
-	/// returning it back to PolyVox on demand. For example, the user might choose to temporarily store this data on disk or stream it to a
-	/// remote database.
+	/// though as explained the exact compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a
+	/// mechanism by which parts of the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a
+	/// potentially unlimited amount of data to be loaded, provided the user is able to take responsibility for storing any data which PolyVox
+	/// cannot fit in memory, and then returning it back to PolyVox on demand. For example, the user might choose to temporarily store this data
+	/// on disk or stream it to a remote database.
 	///
 	/// You can construct such a Volume as follows:
-
-	/// void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
-	/// {
-	///		//This function should store 
-	/// }
-	///	Volume<Density>volData(&loadFunction, &unloadFunction);
 	///
-	/// The constructor takes two functions as parameters. These functions must be defined elsewhere in your program and have the following signatures (although you can name them whatever you wish):
-
-	///Essentially you are providing an extension to the Volume class - a way for data to be stored once PolyVox has run out of memory for it. Note that you don't actually have to do anything with the data - you could simply decide that once it gets removed from memory it doesn't matter anymore. But you still need to be ready to then provide something to PolyVox (even if it's just default data) in the event that it is requested.
-
-	///	
+	/// \code
+	/// void myDataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
+	/// {
+	///		//This function is being called because part of the data is missing from memory and needs to be supplied. The parameter
+	///		//'volume' provides access to the volume data, and the parameter 'reg' indicates which region of the volume you need fill.	
+	/// }
+	///
+	/// void myDataOverflowHandler(const ConstVolumeProxy<MaterialDensityPair44>& vol, const PolyVox::Region& reg)
+	/// {
+	///		//This function is being called because part of the data is about to be removed from memory. The parameter 'volume' 
+	///		//provides access to the volume data, and the parameter 'reg' indicates which region of the volume you need to store.
+	/// }
+	///
+	///	Volume<Density>volData(&myDataRequiredHandler, &myDataOverflowHandler);
+	/// \endcode
+	///
+	/// Essentially you are providing an extension to the Volume class - a way for data to be stored once PolyVox has run out of memory for it. Note
+	/// that you don't actually have to do anything with the data - you could simply decide that once it gets removed from memory it doesn't matter
+	/// anymore. But you still need to be ready to then provide something to PolyVox (even if it's just default data) in the event that it is requested.
 	///
 	/// <b>Cache-aware traversal</b>
 	/// You might be suprised at just how many cache misses can occur when you traverse the volume in a naive manner. Consider a 1024x1024x1024 volume
@@ -156,14 +162,14 @@ namespace PolyVox
 		};
 
 	public:		
-		/// Constructor
+		/// Constructor for creting a very large paging volume.
 		Volume
 		(
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 			uint16_t uBlockSideLength = 32
 		);
-		/// Constructor
+		/// Constructor for creating a fixed size volume.
 		Volume
 		(
 			const Region& regValid,
@@ -196,37 +202,35 @@ namespace PolyVox
 		int32_t getShortestSideLength(void) const;
 		/// Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
-		/// Gets a voxel by <tt>x,y,z</tt> position
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-		/// Gets a voxel by 3D vector position
+		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
+		//Sets whether or not blocks are compressed in memory
 		void setCompressionEnabled(bool bCompressionEnabled);
-		/// Sets the number of blocks for which uncompressed data is stored.
+		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks);
-		/// Sets the number of blocks which can be in memory before unload is called
+		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
 		void setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory);
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
-		/// Sets the voxel at an <tt>x,y,z</tt> position
+		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
-		/// Sets the voxel at a 3D vector position
+		/// Sets the voxel at the position given by a 3D vector
 		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
-		/// tries to load all voxels inside the given region
-		/// if MaxNumberOfBlocksInMemory is not large enough to support the region
-		/// this function will only load part of the region. it is undefined which parts will actually be loaded
-		/// if all the voxels in the given region are already loaded, this function will not do anything
-		/// other blocks might be unloaded to make space for the new blocks
+		/// Tries to ensure that the voxels within the specified Region are loaded into memory.
 		void prefetch(Region regPrefetch);
-		/// attempts to unload all the voxels in the given region.
-		/// there is no guarantee that any voxels are unloaded
-		/// try unloading a region whose sidelengths are multiples of BlockSideLength
+		/// Ensures that any voxels within the specified Region are removed from memory.
 		void flush(Region regFlush);
-		/// unloads all data
+		/// Removes all voxels from memory
 		void flushAll();
 
+		/// Empties the cache of uncompressed blocks
 		void clearBlockCache(void);
+		/// Calculates the approximate compression ratio of the store volume data
 		float calculateCompressionRatio(void);
+		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
 		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
