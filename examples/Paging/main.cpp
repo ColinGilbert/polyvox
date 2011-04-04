@@ -269,12 +269,12 @@ int main(int argc, char *argv[])
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	//volData.setBlockCacheSize(64);
-	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,1024,255));
+	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,255,255));
 	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 	volData.prefetch(reg);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-	PolyVox::Region reg2(Vector3DInt32(0,0,0), Vector3DInt32(500,500,500));
+	PolyVox::Region reg2(Vector3DInt32(0,0,0), Vector3DInt32(255,255,255));
 	std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
 	volData.flush(reg2);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
@@ -283,26 +283,6 @@ int main(int argc, char *argv[])
 	volData.flushAll();
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-
-	srand(12345);
-	for(int ct = 0; ct < 100; ct++)
-	{
-		std::cout << ct << std::endl;
-		int x = rand() % 256;
-		int y = rand() % 256;
-		int z = rand() % 256;
-
-		int r = rand() % 20;
-
-		createSphereInVolume(volData, Vector3DFloat(x,y,z), r);
-	}
-
-	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(128,256,256)));
-	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(128,256,256)));
-	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(128,256,256)));
-	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(256,128,256)));
-	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(256,128,256)));
-	smoothRegion(volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(256,128,256)));
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
