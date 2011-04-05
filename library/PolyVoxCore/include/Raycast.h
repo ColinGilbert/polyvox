@@ -38,7 +38,7 @@ namespace PolyVox
 		///Indicates whether an intersection was found
 		bool foundIntersection;
 		///If an intersection was found then this field holds the intersecting voxel, otherwise it is undefined.
-		Vector3DInt16 intersectionVoxel;
+		Vector3DInt32 intersectionVoxel;
 	};
 
 	/// The Raycast class can be used to find the fist filled voxel along a given path.

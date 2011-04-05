@@ -49,7 +49,6 @@ namespace PolyVox
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
-		Region m_regSizeInCells;
 	};
 }
 

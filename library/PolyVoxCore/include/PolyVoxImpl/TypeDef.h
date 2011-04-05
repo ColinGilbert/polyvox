@@ -51,6 +51,11 @@ freely, subject to the following restrictions:
 	#include <boost/functional/hash.hpp>
 	#define polyvox_hash boost::hash
 
+	#include <boost/bind.hpp>
+	#define polyvox_bind boost::bind
+	#define polyvox_placeholder_1 _1
+	#define polyvox_placeholder_2 _2
+
 
 	//As long as we're requiring boost, we'll use it to compensate
 	//for the missing cstdint header too.
@@ -68,6 +73,9 @@ freely, subject to the following restrictions:
 	#include <memory>
 	#define polyvox_shared_ptr std::shared_ptr
 	#define polyvox_function std::function
+	#define polyvox_bind std::bind
+	#define polyvox_placeholder_1 std::placeholders::_1
+	#define polyvox_placeholder_2 std::placeholders::_2
 	#define polyvox_hash std::hash
 #endif
 

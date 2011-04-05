@@ -25,20 +25,29 @@ freely, subject to the following restrictions:
 #define __PolyVox_Block_H__
 
 #include "PolyVoxForwardDeclarations.h"
+#include <limits>
+#include <vector>
 
 namespace PolyVox
 {
 	template <typename VoxelType>
 	class Block
 	{
+		template <typename LengthType>
+		struct RunlengthEntry
+		{
+			LengthType length;
+			VoxelType value;
+
+			//We can parametise the length on anything up to uint32_t.
+			//This lets us experiment with the optimal size in the future.
+			static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
+		};
+
 		//Make VolumeSampler a friend
 		friend class VolumeSampler<VoxelType>;
 	public:
-		Block(uint16_t uSideLength);
-		Block(const Block& rhs);
-		~Block();
-
-		Block& operator=(const Block& rhs);
+		Block(uint16_t uSideLength = 0);
 
 		uint16_t getSideLength(void) const;
 		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
@@ -48,13 +57,19 @@ namespace PolyVox
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		void fill(VoxelType tValue);
-		bool isHomogeneous(void);
-		uint32_t sizeInChars(void);
+		void initialise(uint16_t uSideLength);
+		uint32_t calculateSizeInBytes(void);
 
-	private:
+	public:
+		void compress(void);
+		void uncompress(void);
+
+		std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
+		VoxelType* m_tUncompressedData;
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
-		VoxelType* m_tData;
+		bool m_bIsCompressed;
+		bool m_bIsUncompressedDataModified;
 	};
 }
 

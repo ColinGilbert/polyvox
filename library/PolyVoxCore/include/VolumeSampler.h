@@ -37,15 +37,15 @@ namespace PolyVox
 
 		VolumeSampler<VoxelType>& operator=(const VolumeSampler<VoxelType>& rhs) throw();
 
-		uint16_t getPosX(void) const;
-		uint16_t getPosY(void) const;
-		uint16_t getPosZ(void) const;
+		int32_t getPosX(void) const;
+		int32_t getPosY(void) const;
+		int32_t getPosZ(void) const;
 		VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 		const Volume<VoxelType>* getVolume(void) const;
 		inline VoxelType getVoxel(void) const;			
 
-		void setPosition(const Vector3DInt16& v3dNewPos);
-		void setPosition(uint16_t xPos, uint16_t yPos, uint16_t zPos);
+		void setPosition(const Vector3DInt32& v3dNewPos);
+		void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
 
 		void movePositiveX(void);
 		void movePositiveY(void);
@@ -91,9 +91,9 @@ namespace PolyVox
 		Volume<VoxelType>* mVolume;
 
 		//The current position in the volume
-		uint16_t mXPosInVolume;
-		uint16_t mYPosInVolume;
-		uint16_t mZPosInVolume;
+		int32_t mXPosInVolume;
+		int32_t mYPosInVolume;
+		int32_t mZPosInVolume;
 
 		//Other current position information
 		VoxelType* mCurrentVoxel;

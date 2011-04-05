@@ -31,7 +31,7 @@ namespace PolyVox
 	/// \return true is the voxel is valid for the path
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt16& v3dPos)
+	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt32& v3dPos)
 	{
 		//Voxels are considered valid candidates for the path if they are inside the volume...
 		if(volData->getEnclosingRegion().containsPoint(v3dPos) == false)
@@ -40,7 +40,7 @@ namespace PolyVox
 		}
 
 		//and if their density is below the threshold.
-		Material8 voxel = volData->getVoxelAt(static_cast<Vector3DUint16>(v3dPos));
+		Material8 voxel = volData->getVoxelAt(v3dPos);
 		if(voxel.getDensity() >= Material8::getThreshold())
 		{
 			return false;
@@ -192,7 +192,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void AStarPathfinder<VoxelType>::processNeighbour(const Vector3DInt16& neighbourPos, float neighbourGVal)
+	void AStarPathfinder<VoxelType>::processNeighbour(const Vector3DInt32& neighbourPos, float neighbourGVal)
 	{
 		bool bIsVoxelValidForPath = m_params.isVoxelValidForPath(m_params.volume, neighbourPos);
 		if(!bIsVoxelValidForPath)
@@ -248,16 +248,16 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::SixConnectedCost(const Vector3DInt16& a, const Vector3DInt16& b)
+	float AStarPathfinder<VoxelType>::SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//This is the only heuristic I'm sure of - just use the manhatten distance for the 6-connected case.
-		uint16_t faceSteps = abs(a.getX()-b.getX()) + abs(a.getY()-b.getY()) + abs(a.getZ()-b.getZ());
+		uint32_t faceSteps = abs(a.getX()-b.getX()) + abs(a.getY()-b.getY()) + abs(a.getZ()-b.getZ());
 
 		return faceSteps * 1.0f;
 	}
 
 	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::EighteenConnectedCost(const Vector3DInt16& a, const Vector3DInt16& b)
+	float AStarPathfinder<VoxelType>::EighteenConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//I'm not sure of the correct heuristic for the 18-connected case, so I'm just letting it fall through to the 
 		//6-connected case. This means 'h' will be bigger than it should be, resulting in a faster path which may not 
@@ -267,11 +267,11 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::TwentySixConnectedCost(const Vector3DInt16& a, const Vector3DInt16& b)
+	float AStarPathfinder<VoxelType>::TwentySixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//Can't say I'm certain about this heuristic - if anyone has
 		//a better idea of what it should be then please let me know.
-		uint16_t array[3];
+		uint32_t array[3];
 		array[0] = abs(a.getX() - b.getX());
 		array[1] = abs(a.getY() - b.getY());
 		array[2] = abs(a.getZ() - b.getZ());
@@ -281,15 +281,15 @@ namespace PolyVox
 		//until the profiler says so.
 		std::sort(&array[0], &array[3]);
 
-		uint16_t cornerSteps = array[0];
-		uint16_t edgeSteps = array[1] - array[0];
-		uint16_t faceSteps = array[2] - array[1];
+		uint32_t cornerSteps = array[0];
+		uint32_t edgeSteps = array[1] - array[0];
+		uint32_t faceSteps = array[2] - array[1];
 
 		return cornerSteps * sqrt_3 + edgeSteps * sqrt_2 + faceSteps * sqrt_1;
 	}
 
 	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::computeH(const Vector3DInt16& a, const Vector3DInt16& b)
+	float AStarPathfinder<VoxelType>::computeH(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		float hVal;
 			

@@ -27,63 +27,23 @@ freely, subject to the following restrictions:
 
 #include <cassert>
 #include <cstring> //For memcpy
+#include <limits>
 #include <stdexcept> //for std::invalid_argument
 
 namespace PolyVox
 {
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength)
-		:m_tData(0)
+		:m_uSideLength(0)
+		,m_uSideLengthPower(0)
+		,m_tUncompressedData(0)
+		,m_bIsCompressed(true)
+		,m_bIsUncompressedDataModified(true)
 	{
-		//Debug mode validation
-		assert(isPowerOf2(uSideLength));
-
-		//Release mode validation
-		if(!isPowerOf2(uSideLength))
+		if(uSideLength != 0)
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			initialise(uSideLength);
 		}
-
-		//Compute the side length		
-		m_uSideLength = uSideLength;
-		m_uSideLengthPower = logBase2(uSideLength);
-
-		//If this fails an exception will be thrown. Memory is not   
-		//allocated and there is nothing else in this class to clean up
-		m_tData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-	}
-
-	template <typename VoxelType>
-	Block<VoxelType>::Block(const Block<VoxelType>& rhs)
-	{
-		*this = rhs;
-	}
-
-	template <typename VoxelType>
-	Block<VoxelType>::~Block()
-	{
-		delete[] m_tData;
-		m_tData = 0;
-	}
-
-	template <typename VoxelType>
-	Block<VoxelType>& Block<VoxelType>::operator=(const Block<VoxelType>& rhs)
-	{
-		if (this == &rhs)
-		{
-			return *this;
-		}
-
-		//If this fails an exception will be thrown. Memory is not   
-		//allocated and there is nothing else in this class to clean up
-		m_tData = new VoxelType[rhs.m_uSideLength * rhs.m_uSideLength * rhs.m_uSideLength];
-
-		//Copy the data
-		m_uSideLength = rhs.m_uSideLength;
-		m_uSideLengthPower = rhs.m_uSideLengthPower;		
-		memcpy(m_tData, rhs.m_tData, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
-
-		return *this;
 	}
 
 	template <typename VoxelType>
@@ -99,7 +59,9 @@ namespace PolyVox
 		assert(uYPos < m_uSideLength);
 		assert(uZPos < m_uSideLength);
 
-		return m_tData
+		assert(m_tUncompressedData);
+
+		return m_tUncompressedData
 			[
 				uXPos + 
 				uYPos * m_uSideLength + 
@@ -120,12 +82,16 @@ namespace PolyVox
 		assert(uYPos < m_uSideLength);
 		assert(uZPos < m_uSideLength);
 
-		m_tData
+		assert(m_tUncompressedData);
+
+		m_tUncompressedData
 		[
 			uXPos + 
 			uYPos * m_uSideLength + 
 			uZPos * m_uSideLength * m_uSideLength
 		] = tValue;
+
+		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>
@@ -137,41 +103,113 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::fill(VoxelType tValue)
 	{
-		//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
-		//in 64-bit mode as casting the pointer to an int causes a loss of precision.
-
-		//memset(m_tData, (int)tValue, m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
-		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		std::fill(m_tData, m_tData + uNoOfVoxels, tValue);
-	}
-
-	template <typename VoxelType>
-	bool Block<VoxelType>::isHomogeneous(void)
-	{
-		const VoxelType tFirstVoxel = m_tData[0];
-		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-
-		for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
+		if(!m_bIsCompressed)
 		{
-			if(m_tData[ct] != tFirstVoxel)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	template <typename VoxelType>
-	uint32_t Block<VoxelType>::sizeInChars(void)
-	{
-		uint32_t uSizeInChars = sizeof(Block<VoxelType>);
-
-		if(m_tData != 0)
-		{
+			//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
+			//in 64-bit mode as casting the pointer to an int causes a loss of precision.
 			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			uSizeInChars += uNoOfVoxels * sizeof(VoxelType);
+			std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
+
+			m_bIsUncompressedDataModified = true;
+		} 
+		else
+		{
+			RunlengthEntry<uint16_t> rle;
+			rle.length = m_uSideLength*m_uSideLength*m_uSideLength;
+			rle.value = tValue;
+			m_vecCompressedData.clear();
+			m_vecCompressedData.push_back(rle);
+		}
+	}
+
+	template <typename VoxelType>
+	void Block<VoxelType>::initialise(uint16_t uSideLength)
+	{
+		//Debug mode validation
+		assert(isPowerOf2(uSideLength));
+
+		//Release mode validation
+		if(!isPowerOf2(uSideLength))
+		{
+			throw std::invalid_argument("Block side length must be a power of two.");
 		}
 
-		return  uSizeInChars;
+		//Compute the side length		
+		m_uSideLength = uSideLength;
+		m_uSideLengthPower = logBase2(uSideLength);
+
+		Block<VoxelType>::fill(VoxelType());
+	}
+
+	template <typename VoxelType>
+	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
+	{
+		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
+		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);
+		return  uSizeInBytes;
+	}
+
+	template <typename VoxelType>
+	void Block<VoxelType>::compress(void)
+	{
+		assert(m_bIsCompressed == false);
+		assert(m_tUncompressedData != 0);
+
+		//If the uncompressed data hasn't actually been
+		//modified then we don't need to redo the compression.
+		if(m_bIsUncompressedDataModified)
+		{
+			uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+			m_vecCompressedData.clear();
+
+			RunlengthEntry<uint16_t> entry;
+			entry.length = 1;
+			entry.value = m_tUncompressedData[0];
+
+			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
+			{		
+				VoxelType value = m_tUncompressedData[ct];
+				if((value == entry.value) && (entry.length < entry.maxRunlength()))
+				{
+					entry.length++;
+				}
+				else
+				{
+					m_vecCompressedData.push_back(entry);
+					entry.value = value;
+					entry.length = 1;
+				}
+			}
+
+			m_vecCompressedData.push_back(entry);
+
+			//Shrink the vectors to their contents (maybe slow?):
+			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
+			//C++0x may have a shrink_to_fit() function?
+			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);
+		}
+
+		//Flag the uncompressed data as no longer being used.
+		delete[] m_tUncompressedData;
+		m_tUncompressedData = 0;
+		m_bIsCompressed = true;
+	}
+
+	template <typename VoxelType>
+	void Block<VoxelType>::uncompress(void)
+	{
+		assert(m_bIsCompressed == true);
+		assert(m_tUncompressedData == 0);
+		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
+		VoxelType* pUncompressedData = m_tUncompressedData;		
+		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
+		{
+			std::fill(pUncompressedData, pUncompressedData + m_vecCompressedData[ct].length, m_vecCompressedData[ct].value);
+			pUncompressedData += m_vecCompressedData[ct].length;
+		}
+
+		m_bIsCompressed = false;
+		m_bIsUncompressedDataModified = false;
 	}
 }

@@ -21,12 +21,14 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "ConstVolumeProxy.h"
 #include "PolyVoxImpl/Block.h"
 #include "Log.h"
 #include "VolumeSampler.h"
 #include "Region.h"
 #include "Vector.h"
 
+#include <limits>
 #include <cassert>
 #include <cstring> //For memcpy
 #include <list>
@@ -35,35 +37,80 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// Builds a volume of the desired dimensions
-	/// \param uWidth The desired width in voxels. This must be a power of two.
-	/// \param uHeight The desired height in voxels. This must be a power of two.
-	/// \param uDepth The desired depth in voxels. This must be a power of two.
-	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
-	/// blocks are more likely to be homogeneous (so more easily shared) and have better
-	/// cache behaviour. However, there is a memory overhead per block so if they are
-	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Accept 
-	/// the default if you are not sure what to choose here.
+	/// When construncting a very large volume you need to be prepared to handle the scenario where there is so much data that PolyVox cannot fit it all in memory. When PolyVox runs out of memory, it identifies the least recently used data and hands it back to the application via a callback function. It is then the responsibility of the application to store this data until PolyVox needs it again (as signalled by another callback function). Please see the Volume  class documentation for a full description of this process and the required function signatures. If you really don't want to handle these events then you can provide null pointers here, in which case the data will be discarded and/or filled with default values.
+	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
+	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
+	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
+	Volume<VoxelType>::Volume
+	(
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+		uint16_t uBlockSideLength
+	)
 	{
+		m_funcDataRequiredHandler = dataRequiredHandler;
+		m_funcDataOverflowHandler = dataOverflowHandler;
+		m_bPagingEnabled = true;
 		//Create a volume of the right size.
-		resize(uWidth, uHeight, uDepth, uBlockSideLength);
-
-		//Create the border block
-		polyvox_shared_ptr< Block<VoxelType> > pTempBlock(new Block<VoxelType>(m_uBlockSideLength));
-		pTempBlock->fill(VoxelType());
-		m_pBorderBlock = pTempBlock;
+		resize(Region::MaxRegion,uBlockSideLength);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Destroys the volume and frees any blocks which are not in use by other volumes.
+	/// Deprecated - do not use this constructor.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	Volume<VoxelType>::Volume
+	(
+		int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
+	)
+	{
+		//In earlier verions of PolyVox the constructor took three values indicating width, height, and depth. However, this
+		//causes confusion because these three parameters can be interpreted as two function pointers and a block size instead,
+		//hence calling a different constructor. And simply removing this constructor will cause confusion because existing
+		//code with three parameters will then always resolve to the constructor with two function pointers and a block size.
+		//
+		//Eventually this constructor will be removed, it's just here to make people change their code to the new version.
+		//
+		//IF YOU HIT THIS ASSERT/ABORT, CHANGE YOUR CODE TO USE THE CONSTRUCTOR TAKING A 'Region' INSTEAD.
+		assert(false);
+		abort();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other Volume constructor).
+	/// \param regValid Specifies the minimum and maximum valid voxel positions.
+	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
+	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
+	/// \param bPagingEnabled Controls whether or not paging is enabled for this Volume.
+	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	Volume<VoxelType>::Volume
+	(
+		const Region& regValid,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
+		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+		bool bPagingEnabled,
+		uint16_t uBlockSideLength
+	)
+	{
+		m_funcDataRequiredHandler = dataRequiredHandler;
+		m_funcDataOverflowHandler = dataOverflowHandler;
+		m_bPagingEnabled = bPagingEnabled;
+
+		//Create a volume of the right size.
+		resize(regValid,uBlockSideLength);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Destroys the volume The destructor will call flushAll() to ensure that a paging volume has the chance to save it's data via the dataOverflowHandler() if desired.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Volume<VoxelType>::~Volume()
 	{
+		flushAll();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -74,49 +121,46 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getBorderValue(void) const
 	{
-		return m_pBorderBlock->getVoxelAt(0,0,0);
+		return *m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The result will always have a lower corner at (0,0,0) and an upper corner at one
-	/// less than the side length. For example, if a volume has dimensions 256x512x1024
-	/// then the upper corner of the enclosing region will be at (255,511,1023).
 	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	Region Volume<VoxelType>::getEnclosingRegion(void) const
 	{
-		return Region(Vector3DInt16(0,0,0), Vector3DInt16(m_uWidth-1,m_uHeight-1,m_uDepth-1));
+		return m_regValidRegion;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The width of the volume in voxels
+	/// \return The width of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the width is 64.
 	/// \sa getHeight(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getWidth(void) const
+	int32_t Volume<VoxelType>::getWidth(void) const
 	{
-		return m_uWidth;
+		return m_regValidRegion.getUpperCorner().getX() - m_regValidRegion.getLowerCorner().getX() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The height of the volume in voxels
+	/// \return The height of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the height is 64.
 	/// \sa getWidth(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getHeight(void) const
+	int32_t Volume<VoxelType>::getHeight(void) const
 	{
-		return m_uHeight;
+		return m_regValidRegion.getUpperCorner().getY() - m_regValidRegion.getLowerCorner().getY() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The depth of the volume in voxels
+	/// \return The depth of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the depth is 64.
 	/// \sa getWidth(), getHeight()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getDepth(void) const
+	int32_t Volume<VoxelType>::getDepth(void) const
 	{
-		return m_uDepth;
+		return m_regValidRegion.getUpperCorner().getZ() - m_regValidRegion.getLowerCorner().getZ() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -125,7 +169,7 @@ namespace PolyVox
 	/// \sa getLongestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getShortestSideLength(void) const
+	int32_t Volume<VoxelType>::getShortestSideLength(void) const
 	{
 		return m_uShortestSideLength;
 	}
@@ -136,7 +180,7 @@ namespace PolyVox
 	/// \sa getShortestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint16_t Volume<VoxelType>::getLongestSideLength(void) const
+	int32_t Volume<VoxelType>::getLongestSideLength(void) const
 	{
 		return m_uLongestSideLength;
 	}	
@@ -154,34 +198,27 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos the \c x position of the voxel
-	/// \param uYPos the \c y position of the voxel
-	/// \param uZPos the \c z position of the voxel
-	/// \return the voxel value
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		//We don't use getEnclosingRegion here because we care
-		//about speed and don't need to check the lower bound.
-		if((uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
+		if(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-			const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-			const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+			const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+			const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
 			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			const polyvox_shared_ptr< Block< VoxelType > >& block = m_pBlocks
-				[
-					blockX + 
-					blockY * m_uWidthInBlocks + 
-					blockZ * m_uWidthInBlocks * m_uHeightInBlocks
-				];
+			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-			return block->getVoxelAt(xOffset,yOffset,zOffset);
+			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
 		}
 		else
 		{
@@ -190,13 +227,65 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos the 3D position of the voxel
-	/// \return the voxel value
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Enabling compression allows significantly more data to be stored in memory.
+	/// \param bCompressionEnabled Specifies whether compression is enabled.
+	////////////////////////////////////////////////////////////////////////////////	
+	template <typename VoxelType>
+	void Volume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
+	{
+		//Early out - nothing to do
+		if(m_bCompressionEnabled == bCompressionEnabled)
+		{
+			return;
+		}
+		
+		m_bCompressionEnabled = bCompressionEnabled;
+
+		if(m_bCompressionEnabled)
+		{
+			//If compression has been enabled then we need to start honouring the max number of
+			//uncompressed blocks. Because compression has been disabled for a while we might have
+			//gone above that limit. Easiest solution is just to clear the cache and start again.
+			clearBlockCache();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Increasing the size of the block cache will increase memory but may improve performance.
+	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
+	/// volume data and then set it to a smaller value (e.g.64) for general processing.
+	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks)
+	{
+		clearBlockCache();
+
+		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Increasing the number of blocks in memory causes fewer calls to dataRequiredHandler()/dataOverflowHandler()
+	/// \param uMaxBlocks The number of blocks
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
+	{
+		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
+		{
+			flushAll();
+		}
+		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -205,7 +294,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
-		return m_pBorderBlock->fill(tBorder);
+		/*Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
+		return pUncompressedBorderBlock->fill(tBorder);*/
+		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -216,55 +307,24 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	bool Volume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		//We don't use getEnclosingRegion here because we care
-		//about speed and don't need to check the lower bound.
-		if((uXPos < getWidth()) && (uYPos < getHeight()) && (uZPos < getDepth()))
-		{
-			const uint16_t blockX = uXPos >> m_uBlockSideLengthPower;
-			const uint16_t blockY = uYPos >> m_uBlockSideLengthPower;
-			const uint16_t blockZ = uZPos >> m_uBlockSideLengthPower;
+		assert(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
 
-			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
-			uint32_t uBlockIndex =
-				blockX + 
-				blockY * m_uWidthInBlocks + 
-				blockZ * m_uWidthInBlocks * m_uHeightInBlocks;
+		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			polyvox_shared_ptr< Block<VoxelType> >& block = m_pBlocks[uBlockIndex];
+		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-			//It's quite possible that the user might attempt to set a voxel to it's current value.
-			//We test for this case firstly because it could help performance, but more importantly
-			//because it lets us avoid unsharing blocks unnecessarily.
-			if(block->getVoxelAt(xOffset, yOffset, zOffset) != tValue)
-			{
-				if(block.unique())
-				{
-					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-					//There is a chance that setting this voxel makes the block homogenous and therefore shareable.
-					//But checking this will take some time, so for now just set a flag.
-					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = true;
-				}
-				else
-				{			
-					polyvox_shared_ptr< Block<VoxelType> > pNewBlock(new Block<VoxelType>(*(block)));
-					block = pNewBlock;
-					m_vecBlockIsPotentiallyHomogenous[uBlockIndex] = false;
-					block->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-				}
-			}
-			//Return true to indicate that we modified a voxel.
-			return true;
-		}
-		else
-		{
-			//Return false to indicate that no voxel was modified.
-			return false;
-		}
+		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+
+		//Return true to indicate that we modified a voxel.
+		return true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -273,33 +333,149 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	bool Volume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
 	{
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
+
 	////////////////////////////////////////////////////////////////////////////////
-	/// Note: Calling this function will destroy all existing data in the volume.
-	/// \param uWidth The desired width in voxels. This must be a power of two.
-	/// \param uHeight The desired height in voxels. This must be a power of two.
-	/// \param uDepth The desired depth in voxels. This must be a power of two.
-	/// \param uBlockSideLength The size of the blocks which make up the volume. Small
-	/// blocks are more likely to be homogeneous (so more easily shared) and have better
-	/// cache behaviour. However, there is a memory overhead per block so if they are
-	/// not shared it could actually be less efficient (this will depend on the data).
-	/// The size of the volume may also be a factor when choosing block size. Accept 
-	/// the default if you are not sure what to choose here.
+	/// Note that if MaxNumberOfBlocksInMemory is not large enough to support the region this function will only load part of the region. In this case it is undefined which parts will actually be loaded. If all the voxels in the given region are already loaded, this function will not do anything. Other voxels might be unloaded to make space for the new voxels.
+	/// \param regPrefetch The Region of voxels to prefetch into memory.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::resize(uint16_t uWidth, uint16_t uHeight, uint16_t uDepth, uint16_t uBlockSideLength)
+	void Volume<VoxelType>::prefetch(Region regPrefetch)
+	{
+		Vector3DInt32 v3dStart;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dStart.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+		}
+
+		Vector3DInt32 v3dEnd;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+		}
+
+		Vector3DInt32 v3dSize = v3dEnd - v3dStart + Vector3DInt32(1,1,1);
+		int32_t numblocks = v3dSize.getX() * v3dSize.getY() * v3dSize.getZ();
+		if(numblocks > m_uMaxNumberOfBlocksInMemory)
+		{
+			// cannot support the amount of blocks... so only load the maximum possible
+			numblocks = m_uMaxNumberOfBlocksInMemory;
+		}
+		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
+		{
+			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
+			{
+				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
+				{
+					Vector3DInt32 pos(x,y,z);
+					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
+					
+					if(itBlock != m_pBlocks.end())
+					{
+						// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
+						// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
+						// This might be nice, but on the prefetch region could be bigger than the uncompressed cache size.
+						// This would limit the amount of prefetching we could do.
+						continue;
+					}
+
+					if(numblocks == 0)
+					{
+						// Loading any more blocks would attempt to overflow the memory and therefore erase blocks
+						// we loaded in the beginning. This wouldn't cause logic problems but would be wasteful.
+						return;
+					}
+					// load a block
+					numblocks--;
+					Block<VoxelType>* block = getUncompressedBlock(x,y,z);
+				} // for z
+			} // for y
+		} // for x
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Removes all voxels from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::flushAll()
+	{
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		//Replaced the for loop here as the call to
+		//eraseBlock was invalidating the iterator.
+		while(m_pBlocks.size() > 0)
+		{
+			eraseBlock(m_pBlocks.begin());
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::flush(Region regFlush)
+	{
+		Vector3DInt32 v3dStart;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+		}
+
+		Vector3DInt32 v3dEnd;
+		for(int i = 0; i < 3; i++)
+		{
+			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+		}
+
+		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
+		{
+			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
+			{
+				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
+				{
+					Vector3DInt32 pos(x,y,z);
+					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
+					if(itBlock == m_pBlocks.end())
+					{
+						// not loaded, not unloading
+						continue;
+					}
+					eraseBlock(itBlock);
+					// eraseBlock might cause a call to getUncompressedBlock, which again sets m_pLastAccessedBlock
+					if(m_v3dLastAccessedBlockPos == pos)
+					{
+						m_pLastAccessedBlock = 0;
+					}
+				} // for z
+			} // for y
+		} // for x
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	///
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::clearBlockCache(void)
+	{
+		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+		{
+			m_vecUncompressedBlockCache[ct]->block.compress();
+		}
+		m_vecUncompressedBlockCache.clear();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should probably be made internal...
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void Volume<VoxelType>::resize(const Region& regValidRegion, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
 		assert(uBlockSideLength > 0);
-		assert(isPowerOf2(uBlockSideLength));
-		assert(uBlockSideLength <= uWidth);
-		assert(uBlockSideLength <= uHeight);
-		assert(uBlockSideLength <= uDepth);
-
+		
 		//Release mode validation
 		if(uBlockSideLength == 0)
 		{
@@ -309,138 +485,251 @@ namespace PolyVox
 		{
 			throw std::invalid_argument("Block side length must be a power of two.");
 		}
-		if(uBlockSideLength > uWidth)
-		{
-			throw std::invalid_argument("Block side length cannot be greater than volume width.");
-		}
-		if(uBlockSideLength > uHeight)
-		{
-			throw std::invalid_argument("Block side length cannot be greater than volume height.");
-		}
-		if(uBlockSideLength > uDepth)
-		{
-			throw std::invalid_argument("Block side length cannot be greater than volume depth.");
-		}
+
+		m_uTimestamper = 0;
+		m_uMaxNumberOfUncompressedBlocks = 16;
+		m_uBlockSideLength = uBlockSideLength;
+		m_pUncompressedBorderData = 0;
+		m_uMaxNumberOfBlocksInMemory = 1024;
+		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
+		m_pLastAccessedBlock = 0;
+		m_bCompressionEnabled = true;
+
+		m_regValidRegion = regValidRegion;
+
+		m_regValidRegionInBlocks.setLowerCorner(m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
+		m_regValidRegionInBlocks.setUpperCorner(m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
+
+		setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
 
 		//Clear the previous data
 		m_pBlocks.clear();
-		m_vecBlockIsPotentiallyHomogenous.clear();
-		m_pHomogenousBlock.clear();
-
-		//Compute the volume side lengths
-		m_uWidth = uWidth;
-		m_uHeight = uHeight;
-		m_uDepth = uDepth;
 
 		//Compute the block side length
 		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
-		//Compute the side lengths in blocks
-		m_uWidthInBlocks = m_uWidth / m_uBlockSideLength;
-		m_uHeightInBlocks = m_uHeight / m_uBlockSideLength;
-		m_uDepthInBlocks = m_uDepth / m_uBlockSideLength;
+		//Clear the previous data
+		m_pBlocks.clear();
 
-		//Compute number of blocks in the volume
-		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
-
-		//Create the blocks
-		m_pBlocks.resize(m_uNoOfBlocksInVolume);
-		m_vecBlockIsPotentiallyHomogenous.resize(m_uNoOfBlocksInVolume);
-		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
-		{
-			m_pBlocks[i] = getHomogenousBlock(VoxelType());
-			m_vecBlockIsPotentiallyHomogenous[i] = false;
-		}		
+		//Create the border block
+		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
 
 		//Other properties we might find useful later
-		m_uLongestSideLength = (std::max)((std::max)(m_uWidth,m_uHeight),m_uDepth);
-		m_uShortestSideLength = (std::min)((std::min)(m_uWidth,m_uHeight),m_uDepth);
-		m_fDiagonalLength = sqrtf(static_cast<float>(m_uWidth * m_uWidth + m_uHeight * m_uHeight + m_uDepth * m_uDepth));
-
-		//Reset the counter for tidying
-		m_uCurrentBlockForTidying = 0;
+		m_uLongestSideLength = (std::max)((std::max)(getWidth(),getHeight()),getDepth());
+		m_uShortestSideLength = (std::min)((std::min)(getWidth(),getHeight()),getDepth());
+		m_fDiagonalLength = sqrtf(static_cast<float>(getWidth() * getWidth() + getHeight() * getHeight() + getDepth() * getDepth()));
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// Clean up the memory usage of the volume. Checks for any blocks which are
-	/// homogeneous and flags them as such for faster processing and reduced memory
-	/// usage.
-	/// \param uNoOfBlocksToProcess the number of blocks to process
-	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::tidyUpMemory(uint32_t uNoOfBlocksToProcess)
+	void Volume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
 	{
-		//Track the number of blocks we have processed.
-		uint32_t m_uNoOfProcessedBlocks = 0;
-
-		//We will loop around, and finish if we get back to our start position
-		uint32_t uFinishBlock = m_uCurrentBlockForTidying;
-
-		//Increment the current block, looping around if necessary
-		++m_uCurrentBlockForTidying;
-		m_uCurrentBlockForTidying %= m_uNoOfBlocksInVolume;
-
-		//While we have not reached the user specified limit and there are more blocks to process...
-		while((m_uNoOfProcessedBlocks < uNoOfBlocksToProcess) && (m_uCurrentBlockForTidying != uFinishBlock))
+		if(m_funcDataOverflowHandler)
 		{
-			//We only do any work if the block is flagged as potentially homogeneous.
-			if(m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying])
+			Vector3DInt32 v3dPos = itBlock->first;
+			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
+			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
+
+			Region reg(v3dLower, v3dUpper);
+			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+
+			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
+		}
+		if(m_bCompressionEnabled) {
+			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 			{
-				//Check if it's really homogeneous (this can be slow).
-				if(m_pBlocks[m_uCurrentBlockForTidying]->isHomogeneous())
+				// find the block in the uncompressed cache
+				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
 				{
-					//If so, replace is with a block from out homogeneous collection.
-					VoxelType homogeneousValue = m_pBlocks[m_uCurrentBlockForTidying]->getVoxelAt(0,0,0);
-					m_pBlocks[m_uCurrentBlockForTidying] = getHomogenousBlock(homogeneousValue);
+					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
+					itBlock->second.block.compress();
+					// put last object in cache here
+					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
+					// decrease cache size by one since last element is now in here twice
+					m_vecUncompressedBlockCache.resize(m_vecUncompressedBlockCache.size()-1);
+					break;
 				}
-
-				//Either way, we have now determined whether the block was sharable. So it's not *potentially* sharable.
-				m_vecBlockIsPotentiallyHomogenous[m_uCurrentBlockForTidying] = false;
-
-				//We've processed a block. This is inside the 'if' because the path outside the 'if' is trivially fast.
-				++m_uNoOfProcessedBlocks;
-			}
-
-			//Increment the current block, looping around if necessary
-			++m_uCurrentBlockForTidying;
-			m_uCurrentBlockForTidying %= m_uNoOfBlocksInVolume;
-		}
-
-		//Identify and remove any homogeneous blocks which are not actually in use.
-		typename std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > >::iterator iter = m_pHomogenousBlock.begin();
-		while(iter != m_pHomogenousBlock.end())
-		{
-			if(iter->second.unique())
-			{
-				m_pHomogenousBlock.erase(iter++); //Increments the iterator and returns the previous position to be erased.
-			}
-			else
-			{
-				++iter; //Just increments the iterator.
 			}
 		}
-	}	
+		m_pBlocks.erase(itBlock);
+	}
 
 	template <typename VoxelType>
-	polyvox_shared_ptr< Block<VoxelType> > Volume<VoxelType>::getHomogenousBlock(VoxelType tHomogenousValue) 
+	bool Volume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
 	{
-		typename std::map<VoxelType, polyvox_shared_ptr< Block<VoxelType> > >::iterator iterResult = m_pHomogenousBlock.find(tHomogenousValue);
-		if(iterResult == m_pHomogenousBlock.end())
+		//We don't have any range checks in this function because it
+		//is a private function only called by the ConstVolumeProxy. The
+		//ConstVolumeProxy takes care of ensuring the range is appropriate.
+
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
+		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
+		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+
+		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+
+		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+
+		//Return true to indicate that we modified a voxel.
+		return true;
+	}
+
+
+	template <typename VoxelType>
+	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	{
+		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
+
+		//Check if we have the same block as last time, if so there's no need to even update
+		//the time stamp. If we updated it everytime then that would be every time we touched
+		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
+		//This check should also provide a significant speed boost as usually it is true.
+		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			//Block<VoxelType> block;
-			polyvox_shared_ptr< Block<VoxelType> > pHomogeneousBlock(new Block<VoxelType>(m_uBlockSideLength));
-			//block.m_pBlock = temp;
-			//block.m_uReferenceCount++;
-			pHomogeneousBlock->fill(tHomogenousValue);
-			m_pHomogenousBlock.insert(std::make_pair(tHomogenousValue, pHomogeneousBlock));
-			return pHomogeneousBlock;
+			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			return m_pLastAccessedBlock;
+		}		
+
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		// check whether the block is already loaded
+		if(itBlock == m_pBlocks.end())
+		{
+			//The block is not in the map, so we will have to create a new block and add it.
+			//Before we do so, we might want to dump some existing data to make space. We 
+			//Only do this if paging is enabled.
+			if(m_bPagingEnabled)
+			{
+				// check wether another block needs to be unloaded before this one can be loaded
+				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
+				{
+					// find the least recently used block
+					typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+					typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
+					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+					{
+						if(i->second.timestamp < itUnloadBlock->second.timestamp)
+						{
+							itUnloadBlock = i;
+						}
+					}
+					eraseBlock(itUnloadBlock);
+				}
+			}
+			
+			// create the new block
+			LoadedBlock newBlock(m_uBlockSideLength);
+			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
+
+			//We have created the new block. If paging is enabled it should be used to
+			//fill in the required data. Otherwise it is just left in the default state.
+			if(m_bPagingEnabled)
+			{
+				if(m_funcDataRequiredHandler)
+				{
+					// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
+					// so this if(itBlock == m_pBlocks.end()) never is entered		
+					//FIXME - can we pass the block around so that we don't have to find  it again when we recursively call this function?
+					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
+					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
+					Region reg(v3dLower, v3dUpper);
+					ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+					m_funcDataRequiredHandler(ConstVolumeProxy, reg);
+				}
+			}
+		}		
+
+		//Get the block and mark that we accessed it
+		LoadedBlock& loadedBlock = itBlock->second;
+		loadedBlock.timestamp = ++m_uTimestamper;
+		m_v3dLastAccessedBlockPos = v3dBlockPos;
+		m_pLastAccessedBlock = &(loadedBlock.block);
+
+		if(loadedBlock.block.m_bIsCompressed == false)
+		{ 			
+			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			return m_pLastAccessedBlock;
+		}
+
+		//If we are allowed to compress then check whether we need to
+		if((m_bCompressionEnabled) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
+		{
+			int32_t leastRecentlyUsedBlockIndex = -1;
+			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();
+
+			//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
+			//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
+			//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
+			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+			{
+				if(m_vecUncompressedBlockCache[ct]->timestamp < uLeastRecentTimestamp)
+				{
+					uLeastRecentTimestamp = m_vecUncompressedBlockCache[ct]->timestamp;
+					leastRecentlyUsedBlockIndex = ct;
+				}
+			}
+			
+			//Compress the least recently used block.
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress();
+
+			//We don't actually remove any elements from this vector, we
+			//simply change the pointer to point at the new uncompressed bloack.			
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex] = &loadedBlock;
 		}
 		else
 		{
-			//iterResult->second.m_uReferenceCount++;
-			//polyvox_shared_ptr< Block<VoxelType> > result(iterResult->second);
-			return iterResult->second;
+			m_vecUncompressedBlockCache.push_back(&loadedBlock);
 		}
+		
+		loadedBlock.block.uncompress();
+
+		m_pLastAccessedBlock = &(loadedBlock.block);
+		assert(m_pLastAccessedBlock->m_tUncompressedData);
+		return m_pLastAccessedBlock;
 	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note: This function needs reviewing for accuracy...
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	float Volume<VoxelType>::calculateCompressionRatio(void)
+	{
+		float fRawSize = m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType);
+		float fCompressedSize = calculateSizeInBytes();
+		return fCompressedSize/fRawSize;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note: This function needs reviewing for accuracy...
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	uint32_t Volume<VoxelType>::calculateSizeInBytes(void)
+	{
+		uint32_t uSizeInBytes = sizeof(Volume);
+
+		//Memory used by the blocks
+		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+		{
+			//Inaccurate - account for rest of loaded block.
+			uSizeInBytes += i->second.block.calculateSizeInBytes();
+		}
+
+		//Memory used by the block cache.
+		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(LoadedBlock);
+		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+
+		//Memory used by border data.
+		if(m_pUncompressedBorderData)
+		{
+			uSizeInBytes += m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		}
+
+		return uSizeInBytes;
+	}
+
 }
+

@@ -74,16 +74,16 @@ void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
 					//Compute the extents of the current region
 					//FIXME - This is a little complex? PolyVox could
 					//provide more functions for dealing with regions?
-					uint16_t regionStartX = uRegionX * m_uRegionSideLength;
-					uint16_t regionStartY = uRegionY * m_uRegionSideLength;
-					uint16_t regionStartZ = uRegionZ * m_uRegionSideLength;
+					int32_t regionStartX = uRegionX * m_uRegionSideLength;
+					int32_t regionStartY = uRegionY * m_uRegionSideLength;
+					int32_t regionStartZ = uRegionZ * m_uRegionSideLength;
 
-					uint16_t regionEndX = regionStartX + m_uRegionSideLength;
-					uint16_t regionEndY = regionStartY + m_uRegionSideLength;
-					uint16_t regionEndZ = regionStartZ + m_uRegionSideLength;
+					int32_t regionEndX = regionStartX + m_uRegionSideLength;
+					int32_t regionEndY = regionStartY + m_uRegionSideLength;
+					int32_t regionEndZ = regionStartZ + m_uRegionSideLength;
 
-					Vector3DInt16 regLowerCorner(regionStartX, regionStartY, regionStartZ);
-					Vector3DInt16 regUpperCorner(regionEndX, regionEndY, regionEndZ);
+					Vector3DInt32 regLowerCorner(regionStartX, regionStartY, regionStartZ);
+					Vector3DInt32 regUpperCorner(regionEndX, regionEndY, regionEndZ);
 
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);

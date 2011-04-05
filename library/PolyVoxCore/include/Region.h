@@ -36,29 +36,36 @@ namespace PolyVox
 #endif
 	{
 	public:
+
+		const static Region MaxRegion;
+
 		Region();
-		Region(const Vector3DInt16& v3dLowerCorner, const Vector3DInt16& v3dUpperCorner);
+		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);
 
-		const Vector3DInt16& getLowerCorner(void) const;
-		const Vector3DInt16& getUpperCorner(void) const;
+		const Vector3DInt32& getLowerCorner(void) const;
+		const Vector3DInt32& getUpperCorner(void) const;
 
-		void setLowerCorner(const Vector3DInt16& v3dLowerCorner);
-		void setUpperCorner(const Vector3DInt16& v3dUpperCorner);
+		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
+		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
-		bool containsPoint(const Vector3DInt16& pos, uint8_t boundary = 0) const;
+		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;
 		void cropTo(const Region& other);
-		int16_t depth(void) const;
-		int16_t height(void) const;
-		void shift(const Vector3DInt16& amount);
-		void shiftLowerCorner(const Vector3DInt16& amount);
-		void shiftUpperCorner(const Vector3DInt16& amount);
-		Vector3DInt16 dimensions(void);
-		int16_t width(void) const;
+		/// Deprecated and misleading
+		int32_t depth(void) const;
+		/// Deprecated and misleading
+		int32_t height(void) const;
+		void shift(const Vector3DInt32& amount);
+		void shiftLowerCorner(const Vector3DInt32& amount);
+		void shiftUpperCorner(const Vector3DInt32& amount);
+		/// Deprecated and misleading
+		Vector3DInt32 dimensions(void);
+		/// Deprecated and misleading
+		int32_t width(void) const;
 
 	private:
-		Vector3DInt16 m_v3dLowerCorner;
-		Vector3DInt16 m_v3dUpperCorner;
+		Vector3DInt32 m_v3dLowerCorner;
+		Vector3DInt32 m_v3dUpperCorner;
 
 		//FIXME - This variable is unused, but without it the OpenGL example crashes in release mode
 		//when the volume size is 128^3 and the level of detail is 2. Very strange, but consistant.

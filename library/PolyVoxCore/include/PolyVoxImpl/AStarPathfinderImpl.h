@@ -84,7 +84,7 @@ namespace PolyVox
 			return false;
 		}
 
-		PolyVox::Vector3DInt16 position;
+		PolyVox::Vector3DInt32 position;
 		Node* parent;
 		float gVal;
 		float hVal;

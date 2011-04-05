@@ -38,14 +38,14 @@ namespace PolyVox
 	const float sqrt_2 = 1.4143f;
 	const float sqrt_3 = 1.7321f;
 
-	extern const POLYVOXCORE_API Vector3DInt16 arrayPathfinderFaces[6];
-	extern const POLYVOXCORE_API Vector3DInt16 arrayPathfinderEdges[12];
-	extern const POLYVOXCORE_API Vector3DInt16 arrayPathfinderCorners[8];
+	extern const POLYVOXCORE_API Vector3DInt32 arrayPathfinderFaces[6];
+	extern const POLYVOXCORE_API Vector3DInt32 arrayPathfinderEdges[12];
+	extern const POLYVOXCORE_API Vector3DInt32 arrayPathfinderCorners[8];
 
 	/// This function provides the default method for checking whether a given voxel
 	/// is vaid for the path computed by the AStarPathfinder.
 	template <typename VoxelType>
-	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt16& v3dPos);
+	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt32& v3dPos);
 
 	/// Provides a configuration for the AStarPathfinder.
 	////////////////////////////////////////////////////////////////////////////////
@@ -65,13 +65,13 @@ namespace PolyVox
 		AStarPathfinderParams
 		(
 			Volume<VoxelType>* volData,
-			const Vector3DInt16& v3dStart,
-			const Vector3DInt16& v3dEnd,
-			std::list<Vector3DInt16>* listResult,
+			const Vector3DInt32& v3dStart,
+			const Vector3DInt32& v3dEnd,
+			std::list<Vector3DInt32>* listResult,
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
 			Connectivity connectivity = TwentySixConnected,
-			polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt16&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
+			polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
 			polyvox_function<void (float)> funcProgressCallback = 0
 		)
 			:volume(volData)
@@ -90,14 +90,14 @@ namespace PolyVox
 		Volume<VoxelType>* volume;
 
 		/// The start point for the pathfinding algorithm.
-		Vector3DInt16 start;
+		Vector3DInt32 start;
 		
 		/// The end point for the pathfinding algorithm.
-		Vector3DInt16 end;
+		Vector3DInt32 end;
 
 		/// The resulting path will be stored as a series of points in
 		/// this list. Any existing contents will be cleared.
-		std::list<Vector3DInt16>* result;
+		std::list<Vector3DInt32>* result;
 
 		/// The AStarPathfinder performs its search by examining the neighbours
 		/// of each voxel it encounters. This property controls the meaning of
@@ -126,7 +126,7 @@ namespace PolyVox
 		/// you could check to ensure that the voxel above is empty and the voxel below is solid.
 		///
 		/// \sa aStarDefaultVoxelValidator
-		polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt16&)> isVoxelValidForPath;
+		polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt32&)> isVoxelValidForPath;
 
 		/// This function is called by the AStarPathfinder to report on its progress in getting to
 		/// the goal. The progress is reported by computing the distance from the closest node found
@@ -169,12 +169,12 @@ namespace PolyVox
 		void execute();
 
 	private:
-		void processNeighbour(const Vector3DInt16& neighbourPos, float neighbourGVal);
+		void processNeighbour(const Vector3DInt32& neighbourPos, float neighbourGVal);
 
-		float SixConnectedCost(const Vector3DInt16& a, const Vector3DInt16& b);
-		float EighteenConnectedCost(const Vector3DInt16& a, const Vector3DInt16& b);
-		float TwentySixConnectedCost(const Vector3DInt16& a, const Vector3DInt16& b);
-		float computeH(const Vector3DInt16& a, const Vector3DInt16& b);		
+		float SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
+		float EighteenConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
+		float TwentySixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
+		float computeH(const Vector3DInt32& a, const Vector3DInt32& b);		
 
 		//Node containers
 		AllNodesContainer allNodes;

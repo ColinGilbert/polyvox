@@ -28,6 +28,6 @@ freely, subject to the following restrictions:
 #include "Volume.h"
 
 void createSphereInVolume(PolyVox::Volume<PolyVox::MaterialDensityPair44>& volData, float fRadius, uint8_t uValue);
-void createCubeInVolume(PolyVox::Volume<PolyVox::MaterialDensityPair44>& volData, PolyVox::Vector3DUint16 lowerCorner, PolyVox::Vector3DUint16 upperCorner, uint8_t uValue);
+void createCubeInVolume(PolyVox::Volume<PolyVox::MaterialDensityPair44>& volData, PolyVox::Vector3DInt32 lowerCorner, PolyVox::Vector3DInt32 upperCorner, uint8_t uValue);
 
 #endif //__OpenGLExample_Shapes_H__
