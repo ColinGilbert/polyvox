@@ -6,18 +6,24 @@ Introduction
 ============
 This tutorial covers the basic use of the PolyVox API. After reading this tutorial you should have a good idea how to create a PolyVox volume and fill it with data, extract a triangle mesh representing the surface, and render the result. This tutorial assumes you are already familiar with the basic concepts behind PolyVox (see the :doc:`principles of polyvox <principles>` document if not), and are reasonably confident with 3D graphics and C++. It also assumes you have already got PolyVox installed on your system, if this is not the case then please consult :doc:`installation guide <install>`.
 
-The code samples and text in this tutorial correspond directly to the basic OpenGL example. This example uses the Qt toolkit for window and input handling, and for providing an OpenGL context to render into. In this tutorial we will omit code which performs these tasks and will instead focus on on the PolyVox code. You can consult the `Qt documentation <http://doc.qt.nokia.com/latest/>`_ if you want more information about these other aspects of the system.
+The code samples and text in this tutorial correspond directly to the BasicExample which comes with PolyVox. This example uses the Qt toolkit for window and input handling, and for providing an OpenGL context to render into. In this tutorial we will omit code which performs these tasks and will instead focus on on the PolyVox code. You can consult the `Qt documentation <http://doc.qt.nokia.com/latest/>`_ if you want more information about these other aspects of the system.
 
 Creating a volume
 =================
+To get started, we need to include the following headers:
 
-*Mention required headers*
+.. code-block:: c++
+
+	#include "MaterialDensityPair.h"
+	#include "CubicSurfaceExtractorWithNormals.h"
+	#include "SurfaceMesh.h"
+	#include "Volume.h"
 
 The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`Volume` class and stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
 
 .. code-block:: c++
 
-	Volume<MaterialDensityPair44> volData(64, 64, 64);
+	Volume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 
 As can be seen, the Volume class is templated upon the voxel type. This means it is straight forward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`Volume documentation <PolyVox::Volume>` for more details). In this particular case we have created a volume in which each voxel is an instance of :polyvox:`MaterialDensityPair44`. Each instance of :polyvox:`MaterialDensityPair44` holds both a material and a density and uses four bits of data for each. This means that both the material and the density have a range of 0-15, and each voxel requires one byte of storage. For more information about materials and densities please consult the :doc:`principles of polyvox <principles>` document.
 
@@ -27,9 +33,9 @@ Next, we set some of the voxels in the volume to be 'solid' in order to create a
 
 .. code-block:: c++
 
-	createSphereInVolume(volData, 30, 1);
+	createSphereInVolume(volData, 30);
 
-Note that this function is part of the basic OpenGL example (rather than being part of the PolyVox library) and is implemented as follows:
+Note that this function is part of the BasicExample (rather than being part of the PolyVox library) and is implemented as follows:
 	
 .. code-block:: c++
 	
@@ -78,16 +84,16 @@ Next, the function uses a three-level 'for' loop to iterate over each voxel in t
 
 Extracting the surface
 ======================
-Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process is performed by the :polyvox:`SurfaceExtractor` class. An instance of the :polyvox:`SurfaceExtractor` is created as follows:
+Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process is performed by the :polyvox:`CubicSurfaceExtractorWithNormals` class. An instance of the :polyvox:`CubicSurfaceExtractorWithNormals` is created as follows:
 
 .. code-block:: c++
 
-	SurfaceMesh mesh;
-	SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	SurfaceMesh<PositionMaterialNormal> mesh;
+	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	
-The :polyvox:`SurfaceExtractor` takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the :polyvox:`Volume` class provides a convienient :polyvox:`Volume::getEnclosingRegion` function which returns a :polyvox:`Region` representing the whole volume. The constructor also takes a pointer to a :polyvox:`SurfaceMesh` object whiere it will store the result, so we need to create one of these before we can construct the :polyvox:`SurfaceExtractor`.
+The :polyvox:`CubicSurfaceExtractorWithNormals` takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the :polyvox:`Volume` class provides a convienient :polyvox:`Volume::getEnclosingRegion` function which returns a :polyvox:`Region` representing the whole volume. The constructor also takes a pointer to a :polyvox:`SurfaceMesh` object whiere it will store the result, so we need to create one of these before we can construct the :polyvox:`CubicSurfaceExtractorWithNormals`.
 
-The actual extraction happens in the :polyvox:`SurfaceExtractor::execute` function. This means you can set up a :polyvox:`SurfaceExtractor` with the required parameters and then actually execute it later (on a different thread, perhaps). For this example we just call it straight away.
+The actual extraction happens in the :polyvox:`CubicSurfaceExtractorWithNormals::execute` function. This means you can set up a :polyvox:`CubicSurfaceExtractorWithNormals` with the required parameters and then actually execute it later. For this example we just call it straight away.
 
 .. code-block:: c++
 
@@ -103,11 +109,11 @@ The OpenGLWidget::setSurfaceMeshToRender() function is impemented as follows:
 
 .. code-block:: c++
 
-	void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh& surfaceMesh)
+	void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
 	{
 		//Convienient access to the vertices and indices
 		const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
-		const vector<SurfaceVertex>& vecVertices = surfaceMesh.getVertices();
+		const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
 
 		//Build an OpenGL index buffer
 		glGenBuffers(1, &indexBuffer);
@@ -119,7 +125,7 @@ The OpenGLWidget::setSurfaceMeshToRender() function is impemented as follows:
 		glGenBuffers(1, &vertexBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
-		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(SurfaceVertex), pVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal), pVertices, GL_STATIC_DRAW);
 
 		m_uBeginIndex = 0;
 		m_uEndIndex = vecIndices.size();
@@ -153,8 +159,8 @@ With the OpenGL index and vertex buffers set up, we can now look at the code whi
 
 		//Bind the vertex buffer
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glVertexPointer(3, GL_FLOAT, sizeof(SurfaceVertex), 0);
-		glNormalPointer(GL_FLOAT, sizeof(SurfaceVertex), (GLvoid*)12);
+		glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal), 0);
+		glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
 
 		glDrawRangeElements(GL_TRIANGLES, m_uBeginIndex, m_uEndIndex-1, m_uEndIndex - m_uBeginIndex, GL_UNSIGNED_INT, 0);
 	}

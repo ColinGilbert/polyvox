@@ -63,7 +63,7 @@ namespace PolyVox
 	/// Access to individual voxels is provided via the setVoxelAt() and getVoxelAt() member functions. Advanced users may also be interested in
 	/// the VolumeSampler class for faster read-only access to a large number of voxels.
 	/// 
-	/// Lastly the example prints out some properties of the Volume. Note that the dimentsions width(), height(), and depth() are inclusive, such
+	/// Lastly the example prints out some properties of the Volume. Note that the dimentsions getWidth(), getHeight(), and getDepth() are inclusive, such
 	/// that the width is 64 when the range of valid x coordinates goes from 0 to 63.
 	/// 
 	/// <b>Data Representaion</b>
