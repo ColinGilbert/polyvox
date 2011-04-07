@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
+#include "SurfaceMesh.h"
+
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
