@@ -34,12 +34,11 @@ void TestVolume::testSize()
 	const int32_t g_uVolumeSideLength = 128;
 	Volume<uint8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
 
-	//Note: Deliberatly go past each edge by one to test if the bounds checking works.
-	for (int32_t z = 0; z < g_uVolumeSideLength + 1; z++)
+	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
 	{
-		for (int32_t y = 0; y < g_uVolumeSideLength + 1; y++)
+		for (int32_t y = 0; y < g_uVolumeSideLength; y++)
 		{
-			for (int32_t x = 0; x < g_uVolumeSideLength + 1; x++)
+			for (int32_t x = 0; x < g_uVolumeSideLength; x++)
 			{
 				volData.setVoxelAt(x,y,z,255);
 			}
