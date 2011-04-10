@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 
 #include <limits>
 #include <cassert>
+#include <cstdlib> //For abort()
 #include <cstring> //For memcpy
 #include <list>
 #include <stdexcept> //For invalid_argument
