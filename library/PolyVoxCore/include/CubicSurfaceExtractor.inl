@@ -47,12 +47,14 @@ namespace PolyVox
 	{
 		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2;
 		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2;
+
 		uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxQuadsSharingVertex};
 		m_previousSliceVertices.resize(arraySize);
 		m_currentSliceVertices.resize(arraySize);
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
-
+		
+		
 		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
 		{
 			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY() + 1; y++)
@@ -83,20 +85,24 @@ namespace PolyVox
 						uint32_t v2 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), material));
 						uint32_t v3 = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), material));*/
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
-						uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+						// Check to ensure that when a voxel solid/non-solid change is right on a region border, the vertices are generated on the solid side of the region border
+						if(((currentVoxelIsSolid > negXVoxelIsSolid) && finalX == false) || ((currentVoxelIsSolid < negXVoxelIsSolid) && regX != 0))
+						{
+							uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+							uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
 
-						if(currentVoxelIsSolid > negXVoxelIsSolid)
-						{
-							m_meshCurrent->addTriangleCubic(v0,v1,v2);
-							m_meshCurrent->addTriangleCubic(v1,v3,v2);
-						}
-						else
-						{
-							m_meshCurrent->addTriangleCubic(v0,v2,v1);
-							m_meshCurrent->addTriangleCubic(v1,v2,v3);
+							if(currentVoxelIsSolid > negXVoxelIsSolid)
+							{
+								m_meshCurrent->addTriangleCubic(v0,v1,v2);
+								m_meshCurrent->addTriangleCubic(v1,v3,v2);
+							}
+							else											
+							{
+								m_meshCurrent->addTriangleCubic(v0,v2,v1);
+								m_meshCurrent->addTriangleCubic(v1,v2,v3);
+							}
 						}
 					}
 
@@ -107,20 +113,23 @@ namespace PolyVox
 					{
 						int material = (std::max)(currentVoxel.getMaterial(),negYVoxel.getMaterial());
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
-						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+						if(((currentVoxelIsSolid > negYVoxelIsSolid) && finalY == false) || ((currentVoxelIsSolid < negYVoxelIsSolid) && regY != 0))
+						{
+							uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+							uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
 
-						if(currentVoxelIsSolid > negYVoxelIsSolid)
-						{
-							m_meshCurrent->addTriangleCubic(v0,v2,v1);
-							m_meshCurrent->addTriangleCubic(v1,v2,v3);
-						}
-						else
-						{
-							m_meshCurrent->addTriangleCubic(v0,v1,v2);
-							m_meshCurrent->addTriangleCubic(v1,v3,v2);
+							if(currentVoxelIsSolid > negYVoxelIsSolid)
+							{
+								m_meshCurrent->addTriangleCubic(v0,v2,v1);
+								m_meshCurrent->addTriangleCubic(v1,v2,v3);
+							}
+							else
+							{
+								m_meshCurrent->addTriangleCubic(v0,v1,v2);
+								m_meshCurrent->addTriangleCubic(v1,v3,v2);
+							}
 						}
 					}
 
@@ -131,20 +140,23 @@ namespace PolyVox
 					{
 						int material = (std::max)(currentVoxel.getMaterial(), negZVoxel.getMaterial());
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v3 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-
-						if(currentVoxelIsSolid > negZVoxelIsSolid)
+						if(((currentVoxelIsSolid > negZVoxelIsSolid) && finalZ == false) || ((currentVoxelIsSolid < negZVoxelIsSolid) && regZ != 0))
 						{
-							m_meshCurrent->addTriangleCubic(v0,v1,v2);
-							m_meshCurrent->addTriangleCubic(v1,v3,v2);
-						}
-						else
-						{
-							m_meshCurrent->addTriangleCubic(v0,v2,v1);
-							m_meshCurrent->addTriangleCubic(v1,v2,v3);
+							uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							uint32_t v3 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+	
+							if(currentVoxelIsSolid > negZVoxelIsSolid)
+							{
+								m_meshCurrent->addTriangleCubic(v0,v1,v2);
+								m_meshCurrent->addTriangleCubic(v1,v3,v2);
+							}
+							else
+							{
+								m_meshCurrent->addTriangleCubic(v0,v2,v1);
+								m_meshCurrent->addTriangleCubic(v1,v2,v3);
+							}
 						}
 					}
 				}
