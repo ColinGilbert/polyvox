@@ -32,7 +32,7 @@ namespace PolyVox
 	class AmbientOcclusionCalculator
 	{
 	public:
-		AmbientOcclusionCalculator(Volume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength);
+		AmbientOcclusionCalculator(Volume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement);
 		~AmbientOcclusionCalculator();
 
 		void execute(void);
@@ -43,6 +43,8 @@ namespace PolyVox
 		Volume<VoxelType>* m_volInput;
 		Array<3, uint8_t>* m_arrayResult;
 		float m_fRayLength;
+
+		uint8_t m_uNoOfSamplesPerOutputElement;
 
 		uint16_t mRandomUnitVectorIndex;
 		uint16_t mRandomVectorIndex;

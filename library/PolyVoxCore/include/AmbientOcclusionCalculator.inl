@@ -32,12 +32,13 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	AmbientOcclusionCalculator<VoxelType>::AmbientOcclusionCalculator(Volume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength)
+	AmbientOcclusionCalculator<VoxelType>::AmbientOcclusionCalculator(Volume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement)
 		:m_region(region)
 		,m_sampVolume(volInput)
 		,m_volInput(volInput)
 		,m_arrayResult(arrayResult)
 		,m_fRayLength(fRayLength)
+		,m_uNoOfSamplesPerOutputElement(uNoOfSamplesPerOutputElement)
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
 		assert(m_volInput->getWidth() % arrayResult->getDimension(0) == 0);
@@ -100,9 +101,9 @@ namespace PolyVox
 					//Keep track of how many rays did not hit anything
 					uint8_t uVisibleDirections = 0;
 
-					for(int ct = 0; ct < 255; ct++)
+					for(int ct = 0; ct < m_uNoOfSamplesPerOutputElement; ct++)
 					{						
-						//We take a random vector with components going from -1 to 1 and scale it to go from -haflRatio to +halfRatio.
+						//We take a random vector with components going from -1 to 1 and scale it to go from -halfRatio to +halfRatio.
 						//This jitter value moves our sample point from the center of the array cell to somewhere else in the array cell
 						Vector3DFloat v3dJitter = randomVectors[(mRandomVectorIndex += (++mIndexIncreament)) % 1019]; //Prime number helps avoid repetition on sucessive loops.
 						v3dJitter *= v3dHalfRatio;
@@ -120,7 +121,21 @@ namespace PolyVox
 							++uVisibleDirections;
 						}
 					}
-					(*m_arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = uVisibleDirections;
+
+					float fVisibility;
+					if(m_uNoOfSamplesPerOutputElement == 0)
+					{
+						//The user might request zero samples (I've done this in the past while debugging - I don't want to
+						//wait for ambient occlusion but I do want as valid result for rendering). Avoid the divide by zero.
+						fVisibility = 1.0f;
+					}
+					else
+					{
+						fVisibility = static_cast<float>(uVisibleDirections) / static_cast<float>(m_uNoOfSamplesPerOutputElement);
+						assert((fVisibility >= 0.0f) && (fVisibility <= 1.0f));
+					}
+
+					(*m_arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = static_cast<uint8_t>(255.0f * fVisibility);
 				}
 			}
 		}
