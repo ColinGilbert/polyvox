@@ -40,6 +40,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxForwardDeclarations.h
 	include/Raycast.h
 	include/Raycast.inl
+	include/RaycastWithCallback.h
+	include/RaycastWithCallback.inl
 	include/Region.h
 	include/SurfaceExtractor.h
 	include/SurfaceExtractor.inl
