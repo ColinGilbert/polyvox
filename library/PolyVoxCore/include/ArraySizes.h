@@ -53,7 +53,7 @@ namespace PolyVox
 	/// behind it may appear complex. For reference, it is based upon the article here:
 	/// http://www.drdobbs.com/cpp/184401319/
 	////////////////////////////////////////////////////////////////////////////////
-	class POLYVOXCORE_API ArraySizes
+	class POLYVOX_API ArraySizes
 	{
 		typedef const uint32_t (&UIntArray1)[1];
 

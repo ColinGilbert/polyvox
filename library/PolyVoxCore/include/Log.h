@@ -45,7 +45,7 @@ namespace PolyVox
 		LS_ERROR
 	};	
 
-	POLYVOXCORE_API extern void (*logHandler)(std::string, int severity);
+	POLYVOX_API extern void (*logHandler)(std::string, int severity);
 }
 
 //Debug severity messages are only used if we are a debug build

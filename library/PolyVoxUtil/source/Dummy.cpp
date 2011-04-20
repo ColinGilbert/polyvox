@@ -2,7 +2,7 @@
 
 namespace PolyVox
 {	
-	class POLYVOXCORE_API DummyClass
+	class POLYVOX_API DummyClass
 	{
 	public:
 		int getx(void);

@@ -9,14 +9,13 @@ SET(UTIL_SRC_FILES
 
 #Projects headers files
 SET(UTIL_INC_FILES
-	include/Export.h
 	include/Serialization.h
 	include/Serialization.inl
 	include/VolumeChangeTracker.h	
 	include/VolumeChangeTracker.inl
 )
 
-ADD_DEFINITIONS(-DPOLYVOXUTIL_EXPORT) #Export symbols in the .dll
+ADD_DEFINITIONS(-DPOLYVOX_SHARED_EXPORTS) #Export symbols in the .dll
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
@@ -30,7 +29,7 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/relea
 
 #Util
 #Build
-ADD_LIBRARY(PolyVoxUtil SHARED ${UTIL_SRC_FILES} ${UTIL_INC_FILES})
+ADD_LIBRARY(PolyVoxUtil STATIC ${UTIL_SRC_FILES} ${UTIL_INC_FILES})
 TARGET_LINK_LIBRARIES(PolyVoxUtil PolyVoxCore)
 SET_TARGET_PROPERTIES(PolyVoxUtil PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 IF(MSVC)

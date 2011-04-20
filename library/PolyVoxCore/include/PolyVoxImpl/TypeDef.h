@@ -25,17 +25,38 @@ freely, subject to the following restrictions:
 #define __PolyVox_TypeDef_H__
 
 //Definitions needed to make library functions accessable
-#ifdef _MSC_VER
-	//We are using a Microsoft compiler.
-	#ifdef POLYVOXCORE_EXPORT
-		#define POLYVOXCORE_API __declspec(dllexport)
-	#else
-		#define POLYVOXCORE_API __declspec(dllimport)
-	#endif
+// See http://gcc.gnu.org/wiki/Visibility for more info.
+#if defined _WIN32 || defined __CYGWIN__
+  #define POLYVOX_HELPER_IMPORT __declspec(dllimport)
+  #define POLYVOX_HELPER_EXPORT __declspec(dllexport)
+  #define POLYVOX_HELPER_LOCAL
 #else
-	//Assume a GNU compiler.
-	#define POLYVOXCORE_API __attribute__ ((visibility("default")))
+  #if __GNUC__ >= 4
+    #define POLYVOX_HELPER_IMPORT __attribute__ ((visibility("default")))
+    #define POLYVOX_HELPER_EXPORT __attribute__ ((visibility("default")))
+    #define POLYVOX_HELPER_LOCAL  __attribute__ ((visibility("hidden")))
+  #else
+    #define POLYVOX_HELPER_IMPORT
+    #define POLYVOX_HELPER_EXPORT
+    #define POLYVOX_HELPER_LOCAL
+  #endif
 #endif
+
+// Now we use the generic helper definitions above to define POLYVOX_API and POLYVOX_LOCAL.
+// POLYVOX_API is used for the public API symbols. It either DLL imports or DLL exports (or does nothing for static build)
+// POLYVOX_LOCAL is used for non-api symbols.
+
+#ifdef POLYVOX_SHARED // defined if FOX is compiled as a DLL
+  #ifdef POLYVOX_SHARED_EXPORTS // defined if we are building the FOX DLL (instead of using it)
+    #define POLYVOX_API POLYVOX_HELPER_EXPORT
+  #else
+    #define POLYVOX_API POLYVOX_HELPER_IMPORT
+  #endif // POLYVOX_SHARED_EXPORTS
+  #define POLYVOX_LOCAL POLYVOX_HELPER_LOCAL
+#else // POLYVOX_SHARED is not defined: this means FOX is a static lib.
+  #define POLYVOX_API
+  #define POLYVOX_LOCAL
+#endif // POLYVOX_SHARED
 
 //Check which compiler we are using and work around unsupported features as necessary.
 #if defined(_MSC_VER) && (_MSC_VER < 1600) 

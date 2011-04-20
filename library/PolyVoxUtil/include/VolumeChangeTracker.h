@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxForwardDeclarations.h"
 #include "Region.h"
-#include "Export.h"
 
 namespace PolyVox
 {	

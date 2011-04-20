@@ -30,8 +30,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	POLYVOXCORE_API uint8_t logBase2(uint32_t uInput);
-	POLYVOXCORE_API bool isPowerOf2(uint32_t uInput);
+	POLYVOX_API uint8_t logBase2(uint32_t uInput);
+	POLYVOX_API bool isPowerOf2(uint32_t uInput);
 
 	template <typename Type>
         Type trilinearlyInterpolate(

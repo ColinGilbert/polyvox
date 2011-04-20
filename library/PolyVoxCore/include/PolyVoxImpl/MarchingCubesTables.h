@@ -28,8 +28,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	extern POLYVOXCORE_API int edgeTable[256];
-	extern POLYVOXCORE_API int triTable[256][16];
+	extern POLYVOX_API int edgeTable[256];
+	extern POLYVOX_API int triTable[256][16];
 }
 
 #endif

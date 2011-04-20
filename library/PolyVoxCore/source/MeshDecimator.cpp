@@ -5,7 +5,7 @@
 namespace PolyVox
 {
 	template<>
-	POLYVOXCORE_API void MeshDecimator<PositionMaterial>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
+	POLYVOX_API void MeshDecimator<PositionMaterial>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
 	{
 		vecVertexMetadata.clear();
 		vecVertexMetadata.resize(m_pOutputMesh->m_vecVertices.size());
@@ -77,7 +77,7 @@ namespace PolyVox
 	}
 
 	template<>
-	POLYVOXCORE_API void MeshDecimator<PositionMaterialNormal>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
+	POLYVOX_API void MeshDecimator<PositionMaterialNormal>::fillInitialVertexMetadata(std::vector<InitialVertexMetadata>& vecVertexMetadata)
 	{
 		vecVertexMetadata.clear();
 		vecVertexMetadata.resize(m_pOutputMesh->m_vecVertices.size());
@@ -130,7 +130,7 @@ namespace PolyVox
 	}
 
 	template<> 
-	POLYVOXCORE_API bool MeshDecimator<PositionMaterialNormal>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
+	POLYVOX_API bool MeshDecimator<PositionMaterialNormal>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
 		if(m_vecInitialVertexMetadata[uSrc].normal.dot(m_vecInitialVertexMetadata[uDst].normal) < m_fMinDotProductForCollapse)
 		{
@@ -142,7 +142,7 @@ namespace PolyVox
 	}
 
 	template<> 
-	POLYVOXCORE_API bool MeshDecimator<PositionMaterial>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
+	POLYVOX_API bool MeshDecimator<PositionMaterial>::canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst)
 	{
 		//We don't actually use the normal here, because we want to allow face
 		//vertices to collapse onto edge vertices. Simply checking whether anything

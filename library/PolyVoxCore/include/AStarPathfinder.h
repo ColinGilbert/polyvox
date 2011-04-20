@@ -38,9 +38,9 @@ namespace PolyVox
 	const float sqrt_2 = 1.4143f;
 	const float sqrt_3 = 1.7321f;
 
-	extern const POLYVOXCORE_API Vector3DInt32 arrayPathfinderFaces[6];
-	extern const POLYVOXCORE_API Vector3DInt32 arrayPathfinderEdges[12];
-	extern const POLYVOXCORE_API Vector3DInt32 arrayPathfinderCorners[8];
+	extern const POLYVOX_API Vector3DInt32 arrayPathfinderFaces[6];
+	extern const POLYVOX_API Vector3DInt32 arrayPathfinderEdges[12];
+	extern const POLYVOX_API Vector3DInt32 arrayPathfinderCorners[8];
 
 	/// This function provides the default method for checking whether a given voxel
 	/// is vaid for the path computed by the AStarPathfinder.

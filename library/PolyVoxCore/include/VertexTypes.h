@@ -35,7 +35,7 @@ namespace PolyVox
 #ifdef SWIG
 	class PositionMaterial
 #else
-	class POLYVOXCORE_API PositionMaterial
+	class POLYVOX_API PositionMaterial
 #endif
 	{
 	public:	
@@ -56,7 +56,7 @@ namespace PolyVox
 #ifdef SWIG
 	class PositionMaterialNormal
 #else
-	class POLYVOXCORE_API PositionMaterialNormal
+	class POLYVOX_API PositionMaterialNormal
 #endif
 	{
 	public:	

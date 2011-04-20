@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {	
-	extern POLYVOXCORE_API const Vector3DFloat randomVectors[];
+	extern POLYVOX_API const Vector3DFloat randomVectors[];
 }
 
 #endif //__PolyVox_RandomVectors_H__

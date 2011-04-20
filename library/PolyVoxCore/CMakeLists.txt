@@ -79,7 +79,8 @@ SET(IMPL_INC_FILES
 	include/PolyVoxImpl/Utility.h
 )
 
-ADD_DEFINITIONS(-DPOLYVOXCORE_EXPORT) #Export symbols in the .dll
+#NOTE: The following line should be uncommented when building shared libs.
+#ADD_DEFINITIONS(-DPOLYVOX_SHARED_EXPORTS) #Export symbols in the .dll
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
@@ -94,7 +95,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #Core
 #Build
-ADD_LIBRARY(PolyVoxCore SHARED ${CORE_SRC_FILES} ${CORE_INC_FILES} ${IMPL_SRC_FILES} ${IMPL_INC_FILES})
+ADD_LIBRARY(PolyVoxCore STATIC ${CORE_SRC_FILES} ${CORE_INC_FILES} ${IMPL_SRC_FILES} ${IMPL_INC_FILES})
 SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 IF(MSVC)
         SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES COMPILE_FLAGS "/wd4251") #Disable warning on STL exports
