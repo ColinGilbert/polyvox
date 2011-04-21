@@ -5,6 +5,7 @@
 MACRO(CREATE_TEST headerfile sourcefile executablename)
 	UNSET(test_moc_SRCS) #clear out the MOCs from previous tests
 	QT4_WRAP_CPP(test_moc_SRCS ${headerfile})
+	LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR} ${PolyVoxUtil_BINARY_DIR})
 	ADD_EXECUTABLE(${executablename} ${sourcefile} ${test_moc_SRCS})
 	TARGET_LINK_LIBRARIES(${executablename} PolyVoxCore PolyVoxUtil ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 	#HACK. This is needed since everything is built in the base dir in Windows. As of 2.8 we should change this.

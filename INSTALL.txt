@@ -47,6 +47,9 @@ The other available settings for PolyVox are:
 ``BUILD_TESTING`` (``ON`` or ``OFF``)
 	Build the test applications that come with PolyVox. Running the tests is detailed in the next section. Defaults to ``ON``.
 
+``BUILD_STATIC_LIBRARIES`` and ``BUILD_DYNAMIC_LIBRARIES`` (``ON`` or ``OFF``)
+	Choose whether static (``.a``) or dynamic libraries (``.so``) should be built. On Linux both are built by default.
+
 ``CMAKE_BUILD_TYPE`` (``Debug``, ``Release``, ``RelWithDebInfo`` or ``MinSizeRel``)
 	String option to set the type of build. This will automatically set some compilation flags such as the optimisation level or define ``NDEBUG``.
 	
@@ -115,6 +118,8 @@ CMake
 You need CMake installed so get the binary distribution from `CMake.org <http://cmake.org/cmake/resources/software.html>`_. Install it and run the CMake GUI.
 
 Point the source directory to the directory holding this file and the build directory to the ``build`` subdirectory. Then, click the ``Configure`` button. Click through the dialog box that appears and once you've clicked ``Finish`` you should see text appearing in the bottom text area. Once this has finished, some options will appear in the top area. The purpose of these options in detailed in the Linux→CMake section above. Once you have set these options to what you please, click ``Configure`` again. If it completes without errors then you can click ``Generate`` which will generate your compilers project files in the build directory.
+
+Note that while on Linux it is possible to build both static and dynamic versions of the libraries, this is not possible on Windows. By default static libraries are built. If you want dynamic libraries (``.dll``) then make sure the ``BUILD_STATIC_LIBRARIES`` option is disabled and the ``BUILD_DYNAMIC_LIBRARIES`` option is enabled in the CMake GUI and reconfigure.
 
 Building
 --------
