@@ -37,11 +37,37 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 void OpenGLWidget::initializeGL()
 {
 	//We need GLEW to access recent OpenGL functionality
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
+	std::cout << "Initialising GLEW...";
+	GLenum result = glewInit();
+	if (result == GLEW_OK)
+	{
+	  std::cout << "success" << std::endl;
+	}
+	else
 	{
 		/* Problem: glewInit failed, something is seriously wrong. */
-		std::cout << "GLEW Error: " << glewGetErrorString(err) << std::endl;
+		std::cout << "failed" << std::endl;
+		std::cout << "Initialising GLEW failed with the following error: " << glewGetErrorString(result) << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	
+	//Print out some information about the OpenGL implementation.
+	std::cout << "OpenGL Implementation Details:" << std::endl;
+	if(glGetString(GL_VENDOR))
+	  std::cout << "\tGL_VENDOR: " << glGetString(GL_VENDOR) << std::endl;
+	if(glGetString(GL_RENDERER))
+	  std::cout << "\tGL_RENDERER: " << glGetString(GL_RENDERER) << std::endl;
+	if(glGetString(GL_VERSION))
+	  std::cout << "\tGL_VERSION: " << glGetString(GL_VERSION) << std::endl;
+	if(glGetString(GL_SHADING_LANGUAGE_VERSION))
+	  std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	
+	//Check our version of OpenGL is recent enough.
+	//We need at least 1.5 for vertex buffer objects,
+	if (!GLEW_VERSION_1_5)
+	{
+	  std::cout << "Error: You need OpenGL version 1.5 to run this example." << std::endl;
+	  exit(EXIT_FAILURE);
 	}
 
 	//Set up the clear colour
@@ -97,6 +123,13 @@ void OpenGLWidget::paintGL()
 	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
 
 	glDrawRangeElements(GL_TRIANGLES, m_uBeginIndex, m_uEndIndex-1, m_uEndIndex - m_uBeginIndex, GL_UNSIGNED_INT, 0);
+	
+	GLenum errCode = glGetError();
+	if(errCode != GL_NO_ERROR)
+	{
+	  //What has replaced getErrorString() in the latest OpenGL?
+	  std::cout << "OpenGL Error: " << errCode << std::endl;
+	}
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent* event)
