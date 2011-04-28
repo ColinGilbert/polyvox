@@ -26,13 +26,13 @@ freely, subject to the following restrictions:
 #include "VertexTypes.h"
 #include "PolyVoxImpl/TypeDef.h"
 
-#include "Volume.h"
+#include "LargeVolume.h"
 
 using namespace std;
 
 namespace PolyVox
 {
-	void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod)
+	void computeNormalsForVertices(LargeVolume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod)
 	{
 		std::vector<PositionMaterialNormal>& vecVertices = mesh.getRawVertexData();
 		std::vector<PositionMaterialNormal>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -41,7 +41,7 @@ namespace PolyVox
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			Volume<uint8_t>::Sampler volIter(volumeData);
+			LargeVolume<uint8_t>::Sampler volIter(volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
@@ -63,11 +63,11 @@ namespace PolyVox
 		}
 	}
 
-	Vector3DFloat computeNormal(Volume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
+	Vector3DFloat computeNormal(LargeVolume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
 	{
 		Vector3DFloat v3dGradient; //To store the result
 
-		Volume<uint8_t>::Sampler volIter(volumeData);
+		LargeVolume<uint8_t>::Sampler volIter(volumeData);
 
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 

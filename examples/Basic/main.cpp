@@ -26,14 +26,14 @@ freely, subject to the following restrictions:
 #include "MaterialDensityPair.h"
 #include "CubicSurfaceExtractorWithNormals.h"
 #include "SurfaceMesh.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 
 #include <QApplication>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius)
+void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface

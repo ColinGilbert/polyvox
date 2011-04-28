@@ -36,42 +36,42 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	///The Volume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
+	///The LargeVolume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/// A Volume is essentially a 3D array in which each element (or <i>voxel</i>) is identified by a three dimensional (x,y,z) coordinate.
-	/// We use the Volume class to store our data in an efficient way, and it is the input to many of the algorithms (such as the surface
-	/// extractors) which form the heart of PolyVox. The Volume class is templatised so that different types of data can be stored within each voxel.
+	/// A LargeVolume is essentially a 3D array in which each element (or <i>voxel</i>) is identified by a three dimensional (x,y,z) coordinate.
+	/// We use the LargeVolume class to store our data in an efficient way, and it is the input to many of the algorithms (such as the surface
+	/// extractors) which form the heart of PolyVox. The LargeVolume class is templatised so that different types of data can be stored within each voxel.
 	///
 	/// <b> Basic usage</b>
 	/// The following code snippet shows how to construct a volume and demonstrates basic usage:
 	///
 	/// \code
-	/// Volume<Material8> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
+	/// LargeVolume<Material8> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
 	/// volume.setVoxelAt(15, 90, 42, Material8(5));
 	/// std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxelAt(15, 90, 42).getMaterial() << std::endl;
 	/// std::cout << "Width = " << volume.getWidth() << ", Height = " << volume.getHeight() << ", Depth = " << volume.getDepth() << std::endl;
 	/// \endcode
 	///
-	/// In this particular example each voxel in the Volume is of type 'Material8', as specified by the template parameter. This is one of several
+	/// In this particular example each voxel in the LargeVolume is of type 'Material8', as specified by the template parameter. This is one of several
 	/// predefined voxel types, and it is also possible to define your own. The Material8 type simply holds an integer value where zero represents
 	/// empty space and any other value represents a solid material.
 	/// 
-	/// The Volume constructor takes a Region as a parameter. This specifies the valid range of voxels which can be held in the volume, so in this
+	/// The LargeVolume constructor takes a Region as a parameter. This specifies the valid range of voxels which can be held in the volume, so in this
 	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). Attempts to access voxels outside this range will result is accessing the
 	/// border value (see getBorderValue() and setBorderValue()). PolyVox also has support for near infinite volumes which will be discussed later.
 	/// 
 	/// Access to individual voxels is provided via the setVoxelAt() and getVoxelAt() member functions. Advanced users may also be interested in
 	/// the Sampler class for faster read-only access to a large number of voxels.
 	/// 
-	/// Lastly the example prints out some properties of the Volume. Note that the dimentsions getWidth(), getHeight(), and getDepth() are inclusive, such
+	/// Lastly the example prints out some properties of the LargeVolume. Note that the dimentsions getWidth(), getHeight(), and getDepth() are inclusive, such
 	/// that the width is 64 when the range of valid x coordinates goes from 0 to 63.
 	/// 
 	/// <b>Data Representaion</b>
 	/// If stored carelessly, volume data can take up a huge amount of memory. For example, a volume of dimensions 1024x1024x1024 with
-	/// 1 byte per voxel will require 1GB of memory if stored in an uncompressed form. Natuarally our Volume class is much more efficient
+	/// 1 byte per voxel will require 1GB of memory if stored in an uncompressed form. Natuarally our LargeVolume class is much more efficient
 	/// than this and it is worth understanding (at least at a high level) the approach which is used.
 	///
-	/// Essentially, the Volume class stores its data as a collection of blocks. Each of these block is much smaller than the whole volume,
+	/// Essentially, the LargeVolume class stores its data as a collection of blocks. Each of these block is much smaller than the whole volume,
 	/// for example a typical size might be 32x32x32 voxels (though is is configurable by the user). In this case, a 256x512x1024 volume
 	/// would contain 8x16x32 = 4096 blocks. The data for each block is stored in a compressed form, which uses only a small amout of
 	/// memory but it is hard to modify the data. Therefore, before any given voxel can be modified, its corresponding block must be uncompressed.
@@ -100,7 +100,7 @@ namespace PolyVox
 	/// cannot fit in memory, and then returning it back to PolyVox on demand. For example, the user might choose to temporarily store this data
 	/// on disk or stream it to a remote database.
 	///
-	/// You can construct such a Volume as follows:
+	/// You can construct such a LargeVolume as follows:
 	///
 	/// \code
 	/// void myDataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
@@ -115,10 +115,10 @@ namespace PolyVox
 	///		//provides access to the volume data, and the parameter 'reg' indicates which region of the volume you need to store.
 	/// }
 	///
-	///	Volume<Density>volData(&myDataRequiredHandler, &myDataOverflowHandler);
+	///	LargeVolume<Density>volData(&myDataRequiredHandler, &myDataOverflowHandler);
 	/// \endcode
 	///
-	/// Essentially you are providing an extension to the Volume class - a way for data to be stored once PolyVox has run out of memory for it. Note
+	/// Essentially you are providing an extension to the LargeVolume class - a way for data to be stored once PolyVox has run out of memory for it. Note
 	/// that you don't actually have to do anything with the data - you could simply decide that once it gets removed from memory it doesn't matter
 	/// anymore. But you still need to be ready to then provide something to PolyVox (even if it's just default data) in the event that it is requested.
 	///
@@ -136,18 +136,18 @@ namespace PolyVox
 	/// is your cache sise is only one. Of course the logic is more complex, but writing code in such a cache-aware manner may be beneficial in some situations.
 	///
 	/// <b>Threading</b>
-	/// The Volume class does not make any guarentees about thread safety. You should ensure that all accesses are performed from the same thread.
+	/// The LargeVolume class does not make any guarentees about thread safety. You should ensure that all accesses are performed from the same thread.
 	/// This is true even if you are only reading data from the volume, as concurrently reading from different threads can invalidate the contents
 	/// of the block cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	class Volume
+	class LargeVolume
 	{
 	public:
 		class Sampler
 		{
 		public:
-			Sampler(Volume<VoxelType>* volume);
+			Sampler(LargeVolume<VoxelType>* volume);
 			~Sampler();
 
 			typename Sampler& operator=(const typename Sampler& rhs) throw();
@@ -156,7 +156,7 @@ namespace PolyVox
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-			const Volume<VoxelType>* getVolume(void) const;
+			const LargeVolume<VoxelType>* getVolume(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
@@ -203,7 +203,7 @@ namespace PolyVox
 		private:
 
 			//The current volume
-			Volume<VoxelType>* mVolume;
+			LargeVolume<VoxelType>* mVolume;
 
 			//The current position in the volume
 			int32_t mXPosInVolume;
@@ -232,14 +232,14 @@ namespace PolyVox
 
 	public:		
 		/// Constructor for creating a very large paging volume.
-		Volume
+		LargeVolume
 		(
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 			uint16_t uBlockSideLength = 32
 		);
 		/// Constructor for creating a fixed size volume.
-		Volume
+		LargeVolume
 		(
 			const Region& regValid,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
@@ -248,16 +248,16 @@ namespace PolyVox
 			uint16_t uBlockSideLength = 32
 		);
 		/// Deprecated constructor - do not use.
-		Volume
+		LargeVolume
 		(
 			int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
 		);
 		/// Destructor
-		~Volume();
+		~LargeVolume();
 
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
-		/// Gets a Region representing the extents of the Volume.
+		/// Gets a Region representing the extents of the LargeVolume.
 		Region getEnclosingRegion(void) const;
 		/// Gets the width of the volume in voxels.
 		int32_t getWidth(void) const;
@@ -310,7 +310,7 @@ private:
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataRequiredHandler;
-		/// gets called when a Region needs to be stored by the user, because Volume will erase it right after
+		/// gets called when a Region needs to be stored by the user, because LargeVolume will erase it right after
 		/// this function returns
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
@@ -359,7 +359,7 @@ private:
 	};
 }
 
-#include "Volume.inl"
-#include "VolumeSampler.inl"
+#include "LargeVolume.inl"
+#include "LargeVolumeSampler.inl"
 
 #endif

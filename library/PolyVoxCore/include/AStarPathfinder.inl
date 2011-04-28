@@ -31,7 +31,7 @@ namespace PolyVox
 	/// \return true is the voxel is valid for the path
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt32& v3dPos)
+	bool aStarDefaultVoxelValidator(const LargeVolume<VoxelType>* volData, const Vector3DInt32& v3dPos)
 	{
 		//Voxels are considered valid candidates for the path if they are inside the volume...
 		if(volData->getEnclosingRegion().containsPoint(v3dPos) == false)

@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	CubicSurfaceExtractorWithNormals<VoxelType>::CubicSurfaceExtractorWithNormals(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	CubicSurfaceExtractorWithNormals<VoxelType>::CubicSurfaceExtractorWithNormals(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)

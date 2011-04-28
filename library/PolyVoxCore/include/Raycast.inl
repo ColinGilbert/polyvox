@@ -31,7 +31,7 @@ namespace PolyVox
 	/// \param result An instance of RaycastResult in which the result will be stored.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Raycast<VoxelType>::Raycast(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result)
+	Raycast<VoxelType>::Raycast(LargeVolume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)

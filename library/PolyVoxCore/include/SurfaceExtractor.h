@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_SurfaceExtractor_H__
 
 #include "PolyVoxForwardDeclarations.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -35,7 +35,7 @@ namespace PolyVox
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+		SurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
 
 		void execute();
 
@@ -54,8 +54,8 @@ namespace PolyVox
 			Array2DInt32& m_pCurrentVertexIndicesY,
 			Array2DInt32& m_pCurrentVertexIndicesZ);
 
-		Vector3DFloat computeCentralDifferenceGradient(const typename Volume<VoxelType>::Sampler& volIter);
-		Vector3DFloat computeSobelGradient(const typename Volume<VoxelType>::Sampler& volIter);
+		Vector3DFloat computeCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter);
+		Vector3DFloat computeSobelGradient(const typename LargeVolume<VoxelType>::Sampler& volIter);
 
 		//Use the cell bitmasks to generate all the indices needed for that slice
 		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
@@ -67,8 +67,8 @@ namespace PolyVox
 			const Array2DInt32& m_pCurrentVertexIndicesZ);
 
 		//The volume data and a sampler to access it.
-		Volume<VoxelType>* m_volData;
-		typename Volume<VoxelType>::Sampler m_sampVolume;
+		LargeVolume<VoxelType>* m_volData;
+		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
 
 		//Holds a position in volume space.
 		int32_t iXVolSpace;

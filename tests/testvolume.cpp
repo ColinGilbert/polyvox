@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "testvolume.h"
 
-#include <Volume.h>
+#include <LargeVolume.h>
 
 #include <QtTest>
 
@@ -32,7 +32,7 @@ using namespace PolyVox;
 void TestVolume::testSize()
 {
 	const int32_t g_uVolumeSideLength = 128;
-	Volume<uint8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
+	LargeVolume<uint8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
 
 	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
 	{

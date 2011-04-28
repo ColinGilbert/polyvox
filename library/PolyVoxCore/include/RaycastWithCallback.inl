@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	RaycastWithCallback<VoxelType>::RaycastWithCallback(Volume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, polyvox_function<bool(const Vector3DInt32& position)> funcCallback)
+	RaycastWithCallback<VoxelType>::RaycastWithCallback(LargeVolume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, polyvox_function<bool(const Vector3DInt32& position)> funcCallback)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)

@@ -62,8 +62,8 @@ namespace PolyVox
 
 	template <typename VoxelType> class ConstVolumeProxy;
 
-	//---------- Volume ----------
-	template <typename VoxelType> class Volume;
+	//---------- LargeVolume ----------
+	template <typename VoxelType> class LargeVolume;
 	//---------------------------------
 
 	//---------- Mesh ----------

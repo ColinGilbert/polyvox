@@ -27,11 +27,11 @@ freely, subject to the following restrictions:
 #include "PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
 
-#include "Volume.h"
+#include "LargeVolume.h"
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(Volume<uint8_t>::Sampler& volIter);
+	float computeSmoothedVoxel(LargeVolume<uint8_t>::Sampler& volIter);
 }
 
 #endif

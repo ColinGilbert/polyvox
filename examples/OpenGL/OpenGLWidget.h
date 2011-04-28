@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 #include <QGLWidget>
 #include <QTimer>
 
-#include "Volume.h"
+#include "LargeVolume.h"
 #include "SurfaceMesh.h"
 #include "PolyVoxImpl/Utility.h"
 
@@ -45,7 +45,7 @@ class OpenGLWidget : public QGLWidget
  public:
      OpenGLWidget(QWidget *parent);
 
-	 void setVolume(PolyVox::Volume<PolyVox::MaterialDensityPair44>* volData);
+	 void setVolume(PolyVox::LargeVolume<PolyVox::MaterialDensityPair44>* volData);
 
 	 void mouseMoveEvent(QMouseEvent* event);
 	 void mousePressEvent(QMouseEvent* event);
@@ -69,7 +69,7 @@ class OpenGLWidget : public QGLWidget
 	 bool m_bUseOpenGLVertexBufferObjects;
 
 	 //Creates a volume 128x128x128
-	PolyVox::Volume<PolyVox::MaterialDensityPair44>* m_volData;
+	PolyVox::LargeVolume<PolyVox::MaterialDensityPair44>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
 	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh> m_mapOpenGLSurfaceMeshes;

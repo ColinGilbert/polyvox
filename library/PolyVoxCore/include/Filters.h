@@ -26,12 +26,12 @@ freely, subject to the following restrictions:
 
 #include "Array.h"
 #include "Region.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 
 namespace PolyVox
 {
 	template <typename VoxelType>
-	void smoothRegion(Volume<VoxelType>& volData, const Region& regionToSmooth);
+	void smoothRegion(LargeVolume<VoxelType>& volData, const Region& regionToSmooth);
 }//namespace PolyVox
 
 #include "Filters.inl"

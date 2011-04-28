@@ -37,13 +37,13 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// When construncting a very large volume you need to be prepared to handle the scenario where there is so much data that PolyVox cannot fit it all in memory. When PolyVox runs out of memory, it identifies the least recently used data and hands it back to the application via a callback function. It is then the responsibility of the application to store this data until PolyVox needs it again (as signalled by another callback function). Please see the Volume  class documentation for a full description of this process and the required function signatures. If you really don't want to handle these events then you can provide null pointers here, in which case the data will be discarded and/or filled with default values.
+	/// When construncting a very large volume you need to be prepared to handle the scenario where there is so much data that PolyVox cannot fit it all in memory. When PolyVox runs out of memory, it identifies the least recently used data and hands it back to the application via a callback function. It is then the responsibility of the application to store this data until PolyVox needs it again (as signalled by another callback function). Please see the LargeVolume  class documentation for a full description of this process and the required function signatures. If you really don't want to handle these events then you can provide null pointers here, in which case the data will be discarded and/or filled with default values.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
 	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume
+	LargeVolume<VoxelType>::LargeVolume
 	(
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
@@ -61,7 +61,7 @@ namespace PolyVox
 	/// Deprecated - do not use this constructor.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume
+	LargeVolume<VoxelType>::LargeVolume
 	(
 		int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
 	)
@@ -79,15 +79,15 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other Volume constructor).
+	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other LargeVolume constructor).
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
-	/// \param bPagingEnabled Controls whether or not paging is enabled for this Volume.
+	/// \param bPagingEnabled Controls whether or not paging is enabled for this LargeVolume.
 	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume
+	LargeVolume<VoxelType>::LargeVolume
 	(
 		const Region& regValid,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
@@ -108,7 +108,7 @@ namespace PolyVox
 	/// Destroys the volume The destructor will call flushAll() to ensure that a paging volume has the chance to save it's data via the dataOverflowHandler() if desired.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::~Volume()
+	LargeVolume<VoxelType>::~LargeVolume()
 	{
 		flushAll();
 	}
@@ -119,7 +119,7 @@ namespace PolyVox
 	/// \return The value used for voxels outside of the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getBorderValue(void) const
+	VoxelType LargeVolume<VoxelType>::getBorderValue(void) const
 	{
 		return *m_pUncompressedBorderData;
 	}
@@ -128,7 +128,7 @@ namespace PolyVox
 	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Region Volume<VoxelType>::getEnclosingRegion(void) const
+	Region LargeVolume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return m_regValidRegion;
 	}
@@ -138,7 +138,7 @@ namespace PolyVox
 	/// \sa getHeight(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getWidth(void) const
+	int32_t LargeVolume<VoxelType>::getWidth(void) const
 	{
 		return m_regValidRegion.getUpperCorner().getX() - m_regValidRegion.getLowerCorner().getX() + 1;
 	}
@@ -148,7 +148,7 @@ namespace PolyVox
 	/// \sa getWidth(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getHeight(void) const
+	int32_t LargeVolume<VoxelType>::getHeight(void) const
 	{
 		return m_regValidRegion.getUpperCorner().getY() - m_regValidRegion.getLowerCorner().getY() + 1;
 	}
@@ -158,7 +158,7 @@ namespace PolyVox
 	/// \sa getWidth(), getHeight()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getDepth(void) const
+	int32_t LargeVolume<VoxelType>::getDepth(void) const
 	{
 		return m_regValidRegion.getUpperCorner().getZ() - m_regValidRegion.getLowerCorner().getZ() + 1;
 	}
@@ -169,7 +169,7 @@ namespace PolyVox
 	/// \sa getLongestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getShortestSideLength(void) const
+	int32_t LargeVolume<VoxelType>::getShortestSideLength(void) const
 	{
 		return m_uShortestSideLength;
 	}
@@ -180,7 +180,7 @@ namespace PolyVox
 	/// \sa getShortestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getLongestSideLength(void) const
+	int32_t LargeVolume<VoxelType>::getLongestSideLength(void) const
 	{
 		return m_uLongestSideLength;
 	}	
@@ -192,7 +192,7 @@ namespace PolyVox
 	/// \sa getShortestSideLength(), getLongestSideLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	float Volume<VoxelType>::getDiagonalLength(void) const
+	float LargeVolume<VoxelType>::getDiagonalLength(void) const
 	{
 		return m_fDiagonalLength;
 	}
@@ -204,7 +204,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	VoxelType LargeVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
 		if(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
@@ -231,7 +231,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
+	VoxelType LargeVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
@@ -241,7 +241,7 @@ namespace PolyVox
 	/// \param bCompressionEnabled Specifies whether compression is enabled.
 	////////////////////////////////////////////////////////////////////////////////	
 	template <typename VoxelType>
-	void Volume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
+	void LargeVolume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
 	{
 		//Early out - nothing to do
 		if(m_bCompressionEnabled == bCompressionEnabled)
@@ -267,7 +267,7 @@ namespace PolyVox
 	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks)
+	void LargeVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks)
 	{
 		clearBlockCache();
 
@@ -279,7 +279,7 @@ namespace PolyVox
 	/// \param uMaxBlocks The number of blocks
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
+	void LargeVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
 	{
 		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
 		{
@@ -292,7 +292,7 @@ namespace PolyVox
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
+	void LargeVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
 		/*Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
 		return pUncompressedBorderBlock->fill(tBorder);*/
@@ -307,7 +307,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
+	bool LargeVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
 		assert(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
 
@@ -333,7 +333,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
+	bool LargeVolume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
 	{
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
@@ -344,7 +344,7 @@ namespace PolyVox
 	/// \param regPrefetch The Region of voxels to prefetch into memory.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::prefetch(Region regPrefetch)
+	void LargeVolume<VoxelType>::prefetch(Region regPrefetch)
 	{
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
@@ -401,7 +401,7 @@ namespace PolyVox
 	/// Removes all voxels from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::flushAll()
+	void LargeVolume<VoxelType>::flushAll()
 	{
 		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
 		//Replaced the for loop here as the call to
@@ -416,7 +416,7 @@ namespace PolyVox
 	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::flush(Region regFlush)
+	void LargeVolume<VoxelType>::flush(Region regFlush)
 	{
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
@@ -458,7 +458,7 @@ namespace PolyVox
 	///
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::clearBlockCache(void)
+	void LargeVolume<VoxelType>::clearBlockCache(void)
 	{
 		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 		{
@@ -471,7 +471,7 @@ namespace PolyVox
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::resize(const Region& regValidRegion, uint16_t uBlockSideLength)
+	void LargeVolume<VoxelType>::resize(const Region& regValidRegion, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
 		assert(uBlockSideLength > 0);
@@ -523,7 +523,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
 	{
 		if(m_funcDataOverflowHandler)
 		{
@@ -556,7 +556,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
+	bool LargeVolume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
 	{
 		//We don't have any range checks in this function because it
 		//is a private function only called by the ConstVolumeProxy. The
@@ -580,7 +580,7 @@ namespace PolyVox
 
 
 	template <typename VoxelType>
-	Block<VoxelType>* Volume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	Block<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
@@ -695,7 +695,7 @@ namespace PolyVox
 	/// Note: This function needs reviewing for accuracy...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	float Volume<VoxelType>::calculateCompressionRatio(void)
+	float LargeVolume<VoxelType>::calculateCompressionRatio(void)
 	{
 		float fRawSize = m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType);
 		float fCompressedSize = calculateSizeInBytes();
@@ -706,9 +706,9 @@ namespace PolyVox
 	/// Note: This function needs reviewing for accuracy...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint32_t Volume<VoxelType>::calculateSizeInBytes(void)
+	uint32_t LargeVolume<VoxelType>::calculateSizeInBytes(void)
 	{
-		uint32_t uSizeInBytes = sizeof(Volume);
+		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
 		//Memory used by the blocks
 		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;

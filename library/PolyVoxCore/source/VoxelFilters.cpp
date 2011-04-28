@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(Volume<uint8_t>::Sampler& volIter)
+	float computeSmoothedVoxel(LargeVolume<uint8_t>::Sampler& volIter)
 	{
 		assert(volIter.getPosX() >= 1);
 		assert(volIter.getPosY() >= 1);

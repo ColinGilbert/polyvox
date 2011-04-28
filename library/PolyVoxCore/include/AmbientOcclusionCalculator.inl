@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "Array.h"
 #include "Raycast.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 
 #include "PolyVoxImpl/RandomUnitVectors.h"
 #include "PolyVoxImpl/RandomVectors.h"
@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	AmbientOcclusionCalculator<VoxelType>::AmbientOcclusionCalculator(Volume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement)
+	AmbientOcclusionCalculator<VoxelType>::AmbientOcclusionCalculator(LargeVolume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement)
 		:m_region(region)
 		,m_sampVolume(volInput)
 		,m_volInput(volInput)

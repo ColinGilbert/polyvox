@@ -70,7 +70,7 @@ void TestArray::testReadWrite()
 	QCOMPARE(total, expectedTotal);
 
 	/*const PolyVox::uint16_t g_uVolumeSideLength = 128;
-	Volume<PolyVox::uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
+	LargeVolume<PolyVox::uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
 	
 	volData.tidyUpMemory(0);
 	

@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "Array.h"
 #include "PolyVoxImpl/AStarPathfinderImpl.h"
 #include "PolyVoxForwardDeclarations.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -44,7 +44,7 @@ namespace PolyVox
 	/// This function provides the default method for checking whether a given voxel
 	/// is vaid for the path computed by the AStarPathfinder.
 	template <typename VoxelType>
-	bool aStarDefaultVoxelValidator(const Volume<VoxelType>* volData, const Vector3DInt32& v3dPos);
+	bool aStarDefaultVoxelValidator(const LargeVolume<VoxelType>* volData, const Vector3DInt32& v3dPos);
 
 	/// Provides a configuration for the AStarPathfinder.
 	////////////////////////////////////////////////////////////////////////////////
@@ -63,14 +63,14 @@ namespace PolyVox
 	public:
 		AStarPathfinderParams
 		(
-			Volume<VoxelType>* volData,
+			LargeVolume<VoxelType>* volData,
 			const Vector3DInt32& v3dStart,
 			const Vector3DInt32& v3dEnd,
 			std::list<Vector3DInt32>* listResult,
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
 			Connectivity connectivity = TwentySixConnected,
-			polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
+			polyvox_function<bool (const LargeVolume<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
 			polyvox_function<void (float)> funcProgressCallback = 0
 		)
 			:volume(volData)
@@ -86,7 +86,7 @@ namespace PolyVox
 		}
 
 		/// This is the volume through which the AStarPathfinder must find a path.
-		Volume<VoxelType>* volume;
+		LargeVolume<VoxelType>* volume;
 
 		/// The start point for the pathfinding algorithm.
 		Vector3DInt32 start;
@@ -125,7 +125,7 @@ namespace PolyVox
 		/// you could check to ensure that the voxel above is empty and the voxel below is solid.
 		///
 		/// \sa aStarDefaultVoxelValidator
-		polyvox_function<bool (const Volume<VoxelType>*, const Vector3DInt32&)> isVoxelValidForPath;
+		polyvox_function<bool (const LargeVolume<VoxelType>*, const Vector3DInt32&)> isVoxelValidForPath;
 
 		/// This function is called by the AStarPathfinder to report on its progress in getting to
 		/// the goal. The progress is reported by computing the distance from the closest node found

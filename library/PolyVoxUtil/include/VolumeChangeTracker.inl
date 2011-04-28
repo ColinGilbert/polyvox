@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 #include "VertexTypes.h"
 #include "PolyVoxImpl/Utility.h"
 #include "Vector.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 
 namespace PolyVox
 {
@@ -40,7 +40,7 @@ namespace PolyVox
 	// VolumeChangeTracker
 	//////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VolumeChangeTracker<VoxelType>::VolumeChangeTracker(Volume<VoxelType>* volumeDataToSet, uint16_t regionSideLength)
+	VolumeChangeTracker<VoxelType>::VolumeChangeTracker(LargeVolume<VoxelType>* volumeDataToSet, uint16_t regionSideLength)
 		:m_bIsLocked(false)
 		,volumeData(0)
 		,m_uRegionSideLength(regionSideLength)
@@ -51,7 +51,7 @@ namespace PolyVox
 		m_uVolumeDepthInRegions = volumeData->getDepth() / m_uRegionSideLength;
 		m_uRegionSideLengthPower = PolyVox::logBase2(m_uRegionSideLength);
 
-		volRegionLastModified = new Volume<int32_t>(m_uVolumeWidthInRegions, m_uVolumeHeightInRegions, m_uVolumeDepthInRegions, 0);
+		volRegionLastModified = new LargeVolume<int32_t>(m_uVolumeWidthInRegions, m_uVolumeHeightInRegions, m_uVolumeDepthInRegions, 0);
 	}
 
 	template <typename VoxelType>
@@ -88,7 +88,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Volume<VoxelType>* VolumeChangeTracker<VoxelType>::getWrappedVolume(void) const
+	LargeVolume<VoxelType>* VolumeChangeTracker<VoxelType>::getWrappedVolume(void) const
 	{
 		return volumeData;
 	}

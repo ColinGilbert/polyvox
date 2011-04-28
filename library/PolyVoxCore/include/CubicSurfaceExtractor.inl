@@ -33,7 +33,7 @@ namespace PolyVox
 	const uint32_t CubicSurfaceExtractor<VoxelType>::MaxQuadsSharingVertex = 4;
 
 	template <typename VoxelType>
-	CubicSurfaceExtractor<VoxelType>::CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
+	CubicSurfaceExtractor<VoxelType>::CubicSurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)

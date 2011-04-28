@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	SurfaceExtractor<VoxelType>::SurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	SurfaceExtractor<VoxelType>::SurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
@@ -507,7 +507,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Vector3DFloat SurfaceExtractor<VoxelType>::computeCentralDifferenceGradient(const typename Volume<VoxelType>::Sampler& volIter)
+	Vector3DFloat SurfaceExtractor<VoxelType>::computeCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
 	{
 		uint8_t voxel1nx = volIter.peekVoxel1nx0py0pz().getDensity();
 		uint8_t voxel1px = volIter.peekVoxel1px0py0pz().getDensity();
@@ -527,7 +527,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Vector3DFloat SurfaceExtractor<VoxelType>::computeSobelGradient(const typename Volume<VoxelType>::Sampler& volIter)
+	Vector3DFloat SurfaceExtractor<VoxelType>::computeSobelGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
 	{
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };

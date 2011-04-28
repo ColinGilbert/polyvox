@@ -32,8 +32,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	class ConstVolumeProxy
 	{
-		//Volume is a friend so it can call the constructor.
-		friend class Volume<VoxelType>;
+		//LargeVolume is a friend so it can call the constructor.
+		friend class LargeVolume<VoxelType>;
 	public:
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 		{
@@ -60,13 +60,13 @@ namespace PolyVox
 		}
 	private:
 		//Private constructor, so client code can't abuse this class.
-		ConstVolumeProxy(const Volume<VoxelType>& pVolume, const Region& regValid)
+		ConstVolumeProxy(const LargeVolume<VoxelType>& pVolume, const Region& regValid)
 			:m_pVolume(pVolume)
 			,m_regValid(regValid)
 		{
 		}
 
-		const Volume<VoxelType>& m_pVolume;
+		const LargeVolume<VoxelType>& m_pVolume;
 		const Region& m_regValid;
 	};
 }

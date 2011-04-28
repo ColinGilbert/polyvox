@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "Array.h"
 #include "PolyVoxForwardDeclarations.h"
+#include "LargeVolume.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -41,7 +42,7 @@ namespace PolyVox
 	class CubicSurfaceExtractor
 	{
 	public:
-		CubicSurfaceExtractor(Volume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
+		CubicSurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
 
 		void execute();
 
@@ -49,8 +50,8 @@ namespace PolyVox
 
 	private:
 		//The volume data and a sampler to access it.
-		Volume<VoxelType>* m_volData;
-		Volume<VoxelType>::Sampler m_sampVolume;
+		LargeVolume<VoxelType>* m_volData;
+		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;

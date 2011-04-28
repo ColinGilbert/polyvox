@@ -48,7 +48,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 	timer->start(0);
 }
 
-void OpenGLWidget::setVolume(PolyVox::Volume<MaterialDensityPair44>* volData)
+void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volData)
 {
 	//First we free anything from the previous volume (if there was one).
 	m_mapOpenGLSurfaceMeshes.clear();

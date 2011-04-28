@@ -31,7 +31,7 @@ namespace PolyVox
 {
 	///This class represents a voxel storing only a density.
 	////////////////////////////////////////////////////////////////////////////////
-	/// In order to perform a surface extraction on a Volume, PolyVox needs the underlying
+	/// In order to perform a surface extraction on a LargeVolume, PolyVox needs the underlying
 	/// voxel type to provide both getDensity() and getMaterial() functions. The getDensity()
 	/// function is used to determine if a voxel is 'solid', and if it is then the getMaterial()
 	/// funtion is used to determine what material should be assigned to the resulting mesh.

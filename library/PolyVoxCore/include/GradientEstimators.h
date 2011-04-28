@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_GradientEstimators_H__
 #define __PolyVox_GradientEstimators_H__
 
-#include "Volume.h"
+#include "LargeVolume.h"
 
 #include <vector>
 
@@ -42,21 +42,21 @@ namespace PolyVox
 	};
 
 	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const typename Volume<VoxelType>::Sampler& volIter);
+	Vector3DFloat computeCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(typename Volume<VoxelType>::Sampler& volIter);
+	Vector3DFloat computeSmoothCentralDifferenceGradient(typename LargeVolume<VoxelType>::Sampler& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeDecimatedCentralDifferenceGradient(typename Volume<VoxelType>::Sampler& volIter);
+	Vector3DFloat computeDecimatedCentralDifferenceGradient(typename LargeVolume<VoxelType>::Sampler& volIter);
 
 	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const typename Volume<VoxelType>::Sampler& volIter);
+	Vector3DFloat computeSobelGradient(const typename LargeVolume<VoxelType>::Sampler& volIter);
 	template <typename VoxelType>
-	Vector3DFloat computeSmoothSobelGradient(typename Volume<VoxelType>::Sampler& volIter);
+	Vector3DFloat computeSmoothSobelGradient(typename LargeVolume<VoxelType>::Sampler& volIter);
 
-	POLYVOX_API void computeNormalsForVertices(Volume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod);
-	POLYVOX_API Vector3DFloat computeNormal(Volume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API void computeNormalsForVertices(LargeVolume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod);
+	POLYVOX_API Vector3DFloat computeNormal(LargeVolume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod);
 }
 
 #include "GradientEstimators.inl"

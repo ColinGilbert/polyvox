@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #define __AmbientOcclusionCalculator_H__
 
 #include "PolyVoxForwardDeclarations.h"
+#include "LargeVolume.h"
 
 namespace PolyVox
 {
@@ -32,15 +33,15 @@ namespace PolyVox
 	class AmbientOcclusionCalculator
 	{
 	public:
-		AmbientOcclusionCalculator(Volume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement);
+		AmbientOcclusionCalculator(LargeVolume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement);
 		~AmbientOcclusionCalculator();
 
 		void execute(void);
 
 	private:
 		Region m_region;
-		Volume<VoxelType>::Sampler m_sampVolume;
-		Volume<VoxelType>* m_volInput;
+		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
+		LargeVolume<VoxelType>* m_volInput;
 		Array<3, uint8_t>* m_arrayResult;
 		float m_fRayLength;
 

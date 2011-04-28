@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include "CubicSurfaceExtractorWithNormals.h"
 #include "SurfaceExtractor.h"
 #include "SurfaceMesh.h"
-#include "Volume.h"
+#include "LargeVolume.h"
 #include "Filters.h"
 
 #include <QApplication>
@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
+void createPerlinVolumeSlow(LargeVolume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,8,1,234);
 
@@ -75,7 +75,7 @@ void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 	}
 }
 
-/*void createPerlinVolumeFast(Volume<MaterialDensityPair44>& volData)
+/*void createPerlinVolumeFast(LargeVolume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,8,1,234);
 
@@ -123,7 +123,7 @@ void createPerlinVolumeSlow(Volume<MaterialDensityPair44>& volData)
 	}
 }*/
 
-void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
+void createPerlinTerrain(LargeVolume<MaterialDensityPair44>& volData)
 {
 	Perlin perlin(2,2,1,234);
 
@@ -159,7 +159,7 @@ void createPerlinTerrain(Volume<MaterialDensityPair44>& volData)
 	std::cout << std::endl;
 }
 
-void createSphereInVolume(Volume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
+void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	//Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -253,8 +253,8 @@ int main(int argc, char *argv[])
 	//If these lines don't compile, please try commenting them out and using the two lines after
 	//(you will need Boost for this). If you have to do this then please let us know in the forums as
 	//we rely on community feedback to keep the Boost version running.
-	Volume<MaterialDensityPair44> volData(&load, &unload, 256);
-	//Volume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
+	LargeVolume<MaterialDensityPair44> volData(&load, &unload, 256);
+	//LargeVolume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
 	//	polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2), 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
