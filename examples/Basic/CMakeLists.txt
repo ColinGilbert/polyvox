@@ -30,8 +30,7 @@ FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include)
-#There has to be a better way!
-LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/release ${PolyVoxCore_BINARY_DIR})
+LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #Build
 ADD_EXECUTABLE(BasicExample ${SRC_FILES})

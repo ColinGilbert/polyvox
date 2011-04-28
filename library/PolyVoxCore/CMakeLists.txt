@@ -137,7 +137,8 @@ IF(WIN32)
 	#On windows, we also install the debug information. It's unfortunate that we have to hard-code
 	#the 'Debug' part of the path, but CMake doesn't seem to provide a way around this. The best I
 	#found was: http://www.cmake.org/pipermail/cmake/2007-October/016924.html (and it is a bit ugly).
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../Debug/PolyVoxCore.pdb DESTINATION PolyVoxCore/lib CONFIGURATIONS Debug)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/PolyVoxCore.pdb DESTINATION PolyVoxCore/lib CONFIGURATIONS Debug)
+	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo/PolyVoxCore.pdb DESTINATION PolyVoxCore/lib CONFIGURATIONS RelWithDebInfo)
 ELSE(WIN32)
 	IF(BUILD_STATIC_LIBRARIES)
 		INSTALL(TARGETS PolyVoxCoreStatic
