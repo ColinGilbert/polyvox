@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/AStarPathfinderImpl.h"
 #include "PolyVoxForwardDeclarations.h"
 #include "Volume.h"
-#include "VolumeSampler.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 

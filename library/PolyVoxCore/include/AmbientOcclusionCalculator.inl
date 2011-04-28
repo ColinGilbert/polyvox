@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #include "Array.h"
 #include "Raycast.h"
 #include "Volume.h"
-#include "VolumeSampler.h"
 
 #include "PolyVoxImpl/RandomUnitVectors.h"
 #include "PolyVoxImpl/RandomVectors.h"

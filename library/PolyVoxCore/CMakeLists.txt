@@ -31,6 +31,7 @@ SET(CORE_INC_FILES
 	include/Density.h
 	include/Filters.h
 	include/Filters.inl
+	include/GradientEstimators.h
 	include/GradientEstimators.inl
 	include/Log.h
 	include/Material.h
@@ -52,7 +53,6 @@ SET(CORE_INC_FILES
 	include/VertexTypes.h
 	include/Volume.h
 	include/Volume.inl
-	include/VolumeSampler.h
 	include/VolumeSampler.inl
 	include/VoxelFilters.h
 )

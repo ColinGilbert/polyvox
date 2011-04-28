@@ -39,7 +39,7 @@ namespace PolyVox
 
 	private:
 		Region m_region;
-		VolumeSampler<VoxelType> m_sampVolume;
+		Volume<VoxelType>::VolumeSampler m_sampVolume;
 		Volume<VoxelType>* m_volInput;
 		Array<3, uint8_t>* m_arrayResult;
 		float m_fRayLength;

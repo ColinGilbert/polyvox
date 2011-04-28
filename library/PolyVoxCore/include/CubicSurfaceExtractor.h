@@ -26,7 +26,6 @@ freely, subject to the following restrictions:
 
 #include "Array.h"
 #include "PolyVoxForwardDeclarations.h"
-#include "VolumeSampler.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -51,7 +50,7 @@ namespace PolyVox
 	private:
 		//The volume data and a sampler to access it.
 		Volume<VoxelType>* m_volData;
-		VolumeSampler<VoxelType> m_sampVolume;
+		Volume<VoxelType>::VolumeSampler m_sampVolume;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;

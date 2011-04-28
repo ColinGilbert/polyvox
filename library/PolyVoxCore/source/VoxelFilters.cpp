@@ -23,11 +23,9 @@ freely, subject to the following restrictions:
 
 #include "VoxelFilters.h"
 
-#include "VolumeSampler.h"
-
 namespace PolyVox
 {
-	float computeSmoothedVoxel(VolumeSampler<uint8_t>& volIter)
+	float computeSmoothedVoxel(Volume<uint8_t>::VolumeSampler& volIter)
 	{
 		assert(volIter.getPosX() >= 1);
 		assert(volIter.getPosY() >= 1);

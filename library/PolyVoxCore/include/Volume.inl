@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #include "ConstVolumeProxy.h"
 #include "PolyVoxImpl/Block.h"
 #include "Log.h"
-#include "VolumeSampler.h"
 #include "Region.h"
 #include "Vector.h"
 

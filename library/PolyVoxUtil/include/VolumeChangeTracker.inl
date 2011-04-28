@@ -30,7 +30,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/Utility.h"
 #include "Vector.h"
 #include "Volume.h"
-#include "VolumeSampler.h"
 
 namespace PolyVox
 {

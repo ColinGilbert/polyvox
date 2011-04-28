@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 #include "VertexTypes.h"
 #include "PolyVoxImpl/TypeDef.h"
 
+#include "Volume.h"
+
 using namespace std;
 
 namespace PolyVox
@@ -39,7 +41,7 @@ namespace PolyVox
 			const Vector3DFloat& v3dPos = iterSurfaceVertex->getPosition() + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
-			VolumeSampler<uint8_t> volIter(volumeData);
+			Volume<uint8_t>::VolumeSampler volIter(volumeData);
 
 			//Check all corners are within the volume, allowing a boundary for gradient estimation
 			bool lowerCornerInside = volumeData->getEnclosingRegion().containsPoint(v3dFloor,2);
@@ -65,7 +67,7 @@ namespace PolyVox
 	{
 		Vector3DFloat v3dGradient; //To store the result
 
-		VolumeSampler<uint8_t> volIter(volumeData);
+		Volume<uint8_t>::VolumeSampler volIter(volumeData);
 
 			const Vector3DInt32 v3dFloor = static_cast<Vector3DInt32>(v3dPos);
 
@@ -74,16 +76,16 @@ namespace PolyVox
 			switch(normalGenerationMethod)
 			{
 			case SOBEL_SMOOTHED:
-				gradFloor = computeSmoothSobelGradient(volIter);
+				gradFloor = computeSmoothSobelGradient<uint8_t>(volIter);
 				break;
 			case CENTRAL_DIFFERENCE_SMOOTHED:
-				gradFloor = computeSmoothCentralDifferenceGradient(volIter);
+				gradFloor = computeSmoothCentralDifferenceGradient<uint8_t>(volIter);
 				break;
 			case SOBEL:
-				gradFloor = computeSobelGradient(volIter);
+				gradFloor = computeSobelGradient<uint8_t>(volIter);
 				break;
 			case CENTRAL_DIFFERENCE:
-				gradFloor = computeCentralDifferenceGradient(volIter);
+				gradFloor = computeCentralDifferenceGradient<uint8_t>(volIter);
 				break;
 			}
 
@@ -104,16 +106,16 @@ namespace PolyVox
 			switch(normalGenerationMethod)
 			{
 			case SOBEL_SMOOTHED:
-				gradCeil = computeSmoothSobelGradient(volIter);
+				gradCeil = computeSmoothSobelGradient<uint8_t>(volIter);
 				break;
 			case CENTRAL_DIFFERENCE_SMOOTHED:
-				gradCeil = computeSmoothCentralDifferenceGradient(volIter);
+				gradCeil = computeSmoothCentralDifferenceGradient<uint8_t>(volIter);
 				break;
 			case SOBEL:
-				gradCeil = computeSobelGradient(volIter);
+				gradCeil = computeSobelGradient<uint8_t>(volIter);
 				break;
 			case CENTRAL_DIFFERENCE:
-				gradCeil = computeCentralDifferenceGradient(volIter);
+				gradCeil = computeCentralDifferenceGradient<uint8_t>(volIter);
 				break;
 			}
 

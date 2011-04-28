@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_CubicSurfaceExtractorWithNormals_H__
 
 #include "PolyVoxForwardDeclarations.h"
-#include "VolumeSampler.h"
+#include "Volume.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 
@@ -42,7 +42,7 @@ namespace PolyVox
 	private:
 		//The volume data and a sampler to access it.
 		Volume<VoxelType>* m_volData;
-		VolumeSampler<VoxelType> m_sampVolume;
+		typename Volume<VoxelType>::VolumeSampler m_sampVolume;
 
 		//The surface patch we are currently filling.
 		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;

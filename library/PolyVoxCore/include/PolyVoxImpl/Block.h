@@ -45,7 +45,7 @@ namespace PolyVox
 		};
 
 		//Make VolumeSampler a friend
-		friend class VolumeSampler<VoxelType>;
+		friend class Volume<VoxelType>::VolumeSampler;
 	public:
 		Block(uint16_t uSideLength = 0);
 
