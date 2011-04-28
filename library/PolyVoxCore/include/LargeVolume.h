@@ -150,7 +150,7 @@ namespace PolyVox
 			Sampler(LargeVolume<VoxelType>* volume);
 			~Sampler();
 
-			typename Sampler& operator=(const typename Sampler& rhs) throw();
+			Sampler& operator=(const Sampler& rhs) throw();
 
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
