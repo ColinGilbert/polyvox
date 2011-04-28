@@ -98,7 +98,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		Volume<VoxelType>::VolumeSampler volIter(&volume);
+		Volume<VoxelType>::Sampler volIter(&volume);
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			//Update progress once per slice.
@@ -212,7 +212,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		Volume<VoxelType>::VolumeSampler volIter(&volume);
+		Volume<VoxelType>::Sampler volIter(&volume);
 		VoxelType current;
 		uint32_t runLength = 0;
 		bool firstTime = true;
@@ -380,7 +380,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
 
 		//Write data
-		Volume<VoxelType>::VolumeSampler volIter(&volume);
+		Volume<VoxelType>::Sampler volIter(&volume);
 		VoxelType current;
 		uint32_t runLength = 0;
 		bool firstTime = true;

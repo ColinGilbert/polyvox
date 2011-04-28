@@ -47,7 +47,7 @@ namespace PolyVox
 		void doRaycast(float x1, float y1, float z1, float x2, float y2, float z2);
 
 		Volume<VoxelType>* m_volData;
-		Volume<VoxelType>::VolumeSampler m_sampVolume;
+		Volume<VoxelType>::Sampler m_sampVolume;
 
 		Vector3DFloat m_v3dStart;
 		Vector3DFloat m_v3dDirection;

@@ -149,7 +149,7 @@ namespace PolyVox
 		assert(m_bIsLocked);
 
 		//FIXME - rather than creating a iterator each time we should have one stored
-		/*VolumeSampler<VoxelType> iterVol(*volumeData);
+		/*Sampler<VoxelType> iterVol(*volumeData);
 		iterVol.setPosition(x,y,z);
 		iterVol.setVoxel(value);*/
 		volumeData->setVoxelAt(x,y,z,value);

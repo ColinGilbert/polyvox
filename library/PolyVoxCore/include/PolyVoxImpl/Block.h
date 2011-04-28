@@ -44,8 +44,8 @@ namespace PolyVox
 			static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
 		};
 
-		//Make VolumeSampler a friend
-		friend class Volume<VoxelType>::VolumeSampler;
+		//Make Sampler a friend
+		friend class Volume<VoxelType>::Sampler;
 	public:
 		Block(uint16_t uSideLength = 0);
 

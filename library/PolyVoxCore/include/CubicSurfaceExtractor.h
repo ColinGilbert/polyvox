@@ -50,7 +50,7 @@ namespace PolyVox
 	private:
 		//The volume data and a sampler to access it.
 		Volume<VoxelType>* m_volData;
-		Volume<VoxelType>::VolumeSampler m_sampVolume;
+		Volume<VoxelType>::Sampler m_sampVolume;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;

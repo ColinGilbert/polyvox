@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	float computeSmoothedVoxel(Volume<uint8_t>::VolumeSampler& volIter);
+	float computeSmoothedVoxel(Volume<uint8_t>::Sampler& volIter);
 }
 
 #endif

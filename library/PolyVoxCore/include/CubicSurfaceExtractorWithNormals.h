@@ -42,7 +42,7 @@ namespace PolyVox
 	private:
 		//The volume data and a sampler to access it.
 		Volume<VoxelType>* m_volData;
-		typename Volume<VoxelType>::VolumeSampler m_sampVolume;
+		typename Volume<VoxelType>::Sampler m_sampVolume;
 
 		//The surface patch we are currently filling.
 		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;

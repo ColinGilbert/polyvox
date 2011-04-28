@@ -54,8 +54,8 @@ namespace PolyVox
 			Array2DInt32& m_pCurrentVertexIndicesY,
 			Array2DInt32& m_pCurrentVertexIndicesZ);
 
-		Vector3DFloat computeCentralDifferenceGradient(const typename Volume<VoxelType>::VolumeSampler& volIter);
-		Vector3DFloat computeSobelGradient(const typename Volume<VoxelType>::VolumeSampler& volIter);
+		Vector3DFloat computeCentralDifferenceGradient(const typename Volume<VoxelType>::Sampler& volIter);
+		Vector3DFloat computeSobelGradient(const typename Volume<VoxelType>::Sampler& volIter);
 
 		//Use the cell bitmasks to generate all the indices needed for that slice
 		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
@@ -68,7 +68,7 @@ namespace PolyVox
 
 		//The volume data and a sampler to access it.
 		Volume<VoxelType>* m_volData;
-		typename Volume<VoxelType>::VolumeSampler m_sampVolume;
+		typename Volume<VoxelType>::Sampler m_sampVolume;
 
 		//Holds a position in volume space.
 		int32_t iXVolSpace;

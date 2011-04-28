@@ -61,7 +61,7 @@ namespace PolyVox
 	/// border value (see getBorderValue() and setBorderValue()). PolyVox also has support for near infinite volumes which will be discussed later.
 	/// 
 	/// Access to individual voxels is provided via the setVoxelAt() and getVoxelAt() member functions. Advanced users may also be interested in
-	/// the VolumeSampler class for faster read-only access to a large number of voxels.
+	/// the Sampler class for faster read-only access to a large number of voxels.
 	/// 
 	/// Lastly the example prints out some properties of the Volume. Note that the dimentsions getWidth(), getHeight(), and getDepth() are inclusive, such
 	/// that the width is 64 when the range of valid x coordinates goes from 0 to 63.
@@ -144,13 +144,13 @@ namespace PolyVox
 	class Volume
 	{
 	public:
-		class VolumeSampler
+		class Sampler
 		{
 		public:
-			VolumeSampler(Volume<VoxelType>* volume);
-			~VolumeSampler();
+			Sampler(Volume<VoxelType>* volume);
+			~Sampler();
 
-			typename VolumeSampler& operator=(const typename VolumeSampler& rhs) throw();
+			typename Sampler& operator=(const typename Sampler& rhs) throw();
 
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;

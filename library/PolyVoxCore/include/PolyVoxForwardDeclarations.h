@@ -99,7 +99,7 @@ namespace PolyVox
 	typedef Vector<3,uint32_t> Vector3DUint32;
 	//----------------------------
 
-	//template <typename VoxelType> class VolumeSampler;
+	//template <typename VoxelType> class Sampler;
 }
 
 #endif
