@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SimpleVolume_H__
 #define __PolyVox_SimpleVolume_H__
 
-#include "PolyVoxImpl/Block.h"
 #include "Region.h"
 #include "PolyVoxForwardDeclarations.h"
 
@@ -40,6 +39,47 @@ namespace PolyVox
 	class SimpleVolume
 	{
 	public:
+		class Block
+		{
+			template <typename LengthType>
+			struct RunlengthEntry
+			{
+				LengthType length;
+				VoxelType value;
+
+				//We can parametise the length on anything up to uint32_t.
+				//This lets us experiment with the optimal size in the future.
+				static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
+			};
+
+			//Make Sampler a friend
+			friend class LargeVolume<VoxelType>::Sampler;
+		public:
+			Block(uint16_t uSideLength = 0);
+
+			uint16_t getSideLength(void) const;
+			VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+			VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
+
+			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+
+			void fill(VoxelType tValue);
+			void initialise(uint16_t uSideLength);
+			uint32_t calculateSizeInBytes(void);
+
+		public:
+			void compress(void);
+			void uncompress(void);
+
+			std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
+			VoxelType* m_tUncompressedData;
+			uint16_t m_uSideLength;
+			uint8_t m_uSideLengthPower;	
+			bool m_bIsCompressed;
+			bool m_bIsUncompressedDataModified;
+		};
+
 		class Sampler
 		{
 		public:
@@ -110,9 +150,6 @@ namespace PolyVox
 			VoxelType* mCurrentVoxel;
 		};
 
-		// Make the ConstVolumeProxy a friend
-		friend class ConstVolumeProxy<VoxelType>;
-
 		struct LoadedBlock
 		{
 		public:
@@ -122,7 +159,7 @@ namespace PolyVox
 			{
 			}
 
-			Block<VoxelType> block;
+			Block block;
 			uint32_t timestamp;
 		};
 
@@ -194,7 +231,7 @@ private:
 		/// is absolutely unsafe
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
 	
-		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const;
 		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
@@ -209,7 +246,7 @@ private:
 		mutable std::vector< LoadedBlock* > m_vecUncompressedBlockCache;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable Block<VoxelType>* m_pLastAccessedBlock;
+		mutable Block* m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
@@ -235,6 +272,7 @@ private:
 	};
 }
 
+#include "SimpleVolumeBlock.inl"
 #include "SimpleVolume.inl"
 #include "SimpleVolumeSampler.inl"
 

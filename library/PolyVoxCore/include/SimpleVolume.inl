@@ -187,7 +187,7 @@ namespace PolyVox
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+			SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
 		}
@@ -276,7 +276,7 @@ namespace PolyVox
 		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 
@@ -420,7 +420,7 @@ namespace PolyVox
 
 
 	template <typename VoxelType>
-	Block<VoxelType>* SimpleVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	typename SimpleVolume<VoxelType>::Block* SimpleVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
