@@ -102,23 +102,12 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Block::fill(VoxelType tValue)
 	{
-		if(!m_bIsCompressed)
-		{
 			//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
 			//in 64-bit mode as casting the pointer to an int causes a loss of precision.
 			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 			std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
 
 			m_bIsUncompressedDataModified = true;
-		} 
-		else
-		{
-			RunlengthEntry<uint16_t> rle;
-			rle.length = m_uSideLength*m_uSideLength*m_uSideLength;
-			rle.value = tValue;
-			m_vecCompressedData.clear();
-			m_vecCompressedData.push_back(rle);
-		}
 	}
 
 	template <typename VoxelType>
@@ -137,6 +126,8 @@ namespace PolyVox
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
+		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
 		SimpleVolume<VoxelType>::Block::fill(VoxelType());
 	}
 
@@ -146,69 +137,5 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
 		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);
 		return  uSizeInBytes;
-	}
-
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::Block::compress(void)
-	{
-		assert(m_bIsCompressed == false);
-		assert(m_tUncompressedData != 0);
-
-		//If the uncompressed data hasn't actually been
-		//modified then we don't need to redo the compression.
-		if(m_bIsUncompressedDataModified)
-		{
-			uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			m_vecCompressedData.clear();
-
-			RunlengthEntry<uint16_t> entry;
-			entry.length = 1;
-			entry.value = m_tUncompressedData[0];
-
-			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
-			{		
-				VoxelType value = m_tUncompressedData[ct];
-				if((value == entry.value) && (entry.length < entry.maxRunlength()))
-				{
-					entry.length++;
-				}
-				else
-				{
-					m_vecCompressedData.push_back(entry);
-					entry.value = value;
-					entry.length = 1;
-				}
-			}
-
-			m_vecCompressedData.push_back(entry);
-
-			//Shrink the vectors to their contents (maybe slow?):
-			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
-			//C++0x may have a shrink_to_fit() function?
-			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);
-		}
-
-		//Flag the uncompressed data as no longer being used.
-		delete[] m_tUncompressedData;
-		m_tUncompressedData = 0;
-		m_bIsCompressed = true;
-	}
-
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::Block::uncompress(void)
-	{
-		assert(m_bIsCompressed == true);
-		assert(m_tUncompressedData == 0);
-		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-
-		VoxelType* pUncompressedData = m_tUncompressedData;		
-		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
-		{
-			std::fill(pUncompressedData, pUncompressedData + m_vecCompressedData[ct].length, m_vecCompressedData[ct].value);
-			pUncompressedData += m_vecCompressedData[ct].length;
-		}
-
-		m_bIsCompressed = false;
-		m_bIsUncompressedDataModified = false;
 	}
 }

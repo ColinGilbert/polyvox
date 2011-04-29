@@ -69,9 +69,6 @@ namespace PolyVox
 			uint32_t calculateSizeInBytes(void);
 
 		public:
-			void compress(void);
-			void uncompress(void);
-
 			std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
 			VoxelType* m_tUncompressedData;
 			uint16_t m_uSideLength;
@@ -199,10 +196,6 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
-		//Sets whether or not blocks are compressed in memory
-		void setCompressionEnabled(bool bCompressionEnabled);
-		/// Sets the number of blocks for which uncompressed data is stored
-		void setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
@@ -239,15 +232,9 @@ private:
 		//The block data
 		mutable std::map<Vector3DInt32, LoadedBlock > m_pBlocks;
 
-		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
-		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
-		//of blocks. However, this could mean the same block data is uncompressed and modified in more than one
-		//location in memory... could be messy with threading.
-		mutable std::vector< LoadedBlock* > m_vecUncompressedBlockCache;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable Block* m_pLastAccessedBlock;
-		uint32_t m_uMaxNumberOfUncompressedBlocks;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
 		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
@@ -267,8 +254,6 @@ private:
 		int32_t m_uLongestSideLength;
 		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;
-
-		bool m_bCompressionEnabled;
 	};
 }
 

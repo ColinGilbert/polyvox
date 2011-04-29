@@ -208,44 +208,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Enabling compression allows significantly more data to be stored in memory.
-	/// \param bCompressionEnabled Specifies whether compression is enabled.
-	////////////////////////////////////////////////////////////////////////////////	
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
-	{
-		//Early out - nothing to do
-		if(m_bCompressionEnabled == bCompressionEnabled)
-		{
-			return;
-		}
-		
-		m_bCompressionEnabled = bCompressionEnabled;
-
-		if(m_bCompressionEnabled)
-		{
-			//If compression has been enabled then we need to start honouring the max number of
-			//uncompressed blocks. Because compression has been disabled for a while we might have
-			//gone above that limit. Easiest solution is just to clear the cache and start again.
-			clearBlockCache();
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Increasing the size of the block cache will increase memory but may improve performance.
-	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
-	/// volume data and then set it to a smaller value (e.g.64) for general processing.
-	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks)
-	{
-		clearBlockCache();
-
-		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -301,11 +263,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::clearBlockCache(void)
 	{
-		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
-		{
-			m_vecUncompressedBlockCache[ct]->block.compress();
-		}
-		m_vecUncompressedBlockCache.clear();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -328,19 +285,15 @@ namespace PolyVox
 		}
 
 		m_uTimestamper = 0;
-		m_uMaxNumberOfUncompressedBlocks = 16;
 		m_uBlockSideLength = uBlockSideLength;
 		m_pUncompressedBorderData = 0;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
-		m_bCompressionEnabled = true;
 
 		m_regValidRegion = regValidRegion;
 
 		m_regValidRegionInBlocks.setLowerCorner(m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
 		m_regValidRegionInBlocks.setUpperCorner(m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
-
-		setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
 
 		//Clear the previous data
 		m_pBlocks.clear();
@@ -365,33 +318,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
 	{
-		/*if(m_funcDataOverflowHandler)
-		{
-			Vector3DInt32 v3dPos = itBlock->first;
-			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
-			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
-
-			Region reg(v3dLower, v3dUpper);
-			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-
-			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
-		}*/
-		if(m_bCompressionEnabled) {
-			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
-			{
-				// find the block in the uncompressed cache
-				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
-				{
-					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-					itBlock->second.block.compress();
-					// put last object in cache here
-					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
-					// decrease cache size by one since last element is now in here twice
-					m_vecUncompressedBlockCache.resize(m_vecUncompressedBlockCache.size()-1);
-					break;
-				}
-			}
-		}
 		m_pBlocks.erase(itBlock);
 	}
 
@@ -422,17 +348,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	typename SimpleVolume<VoxelType>::Block* SimpleVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
-		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
-
-		//Check if we have the same block as last time, if so there's no need to even update
-		//the time stamp. If we updated it everytime then that would be every time we touched
-		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
-		//This check should also provide a significant speed boost as usually it is true.
-		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
-		{
-			assert(m_pLastAccessedBlock->m_tUncompressedData);
-			return m_pLastAccessedBlock;
-		}		
+		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);		
 
 		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
@@ -454,38 +370,8 @@ namespace PolyVox
 			assert(m_pLastAccessedBlock->m_tUncompressedData);
 			return m_pLastAccessedBlock;
 		}
-
-		//If we are allowed to compress then check whether we need to
-		if((m_bCompressionEnabled) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
-		{
-			int32_t leastRecentlyUsedBlockIndex = -1;
-			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();
-
-			//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
-			//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
-			//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
-			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
-			{
-				if(m_vecUncompressedBlockCache[ct]->timestamp < uLeastRecentTimestamp)
-				{
-					uLeastRecentTimestamp = m_vecUncompressedBlockCache[ct]->timestamp;
-					leastRecentlyUsedBlockIndex = ct;
-				}
-			}
-			
-			//Compress the least recently used block.
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress();
-
-			//We don't actually remove any elements from this vector, we
-			//simply change the pointer to point at the new uncompressed bloack.			
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex] = &loadedBlock;
-		}
-		else
-		{
-			m_vecUncompressedBlockCache.push_back(&loadedBlock);
-		}
 		
-		loadedBlock.block.uncompress();
+		//loadedBlock.block.uncompress();
 
 		m_pLastAccessedBlock = &(loadedBlock.block);
 		assert(m_pLastAccessedBlock->m_tUncompressedData);
@@ -518,10 +404,6 @@ namespace PolyVox
 			//Inaccurate - account for rest of loaded block.
 			uSizeInBytes += i->second.block.calculateSizeInBytes();
 		}
-
-		//Memory used by the block cache.
-		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(LoadedBlock);
-		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		//Memory used by border data.
 		if(m_pUncompressedBorderData)
