@@ -37,27 +37,6 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// When construncting a very large volume you need to be prepared to handle the scenario where there is so much data that PolyVox cannot fit it all in memory. When PolyVox runs out of memory, it identifies the least recently used data and hands it back to the application via a callback function. It is then the responsibility of the application to store this data until PolyVox needs it again (as signalled by another callback function). Please see the SimpleVolume  class documentation for a full description of this process and the required function signatures. If you really don't want to handle these events then you can provide null pointers here, in which case the data will be discarded and/or filled with default values.
-	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
-	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
-	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	SimpleVolume<VoxelType>::SimpleVolume
-	(
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
-		uint16_t uBlockSideLength
-	)
-	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = true;
-		//Create a volume of the right size.
-		resize(Region::MaxRegion,uBlockSideLength);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// Deprecated - do not use this constructor.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -90,27 +69,19 @@ namespace PolyVox
 	SimpleVolume<VoxelType>::SimpleVolume
 	(
 		const Region& regValid,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
-		bool bPagingEnabled,
 		uint16_t uBlockSideLength
 	)
 	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = bPagingEnabled;
-
 		//Create a volume of the right size.
 		resize(regValid,uBlockSideLength);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Destroys the volume The destructor will call flushAll() to ensure that a paging volume has the chance to save it's data via the dataOverflowHandler() if desired.
+	/// Destroys the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::~SimpleVolume()
 	{
-		flushAll();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -275,20 +246,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Increasing the number of blocks in memory causes fewer calls to dataRequiredHandler()/dataOverflowHandler()
-	/// \param uMaxBlocks The number of blocks
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
-	{
-		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
-		{
-			flushAll();
-		}
-		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -338,122 +295,6 @@ namespace PolyVox
 		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Note that if MaxNumberOfBlocksInMemory is not large enough to support the region this function will only load part of the region. In this case it is undefined which parts will actually be loaded. If all the voxels in the given region are already loaded, this function will not do anything. Other voxels might be unloaded to make space for the new voxels.
-	/// \param regPrefetch The Region of voxels to prefetch into memory.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::prefetch(Region regPrefetch)
-	{
-		Vector3DInt32 v3dStart;
-		for(int i = 0; i < 3; i++)
-		{
-			v3dStart.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
-		}
-
-		Vector3DInt32 v3dEnd;
-		for(int i = 0; i < 3; i++)
-		{
-			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
-		}
-
-		Vector3DInt32 v3dSize = v3dEnd - v3dStart + Vector3DInt32(1,1,1);
-		int32_t numblocks = v3dSize.getX() * v3dSize.getY() * v3dSize.getZ();
-		if(numblocks > m_uMaxNumberOfBlocksInMemory)
-		{
-			// cannot support the amount of blocks... so only load the maximum possible
-			numblocks = m_uMaxNumberOfBlocksInMemory;
-		}
-		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
-		{
-			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
-			{
-				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
-				{
-					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
-					
-					if(itBlock != m_pBlocks.end())
-					{
-						// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
-						// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
-						// This might be nice, but on the prefetch region could be bigger than the uncompressed cache size.
-						// This would limit the amount of prefetching we could do.
-						continue;
-					}
-
-					if(numblocks == 0)
-					{
-						// Loading any more blocks would attempt to overflow the memory and therefore erase blocks
-						// we loaded in the beginning. This wouldn't cause logic problems but would be wasteful.
-						return;
-					}
-					// load a block
-					numblocks--;
-					Block<VoxelType>* block = getUncompressedBlock(x,y,z);
-				} // for z
-			} // for y
-		} // for x
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Removes all voxels from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::flushAll()
-	{
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-		//Replaced the for loop here as the call to
-		//eraseBlock was invalidating the iterator.
-		while(m_pBlocks.size() > 0)
-		{
-			eraseBlock(m_pBlocks.begin());
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::flush(Region regFlush)
-	{
-		Vector3DInt32 v3dStart;
-		for(int i = 0; i < 3; i++)
-		{
-			v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
-		}
-
-		Vector3DInt32 v3dEnd;
-		for(int i = 0; i < 3; i++)
-		{
-			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
-		}
-
-		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
-		{
-			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
-			{
-				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
-				{
-					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
-					if(itBlock == m_pBlocks.end())
-					{
-						// not loaded, not unloading
-						continue;
-					}
-					eraseBlock(itBlock);
-					// eraseBlock might cause a call to getUncompressedBlock, which again sets m_pLastAccessedBlock
-					if(m_v3dLastAccessedBlockPos == pos)
-					{
-						m_pLastAccessedBlock = 0;
-					}
-				} // for z
-			} // for y
-		} // for x
-	}
-
 	////////////////////////////////////////////////////////////////////////////////
 	///
 	////////////////////////////////////////////////////////////////////////////////
@@ -490,7 +331,6 @@ namespace PolyVox
 		m_uMaxNumberOfUncompressedBlocks = 16;
 		m_uBlockSideLength = uBlockSideLength;
 		m_pUncompressedBorderData = 0;
-		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
 		m_bCompressionEnabled = true;
@@ -597,49 +437,10 @@ namespace PolyVox
 		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
-		{
-			//The block is not in the map, so we will have to create a new block and add it.
-			//Before we do so, we might want to dump some existing data to make space. We 
-			//Only do this if paging is enabled.
-			/*if(m_bPagingEnabled)
-			{
-				// check wether another block needs to be unloaded before this one can be loaded
-				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
-				{
-					// find the least recently used block
-					typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-					typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
-					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
-					{
-						if(i->second.timestamp < itUnloadBlock->second.timestamp)
-						{
-							itUnloadBlock = i;
-						}
-					}
-					eraseBlock(itUnloadBlock);
-				}
-			}*/
-			
+		{			
 			// create the new block
 			LoadedBlock newBlock(m_uBlockSideLength);
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
-
-			//We have created the new block. If paging is enabled it should be used to
-			//fill in the required data. Otherwise it is just left in the default state.
-			/*if(m_bPagingEnabled)
-			{
-				if(m_funcDataRequiredHandler)
-				{
-					// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
-					// so this if(itBlock == m_pBlocks.end()) never is entered		
-					//FIXME - can we pass the block around so that we don't have to find  it again when we recursively call this function?
-					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
-					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
-					Region reg(v3dLower, v3dUpper);
-					ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-					m_funcDataRequiredHandler(ConstVolumeProxy, reg);
-				}
-			}*/
 		}		
 
 		//Get the block and mark that we accessed it
