@@ -36,8 +36,6 @@ namespace PolyVox
 		:m_uSideLength(0)
 		,m_uSideLengthPower(0)
 		,m_tUncompressedData(0)
-		,m_bIsCompressed(true)
-		,m_bIsUncompressedDataModified(true)
 	{
 		if(uSideLength != 0)
 		{
@@ -89,8 +87,6 @@ namespace PolyVox
 			uYPos * m_uSideLength + 
 			uZPos * m_uSideLength * m_uSideLength
 		] = tValue;
-
-		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>
@@ -102,12 +98,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Block::fill(VoxelType tValue)
 	{
-			//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
-			//in 64-bit mode as casting the pointer to an int causes a loss of precision.
-			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
-
-			m_bIsUncompressedDataModified = true;
+		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
 	}
 
 	template <typename VoxelType>
@@ -135,7 +127,7 @@ namespace PolyVox
 	uint32_t SimpleVolume<VoxelType>::Block::calculateSizeInBytes(void)
 	{
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
-		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);
+		uSizeInBytes += sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength;
 		return  uSizeInBytes;
 	}
 }

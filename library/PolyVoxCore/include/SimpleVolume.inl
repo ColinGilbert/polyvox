@@ -284,11 +284,8 @@ namespace PolyVox
 			throw std::invalid_argument("Block side length must be a power of two.");
 		}
 
-		m_uTimestamper = 0;
 		m_uBlockSideLength = uBlockSideLength;
 		m_pUncompressedBorderData = 0;
-		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
-		m_pLastAccessedBlock = 0;
 
 		m_regValidRegion = regValidRegion;
 
@@ -313,12 +310,6 @@ namespace PolyVox
 		m_uLongestSideLength = (std::max)((std::max)(getWidth(),getHeight()),getDepth());
 		m_uShortestSideLength = (std::min)((std::min)(getWidth(),getHeight()),getDepth());
 		m_fDiagonalLength = sqrtf(static_cast<float>(getWidth() * getWidth() + getHeight() * getHeight() + getDepth() * getDepth()));
-	}
-
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
-	{
-		m_pBlocks.erase(itBlock);
 	}
 
 	template <typename VoxelType>
@@ -350,32 +341,17 @@ namespace PolyVox
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);		
 
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, Block >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{			
 			// create the new block
-			LoadedBlock newBlock(m_uBlockSideLength);
+			Block newBlock(m_uBlockSideLength);
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 		}		
 
-		//Get the block and mark that we accessed it
-		LoadedBlock& loadedBlock = itBlock->second;
-		loadedBlock.timestamp = ++m_uTimestamper;
-		m_v3dLastAccessedBlockPos = v3dBlockPos;
-		m_pLastAccessedBlock = &(loadedBlock.block);
-
-		if(loadedBlock.block.m_bIsCompressed == false)
-		{ 			
-			assert(m_pLastAccessedBlock->m_tUncompressedData);
-			return m_pLastAccessedBlock;
-		}
-		
-		//loadedBlock.block.uncompress();
-
-		m_pLastAccessedBlock = &(loadedBlock.block);
-		assert(m_pLastAccessedBlock->m_tUncompressedData);
-		return m_pLastAccessedBlock;
+		Block& block = itBlock->second;
+		return &block;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

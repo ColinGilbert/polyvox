@@ -41,19 +41,8 @@ namespace PolyVox
 	public:
 		class Block
 		{
-			template <typename LengthType>
-			struct RunlengthEntry
-			{
-				LengthType length;
-				VoxelType value;
-
-				//We can parametise the length on anything up to uint32_t.
-				//This lets us experiment with the optimal size in the future.
-				static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
-			};
-
 			//Make Sampler a friend
-			friend class LargeVolume<VoxelType>::Sampler;
+			friend class SimpleVolume<VoxelType>::Sampler;
 		public:
 			Block(uint16_t uSideLength = 0);
 
@@ -69,12 +58,9 @@ namespace PolyVox
 			uint32_t calculateSizeInBytes(void);
 
 		public:
-			std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
 			VoxelType* m_tUncompressedData;
 			uint16_t m_uSideLength;
 			uint8_t m_uSideLengthPower;	
-			bool m_bIsCompressed;
-			bool m_bIsUncompressedDataModified;
 		};
 
 		class Sampler
@@ -147,19 +133,6 @@ namespace PolyVox
 			VoxelType* mCurrentVoxel;
 		};
 
-		struct LoadedBlock
-		{
-		public:
-			LoadedBlock(uint16_t uSideLength = 0)
-				:block(uSideLength)
-				,timestamp(0)
-			{
-			}
-
-			Block block;
-			uint32_t timestamp;
-		};
-
 	public:
 		/// Constructor for creating a fixed size volume.
 		SimpleVolume
@@ -225,14 +198,12 @@ private:
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
 	
 		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const;
 		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
-		mutable std::map<Vector3DInt32, LoadedBlock > m_pBlocks;
+		mutable std::map<Vector3DInt32, Block > m_pBlocks;
 
-		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable Block* m_pLastAccessedBlock;
 
