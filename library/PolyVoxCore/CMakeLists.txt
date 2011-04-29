@@ -47,6 +47,9 @@ SET(CORE_INC_FILES
 	include/RaycastWithCallback.h
 	include/RaycastWithCallback.inl
 	include/Region.h
+	include/SimpleVolume.h
+	include/SimpleVolume.inl
+	include/SimpleVolumeSampler.inl
 	include/SurfaceExtractor.h
 	include/SurfaceExtractor.inl
 	include/SurfaceMesh.h

@@ -29,8 +29,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	CubicSurfaceExtractorWithNormals<VoxelType>::CubicSurfaceExtractorWithNormals(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	template <typename VolumeType, typename VoxelType>
+	CubicSurfaceExtractorWithNormals<VolumeType, VoxelType>::CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
@@ -39,8 +39,8 @@ namespace PolyVox
 		m_meshCurrent->clear();
 	}
 
-	template <typename VoxelType>
-	void CubicSurfaceExtractorWithNormals<VoxelType>::execute()
+	template <typename VolumeType, typename VoxelType>
+	void CubicSurfaceExtractorWithNormals<VolumeType, VoxelType>::execute()
 	{		
 		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z < m_regSizeInVoxels.getUpperCorner().getZ(); z++)
 		{

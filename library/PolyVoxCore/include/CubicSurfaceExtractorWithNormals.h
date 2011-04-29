@@ -31,18 +31,18 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
+	template <typename VolumeType, typename VoxelType>
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
 
 		void execute();
 
 	private:
 		//The volume data and a sampler to access it.
-		LargeVolume<VoxelType>* m_volData;
-		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
+		VolumeType* m_volData;
+		typename VolumeType::Sampler m_sampVolume;
 
 		//The surface patch we are currently filling.
 		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;
