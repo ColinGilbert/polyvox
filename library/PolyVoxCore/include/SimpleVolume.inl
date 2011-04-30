@@ -258,14 +258,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	///
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::clearBlockCache(void)
-	{
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -313,30 +305,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool SimpleVolume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
-	{
-		//We don't have any range checks in this function because it
-		//is a private function only called by the ConstVolumeProxy. The
-		//ConstVolumeProxy takes care of ensuring the range is appropriate.
-
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-
-		//Return true to indicate that we modified a voxel.
-		return true;
-	}
-
-
-	template <typename VoxelType>
 	typename SimpleVolume<VoxelType>::Block* SimpleVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);		
@@ -352,17 +320,6 @@ namespace PolyVox
 
 		Block& block = itBlock->second;
 		return &block;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Note: This function needs reviewing for accuracy...
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	float SimpleVolume<VoxelType>::calculateCompressionRatio(void)
-	{
-		float fRawSize = m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType);
-		float fCompressedSize = calculateSizeInBytes();
-		return fCompressedSize/fRawSize;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

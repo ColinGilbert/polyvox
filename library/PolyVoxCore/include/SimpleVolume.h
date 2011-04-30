@@ -176,36 +176,17 @@ namespace PolyVox
 		/// Sets the voxel at the position given by a 3D vector
 		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
 
-		/// Empties the cache of uncompressed blocks
-		void clearBlockCache(void);
-		/// Calculates the approximate compression ratio of the store volume data
-		float calculateCompressionRatio(void);
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
 		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
 		void resize(const Region& regValidRegion, uint16_t uBlockSideLength);
 
-private:
-		/// gets called when a new region is allocated and needs to be filled
-		/// NOTE: accessing ANY voxels outside this region during the process of this function
-		/// is absolutely unsafe
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataRequiredHandler;
-		/// gets called when a Region needs to be stored by the user, because SimpleVolume will erase it right after
-		/// this function returns
-		/// NOTE: accessing ANY voxels outside this region during the process of this function
-		/// is absolutely unsafe
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
-	
+private:	
 		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
-		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
 		mutable std::map<Vector3DInt32, Block > m_pBlocks;
-
-		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable Block* m_pLastAccessedBlock;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
 		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
