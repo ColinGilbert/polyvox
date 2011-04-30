@@ -32,7 +32,7 @@ using namespace std;
 
 namespace PolyVox
 {
-	void computeNormalsForVertices(LargeVolume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod)
+	/*void computeNormalsForVertices(LargeVolume<uint8_t>* volumeData, SurfaceMesh<PositionMaterialNormal>& mesh, NormalGenerationMethod normalGenerationMethod)
 	{
 		std::vector<PositionMaterialNormal>& vecVertices = mesh.getRawVertexData();
 		std::vector<PositionMaterialNormal>::iterator iterSurfaceVertex = vecVertices.begin();
@@ -61,9 +61,9 @@ namespace PolyVox
 			} //(lowerCornerInside && upperCornerInside)
 			++iterSurfaceVertex;
 		}
-	}
+	}*/
 
-	Vector3DFloat computeNormal(LargeVolume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
+	/*Vector3DFloat computeNormal(LargeVolume<uint8_t>* volumeData, const Vector3DFloat& v3dPos, NormalGenerationMethod normalGenerationMethod)
 	{
 		Vector3DFloat v3dGradient; //To store the result
 
@@ -147,5 +147,5 @@ namespace PolyVox
 				}
 			}
 			return v3dGradient;
-	}
+	}*/
 }

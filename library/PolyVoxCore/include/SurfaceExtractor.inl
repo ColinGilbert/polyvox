@@ -29,8 +29,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	SurfaceExtractor<VoxelType>::SurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	template< template<typename> class VolumeType, typename VoxelType>
+	SurfaceExtractor<VolumeType, VoxelType>::SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
@@ -43,8 +43,8 @@ namespace PolyVox
 		m_meshCurrent->clear();
 	}
 
-	template <typename VoxelType>
-	void SurfaceExtractor<VoxelType>::execute()
+	template< template<typename> class VolumeType, typename VoxelType>
+	void SurfaceExtractor<VolumeType, VoxelType>::execute()
 	{		
 		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
 		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
@@ -130,9 +130,9 @@ namespace PolyVox
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 	}
 
-	template<typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	template<bool isPrevZAvail>
-	uint32_t SurfaceExtractor<VoxelType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t SurfaceExtractor<VolumeType, VoxelType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -196,9 +196,9 @@ namespace PolyVox
 		return m_uNoOfOccupiedCells;
 	}
 
-	template<typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void SurfaceExtractor<VoxelType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	void SurfaceExtractor<VolumeType, VoxelType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -396,8 +396,8 @@ namespace PolyVox
 		}
 	}
 
-	template <typename VoxelType>
-	void SurfaceExtractor<VoxelType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	template< template<typename> class VolumeType, typename VoxelType>
+	void SurfaceExtractor<VolumeType, VoxelType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -429,14 +429,14 @@ namespace PolyVox
 
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
 				const VoxelType v000 = m_sampVolume.getVoxel();
-				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
+				const Vector3DFloat n000 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
 
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					m_sampVolume.movePositiveX();
 					const VoxelType v100 = m_sampVolume.getVoxel();
-					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
+					const Vector3DFloat n100 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
 
 					//float fInterp = static_cast<float>(v100.getDensity() - VoxelType::getMinDensity()) / static_cast<float>(VoxelType::getMaxDensity() - VoxelType::getMinDensity());
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
@@ -460,7 +460,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveY();
 					const VoxelType v010 = m_sampVolume.getVoxel();
-					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
+					const Vector3DFloat n010 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
 
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v010.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
@@ -483,7 +483,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveZ();
 					const VoxelType v001 = m_sampVolume.getVoxel();
-					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
+					const Vector3DFloat n001 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
 
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v001.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
@@ -506,111 +506,8 @@ namespace PolyVox
 		}
 	}
 
-	template <typename VoxelType>
-	Vector3DFloat SurfaceExtractor<VoxelType>::computeCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
-	{
-		uint8_t voxel1nx = volIter.peekVoxel1nx0py0pz().getDensity();
-		uint8_t voxel1px = volIter.peekVoxel1px0py0pz().getDensity();
-
-		uint8_t voxel1ny = volIter.peekVoxel0px1ny0pz().getDensity();
-		uint8_t voxel1py = volIter.peekVoxel0px1py0pz().getDensity();
-
-		uint8_t voxel1nz = volIter.peekVoxel0px0py1nz().getDensity();
-		uint8_t voxel1pz = volIter.peekVoxel0px0py1pz().getDensity();
-
-		return Vector3DFloat
-		(
-			static_cast<float>(voxel1nx) - static_cast<float>(voxel1px),
-			static_cast<float>(voxel1ny) - static_cast<float>(voxel1py),
-			static_cast<float>(voxel1nz) - static_cast<float>(voxel1pz)
-		);
-	}
-
-	template <typename VoxelType>
-	Vector3DFloat SurfaceExtractor<VoxelType>::computeSobelGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
-	{
-		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
-			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
-
-			const uint8_t pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz().getDensity();
-			const uint8_t pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz().getDensity();
-			const uint8_t pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz().getDensity();
-			const uint8_t pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz().getDensity();
-			const uint8_t pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz().getDensity();
-			const uint8_t pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz().getDensity();
-			const uint8_t pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz().getDensity();
-			const uint8_t pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz().getDensity();
-			const uint8_t pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz().getDensity();
-
-			const uint8_t pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz().getDensity();
-			const uint8_t pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz().getDensity();
-			const uint8_t pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz().getDensity();
-			const uint8_t pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz().getDensity();
-			//const uint8_t pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz().getDensity();
-			const uint8_t pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz().getDensity();
-			const uint8_t pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz().getDensity();
-			const uint8_t pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz().getDensity();
-			const uint8_t pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz().getDensity();
-
-			const uint8_t pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz().getDensity();
-			const uint8_t pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz().getDensity();
-			const uint8_t pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz().getDensity();
-			const uint8_t pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz().getDensity();
-			const uint8_t pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz().getDensity();
-			const uint8_t pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz().getDensity();
-			const uint8_t pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz().getDensity();
-			const uint8_t pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz().getDensity();
-			const uint8_t pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz().getDensity();
-
-			const int xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
-				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
-				pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
-				weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
-				pVoxel1nx0py1pz - weights[0][2][0] * pVoxel1nx1py1nz -
-				weights[1][2][0] * pVoxel1nx1py0pz - weights[2][2][0] *
-				pVoxel1nx1py1pz + weights[0][0][2] * pVoxel1px1ny1nz +
-				weights[1][0][2] * pVoxel1px1ny0pz + weights[2][0][2] *
-				pVoxel1px1ny1pz + weights[0][1][2] * pVoxel1px0py1nz +
-				weights[1][1][2] * pVoxel1px0py0pz + weights[2][1][2] *
-				pVoxel1px0py1pz + weights[0][2][2] * pVoxel1px1py1nz +
-				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
-				pVoxel1px1py1pz);
-
-			const int yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
-				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
-				pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
-				weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
-				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz -
-				weights[1][0][1] * pVoxel0px1ny0pz - weights[2][0][1] *
-				pVoxel0px1ny1pz + weights[0][2][1] * pVoxel0px1py1nz +
-				weights[1][2][1] * pVoxel0px1py0pz + weights[2][2][1] *
-				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz -
-				weights[1][0][2] * pVoxel1px1ny0pz - weights[2][0][2] *
-				pVoxel1px1ny1pz + weights[0][2][2] * pVoxel1px1py1nz +
-				weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
-				pVoxel1px1py1pz);
-
-			const int zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
-				weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
-				pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
-				weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
-				pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz +
-				weights[2][0][1] * pVoxel0px1ny1pz - weights[0][1][1] *
-				pVoxel0px0py1nz + weights[2][1][1] * pVoxel0px0py1pz -
-				weights[0][2][1] * pVoxel0px1py1nz + weights[2][2][1] *
-				pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz +
-				weights[2][0][2] * pVoxel1px1ny1pz - weights[0][1][2] *
-				pVoxel1px0py1nz + weights[2][1][2] * pVoxel1px0py1pz -
-				weights[0][2][2] * pVoxel1px1py1nz + weights[2][2][2] *
-				pVoxel1px1py1pz);
-
-			//Note: The above actually give gradients going from low density to high density.
-			//For our normals we want the the other way around, so we switch the components as we return them.
-			return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
-	}
-
-	template <typename VoxelType>
-	void SurfaceExtractor<VoxelType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	template< template<typename> class VolumeType, typename VoxelType>
+	void SurfaceExtractor<VolumeType, VoxelType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,

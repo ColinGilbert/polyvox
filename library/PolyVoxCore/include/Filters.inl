@@ -2,8 +2,8 @@
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	void smoothRegion(LargeVolume<VoxelType>& volData, const Region& regionToSmooth)
+	template< template<typename> class VolumeType, typename VoxelType>
+	void smoothRegion(VolumeType<VoxelType>& volData, const Region& regionToSmooth)
 	{
 		Region croppedRegion = regionToSmooth;
 

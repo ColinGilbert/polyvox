@@ -27,8 +27,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
+	template< template<typename> class VolumeType, typename VoxelType>
+	Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 	{
 		//FIXME - bitwise way of doing this?
 		VoxelType voxel1nx = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
@@ -48,8 +48,8 @@ namespace PolyVox
 		);
 	}
 
-	template <typename VoxelType>
-	Vector3DFloat computeDecimatedCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
+	template< template<typename> class VolumeType, typename VoxelType>
+	Vector3DFloat computeDecimatedCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 	{
 		const int32_t x = volIter.getPosX();
 		const int32_t y = volIter.getPosY();
@@ -73,8 +73,8 @@ namespace PolyVox
 		);
 	}
 
-	template <typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(typename LargeVolume<VoxelType>::Sampler& volIter)
+	template< template<typename> class VolumeType, typename VoxelType>
+	Vector3DFloat computeSmoothCentralDifferenceGradient(typename VolumeType<VoxelType>::Sampler& volIter)
 	{
 		int32_t initialX = volIter.getPosX();
 		int32_t initialY = volIter.getPosY();
@@ -104,8 +104,8 @@ namespace PolyVox
 		);
 	}
 
-	template <typename VoxelType>
-	Vector3DFloat computeSobelGradient(const typename LargeVolume<VoxelType>::Sampler& volIter)
+	template< template<typename> class VolumeType, typename VoxelType>
+	Vector3DFloat computeSobelGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 	{
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
@@ -187,8 +187,8 @@ namespace PolyVox
 			return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
 	}
 
-	template <typename VoxelType>
-	Vector3DFloat computeSmoothSobelGradient(typename LargeVolume<VoxelType>::Sampler& volIter)
+	template< template<typename> class VolumeType, typename VoxelType>
+	Vector3DFloat computeSmoothSobelGradient(typename VolumeType<VoxelType>::Sampler& volIter)
 	{
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };

@@ -31,11 +31,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+		SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
 
 		void execute();
 
@@ -54,8 +54,115 @@ namespace PolyVox
 			Array2DInt32& m_pCurrentVertexIndicesY,
 			Array2DInt32& m_pCurrentVertexIndicesZ);
 
-		Vector3DFloat computeCentralDifferenceGradient(const typename LargeVolume<VoxelType>::Sampler& volIter);
-		Vector3DFloat computeSobelGradient(const typename LargeVolume<VoxelType>::Sampler& volIter);
+		////////////////////////////////////////////////////////////////////////////////
+		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
+		//See http://stackoverflow.com/questions/1484885/strange-vc-compile-error-c2244 for details.
+		////////////////////////////////////////////////////////////////////////////////
+		template< template<typename> class VolumeType, typename VoxelType>
+		Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+		{
+			uint8_t voxel1nx = volIter.peekVoxel1nx0py0pz().getDensity();
+			uint8_t voxel1px = volIter.peekVoxel1px0py0pz().getDensity();
+
+			uint8_t voxel1ny = volIter.peekVoxel0px1ny0pz().getDensity();
+			uint8_t voxel1py = volIter.peekVoxel0px1py0pz().getDensity();
+
+			uint8_t voxel1nz = volIter.peekVoxel0px0py1nz().getDensity();
+			uint8_t voxel1pz = volIter.peekVoxel0px0py1pz().getDensity();
+
+			return Vector3DFloat
+			(
+				static_cast<float>(voxel1nx) - static_cast<float>(voxel1px),
+				static_cast<float>(voxel1ny) - static_cast<float>(voxel1py),
+				static_cast<float>(voxel1nz) - static_cast<float>(voxel1pz)
+			);
+		}
+
+		template< template<typename> class VolumeType, typename VoxelType>
+		Vector3DFloat computeSobelGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+		{
+			static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
+				{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
+
+				const uint8_t pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz().getDensity();
+				const uint8_t pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz().getDensity();
+				const uint8_t pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz().getDensity();
+				const uint8_t pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz().getDensity();
+				const uint8_t pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz().getDensity();
+				const uint8_t pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz().getDensity();
+				const uint8_t pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz().getDensity();
+				const uint8_t pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz().getDensity();
+				const uint8_t pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz().getDensity();
+
+				const uint8_t pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz().getDensity();
+				const uint8_t pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz().getDensity();
+				const uint8_t pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz().getDensity();
+				const uint8_t pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz().getDensity();
+				//const uint8_t pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz().getDensity();
+				const uint8_t pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz().getDensity();
+				const uint8_t pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz().getDensity();
+				const uint8_t pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz().getDensity();
+				const uint8_t pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz().getDensity();
+
+				const uint8_t pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz().getDensity();
+				const uint8_t pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz().getDensity();
+				const uint8_t pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz().getDensity();
+				const uint8_t pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz().getDensity();
+				const uint8_t pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz().getDensity();
+				const uint8_t pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz().getDensity();
+				const uint8_t pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz().getDensity();
+				const uint8_t pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz().getDensity();
+				const uint8_t pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz().getDensity();
+
+				const int xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+					weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+					pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
+					weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
+					pVoxel1nx0py1pz - weights[0][2][0] * pVoxel1nx1py1nz -
+					weights[1][2][0] * pVoxel1nx1py0pz - weights[2][2][0] *
+					pVoxel1nx1py1pz + weights[0][0][2] * pVoxel1px1ny1nz +
+					weights[1][0][2] * pVoxel1px1ny0pz + weights[2][0][2] *
+					pVoxel1px1ny1pz + weights[0][1][2] * pVoxel1px0py1nz +
+					weights[1][1][2] * pVoxel1px0py0pz + weights[2][1][2] *
+					pVoxel1px0py1pz + weights[0][2][2] * pVoxel1px1py1nz +
+					weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+					pVoxel1px1py1pz);
+
+				const int yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+					weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
+					pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
+					weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
+					pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz -
+					weights[1][0][1] * pVoxel0px1ny0pz - weights[2][0][1] *
+					pVoxel0px1ny1pz + weights[0][2][1] * pVoxel0px1py1nz +
+					weights[1][2][1] * pVoxel0px1py0pz + weights[2][2][1] *
+					pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz -
+					weights[1][0][2] * pVoxel1px1ny0pz - weights[2][0][2] *
+					pVoxel1px1ny1pz + weights[0][2][2] * pVoxel1px1py1nz +
+					weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
+					pVoxel1px1py1pz);
+
+				const int zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
+					weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
+					pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
+					weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
+					pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz +
+					weights[2][0][1] * pVoxel0px1ny1pz - weights[0][1][1] *
+					pVoxel0px0py1nz + weights[2][1][1] * pVoxel0px0py1pz -
+					weights[0][2][1] * pVoxel0px1py1nz + weights[2][2][1] *
+					pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz +
+					weights[2][0][2] * pVoxel1px1ny1pz - weights[0][1][2] *
+					pVoxel1px0py1nz + weights[2][1][2] * pVoxel1px0py1pz -
+					weights[0][2][2] * pVoxel1px1py1nz + weights[2][2][2] *
+					pVoxel1px1py1pz);
+
+				//Note: The above actually give gradients going from low density to high density.
+				//For our normals we want the the other way around, so we switch the components as we return them.
+				return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
+		}
+		////////////////////////////////////////////////////////////////////////////////
+		// End of compiler bug workaroumd.
+		////////////////////////////////////////////////////////////////////////////////
 
 		//Use the cell bitmasks to generate all the indices needed for that slice
 		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
@@ -67,8 +174,8 @@ namespace PolyVox
 			const Array2DInt32& m_pCurrentVertexIndicesZ);
 
 		//The volume data and a sampler to access it.
-		LargeVolume<VoxelType>* m_volData;
-		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
+		VolumeType<VoxelType>* m_volData;
+		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		//Holds a position in volume space.
 		int32_t iXVolSpace;

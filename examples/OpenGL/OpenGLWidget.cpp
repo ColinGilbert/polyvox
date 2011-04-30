@@ -89,7 +89,7 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
 
 					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > mesh(new SurfaceMesh<PositionMaterialNormal>);
-					SurfaceExtractor<MaterialDensityPair44> surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
+					SurfaceExtractor<LargeVolume, MaterialDensityPair44> surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
 					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > decimatedMesh(new SurfaceMesh<PositionMaterialNormal>);

@@ -101,8 +101,8 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
 	//Smooth part of the volume
-	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(127, 127, 127)));
-	smoothRegion<MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(127, 127, 127)));
+	smoothRegion<LargeVolume, MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(127, 127, 127)));
+	smoothRegion<LargeVolume, MaterialDensityPair44>(volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(127, 127, 127)));
 
 	QApplication app(argc, argv);
 

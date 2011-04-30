@@ -84,8 +84,8 @@ namespace PolyVox
 	class Region;
 	class PositionMaterial;
 	class PositionMaterialNormal;
-	template <typename VoxelType> class CubicSurfaceExtractor;
-	template <typename VoxelType> class SurfaceExtractor;
+	template< template<typename> class VolumeType, typename VoxelType> class CubicSurfaceExtractor;
+	template< template<typename> class VolumeType, typename VoxelType> class SurfaceExtractor;
 
 	//---------- Vector ----------
 	template <uint32_t Size, typename Type> class Vector;
