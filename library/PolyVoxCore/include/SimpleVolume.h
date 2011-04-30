@@ -186,7 +186,9 @@ private:
 		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
 		//The block data
-		mutable std::map<Vector3DInt32, Block > m_pBlocks;
+		//mutable std::map<Vector3DInt32, Block > m_pBlocks;
+
+		Block* m_pBlocks;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
 		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a

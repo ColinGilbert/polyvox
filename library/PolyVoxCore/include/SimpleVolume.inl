@@ -284,15 +284,21 @@ namespace PolyVox
 		m_regValidRegionInBlocks.setLowerCorner(m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
 		m_regValidRegionInBlocks.setUpperCorner(m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
 
-		//Clear the previous data
-		m_pBlocks.clear();
-
 		//Compute the block side length
 		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
 		//Clear the previous data
-		m_pBlocks.clear();
+		//m_pBlocks.clear();
+		//delete[] m_pBlocks;
+		//Allocate the new data
+
+		Vector3DInt32 uDimensionsInBlocks = m_regValidRegionInBlocks.getUpperCorner() - m_regValidRegionInBlocks.getLowerCorner() + Vector3DInt32(1,1,1);
+		m_pBlocks = new Block[uDimensionsInBlocks.getX() * uDimensionsInBlocks.getY() * uDimensionsInBlocks.getZ()];
+		for(uint32_t i = 0; i < uDimensionsInBlocks.getX() * uDimensionsInBlocks.getY() * uDimensionsInBlocks.getZ(); ++i)
+		{
+			m_pBlocks[i].initialise(m_uBlockSideLength);
+		}
 
 		//Create the border block
 		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
@@ -307,9 +313,23 @@ namespace PolyVox
 	template <typename VoxelType>
 	typename SimpleVolume<VoxelType>::Block* SimpleVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
-		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);		
+		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);	
 
-		typename std::map<Vector3DInt32, Block >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		Vector3DInt32 uDimensionsInBlocks = m_regValidRegionInBlocks.getUpperCorner() - m_regValidRegionInBlocks.getLowerCorner() + Vector3DInt32(1,1,1);
+
+		uint32_t uBlockIndex =
+				uBlockX + 
+				uBlockY * uDimensionsInBlocks.getX() + 
+				uBlockZ * uDimensionsInBlocks.getX() * uDimensionsInBlocks.getY();
+
+		//Get the block
+		Block* block = &(m_pBlocks[uBlockIndex]);
+
+		return block;
+
+		//Block& block = m_pBlocks[]
+
+		/*typename std::map<Vector3DInt32, Block >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{			
@@ -319,7 +339,7 @@ namespace PolyVox
 		}		
 
 		Block& block = itBlock->second;
-		return &block;
+		return &block;*/
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
