@@ -28,10 +28,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxForwardDeclarations.h"
 
 #include <limits>
-#include <map>
-#include <set>
 #include <memory>
-#include <vector>
 
 namespace PolyVox
 {
@@ -186,8 +183,6 @@ private:
 		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
 		//The block data
-		//mutable std::map<Vector3DInt32, Block > m_pBlocks;
-
 		Block* m_pBlocks;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
@@ -199,6 +194,12 @@ private:
 		//The size of the volume
 		Region m_regValidRegion;
 		Region m_regValidRegionInBlocks;
+
+		//Volume size measured in blocks.
+		uint32_t m_uNoOfBlocksInVolume;
+		uint16_t m_uWidthInBlocks;
+		uint16_t m_uHeightInBlocks;
+		uint16_t m_uDepthInBlocks;
 
 		//The size of the blocks
 		uint16_t m_uBlockSideLength;

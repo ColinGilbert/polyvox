@@ -30,8 +30,6 @@ freely, subject to the following restrictions:
 #include <limits>
 #include <cassert>
 #include <cstdlib> //For abort()
-#include <cstring> //For memcpy
-#include <list>
 #include <stdexcept> //For invalid_argument
 
 namespace PolyVox
@@ -82,6 +80,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::~SimpleVolume()
 	{
+		delete[] m_pBlocks;
+		m_pBlocks = 0;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -288,14 +288,15 @@ namespace PolyVox
 		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
-		//Clear the previous data
-		//m_pBlocks.clear();
-		//delete[] m_pBlocks;
-		//Allocate the new data
+		//Compute the size of the volume in blocks (and note +1 at the end)
+		m_uWidthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getX() - m_regValidRegionInBlocks.getLowerCorner().getX() + 1;
+		m_uHeightInBlocks = m_regValidRegionInBlocks.getUpperCorner().getY() - m_regValidRegionInBlocks.getLowerCorner().getY() + 1;
+		m_uDepthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getZ() - m_regValidRegionInBlocks.getLowerCorner().getZ() + 1;
+		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
 
-		Vector3DInt32 uDimensionsInBlocks = m_regValidRegionInBlocks.getUpperCorner() - m_regValidRegionInBlocks.getLowerCorner() + Vector3DInt32(1,1,1);
-		m_pBlocks = new Block[uDimensionsInBlocks.getX() * uDimensionsInBlocks.getY() * uDimensionsInBlocks.getZ()];
-		for(uint32_t i = 0; i < uDimensionsInBlocks.getX() * uDimensionsInBlocks.getY() * uDimensionsInBlocks.getZ(); ++i)
+		//Allocate the data
+		m_pBlocks = new Block[m_uNoOfBlocksInVolume];
+		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].initialise(m_uBlockSideLength);
 		}
@@ -313,33 +314,20 @@ namespace PolyVox
 	template <typename VoxelType>
 	typename SimpleVolume<VoxelType>::Block* SimpleVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
-		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);	
+		//The lower left corner of the volume could be
+		//anywhere, but array indices need to start at zero.
+		uBlockX -= m_regValidRegionInBlocks.getLowerCorner().getX();
+		uBlockY -= m_regValidRegionInBlocks.getLowerCorner().getY();
+		uBlockZ -= m_regValidRegionInBlocks.getLowerCorner().getZ();
 
-		Vector3DInt32 uDimensionsInBlocks = m_regValidRegionInBlocks.getUpperCorner() - m_regValidRegionInBlocks.getLowerCorner() + Vector3DInt32(1,1,1);
-
+		//Compute the block index
 		uint32_t uBlockIndex =
 				uBlockX + 
-				uBlockY * uDimensionsInBlocks.getX() + 
-				uBlockZ * uDimensionsInBlocks.getX() * uDimensionsInBlocks.getY();
+				uBlockY * m_uWidthInBlocks + 
+				uBlockZ * m_uWidthInBlocks * m_uHeightInBlocks;
 
-		//Get the block
-		Block* block = &(m_pBlocks[uBlockIndex]);
-
-		return block;
-
-		//Block& block = m_pBlocks[]
-
-		/*typename std::map<Vector3DInt32, Block >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
-		// check whether the block is already loaded
-		if(itBlock == m_pBlocks.end())
-		{			
-			// create the new block
-			Block newBlock(m_uBlockSideLength);
-			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
-		}		
-
-		Block& block = itBlock->second;
-		return &block;*/
+		//Return the block
+		return &(m_pBlocks[uBlockIndex]);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
