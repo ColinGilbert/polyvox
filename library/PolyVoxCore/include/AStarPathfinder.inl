@@ -30,8 +30,8 @@ namespace PolyVox
 	/// volume and if its density is below that returned by the voxel's getDensity() function.
 	/// \return true is the voxel is valid for the path
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool aStarDefaultVoxelValidator(const LargeVolume<VoxelType>* volData, const Vector3DInt32& v3dPos)
+	template< template<typename> class VolumeType, typename VoxelType>
+	bool aStarDefaultVoxelValidator(const VolumeType<VoxelType>* volData, const Vector3DInt32& v3dPos)
 	{
 		//Voxels are considered valid candidates for the path if they are inside the volume...
 		if(volData->getEnclosingRegion().containsPoint(v3dPos) == false)
@@ -52,14 +52,14 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// AStarPathfinder Class
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	AStarPathfinder<VoxelType>::AStarPathfinder(const AStarPathfinderParams<VoxelType>& params)
+	template< template<typename> class VolumeType, typename VoxelType>
+	AStarPathfinder<VolumeType, VoxelType>::AStarPathfinder(const AStarPathfinderParams<VolumeType, VoxelType>& params)
 		:m_params(params)
 	{
 	}
 
-	template <typename VoxelType>
-	void AStarPathfinder<VoxelType>::execute()
+	template< template<typename> class VolumeType, typename VoxelType>
+	void AStarPathfinder<VolumeType, VoxelType>::execute()
 	{
 		//Clear any existing nodes
 		allNodes.clear();
@@ -191,8 +191,8 @@ namespace PolyVox
 		}
 	}
 
-	template <typename VoxelType>
-	void AStarPathfinder<VoxelType>::processNeighbour(const Vector3DInt32& neighbourPos, float neighbourGVal)
+	template< template<typename> class VolumeType, typename VoxelType>
+	void AStarPathfinder<VolumeType, VoxelType>::processNeighbour(const Vector3DInt32& neighbourPos, float neighbourGVal)
 	{
 		bool bIsVoxelValidForPath = m_params.isVoxelValidForPath(m_params.volume, neighbourPos);
 		if(!bIsVoxelValidForPath)
@@ -247,8 +247,8 @@ namespace PolyVox
 		}
 	}
 
-	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
+	template< template<typename> class VolumeType, typename VoxelType>
+	float AStarPathfinder<VolumeType, VoxelType>::SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//This is the only heuristic I'm sure of - just use the manhatten distance for the 6-connected case.
 		uint32_t faceSteps = abs(a.getX()-b.getX()) + abs(a.getY()-b.getY()) + abs(a.getZ()-b.getZ());
@@ -256,8 +256,8 @@ namespace PolyVox
 		return faceSteps * 1.0f;
 	}
 
-	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::EighteenConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
+	template< template<typename> class VolumeType, typename VoxelType>
+	float AStarPathfinder<VolumeType, VoxelType>::EighteenConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//I'm not sure of the correct heuristic for the 18-connected case, so I'm just letting it fall through to the 
 		//6-connected case. This means 'h' will be bigger than it should be, resulting in a faster path which may not 
@@ -266,8 +266,8 @@ namespace PolyVox
 		return SixConnectedCost(a,b);
 	}
 
-	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::TwentySixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
+	template< template<typename> class VolumeType, typename VoxelType>
+	float AStarPathfinder<VolumeType, VoxelType>::TwentySixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//Can't say I'm certain about this heuristic - if anyone has
 		//a better idea of what it should be then please let me know.
@@ -288,8 +288,8 @@ namespace PolyVox
 		return cornerSteps * sqrt_3 + edgeSteps * sqrt_2 + faceSteps * sqrt_1;
 	}
 
-	template <typename VoxelType>
-	float AStarPathfinder<VoxelType>::computeH(const Vector3DInt32& a, const Vector3DInt32& b)
+	template< template<typename> class VolumeType, typename VoxelType>
+	float AStarPathfinder<VolumeType, VoxelType>::computeH(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		float hVal;
 			

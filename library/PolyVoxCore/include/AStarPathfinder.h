@@ -43,8 +43,8 @@ namespace PolyVox
 
 	/// This function provides the default method for checking whether a given voxel
 	/// is vaid for the path computed by the AStarPathfinder.
-	template <typename VoxelType>
-	bool aStarDefaultVoxelValidator(const LargeVolume<VoxelType>* volData, const Vector3DInt32& v3dPos);
+	template< template<typename> class VolumeType, typename VoxelType>
+	bool aStarDefaultVoxelValidator(const VolumeType<VoxelType>* volData, const Vector3DInt32& v3dPos);
 
 	/// Provides a configuration for the AStarPathfinder.
 	////////////////////////////////////////////////////////////////////////////////
@@ -57,20 +57,20 @@ namespace PolyVox
 	///
 	/// \sa AStarPathfinder
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	struct AStarPathfinderParams
 	{
 	public:
 		AStarPathfinderParams
 		(
-			LargeVolume<VoxelType>* volData,
+			VolumeType<VoxelType>* volData,
 			const Vector3DInt32& v3dStart,
 			const Vector3DInt32& v3dEnd,
 			std::list<Vector3DInt32>* listResult,
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
 			Connectivity connectivity = TwentySixConnected,
-			polyvox_function<bool (const LargeVolume<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VoxelType>,
+			polyvox_function<bool (const VolumeType<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VolumeType, VoxelType>,
 			polyvox_function<void (float)> funcProgressCallback = 0
 		)
 			:volume(volData)
@@ -86,7 +86,7 @@ namespace PolyVox
 		}
 
 		/// This is the volume through which the AStarPathfinder must find a path.
-		LargeVolume<VoxelType>* volume;
+		VolumeType<VoxelType>* volume;
 
 		/// The start point for the pathfinding algorithm.
 		Vector3DInt32 start;
@@ -125,7 +125,7 @@ namespace PolyVox
 		/// you could check to ensure that the voxel above is empty and the voxel below is solid.
 		///
 		/// \sa aStarDefaultVoxelValidator
-		polyvox_function<bool (const LargeVolume<VoxelType>*, const Vector3DInt32&)> isVoxelValidForPath;
+		polyvox_function<bool (const VolumeType<VoxelType>*, const Vector3DInt32&)> isVoxelValidForPath;
 
 		/// This function is called by the AStarPathfinder to report on its progress in getting to
 		/// the goal. The progress is reported by computing the distance from the closest node found
@@ -159,11 +159,11 @@ namespace PolyVox
 	///
 	/// \sa AStarPathfinderParams
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	class AStarPathfinder
 	{
 	public:
-		AStarPathfinder(const AStarPathfinderParams<VoxelType>& params);
+		AStarPathfinder(const AStarPathfinderParams<VolumeType, VoxelType>& params);
 
 		void execute();
 
@@ -185,7 +185,7 @@ namespace PolyVox
 		
 		float m_fProgress;
 
-		AStarPathfinderParams<VoxelType> m_params;
+		AStarPathfinderParams<VolumeType, VoxelType> m_params;
 	};
 }
 

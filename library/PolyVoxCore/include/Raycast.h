@@ -80,12 +80,12 @@ namespace PolyVox
 	/// surace extractors. It's behaviour with the Marching Cubes surface extractor has not
 	/// been tested yet.
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	class Raycast
 	{
 	public:
 		///Constructor
-		Raycast(LargeVolume<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result);
+		Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result);
 
 		///Sets the start position for the ray.
 		void setStart(const Vector3DFloat& v3dStart);
@@ -100,8 +100,8 @@ namespace PolyVox
 
 		void doRaycast(float x1, float y1, float z1, float x2, float y2, float z2);
 
-		LargeVolume<VoxelType>* m_volData;
-		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
+		VolumeType<VoxelType>* m_volData;
+		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		Vector3DFloat m_v3dStart;
 		Vector3DFloat m_v3dDirection;

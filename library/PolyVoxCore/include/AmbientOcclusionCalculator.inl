@@ -28,10 +28,12 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/RandomUnitVectors.h"
 #include "PolyVoxImpl/RandomVectors.h"
 
+#include <algorithm>
+
 namespace PolyVox
 {
-	template <typename VoxelType>
-	AmbientOcclusionCalculator<VoxelType>::AmbientOcclusionCalculator(LargeVolume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement)
+	template< template<typename> class VolumeType, typename VoxelType>
+	AmbientOcclusionCalculator<VolumeType, VoxelType>::AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement)
 		:m_region(region)
 		,m_sampVolume(volInput)
 		,m_volInput(volInput)
@@ -54,18 +56,18 @@ namespace PolyVox
 		mIndexIncreament = 1;
 	}
 
-	template <typename VoxelType>
-	AmbientOcclusionCalculator<VoxelType>::~AmbientOcclusionCalculator()
+	template< template<typename> class VolumeType, typename VoxelType>
+	AmbientOcclusionCalculator<VolumeType, VoxelType>::~AmbientOcclusionCalculator()
 	{
 	}
 
-	template <typename VoxelType>
-	void AmbientOcclusionCalculator<VoxelType>::execute(void)
+	template< template<typename> class VolumeType, typename VoxelType>
+	void AmbientOcclusionCalculator<VolumeType, VoxelType>::execute(void)
 	{
 		const int iRatioX = m_volInput->getWidth()  / m_arrayResult->getDimension(0);
 		const int iRatioY = m_volInput->getHeight() / m_arrayResult->getDimension(1);
 		const int iRatioZ = m_volInput->getDepth()  / m_arrayResult->getDimension(2);
-		const int iRatioMax = std::max(std::max(iRatioX, iRatioY), iRatioZ);
+		const int iRatioMax = (std::max)((std::max)(iRatioX, iRatioY), iRatioZ);
 
 		const float fRatioX = iRatioX;
 		const float fRatioY = iRatioY;
@@ -82,7 +84,7 @@ namespace PolyVox
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
 
 		RaycastResult raycastResult;
-		Raycast<VoxelType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult);
+		Raycast<VolumeType, VoxelType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult);
 
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
 		for(uint16_t z = m_region.getLowerCorner().getZ(); z <= m_region.getUpperCorner().getZ(); z += iRatioZ)

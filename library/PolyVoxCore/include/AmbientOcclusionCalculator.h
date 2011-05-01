@@ -29,19 +29,19 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	class AmbientOcclusionCalculator
 	{
 	public:
-		AmbientOcclusionCalculator(LargeVolume<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement);
+		AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement);
 		~AmbientOcclusionCalculator();
 
 		void execute(void);
 
 	private:
 		Region m_region;
-		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
-		LargeVolume<VoxelType>* m_volInput;
+		typename VolumeType<VoxelType>::Sampler m_sampVolume;
+		VolumeType<VoxelType>* m_volInput;
 		Array<3, uint8_t>* m_arrayResult;
 		float m_fRayLength;
 
