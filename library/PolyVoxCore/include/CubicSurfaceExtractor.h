@@ -38,11 +38,11 @@ namespace PolyVox
 		int32_t uMaterial : 8;
 	};
 
-	template <typename VoxelType>
+	template< template<typename> class VolumeType, typename VoxelType>
 	class CubicSurfaceExtractor
 	{
 	public:
-		CubicSurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
+		CubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
 
 		void execute();
 
@@ -50,8 +50,8 @@ namespace PolyVox
 
 	private:
 		//The volume data and a sampler to access it.
-		LargeVolume<VoxelType>* m_volData;
-		typename LargeVolume<VoxelType>::Sampler m_sampVolume;
+		VolumeType<VoxelType>* m_volData;
+		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;

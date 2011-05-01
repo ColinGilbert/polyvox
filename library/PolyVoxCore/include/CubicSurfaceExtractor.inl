@@ -29,11 +29,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType>
-	const uint32_t CubicSurfaceExtractor<VoxelType>::MaxQuadsSharingVertex = 4;
+	template< template<typename> class VolumeType, typename VoxelType>
+	const uint32_t CubicSurfaceExtractor<VolumeType, VoxelType>::MaxQuadsSharingVertex = 4;
 
-	template <typename VoxelType>
-	CubicSurfaceExtractor<VoxelType>::CubicSurfaceExtractor(LargeVolume<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
+	template< template<typename> class VolumeType, typename VoxelType>
+	CubicSurfaceExtractor<VolumeType, VoxelType>::CubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
@@ -42,8 +42,8 @@ namespace PolyVox
 		m_meshCurrent->clear();
 	}
 
-	template <typename VoxelType>
-	void CubicSurfaceExtractor<VoxelType>::execute()
+	template< template<typename> class VolumeType, typename VoxelType>
+	void CubicSurfaceExtractor<VolumeType, VoxelType>::execute()
 	{
 		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2;
 		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2;
@@ -175,8 +175,8 @@ namespace PolyVox
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 	}
 
-	template <typename VoxelType>
-	int32_t CubicSurfaceExtractor<VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
+	template< template<typename> class VolumeType, typename VoxelType>
+	int32_t CubicSurfaceExtractor<VolumeType, VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		uint32_t uX = static_cast<uint32_t>(fX + 0.75f);
 		uint32_t uY = static_cast<uint32_t>(fY + 0.75f);
