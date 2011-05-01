@@ -429,14 +429,14 @@ namespace PolyVox
 
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
 				const VoxelType v000 = m_sampVolume.getVoxel();
-				const Vector3DFloat n000 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
+				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					m_sampVolume.movePositiveX();
 					const VoxelType v100 = m_sampVolume.getVoxel();
-					const Vector3DFloat n100 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
+					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
 					//float fInterp = static_cast<float>(v100.getDensity() - VoxelType::getMinDensity()) / static_cast<float>(VoxelType::getMaxDensity() - VoxelType::getMinDensity());
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
@@ -460,7 +460,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveY();
 					const VoxelType v010 = m_sampVolume.getVoxel();
-					const Vector3DFloat n010 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
+					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v010.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
@@ -483,7 +483,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveZ();
 					const VoxelType v001 = m_sampVolume.getVoxel();
-					const Vector3DFloat n001 = computeCentralDifferenceGradient<VolumeType, VoxelType>(m_sampVolume);
+					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v001.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;

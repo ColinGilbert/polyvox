@@ -337,20 +337,11 @@ namespace PolyVox
 	uint32_t SimpleVolume<VoxelType>::calculateSizeInBytes(void)
 	{
 		uint32_t uSizeInBytes = sizeof(SimpleVolume);
+		
+		uint32_t uSizeOfBlockInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
-		//Memory used by the blocks
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
-		{
-			//Inaccurate - account for rest of loaded block.
-			uSizeInBytes += i->second.block.calculateSizeInBytes();
-		}
-
-		//Memory used by border data.
-		if(m_pUncompressedBorderData)
-		{
-			uSizeInBytes += m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-		}
+		//Memory used by the blocks ( + 1 is for border)
+		uSizeInBytes += uSizeOfBlockInBytes * (m_uNoOfBlocksInVolume + 1);
 
 		return uSizeInBytes;
 	}

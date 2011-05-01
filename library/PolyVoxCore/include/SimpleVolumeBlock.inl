@@ -126,7 +126,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t SimpleVolume<VoxelType>::Block::calculateSizeInBytes(void)
 	{
-		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
+		uint32_t uSizeInBytes = sizeof(Block);
 		uSizeInBytes += sizeof(VoxelType) * m_uSideLength * m_uSideLength * m_uSideLength;
 		return  uSizeInBytes;
 	}

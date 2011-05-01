@@ -58,7 +58,6 @@ namespace PolyVox
 		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
 		//See http://stackoverflow.com/questions/1484885/strange-vc-compile-error-c2244 for details.
 		////////////////////////////////////////////////////////////////////////////////
-		template< template<typename> class VolumeType, typename VoxelType>
 		Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 		{
 			uint8_t voxel1nx = volIter.peekVoxel1nx0py0pz().getDensity();
@@ -78,7 +77,6 @@ namespace PolyVox
 			);
 		}
 
-		template< template<typename> class VolumeType, typename VoxelType>
 		Vector3DFloat computeSobelGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 		{
 			static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
