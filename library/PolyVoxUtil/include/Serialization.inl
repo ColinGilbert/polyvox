@@ -21,15 +21,14 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "LargeVolume.h"
 #include "PolyVoxImpl/Utility.h"
 
 namespace PolyVox
 {
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	template <typename VoxelType>
-	polyvox_shared_ptr< LargeVolume<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	polyvox_shared_ptr< VolumeType<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'loadVolume()' ASAP.
 
@@ -46,7 +45,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		polyvox_shared_ptr< LargeVolume<VoxelType> > volume(new LargeVolume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
+		polyvox_shared_ptr< VolumeType<VoxelType> > volume(new LargeVolume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
 
 		//Read data
 		for(uint16_t z = 0; z < volumeDepth; ++z)
@@ -79,8 +78,8 @@ namespace PolyVox
 		return volume;
 	}
 
-	template <typename VoxelType>
-	void saveVolumeRaw(std::ostream& stream, LargeVolume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	void saveVolumeRaw(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'saveVolume()' ASAP.
 
@@ -98,7 +97,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		LargeVolume<VoxelType>::Sampler volIter(&volume);
+		VolumeType<VoxelType>::Sampler volIter(&volume);
 		for(uint16_t z = 0; z < volumeDepth; ++z)
 		{
 			//Update progress once per slice.
@@ -128,8 +127,8 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	template <typename VoxelType>
-	polyvox_shared_ptr< LargeVolume<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	polyvox_shared_ptr< VolumeType<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener)
 	{
 		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'loadVolume()' ASAP.
 
@@ -146,7 +145,7 @@ namespace PolyVox
 		uint16_t volumeDepth = 0x0001 << volumeDepthPower;
 
 		//FIXME - need to support non cubic volumes
-		polyvox_shared_ptr< LargeVolume<VoxelType> > volume(new LargeVolume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
+		polyvox_shared_ptr< VolumeType<VoxelType> > volume(new LargeVolume<VoxelType>(volumeWidth, volumeHeight, volumeDepth));
 
 		//Read data
 		bool firstTime = true;
@@ -193,8 +192,8 @@ namespace PolyVox
 		return volume;
 	}
 
-	template <typename VoxelType>
-	void saveVolumeRle(std::ostream& stream, LargeVolume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	void saveVolumeRle(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		assert(false); //THIS FUNCTION IS DEPRECATED. REMOVE THIS ASSERT TO CONTINUE, BUT SWITCH TO 'saveVolume()' ASAP.
 
@@ -212,7 +211,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepthPower), sizeof(volumeDepthPower));
 
 		//Write data
-		LargeVolume<VoxelType>::Sampler volIter(&volume);
+		VolumeType<VoxelType>::Sampler volIter(&volume);
 		VoxelType current;
 		uint32_t runLength = 0;
 		bool firstTime = true;
@@ -268,8 +267,8 @@ namespace PolyVox
 	// New version of load/save code with versioning
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	template <typename VoxelType>
-	bool loadVolume(std::istream& stream, LargeVolume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	bool loadVolume(std::istream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		char pIdentifier[8];
 		stream.read(pIdentifier, 7);
@@ -293,8 +292,8 @@ namespace PolyVox
 		
 	}
 
-	template <typename VoxelType>
-	bool saveVolume(std::ostream& stream, LargeVolume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	bool saveVolume(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		char pIdentifier[] = "PolyVox";
 		stream.write(pIdentifier, 7);
@@ -307,8 +306,8 @@ namespace PolyVox
 
 	//Note: we don't do much error handling in here - exceptions will simply be propergated up to the caller.
 	//FIXME - think about pointer ownership issues. Or could return volume by value if the copy constructor is shallow
-	template <typename VoxelType>
-	bool loadVersion0(std::istream& stream, LargeVolume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	bool loadVersion0(std::istream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		//Read volume dimensions
 		uint16_t volumeWidth = 0;
@@ -367,8 +366,8 @@ namespace PolyVox
 		return true;
 	}
 
-	template <typename VoxelType>
-	bool saveVersion0(std::ostream& stream, LargeVolume<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
+	template< template<typename> class VolumeType, typename VoxelType>
+	bool saveVersion0(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener)
 	{
 		//Write volume dimensions
 		uint16_t volumeWidth = volume.getWidth();
@@ -380,7 +379,7 @@ namespace PolyVox
 		stream.write(reinterpret_cast<char*>(&volumeDepth), sizeof(volumeDepth));
 
 		//Write data
-		LargeVolume<VoxelType>::Sampler volIter(&volume);
+		VolumeType<VoxelType>::Sampler volIter(&volume);
 		VoxelType current;
 		uint32_t runLength = 0;
 		bool firstTime = true;
