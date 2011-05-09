@@ -33,6 +33,8 @@ SET(CORE_INC_FILES
 	include/Filters.inl
 	include/GradientEstimators.h
 	include/GradientEstimators.inl
+	include/ImprovedCubicSurfaceExtractor.h
+	include/ImprovedCubicSurfaceExtractor.inl
 	include/LargeVolume.h
 	include/LargeVolume.inl
 	include/LargeVolumeSampler.inl
