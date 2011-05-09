@@ -110,8 +110,8 @@ void OpenGLWidget::paintGL()
 	glMatrixMode(GL_MODELVIEW); 
 	glLoadIdentity();
 	glTranslatef(0.0f,0.0f,-100.0f); //Centre volume and move back
-	glRotatef(m_xRotation, 1.0f, 0.0f, 0.0f);
-	glRotatef(m_yRotation, 0.0f, 1.0f, 0.0f);
+	glRotatef(-m_xRotation, 0.0f, 1.0f, 0.0f);
+	glRotatef(-m_yRotation, 1.0f, 0.0f, 0.0f);
 	glTranslatef(-32.0f,-32.0f,-32.0f); //Centre volume and move back
 
 	//Bind the index buffer
