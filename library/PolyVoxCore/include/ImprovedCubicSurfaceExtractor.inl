@@ -105,11 +105,6 @@ namespace PolyVox
 
 							if(currentVoxelIsSolid > negXVoxelIsSolid)
 							{
-								//m_meshCurrent->addTriangleCubic(v0,v1,v2);
-								//m_meshCurrent->addTriangleCubic(v1,v3,v2);
-
-								//m_faces[x][y][z][NegativeX] = material;
-
 								Quad quad;
 								quad.vertices[0] = v0;
 								quad.vertices[1] = v1;
@@ -118,15 +113,9 @@ namespace PolyVox
 								quad.material = material;
 
 								m_vecNegXQuads[regX].push_back(quad);
-
-								/*m_vecNegXIndices[x].push_back(v0);
-								m_vecNegXIndices[x].push_back(v1);
-								m_vecNegXIndices[x].push_back(v2);
-								m_vecNegXIndices[x].push_back(v3);*/
 							}
 							else											
 							{
-
 								Quad quad;
 								quad.vertices[0] = v0;
 								quad.vertices[1] = v3;
@@ -135,18 +124,6 @@ namespace PolyVox
 								quad.material = material;
 
 								m_vecPosXQuads[regX].push_back(quad);
-
-								//m_meshCurrent->addTriangleCubic(v0,v2,v1);
-								//m_meshCurrent->addTriangleCubic(v1,v2,v3);
-
-								/*m_vecPosXIndices[x-1].push_back(v0);
-								m_vecPosXIndices[x-1].push_back(v2);
-								m_vecPosXIndices[x-1].push_back(v1);
-								m_vecPosXIndices[x-1].push_back(v1);
-								m_vecPosXIndices[x-1].push_back(v2);
-								m_vecPosXIndices[x-1].push_back(v3);*/								
-
-								//m_faces[x-1][y][z][PositiveX] = material;
 							}
 
 						}
@@ -165,9 +142,6 @@ namespace PolyVox
 							uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
 							uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
 							uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-							
-							
-							
 
 							if(currentVoxelIsSolid > negYVoxelIsSolid)
 							{
@@ -180,10 +154,6 @@ namespace PolyVox
 								quad.material = material;
 
 								m_vecNegYQuads[regY].push_back(quad);
-								//m_meshCurrent->addTriangleCubic(v0,v2,v1);
-								//m_meshCurrent->addTriangleCubic(v1,v2,v3);
-
-								//m_faces[x][y][z][NegativeY] = material;
 							}
 							else
 							{
@@ -196,10 +166,6 @@ namespace PolyVox
 								quad.material = material;
 
 								m_vecPosYQuads[regY].push_back(quad);
-								//m_meshCurrent->addTriangleCubic(v0,v1,v2);
-								//m_meshCurrent->addTriangleCubic(v1,v3,v2);
-
-								//m_faces[x][y-1][z][PositiveY] = material;
 							}
 						}
 					}
@@ -230,10 +196,6 @@ namespace PolyVox
 								quad.material = material;
 
 								m_vecNegZQuads[regZ].push_back(quad);
-								//m_meshCurrent->addTriangleCubic(v0,v1,v2);
-								//m_meshCurrent->addTriangleCubic(v1,v3,v2);
-
-								//m_faces[x][y][z][NegativeZ] = material;
 							}
 							else
 							{
@@ -245,10 +207,6 @@ namespace PolyVox
 								quad.material = material;
 
 								m_vecPosZQuads[regZ].push_back(quad);
-								//m_meshCurrent->addTriangleCubic(v0,v2,v1);
-								//m_meshCurrent->addTriangleCubic(v1,v2,v3);
-
-								//m_faces[x][y][z-1][PositiveZ] = material;
 							}
 						}
 					}
@@ -430,7 +388,7 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	Quad ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(Quad q1, Quad q2)
+	Quad ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(const Quad& q1, const Quad& q2)
 	{
 		/*Quad* pCurrentQuad = &q1;
 		Quad* pOtherQuad = &q2;
@@ -480,7 +438,7 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::canMergeQuads(Quad q1, Quad q2)
+	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::canMergeQuads(const Quad& q1, const Quad& q2)
 	{
 		if(q1.material != q2.material)
 		{

@@ -114,9 +114,9 @@ namespace PolyVox
 
 		bool decimate(std::list<Quad>& quads);
 
-		Quad mergeQuads(Quad q1, Quad q2);
+		Quad mergeQuads(const Quad& q1, const Quad& q2);
 
-		bool canMergeQuads(Quad q1, Quad q2);
+		bool canMergeQuads(const Quad& q1, const Quad& q2);
 
 		int32_t quadContainsVertex(const Quad& quad, uint32_t uVertexIndex);
 
