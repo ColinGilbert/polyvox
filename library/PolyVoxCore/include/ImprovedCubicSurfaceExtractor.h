@@ -97,7 +97,7 @@ namespace PolyVox
 
 		bool decimate(std::list<Quad>& quads);
 
-		Quad mergeQuads(const Quad& q1, const Quad& q2);
+		std::pair<bool, Quad> mergeQuads(const Quad& q1, const Quad& q2);
 
 		bool canMergeQuads(const Quad& q1, const Quad& q2);
 
