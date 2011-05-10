@@ -60,14 +60,14 @@ namespace PolyVox
 		m_faces.resize(ArraySizes(uRegionWidth)(uRegionHeight)(uRegionDepth)(NoOfFaces));
 		memset(m_faces.getRawData(), 0x00, m_faces.getNoOfElements() * sizeof(uint8_t)); //Note: hard-coded type uint8_t
 
-		m_vecNegXQuads.resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
-		m_vecPosXQuads.resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
+		m_vecQuads[NegativeX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
+		m_vecQuads[PositiveX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
 
-		m_vecNegYQuads.resize(m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2);
-		m_vecPosYQuads.resize(m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2);
+		m_vecQuads[NegativeY].resize(m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2);
+		m_vecQuads[PositiveY].resize(m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2);
 
-		m_vecNegZQuads.resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
-		m_vecPosZQuads.resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
+		m_vecQuads[NegativeZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
+		m_vecQuads[PositiveZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
 		
 		
 		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
@@ -112,7 +112,7 @@ namespace PolyVox
 								quad.vertices[3] = v3;
 								quad.material = material;
 
-								m_vecNegXQuads[regX].push_back(quad);
+								m_vecQuads[NegativeX][regX].push_back(quad);
 							}
 							else											
 							{
@@ -123,7 +123,7 @@ namespace PolyVox
 								quad.vertices[3] = v1;
 								quad.material = material;
 
-								m_vecPosXQuads[regX].push_back(quad);
+								m_vecQuads[PositiveX][regX].push_back(quad);
 							}
 
 						}
@@ -153,7 +153,7 @@ namespace PolyVox
 								quad.vertices[3] = v1;
 								quad.material = material;
 
-								m_vecNegYQuads[regY].push_back(quad);
+								m_vecQuads[NegativeY][regY].push_back(quad);
 							}
 							else
 							{
@@ -165,7 +165,7 @@ namespace PolyVox
 								quad.vertices[3] = v3;
 								quad.material = material;
 
-								m_vecPosYQuads[regY].push_back(quad);
+								m_vecQuads[PositiveY][regY].push_back(quad);
 							}
 						}
 					}
@@ -195,7 +195,7 @@ namespace PolyVox
 								quad.vertices[3] = v3;
 								quad.material = material;
 
-								m_vecNegZQuads[regZ].push_back(quad);
+								m_vecQuads[NegativeZ][regZ].push_back(quad);
 							}
 							else
 							{
@@ -206,7 +206,7 @@ namespace PolyVox
 								quad.vertices[3] = v1;
 								quad.material = material;
 
-								m_vecPosZQuads[regZ].push_back(quad);
+								m_vecQuads[PositiveZ][regZ].push_back(quad);
 							}
 						}
 					}
@@ -217,94 +217,24 @@ namespace PolyVox
 			memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		}
 
-		for(uint32_t slice = 0; slice < m_vecNegXQuads.size(); slice++)
+		for(uint32_t uFace = 0; uFace < NoOfFaces; uFace++)
 		{
-			while(decimate(m_vecNegXQuads[slice])){}
+			std::vector< std::list<Quad> >& vecListQuads = m_vecQuads[uFace];
 
-			for(std::list<Quad>::iterator quadIter = m_vecNegXQuads[slice].begin(); quadIter != m_vecNegXQuads[slice].end(); quadIter++)
+			for(uint32_t slice = 0; slice < vecListQuads.size(); slice++)
 			{
-				//m_meshCurrent->addTriangleCubic(m_vecPosXIndices[slice][index], m_vecPosXIndices[slice][index+1], m_vecPosXIndices[slice][index+2]);
+				std::list<Quad>& listQuads = vecListQuads[slice];
 
-				Quad quad = *quadIter;
-				
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
-			}			
-		}
+				while(decimate(listQuads)){}
 
-		for(uint32_t slice = 0; slice < m_vecPosXQuads.size(); slice++)
-		{
-			while(decimate(m_vecPosXQuads[slice])){}
-
-			for(std::list<Quad>::iterator quadIter = m_vecPosXQuads[slice].begin(); quadIter != m_vecPosXQuads[slice].end(); quadIter++)
-			{
-				//m_meshCurrent->addTriangleCubic(m_vecPosXIndices[slice][index], m_vecPosXIndices[slice][index+1], m_vecPosXIndices[slice][index+2]);
-
-				Quad quad = *quadIter;
-				
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
-			}			
-		}
-
-		for(uint32_t slice = 0; slice < m_vecNegYQuads.size(); slice++)
-		{
-			while(decimate(m_vecNegYQuads[slice])){}
-
-			for(std::list<Quad>::iterator quadIter = m_vecNegYQuads[slice].begin(); quadIter != m_vecNegYQuads[slice].end(); quadIter++)
-			{
-				//m_meshCurrent->addTriangleCubic(m_vecPosXIndices[slice][index], m_vecPosXIndices[slice][index+1], m_vecPosXIndices[slice][index+2]);
-
-				Quad quad = *quadIter;
-				
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
-			}			
-		}
-
-		for(uint32_t slice = 0; slice < m_vecPosYQuads.size(); slice++)
-		{
-			while(decimate(m_vecPosYQuads[slice])){}
-
-			for(std::list<Quad>::iterator quadIter = m_vecPosYQuads[slice].begin(); quadIter != m_vecPosYQuads[slice].end(); quadIter++)
-			{
-				//m_meshCurrent->addTriangleCubic(m_vecPosXIndices[slice][index], m_vecPosXIndices[slice][index+1], m_vecPosXIndices[slice][index+2]);
-
-				Quad quad = *quadIter;
-				
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
-			}			
-		}
-
-		for(uint32_t slice = 0; slice < m_vecNegZQuads.size(); slice++)
-		{
-			while(decimate(m_vecNegZQuads[slice])){}
-
-			for(std::list<Quad>::iterator quadIter = m_vecNegZQuads[slice].begin(); quadIter != m_vecNegZQuads[slice].end(); quadIter++)
-			{
-				//m_meshCurrent->addTriangleCubic(m_vecPosXIndices[slice][index], m_vecPosXIndices[slice][index+1], m_vecPosXIndices[slice][index+2]);
-
-				Quad quad = *quadIter;
-				
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
-			}			
-		}
-
-		for(uint32_t slice = 0; slice < m_vecPosZQuads.size(); slice++)
-		{
-			while(decimate(m_vecPosZQuads[slice])){}
-
-			for(std::list<Quad>::iterator quadIter = m_vecPosZQuads[slice].begin(); quadIter != m_vecPosZQuads[slice].end(); quadIter++)
-			{
-				//m_meshCurrent->addTriangleCubic(m_vecPosXIndices[slice][index], m_vecPosXIndices[slice][index+1], m_vecPosXIndices[slice][index+2]);
-
-				Quad quad = *quadIter;
-				
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-				m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
-			}			
+				std::list<Quad>::iterator iterEnd = listQuads.end();
+				for(std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
+				{
+					Quad& quad = *quadIter;				
+					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
+					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
+				}			
+			}
 		}
 
 		m_meshCurrent->m_Region = m_regSizeInVoxels;

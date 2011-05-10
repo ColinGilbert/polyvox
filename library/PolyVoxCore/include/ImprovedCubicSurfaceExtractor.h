@@ -82,14 +82,7 @@ namespace PolyVox
 
 		Array<4, uint8_t> m_faces;
 
-		std::vector< std::list<Quad> > m_vecNegXQuads;
-		std::vector< std::list<Quad> > m_vecPosXQuads;
-
-		std::vector< std::list<Quad> > m_vecNegYQuads;
-		std::vector< std::list<Quad> > m_vecPosYQuads;
-
-		std::vector< std::list<Quad> > m_vecNegZQuads;
-		std::vector< std::list<Quad> > m_vecPosZQuads;
+		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
 
 		//Although we try to avoid creating multiple vertices at the same location, sometimes this is unavoidable
 		//if they have different materials. For example, four different materials next to each other would mean
