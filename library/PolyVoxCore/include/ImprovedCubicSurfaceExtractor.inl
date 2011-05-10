@@ -33,11 +33,12 @@ namespace PolyVox
 	const uint32_t ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::MaxQuadsSharingVertex = 4;
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::ImprovedCubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result)
+	ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::ImprovedCubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
+		,m_bMergeQuads(bMergeQuads)
 	{
 		m_meshCurrent->clear();
 	}
@@ -225,7 +226,10 @@ namespace PolyVox
 			{
 				std::list<Quad>& listQuads = vecListQuads[slice];
 
-				while(decimate(listQuads)){}
+				if(m_bMergeQuads)
+				{
+					while(decimate(listQuads)){}
+				}
 
 				std::list<Quad>::iterator iterEnd = listQuads.end();
 				for(std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
@@ -320,32 +324,6 @@ namespace PolyVox
 	template< template<typename> class VolumeType, typename VoxelType>
 	Quad ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(const Quad& q1, const Quad& q2)
 	{
-		/*Quad* pCurrentQuad = &q1;
-		Quad* pOtherQuad = &q2;
-		uint32_t uCurrentInputIndex = 0;
-		uint32_t uCurrentOutputIndex = 0;
-
-		Quad result;
-		result.material = q1.material;
-
-		do
-		{
-			uint32_t uIndexInOtherQuad = quadContainsVertex(*pOtherQuad, (*(pCurrentQuad)).vertices[uCurrentInputIndex]);
-			if(uIndexInOtherQuad != -1)
-			{
-				std::swap(pCurrentQuad, pOtherQuad);
-				uCurrentInputIndex = (uIndexInOtherQuad + 1) % 4;
-			}
-			else
-			{
-				result.vertices[uCurrentOutputIndex] = pCurrentQuad->vertices[uCurrentInputIndex];
-				uCurrentOutputIndex++;
-				uCurrentInputIndex = (uCurrentInputIndex + 1) % 4;
-			}
-		} while(uCurrentOutputIndex < 4);
-
-		return result;*/
-
 		Quad result;
 		result.material = q1.material;
 

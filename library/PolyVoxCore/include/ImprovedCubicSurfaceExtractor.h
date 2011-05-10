@@ -32,23 +32,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	struct IndexAndMaterial
-	{
-		int32_t iIndex    : 24;
-		int32_t uMaterial : 8;
-	};
-
-	enum FaceNames
-	{
-		PositiveX,
-		PositiveY,
-		PositiveZ,
-		NegativeX,
-		NegativeY,
-		NegativeZ,
-		NoOfFaces
-	};
-
 	struct Quad
 	{
 		uint32_t vertices[4];
@@ -58,8 +41,25 @@ namespace PolyVox
 	template< template<typename> class VolumeType, typename VoxelType>
 	class ImprovedCubicSurfaceExtractor
 	{
+		struct IndexAndMaterial
+		{
+			int32_t iIndex    : 24;
+			int32_t uMaterial : 8;
+		};
+
+		enum FaceNames
+		{
+			PositiveX,
+			PositiveY,
+			PositiveZ,
+			NegativeX,
+			NegativeY,
+			NegativeZ,
+			NoOfFaces
+		};
+
 	public:
-		ImprovedCubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
+		ImprovedCubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true);
 
 		void execute();
 
@@ -84,6 +84,8 @@ namespace PolyVox
 
 		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
 
+		bool m_bMergeQuads;
+
 		//Although we try to avoid creating multiple vertices at the same location, sometimes this is unavoidable
 		//if they have different materials. For example, four different materials next to each other would mean
 		//four quads (though more triangles) sharing the vertex. As far as I can tell, four is the worst case scenario.
@@ -92,18 +94,6 @@ namespace PolyVox
 		////////////////////////////////////////////////////////////////////////////////
 		// Decimation
 		////////////////////////////////////////////////////////////////////////////////
-
-		/*class Triangle
-		{
-			uint32_t v0;
-			uint32_t v1;
-			uint32_t v2;
-		}
-
-		std::vector<Triangle> triangles;
-		std::vector< std::vector<uint32_t> > trianglesUsingVertex;*/
-
-		//std::vector<Quad> decimate(const std::vector<Quad>& quads);
 
 		bool decimate(std::list<Quad>& quads);
 
