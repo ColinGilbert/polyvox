@@ -216,19 +216,19 @@ namespace PolyVox
 
 		for(uint32_t uFace = 0; uFace < NoOfFaces; uFace++)
 		{
-			std::vector< std::vector<Quad> >& vecListQuads = m_vecQuads[uFace];
+			std::vector< std::list<Quad> >& vecListQuads = m_vecQuads[uFace];
 
 			for(uint32_t slice = 0; slice < vecListQuads.size(); slice++)
 			{
-				std::vector<Quad>& listQuads = vecListQuads[slice];
+				std::list<Quad>& listQuads = vecListQuads[slice];
 
 				if(m_bMergeQuads)
 				{
 					while(decimate(listQuads)){}
 				}
 
-				std::vector<Quad>::iterator iterEnd = listQuads.end();
-				for(std::vector<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
+				std::list<Quad>::iterator iterEnd = listQuads.end();
+				for(std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
 				{
 					Quad& quad = *quadIter;				
 					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
@@ -285,117 +285,66 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::decimate(std::vector<Quad>& quads)
+	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::decimate(std::list<Quad>& quads)
 	{
-		for(std::vector<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
+		bool bDidMerge = false;
+		for(std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
 		{
-			std::vector<Quad>::iterator innerIter = outerIter;
+			std::list<Quad>::iterator innerIter = outerIter;
 			innerIter++;
 			while(innerIter != quads.end())
 			{
 				Quad& q1 = *outerIter;
 				Quad& q2 = *innerIter;
 
-				std::pair<bool, Quad> result = mergeQuads(q1,q2);
+				bool result = mergeQuads(q1,q2);
 
-				if(result.first)
+				if(result)
 				{
-					quads.push_back(result.second);
-
-					quads.erase(innerIter);
-					quads.erase(outerIter);					
-
-					return true;
+					bDidMerge = true;
+					innerIter = quads.erase(innerIter);
 				}
-
-				innerIter++;
+				else
+				{
+					innerIter++;
+				}
 			}
 		}
 
-		return false;
-		//std::cout << "Can not merge" << std::endl;
+		return bDidMerge;
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	std::pair<bool, Quad> ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(const Quad& q1, const Quad& q2)
+	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(Quad& q1, Quad& q2)
 	{
-		std::pair<bool, Quad> resultPair;
-		resultPair.first = false;
-
 		if(q1.material == q2.material)
 		{
-			resultPair.second.material = q1.material;
-
 			if((q1.vertices[0] == q2.vertices[1]) && ((q1.vertices[3] == q2.vertices[2])))
 			{
-				resultPair.first = true;
-				resultPair.second.vertices[0] = q2.vertices[0];
-				resultPair.second.vertices[1] = q1.vertices[1];
-				resultPair.second.vertices[2] = q1.vertices[2];
-				resultPair.second.vertices[3] = q2.vertices[3];
+				q1.vertices[0] = q2.vertices[0];
+				q1.vertices[3] = q2.vertices[3];
+				return true;
 			}
 			else if((q1.vertices[3] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[1])))
 			{
-				resultPair.first = true;
-				resultPair.second.vertices[0] = q1.vertices[0];
-				resultPair.second.vertices[1] = q1.vertices[1];
-				resultPair.second.vertices[2] = q2.vertices[2];
-				resultPair.second.vertices[3] = q2.vertices[3];
+				q1.vertices[3] = q2.vertices[3];
+				q1.vertices[2] = q2.vertices[2];
+				return true;
 			}
 			else if((q1.vertices[1] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[3])))
 			{
-				resultPair.first = true;
-				resultPair.second.vertices[0] = q1.vertices[0];
-				resultPair.second.vertices[1] = q2.vertices[1];
-				resultPair.second.vertices[2] = q2.vertices[2];
-				resultPair.second.vertices[3] = q1.vertices[3];
+				q1.vertices[1] = q2.vertices[1];
+				q1.vertices[2] = q2.vertices[2];
+				return true;
 			}
-			else if((q1.vertices[0] == q2.vertices[3]) && ((q1.vertices[1] == q2.vertices[1])))
+			else if((q1.vertices[0] == q2.vertices[3]) && ((q1.vertices[1] == q2.vertices[2])))
 			{
-				resultPair.first = true;
-				resultPair.second.vertices[0] = q2.vertices[0];
-				resultPair.second.vertices[1] = q2.vertices[1];
-				resultPair.second.vertices[2] = q1.vertices[2];
-				resultPair.second.vertices[3] = q1.vertices[3];
+				q1.vertices[0] = q2.vertices[0];
+				q1.vertices[1] = q2.vertices[1];
+				return true;
 			}
 		}
 		
-		return resultPair;
-	}
-
-	template< template<typename> class VolumeType, typename VoxelType>
-	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::canMergeQuads(const Quad& q1, const Quad& q2)
-	{
-		if(q1.material != q2.material)
-		{
-			return false;
-		}
-
-		uint32_t uNoOfMatchingVertices = 0;
-		for(uint32_t uQuad1Index = 0; uQuad1Index < 4; uQuad1Index++)
-		{
-			if(quadContainsVertex(q2, q1.vertices[uQuad1Index]) != -1)
-			{
-				uNoOfMatchingVertices++;
-			}
-		}
-
-		return uNoOfMatchingVertices == 2;
-	}
-
-	template< template<typename> class VolumeType, typename VoxelType>
-	int32_t ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::quadContainsVertex(const Quad& quad, uint32_t uVertexIndex)
-	{
-		for(uint32_t ct = 0; ct < 4; ct++)
-		{
-			if(quad.vertices[ct] == uVertexIndex)
-			{
-				//We've found a matching vertex.
-				return ct;
-			}
-		}
-
-		//Vertex not found.
-		return -1;
+		return false;
 	}
 }
