@@ -82,7 +82,7 @@ namespace PolyVox
 
 		Array<4, uint8_t> m_faces;
 
-		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
+		std::vector< std::vector<Quad> > m_vecQuads[NoOfFaces];
 
 		bool m_bMergeQuads;
 
@@ -95,7 +95,7 @@ namespace PolyVox
 		// Decimation
 		////////////////////////////////////////////////////////////////////////////////
 
-		bool decimate(std::list<Quad>& quads);
+		bool decimate(std::vector<Quad>& quads);
 
 		std::pair<bool, Quad> mergeQuads(const Quad& q1, const Quad& q2);
 
