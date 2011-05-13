@@ -259,12 +259,7 @@ namespace PolyVox
 			int32_t iIndex = static_cast<int32_t>(rEntry.iIndex);
 			uint8_t uMaterial = static_cast<uint8_t>(rEntry.uMaterial);
 
-			//If we have an existing vertex and the material matches then we can return it.
-			if((iIndex != -1) && (uMaterial == uMaterialIn))
-			{
-				return iIndex;
-			}
-			else
+			if(iIndex == -1)
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex.
 				uint32_t temp = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(fX, fY, fZ), uMaterialIn));
@@ -275,6 +270,12 @@ namespace PolyVox
 				rEntry.uMaterial = uMaterialIn;
 
 				return temp;
+			}
+
+			//If we have an existing vertex and the material matches then we can return it.
+			if(uMaterial == uMaterialIn)
+			{
+				return iIndex;
 			}
 		}
 
