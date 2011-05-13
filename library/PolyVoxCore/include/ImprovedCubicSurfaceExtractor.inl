@@ -114,7 +114,6 @@ namespace PolyVox
 								quad.vertices[1] = v1;
 								quad.vertices[2] = v2;
 								quad.vertices[3] = v3;
-								quad.material = material;
 
 								m_vecQuads[NegativeX][regX].push_back(quad);
 							}
@@ -124,7 +123,6 @@ namespace PolyVox
 								quad.vertices[1] = v3;
 								quad.vertices[2] = v2;
 								quad.vertices[3] = v1;
-								quad.material = material;
 
 								m_vecQuads[PositiveX][regX].push_back(quad);
 							}
@@ -153,7 +151,6 @@ namespace PolyVox
 								quad.vertices[1] = v3;
 								quad.vertices[2] = v2;
 								quad.vertices[3] = v1;
-								quad.material = material;
 
 								m_vecQuads[NegativeY][regY].push_back(quad);
 							}
@@ -164,7 +161,6 @@ namespace PolyVox
 								quad.vertices[1] = v1;
 								quad.vertices[2] = v2;
 								quad.vertices[3] = v3;
-								quad.material = material;
 
 								m_vecQuads[PositiveY][regY].push_back(quad);
 							}
@@ -191,7 +187,6 @@ namespace PolyVox
 								quad.vertices[1] = v1;
 								quad.vertices[2] = v2;
 								quad.vertices[3] = v3;
-								quad.material = material;
 
 								m_vecQuads[NegativeZ][regZ].push_back(quad);
 							}
@@ -201,7 +196,6 @@ namespace PolyVox
 								quad.vertices[1] = v3;
 								quad.vertices[2] = v2;
 								quad.vertices[3] = v1;
-								quad.material = material;
 
 								m_vecQuads[PositiveZ][regZ].push_back(quad);
 							}
@@ -256,26 +250,19 @@ namespace PolyVox
 		{
 			IndexAndMaterial& rEntry = existingVertices[uX][uY][ct];
 
-			int32_t iIndex = static_cast<int32_t>(rEntry.iIndex);
-			uint8_t uMaterial = static_cast<uint8_t>(rEntry.uMaterial);
-
-			if(iIndex == -1)
+			if(rEntry.iIndex == -1)
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex.
-				uint32_t temp = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(fX, fY, fZ), uMaterialIn));
-
-				//Note - Slightly dodgy casting taking place here. No proper way to convert to 24-bit int though?
-				//If problematic in future then fix IndexAndMaterial to contain variables rather than bitfield.
-				rEntry.iIndex = temp;
+				rEntry.iIndex = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(fX, fY, fZ), uMaterialIn));
 				rEntry.uMaterial = uMaterialIn;
 
-				return temp;
+				return rEntry.iIndex;
 			}
 
 			//If we have an existing vertex and the material matches then we can return it.
-			if(uMaterial == uMaterialIn)
+			if(rEntry.uMaterial == uMaterialIn)
 			{
-				return iIndex;
+				return rEntry.iIndex;
 			}
 		}
 
@@ -318,7 +305,9 @@ namespace PolyVox
 	template< template<typename> class VolumeType, typename VoxelType>
 	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(Quad& q1, Quad& q2)
 	{
-		if(q1.material == q2.material)
+		//All four vertices of a given quad have the same material,
+		//so just check that the first pair or vertices match.
+		if(fabs(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() - m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial()) < 0.001)
 		{
 			if((q1.vertices[0] == q2.vertices[1]) && ((q1.vertices[3] == q2.vertices[2])))
 			{

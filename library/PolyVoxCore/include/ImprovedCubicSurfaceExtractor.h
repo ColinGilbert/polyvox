@@ -35,7 +35,6 @@ namespace PolyVox
 	struct Quad
 	{
 		uint32_t vertices[4];
-		uint8_t material; //Shouldn't hard code to uint8_t type?
 	};
 
 	template< template<typename> class VolumeType, typename VoxelType>
@@ -43,8 +42,8 @@ namespace PolyVox
 	{
 		struct IndexAndMaterial
 		{
-			int32_t iIndex    : 24;
-			int32_t uMaterial : 8;
+			int32_t iIndex;
+			int32_t uMaterial; //Should actually use the material type here, but this is ok for now.
 		};
 
 		enum FaceNames
