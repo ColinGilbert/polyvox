@@ -32,11 +32,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	struct Quad
-	{
-		uint32_t vertices[4];
-	};
-
 	template< template<typename> class VolumeType, typename VoxelType>
 	class ImprovedCubicSurfaceExtractor
 	{
@@ -57,17 +52,23 @@ namespace PolyVox
 			NoOfFaces
 		};
 
+		struct Quad
+		{
+			uint32_t vertices[4];
+		};
+
 	public:
 		ImprovedCubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true);
 
-		void execute();
-
-		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		void execute();		
 
 	private:
+		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		bool performQuadMerging(std::list<Quad>& quads);
+		bool mergeQuads(Quad& q1, Quad& q2);
+
 		//The volume data and a sampler to access it.
 		VolumeType<VoxelType>* m_volData;
-		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -75,28 +76,22 @@ namespace PolyVox
 		//The surface patch we are currently filling.
 		SurfaceMesh<PositionMaterial>* m_meshCurrent;
 
-		//Array<4, IndexAndMaterial> m_vertices;
+		//Used to avoid creating duplicate vertices.
 		Array<3, IndexAndMaterial> m_previousSliceVertices;
 		Array<3, IndexAndMaterial> m_currentSliceVertices;
 
-		Array<4, uint8_t> m_faces;
-
+		//During extraction we create a number of different lists of quads. All the 
+		//quads in a given list are in the same plane and facing in the same direction.
 		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
 
+		//Controls whether quad merging should be performed. This might be undesirable
+		//is the user needs per-vertex attributes, or to perform per vertex lighting.
 		bool m_bMergeQuads;
 
 		//Although we try to avoid creating multiple vertices at the same location, sometimes this is unavoidable
 		//if they have different materials. For example, four different materials next to each other would mean
 		//four quads (though more triangles) sharing the vertex. As far as I can tell, four is the worst case scenario.
-		static const uint32_t MaxQuadsSharingVertex;
-
-		////////////////////////////////////////////////////////////////////////////////
-		// Decimation
-		////////////////////////////////////////////////////////////////////////////////
-
-		bool decimate(std::list<Quad>& quads);
-
-		bool mergeQuads(Quad& q1, Quad& q2);
+		static const uint32_t MaxQuadsSharingVertex;		
 	};
 }
 

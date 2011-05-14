@@ -35,7 +35,6 @@ namespace PolyVox
 	template< template<typename> class VolumeType, typename VoxelType>
 	ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::ImprovedCubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads)
 		:m_volData(volData)
-		,m_sampVolume(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
 		,m_bMergeQuads(bMergeQuads)
@@ -58,8 +57,6 @@ namespace PolyVox
 		uint32_t uRegionWidth  = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
 		uint32_t uRegionHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
 		uint32_t uRegionDepth  = m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 1;
-		m_faces.resize(ArraySizes(uRegionWidth)(uRegionHeight)(uRegionDepth)(NoOfFaces));
-		memset(m_faces.getRawData(), 0x00, m_faces.getNoOfElements() * sizeof(uint8_t)); //Note: hard-coded type uint8_t
 
 		m_vecQuads[NegativeX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
 		m_vecQuads[PositiveX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
@@ -218,7 +215,9 @@ namespace PolyVox
 
 				if(m_bMergeQuads)
 				{
-					while(decimate(listQuads)){}
+					//Repeatedly call this function until it returns
+					//false to indicate nothing more can be done.
+					while(performQuadMerging(listQuads)){}
 				}
 
 				std::list<Quad>::iterator iterEnd = listQuads.end();
@@ -274,7 +273,7 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::decimate(std::list<Quad>& quads)
+	bool ImprovedCubicSurfaceExtractor<VolumeType, VoxelType>::performQuadMerging(std::list<Quad>& quads)
 	{
 		bool bDidMerge = false;
 		for(std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
@@ -310,6 +309,9 @@ namespace PolyVox
 		//so just check that the first pair or vertices match.
 		if(fabs(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() - m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial()) < 0.001)
 		{
+			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
+			//Adjacent quads must share two vertices, and the second quad could be to the
+			//top, bottom, left, of right of the first one. This gives four combinations to test.
 			if((q1.vertices[0] == q2.vertices[1]) && ((q1.vertices[3] == q2.vertices[2])))
 			{
 				q1.vertices[0] = q2.vertices[0];
@@ -336,6 +338,7 @@ namespace PolyVox
 			}
 		}
 		
+		//Quads cannot be merged.
 		return false;
 	}
 }
