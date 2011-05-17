@@ -14,10 +14,10 @@ To get started, we need to include the following headers:
 
 .. code-block:: c++
 
-	#include "MaterialDensityPair.h"
-	#include "CubicSurfaceExtractorWithNormals.h"
-	#include "SurfaceMesh.h"
-	#include "Volume.h"
+	#include "PolyVoxCore/MaterialDensityPair.h"
+	#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+	#include "PolyVoxCore/SurfaceMesh.h"
+	#include "PolyVoxCore/Volume.h"
 
 The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`Volume` class and stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
 
