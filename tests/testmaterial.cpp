@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "testmaterial.h"
 
-#include <Material.h>
+#include "PolyVoxCore/Material.h"
 
 #include <QtTest>
 

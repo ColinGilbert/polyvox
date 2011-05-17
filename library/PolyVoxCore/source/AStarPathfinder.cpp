@@ -21,9 +21,9 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "AStarPathfinder.h"
+#include "PolyVoxCore/AStarPathfinder.h"
 
-#include "Material.h"
+#include "PolyVoxCore/Material.h"
 
 using namespace PolyVox;
 

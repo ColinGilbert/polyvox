@@ -23,10 +23,10 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "MaterialDensityPair.h"
-#include "CubicSurfaceExtractorWithNormals.h"
-#include "SurfaceMesh.h"
-#include "SimpleVolume.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/SimpleVolume.h"
 
 #include <QApplication>
 

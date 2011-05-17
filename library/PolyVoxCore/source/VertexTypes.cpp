@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include <sstream>
 
-#include "VertexTypes.h"
+#include "PolyVoxCore/VertexTypes.h"
 
 namespace PolyVox
 {

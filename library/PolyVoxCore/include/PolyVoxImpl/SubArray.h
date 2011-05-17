@@ -81,6 +81,6 @@ namespace PolyVox
 	};
 }//namespace PolyVox
 
-#include "SubArray.inl"
+#include "PolyVoxImpl/SubArray.inl"
 
 #endif //__PolyVox_SubArray_H__

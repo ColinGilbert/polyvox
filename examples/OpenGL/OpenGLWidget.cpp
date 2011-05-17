@@ -25,10 +25,10 @@ freely, subject to the following restrictions:
 
 #include <QMouseEvent>
 
-#include "GradientEstimators.h"
-#include "MaterialDensityPair.h"
-#include "MeshDecimator.h"
-#include "SurfaceExtractor.h"
+#include "PolyVoxCore/GradientEstimators.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/MeshDecimator.h"
+#include "PolyVoxCore/SurfaceExtractor.h"
 
 //Some namespaces we need
 using namespace std;

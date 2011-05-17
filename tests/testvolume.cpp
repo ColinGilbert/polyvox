@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "testvolume.h"
 
-#include <LargeVolume.h>
+#include "PolyVoxCore/LargeVolume.h"
 
 #include <QtTest>
 

@@ -1,6 +1,6 @@
-#include "MeshDecimator.h"
+#include "PolyVoxCore/MeshDecimator.h"
 
-#include "SurfaceMesh.h"
+#include "PolyVoxCore/SurfaceMesh.h"
 
 namespace PolyVox
 {

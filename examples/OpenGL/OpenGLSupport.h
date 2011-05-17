@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __OpenGLExample_OpenGLSupport_H__
 #define __OpenGLExample_OpenGLSupport_H__
 
-#include "PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 
 #include "glew/glew.h"
 

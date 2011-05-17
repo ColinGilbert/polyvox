@@ -24,12 +24,12 @@ freely, subject to the following restrictions:
 #include "OpenGLWidget.h"
 #include "Perlin.h"
 
-#include "MaterialDensityPair.h"
-#include "CubicSurfaceExtractorWithNormals.h"
-#include "SurfaceExtractor.h"
-#include "SurfaceMesh.h"
-#include "LargeVolume.h"
-#include "Filters.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/SurfaceExtractor.h"
+#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/Filters.h"
 
 #include <QApplication>
 

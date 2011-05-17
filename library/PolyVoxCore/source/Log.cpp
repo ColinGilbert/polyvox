@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "Log.h"
+#include "PolyVoxCore/Log.h"
 
 namespace PolyVox
 {

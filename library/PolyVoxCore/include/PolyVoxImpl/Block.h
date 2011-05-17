@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Block_H__
 #define __PolyVox_Block_H__
 
-#include "PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include <limits>
 #include <vector>
 
@@ -73,6 +73,6 @@ namespace PolyVox
 	};
 }
 
-#include "Block.inl"
+#include "PolyVoxImpl/Block.inl"
 
 #endif

@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Utility_H__
 #define __PolyVox_Utility_H__
 
-#include "TypeDef.h"
+#include "PolyVoxImpl/TypeDef.h"
 
 #include <cassert>
 

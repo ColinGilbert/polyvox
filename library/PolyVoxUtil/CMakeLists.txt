@@ -9,10 +9,10 @@ SET(UTIL_SRC_FILES
 
 #Projects headers files
 SET(UTIL_INC_FILES
-	include/Serialization.h
-	include/Serialization.inl
-	include/VolumeChangeTracker.h	
-	include/VolumeChangeTracker.inl
+	include/PolyVoxUtil/Serialization.h
+	include/PolyVoxUtil/Serialization.inl
+	include/PolyVoxUtil/VolumeChangeTracker.h	
+	include/PolyVoxUtil/VolumeChangeTracker.inl
 )
 
 ADD_DEFINITIONS(-DPOLYVOX_SHARED_EXPORTS) #Export symbols in the .dll

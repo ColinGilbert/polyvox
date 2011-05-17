@@ -21,11 +21,11 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "Filters.h"
-#include "Log.h"
-#include "MaterialDensityPair.h"
-#include "LargeVolume.h"
-#include "SurfaceMesh.h"
+#include "PolyVoxCore/Filters.h"
+#include "PolyVoxCore/Log.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"

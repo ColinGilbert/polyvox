@@ -29,8 +29,8 @@ freely, subject to the following restrictions:
 #include <QGLWidget>
 #include <QTimer>
 
-#include "LargeVolume.h"
-#include "SurfaceMesh.h"
+#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"

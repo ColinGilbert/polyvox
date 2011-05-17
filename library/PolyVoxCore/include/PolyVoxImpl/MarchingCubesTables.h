@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MarchingCubeTables_H__
 #define __PolyVox_MarchingCubeTables_H__
 
-#include "TypeDef.h"
+#include "PolyVoxImpl/TypeDef.h"
 
 namespace PolyVox
 {

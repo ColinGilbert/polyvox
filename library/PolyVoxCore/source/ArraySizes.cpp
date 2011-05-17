@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "ArraySizes.h"
+#include "PolyVoxCore/ArraySizes.h"
 
 namespace PolyVox
 {	

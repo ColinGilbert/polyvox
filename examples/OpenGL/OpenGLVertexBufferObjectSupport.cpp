@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #include "OpenGLSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"
 
-#include "SurfaceMesh.h"
+#include "PolyVoxCore/SurfaceMesh.h"
 
 using namespace PolyVox;
 using namespace std;

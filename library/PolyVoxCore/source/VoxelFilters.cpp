@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "VoxelFilters.h"
+#include "PolyVoxCore/VoxelFilters.h"
 
 namespace PolyVox
 {

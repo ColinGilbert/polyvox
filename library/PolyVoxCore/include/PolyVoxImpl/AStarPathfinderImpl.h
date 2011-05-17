@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_AStarPathfinderImpl_H__
 #define __PolyVox_AStarPathfinderImpl_H__
 
-#include "Vector.h"
+#include "PolyVoxCore/Vector.h"
 
 #include <limits> //For numeric_limits
 #include <set>
