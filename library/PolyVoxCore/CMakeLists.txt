@@ -33,8 +33,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Filters.inl
 	include/PolyVoxCore/GradientEstimators.h
 	include/PolyVoxCore/GradientEstimators.inl
-	include/PolyVoxCore/ImprovedCubicSurfaceExtractor.h
-	include/PolyVoxCore/ImprovedCubicSurfaceExtractor.inl
 	include/PolyVoxCore/LargeVolume.h
 	include/PolyVoxCore/LargeVolume.inl
 	include/PolyVoxCore/LargeVolumeSampler.inl

@@ -32,26 +32,43 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	struct IndexAndMaterial
-	{
-		int32_t iIndex    : 24;
-		int32_t uMaterial : 8;
-	};
-
 	template< template<typename> class VolumeType, typename VoxelType>
 	class CubicSurfaceExtractor
 	{
+		struct IndexAndMaterial
+		{
+			int32_t iIndex;
+			int32_t uMaterial; //Should actually use the material type here, but this is ok for now.
+		};
+
+		enum FaceNames
+		{
+			PositiveX,
+			PositiveY,
+			PositiveZ,
+			NegativeX,
+			NegativeY,
+			NegativeZ,
+			NoOfFaces
+		};
+
+		struct Quad
+		{
+			uint32_t vertices[4];
+		};
+
 	public:
-		CubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result);
+		CubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true);
 
-		void execute();
-
-		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		void execute();		
 
 	private:
+		int32_t addVertex(float fX, float fY, float fZ, uint8_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		bool performQuadMerging(std::list<Quad>& quads);
+		bool mergeQuads(Quad& q1, Quad& q2);
+
 		//The volume data and a sampler to access it.
 		VolumeType<VoxelType>* m_volData;
-		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -59,14 +76,22 @@ namespace PolyVox
 		//The surface patch we are currently filling.
 		SurfaceMesh<PositionMaterial>* m_meshCurrent;
 
-		//Array<4, IndexAndMaterial> m_vertices;
+		//Used to avoid creating duplicate vertices.
 		Array<3, IndexAndMaterial> m_previousSliceVertices;
 		Array<3, IndexAndMaterial> m_currentSliceVertices;
+
+		//During extraction we create a number of different lists of quads. All the 
+		//quads in a given list are in the same plane and facing in the same direction.
+		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
+
+		//Controls whether quad merging should be performed. This might be undesirable
+		//is the user needs per-vertex attributes, or to perform per vertex lighting.
+		bool m_bMergeQuads;
 
 		//Although we try to avoid creating multiple vertices at the same location, sometimes this is unavoidable
 		//if they have different materials. For example, four different materials next to each other would mean
 		//four quads (though more triangles) sharing the vertex. As far as I can tell, four is the worst case scenario.
-		static const uint32_t MaxQuadsSharingVertex;
+		static const uint32_t MaxQuadsSharingVertex;		
 	};
 }
 
