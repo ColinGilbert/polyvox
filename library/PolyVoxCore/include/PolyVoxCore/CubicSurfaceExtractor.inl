@@ -67,7 +67,7 @@ namespace PolyVox
 		m_vecQuads[NegativeZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
 		m_vecQuads[PositiveZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
 
-		VolumeType<VoxelType>::Sampler volumeSampler(m_volData);	
+		typename VolumeType<VoxelType>::Sampler volumeSampler(m_volData);	
 		Quad quad;
 		
 		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
@@ -220,8 +220,8 @@ namespace PolyVox
 					while(performQuadMerging(listQuads)){}
 				}
 
-				std::list<Quad>::iterator iterEnd = listQuads.end();
-				for(std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
+				typename std::list<Quad>::iterator iterEnd = listQuads.end();
+				for(typename std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
 				{
 					Quad& quad = *quadIter;				
 					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
@@ -276,9 +276,9 @@ namespace PolyVox
 	bool CubicSurfaceExtractor<VolumeType, VoxelType>::performQuadMerging(std::list<Quad>& quads)
 	{
 		bool bDidMerge = false;
-		for(std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
+		for(typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
 		{
-			std::list<Quad>::iterator innerIter = outerIter;
+			typename std::list<Quad>::iterator innerIter = outerIter;
 			innerIter++;
 			while(innerIter != quads.end())
 			{
