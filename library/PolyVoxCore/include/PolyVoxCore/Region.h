@@ -37,7 +37,7 @@ namespace PolyVox
 	{
 	public:
 
-		const static Region MaxRegion;
+		static const Region MaxRegion;
 
 		Region();
 		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);

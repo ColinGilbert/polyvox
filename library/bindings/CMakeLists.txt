@@ -4,7 +4,8 @@ if(SWIG_FOUND)
 	
 	find_package(PythonLibs)
 	include_directories(${PYTHON_INCLUDE_PATH})
-	include_directories(${PolyVoxCore_SOURCE_DIR}/include)
+	include_directories(${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
+	link_directories(${PolyVoxCore_BINARY_DIR})
 
 	set(CMAKE_SWIG_FLAGS "")
 	set_source_files_properties(PolyVoxCore.i PROPERTIES CPLUSPLUS ON)

@@ -1,11 +1,11 @@
 %module CubicSurfaceExtractorWithNormals
 %{
-#include "VolumeSampler.h"
+#include "SimpleVolume.h"
 //#include "CubicSurfaceExtractor.h"
 #include "CubicSurfaceExtractorWithNormals.h"
 %}
 
-%include "VolumeSampler.h"
+%include "SimpleVolume.h"
 //%include "CubicSurfaceExtractor.h"
 %include "CubicSurfaceExtractorWithNormals.h"
 

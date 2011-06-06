@@ -1,10 +1,10 @@
 %module SurfaceExtractor
 %{
-#include "VolumeSampler.h"
+#include "SimpleVolume.h"
 #include "SurfaceExtractor.h"
 %}
 
-%include "VolumeSampler.h"
+%include "SimpleVolume.h"
 %include "SurfaceExtractor.h"
 
 %template(SurfaceExtractorMaterial8) PolyVox::SurfaceExtractor<PolyVox::Material8>;
