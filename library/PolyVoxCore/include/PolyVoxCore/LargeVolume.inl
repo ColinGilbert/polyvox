@@ -267,7 +267,7 @@ namespace PolyVox
 	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks)
+	void LargeVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks)
 	{
 		clearBlockCache();
 
@@ -279,7 +279,7 @@ namespace PolyVox
 	/// \param uMaxBlocks The number of blocks
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory)
+	void LargeVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory)
 	{
 		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
 		{

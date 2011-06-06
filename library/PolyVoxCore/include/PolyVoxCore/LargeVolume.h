@@ -279,9 +279,9 @@ namespace PolyVox
 		//Sets whether or not blocks are compressed in memory
 		void setCompressionEnabled(bool bCompressionEnabled);
 		/// Sets the number of blocks for which uncompressed data is stored
-		void setMaxNumberOfUncompressedBlocks(uint16_t uMaxNumberOfUncompressedBlocks);
+		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
-		void setMaxNumberOfBlocksInMemory(uint16_t uMaxNumberOfBlocksInMemory);
+		void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
