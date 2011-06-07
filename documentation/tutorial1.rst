@@ -17,15 +17,15 @@ To get started, we need to include the following headers:
 	#include "PolyVoxCore/MaterialDensityPair.h"
 	#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 	#include "PolyVoxCore/SurfaceMesh.h"
-	#include "PolyVoxCore/Volume.h"
+	#include "PolyVoxCore/SimpleVolume.h"
 
-The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`Volume` class and stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
+The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`SimpleVolume` class and stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
 
 .. code-block:: c++
 
-	Volume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	SimpleVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 
-As can be seen, the Volume class is templated upon the voxel type. This means it is straightforward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`Volume documentation <PolyVox::Volume>` for more details). In this particular case we have created a volume in which each voxel is an instance of :polyvox:`MaterialDensityPair44`. Each instance of :polyvox:`MaterialDensityPair44` holds both a material and a density and uses four bits of data for each. This means that both the material and the density have a range of 0-15, and each voxel requires one byte of storage. For more information about materials and densities please consult the :doc:`principles of polyvox <principles>` document.
+As can be seen, the SimpleVolume class is templated upon the voxel type. This means it is straightforward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`SimpleVolume documentation <PolyVox::SimpleVolume>` for more details). In this particular case we have created a volume in which each voxel is an instance of :polyvox:`MaterialDensityPair44`. Each instance of :polyvox:`MaterialDensityPair44` holds both a material and a density and uses four bits of data for each. This means that both the material and the density have a range of 0-15, and each voxel requires one byte of storage. For more information about materials and densities please consult the :doc:`principles of polyvox <principles>` document.
 
 Each voxel is initialised using its default constructor, which in the case of :polyvox:`MaterialDensityPair44` will mean that both the material and the density are set to zero. This corresponds to a volume full of empty space because the density of each voxel is below the threshold.
 
@@ -39,7 +39,7 @@ Note that this function is part of the BasicExample (rather than being part of t
 	
 .. code-block:: c++
 	
-	void createSphereInVolume(Volume<MaterialDensityPair44>& volData, float fRadius)
+	void createSphereInVolume(SimpleVolume<MaterialDensityPair44>& volData, float fRadius)
 	{
 		//This vector hold the position of the center of the volume
 		Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -76,9 +76,9 @@ Note that this function is part of the BasicExample (rather than being part of t
 		}
 	}
 	
-This function takes as input the :polyvox:`Volume` in which we want to create the sphere, and also a radius specifying how large we want the sphere to be. In our case we have specified a radius of 30 voxels, which will fit nicely inside our :polyvox:`Volume` of dimensions 64x64x64.
+This function takes as input the :polyvox:`SimpleVolume` in which we want to create the sphere, and also a radius specifying how large we want the sphere to be. In our case we have specified a radius of 30 voxels, which will fit nicely inside our :polyvox:`SimpleVolume` of dimensions 64x64x64.
 
-Because this is a simple example function it always places the sphere at the centre of the volume. It computes this centre by halving the dimensions of the volume as given by the functions :polyvox:`Volume::getWidth`, :polyvox:`Volume::getHeight` and :polyvox:`Volume::getDepth`. The resulting position is stored using a :polyvox:`Vector3DFloat`. This is simply a typedef from our templatised :polyvox:`Vector` class, meaning that other sizes and storage types are available if you need them. 
+Because this is a simple example function it always places the sphere at the centre of the volume. It computes this centre by halving the dimensions of the volume as given by the functions :polyvox:`SimpleVolume::getWidth`, :polyvox:`SimpleVolume::getHeight` and :polyvox:`SimpleVolume::getDepth`. The resulting position is stored using a :polyvox:`Vector3DFloat`. This is simply a typedef from our templatised :polyvox:`Vector` class, meaning that other sizes and storage types are available if you need them. 
 
 Next, the function uses a three-level 'for' loop to iterate over each voxel in the volume. For each voxel it computes the distance from the voxel to the centre of the volume. If this distance is less than or equal to the specified radius then the voxel form part of the sphere and is made solid. During surface extraction, the voxel will be considered solid if it's density is set to any value greater than its threshold, which can be obtained by calling :polyvox:`MaterialDensityPair44::getThreshold <MaterialDensityPair::getThreshold>`. In our case we simply set it to the largest possible value by calling :polyvox:`MaterialDensityPair44::getMaxDensity <MaterialDensityPair::getMaxDensity>`.
 
@@ -89,9 +89,9 @@ Now that we have built our volume we need to convert it into a triangle mesh for
 .. code-block:: c++
 
 	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair44 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	
-The :polyvox:`CubicSurfaceExtractorWithNormals` takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the :polyvox:`Volume` class provides a convenient :polyvox:`Volume::getEnclosingRegion` function which returns a :polyvox:`Region` representing the whole volume. The constructor also takes a pointer to a :polyvox:`SurfaceMesh` object where it will store the result, so we need to create one of these before we can construct the :polyvox:`CubicSurfaceExtractorWithNormals`.
+The :polyvox:`CubicSurfaceExtractorWithNormals` takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced application this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purposes the :polyvox:`SimpleVolume` class provides a convenient :polyvox:`SimpleVolume::getEnclosingRegion` function which returns a :polyvox:`Region` representing the whole volume. The constructor also takes a pointer to a :polyvox:`SurfaceMesh` object where it will store the result, so we need to create one of these before we can construct the :polyvox:`CubicSurfaceExtractorWithNormals`.
 
 The actual extraction happens in the :polyvox:`CubicSurfaceExtractorWithNormals::execute` function. This means you can set up a :polyvox:`CubicSurfaceExtractorWithNormals` with the required parameters and then actually execute it later. For this example we just call it straight away.
 
