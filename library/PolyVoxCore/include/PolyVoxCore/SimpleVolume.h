@@ -36,6 +36,7 @@ namespace PolyVox
 	class SimpleVolume
 	{
 	public:
+		#ifndef SWIG
 		class Block
 		{
 			//Make Sampler a friend
@@ -129,6 +130,7 @@ namespace PolyVox
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 		};
+		#endif
 
 	public:
 		/// Constructor for creating a fixed size volume.
