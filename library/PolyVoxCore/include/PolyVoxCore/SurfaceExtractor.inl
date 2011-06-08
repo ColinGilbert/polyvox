@@ -448,7 +448,7 @@ namespace PolyVox
 					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
 					v3dNormal.normalise();
 
-					const uint8_t uMaterial = v000.getMaterial() | v100.getMaterial(); //Because one of these is 0, the or operation takes the max.
+					const uint32_t uMaterial = v000.getMaterial() | v100.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -471,7 +471,7 @@ namespace PolyVox
 					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
 					v3dNormal.normalise();
 
-					const uint8_t uMaterial = v000.getMaterial() | v010.getMaterial(); //Because one of these is 0, the or operation takes the max.
+					const uint32_t uMaterial = v000.getMaterial() | v010.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -494,7 +494,7 @@ namespace PolyVox
 					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
 					v3dNormal.normalise();
 
-					const uint8_t uMaterial = v000.getMaterial() | v001.getMaterial(); //Because one of these is 0, the or operation takes the max.
+					const uint32_t uMaterial = v000.getMaterial() | v001.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);

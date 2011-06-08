@@ -58,7 +58,7 @@ namespace PolyVox
 					int plusXVoxel = m_volData->getVoxelAt(x+1,y,z).getDensity()  >= VoxelType::getThreshold();
 					if(currentVoxel > plusXVoxel)
 					{
-						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
+						uint32_t material = m_volData->getVoxelAt(x,y,z).getMaterial();
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));

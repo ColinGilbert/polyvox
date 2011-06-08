@@ -40,8 +40,8 @@ namespace PolyVox
 		}
 
 		//and if their density is below the threshold.
-		Material8 voxel = volData->getVoxelAt(v3dPos);
-		if(voxel.getDensity() >= Material8::getThreshold())
+		VoxelType voxel = volData->getVoxelAt(v3dPos);
+		if(voxel.getDensity() >= VoxelType::getThreshold())
 		{
 			return false;
 		}

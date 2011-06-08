@@ -88,6 +88,8 @@ namespace PolyVox
 	};
 
 	typedef Material<uint8_t> Material8;
+	typedef Material<uint16_t> Material16;
+	typedef Material<uint32_t> Material32;
 }
 
 #endif //__PolyVox_Material_H__

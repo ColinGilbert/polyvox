@@ -95,7 +95,7 @@ namespace PolyVox
 
 					if((currentVoxelIsSolid != negXVoxelIsSolid) && (finalY == false) && (finalZ == false))
 					{
-						int material = (std::max)(currentVoxel.getMaterial(), negXVoxel.getMaterial());
+						uint32_t material = (std::max)(currentVoxel.getMaterial(), negXVoxel.getMaterial());
 
 						// Check to ensure that when a voxel solid/non-solid change is right on a region border, the vertices are generated on the solid side of the region border
 						if(((currentVoxelIsSolid > negXVoxelIsSolid) && finalX == false) || ((currentVoxelIsSolid < negXVoxelIsSolid) && regX != 0))
@@ -241,7 +241,7 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	int32_t CubicSurfaceExtractor<VolumeType, VoxelType>::addVertex(float fX, float fY, float fZ, uint8_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
+	int32_t CubicSurfaceExtractor<VolumeType, VoxelType>::addVertex(float fX, float fY, float fZ, uint32_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		uint32_t uX = static_cast<uint32_t>(fX + 0.75f);
 		uint32_t uY = static_cast<uint32_t>(fY + 0.75f);

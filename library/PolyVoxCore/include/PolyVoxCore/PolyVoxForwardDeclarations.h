@@ -77,6 +77,8 @@ namespace PolyVox
 	typedef Density<uint8_t> Density8;
 	template <typename Type> class Material;
 	typedef Material<uint8_t> Material8;
+	typedef Material<uint16_t> Material16;
+	typedef Material<uint32_t> Material32;
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits> class MaterialDensityPair;
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 
