@@ -94,7 +94,7 @@ namespace PolyVox
 	/**
 	This copy constructor allows casting between vectors with different data types.
 	It is now possible to use code such as:
-
+	
 	Vector3DDouble v3dDouble(1.0,2.0,3.0);
 	Vector3DFloat v3dFloat = static_cast<Vector3DFloat>(v3dDouble); //Casting
 
@@ -106,7 +106,7 @@ namespace PolyVox
 	{
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] = static_cast<CastType>(vector.getElement(ct));
+			m_tElements[ct] = static_cast<Type>(vector.getElement(ct));
 		}
 	}
 

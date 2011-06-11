@@ -85,7 +85,7 @@ namespace PolyVox
 		//Build a list of all the triangles, complete with face normals.
 		m_vecTriangles.clear();
 		m_vecTriangles.resize(m_pOutputMesh->m_vecTriangleIndices.size() / 3);
-		for(int triCt = 0; triCt < m_vecTriangles.size(); triCt++)
+		for(uint32_t triCt = 0; triCt < m_vecTriangles.size(); triCt++)
 		{
 			m_vecTriangles[triCt].v0 = m_pOutputMesh->m_vecTriangleIndices[triCt * 3 + 0];
 			m_vecTriangles[triCt].v1 = m_pOutputMesh->m_vecTriangleIndices[triCt * 3 + 1];
@@ -106,11 +106,11 @@ namespace PolyVox
 		//For each vertex, determine which triangles are using it.
 		trianglesUsingVertex.clear();
 		trianglesUsingVertex.resize(m_pOutputMesh->m_vecVertices.size());
-		for(int ct = 0; ct < trianglesUsingVertex.size(); ct++)
+		for(uint32_t ct = 0; ct < trianglesUsingVertex.size(); ct++)
 		{
 			trianglesUsingVertex[ct].reserve(6);
 		}
-		for(int ct = 0; ct < m_vecTriangles.size(); ct++)
+		for(uint32_t ct = 0; ct < m_vecTriangles.size(); ct++)
 		{
 			trianglesUsingVertex[m_vecTriangles[ct].v0].push_back(ct);
 			trianglesUsingVertex[m_vecTriangles[ct].v1].push_back(ct);
@@ -145,7 +145,7 @@ namespace PolyVox
 		}
 
 		//For each triangle...
-		for(int ctIter = 0; ctIter < m_vecTriangles.size(); ctIter++)
+		for(uint32_t ctIter = 0; ctIter < m_vecTriangles.size(); ctIter++)
 		{
 			if(attemptEdgeCollapse(m_vecTriangles[ctIter].v0, m_vecTriangles[ctIter].v1))
 			{
@@ -166,7 +166,7 @@ namespace PolyVox
 		if(noOfEdgesCollapsed > 0)
 		{
 			//Fix up the indices
-			for(int triCt = 0; triCt < m_pOutputMesh->m_vecTriangleIndices.size(); triCt++)
+			for(uint32_t triCt = 0; triCt < m_pOutputMesh->m_vecTriangleIndices.size(); triCt++)
 			{
 				uint32_t before = m_pOutputMesh->m_vecTriangleIndices[triCt];
 				uint32_t after = vertexMapper[m_pOutputMesh->m_vecTriangleIndices[triCt]];

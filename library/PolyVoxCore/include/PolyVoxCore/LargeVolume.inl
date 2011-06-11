@@ -359,7 +359,7 @@ namespace PolyVox
 		}
 
 		Vector3DInt32 v3dSize = v3dEnd - v3dStart + Vector3DInt32(1,1,1);
-		int32_t numblocks = v3dSize.getX() * v3dSize.getY() * v3dSize.getZ();
+		uint32_t numblocks = static_cast<uint32_t>(v3dSize.getX() * v3dSize.getY() * v3dSize.getZ());
 		if(numblocks > m_uMaxNumberOfBlocksInMemory)
 		{
 			// cannot support the amount of blocks... so only load the maximum possible

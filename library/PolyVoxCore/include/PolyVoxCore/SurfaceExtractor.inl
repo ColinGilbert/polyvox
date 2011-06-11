@@ -450,7 +450,7 @@ namespace PolyVox
 
 					const uint32_t uMaterial = v000.getMaterial() | v100.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
-					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
@@ -473,7 +473,7 @@ namespace PolyVox
 
 					const uint32_t uMaterial = v000.getMaterial() | v010.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
-					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
@@ -496,7 +496,7 @@ namespace PolyVox
 
 					const uint32_t uMaterial = v000.getMaterial() | v001.getMaterial(); //Because one of these is 0, the or operation takes the max.
 
-					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 

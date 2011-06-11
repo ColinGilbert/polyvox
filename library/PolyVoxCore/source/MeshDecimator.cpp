@@ -10,7 +10,7 @@ namespace PolyVox
 		vecVertexMetadata.clear();
 		vecVertexMetadata.resize(m_pOutputMesh->m_vecVertices.size());
 		//Initialise the metadata
-		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
+		for(uint32_t ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
 			vecVertexMetadata[ct].normal.setElements(0,0,0);
 			vecVertexMetadata[ct].isOnMaterialEdge = false;
@@ -22,7 +22,7 @@ namespace PolyVox
 		//CubicSurfaceExtractor in. Duplicates are now neighbours in the resulting list so just scan through for pairs.
 		std::vector<IntVertex> intVertices;
 		intVertices.reserve(m_pOutputMesh->m_vecVertices.size());
-		for(int ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
+		for(uint32_t ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
 			const Vector3DFloat& floatPos = m_pOutputMesh->m_vecVertices[ct].position;
 			IntVertex intVertex(static_cast<uint32_t>(floatPos.getX()), static_cast<uint32_t>(floatPos.getY()), static_cast<uint32_t>(floatPos.getZ()), ct);
@@ -33,7 +33,7 @@ namespace PolyVox
 		sort(intVertices.begin(), intVertices.end());
 
 		//Find neighbours which are duplicates.
-		for(int ct = 0; ct < intVertices.size() - 1; ct++)
+		for(uint32_t ct = 0; ct < intVertices.size() - 1; ct++)
 		{
 			const IntVertex& v0 = intVertices[ct+0];
 			const IntVertex& v1 = intVertices[ct+1];
@@ -46,7 +46,7 @@ namespace PolyVox
 		}
 
 		//Compute an approcimation to the normal, used when deciding if an edge can collapse.
-		for(int ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
+		for(uint32_t ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
 			Vector3DFloat sumOfNormals(0.0f,0.0f,0.0f);
 			for(vector<uint32_t>::const_iterator iter = trianglesUsingVertex[ct].cbegin(); iter != trianglesUsingVertex[ct].cend(); iter++)
@@ -59,7 +59,7 @@ namespace PolyVox
 		}
 
 		//Identify those vertices on the edge of a region. Care will need to be taken when moving them.
-		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
+		for(uint32_t ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
 			Region regTransformed = m_pOutputMesh->m_Region;
 			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int32_t>(-1));
@@ -83,7 +83,7 @@ namespace PolyVox
 		vecVertexMetadata.resize(m_pOutputMesh->m_vecVertices.size());
 
 		//Initialise the metadata
-		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
+		for(uint32_t ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{			
 			vecVertexMetadata[ct].isOnRegionFace.reset();
 			vecVertexMetadata[ct].isOnMaterialEdge = false;
@@ -91,7 +91,7 @@ namespace PolyVox
 		}
 
 		//Identify those vertices on the edge of a region. Care will need to be taken when moving them.
-		for(int ct = 0; ct < vecVertexMetadata.size(); ct++)
+		for(uint32_t ct = 0; ct < vecVertexMetadata.size(); ct++)
 		{
 			Region regTransformed = m_pOutputMesh->m_Region;
 			regTransformed.shift(regTransformed.getLowerCorner() * static_cast<int32_t>(-1));
@@ -110,7 +110,7 @@ namespace PolyVox
 		//If all three vertices have the same material then we are not on a material edge. If any vertex has a different
 		//material then all three vertices are on a material edge. E.g. If one vertex has material 'a' and the other two 
 		//have material 'b', then the two 'b's are still on an edge (with 'a') even though they are the same as eachother.
-		for(int ct = 0; ct < m_vecTriangles.size(); ct++)
+		for(uint32_t ct = 0; ct < m_vecTriangles.size(); ct++)
 		{
 			uint32_t v0 = m_vecTriangles[ct].v0;
 			uint32_t v1 = m_vecTriangles[ct].v1;

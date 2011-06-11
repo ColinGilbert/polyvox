@@ -30,7 +30,7 @@ using namespace PolyVox;
 void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
-	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
+	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / 2;
 
 	//This three-level for loop iterates over every voxel in the volume
 	for (int z = 0; z < volData.getWidth(); z++)
@@ -40,9 +40,9 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 			for (int x = 0; x < volData.getDepth(); x++)
 			{
 				//Store our current position as a vector...
-				Vector3DFloat v3dCurrentPos(x,y,z);	
+				Vector3DInt32 v3dCurrentPos(x,y,z);	
 				//And compute how far the current position is from the center of the volume
-				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
+				double fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
 				//If the current voxel is less than 'radius' units from the center
 				//then we make it solid, otherwise we make it empty space.

@@ -316,7 +316,7 @@ namespace PolyVox
 	int SurfaceMesh<VertexType>::noOfDegenerateTris(void)
 	{
 		int count = 0;
-		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
+		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size();)
 		{
 			int v0 = m_vecTriangleIndices[triCt];
 			triCt++;
@@ -338,7 +338,7 @@ namespace PolyVox
 	{
 		int noOfNonDegenerate = 0;
 		int targetCt = 0;
-		for(int triCt = 0; triCt < m_vecTriangleIndices.size();)
+		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size();)
 		{
 			int v0 = m_vecTriangleIndices[triCt];
 			triCt++;
@@ -369,7 +369,7 @@ namespace PolyVox
 		vector<bool> isVertexUsed(m_vecVertices.size());
 		fill(isVertexUsed.begin(), isVertexUsed.end(), false);
 
-		for(int triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
+		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
 		{
 			int v = m_vecTriangleIndices[triCt];
 			isVertexUsed[v] = true;
@@ -377,7 +377,7 @@ namespace PolyVox
 
 		int noOfUsedVertices = 0;
 		vector<uint32_t> newPos(m_vecVertices.size());
-		for(int vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
+		for(uint32_t vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
 		{
 			if(isVertexUsed[vertCt])
 			{
@@ -389,7 +389,7 @@ namespace PolyVox
 
 		m_vecVertices.resize(noOfUsedVertices);
 
-		for(int triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
+		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
 		{
 			m_vecTriangleIndices[triCt] = newPos[m_vecTriangleIndices[triCt]];
 		}
