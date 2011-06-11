@@ -40,6 +40,8 @@ namespace PolyVox
 		,m_arrayResult(arrayResult)
 		,m_fRayLength(fRayLength)
 		,m_uNoOfSamplesPerOutputElement(uNoOfSamplesPerOutputElement)
+		,mRandomUnitVectorIndex(0) //Although these could be uninitialised, we 
+		,mRandomVectorIndex(0) //initialise for consistant results in the tests.
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
 		assert(m_volInput->getWidth() % arrayResult->getDimension(0) == 0);

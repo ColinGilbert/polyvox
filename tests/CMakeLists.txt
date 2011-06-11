@@ -29,6 +29,16 @@ ENDIF()
 INCLUDE_DIRECTORIES(${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
 REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 
+# Test Template. Copy and paste this template for consistant naming.
+# # ClassName tests
+# CREATE_TEST(TestClassName.h TestClassName.cpp TestClassName)
+# ADD_TEST(ClassNameFeature1Test ${LATEST_TEST} testFeature1)
+# ADD_TEST(ClassNameFeature2Test ${LATEST_TEST} testFeature2)
+
+# AmbientOcclusionGenerator tests
+CREATE_TEST(TestAmbientOcclusionGenerator.h TestAmbientOcclusionGenerator.cpp TestAmbientOcclusionGenerator)
+ADD_TEST(AmbientOcclusionGeneratorExecuteTest ${LATEST_TEST} testExecute)
+
 # Array tests
 CREATE_TEST(TestArray.h TestArray.cpp TestArray)
 ADD_TEST(ArrayReadWriteTest ${LATEST_TEST} testReadWrite)
