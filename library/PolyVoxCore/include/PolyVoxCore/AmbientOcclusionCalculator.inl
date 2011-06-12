@@ -49,7 +49,7 @@ namespace PolyVox
 		assert(m_volInput->getDepth() % arrayResult->getDimension(2) == 0);
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
-		//sure they are different for different regions which helps reduce tiling patterns is the results.
+		//sure they are different for different regions which helps reduce tiling patterns in the results.
 		mRandomUnitVectorIndex += m_region.getLowerCorner().getX() + m_region.getLowerCorner().getY() + m_region.getLowerCorner().getZ();
 		mRandomVectorIndex += m_region.getLowerCorner().getX() + m_region.getLowerCorner().getY() + m_region.getLowerCorner().getZ();
 
