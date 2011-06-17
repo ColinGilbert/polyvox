@@ -35,27 +35,6 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// Deprecated - do not use this constructor.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	RawVolume<VoxelType>::RawVolume
-	(
-		int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
-	)
-	{
-		//In earlier verions of PolyVox the constructor took three values indicating width, height, and depth. However, this
-		//causes confusion because these three parameters can be interpreted as two function pointers and a block size instead,
-		//hence calling a different constructor. And simply removing this constructor will cause confusion because existing
-		//code with three parameters will then always resolve to the constructor with two function pointers and a block size.
-		//
-		//Eventually this constructor will be removed, it's just here to make people change their code to the new version.
-		//
-		//IF YOU HIT THIS ASSERT/ABORT, CHANGE YOUR CODE TO USE THE CONSTRUCTOR TAKING A 'Region' INSTEAD.
-		assert(false);
-		abort();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other RawVolume constructor).
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
@@ -66,12 +45,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>::RawVolume
 	(
-		const Region& regValid,
-		uint16_t uBlockSideLength
+		const Region& regValid
 	)
 	{
 		//Create a volume of the right size.
-		resize(regValid,uBlockSideLength);
+		resize(regValid);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -80,8 +58,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>::~RawVolume()
 	{
-		delete[] m_pBlocks;
-		m_pBlocks = 0;
+		delete[] m_pOnlyBlock;
+		m_pOnlyBlock = 0;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +70,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getBorderValue(void) const
 	{
-		return *m_pUncompressedBorderData;
+		return m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -179,17 +157,7 @@ namespace PolyVox
 	{
 		if(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-			const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-			RawVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+			return m_pOnlyBlock->getVoxelAt(uXPos, uYPos, uZPos);
 		}
 		else
 		{
@@ -215,7 +183,8 @@ namespace PolyVox
 	{
 		/*Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
 		return pUncompressedBorderBlock->fill(tBorder);*/
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, tBorder);
+		//std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, tBorder);
+		m_pUncompressedBorderData = tBorder;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -230,17 +199,7 @@ namespace PolyVox
 	{
 		assert(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
 
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-		RawVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+		m_pOnlyBlock->setVoxelAt(uXPos, uYPos, uZPos, tValue);
 
 		//Return true to indicate that we modified a voxel.
 		return true;
@@ -261,49 +220,52 @@ namespace PolyVox
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void RawVolume<VoxelType>::resize(const Region& regValidRegion, uint16_t uBlockSideLength)
+	void RawVolume<VoxelType>::resize(const Region& regValidRegion)
 	{
 		//Debug mode validation
-		assert(uBlockSideLength > 0);
+		/*assert(uBlockSideLength > 0);
 		
 		//Release mode validation
 		if(uBlockSideLength == 0)
 		{
 			throw std::invalid_argument("Block side length cannot be zero.");
-		}
-		if(!isPowerOf2(uBlockSideLength))
+		}*/
+		/*if(!isPowerOf2(uBlockSideLength))
 		{
 			throw std::invalid_argument("Block side length must be a power of two.");
-		}
+		}*/
 
-		m_uBlockSideLength = uBlockSideLength;
-		m_pUncompressedBorderData = 0;
+		//m_uBlockSideLength = uBlockSideLength;
+		//m_pUncompressedBorderData = 0;
 
 		m_regValidRegion = regValidRegion;
 
-		m_regValidRegionInBlocks.setLowerCorner(m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
-		m_regValidRegionInBlocks.setUpperCorner(m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
+		//m_regValidRegionInBlocks.setLowerCorner(m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
+		//m_regValidRegionInBlocks.setUpperCorner(m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
 
 		//Compute the block side length
-		m_uBlockSideLength = uBlockSideLength;
-		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
+		//m_uBlockSideLength = uBlockSideLength;
+		//m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
 		//Compute the size of the volume in blocks (and note +1 at the end)
-		m_uWidthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getX() - m_regValidRegionInBlocks.getLowerCorner().getX() + 1;
-		m_uHeightInBlocks = m_regValidRegionInBlocks.getUpperCorner().getY() - m_regValidRegionInBlocks.getLowerCorner().getY() + 1;
-		m_uDepthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getZ() - m_regValidRegionInBlocks.getLowerCorner().getZ() + 1;
-		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
+		//m_uWidthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getX() - m_regValidRegionInBlocks.getLowerCorner().getX() + 1;
+		//m_uHeightInBlocks = m_regValidRegionInBlocks.getUpperCorner().getY() - m_regValidRegionInBlocks.getLowerCorner().getY() + 1;
+		//m_uDepthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getZ() - m_regValidRegionInBlocks.getLowerCorner().getZ() + 1;
+		//m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
 
 		//Allocate the data
-		m_pBlocks = new Block[m_uNoOfBlocksInVolume];
+		/*m_pBlocks = new Block[m_uNoOfBlocksInVolume];
 		for(uint32_t i = 0; i < m_uNoOfBlocksInVolume; ++i)
 		{
 			m_pBlocks[i].initialise(m_uBlockSideLength);
-		}
+		}*/
+
+		m_pOnlyBlock = new Block;
+		m_pOnlyBlock->initialise(getWidth());
 
 		//Create the border block
-		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
+		//m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+		//std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
 
 		//Other properties we might find useful later
 		m_uLongestSideLength = (std::max)((std::max)(getWidth(),getHeight()),getDepth());
@@ -311,7 +273,7 @@ namespace PolyVox
 		m_fDiagonalLength = sqrtf(static_cast<float>(getWidth() * getWidth() + getHeight() * getHeight() + getDepth() * getDepth()));
 	}
 
-	template <typename VoxelType>
+	/*template <typename VoxelType>
 	typename RawVolume<VoxelType>::Block* RawVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		//The lower left corner of the volume could be
@@ -328,7 +290,7 @@ namespace PolyVox
 
 		//Return the block
 		return &(m_pBlocks[uBlockIndex]);
-	}
+	}*/
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Note: This function needs reviewing for accuracy...
@@ -336,14 +298,15 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t RawVolume<VoxelType>::calculateSizeInBytes(void)
 	{
-		uint32_t uSizeInBytes = sizeof(RawVolume);
+		/*uint32_t uSizeInBytes = sizeof(RawVolume);
 		
 		uint32_t uSizeOfBlockInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		//Memory used by the blocks ( + 1 is for border)
 		uSizeInBytes += uSizeOfBlockInBytes * (m_uNoOfBlocksInVolume + 1);
 
-		return uSizeInBytes;
+		return uSizeInBytes;*/
+		return 42;
 	}
 
 }

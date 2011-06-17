@@ -136,13 +136,7 @@ namespace PolyVox
 		/// Constructor for creating a fixed size volume.
 		RawVolume
 		(
-			const Region& regValid,
-			uint16_t uBlockSideLength = 32
-		);
-		/// Deprecated constructor - do not use.
-		RawVolume
-		(
-			int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
+			const Region& regValid
 		);
 		/// Destructor
 		~RawVolume();
@@ -179,33 +173,33 @@ namespace PolyVox
 		uint32_t calculateSizeInBytes(void);
 
 		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
-		void resize(const Region& regValidRegion, uint16_t uBlockSideLength);
+		void resize(const Region& regValidRegion);
 
 private:	
-		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		//Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
 		//The block data
-		Block* m_pBlocks;
+		Block* m_pOnlyBlock;
 
 		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
 		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
 		//good chance we'll often hit it anyway. It's a chunk of homogenous data (rather than a single value) so that
 		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
-		VoxelType* m_pUncompressedBorderData;
+		VoxelType m_pUncompressedBorderData;
 
 		//The size of the volume
 		Region m_regValidRegion;
-		Region m_regValidRegionInBlocks;
+		//Region m_regValidRegionInBlocks;
 
 		//Volume size measured in blocks.
-		uint32_t m_uNoOfBlocksInVolume;
-		uint16_t m_uWidthInBlocks;
-		uint16_t m_uHeightInBlocks;
-		uint16_t m_uDepthInBlocks;
+		//uint32_t m_uNoOfBlocksInVolume;
+		//uint16_t m_uWidthInBlocks;
+		//uint16_t m_uHeightInBlocks;
+		//uint16_t m_uDepthInBlocks;
 
 		//The size of the blocks
-		uint16_t m_uBlockSideLength;
-		uint8_t m_uBlockSideLengthPower;
+		//uint16_t m_uBlockSideLength;
+		//uint8_t m_uBlockSideLengthPower;
 
 		//Some useful sizes
 		int32_t m_uLongestSideLength;
