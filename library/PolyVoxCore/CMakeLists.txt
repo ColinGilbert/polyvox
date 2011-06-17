@@ -42,6 +42,10 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MeshDecimator.h
 	include/PolyVoxCore/MeshDecimator.inl
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
+	include/PolyVoxCore/RawVolume.h
+	include/PolyVoxCore/RawVolume.inl
+	include/PolyVoxCore/RawVolumeBlock.inl
+	include/PolyVoxCore/RawVolumeSampler.inl
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/RaycastWithCallback.h
@@ -49,6 +53,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Region.h
 	include/PolyVoxCore/SimpleVolume.h
 	include/PolyVoxCore/SimpleVolume.inl
+	include/PolyVoxCore/SimpleVolumeBlock.inl
 	include/PolyVoxCore/SimpleVolumeSampler.inl
 	include/PolyVoxCore/SurfaceExtractor.h
 	include/PolyVoxCore/SurfaceExtractor.inl
