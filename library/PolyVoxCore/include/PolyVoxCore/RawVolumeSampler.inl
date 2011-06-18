@@ -32,6 +32,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
 		:mVolume(volume)
+		,mXPosInVolume(0)
+		,mYPosInVolume(0)
+		,mZPosInVolume(0)
+		,mCurrentVoxel(0)
+		,m_bIsCurrentPositionValid(false)
 	{
 	}
 
@@ -82,7 +87,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
-		return *mCurrentVoxel;
+		return m_bIsCurrentPositionValid ? *mCurrentVoxel : mVolume->m_tBorderValue;
 	}
 
 	template <typename VoxelType>
@@ -98,114 +103,61 @@ namespace PolyVox
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		const uint32_t uVoxelIndex = uXPos + 
-				uYPos * mVolume->getWidth() + 
-				uZPos * mVolume->getWidth() * mVolume->getHeight();
+		const uint32_t uVoxelIndex = xPos + 
+				yPos * mVolume->getWidth() + 
+				zPos * mVolume->getWidth() * mVolume->getHeight();
 
-		if(mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
-		{
-			mCurrentVoxel = mVolume->m_pData + uVoxelIndex;
-		}
-		else
-		{
-			mCurrentVoxel = mVolume->m_tBorderValue;
-		}
+		mCurrentVoxel = mVolume->m_pData + uVoxelIndex;
+
+		m_bIsCurrentPositionValid = mVolume->m_regValidRegion.containsPoint(Vector3DInt32(xPos, yPos, zPos));
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
 		mXPosInVolume++;
-
-		if(mXPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getX())
-		{
-			++mCurrentVoxel;
-		}
-		else
-		{
-			//We've hit the volume boundary.
-			mCurrentVoxel = &mVolume->m_tBorderValue;
-		}
+		++mCurrentVoxel;
+		m_bIsCurrentPositionValid = mXPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getX();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
 		mYPosInVolume++;
-
-		if(mYPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getY())
-		{
-			mCurrentVoxel += mVolume->getWidth();
-		}
-		else
-		{
-			//We've hit the volume boundary.
-			mCurrentVoxel = &mVolume->m_tBorderValue;
-		}
+		mCurrentVoxel += mVolume->getWidth();
+		m_bIsCurrentPositionValid = mYPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getY();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
 		mZPosInVolume--;
-
-		if(mZPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getZ())
-		{
-			mCurrentVoxel += mVolume->getWidth() * mVolume->getHeight();
-		}
-		else
-		{
-			//We've hit the volume boundary.
-			mCurrentVoxel = &mVolume->m_tBorderValue;
-		}
+		mCurrentVoxel += mVolume->getWidth() * mVolume->getHeight();
+		m_bIsCurrentPositionValid = mZPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getZ();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
 		mXPosInVolume--;
-
-		if(mXPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getX())
-		{
-			--mCurrentVoxel;
-		}
-		else
-		{
-			//We've hit the volume boundary.
-			mCurrentVoxel = &mVolume->m_tBorderValue;
-		}
+		--mCurrentVoxel;
+		m_bIsCurrentPositionValid = mXPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getX();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
 		mYPosInVolume--;
-
-		if(mYPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getY())
-		{
-			mCurrentVoxel -= mVolume->getWidth();
-		}
-		else
-		{
-			//We've hit the volume boundary.
-			mCurrentVoxel = &mVolume->m_tBorderValue;
-		}
+		mCurrentVoxel -= mVolume->getWidth();
+		m_bIsCurrentPositionValid = mYPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getY();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
 		mZPosInVolume--;
-
-		if(mZPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getZ())
-		{
-			mCurrentVoxel -= mVolume->getWidth() * mVolume->getHeight();
-		}
-		else
-		{
-			//We've hit the volume boundary.
-			mCurrentVoxel = &mVolume->m_tBorderValue;
-		}
+		mCurrentVoxel -= mVolume->getWidth() * mVolume->getHeight();
+		m_bIsCurrentPositionValid =mZPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getZ();
 	}
 
 	template <typename VoxelType>

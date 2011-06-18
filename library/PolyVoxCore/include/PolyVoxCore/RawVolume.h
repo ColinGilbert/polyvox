@@ -103,6 +103,9 @@ namespace PolyVox
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
+
+			//Whether the current position is inside the volume
+			bool m_bIsCurrentPositionValid;
 		};
 		#endif
 
