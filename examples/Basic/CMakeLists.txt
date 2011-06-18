@@ -4,7 +4,7 @@ PROJECT(BasicExample)
 
 #Projects source files
 SET(SRC_FILES
-	glew/glew.c
+	glew/glew.cpp
 	
 	main.cpp
 	OpenGLWidget.cpp

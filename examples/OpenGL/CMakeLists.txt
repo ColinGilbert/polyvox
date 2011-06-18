@@ -4,7 +4,7 @@ PROJECT(OpenGLExample)
 
 #Projects source files
 SET(SRC_FILES
-	glew/glew.c
+	glew/glew.cpp
 	main.cpp
 	OpenGLImmediateModeSupport.cpp
 	OpenGLSupport.cpp
