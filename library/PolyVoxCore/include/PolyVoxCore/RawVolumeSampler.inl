@@ -104,13 +104,11 @@ namespace PolyVox
 
 		if(mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
 		{
-			//Block* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
-
-			mCurrentVoxel = mVolume->m_pOnlyBlock + uVoxelIndex;
+			mCurrentVoxel = mVolume->m_pData + uVoxelIndex;
 		}
 		else
 		{
-			mCurrentVoxel = mVolume->m_pUncompressedBorderData;
+			mCurrentVoxel = mVolume->m_tBorderValue;
 		}
 	}
 
@@ -119,16 +117,14 @@ namespace PolyVox
 	{
 		mXPosInVolume++;
 
-		//Note the *post* decreament here
 		if(mXPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getX())
 		{
-			//No need to compute new block.
 			++mCurrentVoxel;
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			mCurrentVoxel = &mVolume->m_pUncompressedBorderData;
+			//We've hit the volume boundary.
+			mCurrentVoxel = &mVolume->m_tBorderValue;
 		}
 	}
 
@@ -137,16 +133,14 @@ namespace PolyVox
 	{
 		mYPosInVolume++;
 
-		//Note the *post* decreament here
 		if(mYPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getY())
 		{
-			//No need to compute new block.
 			mCurrentVoxel += mVolume->getWidth();
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			mCurrentVoxel = &mVolume->m_pUncompressedBorderData;
+			//We've hit the volume boundary.
+			mCurrentVoxel = &mVolume->m_tBorderValue;
 		}
 	}
 
@@ -157,14 +151,12 @@ namespace PolyVox
 
 		if(mZPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getZ())
 		{
-			//No need to compute new block.
 			mCurrentVoxel += mVolume->getWidth() * mVolume->getHeight();
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			//setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
-			mCurrentVoxel = &mVolume->m_pUncompressedBorderData;
+			//We've hit the volume boundary.
+			mCurrentVoxel = &mVolume->m_tBorderValue;
 		}
 	}
 
@@ -173,16 +165,14 @@ namespace PolyVox
 	{
 		mXPosInVolume--;
 
-		//Note the *post* decreament here
 		if(mXPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getX())
 		{
-			//No need to compute new block.
 			--mCurrentVoxel;
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			mCurrentVoxel = &mVolume->m_pUncompressedBorderData;
+			//We've hit the volume boundary.
+			mCurrentVoxel = &mVolume->m_tBorderValue;
 		}
 	}
 
@@ -191,16 +181,14 @@ namespace PolyVox
 	{
 		mYPosInVolume--;
 
-		//Note the *post* decreament here
 		if(mYPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getY())
 		{
-			//No need to compute new block.
 			mCurrentVoxel -= mVolume->getWidth();
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			mCurrentVoxel = &mVolume->m_pUncompressedBorderData;
+			//We've hit the volume boundary.
+			mCurrentVoxel = &mVolume->m_tBorderValue;
 		}
 	}
 
@@ -211,14 +199,12 @@ namespace PolyVox
 
 		if(mZPosInVolume >= mVolume->getEnclosingRegion().getLowerCorner().getZ())
 		{
-			//No need to compute new block.
 			mCurrentVoxel -= mVolume->getWidth() * mVolume->getHeight();
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			//setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
-			mCurrentVoxel = &mVolume->m_pUncompressedBorderData;
+			//We've hit the volume boundary.
+			mCurrentVoxel = &mVolume->m_tBorderValue;
 		}
 	}
 

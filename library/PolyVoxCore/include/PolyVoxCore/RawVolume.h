@@ -37,30 +37,6 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
-		class Block
-		{
-			//Make Sampler a friend
-			friend class RawVolume<VoxelType>::Sampler;
-		public:
-			Block(uint16_t uSideLength = 0);
-
-			uint16_t getSideLength(void) const;
-			VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
-			VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
-
-			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
-			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
-
-			void fill(VoxelType tValue);
-			void initialise(uint16_t uSideLength);
-			uint32_t calculateSizeInBytes(void);
-
-		public:
-			VoxelType* m_tUncompressedData;
-			uint16_t m_uSideLength;
-			uint8_t m_uSideLengthPower;	
-		};
-
 		class Sampler
 		{
 		public:
@@ -117,7 +93,6 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		private:
-
 			//The current volume
 			RawVolume<VoxelType>* mVolume;
 
@@ -175,30 +150,14 @@ namespace PolyVox
 		void resize(const Region& regValidRegion);
 
 private:	
-		//Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-
 		//The block data
-		Block* m_pOnlyBlock;
+		VoxelType* m_pData;
 
-		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
-		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
-		//good chance we'll often hit it anyway. It's a chunk of homogenous data (rather than a single value) so that
-		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
-		VoxelType m_pUncompressedBorderData;
+		//The border value
+		VoxelType m_tBorderValue;
 
 		//The size of the volume
 		Region m_regValidRegion;
-		//Region m_regValidRegionInBlocks;
-
-		//Volume size measured in blocks.
-		//uint32_t m_uNoOfBlocksInVolume;
-		//uint16_t m_uWidthInBlocks;
-		//uint16_t m_uHeightInBlocks;
-		//uint16_t m_uDepthInBlocks;
-
-		//The size of the blocks
-		//uint16_t m_uBlockSideLength;
-		//uint8_t m_uBlockSideLengthPower;
 
 		//Some useful sizes
 		int32_t m_uLongestSideLength;
@@ -207,7 +166,6 @@ private:
 	};
 }
 
-#include "PolyVoxCore/RawVolumeBlock.inl"
 #include "PolyVoxCore/RawVolume.inl"
 #include "PolyVoxCore/RawVolumeSampler.inl"
 

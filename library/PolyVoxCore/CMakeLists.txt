@@ -44,7 +44,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/RawVolume.h
 	include/PolyVoxCore/RawVolume.inl
-	include/PolyVoxCore/RawVolumeBlock.inl
 	include/PolyVoxCore/RawVolumeSampler.inl
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
