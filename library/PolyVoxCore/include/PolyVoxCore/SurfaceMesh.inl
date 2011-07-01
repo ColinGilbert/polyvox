@@ -141,7 +141,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType>
-	const bool SurfaceMesh<VertexType>::isEmpty(void) const
+	bool SurfaceMesh<VertexType>::isEmpty(void) const
 	{
 		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
 	}

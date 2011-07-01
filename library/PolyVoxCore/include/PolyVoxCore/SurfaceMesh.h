@@ -61,7 +61,7 @@ namespace PolyVox
 	   void addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2);
 	   uint32_t addVertex(const VertexType& vertex);
 	   void clear(void);
-	   const bool isEmpty(void) const;
+	   bool isEmpty(void) const;
 
 	   //THESE FUNCTIONS TO BE REMOVED IN THE FUTURE. OR AT LEAST MOVED OUT OF THIS CLASS INTO FREE FUNCTIONS.
 	   //THEY ARE CAUSING PROBLEMS WITH THE SWIG BINDINGS. THE FUNCTIONS REGARDING NORMALS MAKE NO SENSE WHEN
