@@ -68,9 +68,9 @@ void TestAmbientOcclusionGenerator::testExecute()
 	//of the two walls we added, samples in the middle are darker than those at the edge.
 	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][ 0][16]), 182);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][ 8][16]), 114);
-	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][16][16]), 103);
+	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][16][16]), 104);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][24][16]), 123);
-	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][31][16]), 173);
+	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][31][16]), 174);
 }
 
 QTEST_MAIN(TestAmbientOcclusionGenerator)
