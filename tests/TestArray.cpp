@@ -68,15 +68,6 @@ void TestArray::testReadWrite()
 	}
 
 	QCOMPARE(total, expectedTotal);
-
-	/*const PolyVox::uint16_t g_uVolumeSideLength = 128;
-	LargeVolume<PolyVox::uint8_t> volData(g_uVolumeSideLength, g_uVolumeSideLength, g_uVolumeSideLength);
-	
-	volData.tidyUpMemory(0);
-	
-	QCOMPARE(volData.getWidth(), g_uVolumeSideLength);
-	QCOMPARE(volData.getHeight(), g_uVolumeSideLength);
-	QCOMPARE(volData.getDepth(), g_uVolumeSideLength);*/
 }
 
 QTEST_MAIN(TestArray)

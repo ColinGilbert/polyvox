@@ -43,10 +43,9 @@ ADD_TEST(AmbientOcclusionGeneratorExecuteTest ${LATEST_TEST} testExecute)
 CREATE_TEST(TestArray.h TestArray.cpp TestArray)
 ADD_TEST(ArrayReadWriteTest ${LATEST_TEST} testReadWrite)
 
-#Vector tests
-CREATE_TEST(testvector.h testvector.cpp testvector)
-ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
-ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
+# AStarPathfinder tests
+CREATE_TEST(TestAStarPathfinder.h TestAStarPathfinder.cpp TestAStarPathfinder)
+ADD_TEST(AStarPathfinderExecuteTest ${LATEST_TEST} testExecute)
 
 # LargeVolume tests
 CREATE_TEST(testvolume.h testvolume.cpp testvolume)
@@ -55,3 +54,8 @@ ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
 # Material tests
 CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
 ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
+
+#Vector tests
+CREATE_TEST(testvector.h testvector.cpp testvector)
+ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
+ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
