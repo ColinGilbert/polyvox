@@ -63,7 +63,7 @@ namespace PolyVox
 				{
 					uint16_t& uDensity = temp[x-croppedRegion.getLowerCorner().getX()][y-croppedRegion.getLowerCorner().getY()][z-croppedRegion.getLowerCorner().getZ()];
 
-					MaterialDensityPair44 val = volData.getVoxelAt(x,y,z);
+					VoxelType val = volData.getVoxelAt(x,y,z);
 					val.setDensity(uDensity);
 					volData.setVoxelAt(x,y,z,val);
 				}

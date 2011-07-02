@@ -463,4 +463,16 @@ namespace PolyVox
 
 		return result;
 	}
+
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::scaleVertices(float amount)
+	{
+		for(uint32_t ct = 0; ct < m_vecVertices.size(); ct++)
+		{
+			//TODO: Should rethink accessors here to provide faster access
+			Vector3DFloat position = m_vecVertices[ct].getPosition();
+			position *= amount;
+			m_vecVertices[ct].setPosition(position);
+		}
+	}
 }
