@@ -64,6 +64,7 @@ namespace PolyVox
 	   bool isEmpty(void) const;
 
 	   void scaleVertices(float amount);
+	   void translateVertices(const Vector3DFloat& amount);
 
 	   //THESE FUNCTIONS TO BE REMOVED IN THE FUTURE. OR AT LEAST MOVED OUT OF THIS CLASS INTO FREE FUNCTIONS.
 	   //THEY ARE CAUSING PROBLEMS WITH THE SWIG BINDINGS. THE FUNCTIONS REGARDING NORMALS MAKE NO SENSE WHEN

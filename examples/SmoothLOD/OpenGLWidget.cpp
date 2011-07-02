@@ -34,6 +34,28 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	m_uEndIndex = vecIndices.size();
 }
 
+void OpenGLWidget::setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
+{
+	//Convienient access to the vertices and indices
+	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
+	const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
+
+	//Build an OpenGL index buffer
+	glGenBuffers(1, &indexBufferLow);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferLow);
+	const GLvoid* pIndices = static_cast<const GLvoid*>(&(vecIndices[0]));		
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), pIndices, GL_STATIC_DRAW);
+
+	//Build an OpenGL vertex buffer
+	glGenBuffers(1, &vertexBufferLow);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferLow);
+	const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal), pVertices, GL_STATIC_DRAW);
+
+	m_uBeginIndexLow = 0;
+	m_uEndIndexLow = vecIndices.size();
+}
+
 void OpenGLWidget::initializeGL()
 {
 	//We need GLEW to access recent OpenGL functionality
@@ -125,6 +147,16 @@ void OpenGLWidget::paintGL()
 	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
 
 	glDrawRangeElements(GL_TRIANGLES, m_uBeginIndex, m_uEndIndex-1, m_uEndIndex - m_uBeginIndex, GL_UNSIGNED_INT, 0);
+
+	//Bind the index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferLow);
+
+	//Bind the vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferLow);
+	glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal), 0);
+	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
+
+	glDrawRangeElements(GL_TRIANGLES, m_uBeginIndexLow, m_uEndIndexLow-1, m_uEndIndexLow - m_uBeginIndexLow, GL_UNSIGNED_INT, 0);
 	
 	GLenum errCode = glGetError();
 	if(errCode != GL_NO_ERROR)

@@ -475,4 +475,16 @@ namespace PolyVox
 			m_vecVertices[ct].setPosition(position);
 		}
 	}
+
+	template <typename VertexType>
+	void SurfaceMesh<VertexType>::translateVertices(const Vector3DFloat& amount)
+	{
+		for(uint32_t ct = 0; ct < m_vecVertices.size(); ct++)
+		{
+			//TODO: Should rethink accessors here to provide faster access
+			Vector3DFloat position = m_vecVertices[ct].getPosition();
+			position += amount;
+			m_vecVertices[ct].setPosition(position);
+		}
+	}
 }

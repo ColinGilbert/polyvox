@@ -91,20 +91,26 @@ int main(int argc, char *argv[])
 	smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
 	smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
 
-	RawVolume<Density8> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 31, 31)));
+	RawVolume<Density8> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
 
-	VolumeResampler<SimpleVolume, RawVolume, Density8> volumeResampler(&volData, volData.getEnclosingRegion(), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+	VolumeResampler<SimpleVolume, RawVolume, Density8> volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 	volumeResampler.execute();
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> mesh;
-	SurfaceExtractor<RawVolume, Density8 > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &mesh);
+	SurfaceMesh<PositionMaterialNormal> meshLowLOD;
+	SurfaceExtractor<RawVolume, Density8 > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
 	surfaceExtractor.execute();
+	meshLowLOD.scaleVertices(2.0f);
 
-	mesh.scaleVertices(2.0f);
+	//Extract the surface
+	SurfaceMesh<PositionMaterialNormal> meshHighLOD;
+	SurfaceExtractor<SimpleVolume, Density8 > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(32,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
+	surfaceExtractorHigh.execute();
+	meshHighLOD.translateVertices(Vector3DFloat(32, 0, 0));
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setSurfaceMeshToRender(meshHighLOD);
+	openGLWidget.setSurfaceMeshToRenderLowLOD(meshLowLOD);
 
 	//Run the message pump.
 	return app.exec();

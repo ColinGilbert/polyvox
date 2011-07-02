@@ -35,8 +35,26 @@ namespace PolyVox
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
 	void VolumeResampler<SrcVolumeType, DestVolumeType, VoxelType>::execute()
 	{
-		//resampleSameSize();
-		resampleHalfSize();
+		int32_t uSrcWidth = m_regSrc.getUpperCorner().getX() - m_regSrc.getLowerCorner().getX() + 1;
+		int32_t uSrcHeight = m_regSrc.getUpperCorner().getY() - m_regSrc.getLowerCorner().getY() + 1;
+		int32_t uSrcDepth = m_regSrc.getUpperCorner().getZ() - m_regSrc.getLowerCorner().getZ() + 1;
+
+		int32_t uDstWidth = m_regDst.getUpperCorner().getX() - m_regDst.getLowerCorner().getX() + 1;
+		int32_t uDstHeight = m_regDst.getUpperCorner().getY() - m_regDst.getLowerCorner().getY() + 1;
+		int32_t uDstDepth = m_regDst.getUpperCorner().getZ() - m_regDst.getLowerCorner().getZ() + 1;
+
+		if((uSrcWidth == uDstWidth) && (uSrcHeight == uDstHeight) && (uSrcDepth == uDstDepth))
+		{
+			resampleSameSize();
+		}
+		else if((uSrcWidth == uDstWidth * 2) && (uSrcHeight == uDstHeight * 2) && (uSrcDepth == uDstDepth * 2))
+		{
+			resampleHalfSize();
+		}
+		else
+		{
+			resampleArbitrary();
+		}
 	}
 
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
@@ -91,5 +109,12 @@ namespace PolyVox
 				}
 			}
 		}
+	}
+
+	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
+	void VolumeResampler<SrcVolumeType, DestVolumeType, VoxelType>::resampleArbitrary()
+	{
+		//ARBITRARY RESAMPLING NOT YET IMPLEMENTED.
+		assert(false); 
 	}
 }

@@ -42,6 +42,7 @@ public:
 
 	//Convert a SrfaceMesh to OpenGL index/vertex buffers
 	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& surfaceMesh);
+	void setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& surfaceMesh);
 
 protected:
 	//Qt OpenGL functions
@@ -53,9 +54,15 @@ private:
 	//Index/vertex buffer data
 	GLuint m_uBeginIndex;
 	GLuint m_uEndIndex;
-	GLuint noOfIndices;
+	//GLuint noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
+
+	GLuint m_uBeginIndexLow;
+	GLuint m_uEndIndexLow;
+	//GLuint noOfIndicesLow;
+	GLuint indexBufferLow;
+	GLuint vertexBufferLow;
 
 	//Mouse data
 	QPoint m_LastFrameMousePos;
