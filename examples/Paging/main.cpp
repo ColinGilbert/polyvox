@@ -238,7 +238,8 @@ void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::
 		}
 	}
 }
-void unload(const ConstVolumeProxy<MaterialDensityPair44>& vol, const PolyVox::Region& reg)
+
+void unload(const ConstVolumeProxy<MaterialDensityPair44>& /*vol*/, const PolyVox::Region& reg)
 {
 	std::cout << "warning unloading region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 }

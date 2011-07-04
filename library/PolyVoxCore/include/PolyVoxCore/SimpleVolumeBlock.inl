@@ -33,9 +33,9 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::Block::Block(uint16_t uSideLength)
-		:m_uSideLength(0)
+		:m_tUncompressedData(0)
+		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_tUncompressedData(0)
 	{
 		if(uSideLength != 0)
 		{

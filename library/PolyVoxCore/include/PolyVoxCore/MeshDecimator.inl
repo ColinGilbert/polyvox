@@ -119,7 +119,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType>
-	uint32_t MeshDecimator<VertexType>::performDecimationPass(float m_fMinDotProductForCollapse)
+	uint32_t MeshDecimator<VertexType>::performDecimationPass(float /*m_fMinDotProductForCollapse*/)
 	{
 		// Count how many edges we have collapsed
 		uint32_t noOfEdgesCollapsed = 0;
@@ -250,7 +250,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType>
-	bool MeshDecimator<VertexType>::canCollapseMaterialEdge(uint32_t uSrc, uint32_t uDst)
+	bool MeshDecimator<VertexType>::canCollapseMaterialEdge(uint32_t /*uSrc*/, uint32_t /*uDst*/)
 	{
 		return false;
 	}

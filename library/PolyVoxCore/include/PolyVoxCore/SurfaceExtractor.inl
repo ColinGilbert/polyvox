@@ -108,7 +108,7 @@ namespace PolyVox
 
 			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 			{
-				generateIndicesForSlice(pPreviousBitmask, m_pPreviousVertexIndicesX, m_pPreviousVertexIndicesY, m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesX, m_pCurrentVertexIndicesY, m_pCurrentVertexIndicesZ);
+				generateIndicesForSlice(pPreviousBitmask, m_pPreviousVertexIndicesX, m_pPreviousVertexIndicesY, m_pPreviousVertexIndicesZ, m_pCurrentVertexIndicesX, m_pCurrentVertexIndicesY);
 			}
 
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
@@ -512,8 +512,7 @@ namespace PolyVox
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,
 		const Array2DInt32& m_pCurrentVertexIndicesX,
-		const Array2DInt32& m_pCurrentVertexIndicesY,
-		const Array2DInt32& m_pCurrentVertexIndicesZ)
+		const Array2DInt32& m_pCurrentVertexIndicesY)
 	{
 		int32_t indlist[12];
 		for(int i = 0; i < 12; i++)

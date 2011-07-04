@@ -391,7 +391,7 @@ namespace PolyVox
 					}
 					// load a block
 					numblocks--;
-					Block<VoxelType>* block = getUncompressedBlock(x,y,z);
+					getUncompressedBlock(x,y,z);
 				} // for z
 			} // for y
 		} // for x

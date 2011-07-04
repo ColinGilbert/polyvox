@@ -76,11 +76,11 @@ namespace PolyVox
 			:volume(volData)
 			,start(v3dStart)
 			,end(v3dEnd)
-			,result(listResult)
-			,hBias(fHBias)
 			,connectivity(connectivity)
-			,isVoxelValidForPath(funcIsVoxelValidForPath)
+			,hBias(fHBias)
+			,result(listResult)
 			,maxNumberOfNodes(uMaxNoOfNodes)
+			,isVoxelValidForPath(funcIsVoxelValidForPath)
 			,progressCallback(funcProgressCallback)
 		{
 		}

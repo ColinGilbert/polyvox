@@ -49,7 +49,6 @@ class OpenGLWidget : public QGLWidget
 
 	 void mouseMoveEvent(QMouseEvent* event);
 	 void mousePressEvent(QMouseEvent* event);
-	 void wheelEvent ( QWheelEvent * event ); 
 
  protected:
      void initializeGL();

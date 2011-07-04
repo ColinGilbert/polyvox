@@ -165,7 +165,7 @@ namespace PolyVox
     template <uint32_t Size, typename Type>
         inline bool Vector<Size, Type>::operator<(const Vector<Size, Type> &rhs) const throw()
     {
-		for(int ct = 0; ct < Size; ++ct)
+		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
 			if (m_tElements[ct] < rhs.m_tElements[ct])
 				return true;

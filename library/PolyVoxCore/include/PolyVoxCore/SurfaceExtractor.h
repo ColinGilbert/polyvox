@@ -168,8 +168,7 @@ namespace PolyVox
 			const Array2DInt32& m_pPreviousVertexIndicesY,
 			const Array2DInt32& m_pPreviousVertexIndicesZ,
 			const Array2DInt32& m_pCurrentVertexIndicesX,
-			const Array2DInt32& m_pCurrentVertexIndicesY,
-			const Array2DInt32& m_pCurrentVertexIndicesZ);
+			const Array2DInt32& m_pCurrentVertexIndicesY);
 
 		//The volume data and a sampler to access it.
 		VolumeType<VoxelType>* m_volData;

@@ -32,11 +32,11 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template< template<typename> class VolumeType, typename VoxelType>
 	Raycast<VolumeType, VoxelType>::Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result)
-		:m_volData(volData)
+		:m_result(result)
+		,m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
 		,m_v3dDirection(v3dDirection)
-		,m_result(result)
 	{
 	}
 

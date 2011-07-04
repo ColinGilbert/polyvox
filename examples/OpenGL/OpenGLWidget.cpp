@@ -239,10 +239,6 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 	m_LastFrameMousePos = m_CurrentMousePos;;
 }
 
-void OpenGLWidget::wheelEvent(QWheelEvent* event)
-{
-}
-
 void OpenGLWidget::setupProjectionMatrix(void)
 {
 	glMatrixMode(GL_PROJECTION);

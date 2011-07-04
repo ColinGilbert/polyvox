@@ -69,18 +69,15 @@ namespace PolyVox
 		const int iRatioX = m_volInput->getWidth()  / m_arrayResult->getDimension(0);
 		const int iRatioY = m_volInput->getHeight() / m_arrayResult->getDimension(1);
 		const int iRatioZ = m_volInput->getDepth()  / m_arrayResult->getDimension(2);
-		const int iRatioMax = (std::max)((std::max)(iRatioX, iRatioY), iRatioZ);
 
 		const float fRatioX = iRatioX;
 		const float fRatioY = iRatioY;
 		const float fRatioZ = iRatioZ;
-		const float fRatioMax = iRatioMax;
 		const Vector3DFloat v3dRatio(fRatioX, fRatioY, fRatioZ);
 
 		const float fHalfRatioX = fRatioX * 0.5f;
 		const float fHalfRatioY = fRatioY * 0.5f;
 		const float fHalfRatioZ = fRatioZ * 0.5f;
-		const float fHalfRatioMax = fRatioMax * 0.5f;
 		const Vector3DFloat v3dHalfRatio(fHalfRatioX, fHalfRatioY, fHalfRatioZ);
 
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);

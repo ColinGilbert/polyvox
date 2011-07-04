@@ -33,8 +33,8 @@ namespace PolyVox
 	CubicSurfaceExtractorWithNormals<VolumeType, VoxelType>::CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
-		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
+		,m_regSizeInVoxels(region)
 	{
 		m_meshCurrent->clear();
 	}
