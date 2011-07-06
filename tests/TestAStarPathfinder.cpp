@@ -117,12 +117,6 @@ void TestAStarPathfinder::testExecute()
 	//Execute the pathfinder.
 	pathfinder.execute();
 
-	for(std::list<Vector3DInt32>::iterator iterResult = result.begin(); iterResult != result.end(); iterResult++)
-	{
-		Vector3DInt32 res = *iterResult;
-		std::cout << "Vector3DInt32(" << res.getX() << "," << res.getY() << "," << res.getZ() << ")," << std::endl;
-	}
-
 	//Make sure the right number of steps were created.
 	QCOMPARE(result.size(), static_cast<size_t>(24));
 
