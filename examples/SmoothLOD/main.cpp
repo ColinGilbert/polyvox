@@ -100,13 +100,13 @@ int main(int argc, char *argv[])
 	SurfaceMesh<PositionMaterialNormal> meshLowLOD;
 	SurfaceExtractor<RawVolume, Density8 > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
 	surfaceExtractor.execute();
-	meshLowLOD.scaleVertices(2.0f);
+	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> meshHighLOD;
-	SurfaceExtractor<SimpleVolume, Density8 > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(32,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
+	SurfaceExtractor<SimpleVolume, Density8 > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
 	surfaceExtractorHigh.execute();
-	meshHighLOD.translateVertices(Vector3DFloat(32, 0, 0));
+	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(meshHighLOD);
