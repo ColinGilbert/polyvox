@@ -100,15 +100,6 @@ namespace PolyVox
 					sy += m_regSrc.getLowerCorner().getY();
 					sz += m_regSrc.getLowerCorner().getZ();
 
-					/*VoxelType voxel000 = m_pVolSrc->getVoxelAt(sx+0,sy+0,sz+0);
-					VoxelType voxel001 = m_pVolSrc->getVoxelAt(sx+0,sy+0,sz+1);
-					VoxelType voxel010 = m_pVolSrc->getVoxelAt(sx+0,sy+1,sz+0);
-					VoxelType voxel011 = m_pVolSrc->getVoxelAt(sx+0,sy+1,sz+1);
-					VoxelType voxel100 = m_pVolSrc->getVoxelAt(sx+1,sy+0,sz+0);
-					VoxelType voxel101 = m_pVolSrc->getVoxelAt(sx+1,sy+0,sz+1);
-					VoxelType voxel110 = m_pVolSrc->getVoxelAt(sx+1,sy+1,sz+0);
-					VoxelType voxel111 = m_pVolSrc->getVoxelAt(sx+1,sy+1,sz+1);*/
-
 					sampler.setPosition(sx,sy,sz);
 					VoxelType voxel000 = sampler.peekVoxel0px0py0pz();
 					VoxelType voxel001 = sampler.peekVoxel0px0py1pz();

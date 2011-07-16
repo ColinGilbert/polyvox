@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#ifndef __PolyVox_TestVolume_H__
-#define __PolyVox_TestVolume_H__
+#ifndef __PolyVox_TestAmbientOcclusionGenerator_H__
+#define __PolyVox_TestAmbientOcclusionGenerator_H__
 
 #include <QObject>
 
