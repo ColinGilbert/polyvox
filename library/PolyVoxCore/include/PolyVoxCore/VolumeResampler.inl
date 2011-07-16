@@ -80,32 +80,44 @@ namespace PolyVox
 		float dstHeight = m_regDst.getUpperCorner().getY() - m_regDst.getLowerCorner().getY();
 		float dstDepth  = m_regDst.getUpperCorner().getZ() - m_regDst.getLowerCorner().getZ();
 
+		float fScaleX = srcWidth / dstWidth;
+		float fScaleY = srcHeight / dstHeight;
+		float fScaleZ = srcDepth / dstDepth;
+
+		SrcVolumeType<VoxelType>::Sampler sampler(m_pVolSrc);
+
 		for(int32_t dz = m_regDst.getLowerCorner().getZ(); dz <= m_regDst.getUpperCorner().getZ(); dz++)
 		{
 			for(int32_t dy = m_regDst.getLowerCorner().getY(); dy <= m_regDst.getUpperCorner().getY(); dy++)
 			{
 				for(int32_t dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); dx++)
 				{
-					float sx = (dx - m_regDst.getLowerCorner().getX()) / dstWidth;
-					float sy = (dy - m_regDst.getLowerCorner().getY()) / dstHeight;
-					float sz = (dz - m_regDst.getLowerCorner().getZ()) / dstDepth;
-
-					sx *= srcWidth;
-					sy *= srcHeight;
-					sz *= srcDepth;
+					float sx = (dx - m_regDst.getLowerCorner().getX()) * fScaleX;
+					float sy = (dy - m_regDst.getLowerCorner().getY()) * fScaleY;
+					float sz = (dz - m_regDst.getLowerCorner().getZ()) * fScaleZ;
 
 					sx += m_regSrc.getLowerCorner().getX();
 					sy += m_regSrc.getLowerCorner().getY();
 					sz += m_regSrc.getLowerCorner().getZ();
 
-					VoxelType voxel000 = m_pVolSrc->getVoxelAt(sx+0,sy+0,sz+0);
+					/*VoxelType voxel000 = m_pVolSrc->getVoxelAt(sx+0,sy+0,sz+0);
 					VoxelType voxel001 = m_pVolSrc->getVoxelAt(sx+0,sy+0,sz+1);
 					VoxelType voxel010 = m_pVolSrc->getVoxelAt(sx+0,sy+1,sz+0);
 					VoxelType voxel011 = m_pVolSrc->getVoxelAt(sx+0,sy+1,sz+1);
 					VoxelType voxel100 = m_pVolSrc->getVoxelAt(sx+1,sy+0,sz+0);
 					VoxelType voxel101 = m_pVolSrc->getVoxelAt(sx+1,sy+0,sz+1);
 					VoxelType voxel110 = m_pVolSrc->getVoxelAt(sx+1,sy+1,sz+0);
-					VoxelType voxel111 = m_pVolSrc->getVoxelAt(sx+1,sy+1,sz+1);
+					VoxelType voxel111 = m_pVolSrc->getVoxelAt(sx+1,sy+1,sz+1);*/
+
+					sampler.setPosition(sx,sy,sz);
+					VoxelType voxel000 = sampler.peekVoxel0px0py0pz();
+					VoxelType voxel001 = sampler.peekVoxel0px0py1pz();
+					VoxelType voxel010 = sampler.peekVoxel0px1py0pz();
+					VoxelType voxel011 = sampler.peekVoxel0px1py1pz();
+					VoxelType voxel100 = sampler.peekVoxel1px0py0pz();
+					VoxelType voxel101 = sampler.peekVoxel1px0py1pz();
+					VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
+					VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
 
 					uint8_t voxel000Den = voxel000.getDensity();
 					uint8_t voxel001Den = voxel001.getDensity();
