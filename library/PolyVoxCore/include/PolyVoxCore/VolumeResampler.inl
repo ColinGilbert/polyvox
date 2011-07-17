@@ -84,7 +84,7 @@ namespace PolyVox
 		float fScaleY = srcHeight / dstHeight;
 		float fScaleZ = srcDepth / dstDepth;
 
-		SrcVolumeType<VoxelType>::Sampler sampler(m_pVolSrc);
+		typename SrcVolumeType<VoxelType>::Sampler sampler(m_pVolSrc);
 
 		for(int32_t dz = m_regDst.getLowerCorner().getZ(); dz <= m_regDst.getUpperCorner().getZ(); dz++)
 		{
