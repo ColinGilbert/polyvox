@@ -34,6 +34,9 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #Build
 ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES})
+IF(MSVC)
+	SET_TARGET_PROPERTIES(SmoothLODExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
+ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(SmoothLODExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 
 #Install - Only install the example in Windows

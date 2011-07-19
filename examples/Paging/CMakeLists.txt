@@ -36,6 +36,9 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #Build
 ADD_EXECUTABLE(PagingExample ${SRC_FILES})
+IF(MSVC)
+	SET_TARGET_PROPERTIES(PagingExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
+ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(PagingExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 
 #Install - Only install the example in Windows
