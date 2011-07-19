@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Volume_H__
-#define __PolyVox_Volume_H__
+#ifndef __PolyVox_LargeVolume_H__
+#define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxImpl/Block.h"
 #include "PolyVoxCore/Region.h"
@@ -362,4 +362,4 @@ private:
 #include "PolyVoxCore/LargeVolume.inl"
 #include "PolyVoxCore/LargeVolumeSampler.inl"
 
-#endif
+#endif //__PolyVox_LargeVolume_H__
