@@ -1,0 +1,95 @@
+/*******************************************************************************
+Copyright (c) 2005-2009 David Williams
+
+This software is provided 'as-is', without any express or implied
+warranty. In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not
+    claim that you wrote the original software. If you use this software
+    in a product, an acknowledgment in the product documentation would be
+    appreciated but is not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be
+    misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source
+    distribution. 	
+*******************************************************************************/
+
+#ifndef __PolyVox_Volume_H__
+#define __PolyVox_Volume_H__
+
+#include "PolyVoxCore/Region.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+
+#include <limits>
+#include <memory>
+
+namespace PolyVox
+{
+	template <typename VoxelType>
+	class Volume
+	{
+	public:
+		/// Constructor for creating a fixed size volume.
+		Volume
+		(
+			const Region& regValid
+		);
+		/// Destructor
+		~Volume();
+
+		/// Gets the value used for voxels which are outside the volume
+		VoxelType getBorderValue(void) const;
+		/// Gets a Region representing the extents of the RawVolume.
+		Region getEnclosingRegion(void) const;
+		/// Gets the width of the volume in voxels.
+		int32_t getWidth(void) const;
+		/// Gets the height of the volume in voxels.
+		int32_t getHeight(void) const;
+		/// Gets the depth of the volume in voxels.
+		int32_t getDepth(void) const;
+		/// Gets the length of the longest side in voxels
+		int32_t getLongestSideLength(void) const;
+		/// Gets the length of the shortest side in voxels
+		int32_t getShortestSideLength(void) const;
+		/// Gets the length of the diagonal in voxels
+		float getDiagonalLength(void) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
+
+		/// Sets the value used for voxels which are outside the volume
+		void setBorderValue(const VoxelType& tBorder);
+		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
+		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
+		/// Sets the voxel at the position given by a 3D vector
+		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
+
+		/// Calculates approximatly how many bytes of memory the volume is currently using.
+		uint32_t calculateSizeInBytes(void);
+
+protected:	
+		//The border value
+		VoxelType m_tBorderValue;
+
+		//The size of the volume
+		Region m_regValidRegion;
+
+		//Some useful sizes
+		int32_t m_uLongestSideLength;
+		int32_t m_uShortestSideLength;
+		float m_fDiagonalLength;
+	};
+}
+
+#include "PolyVoxCore/Volume.inl"
+#include "PolyVoxCore/VolumeSampler.inl"
+
+#endif //__PolyVox_Volume_H__

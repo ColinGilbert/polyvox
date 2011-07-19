@@ -47,6 +47,7 @@ namespace PolyVox
 	(
 		const Region& regValid
 	)
+	:Volume(regValid)
 	{
 		//Create a volume of the right size.
 		resize(regValid);
@@ -60,90 +61,6 @@ namespace PolyVox
 	{
 		delete[] m_pData;
 		m_pData = 0;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// The border value is returned whenever an atempt is made to read a voxel which
-	/// is outside the extents of the volume.
-	/// \return The value used for voxels outside of the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getBorderValue(void) const
-	{
-		return m_tBorderValue;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return A Region representing the extent of the volume.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	Region RawVolume<VoxelType>::getEnclosingRegion(void) const
-	{
-		return m_regValidRegion;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The width of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the width is 64.
-	/// \sa getHeight(), getDepth()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getWidth(void) const
-	{
-		return m_regValidRegion.getUpperCorner().getX() - m_regValidRegion.getLowerCorner().getX() + 1;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The height of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the height is 64.
-	/// \sa getWidth(), getDepth()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getHeight(void) const
-	{
-		return m_regValidRegion.getUpperCorner().getY() - m_regValidRegion.getLowerCorner().getY() + 1;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The depth of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the depth is 64.
-	/// \sa getWidth(), getHeight()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getDepth(void) const
-	{
-		return m_regValidRegion.getUpperCorner().getZ() - m_regValidRegion.getLowerCorner().getZ() + 1;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The length of the shortest side in voxels. For example, if a volume has
-	/// dimensions 256x512x1024 this function will return 256.
-	/// \sa getLongestSideLength(), getDiagonalLength()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getShortestSideLength(void) const
-	{
-		return m_uShortestSideLength;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The length of the longest side in voxels. For example, if a volume has
-	/// dimensions 256x512x1024 this function will return 1024.
-	/// \sa getShortestSideLength(), getDiagonalLength()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getLongestSideLength(void) const
-	{
-		return m_uLongestSideLength;
-	}	
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The length of the diagonal in voxels. For example, if a volume has
-	/// dimensions 256x512x1024 this function will return sqrt(256*256+512*512+1024*1024)
-	/// = 1173.139. This value is computed on volume creation so retrieving it is fast.
-	/// \sa getShortestSideLength(), getLongestSideLength()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	float RawVolume<VoxelType>::getDiagonalLength(void) const
-	{
-		return m_fDiagonalLength;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -178,15 +95,6 @@ namespace PolyVox
 	VoxelType RawVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param tBorder The value to use for voxels outside the volume.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void RawVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
-	{
-		m_tBorderValue = tBorder;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
