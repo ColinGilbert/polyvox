@@ -140,7 +140,7 @@ namespace PolyVox
 	VoxelType Volume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
 		assert(false);
-		return VoxelType; //Default constructor
+		return VoxelType();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +151,7 @@ namespace PolyVox
 	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		assert(false);
-		return VoxelType; //Default constructor
+		return VoxelType();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

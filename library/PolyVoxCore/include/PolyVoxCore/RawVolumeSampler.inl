@@ -31,33 +31,19 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
-		:mVolume(volume)
-		,mXPosInVolume(0)
-		,mYPosInVolume(0)
-		,mZPosInVolume(0)
+		:Volume<VoxelType>::Sampler(volume)
+		//,mXPosInVolume(0)
+		//,mYPosInVolume(0)
+		//,mZPosInVolume(0)
+		,mRawVolume(volume)
 		,mCurrentVoxel(0)
-		,m_bIsCurrentPositionValid(false)
+		//,m_bIsCurrentPositionValid(false)
 	{
 	}
 
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::~Sampler()
 	{
-	}
-
-	template <typename VoxelType>
-	typename RawVolume<VoxelType>::Sampler& RawVolume<VoxelType>::Sampler::operator=(const typename RawVolume<VoxelType>::Sampler& rhs) throw()
-	{
-		if(this == &rhs)
-		{
-			return *this;
-		}
-        mVolume = rhs.mVolume;
-		mXPosInVolume = rhs.mXPosInVolume;
-		mYPosInVolume = rhs.mYPosInVolume;
-		mZPosInVolume = rhs.mZPosInVolume;
-		mCurrentVoxel = rhs.mCurrentVoxel;
-        return *this;
 	}
 
 	template <typename VoxelType>
@@ -87,7 +73,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
-		return m_bIsCurrentPositionValid ? *mCurrentVoxel : mVolume->m_tBorderValue;
+		return m_bIsCurrentPositionValid ? *mCurrentVoxel : mVolume->getBorderValue();
 	}
 
 	template <typename VoxelType>
@@ -107,9 +93,9 @@ namespace PolyVox
 				yPos * mVolume->getWidth() + 
 				zPos * mVolume->getWidth() * mVolume->getHeight();
 
-		mCurrentVoxel = mVolume->m_pData + uVoxelIndex;
+		mCurrentVoxel = mRawVolume->m_pData + uVoxelIndex;
 
-		m_bIsCurrentPositionValid = mVolume->m_regValidRegion.containsPoint(Vector3DInt32(xPos, yPos, zPos));
+		m_bIsCurrentPositionValid = mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos));
 	}
 
 	template <typename VoxelType>
@@ -131,7 +117,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
-		mZPosInVolume--;
+		mZPosInVolume++;
 		mCurrentVoxel += mVolume->getWidth() * mVolume->getHeight();
 		m_bIsCurrentPositionValid = mZPosInVolume <= mVolume->getEnclosingRegion().getUpperCorner().getZ();
 	}

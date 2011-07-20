@@ -38,13 +38,11 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
-		class Sampler
+		class Sampler : public Volume<VoxelType>::Sampler
 		{
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
 			~Sampler();
-
-			Sampler& operator=(const Sampler& rhs) throw();
 
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
@@ -95,18 +93,18 @@ namespace PolyVox
 
 		private:
 			//The current volume
-			RawVolume<VoxelType>* mVolume;
+			RawVolume<VoxelType>* mRawVolume;
 
 			//The current position in the volume
-			int32_t mXPosInVolume;
+			/*int32_t mXPosInVolume;
 			int32_t mYPosInVolume;
-			int32_t mZPosInVolume;
+			int32_t mZPosInVolume;*/
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 
 			//Whether the current position is inside the volume
-			bool m_bIsCurrentPositionValid;
+			//bool m_bIsCurrentPositionValid;
 		};
 		#endif
 
