@@ -40,9 +40,6 @@ namespace PolyVox
 		class Sampler
 		{
 		public:
-			Sampler(Volume<VoxelType>* volume);
-			~Sampler();
-
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
@@ -89,18 +86,6 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1nz(void) const;
 			inline VoxelType peekVoxel1px1py0pz(void) const;
 			inline VoxelType peekVoxel1px1py1pz(void) const;
-
-		protected:
-			//The current volume
-			Volume<VoxelType>* mVolume;
-
-			//The current position in the volume
-			int32_t mXPosInVolume;
-			int32_t mYPosInVolume;
-			int32_t mZPosInVolume;
-
-			//Whether the current position is inside the volume
-			bool m_bIsCurrentPositionValid;
 		};
 		#endif
 

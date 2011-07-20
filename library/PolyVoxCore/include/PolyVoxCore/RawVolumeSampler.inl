@@ -31,13 +31,12 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
-		:Volume<VoxelType>::Sampler(volume)
-		//,mXPosInVolume(0)
-		//,mYPosInVolume(0)
-		//,mZPosInVolume(0)
-		,mRawVolume(volume)
+		:mVolume(volume)
+		,mXPosInVolume(0)
+		,mYPosInVolume(0)
+		,mZPosInVolume(0)
 		,mCurrentVoxel(0)
-		//,m_bIsCurrentPositionValid(false)
+		,m_bIsCurrentPositionValid(false)
 	{
 	}
 
@@ -93,7 +92,7 @@ namespace PolyVox
 				yPos * mVolume->getWidth() + 
 				zPos * mVolume->getWidth() * mVolume->getHeight();
 
-		mCurrentVoxel = mRawVolume->m_pData + uVoxelIndex;
+		mCurrentVoxel = mVolume->m_pData + uVoxelIndex;
 
 		m_bIsCurrentPositionValid = mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos));
 	}

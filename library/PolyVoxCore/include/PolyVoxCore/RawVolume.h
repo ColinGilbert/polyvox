@@ -93,18 +93,18 @@ namespace PolyVox
 
 		private:
 			//The current volume
-			RawVolume<VoxelType>* mRawVolume;
+			RawVolume<VoxelType>* mVolume;
 
 			//The current position in the volume
-			/*int32_t mXPosInVolume;
+			int32_t mXPosInVolume;
 			int32_t mYPosInVolume;
-			int32_t mZPosInVolume;*/
+			int32_t mZPosInVolume;
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 
 			//Whether the current position is inside the volume
-			//bool m_bIsCurrentPositionValid;
+			bool m_bIsCurrentPositionValid;
 		};
 		#endif
 
