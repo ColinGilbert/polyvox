@@ -54,7 +54,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Volume<VoxelType>::getBorderValue(void) const
 	{
-		return m_tBorderValue;
+		assert(false);
+		return VoxelType();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -160,7 +161,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
-		m_tBorderValue = tBorder;
+		assert(false);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

@@ -130,9 +130,6 @@ namespace PolyVox
 		uint32_t calculateSizeInBytes(void);
 
 protected:	
-		//The border value
-		VoxelType m_tBorderValue;
-
 		//The size of the volume
 		Region m_regValidRegion;
 

@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/Block.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Volume.h"
 
 #include <limits>
 #include <map>
@@ -141,10 +142,10 @@ namespace PolyVox
 	/// of the block cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	class LargeVolume
+	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
-		class Sampler
+		class Sampler : public Volume<VoxelType>::Sampler
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);
@@ -257,20 +258,6 @@ namespace PolyVox
 
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
-		/// Gets a Region representing the extents of the LargeVolume.
-		Region getEnclosingRegion(void) const;
-		/// Gets the width of the volume in voxels.
-		int32_t getWidth(void) const;
-		/// Gets the height of the volume in voxels.
-		int32_t getHeight(void) const;
-		/// Gets the depth of the volume in voxels.
-		int32_t getDepth(void) const;
-		/// Gets the length of the longest side in voxels
-		int32_t getLongestSideLength(void) const;
-		/// Gets the length of the shortest side in voxels
-		int32_t getShortestSideLength(void) const;
-		/// Gets the length of the diagonal in voxels
-		float getDiagonalLength(void) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
@@ -342,17 +329,11 @@ private:
 		VoxelType* m_pUncompressedBorderData;
 
 		//The size of the volume
-		Region m_regValidRegion;
 		Region m_regValidRegionInBlocks;
 
 		//The size of the blocks
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
-
-		//Some useful sizes
-		int32_t m_uLongestSideLength;
-		int32_t m_uShortestSideLength;
-		float m_fDiagonalLength;
 
 		bool m_bCompressionEnabled;
 		bool m_bPagingEnabled;

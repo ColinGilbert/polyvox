@@ -64,6 +64,17 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// The border value is returned whenever an attempt is made to read a voxel which
+	/// is outside the extents of the volume.
+	/// \return The value used for voxels outside of the volume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getBorderValue(void) const
+	{
+		return m_tBorderValue;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel
 	/// \param uZPos The \c z position of the voxel
@@ -95,6 +106,15 @@ namespace PolyVox
 	VoxelType RawVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param tBorder The value to use for voxels outside the volume.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void RawVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
+	{
+		m_tBorderValue = tBorder;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
