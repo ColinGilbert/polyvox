@@ -47,7 +47,7 @@ namespace PolyVox
 	(
 		const Region& regValid
 	)
-	:Volume(regValid)
+	:Volume<VoxelType>(regValid)
 	{
 		//Create a volume of the right size.
 		resize(regValid);
@@ -72,18 +72,18 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		if(Volume<VoxelType>::m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
 			return m_pData
 			[
 				uXPos + 
-				uYPos * getWidth() + 
-				uZPos * getWidth() * getHeight()
+				uYPos * Volume<VoxelType>::getWidth() + 
+				uZPos * Volume<VoxelType>::getWidth() * Volume<VoxelType>::getHeight()
 			];
 		}
 		else
 		{
-			return getBorderValue();
+			return Volume<VoxelType>::getBorderValue();
 		}
 	}
 
@@ -107,13 +107,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool RawVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		assert(m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		assert(Volume<VoxelType>::m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
 
 		m_pData
 		[
 			uXPos + 
-			uYPos * getWidth() + 
-			uZPos * getWidth() * getHeight()
+			uYPos * Volume<VoxelType>::getWidth() + 
+			uZPos * Volume<VoxelType>::getWidth() * Volume<VoxelType>::getHeight()
 		] = tValue;
 
 		//Return true to indicate that we modified a voxel.
@@ -137,20 +137,20 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::resize(const Region& regValidRegion)
 	{
-		m_regValidRegion = regValidRegion;
+		Volume<VoxelType>::m_regValidRegion = regValidRegion;
 
 		//Ensure dimensions of the specified Region are valid
-		assert(getWidth() > 0);
-		assert(getHeight() > 0);
-		assert(getDepth() > 0);
+		assert(Volume<VoxelType>::getWidth() > 0);
+		assert(Volume<VoxelType>::getHeight() > 0);
+		assert(Volume<VoxelType>::getDepth() > 0);
 
 		//Create the data
-		m_pData = new VoxelType[getWidth() * getHeight()* getDepth()];
+		m_pData = new VoxelType[Volume<VoxelType>::getWidth() * Volume<VoxelType>::getHeight()* Volume<VoxelType>::getDepth()];
 
 		//Other properties we might find useful later
-		m_uLongestSideLength = (std::max)((std::max)(getWidth(),getHeight()),getDepth());
-		m_uShortestSideLength = (std::min)((std::min)(getWidth(),getHeight()),getDepth());
-		m_fDiagonalLength = sqrtf(static_cast<float>(getWidth() * getWidth() + getHeight() * getHeight() + getDepth() * getDepth()));
+		Volume<VoxelType>::m_uLongestSideLength = (std::max)((std::max)(Volume<VoxelType>::getWidth(),Volume<VoxelType>::getHeight()),Volume<VoxelType>::getDepth());
+		Volume<VoxelType>::m_uShortestSideLength = (std::min)((std::min)(Volume<VoxelType>::getWidth(),Volume<VoxelType>::getHeight()),Volume<VoxelType>::getDepth());
+		Volume<VoxelType>::m_fDiagonalLength = sqrtf(static_cast<float>(Volume<VoxelType>::getWidth() * Volume<VoxelType>::getWidth() + Volume<VoxelType>::getHeight() * Volume<VoxelType>::getHeight() + Volume<VoxelType>::getDepth() * Volume<VoxelType>::getDepth()));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +159,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t RawVolume<VoxelType>::calculateSizeInBytes(void)
 	{
-		return getWidth() * getHeight() * getDepth() * sizeof(VoxelType);
+		return Volume<VoxelType>::getWidth() * Volume<VoxelType>::getHeight() * Volume<VoxelType>::getDepth() * sizeof(VoxelType);
 	}
 
 }
