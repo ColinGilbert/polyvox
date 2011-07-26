@@ -30,146 +30,160 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::Sampler::getPosX(void) const
+	template <typename DerivedVolumeType>
+	int32_t Volume<VoxelType>::Sampler<DerivedVolumeType>::getPosX(void) const
 	{
 		assert(false);
 		return 0;
 	}
 
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::Sampler::getPosY(void) const
+	template <typename DerivedVolumeType>
+	int32_t Volume<VoxelType>::Sampler<DerivedVolumeType>::getPosY(void) const
 	{
 		assert(false);
 		return 0;
 	}
 
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::Sampler::getPosZ(void) const
+	template <typename DerivedVolumeType>
+	int32_t Volume<VoxelType>::Sampler<DerivedVolumeType>::getPosZ(void) const
 	{
 		assert(false);
 		return 0;
 	}
 
 	template <typename VoxelType>
-	const Volume<VoxelType>* Volume<VoxelType>::Sampler::getVolume(void) const
-	{
-		assert(false);
-		return 0;
-	}
-
-	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::getVoxel(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::getVoxel(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::setPosition(const Vector3DInt32& v3dNewPos)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::setPosition(const Vector3DInt32& v3dNewPos)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::movePositiveX(void)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveX(void)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::movePositiveY(void)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveY(void)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::movePositiveZ(void)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveZ(void)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::moveNegativeX(void)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::moveNegativeX(void)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::moveNegativeY(void)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::moveNegativeY(void)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	void Volume<VoxelType>::Sampler::moveNegativeZ(void)
+	template <typename DerivedVolumeType>
+	void Volume<VoxelType>::Sampler<DerivedVolumeType>::moveNegativeZ(void)
 	{
 		assert(false);
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
-	{
-		assert(false);
-		return VoxelType();
-	}
-
-	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
-	{
-		assert(false);
-		return VoxelType();
-	}
-
-	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1ny1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1ny0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1ny1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx0py1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx0py0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx0py1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1py1nz(void) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1py0pz(void) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1py1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
@@ -178,63 +192,72 @@ namespace PolyVox
 	//////////////////////////////////////////////////////////////////////////
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1ny1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1ny0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1ny1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px0py1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px0py0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px0py0pz(void) const
 	{
 			assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px0py1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1py1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1py0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1py1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
@@ -243,63 +266,72 @@ namespace PolyVox
 	//////////////////////////////////////////////////////////////////////////
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1ny1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1ny0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1ny1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px0py1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px0py0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px0py1pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1py1nz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1py0pz(void) const
 	{
 		assert(false);
 		return VoxelType();
 	}
 
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
+	template <typename DerivedVolumeType>
+	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1py1pz(void) const
 	{
 		assert(false);
 		return VoxelType();

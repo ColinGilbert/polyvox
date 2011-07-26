@@ -117,12 +117,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	const LargeVolume<VoxelType>* LargeVolume<VoxelType>::Sampler::getVolume(void) const
-	{
-		return mVolume;
-	}
-
-	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
 		return *mCurrentVoxel;

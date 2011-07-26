@@ -40,8 +40,6 @@ namespace PolyVox
 		#ifndef SWIG
 		class Block
 		{
-			//Make Sampler a friend
-			friend class SimpleVolume<VoxelType>::Sampler;
 		public:
 			Block(uint16_t uSideLength = 0);
 
@@ -62,7 +60,7 @@ namespace PolyVox
 			uint8_t m_uSideLengthPower;	
 		};
 
-		class Sampler : public Volume<VoxelType>::Sampler
+		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> >
 		{
 		public:
 			Sampler(SimpleVolume<VoxelType>* volume);
@@ -74,7 +72,6 @@ namespace PolyVox
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-			const SimpleVolume<VoxelType>* getVolume(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);

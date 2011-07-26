@@ -38,7 +38,7 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
-		class Sampler : public Volume<VoxelType>::Sampler
+		class Sampler : public Volume<VoxelType>::Sampler< RawVolume<VoxelType> >
 		{
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
@@ -47,7 +47,6 @@ namespace PolyVox
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
-			const RawVolume<VoxelType>* getVolume(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);

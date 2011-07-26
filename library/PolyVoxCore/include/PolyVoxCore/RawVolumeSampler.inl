@@ -64,12 +64,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	const RawVolume<VoxelType>* RawVolume<VoxelType>::Sampler::getVolume(void) const
-	{
-		return mVolume;
-	}
-
-	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
 		return m_bIsCurrentPositionValid ? *mCurrentVoxel : mVolume->getBorderValue();

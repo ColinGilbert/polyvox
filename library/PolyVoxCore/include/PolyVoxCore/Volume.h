@@ -37,13 +37,13 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
+		template <typename DerivedVolumeType>
 		class Sampler
 		{
 		public:
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
-			const Volume<VoxelType>* getVolume(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
@@ -86,6 +86,9 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1nz(void) const;
 			inline VoxelType peekVoxel1px1py0pz(void) const;
 			inline VoxelType peekVoxel1px1py1pz(void) const;
+
+		protected:
+			DerivedVolumeType* m_pDerivedVolume;
 		};
 		#endif
 

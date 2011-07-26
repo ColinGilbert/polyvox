@@ -145,7 +145,7 @@ namespace PolyVox
 	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
-		class Sampler : public Volume<VoxelType>::Sampler
+		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> >
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);
@@ -157,7 +157,6 @@ namespace PolyVox
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-			const LargeVolume<VoxelType>* getVolume(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
