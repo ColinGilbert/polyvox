@@ -145,7 +145,7 @@ namespace PolyVox
 	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
-		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> >
+		class Sampler : public Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> >
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);

@@ -60,7 +60,7 @@ namespace PolyVox
 			uint8_t m_uSideLengthPower;	
 		};
 
-		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> >
+		class Sampler : public Volume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >
 		{
 		public:
 			Sampler(SimpleVolume<VoxelType>* volume);

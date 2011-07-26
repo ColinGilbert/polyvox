@@ -38,7 +38,7 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
-		class Sampler : public Volume<VoxelType>::Sampler< RawVolume<VoxelType> >
+		class Sampler : public Volume<VoxelType>::template Sampler< RawVolume<VoxelType> >
 		{
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
