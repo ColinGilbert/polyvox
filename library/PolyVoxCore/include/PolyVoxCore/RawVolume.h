@@ -38,7 +38,11 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
+#if defined(_MSC_VER) //DIRTY HACK!!!
+		class Sampler : public Volume<VoxelType>::Sampler< RawVolume<VoxelType> >
+#else
 		class Sampler : public Volume<VoxelType>::template Sampler< RawVolume<VoxelType> >
+#endif
 		{
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
@@ -92,7 +96,7 @@ namespace PolyVox
 
 		private:
 			//The current volume
-			RawVolume<VoxelType>* mVolume;
+			//RawVolume<VoxelType>* mVolume;
 
 			//The current position in the volume
 			int32_t mXPosInVolume;

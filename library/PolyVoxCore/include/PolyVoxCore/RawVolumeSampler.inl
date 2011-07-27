@@ -31,13 +31,15 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
-		:mVolume(volume)
-		,mXPosInVolume(0)
+		//:mVolume(volume)
+		:mXPosInVolume(0)
 		,mYPosInVolume(0)
 		,mZPosInVolume(0)
 		,mCurrentVoxel(0)
 		,m_bIsCurrentPositionValid(false)
 	{
+		//Dodgy doing this - need to find how to call base constructor
+		mVolume = volume;
 	}
 
 	template <typename VoxelType>

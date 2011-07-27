@@ -88,7 +88,7 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		protected:
-			DerivedVolumeType* m_pDerivedVolume;
+			DerivedVolumeType* mVolume;
 		};
 		#endif
 

@@ -60,7 +60,11 @@ namespace PolyVox
 			uint8_t m_uSideLengthPower;	
 		};
 
+#if defined(_MSC_VER) //DIRTY HACK!!!
+		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> >
+#else
 		class Sampler : public Volume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >
+#endif
 		{
 		public:
 			Sampler(SimpleVolume<VoxelType>* volume);
@@ -118,7 +122,7 @@ namespace PolyVox
 		private:
 
 			//The current volume
-			SimpleVolume<VoxelType>* mVolume;
+			//SimpleVolume<VoxelType>* mVolume;
 
 			//The current position in the volume
 			int32_t mXPosInVolume;

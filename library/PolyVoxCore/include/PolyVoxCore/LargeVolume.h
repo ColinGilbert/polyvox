@@ -145,7 +145,11 @@ namespace PolyVox
 	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
+#if defined(_MSC_VER) //DIRTY HACK!!!
+		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> >
+#else
 		class Sampler : public Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> >
+#endif
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);
@@ -203,7 +207,7 @@ namespace PolyVox
 		private:
 
 			//The current volume
-			LargeVolume<VoxelType>* mVolume;
+			//LargeVolume<VoxelType>* mVolume;
 
 			//The current position in the volume
 			int32_t mXPosInVolume;
