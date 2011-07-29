@@ -105,7 +105,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if(Volume<VoxelType>::m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
 			const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -156,7 +156,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool SimpleVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		assert(Volume<VoxelType>::m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -207,10 +207,10 @@ namespace PolyVox
 		m_uBlockSideLength = uBlockSideLength;
 		m_pUncompressedBorderData = 0;
 
-		Volume<VoxelType>::m_regValidRegion = regValidRegion;
+		this->m_regValidRegion = regValidRegion;
 
-		m_regValidRegionInBlocks.setLowerCorner(Volume<VoxelType>::m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
-		m_regValidRegionInBlocks.setUpperCorner(Volume<VoxelType>::m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
+		m_regValidRegionInBlocks.setLowerCorner(this->m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
+		m_regValidRegionInBlocks.setUpperCorner(this->m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
 
 		//Compute the block side length
 		m_uBlockSideLength = uBlockSideLength;
@@ -234,9 +234,9 @@ namespace PolyVox
 		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
 
 		//Other properties we might find useful later
-		Volume<VoxelType>::m_uLongestSideLength = (std::max)((std::max)(Volume<VoxelType>::getWidth(),Volume<VoxelType>::getHeight()),Volume<VoxelType>::getDepth());
-		Volume<VoxelType>::m_uShortestSideLength = (std::min)((std::min)(Volume<VoxelType>::getWidth(),Volume<VoxelType>::getHeight()),Volume<VoxelType>::getDepth());
-		Volume<VoxelType>::m_fDiagonalLength = sqrtf(static_cast<float>(Volume<VoxelType>::getWidth() * Volume<VoxelType>::getWidth() + Volume<VoxelType>::getHeight() * Volume<VoxelType>::getHeight() + Volume<VoxelType>::getDepth() * Volume<VoxelType>::getDepth()));
+		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
+		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
+		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
 	}
 
 	template <typename VoxelType>

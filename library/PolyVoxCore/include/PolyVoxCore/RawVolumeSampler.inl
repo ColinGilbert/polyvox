@@ -39,7 +39,7 @@ namespace PolyVox
 		,m_bIsCurrentPositionValid(false)
 	{
 		//Dodgy doing this - need to find how to call base constructor
-		mVolume = volume;
+		this->mVolume = volume;
 	}
 
 	template <typename VoxelType>

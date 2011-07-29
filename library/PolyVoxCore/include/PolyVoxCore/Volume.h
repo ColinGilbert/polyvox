@@ -89,6 +89,10 @@ namespace PolyVox
 
 		protected:
 			DerivedVolumeType* mVolume;
+
+			int32_t mXPos;
+			int32_t mYPos;
+			int32_t mZPos;
 		};
 		#endif
 
