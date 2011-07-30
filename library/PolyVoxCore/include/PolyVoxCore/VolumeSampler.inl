@@ -31,6 +31,22 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
+	Volume<VoxelType>::Sampler<DerivedVolumeType>::Sampler(DerivedVolumeType* volume)
+		:mVolume(volume)
+		,mXPos(0)
+		,mYPos(0)
+		,mZPos(0)
+	{
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
+	Volume<VoxelType>::Sampler<DerivedVolumeType>::~Sampler()
+	{
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
 	int32_t Volume<VoxelType>::Sampler<DerivedVolumeType>::getPosX(void) const
 	{
 		return mXPos;
@@ -54,7 +70,7 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::getVoxel(void) const
 	{
-		mVolume->getVoxelAt(mXPos, mYPos, mZPos);
+		return mVolume->getVoxelAt(mXPos, mYPos, mZPos);
 	}
 
 	template <typename VoxelType>
@@ -121,63 +137,63 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1ny1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos - 1, mZPos - 1);
+		return mVolume->getVoxelAt(mXPos - 1, mYPos - 1, mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1ny0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos - 1, mZPos    );
+		return mVolume->getVoxelAt(mXPos - 1, mYPos - 1, mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1ny1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos - 1, mZPos + 1);
+		return mVolume->getVoxelAt(mXPos - 1, mYPos - 1, mZPos + 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx0py1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos    , mZPos - 1);
+		return mVolume->getVoxelAt(mXPos - 1, mYPos    , mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx0py0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos    , mZPos    );
+		return mVolume->getVoxelAt(mXPos - 1, mYPos    , mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx0py1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos    , mZPos + 1);
+		return mVolume->getVoxelAt(mXPos - 1, mYPos    , mZPos + 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1py1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos + 1, mZPos - 1);
+		return mVolume->getVoxelAt(mXPos - 1, mYPos + 1, mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1py0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos + 1, mZPos    );
+		return mVolume->getVoxelAt(mXPos - 1, mYPos + 1, mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1nx1py1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos - 1, mYPos + 1, mZPos + 1);
+		return mVolume->getVoxelAt(mXPos - 1, mYPos + 1, mZPos + 1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -186,63 +202,63 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1ny1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos - 1, mZPos - 1);
+		return mVolume->getVoxelAt(mXPos    , mYPos - 1, mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1ny0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos - 1, mZPos    );
+		return mVolume->getVoxelAt(mXPos    , mYPos - 1, mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1ny1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos - 1, mZPos + 1);
+		return mVolume->getVoxelAt(mXPos    , mYPos - 1, mZPos + 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px0py1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos    , mZPos - 1);
+		return mVolume->getVoxelAt(mXPos    , mYPos    , mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px0py0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos    , mZPos    );
+		return mVolume->getVoxelAt(mXPos    , mYPos    , mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px0py1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos    , mZPos + 1);
+		return mVolume->getVoxelAt(mXPos    , mYPos    , mZPos + 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1py1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos + 1, mZPos - 1);
+		return mVolume->getVoxelAt(mXPos    , mYPos + 1, mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1py0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos + 1, mZPos    );
+		return mVolume->getVoxelAt(mXPos    , mYPos + 1, mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel0px1py1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos    , mYPos + 1, mZPos + 1);
+		return mVolume->getVoxelAt(mXPos    , mYPos + 1, mZPos + 1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -251,62 +267,62 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1ny1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos - 1, mZPos - 1);
+		return mVolume->getVoxelAt(mXPos + 1, mYPos - 1, mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1ny0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos - 1, mZPos    );
+		return mVolume->getVoxelAt(mXPos + 1, mYPos - 1, mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1ny1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos - 1, mZPos + 1);
+		return mVolume->getVoxelAt(mXPos + 1, mYPos - 1, mZPos + 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px0py1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos    , mZPos - 1);
+		return mVolume->getVoxelAt(mXPos + 1, mYPos    , mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px0py0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos    , mZPos    );
+		return mVolume->getVoxelAt(mXPos + 1, mYPos    , mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px0py1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos    , mZPos + 1);
+		return mVolume->getVoxelAt(mXPos + 1, mYPos    , mZPos + 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1py1nz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos + 1, mZPos - 1);
+		return mVolume->getVoxelAt(mXPos + 1, mYPos + 1, mZPos - 1);
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1py0pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos + 1, mZPos    );
+		return mVolume->getVoxelAt(mXPos + 1, mYPos + 1, mZPos    );
 	}
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
 	VoxelType Volume<VoxelType>::Sampler<DerivedVolumeType>::peekVoxel1px1py1pz(void) const
 	{
-		mVolume->getVoxelAt(mXPos + 1, mYPos + 1, mZPos + 1);
+		return mVolume->getVoxelAt(mXPos + 1, mYPos + 1, mZPos + 1);
 	}
 }

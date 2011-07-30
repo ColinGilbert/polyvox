@@ -50,6 +50,16 @@ namespace PolyVox
 		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
 	}
 
+	Region::Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ)
+		:m_v3dLowerCorner(iLowerX, iLowerY, iLowerZ)
+		,m_v3dUpperCorner(iUpperX, iUpperY, iUpperZ)
+	{
+		//Check the region is valid.
+		assert(m_v3dUpperCorner.getX() >= m_v3dLowerCorner.getX());
+		assert(m_v3dUpperCorner.getY() >= m_v3dLowerCorner.getY());
+		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
+	}
+
 	const Vector3DInt32& Region::getLowerCorner(void) const
 	{
 		return m_v3dLowerCorner;

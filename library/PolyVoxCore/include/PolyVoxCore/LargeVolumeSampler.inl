@@ -36,10 +36,8 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::Sampler::Sampler(LargeVolume<VoxelType>* volume)
-		//:mVolume(volume)
+		:Volume<VoxelType>::Sampler< LargeVolume<VoxelType> >(volume)
 	{
-		//Dodgy doing this - need to find how to call base constructor
-		this->mVolume = volume;
 	}
 
 	template <typename VoxelType>

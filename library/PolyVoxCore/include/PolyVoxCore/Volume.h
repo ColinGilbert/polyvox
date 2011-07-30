@@ -41,6 +41,9 @@ namespace PolyVox
 		class Sampler
 		{
 		public:
+			Sampler(DerivedVolumeType* volume);
+			~Sampler();
+
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
