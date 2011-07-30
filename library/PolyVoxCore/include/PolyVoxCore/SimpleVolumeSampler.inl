@@ -36,7 +36,7 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::Sampler::Sampler(SimpleVolume<VoxelType>* volume)
-		:Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> >(volume)
+		:Volume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >(volume)
 	{
 	}
 

@@ -46,7 +46,7 @@ public:
 		{
 		public:
 			Sampler(VolumeSubclass<VoxelType>* volume)
-				:Volume<VoxelType>::Sampler< VolumeSubclass<VoxelType> >(volume)
+				:Volume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >(volume)
 			{
 				this->mVolume = volume;
 			}
