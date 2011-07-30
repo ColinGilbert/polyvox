@@ -32,9 +32,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
 		:Volume<VoxelType>::Sampler< RawVolume<VoxelType> >(volume)
-		,mXPosInVolume(0)
-		,mYPosInVolume(0)
-		,mZPosInVolume(0)
 		,mCurrentVoxel(0)
 		,m_bIsCurrentPositionValid(false)
 	{

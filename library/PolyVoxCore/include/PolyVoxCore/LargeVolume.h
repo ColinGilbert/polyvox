@@ -205,15 +205,6 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		private:
-
-			//The current volume
-			//LargeVolume<VoxelType>* mVolume;
-
-			//The current position in the volume
-			int32_t mXPosInVolume;
-			int32_t mYPosInVolume;
-			int32_t mZPosInVolume;
-
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 		};

@@ -93,9 +93,10 @@ namespace PolyVox
 		protected:
 			DerivedVolumeType* mVolume;
 
-			int32_t mXPos;
-			int32_t mYPos;
-			int32_t mZPos;
+			//The current position in the volume
+			int32_t mXPosInVolume;
+			int32_t mYPosInVolume;
+			int32_t mZPosInVolume;
 		};
 		#endif
 
