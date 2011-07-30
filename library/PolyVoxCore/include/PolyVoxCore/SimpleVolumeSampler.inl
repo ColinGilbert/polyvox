@@ -26,10 +26,10 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Region.h"
 
-#define BORDER_LOW(x) ((( x >> mVolume->m_uBlockSideLengthPower) << mVolume->m_uBlockSideLengthPower) != x)
-#define BORDER_HIGH(x) ((( (x+1) >> mVolume->m_uBlockSideLengthPower) << mVolume->m_uBlockSideLengthPower) != (x+1))
-//#define BORDER_LOW(x) (( x % mVolume->m_uBlockSideLength) != 0)
-//#define BORDER_HIGH(x) (( x % mVolume->m_uBlockSideLength) != mVolume->m_uBlockSideLength - 1)
+#define BORDER_LOW(x) ((( x >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != x)
+#define BORDER_HIGH(x) ((( (x+1) >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != (x+1))
+//#define BORDER_LOW(x) (( x % this->mVolume->m_uBlockSideLength) != 0)
+//#define BORDER_HIGH(x) (( x % this->mVolume->m_uBlockSideLength) != this->mVolume->m_uBlockSideLength - 1)
 
 #include <limits>
 namespace PolyVox
@@ -52,7 +52,7 @@ namespace PolyVox
 		{
 			return *this;
 		}
-        mVolume = rhs.mVolume;
+        this->mVolume = rhs.mVolume;
 		mXPosInVolume = rhs.mXPosInVolume;
 		mYPosInVolume = rhs.mYPosInVolume;
 		mZPosInVolume = rhs.mZPosInVolume;
@@ -108,7 +108,7 @@ namespace PolyVox
 				{
 					for(uint8_t x = 0; x < uSize; ++x)
 					{
-						tValue = (std::min)(tValue, mVolume->getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
+						tValue = (std::min)(tValue, this->mVolume->getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
 					}
 				}
 			}
@@ -135,27 +135,27 @@ namespace PolyVox
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
 
-		const int32_t uXBlock = mXPosInVolume >> mVolume->m_uBlockSideLengthPower;
-		const int32_t uYBlock = mYPosInVolume >> mVolume->m_uBlockSideLengthPower;
-		const int32_t uZBlock = mZPosInVolume >> mVolume->m_uBlockSideLengthPower;
+		const int32_t uXBlock = mXPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
+		const int32_t uYBlock = mYPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
+		const int32_t uZBlock = mZPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
 
-		const uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << mVolume->m_uBlockSideLengthPower);
-		const uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume->m_uBlockSideLengthPower);
-		const uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << mVolume->m_uBlockSideLengthPower);
+		const uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << this->mVolume->m_uBlockSideLengthPower);
+		const uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << this->mVolume->m_uBlockSideLengthPower);
+		const uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << this->mVolume->m_uBlockSideLengthPower);
 
 		const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
-				uYPosInBlock * mVolume->m_uBlockSideLength + 
-				uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+				uYPosInBlock * this->mVolume->m_uBlockSideLength + 
+				uZPosInBlock * this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
 
-		if(mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
+		if(this->mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
 		{
-			Block* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
+			Block* pUncompressedCurrentBlock = this->mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
 
 			mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
 		}
 		else
 		{
-			mCurrentVoxel = mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
+			mCurrentVoxel = this->mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
 		}
 	}
 
@@ -163,7 +163,7 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
 		//Note the *pre* increament here
-		if((++mXPosInVolume) % mVolume->m_uBlockSideLength != 0)
+		if((++mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
 			++mCurrentVoxel;			
@@ -179,10 +179,10 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
 		//Note the *pre* increament here
-		if((++mYPosInVolume) % mVolume->m_uBlockSideLength != 0)
+		if((++mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel += mVolume->m_uBlockSideLength;
+			mCurrentVoxel += this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
@@ -195,10 +195,10 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
 		//Note the *pre* increament here
-		if((++mZPosInVolume) % mVolume->m_uBlockSideLength != 0)
+		if((++mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel += mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+			mCurrentVoxel += this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
@@ -211,7 +211,7 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
 		//Note the *post* decreament here
-		if((mXPosInVolume--) % mVolume->m_uBlockSideLength != 0)
+		if((mXPosInVolume--) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
 			--mCurrentVoxel;			
@@ -227,10 +227,10 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
 		//Note the *post* decreament here
-		if((mYPosInVolume--) % mVolume->m_uBlockSideLength != 0)
+		if((mYPosInVolume--) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel -= mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
@@ -243,10 +243,10 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
 		//Note the *post* decreament here
-		if((mZPosInVolume--) % mVolume->m_uBlockSideLength != 0)
+		if((mZPosInVolume--) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel -= mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
@@ -260,9 +260,9 @@ namespace PolyVox
 	{
 		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -270,9 +270,9 @@ namespace PolyVox
 	{
 		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -280,9 +280,9 @@ namespace PolyVox
 	{
 		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
@@ -290,9 +290,9 @@ namespace PolyVox
 	{
 		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -302,7 +302,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -310,9 +310,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
@@ -320,9 +320,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -330,9 +330,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -340,9 +340,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume+1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -352,9 +352,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -362,9 +362,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -372,9 +372,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
@@ -382,9 +382,9 @@ namespace PolyVox
 	{
 		if( BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -398,9 +398,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
@@ -408,9 +408,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -418,9 +418,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -428,9 +428,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume+1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -440,9 +440,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -450,9 +450,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -460,9 +460,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
@@ -470,9 +470,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -482,7 +482,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -490,9 +490,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
@@ -500,9 +500,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -510,9 +510,9 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -520,8 +520,8 @@ namespace PolyVox
 	{
 		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
 	}
 }
