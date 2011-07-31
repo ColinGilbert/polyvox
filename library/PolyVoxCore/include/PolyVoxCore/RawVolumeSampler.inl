@@ -45,19 +45,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	int32_t RawVolume<VoxelType>::Sampler::getPosX(void) const
 	{
-		return mXPosInVolume;
+		return this->mXPosInVolume;
 	}
 
 	template <typename VoxelType>
 	int32_t RawVolume<VoxelType>::Sampler::getPosY(void) const
 	{
-		return mYPosInVolume;
+		return this->mYPosInVolume;
 	}
 
 	template <typename VoxelType>
 	int32_t RawVolume<VoxelType>::Sampler::getPosZ(void) const
 	{
-		return mZPosInVolume;
+		return this->mZPosInVolume;
 	}
 
 	template <typename VoxelType>
@@ -75,9 +75,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
 	{
-		mXPosInVolume = xPos;
-		mYPosInVolume = yPos;
-		mZPosInVolume = zPos;
+		this->mXPosInVolume = xPos;
+		this->mYPosInVolume = yPos;
+		this->mZPosInVolume = zPos;
 
 		const uint32_t uVoxelIndex = xPos + 
 				yPos * this->mVolume->getWidth() + 
@@ -91,103 +91,103 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
-		mXPosInVolume++;
+		this->mXPosInVolume++;
 		++mCurrentVoxel;
-		m_bIsCurrentPositionValid = mXPosInVolume <= this->mVolume->getEnclosingRegion().getUpperCorner().getX();
+		m_bIsCurrentPositionValid = this->mXPosInVolume <= this->mVolume->getEnclosingRegion().getUpperCorner().getX();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
-		mYPosInVolume++;
+		this->mYPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth();
-		m_bIsCurrentPositionValid = mYPosInVolume <= this->mVolume->getEnclosingRegion().getUpperCorner().getY();
+		m_bIsCurrentPositionValid = this->mYPosInVolume <= this->mVolume->getEnclosingRegion().getUpperCorner().getY();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
-		mZPosInVolume++;
+		this->mZPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
-		m_bIsCurrentPositionValid = mZPosInVolume <= this->mVolume->getEnclosingRegion().getUpperCorner().getZ();
+		m_bIsCurrentPositionValid = this->mZPosInVolume <= this->mVolume->getEnclosingRegion().getUpperCorner().getZ();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
-		mXPosInVolume--;
+		this->mXPosInVolume--;
 		--mCurrentVoxel;
-		m_bIsCurrentPositionValid = mXPosInVolume >= this->mVolume->getEnclosingRegion().getLowerCorner().getX();
+		m_bIsCurrentPositionValid = this->mXPosInVolume >= this->mVolume->getEnclosingRegion().getLowerCorner().getX();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
-		mYPosInVolume--;
+		this->mYPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth();
-		m_bIsCurrentPositionValid = mYPosInVolume >= this->mVolume->getEnclosingRegion().getLowerCorner().getY();
+		m_bIsCurrentPositionValid = this->mYPosInVolume >= this->mVolume->getEnclosingRegion().getLowerCorner().getY();
 	}
 
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
-		mZPosInVolume--;
+		this->mZPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
-		m_bIsCurrentPositionValid =mZPosInVolume >= this->mVolume->getEnclosingRegion().getLowerCorner().getZ();
+		m_bIsCurrentPositionValid =this->mZPosInVolume >= this->mVolume->getEnclosingRegion().getLowerCorner().getZ();
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -195,25 +195,25 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -225,25 +225,25 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -251,54 +251,54 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
 	{
-		return this->mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 }
