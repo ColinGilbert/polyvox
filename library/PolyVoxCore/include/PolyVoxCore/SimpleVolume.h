@@ -60,11 +60,8 @@ namespace PolyVox
 			uint8_t m_uSideLengthPower;	
 		};
 
-#if defined(_MSC_VER) //DIRTY HACK!!!
-		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> >
-#else
-		class Sampler : public Volume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >
-#endif
+		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
+		class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
 		{
 		public:
 			Sampler(SimpleVolume<VoxelType>* volume);

@@ -145,11 +145,8 @@ namespace PolyVox
 	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
-#if defined(_MSC_VER) //DIRTY HACK!!!
-		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> >
-#else
-		class Sampler : public Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> >
-#endif
+		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
+		class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);

@@ -38,11 +38,8 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
-#if defined(_MSC_VER) //DIRTY HACK!!!
-		class Sampler : public Volume<VoxelType>::Sampler< RawVolume<VoxelType> >
-#else
-		class Sampler : public Volume<VoxelType>::template Sampler< RawVolume<VoxelType> >
-#endif
+		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
+		class Sampler : public VolumeOfVoxelType::template Sampler< RawVolume<VoxelType> >
 		{
 		public:
 			Sampler(RawVolume<VoxelType>* volume);

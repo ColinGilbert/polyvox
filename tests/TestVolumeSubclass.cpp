@@ -37,21 +37,17 @@ template <typename VoxelType>
 class VolumeSubclass : public Volume<VoxelType>
 {
 public:
-
-#if defined(_MSC_VER) //DIRTY HACK!!!
-		class Sampler : public Volume<VoxelType>::Sampler< VolumeSubclass<VoxelType> >
-#else
-		class Sampler : public Volume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >
-#endif
+	typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
+	class Sampler : public VolumeOfVoxelType::template Sampler< VolumeSubclass<VoxelType> >
+	{
+	public:
+		Sampler(VolumeSubclass<VoxelType>* volume)
+			:Volume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >(volume)
 		{
-		public:
-			Sampler(VolumeSubclass<VoxelType>* volume)
-				:Volume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >(volume)
-			{
-				this->mVolume = volume;
-			}
-			//~Sampler();
-		};
+			this->mVolume = volume;
+		}
+		//~Sampler();
+	};
 
 	/// Constructor for creating a fixed size volume.
 	VolumeSubclass(const Region& regValid)
