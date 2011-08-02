@@ -59,3 +59,7 @@ ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
 CREATE_TEST(testvector.h testvector.cpp testvector)
 ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
 ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
+
+# Volume subclass tests
+CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)
+ADD_TEST(VolumeSubclassExtractSurfaceTest ${LATEST_TEST} testExtractSurface)

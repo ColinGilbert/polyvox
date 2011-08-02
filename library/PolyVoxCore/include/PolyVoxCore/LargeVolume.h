@@ -21,12 +21,13 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Volume_H__
-#define __PolyVox_Volume_H__
+#ifndef __PolyVox_LargeVolume_H__
+#define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxImpl/Block.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Volume.h"
 
 #include <limits>
 #include <map>
@@ -141,10 +142,11 @@ namespace PolyVox
 	/// of the block cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	class LargeVolume
+	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
-		class Sampler
+		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
+		class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);
@@ -156,7 +158,6 @@ namespace PolyVox
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-			const LargeVolume<VoxelType>* getVolume(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
@@ -201,15 +202,6 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		private:
-
-			//The current volume
-			LargeVolume<VoxelType>* mVolume;
-
-			//The current position in the volume
-			int32_t mXPosInVolume;
-			int32_t mYPosInVolume;
-			int32_t mZPosInVolume;
-
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 		};
@@ -257,20 +249,6 @@ namespace PolyVox
 
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
-		/// Gets a Region representing the extents of the LargeVolume.
-		Region getEnclosingRegion(void) const;
-		/// Gets the width of the volume in voxels.
-		int32_t getWidth(void) const;
-		/// Gets the height of the volume in voxels.
-		int32_t getHeight(void) const;
-		/// Gets the depth of the volume in voxels.
-		int32_t getDepth(void) const;
-		/// Gets the length of the longest side in voxels
-		int32_t getLongestSideLength(void) const;
-		/// Gets the length of the shortest side in voxels
-		int32_t getShortestSideLength(void) const;
-		/// Gets the length of the diagonal in voxels
-		float getDiagonalLength(void) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
@@ -342,17 +320,11 @@ private:
 		VoxelType* m_pUncompressedBorderData;
 
 		//The size of the volume
-		Region m_regValidRegion;
 		Region m_regValidRegionInBlocks;
 
 		//The size of the blocks
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
-
-		//Some useful sizes
-		int32_t m_uLongestSideLength;
-		int32_t m_uShortestSideLength;
-		float m_fDiagonalLength;
 
 		bool m_bCompressionEnabled;
 		bool m_bPagingEnabled;
@@ -362,4 +334,4 @@ private:
 #include "PolyVoxCore/LargeVolume.inl"
 #include "PolyVoxCore/LargeVolumeSampler.inl"
 
-#endif
+#endif //__PolyVox_LargeVolume_H__

@@ -61,6 +61,9 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/VertexTypes.h
+	include/PolyVoxCore/Volume.h
+	include/PolyVoxCore/Volume.inl
+	include/PolyVoxCore/VolumeSampler.inl
 	include/PolyVoxCore/VolumeResampler.h
 	include/PolyVoxCore/VolumeResampler.inl
 	include/PolyVoxCore/VoxelFilters.h
@@ -108,7 +111,7 @@ IF(BUILD_STATIC_LIBRARIES)
 	SET_TARGET_PROPERTIES(PolyVoxCoreStatic PROPERTIES OUTPUT_NAME "PolyVoxCore")
 	SET_TARGET_PROPERTIES(PolyVoxCoreStatic PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 	IF(MSVC)
-			SET_TARGET_PROPERTIES(PolyVoxCoreStatic PROPERTIES COMPILE_FLAGS "/wd4251") #Disable warning on STL exports
+			SET_TARGET_PROPERTIES(PolyVoxCoreStatic PROPERTIES COMPILE_FLAGS "/W4 /wd4251 /wd4127") #Disable warning on STL exports
 	ENDIF(MSVC)
 	SET(PolyVoxCore_LIBRARY "PolyVoxCoreStatic")
 ENDIF()
@@ -118,7 +121,7 @@ IF(BUILD_DYNAMIC_LIBRARIES)
 	SET_TARGET_PROPERTIES(PolyVoxCoreDynamic PROPERTIES COMPILE_FLAGS "-DPOLYVOX_SHARED_EXPORTS")
 	SET_TARGET_PROPERTIES(PolyVoxCoreDynamic PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 	IF(MSVC)
-			SET_TARGET_PROPERTIES(PolyVoxCoreDynamic PROPERTIES COMPILE_FLAGS "/wd4251") #Disable warning on STL exports
+			SET_TARGET_PROPERTIES(PolyVoxCoreDynamic PROPERTIES COMPILE_FLAGS "/W4 /wd4251 /wd4127") #Disable warning on STL exports
 	ENDIF(MSVC)
 	SET(PolyVoxCore_LIBRARY "PolyVoxCoreDynamic")
 ENDIF()

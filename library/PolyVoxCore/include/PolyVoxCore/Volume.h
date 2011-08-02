@@ -21,12 +21,11 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_SimpleVolume_H__
-#define __PolyVox_SimpleVolume_H__
+#ifndef __PolyVox_Volume_H__
+#define __PolyVox_Volume_H__
 
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/Volume.h"
 
 #include <limits>
 #include <memory>
@@ -34,45 +33,20 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class SimpleVolume : public Volume<VoxelType>
+	class Volume
 	{
 	public:
 		#ifndef SWIG
-		class Block
+		template <typename DerivedVolumeType>
+		class Sampler
 		{
 		public:
-			Block(uint16_t uSideLength = 0);
-
-			uint16_t getSideLength(void) const;
-			VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
-			VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
-
-			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
-			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
-
-			void fill(VoxelType tValue);
-			void initialise(uint16_t uSideLength);
-			uint32_t calculateSizeInBytes(void);
-
-		public:
-			VoxelType* m_tUncompressedData;
-			uint16_t m_uSideLength;
-			uint8_t m_uSideLengthPower;	
-		};
-
-		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
-		class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
-		{
-		public:
-			Sampler(SimpleVolume<VoxelType>* volume);
+			Sampler(DerivedVolumeType* volume);
 			~Sampler();
-
-			Sampler& operator=(const Sampler& rhs) throw();
 
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
-			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
@@ -116,29 +90,41 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py0pz(void) const;
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
-		private:			
-			//Other current position information
-			VoxelType* mCurrentVoxel;
+		protected:
+			DerivedVolumeType* mVolume;
+
+			//The current position in the volume
+			int32_t mXPosInVolume;
+			int32_t mYPosInVolume;
+			int32_t mZPosInVolume;
 		};
 		#endif
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		SimpleVolume
+		Volume
 		(
-			const Region& regValid,
-			uint16_t uBlockSideLength = 32
-		);
-		/// Deprecated constructor - do not use.
-		SimpleVolume
-		(
-			int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
+			const Region& regValid
 		);
 		/// Destructor
-		~SimpleVolume();
+		~Volume();
 
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
+		/// Gets a Region representing the extents of the Volume.
+		Region getEnclosingRegion(void) const;
+		/// Gets the width of the volume in voxels.
+		int32_t getWidth(void) const;
+		/// Gets the height of the volume in voxels.
+		int32_t getHeight(void) const;
+		/// Gets the depth of the volume in voxels.
+		int32_t getDepth(void) const;
+		/// Gets the length of the longest side in voxels
+		int32_t getLongestSideLength(void) const;
+		/// Gets the length of the shortest side in voxels
+		int32_t getShortestSideLength(void) const;
+		/// Gets the length of the diagonal in voxels
+		float getDiagonalLength(void) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
@@ -154,38 +140,18 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
-		void resize(const Region& regValidRegion, uint16_t uBlockSideLength);
+protected:	
+		//The size of the volume
+		Region m_regValidRegion;
 
-private:	
-		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-
-		//The block data
-		Block* m_pBlocks;
-
-		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
-		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
-		//good chance we'll often hit it anyway. It's a chunk of homogenous data (rather than a single value) so that
-		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
-		VoxelType* m_pUncompressedBorderData;
-
-		//The size of the volume in vlocks
-		Region m_regValidRegionInBlocks;
-
-		//Volume size measured in blocks.
-		uint32_t m_uNoOfBlocksInVolume;
-		uint16_t m_uWidthInBlocks;
-		uint16_t m_uHeightInBlocks;
-		uint16_t m_uDepthInBlocks;
-
-		//The size of the blocks
-		uint16_t m_uBlockSideLength;
-		uint8_t m_uBlockSideLengthPower;
+		//Some useful sizes
+		int32_t m_uLongestSideLength;
+		int32_t m_uShortestSideLength;
+		float m_fDiagonalLength;
 	};
 }
 
-#include "PolyVoxCore/SimpleVolumeBlock.inl"
-#include "PolyVoxCore/SimpleVolume.inl"
-#include "PolyVoxCore/SimpleVolumeSampler.inl"
+#include "PolyVoxCore/Volume.inl"
+#include "PolyVoxCore/VolumeSampler.inl"
 
-#endif //__PolyVox_SimpleVolume_H__
+#endif //__PolyVox_Volume_H__

@@ -41,6 +41,7 @@ namespace PolyVox
 
 		Region();
 		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);
+		Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ);
 
 		const Vector3DInt32& getLowerCorner(void) const;
 		const Vector3DInt32& getUpperCorner(void) const;

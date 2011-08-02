@@ -26,8 +26,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Region.h"
 
-#define BORDER_LOW(x) ((( x >> mVolume->m_uBlockSideLengthPower) << mVolume->m_uBlockSideLengthPower) != x)
-#define BORDER_HIGH(x) ((( (x+1) >> mVolume->m_uBlockSideLengthPower) << mVolume->m_uBlockSideLengthPower) != (x+1))
+#define BORDER_LOW(x) ((( x >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != x)
+#define BORDER_HIGH(x) ((( (x+1) >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != (x+1))
 //#define BORDER_LOW(x) (( x % mVolume->m_uBlockSideLength) != 0)
 //#define BORDER_HIGH(x) (( x % mVolume->m_uBlockSideLength) != mVolume->m_uBlockSideLength - 1)
 
@@ -36,7 +36,7 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::Sampler::Sampler(LargeVolume<VoxelType>* volume)
-		:mVolume(volume)
+		:Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> >(volume)
 	{
 	}
 
@@ -52,10 +52,10 @@ namespace PolyVox
 		{
 			return *this;
 		}
-        mVolume = rhs.mVolume;
-		mXPosInVolume = rhs.mXPosInVolume;
-		mYPosInVolume = rhs.mYPosInVolume;
-		mZPosInVolume = rhs.mZPosInVolume;
+        this->mVolume = rhs.mVolume;
+		this->mXPosInVolume = rhs.mXPosInVolume;
+		this->mYPosInVolume = rhs.mYPosInVolume;
+		this->mZPosInVolume = rhs.mZPosInVolume;
 		mCurrentVoxel = rhs.mCurrentVoxel;
         return *this;
 	}
@@ -63,19 +63,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	int32_t LargeVolume<VoxelType>::Sampler::getPosX(void) const
 	{
-		return mXPosInVolume;
+		return this->mXPosInVolume;
 	}
 
 	template <typename VoxelType>
 	int32_t LargeVolume<VoxelType>::Sampler::getPosY(void) const
 	{
-		return mYPosInVolume;
+		return this->mYPosInVolume;
 	}
 
 	template <typename VoxelType>
 	int32_t LargeVolume<VoxelType>::Sampler::getPosZ(void) const
 	{
-		return mZPosInVolume;
+		return this->mZPosInVolume;
 	}
 
 	template <typename VoxelType>
@@ -108,18 +108,12 @@ namespace PolyVox
 				{
 					for(uint8_t x = 0; x < uSize; ++x)
 					{
-						tValue = (std::min)(tValue, mVolume->getVoxelAt(mXPosInVolume + x, mYPosInVolume + y, mZPosInVolume + z));
+						tValue = (std::min)(tValue, this->mVolume->getVoxelAt(this->mXPosInVolume + x, this->mYPosInVolume + y, this->mZPosInVolume + z));
 					}
 				}
 			}
 			return tValue;
 		}
-	}
-
-	template <typename VoxelType>
-	const LargeVolume<VoxelType>* LargeVolume<VoxelType>::Sampler::getVolume(void) const
-	{
-		return mVolume;
 	}
 
 	template <typename VoxelType>
@@ -137,31 +131,31 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::Sampler::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
 	{
-		mXPosInVolume = xPos;
-		mYPosInVolume = yPos;
-		mZPosInVolume = zPos;
+		this->mXPosInVolume = xPos;
+		this->mYPosInVolume = yPos;
+		this->mZPosInVolume = zPos;
 
-		const int32_t uXBlock = mXPosInVolume >> mVolume->m_uBlockSideLengthPower;
-		const int32_t uYBlock = mYPosInVolume >> mVolume->m_uBlockSideLengthPower;
-		const int32_t uZBlock = mZPosInVolume >> mVolume->m_uBlockSideLengthPower;
+		const int32_t uXBlock = this->mXPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
+		const int32_t uYBlock = this->mYPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
+		const int32_t uZBlock = this->mZPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
 
-		const uint16_t uXPosInBlock = mXPosInVolume - (uXBlock << mVolume->m_uBlockSideLengthPower);
-		const uint16_t uYPosInBlock = mYPosInVolume - (uYBlock << mVolume->m_uBlockSideLengthPower);
-		const uint16_t uZPosInBlock = mZPosInVolume - (uZBlock << mVolume->m_uBlockSideLengthPower);
+		const uint16_t uXPosInBlock = this->mXPosInVolume - (uXBlock << this->mVolume->m_uBlockSideLengthPower);
+		const uint16_t uYPosInBlock = this->mYPosInVolume - (uYBlock << this->mVolume->m_uBlockSideLengthPower);
+		const uint16_t uZPosInBlock = this->mZPosInVolume - (uZBlock << this->mVolume->m_uBlockSideLengthPower);
 
 		const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
-				uYPosInBlock * mVolume->m_uBlockSideLength + 
-				uZPosInBlock * mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+				uYPosInBlock * this->mVolume->m_uBlockSideLength + 
+				uZPosInBlock * this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
 
-		if(mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
+		if(this->mVolume->m_regValidRegionInBlocks.containsPoint(Vector3DInt32(uXBlock, uYBlock, uZBlock)))
 		{
-			Block<VoxelType>* pUncompressedCurrentBlock = mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
+			Block<VoxelType>* pUncompressedCurrentBlock = this->mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
 
 			mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
 		}
 		else
 		{
-			mCurrentVoxel = mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
+			mCurrentVoxel = this->mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
 		}
 	}
 
@@ -169,7 +163,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
 		//Note the *pre* increament here
-		if((++mXPosInVolume) % mVolume->m_uBlockSideLength != 0)
+		if((++this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
 			++mCurrentVoxel;			
@@ -177,7 +171,7 @@ namespace PolyVox
 		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 
@@ -185,15 +179,15 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
 		//Note the *pre* increament here
-		if((++mYPosInVolume) % mVolume->m_uBlockSideLength != 0)
+		if((++this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel += mVolume->m_uBlockSideLength;
+			mCurrentVoxel += this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 
@@ -201,15 +195,15 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
 		//Note the *pre* increament here
-		if((++mZPosInVolume) % mVolume->m_uBlockSideLength != 0)
+		if((++this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel += mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+			mCurrentVoxel += this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 
@@ -217,7 +211,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
 		//Note the *post* decreament here
-		if((mXPosInVolume--) % mVolume->m_uBlockSideLength != 0)
+		if((this->mXPosInVolume--) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
 			--mCurrentVoxel;			
@@ -225,7 +219,7 @@ namespace PolyVox
 		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 
@@ -233,15 +227,15 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
 		//Note the *post* decreament here
-		if((mYPosInVolume--) % mVolume->m_uBlockSideLength != 0)
+		if((this->mYPosInVolume--) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel -= mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 
@@ -249,106 +243,106 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
 		//Note the *post* decreament here
-		if((mZPosInVolume--) % mVolume->m_uBlockSideLength != 0)
+		if((this->mZPosInVolume--) % this->mVolume->m_uBlockSideLength != 0)
 		{
 			//No need to compute new block.
-			mCurrentVoxel -= mVolume->m_uBlockSideLength * mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
 		}
 		else
 		{
 			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
-			setPosition(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
 	{
-		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if(	BORDER_LOW(this->mXPosInVolume) && BORDER_LOW(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
 	{
-		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) )
+		if(	BORDER_LOW(this->mXPosInVolume) && BORDER_LOW(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
 	{
-		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if(	BORDER_LOW(this->mXPosInVolume) && BORDER_LOW(this->mYPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
 	{
-		if(	BORDER_LOW(mXPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if(	BORDER_LOW(this->mXPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		if( BORDER_LOW(mXPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
 	{
-		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mYPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
 	{
-		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
 	{
-		if( BORDER_LOW(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume-1,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -356,41 +350,41 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		if( BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if( BORDER_LOW(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
 	{
-		if( BORDER_LOW(mYPosInVolume) )
+		if( BORDER_LOW(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
 	{
-		if( BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_LOW(this->mYPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
 	{
-		if( BORDER_LOW(mZPosInVolume) )
+		if( BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
@@ -402,41 +396,41 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
 	{
-		if( BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
 	{
-		if( BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if( BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
 	{
-		if( BORDER_HIGH(mYPosInVolume) )
+		if( BORDER_HIGH(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
 	{
-		if( BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_HIGH(this->mYPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -444,90 +438,90 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_LOW(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_LOW(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_LOW(this->mYPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume-1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_LOW(mZPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength - mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume-1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
 	{
-		if( BORDER_HIGH(mXPosInVolume) && BORDER_HIGH(mYPosInVolume) && BORDER_HIGH(mZPosInVolume) )
+		if( BORDER_HIGH(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_HIGH(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + mVolume->m_uBlockSideLength + mVolume->m_uBlockSideLength*mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return mVolume->getVoxelAt(mXPosInVolume+1,mYPosInVolume+1,mZPosInVolume+1);
+		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 }
