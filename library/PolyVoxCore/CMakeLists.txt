@@ -37,6 +37,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/LargeVolume.inl
 	include/PolyVoxCore/LargeVolumeSampler.inl
 	include/PolyVoxCore/Log.h
+	include/PolyVoxCore/LowPassFilter.h
+	include/PolyVoxCore/LowPassFilter.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MeshDecimator.h
