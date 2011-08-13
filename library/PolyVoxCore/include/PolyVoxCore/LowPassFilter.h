@@ -33,9 +33,10 @@ namespace PolyVox
 	class LowPassFilter
 	{
 	public:
-		LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst);
+		LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst, uint32_t uKernelSize);
 
 		void execute();
+		void executeSAT();
 
 	private:
 		//Source data
@@ -45,6 +46,9 @@ namespace PolyVox
 		//Destination data
 		DestVolumeType<VoxelType>* m_pVolDst;
 		Region m_regDst;
+
+		//Kernel size
+		uint32_t m_uKernelSize;
 	};
 
 }//namespace PolyVox

@@ -29,8 +29,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.inl
 	include/PolyVoxCore/Density.h
-	include/PolyVoxCore/Filters.h
-	include/PolyVoxCore/Filters.inl
 	include/PolyVoxCore/GradientEstimators.h
 	include/PolyVoxCore/GradientEstimators.inl
 	include/PolyVoxCore/LargeVolume.h

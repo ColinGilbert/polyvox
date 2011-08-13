@@ -21,15 +21,28 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/RawVolume.h"
+
 namespace PolyVox
 {
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
-	LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst)
+	LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst, uint32_t uKernelSize)
 		:m_pVolSrc(pVolSrc)
 		,m_regSrc(regSrc)
 		,m_pVolDst(pVolDst)
 		,m_regDst(regDst)
+		,m_uKernelSize(uKernelSize)
 	{
+		//Kernel size must be at least three
+		assert(m_uKernelSize >= 3);
+		m_uKernelSize = std::max(m_uKernelSize, static_cast<uint32_t>(3)); //For release builds
+
+		//Kernel size must be odd
+		assert(m_uKernelSize % 2 == 1);
+		if(m_uKernelSize % 2 == 0) //For release builds
+		{
+			m_uKernelSize++;
+		}
 	}
 
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
@@ -99,6 +112,128 @@ namespace PolyVox
 
 					tSrcVoxel.setDensity(uDensity);
 					m_pVolDst->setVoxelAt(iSrcX, iSrcY, iSrcZ, tSrcVoxel);
+				}
+			}
+		}
+	}
+
+	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
+	void LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::executeSAT()
+	{
+		const int border = m_uKernelSize - 1;
+
+		Vector3DInt32 satLowerCorner = m_regSrc.getLowerCorner() - Vector3DInt32(border+1, border+1, border+1);
+		Vector3DInt32 satUpperCorner = m_regSrc.getUpperCorner() + Vector3DInt32(border, border, border);
+
+		RawVolume<uint32_t> satVolume(Region(satLowerCorner, satUpperCorner));
+
+		//Clear to zeros (necessary?)
+		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		{
+			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			{
+				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				{
+					satVolume.setVoxelAt(x,y,z,0);
+				}
+			}
+		}
+
+		//Build SAT in three passes
+		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		{
+			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			{
+				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				{
+					uint32_t previousSum = satVolume.getVoxelAt(x-1,y,z);
+					uint32_t currentVal = m_pVolSrc->getVoxelAt(x,y,z).getDensity();
+
+					satVolume.setVoxelAt(x,y,z,previousSum + currentVal);
+				}
+			}
+		}
+
+		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		{
+			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			{
+				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				{
+					uint32_t previousSum = satVolume.getVoxelAt(x,y-1,z);
+					uint32_t currentSum = satVolume.getVoxelAt(x,y,z);
+
+					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
+				}
+			}
+		}
+
+		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		{
+			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			{
+				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				{
+					uint32_t previousSum = satVolume.getVoxelAt(x,y,z-1);
+					uint32_t currentSum = satVolume.getVoxelAt(x,y,z);
+
+					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
+				}
+			}
+		}
+
+		//Now compute the average
+		const Vector3DInt32& v3dDestLowerCorner = m_regDst.getLowerCorner();
+		const Vector3DInt32& v3dDestUpperCorner = m_regDst.getUpperCorner();
+
+		const Vector3DInt32& v3dSrcLowerCorner = m_regSrc.getLowerCorner();
+		const Vector3DInt32& v3dSrcUpperCorner = m_regSrc.getUpperCorner();
+
+		for(int32_t iDstZ = v3dDestLowerCorner.getZ(), iSrcZ = v3dSrcLowerCorner.getZ(); iDstZ <= v3dDestUpperCorner.getZ(); iDstZ++, iSrcZ++)
+		{
+			for(int32_t iDstY = v3dDestLowerCorner.getY(), iSrcY = v3dSrcLowerCorner.getY(); iDstY <= v3dDestUpperCorner.getY(); iDstY++, iSrcY++)
+			{
+				for(int32_t iDstX = v3dDestLowerCorner.getX(), iSrcX = v3dSrcLowerCorner.getX(); iDstX <= v3dDestUpperCorner.getX(); iDstX++, iSrcX++)
+				{
+					int32_t satLowerX = iSrcX - border - 1;
+					int32_t satLowerY = iSrcY - border - 1;
+					int32_t satLowerZ = iSrcZ - border - 1;
+
+					int32_t satUpperX = iSrcX + border;
+					int32_t satUpperY = iSrcY + border;
+					int32_t satUpperZ = iSrcZ + border;
+
+					int32_t a = satVolume.getVoxelAt(satLowerX,satLowerY,satLowerZ);
+					int32_t b = satVolume.getVoxelAt(satUpperX,satLowerY,satLowerZ);
+					int32_t c = satVolume.getVoxelAt(satLowerX,satUpperY,satLowerZ);
+					int32_t d = satVolume.getVoxelAt(satUpperX,satUpperY,satLowerZ);
+					int32_t e = satVolume.getVoxelAt(satLowerX,satLowerY,satUpperZ);
+					int32_t f = satVolume.getVoxelAt(satUpperX,satLowerY,satUpperZ);
+					int32_t g = satVolume.getVoxelAt(satLowerX,satUpperY,satUpperZ);
+					int32_t h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
+
+					int32_t sum = h+c-d-g-f-a+b+e;
+
+					int32_t sideLength = border * 2 + 1;
+
+					int32_t average = sum / (sideLength*sideLength*sideLength);
+
+					VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
+
+					voxel.setDensity(average);
+
+					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, voxel);
+
+
+					//float maxSolid = border * 2/* + 1*/;
+					/*maxSolid = maxSolid * maxSolid * maxSolid;
+
+					float percentSolid = noSolid / maxSolid;
+					float percentEmpty = 1.0f - percentSolid;
+
+					(*mAmbientOcclusionVolume)[ambVolZ][ambVolY][ambVolX] = 255 * percentEmpty;*/
+
+					//(*mAmbientOcclusionVolume)[ambVolZ][ambVolY][ambVolX] = 255 - ((h+c-d-g-f-a+b+e) * 19); //FIXME - should not be 9
 				}
 			}
 		}

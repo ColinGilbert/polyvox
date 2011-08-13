@@ -79,13 +79,26 @@ namespace PolyVox
 		this->mYPosInVolume = yPos;
 		this->mZPosInVolume = zPos;
 
-		const uint32_t uVoxelIndex = xPos + 
-				yPos * this->mVolume->getWidth() + 
-				zPos * this->mVolume->getWidth() * this->mVolume->getHeight();
+		if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos)))
+		{
+			const Vector3DInt32& v3dLowerCorner = this->mVolume->m_regValidRegion.getLowerCorner();
+			int32_t iLocalXPos = xPos - v3dLowerCorner.getX();
+			int32_t iLocalYPos = yPos - v3dLowerCorner.getY();
+			int32_t iLocalZPos = zPos - v3dLowerCorner.getZ();
 
-		mCurrentVoxel = this->mVolume->m_pData + uVoxelIndex;
+			const uint32_t uVoxelIndex = iLocalXPos + 
+					iLocalYPos * this->mVolume->getWidth() + 
+					iLocalZPos * this->mVolume->getWidth() * this->mVolume->getHeight();
 
-		m_bIsCurrentPositionValid = this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos));
+			mCurrentVoxel = this->mVolume->m_pData + uVoxelIndex;
+
+			m_bIsCurrentPositionValid = true;
+		}
+		else
+		{
+			mCurrentVoxel = 0;
+			m_bIsCurrentPositionValid = false;
+		}
 	}
 
 	template <typename VoxelType>

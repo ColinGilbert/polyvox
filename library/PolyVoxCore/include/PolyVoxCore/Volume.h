@@ -140,7 +140,7 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-protected:	
+	protected:	
 		//The size of the volume
 		Region m_regValidRegion;
 
