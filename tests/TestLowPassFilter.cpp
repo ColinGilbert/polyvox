@@ -61,6 +61,10 @@ void TestLowPassFilter::testExecute()
 	LowPassFilter<RawVolume, RawVolume, Density8> pass1(&volData, reg, &resultVolume, reg, 5);
 
 	pass1.executeSAT();
+
+	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(1,2,3).getDensity()) << std::endl; // 7
+	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(10,6,7).getDensity()) << std::endl; // 17
+	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(15,2,12).getDensity()) << std::endl; // 4
 }
 
 QTEST_MAIN(TestLowPassFilter)

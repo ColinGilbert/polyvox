@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/IteratorController.h"
 #include "PolyVoxCore/RawVolume.h"
 
 namespace PolyVox
@@ -139,8 +140,34 @@ namespace PolyVox
 			}
 		}
 
+		RawVolume<uint32_t>::Sampler satVolumeIter(&satVolume);
+
+		IteratorController<RawVolume<uint32_t>::Sampler> satIterCont;
+		satIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
+		satIterCont.m_Iter = &satVolumeIter;
+		satIterCont.reset();
+
+		SrcVolumeType<VoxelType>::Sampler srcVolumeIter(m_pVolSrc);
+
+		IteratorController<SrcVolumeType<VoxelType>::Sampler> srcIterCont;
+		srcIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
+		srcIterCont.m_Iter = &srcVolumeIter;
+		srcIterCont.reset();
+
+		do
+		{
+			uint32_t previousSum = satVolumeIter.peekVoxel1nx0py0pz();
+
+			uint32_t currentVal = srcVolumeIter.getVoxel().getDensity();
+
+			satVolumeIter.setVoxel(previousSum + currentVal);
+
+			srcIterCont.moveForward();
+
+		}while(satIterCont.moveForward());
+
 		//Build SAT in three passes
-		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		/*for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
 			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
 			{
@@ -152,7 +179,7 @@ namespace PolyVox
 					satVolume.setVoxelAt(x,y,z,previousSum + currentVal);
 				}
 			}
-		}
+		}*/
 
 		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
