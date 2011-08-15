@@ -52,6 +52,7 @@ namespace PolyVox
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			inline bool setVoxel(VoxelType tValue);
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -96,7 +97,10 @@ namespace PolyVox
 			VoxelType* mCurrentVoxel;
 
 			//Whether the current position is inside the volume
-			bool m_bIsCurrentPositionValid;
+			//FIXME - Replace these with flags
+			bool m_bIsCurrentPositionValidInX;
+			bool m_bIsCurrentPositionValidInY;
+			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 

@@ -93,6 +93,13 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
+	bool Volume<VoxelType>::Sampler<DerivedVolumeType>::setVoxel(VoxelType tValue)
+	{
+		return mVolume->setVoxelAt(mXPosInVolume, mYPosInVolume, mZPosInVolume, tValue);
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
 	void Volume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveX(void)
 	{
 		mXPosInVolume++;

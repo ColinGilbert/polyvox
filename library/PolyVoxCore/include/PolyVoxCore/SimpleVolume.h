@@ -77,6 +77,7 @@ namespace PolyVox
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			inline bool setVoxel(VoxelType tValue);
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -179,6 +180,7 @@ private:
 		uint16_t m_uDepthInBlocks;
 
 		//The size of the blocks
+		uint32_t m_uNoOfVoxelsPerBlock;
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
 	};

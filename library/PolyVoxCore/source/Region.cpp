@@ -100,6 +100,42 @@ namespace PolyVox
 			&& (pos.getZ() >= m_v3dLowerCorner.getZ() + boundary);
 	}
 
+	bool Region::containsPointInX(float pos, float boundary) const
+	{
+		return (pos <= m_v3dUpperCorner.getX() - boundary)
+			&& (pos >= m_v3dLowerCorner.getX() + boundary);
+	}
+
+	bool Region::containsPointInX(int32_t pos, uint8_t boundary) const
+	{
+		return (pos <= m_v3dUpperCorner.getX() - boundary)
+			&& (pos >= m_v3dLowerCorner.getX() + boundary);
+	}
+
+	bool Region::containsPointInY(float pos, float boundary) const
+	{
+		return (pos <= m_v3dUpperCorner.getY() - boundary)
+			&& (pos >= m_v3dLowerCorner.getY() + boundary);
+	}
+
+	bool Region::containsPointInY(int32_t pos, uint8_t boundary) const
+	{
+		return (pos <= m_v3dUpperCorner.getY() - boundary) 
+			&& (pos >= m_v3dLowerCorner.getY() + boundary);
+	}
+
+	bool Region::containsPointInZ(float pos, float boundary) const
+	{
+		return (pos <= m_v3dUpperCorner.getZ() - boundary)
+			&& (pos >= m_v3dLowerCorner.getZ() + boundary);
+	}
+
+	bool Region::containsPointInZ(int32_t pos, uint8_t boundary) const
+	{
+		return (pos <= m_v3dUpperCorner.getZ() - boundary)
+			&& (pos >= m_v3dLowerCorner.getZ() + boundary);
+	}
+
 	void Region::cropTo(const Region& other)
 	{
 		m_v3dLowerCorner.setX((std::max)(m_v3dLowerCorner.getX(), other.m_v3dLowerCorner.getX()));

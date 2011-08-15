@@ -51,6 +51,13 @@ namespace PolyVox
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
 		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;
+		//FIXME - Don't like these. Make containsPoint take flags indicating which axes to check?
+		bool containsPointInX(float pos, float boundary = 0.0f) const;
+		bool containsPointInX(int32_t pos, uint8_t boundary = 0) const;
+		bool containsPointInY(float pos, float boundary = 0.0f) const;
+		bool containsPointInY(int32_t pos, uint8_t boundary = 0) const;
+		bool containsPointInZ(float pos, float boundary = 0.0f) const;
+		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
 		void cropTo(const Region& other);
 		/// Deprecated and misleading
 		int32_t depth(void) const;
