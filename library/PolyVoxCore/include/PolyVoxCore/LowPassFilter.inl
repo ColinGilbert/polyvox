@@ -65,7 +65,7 @@ namespace PolyVox
 		//int32_t iDstMaxY = m_regDst.getUpperCorner().getY();
 		//int32_t iDstMaxZ = m_regDst.getUpperCorner().getZ();
 
-		SrcVolumeType<VoxelType>::Sampler srcSampler(m_pVolSrc);
+		typename SrcVolumeType<VoxelType>::Sampler srcSampler(m_pVolSrc);
 
 		for(int32_t iSrcZ = iSrcMinZ, iDstZ = iDstMinZ; iSrcZ <= iSrcMaxZ; iSrcZ++, iDstZ++)
 		{
@@ -147,9 +147,9 @@ namespace PolyVox
 		satIterCont.m_Iter = &satVolumeIter;
 		satIterCont.reset();
 
-		SrcVolumeType<VoxelType>::Sampler srcVolumeIter(m_pVolSrc);
+		typename SrcVolumeType<VoxelType>::Sampler srcVolumeIter(m_pVolSrc);
 
-		IteratorController<SrcVolumeType<VoxelType>::Sampler> srcIterCont;
+		IteratorController<typename SrcVolumeType<VoxelType>::Sampler> srcIterCont;
 		srcIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
 		srcIterCont.m_Iter = &srcVolumeIter;
 		srcIterCont.reset();
