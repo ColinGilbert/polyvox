@@ -67,8 +67,18 @@ namespace PolyVox
 			uint8_t m_uSideLengthPower;	
 		};
 
-		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
-		class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
+		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
+		//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
+		//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
+		//option. For now it seems best to 'fix' it with the preprocessor insstead, but maybe the workaround can be reinstated
+		//in the future
+		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
+		//class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
+#if defined(_MSC_VER)
+		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> > //This line works on VS2010
+#else
+        class Sampler : public Volume<VoxelType>::Sampler Nested< SimpleVolume<VoxelType> > //This line works on GCC
+#endif
 		{
 		public:
 			Sampler(SimpleVolume<VoxelType>* volume);
