@@ -76,7 +76,7 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			const Vector3DInt32& v3dLowerCorner = m_regValidRegion.getLowerCorner();
+			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
 			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
 			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
@@ -125,7 +125,7 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			const Vector3DInt32& v3dLowerCorner = m_regValidRegion.getLowerCorner();
+			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
 			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
 			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();

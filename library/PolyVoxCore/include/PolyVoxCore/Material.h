@@ -75,7 +75,7 @@ namespace PolyVox
 
 		Type getMaterial() const throw() { return m_uMaterial; }
 
-		void setDensity(Type /*uDensity*/) { assert("Cannot set density on voxel of type 'Material'"); }
+		void setDensity(Type /*uDensity*/) { assert(false); } //Cannot set density on voxel of type Material
 		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 
 		static Type getMaxDensity() throw() { return 2; }

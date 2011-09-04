@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
 	//Smooth part of the volume
-	RawVolume<MaterialDensityPair44> tempVolume(Region(0,0,0,128, 128, 128));
+	RawVolume<MaterialDensityPair44> tempVolume(PolyVox::Region(0,0,0,128, 128, 128));
 	LowPassFilter<LargeVolume, RawVolume, MaterialDensityPair44> pass1(&volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
 	pass1.executeSAT();
 	LowPassFilter<RawVolume, LargeVolume, MaterialDensityPair44> pass2(&tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
