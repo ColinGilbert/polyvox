@@ -25,14 +25,19 @@ freely, subject to the following restrictions:
 #define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxImpl/Block.h"
+#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Volume.h"
 
 #include <limits>
+#include <cassert>
+#include <cstdlib> //For abort()
+#include <cstring> //For memcpy
+#include <list>
 #include <map>
-#include <set>
 #include <memory>
+#include <stdexcept> //For invalid_argument
 #include <vector>
 
 namespace PolyVox
@@ -141,6 +146,9 @@ namespace PolyVox
 	/// This is true even if you are only reading data from the volume, as concurrently reading from different threads can invalidate the contents
 	/// of the block cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	template <typename VoxelType> class ConstVolumeProxy;
+
 	template <typename VoxelType>
 	class LargeVolume : public Volume<VoxelType>
 	{

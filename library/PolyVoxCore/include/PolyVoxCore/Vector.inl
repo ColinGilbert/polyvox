@@ -21,11 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include <cassert>
-#include <cmath>
-#include <string>
-#include <cstring>
-
 namespace PolyVox
 {
     //-------------------------- Constructors, etc ---------------------------------

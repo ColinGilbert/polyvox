@@ -24,10 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VoxelFilters_H__
 #define __PolyVox_VoxelFilters_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
-
-#include "PolyVoxCore/LargeVolume.h"
 
 namespace PolyVox
 {

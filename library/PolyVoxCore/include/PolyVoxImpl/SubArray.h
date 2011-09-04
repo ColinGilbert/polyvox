@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SubArray_H__
 #define __PolyVox_SubArray_H__
 
+#include "PolyVoxImpl/TypeDef.h"
+
 namespace PolyVox
 {
 	template <uint32_t noOfDims, typename ElementType> class Array;

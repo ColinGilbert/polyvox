@@ -24,7 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_LowPassFilter_H__
 #define __PolyVox_LowPassFilter_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/IteratorController.h"
+#include "PolyVoxCore/RawVolume.h" //Is this desirable?
 #include "PolyVoxCore/Region.h"
 
 namespace PolyVox

@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include <sstream>
-
 #include "PolyVoxCore/VertexTypes.h"
 
 namespace PolyVox

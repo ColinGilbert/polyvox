@@ -21,12 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/Volume.h"
-#include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Region.h"
-
-#include <limits>
 namespace PolyVox
 {
 	template <typename VoxelType>

@@ -24,7 +24,9 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MeshDecimator_H__
 #define __PolyVox_MeshDecimator_H__
 
+#include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/Vector.h"
+#include "PolyVoxCore/VertexTypes.h"
 
 #include <bitset>
 #include <vector>

@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/AStarPathfinder.h"
 
-#include "PolyVoxCore/Material.h"
-
 using namespace PolyVox;
 
 namespace PolyVox

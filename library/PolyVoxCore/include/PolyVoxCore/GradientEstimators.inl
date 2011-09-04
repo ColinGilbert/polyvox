@@ -21,10 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/VoxelFilters.h"
-
-#include "PolyVoxCore/LargeVolume.h"
-
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>

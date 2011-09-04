@@ -21,13 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Region.h"
-
-#include <limits>
-
 #define BORDER_LOWX(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getX())
 #define BORDER_HIGHX(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getX())
 #define BORDER_LOWY(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getY())

@@ -24,12 +24,12 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_AStarPathfinder_H__
 #define __PolyVox_AStarPathfinder_H__
 
-#include "PolyVoxCore/Array.h"
 #include "PolyVoxImpl/AStarPathfinderImpl.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/LargeVolume.h"
-
 #include "PolyVoxImpl/TypeDef.h"
+
+#include "PolyVoxCore/Array.h"
+
+#include <list>
 
 namespace PolyVox
 {

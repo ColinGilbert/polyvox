@@ -24,14 +24,17 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SurfaceMesh_H__
 #define __PolyVox_SurfaceMesh_H__
 
-#include <vector>
-#include <set>
-#include <memory>
-
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/VertexTypes.h"
 #include "PolyVoxImpl/TypeDef.h"
+
+#include "PolyVoxCore/Region.h"
+#include "PolyVoxCore/VertexTypes.h" //Should probably do away with this on in the future...
+
+#include <algorithm>
+#include <cstdlib>
+#include <list>
+#include <memory>
+#include <set>
+#include <vector>
 
 namespace PolyVox
 {

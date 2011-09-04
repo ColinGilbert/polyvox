@@ -21,12 +21,9 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/GradientEstimators.h"
-#include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxCore/VertexTypes.h"
 #include "PolyVoxImpl/TypeDef.h"
 
-#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/GradientEstimators.h"
 
 using namespace std;
 

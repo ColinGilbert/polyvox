@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxImpl/Utility.h"
 #include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/LargeVolume.h"
 
 #include <cassert>
 #include <cstring> //For memcpy

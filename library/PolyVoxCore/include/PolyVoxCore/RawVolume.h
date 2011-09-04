@@ -24,12 +24,16 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_RawVolume_H__
 #define __PolyVox_RawVolume_H__
 
+#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Volume.h"
 
+#include <cassert>
+#include <cstdlib> //For abort()
 #include <limits>
 #include <memory>
+#include <stdexcept> //For invalid_argument
 
 namespace PolyVox
 {

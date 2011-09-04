@@ -24,10 +24,11 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VolumeChangeTracker_H__
 #define __PolyVox_VolumeChangeTracker_H__
 
-#include <list>
+#include "PolyVoxImpl/Utility.h"
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxCore/Region.h"
+#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Vector.h"
 
 namespace PolyVox
 {	

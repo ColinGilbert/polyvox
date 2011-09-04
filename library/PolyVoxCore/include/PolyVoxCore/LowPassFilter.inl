@@ -21,9 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/IteratorController.h"
-#include "PolyVoxCore/RawVolume.h"
-
 namespace PolyVox
 {
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>

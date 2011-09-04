@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #include "TestAStarPathfinder.h"
 
 #include "PolyVoxCore/AStarPathfinder.h"
+#include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/RawVolume.h"
 
 #include <QtTest>

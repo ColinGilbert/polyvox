@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VolumeResampler_H__
 #define __PolyVox_VolumeResampler_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-
 namespace PolyVox
 {
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
@@ -38,7 +36,6 @@ namespace PolyVox
 
 	private:
 		void resampleSameSize();
-		void resampleHalfSize();
 		void resampleArbitrary();
 
 		//Source data

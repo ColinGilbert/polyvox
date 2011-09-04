@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Raycast_H__
 #define __PolyVox_Raycast_H__
 
+#include "PolyVoxCore/Vector.h"
+
 namespace PolyVox
 {
 	/// Stores the result of a raycast operation.

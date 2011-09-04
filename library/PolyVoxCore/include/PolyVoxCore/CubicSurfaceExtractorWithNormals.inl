@@ -21,12 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Array.h"
-#include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxImpl/MarchingCubesTables.h"
-#include "PolyVoxCore/VertexTypes.h"
-
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>

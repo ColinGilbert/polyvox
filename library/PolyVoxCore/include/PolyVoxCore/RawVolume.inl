@@ -21,17 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/ConstVolumeProxy.h"
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/Log.h"
-#include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <limits>
-#include <cassert>
-#include <cstdlib> //For abort()
-#include <stdexcept> //For invalid_argument
-
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,9 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Block_H__
 #define __PolyVox_Block_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxImpl/TypeDef.h"
+#include "PolyVoxCore/Vector.h"
+
 #include <limits>
 #include <vector>
 
@@ -44,8 +46,6 @@ namespace PolyVox
 			static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
 		};
 
-		//Make Sampler a friend
-		friend class LargeVolume<VoxelType>::Sampler;
 	public:
 		Block(uint16_t uSideLength = 0);
 

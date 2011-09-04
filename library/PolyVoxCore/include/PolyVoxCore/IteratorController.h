@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_IteratorController_H__
 #define __PolyVox_IteratorController_H__
 
+#include "PolyVoxCore/Region.h"
+
 namespace PolyVox
 {
 	template <typename IteratorType>

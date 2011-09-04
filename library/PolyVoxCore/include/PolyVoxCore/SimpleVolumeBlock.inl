@@ -21,14 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Utility.h"
-#include "Vector.h"
-
-#include <cassert>
-#include <cstring> //For memcpy
-#include <limits>
-#include <stdexcept> //for std::invalid_argument
-
 namespace PolyVox
 {
 	template <typename VoxelType>

@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_Region_H__
 
 #include "PolyVoxImpl/TypeDef.h"
+
 #include "PolyVoxCore/Vector.h"
 
 namespace PolyVox

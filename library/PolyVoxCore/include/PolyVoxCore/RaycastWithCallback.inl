@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
+
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>

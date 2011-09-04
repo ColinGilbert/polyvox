@@ -21,13 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/LargeVolume.h"
-#include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Region.h"
-
-#include <limits>
-
 #define BORDER_LOW(x) ((( x >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != x)
 #define BORDER_HIGH(x) ((( (x+1) >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != (x+1))
 //#define BORDER_LOW(x) (( x % mVolume->m_uBlockSideLength) != 0)

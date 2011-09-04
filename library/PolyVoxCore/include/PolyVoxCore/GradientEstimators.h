@@ -24,9 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_GradientEstimators_H__
 #define __PolyVox_GradientEstimators_H__
 
-#include <vector>
-
 #include "PolyVoxCore/Vector.h"
+#include "PolyVoxCore/VoxelFilters.h"
+
+#include <vector>
 
 namespace PolyVox
 {

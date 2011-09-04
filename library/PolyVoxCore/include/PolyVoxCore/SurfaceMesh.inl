@@ -21,12 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include <cstdlib>
-#include <list>
-#include <algorithm>
-
-using namespace std;
-
 namespace PolyVox
 {
 	template <typename VertexType>
@@ -366,7 +360,7 @@ namespace PolyVox
 	template <typename VertexType>
 	void SurfaceMesh<VertexType>::removeUnusedVertices(void)
 	{
-		vector<bool> isVertexUsed(m_vecVertices.size());
+		std::vector<bool> isVertexUsed(m_vecVertices.size());
 		fill(isVertexUsed.begin(), isVertexUsed.end(), false);
 
 		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
@@ -376,7 +370,7 @@ namespace PolyVox
 		}
 
 		int noOfUsedVertices = 0;
-		vector<uint32_t> newPos(m_vecVertices.size());
+		std::vector<uint32_t> newPos(m_vecVertices.size());
 		for(uint32_t vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
 		{
 			if(isVertexUsed[vertCt])
