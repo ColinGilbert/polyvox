@@ -119,7 +119,8 @@ namespace PolyVox
 					uint8_t voxel110Den = voxel110.getDensity();
 					uint8_t voxel111Den = voxel111.getDensity();
 
-					float dummy;
+					//FIXME - should accept all float parameters, but GCC complains?
+					double dummy;
 					sx = modf(sx, &dummy);
 					sy = modf(sy, &dummy);
 					sz = modf(sz, &dummy);

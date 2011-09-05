@@ -259,9 +259,9 @@ namespace PolyVox
 	bool MeshDecimator<VertexType>::collapseChangesFaceNormals(uint32_t uSrc, uint32_t uDst, float fThreshold)
 	{
 		bool faceFlipped = false;
-		vector<uint32_t>& triangles = trianglesUsingVertex[uSrc];
+		std::vector<uint32_t>& triangles = trianglesUsingVertex[uSrc];
 
-		for(vector<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
+		for(std::vector<uint32_t>::iterator triIter = triangles.begin(); triIter != triangles.end(); triIter++)
 		{
 			uint32_t tri = *triIter;
 					
