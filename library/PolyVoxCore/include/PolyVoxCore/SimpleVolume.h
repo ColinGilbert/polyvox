@@ -49,6 +49,7 @@ namespace PolyVox
 		{
 		public:
 			Block(uint16_t uSideLength = 0);
+			~Block();
 
 			uint16_t getSideLength(void) const;
 			VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
