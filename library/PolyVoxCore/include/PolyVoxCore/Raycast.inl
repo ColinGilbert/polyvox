@@ -134,6 +134,7 @@ namespace PolyVox
 		float deltatz = 1.0f / abs(z2 - z1);
 
 		m_sampVolume.setPosition(i,j,k);
+		m_result.previousVoxel = Vector3DInt32(i,j,k);
 
 		for(;;)
 		{
@@ -143,7 +144,7 @@ namespace PolyVox
 				m_result.intersectionVoxel = Vector3DInt32(i,j,k);
 				return;
 			}
-
+			m_result.previousVoxel = Vector3DInt32(i,j,k);
 			if(tx <= ty && tx <= tz)
 			{
 				if(i == iend) break;
@@ -174,5 +175,6 @@ namespace PolyVox
 		//Didn't hit anything
 		m_result.foundIntersection = false;
 		m_result.intersectionVoxel = Vector3DInt32(0,0,0);
+		m_result.previousVoxel = Vector3DInt32(0,0,0);
 	}
 }
