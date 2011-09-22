@@ -21,17 +21,11 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/LargeVolume.h"
-#include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Region.h"
-
 #define BORDER_LOW(x) ((( x >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != x)
 #define BORDER_HIGH(x) ((( (x+1) >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != (x+1))
 //#define BORDER_LOW(x) (( x % mVolume->m_uBlockSideLength) != 0)
 //#define BORDER_HIGH(x) (( x % mVolume->m_uBlockSideLength) != mVolume->m_uBlockSideLength - 1)
 
-#include <limits>
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -157,6 +151,15 @@ namespace PolyVox
 		{
 			mCurrentVoxel = this->mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
 		}
+	}
+
+	template <typename VoxelType>
+	bool LargeVolume<VoxelType>::Sampler::setVoxel(VoxelType tValue)
+	{
+		//*mCurrentVoxel = tValue;
+		//Need to think what effect this has on any existing iterators.
+		assert(false);
+		return false;
 	}
 
 	template <typename VoxelType>
@@ -525,3 +528,6 @@ namespace PolyVox
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 }
+
+#undef BORDER_LOW
+#undef BORDER_HIGH

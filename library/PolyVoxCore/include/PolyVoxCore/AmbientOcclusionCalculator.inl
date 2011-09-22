@@ -21,15 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Array.h"
-#include "PolyVoxCore/Raycast.h"
-#include "PolyVoxCore/LargeVolume.h"
-
-#include "PolyVoxImpl/RandomUnitVectors.h"
-#include "PolyVoxImpl/RandomVectors.h"
-
-#include <algorithm>
-
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>

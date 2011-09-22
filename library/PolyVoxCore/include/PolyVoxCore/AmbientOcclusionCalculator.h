@@ -24,8 +24,14 @@ freely, subject to the following restrictions:
 #ifndef __AmbientOcclusionCalculator_H__
 #define __AmbientOcclusionCalculator_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxImpl/RandomUnitVectors.h"
+#include "PolyVoxImpl/RandomVectors.h"
+
+#include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/Region.h"
+#include "PolyVoxCore/Raycast.h"
+
+#include <algorithm>
 
 namespace PolyVox
 {

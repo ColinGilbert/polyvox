@@ -24,10 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_CubicSurfaceExtractorWithNormals_H__
 #define __PolyVox_CubicSurfaceExtractorWithNormals_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxImpl/MarchingCubesTables.h"
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/SurfaceMesh.h"
 
 namespace PolyVox
 {

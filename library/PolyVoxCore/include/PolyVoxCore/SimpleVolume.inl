@@ -21,17 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/ConstVolumeProxy.h"
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/Log.h"
-#include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <limits>
-#include <cassert>
-#include <cstdlib> //For abort()
-#include <stdexcept> //For invalid_argument
-
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +71,7 @@ namespace PolyVox
 	SimpleVolume<VoxelType>::~SimpleVolume()
 	{
 		delete[] m_pBlocks;
-		m_pBlocks = 0;
+		delete[] m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +132,7 @@ namespace PolyVox
 	{
 		/*Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
 		return pUncompressedBorderBlock->fill(tBorder);*/
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, tBorder);
+		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uNoOfVoxelsPerBlock, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -205,6 +194,7 @@ namespace PolyVox
 		}
 
 		m_uBlockSideLength = uBlockSideLength;
+		m_uNoOfVoxelsPerBlock = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength;
 		m_pUncompressedBorderData = 0;
 
 		this->m_regValidRegion = regValidRegion;
@@ -230,8 +220,8 @@ namespace PolyVox
 		}
 
 		//Create the border block
-		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
+		m_pUncompressedBorderData = new VoxelType[m_uNoOfVoxelsPerBlock];
+		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uNoOfVoxelsPerBlock, VoxelType());
 
 		//Other properties we might find useful later
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
@@ -266,7 +256,7 @@ namespace PolyVox
 	{
 		uint32_t uSizeInBytes = sizeof(SimpleVolume);
 		
-		uint32_t uSizeOfBlockInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		uint32_t uSizeOfBlockInBytes = m_uNoOfVoxelsPerBlock * sizeof(VoxelType);
 
 		//Memory used by the blocks ( + 1 is for border)
 		uSizeInBytes += uSizeOfBlockInBytes * (m_uNoOfBlocksInVolume + 1);

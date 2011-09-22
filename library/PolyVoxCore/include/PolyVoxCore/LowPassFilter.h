@@ -21,18 +21,40 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Filters_H__
-#define __PolyVox_Filters_H__
+#ifndef __PolyVox_LowPassFilter_H__
+#define __PolyVox_LowPassFilter_H__
 
-#include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/IteratorController.h"
+#include "PolyVoxCore/RawVolume.h" //Is this desirable?
 #include "PolyVoxCore/Region.h"
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
-	void smoothRegion(VolumeType<VoxelType>& volData, const Region& regionToSmooth);
+	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
+	class LowPassFilter
+	{
+	public:
+		LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst, uint32_t uKernelSize);
+
+		void execute();
+		void executeSAT();
+
+	private:
+		//Source data
+		SrcVolumeType<VoxelType>* m_pVolSrc;
+		Region m_regSrc;
+
+		//Destination data
+		DestVolumeType<VoxelType>* m_pVolDst;
+		Region m_regDst;
+
+		//Kernel size
+		uint32_t m_uKernelSize;
+	};
+
 }//namespace PolyVox
 
-#include "PolyVoxCore/Filters.inl"
+#include "PolyVoxCore/LowPassFilter.inl"
 
-#endif
+#endif //__PolyVox_LowPassFilter_H__
+

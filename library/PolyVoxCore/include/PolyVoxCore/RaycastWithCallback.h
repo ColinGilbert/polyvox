@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_RaycastWithCallback_H__
 #define __PolyVox_RaycastWithCallback_H__
 
+#include "PolyVoxCore/Vector.h"
+
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>

@@ -21,14 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/GradientEstimators.h"
-#include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxImpl/MarchingCubesTables.h"
-#include "PolyVoxCore/VertexTypes.h"
-#include "PolyVoxImpl/Utility.h"
-#include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/LargeVolume.h"
-
 namespace PolyVox
 {
 	template <typename VoxelType>

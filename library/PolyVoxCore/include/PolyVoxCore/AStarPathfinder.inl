@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "PolyVoxCore/Material.h"
-
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #include "OpenGLWidget.h"
 
 #include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/Filters.h"
 #include "PolyVoxCore/SurfaceExtractor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/RawVolume.h"
@@ -86,10 +85,10 @@ int main(int argc, char *argv[])
 	SimpleVolume<Density8> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 28);
 
-	//Smooth the data
-	smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
-	smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
-	smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
+	//Smooth the data - should reimplement this using LowPassFilter
+	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
 
 	RawVolume<Density8> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
 

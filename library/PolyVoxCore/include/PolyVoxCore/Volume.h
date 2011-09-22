@@ -24,11 +24,12 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Volume_H__
 #define __PolyVox_Volume_H__
 
+#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 
+#include <cassert>
 #include <limits>
-#include <memory>
 
 namespace PolyVox
 {
@@ -47,10 +48,11 @@ namespace PolyVox
 			int32_t getPosX(void) const;
 			int32_t getPosY(void) const;
 			int32_t getPosZ(void) const;
-			inline VoxelType getVoxel(void) const;			
+			inline VoxelType getVoxel(void) const;	
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			inline bool setVoxel(VoxelType tValue);
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -140,7 +142,7 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-protected:	
+	protected:	
 		//The size of the volume
 		Region m_regValidRegion;
 

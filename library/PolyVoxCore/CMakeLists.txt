@@ -29,14 +29,16 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.inl
 	include/PolyVoxCore/Density.h
-	include/PolyVoxCore/Filters.h
-	include/PolyVoxCore/Filters.inl
 	include/PolyVoxCore/GradientEstimators.h
 	include/PolyVoxCore/GradientEstimators.inl
+	include/PolyVoxCore/IteratorController.h
+	include/PolyVoxCore/IteratorController.inl
 	include/PolyVoxCore/LargeVolume.h
 	include/PolyVoxCore/LargeVolume.inl
 	include/PolyVoxCore/LargeVolumeSampler.inl
 	include/PolyVoxCore/Log.h
+	include/PolyVoxCore/LowPassFilter.h
+	include/PolyVoxCore/LowPassFilter.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MeshDecimator.h

@@ -21,18 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+//Included here rather than in the .h because it refers to LargeVolume (avoids forward declaration)
 #include "PolyVoxCore/ConstVolumeProxy.h"
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/Log.h"
-#include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <limits>
-#include <cassert>
-#include <cstdlib> //For abort()
-#include <cstring> //For memcpy
-#include <list>
-#include <stdexcept> //For invalid_argument
 
 namespace PolyVox
 {
@@ -113,6 +103,7 @@ namespace PolyVox
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
 		flushAll();
+		delete[] m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

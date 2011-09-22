@@ -21,15 +21,26 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_VoxelFilters_H__
-#define __PolyVox_VoxelFilters_H__
+#ifndef __PolyVox_IteratorController_H__
+#define __PolyVox_IteratorController_H__
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "PolyVoxCore/Region.h"
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType>
-	float computeSmoothedVoxel(typename VolumeType<uint8_t>::Sampler& volIter);
+	template <typename IteratorType>
+	class IteratorController
+	{
+	public:
+		void reset(void);
+		bool moveForward(void);
+
+	public:
+		Region m_regValid;
+		IteratorType* m_Iter;
+	};
 }
 
-#endif
+#include "PolyVoxCore/IteratorController.inl"
+
+#endif //__PolyVox_IteratorController_H__

@@ -20,6 +20,7 @@ freely, subject to the following restrictions:
     3. This notice may not be removed or altered from any source
     distribution. 	
 *******************************************************************************/
+
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -142,6 +143,7 @@ namespace PolyVox
 				m_result.intersectionVoxel = Vector3DInt32(i,j,k);
 				return;
 			}
+			m_result.previousVoxel = Vector3DInt32(i,j,k);
 
 			if(tx <= ty && tx <= tz)
 			{
@@ -173,5 +175,6 @@ namespace PolyVox
 		//Didn't hit anything
 		m_result.foundIntersection = false;
 		m_result.intersectionVoxel = Vector3DInt32(0,0,0);
+		m_result.previousVoxel = Vector3DInt32(0,0,0);
 	}
 }

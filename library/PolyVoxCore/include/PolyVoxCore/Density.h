@@ -24,8 +24,9 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Density_H__
 #define __PolyVox_Density_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxImpl/TypeDef.h"
+
+#include <cassert>
 
 namespace PolyVox
 {
@@ -62,7 +63,7 @@ namespace PolyVox
 		Type getMaterial() const throw() { return 1; }
 
 		void setDensity(Type uDensity) { m_uDensity = uDensity; }
-		void setMaterial(Type uMaterial) { assert("Cannot set material on voxel of type 'Density'"); }
+		void setMaterial(Type uMaterial) { assert(false); } //Cannot set material on voxel of type Density
 
 		static Type getMaxDensity() throw() { return (0x01 << (sizeof(Type) * 8)) - 1; } 
 		static Type getMinDensity() throw() { return 0; }

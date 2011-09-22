@@ -21,12 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Log.h"
-#include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <cassert>
-
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -197,7 +191,6 @@ namespace PolyVox
 	uint32_t Volume<VoxelType>::calculateSizeInBytes(void)
 	{
 		return getWidth() * getHeight() * getDepth() * sizeof(VoxelType);
-	}
-
+	}	
 }
 

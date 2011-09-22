@@ -24,12 +24,19 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SimpleVolume_H__
 #define __PolyVox_SimpleVolume_H__
 
+#include "PolyVoxImpl/Utility.h"
+
+#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Volume.h"
 
+#include <cassert>
+#include <cstdlib> //For abort()
+#include <cstring> //For memcpy
 #include <limits>
 #include <memory>
+#include <stdexcept> //For invalid_argument
 
 namespace PolyVox
 {
@@ -42,6 +49,7 @@ namespace PolyVox
 		{
 		public:
 			Block(uint16_t uSideLength = 0);
+			~Block();
 
 			uint16_t getSideLength(void) const;
 			VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
@@ -60,8 +68,18 @@ namespace PolyVox
 			uint8_t m_uSideLengthPower;	
 		};
 
-		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
-		class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
+		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
+		//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
+		//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
+		//option. For now it seems best to 'fix' it with the preprocessor insstead, but maybe the workaround can be reinstated
+		//in the future
+		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
+		//class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
+#if defined(_MSC_VER)
+		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> > //This line works on VS2010
+#else
+                class Sampler : public Volume<VoxelType>::template Sampler< SimpleVolume<VoxelType> > //This line works on GCC
+#endif
 		{
 		public:
 			Sampler(SimpleVolume<VoxelType>* volume);
@@ -77,6 +95,7 @@ namespace PolyVox
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			inline bool setVoxel(VoxelType tValue);
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -179,6 +198,7 @@ private:
 		uint16_t m_uDepthInBlocks;
 
 		//The size of the blocks
+		uint32_t m_uNoOfVoxelsPerBlock;
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
 	};

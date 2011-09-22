@@ -60,18 +60,10 @@ namespace PolyVox
 
 	template <typename VoxelType> class Block;
 
-	template <typename VoxelType> class ConstVolumeProxy;
-
 	//---------- LargeVolume ----------
 	template <typename VoxelType> class LargeVolume;
 	//---------------------------------
 
-	//---------- Mesh ----------
-	class Mesh;
-	class MeshEdge;
-	class MeshFace;
-	class MeshVertex;
-	//---------------------------------
 
 	template <typename Type> class Density;
 	typedef Density<uint8_t> Density8;

@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Raycast_H__
 #define __PolyVox_Raycast_H__
 
+#include "PolyVoxCore/Vector.h"
+
 namespace PolyVox
 {
 	/// Stores the result of a raycast operation.
@@ -39,6 +41,7 @@ namespace PolyVox
 		bool foundIntersection;
 		///If an intersection was found then this field holds the intersecting voxel, otherwise it is undefined.
 		Vector3DInt32 intersectionVoxel;
+		Vector3DInt32 previousVoxel;
 	};
 
 	/// The Raycast class can be used to find the fist filled voxel along a given path.

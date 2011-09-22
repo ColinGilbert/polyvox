@@ -21,15 +21,43 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_VoxelFilters_H__
-#define __PolyVox_VoxelFilters_H__
-
-#include "PolyVoxImpl/TypeDef.h"
-
 namespace PolyVox
 {
-	template< template<typename> class VolumeType>
-	float computeSmoothedVoxel(typename VolumeType<uint8_t>::Sampler& volIter);
-}
+	template <typename IteratorType>
+	void IteratorController<IteratorType>::reset(void)
+	{
+		m_Iter->setPosition(m_regValid.getLowerCorner());
+	}
 
-#endif
+	template <typename IteratorType>
+	bool IteratorController<IteratorType>::moveForward(void)
+	{
+		Vector3DInt32 v3dInitialPosition(m_Iter->getPosX(), m_Iter->getPosY(), m_Iter->getPosZ());
+
+		if(v3dInitialPosition.getX() < m_regValid.getUpperCorner().getX())
+		{
+			m_Iter->movePositiveX();
+			return true;
+		}
+
+		v3dInitialPosition.setX(m_regValid.getLowerCorner().getX());
+
+		if(v3dInitialPosition.getY() < m_regValid.getUpperCorner().getY())
+		{
+			v3dInitialPosition.setY(v3dInitialPosition.getY() + 1);
+			m_Iter->setPosition(v3dInitialPosition);
+			return true;
+		}
+
+		v3dInitialPosition.setY(m_regValid.getLowerCorner().getY());
+
+		if(v3dInitialPosition.getZ() < m_regValid.getUpperCorner().getZ())
+		{
+			v3dInitialPosition.setZ(v3dInitialPosition.getZ() + 1);
+			m_Iter->setPosition(v3dInitialPosition);
+			return true;
+		}
+
+		return false;
+	}
+}

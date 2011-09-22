@@ -24,12 +24,16 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_RawVolume_H__
 #define __PolyVox_RawVolume_H__
 
+#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Volume.h"
 
+#include <cassert>
+#include <cstdlib> //For abort()
 #include <limits>
 #include <memory>
+#include <stdexcept> //For invalid_argument
 
 namespace PolyVox
 {
@@ -38,8 +42,18 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
-		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
-		class Sampler : public VolumeOfVoxelType::template Sampler< RawVolume<VoxelType> >
+		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
+		//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
+		//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
+		//option. For now it seems best to 'fix' it with the preprocessor insstead, but maybe the workaround can be reinstated
+		//in the future
+		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
+		//class Sampler : public VolumeOfVoxelType::template Sampler< RawVolume<VoxelType> >
+#if defined(_MSC_VER)
+		class Sampler : public Volume<VoxelType>::Sampler< RawVolume<VoxelType> > //This line works on VS2010
+#else
+                class Sampler : public Volume<VoxelType>::template Sampler< RawVolume<VoxelType> > //This line works on GCC
+#endif
 		{
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
@@ -52,6 +66,7 @@ namespace PolyVox
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			inline bool setVoxel(VoxelType tValue);
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -96,7 +111,10 @@ namespace PolyVox
 			VoxelType* mCurrentVoxel;
 
 			//Whether the current position is inside the volume
-			bool m_bIsCurrentPositionValid;
+			//FIXME - Replace these with flags
+			bool m_bIsCurrentPositionValidInX;
+			bool m_bIsCurrentPositionValidInY;
+			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 

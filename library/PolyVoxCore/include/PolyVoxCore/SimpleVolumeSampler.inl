@@ -21,17 +21,11 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/SimpleVolume.h"
-#include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Region.h"
-
 #define BORDER_LOW(x) ((( x >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != x)
 #define BORDER_HIGH(x) ((( (x+1) >> this->mVolume->m_uBlockSideLengthPower) << this->mVolume->m_uBlockSideLengthPower) != (x+1))
 //#define BORDER_LOW(x) (( x % this->mVolume->m_uBlockSideLength) != 0)
 //#define BORDER_HIGH(x) (( x % this->mVolume->m_uBlockSideLength) != this->mVolume->m_uBlockSideLength - 1)
 
-#include <limits>
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -156,6 +150,23 @@ namespace PolyVox
 		else
 		{
 			mCurrentVoxel = this->mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
+		}
+	}
+
+	template <typename VoxelType>
+	bool SimpleVolume<VoxelType>::Sampler::setVoxel(VoxelType tValue)
+	{
+		VoxelType* pBorderDataEndPlusOne = this->mVolume->m_pUncompressedBorderData + this->mVolume->m_uNoOfVoxelsPerBlock;
+
+		//Make sure we're not trying to write to the border data
+		if((mCurrentVoxel < this->mVolume->m_pUncompressedBorderData) || (mCurrentVoxel >= pBorderDataEndPlusOne))
+		{
+			*mCurrentVoxel = tValue;
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 
@@ -525,3 +536,6 @@ namespace PolyVox
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 }
+
+#undef BORDER_LOW
+#undef BORDER_HIGH

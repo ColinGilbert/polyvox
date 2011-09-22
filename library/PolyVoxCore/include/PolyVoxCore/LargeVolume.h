@@ -25,14 +25,19 @@ freely, subject to the following restrictions:
 #define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxImpl/Block.h"
+#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 #include "PolyVoxCore/Volume.h"
 
 #include <limits>
+#include <cassert>
+#include <cstdlib> //For abort()
+#include <cstring> //For memcpy
+#include <list>
 #include <map>
-#include <set>
 #include <memory>
+#include <stdexcept> //For invalid_argument
 #include <vector>
 
 namespace PolyVox
@@ -141,12 +146,25 @@ namespace PolyVox
 	/// This is true even if you are only reading data from the volume, as concurrently reading from different threads can invalidate the contents
 	/// of the block cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	template <typename VoxelType> class ConstVolumeProxy;
+
 	template <typename VoxelType>
 	class LargeVolume : public Volume<VoxelType>
 	{
 	public:
-		typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
-		class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
+		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
+		//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
+		//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
+		//option. For now it seems best to 'fix' it with the preprocessor insstead, but maybe the workaround can be reinstated
+		//in the future
+		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
+		//class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
+#if defined(_MSC_VER)
+		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> > //This line works on VS2010
+#else
+                class Sampler : public Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> > //This line works on GCC
+#endif
 		{
 		public:
 			Sampler(LargeVolume<VoxelType>* volume);
@@ -162,6 +180,7 @@ namespace PolyVox
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			inline bool setVoxel(VoxelType tValue);
 
 			void movePositiveX(void);
 			void movePositiveY(void);

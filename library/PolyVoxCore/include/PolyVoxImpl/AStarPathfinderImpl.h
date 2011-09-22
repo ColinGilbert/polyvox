@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Vector.h"
 
+#include <algorithm>
 #include <limits> //For numeric_limits
 #include <set>
 #include <vector>

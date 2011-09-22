@@ -21,17 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/ConstVolumeProxy.h"
-#include "PolyVoxImpl/Block.h"
-#include "PolyVoxCore/Log.h"
-#include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <limits>
-#include <cassert>
-#include <cstdlib> //For abort()
-#include <stdexcept> //For invalid_argument
-
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +38,8 @@ namespace PolyVox
 	)
 	:Volume<VoxelType>(regValid)
 	{
+		setBorderValue(VoxelType());
+
 		//Create a volume of the right size.
 		resize(regValid);
 	}
@@ -85,11 +76,16 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
+			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
+			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
+			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
+			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
+
 			return m_pData
 			[
-				uXPos + 
-				uYPos * this->getWidth() + 
-				uZPos * this->getWidth() * this->getHeight()
+				iLocalXPos + 
+				iLocalYPos * this->getWidth() + 
+				iLocalZPos * this->getWidth() * this->getHeight()
 			];
 		}
 		else
@@ -127,17 +123,27 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool RawVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		{
+			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
+			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
+			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
+			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
 
-		m_pData
-		[
-			uXPos + 
-			uYPos * this->getWidth() + 
-			uZPos * this->getWidth() * this->getHeight()
-		] = tValue;
+			m_pData
+			[
+				iLocalXPos + 
+				iLocalYPos * this->getWidth() + 
+				iLocalZPos * this->getWidth() * this->getHeight()
+			] = tValue;
 
-		//Return true to indicate that we modified a voxel.
-		return true;
+			//Return true to indicate that we modified a voxel.
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
