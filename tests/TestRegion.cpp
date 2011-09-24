@@ -21,34 +21,22 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "testvector.h"
+#include "TestRegion.h"
 
-#include "PolyVoxCore/Vector.h"
+#include "PolyVoxCore/Region.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
 
-void TestVector::testLength()
+void TestRegion::testEquality()
 {
-	Vector3DInt8 vec(3, 4, 5);
-	QCOMPARE(vec.lengthSquared(), double(3*3+4*4+5*5));
+	Region reg1(1,2,3,4,5,6);
+	Region reg2(0,0,0,10,20,30);
+	Region reg3(Vector3DInt32(1,2,3), Vector3DInt32(4,5,6));
+
+	QCOMPARE(reg1 != reg2, true);
+	QCOMPARE(reg1 == reg3, true);
 }
 
-void TestVector::testDotProduct()
-{
-	Vector3DInt8 vecxy(3, 4, 0);
-	Vector3DInt8 vecz(0, 0, 1);
-	
-	QCOMPARE(vecxy.dot(vecz), int8_t(0)); //QCOMPARE is very strict on the types matching
-}
-
-void TestVector::testEquality()
-{
-	Vector3DInt8 vecxy(3, 4, 0);
-	Vector3DInt8 vecz(0, 0, 1);
-	
-	QCOMPARE(vecxy != vecz, true);
-}
-
-QTEST_MAIN(TestVector)
+QTEST_MAIN(TestRegion)

@@ -151,6 +151,18 @@ namespace PolyVox
     }
 
 	/**
+    Checks whether two Vectors are not equal.
+    \param rhs The Vector to compare to.
+    \return true if the Vectors do not match.
+    \see operator==
+    */
+    template <uint32_t Size, typename Type>
+        inline bool Vector<Size, Type>::operator!=(const Vector<Size, Type> &rhs) const throw()
+    {
+		return !(*this == rhs); //Just call equality operator and invert the result.
+    }
+
+	/**
     Checks whether this vector is less than the parameter. The metric is
 	meaningless but it allows Vectors to me used as key in sdt::map, etc.
     \param rhs The Vector to compare to.

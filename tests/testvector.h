@@ -33,6 +33,7 @@ class TestVector: public QObject
 	private slots:
 		void testLength();
 		void testDotProduct();
+		void testEquality();
 };
 
 #endif

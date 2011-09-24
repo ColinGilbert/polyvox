@@ -59,10 +59,15 @@ ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
 CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
 ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
 
+# Region tests
+CREATE_TEST(TestRegion.h TestRegion.cpp TestRegion)
+ADD_TEST(RegionEqualityTest ${LATEST_TEST} testEquality)
+
 #Vector tests
 CREATE_TEST(testvector.h testvector.cpp testvector)
 ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
 ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
+ADD_TEST(VectorEqualityTest ${LATEST_TEST} testEquality)
 
 # Volume subclass tests
 CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)
