@@ -71,7 +71,7 @@ namespace PolyVox
 	SimpleVolume<VoxelType>::~SimpleVolume()
 	{
 		delete[] m_pBlocks;
-		m_pBlocks = 0;
+		delete[] m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

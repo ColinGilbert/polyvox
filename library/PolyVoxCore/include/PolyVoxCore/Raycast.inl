@@ -145,6 +145,7 @@ namespace PolyVox
 				return;
 			}
 			m_result.previousVoxel = Vector3DInt32(i,j,k);
+
 			if(tx <= ty && tx <= tz)
 			{
 				if(i == iend) break;

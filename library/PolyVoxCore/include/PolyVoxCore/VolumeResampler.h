@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VolumeResampler_H__
 #define __PolyVox_VolumeResampler_H__
 
+#include <cmath>
+
 namespace PolyVox
 {
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>

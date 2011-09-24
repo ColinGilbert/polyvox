@@ -30,6 +30,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Array.h"
 
 #include <list>
+#include <stdexcept> //For runtime_error
 
 namespace PolyVox
 {

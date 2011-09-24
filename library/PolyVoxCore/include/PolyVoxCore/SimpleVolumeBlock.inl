@@ -36,6 +36,12 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	SimpleVolume<VoxelType>::Block::~Block()
+	{
+		delete[] m_tUncompressedData;
+	}
+
+	template <typename VoxelType>
 	uint16_t SimpleVolume<VoxelType>::Block::getSideLength(void) const
 	{
 		return m_uSideLength;

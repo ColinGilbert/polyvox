@@ -163,7 +163,7 @@ namespace PolyVox
 #if defined(_MSC_VER)
 		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> > //This line works on VS2010
 #else
-        class Sampler : public Volume<VoxelType>::Sampler Nested< LargeVolume<VoxelType> > //This line works on GCC
+                class Sampler : public Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> > //This line works on GCC
 #endif
 		{
 		public:
