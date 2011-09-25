@@ -27,8 +27,8 @@ namespace PolyVox
 	SurfaceExtractor<VolumeType, VoxelType>::SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
-		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
+		,m_regSizeInVoxels(region)
 	{
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
@@ -524,7 +524,6 @@ namespace PolyVox
 				//Current position
 				const uint32_t uXRegSpace = m_sampVolume.getPosX() - m_regSizeInVoxels.getLowerCorner().getX();
 				const uint32_t uYRegSpace = m_sampVolume.getPosY() - m_regSizeInVoxels.getLowerCorner().getY();
-				const uint32_t uZRegSpace = m_sampVolume.getPosZ() - m_regSizeInVoxels.getLowerCorner().getZ();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = pPreviousBitmask[uXRegSpace][uYRegSpace];
