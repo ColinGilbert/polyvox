@@ -21,34 +21,17 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "testvector.h"
+#ifndef __PolyVox_TestRegion_H__
+#define __PolyVox_TestRegion_H__
 
-#include "PolyVoxCore/Vector.h"
+#include <QObject>
 
-#include <QtTest>
-
-using namespace PolyVox;
-
-void TestVector::testLength()
+class TestRegion: public QObject
 {
-	Vector3DInt8 vec(3, 4, 5);
-	QCOMPARE(vec.lengthSquared(), double(3*3+4*4+5*5));
-}
-
-void TestVector::testDotProduct()
-{
-	Vector3DInt8 vecxy(3, 4, 0);
-	Vector3DInt8 vecz(0, 0, 1);
+	Q_OBJECT
 	
-	QCOMPARE(vecxy.dot(vecz), int8_t(0)); //QCOMPARE is very strict on the types matching
-}
+	private slots:
+		void testEquality();
+};
 
-void TestVector::testEquality()
-{
-	Vector3DInt8 vecxy(3, 4, 0);
-	Vector3DInt8 vecz(0, 0, 1);
-	
-	QCOMPARE(vecxy != vecz, true);
-}
-
-QTEST_MAIN(TestVector)
+#endif

@@ -60,6 +60,28 @@ namespace PolyVox
 		assert(m_v3dUpperCorner.getZ() >= m_v3dLowerCorner.getZ());
 	}
 
+	/**
+    Checks whether two Regions are equal.
+    \param rhs The Region to compare to.
+    \return true if the Regions match.
+    \see operator!=
+    */
+    bool Region::operator==(const Region& rhs) const throw()
+    {
+		return ((m_v3dLowerCorner == rhs.m_v3dLowerCorner) && (m_v3dUpperCorner == rhs.m_v3dUpperCorner));
+    }
+
+	/**
+    Checks whether two Regions are not equal.
+    \param rhs The Region to compare to.
+    \return true if the Regions do not match.
+    \see operator==
+    */
+    bool Region::operator!=(const Region& rhs) const throw()
+    {
+		return !(*this == rhs);
+    }
+
 	const Vector3DInt32& Region::getLowerCorner(void) const
 	{
 		return m_v3dLowerCorner;

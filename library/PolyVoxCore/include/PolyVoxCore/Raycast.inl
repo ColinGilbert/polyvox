@@ -134,6 +134,7 @@ namespace PolyVox
 		float deltatz = 1.0f / abs(z2 - z1);
 
 		m_sampVolume.setPosition(i,j,k);
+		m_result.previousVoxel = Vector3DInt32(i,j,k);
 
 		for(;;)
 		{
