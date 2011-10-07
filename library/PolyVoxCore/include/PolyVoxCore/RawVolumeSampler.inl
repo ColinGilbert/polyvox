@@ -166,7 +166,7 @@ namespace PolyVox
 	{
 		if(	BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
@@ -186,7 +186,7 @@ namespace PolyVox
 	{
 		if(	BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
@@ -196,7 +196,7 @@ namespace PolyVox
 	{
 		if(	BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
@@ -216,7 +216,7 @@ namespace PolyVox
 	{
 		if( BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
@@ -226,7 +226,7 @@ namespace PolyVox
 	{
 		if( BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
@@ -246,7 +246,7 @@ namespace PolyVox
 	{
 		if( BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
@@ -258,7 +258,7 @@ namespace PolyVox
 	{
 		if( BORDER_LOWX(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->getWidth() - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
@@ -278,7 +278,7 @@ namespace PolyVox
 	{
 		if( BORDER_LOWY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->getWidth() + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
@@ -288,7 +288,7 @@ namespace PolyVox
 	{
 		if( BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
@@ -304,7 +304,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
@@ -314,7 +314,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->getWidth() - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
@@ -334,7 +334,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->getWidth() + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
@@ -346,7 +346,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
@@ -366,7 +366,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
@@ -376,7 +376,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
@@ -396,7 +396,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
@@ -406,7 +406,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() - this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
@@ -426,7 +426,7 @@ namespace PolyVox
 	{
 		if( BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() + this->mVolume->getHeight() * this->mVolume->getHeight());
+			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->mVolume->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
