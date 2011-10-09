@@ -65,9 +65,9 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		void setMaterial(uint32_t uMaterial) { assert(false); } //Cannot set material on voxel of type Density
 
-		static DensityType getMaxDensity() throw() { return (0x01 << (sizeof(DensityType) * 8)) - 1; } 
-		static DensityType getMinDensity() throw() { return 0; }
-		static DensityType getThreshold() throw() {return  0x01 << ((sizeof(DensityType) * 8) - 1);}
+		static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
+		static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
+		static DensityType getThreshold() throw() { return (std::numeric_limits<DensityType>::max)() / 2; }
 
 	private:
 		DensityType m_uDensity;
