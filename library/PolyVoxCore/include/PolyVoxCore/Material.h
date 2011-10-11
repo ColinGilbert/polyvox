@@ -43,12 +43,12 @@ namespace PolyVox
 	///
 	/// \sa Density, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename Type>
+	template <typename MaterialType>
 	class Material
 	{
 	public:
 		Material() : m_uMaterial(0) {}
-		Material(Type uMaterial) : m_uMaterial(uMaterial) {}
+		Material(MaterialType uMaterial) : m_uMaterial(uMaterial) {}
 
 		bool operator==(const Material& rhs) const throw()
 		{
@@ -60,7 +60,7 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
-		Type getDensity() const throw()
+		uint32_t getDensity() const throw()
 		{
 			//We don't actually have a density, so make one up based on the material.
 			if(m_uMaterial == 0)
@@ -73,17 +73,17 @@ namespace PolyVox
 			}
 		}
 
-		Type getMaterial() const throw() { return m_uMaterial; }
+		MaterialType getMaterial() const throw() { return m_uMaterial; }
 
-		void setDensity(Type /*uDensity*/) { assert(false); } //Cannot set density on voxel of type Material
-		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
+		void setDensity(uint32_t /*uDensity*/) { assert(false); } //Cannot set density on voxel of type Material
+		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		static Type getMaxDensity() throw() { return 2; }
-		static Type getMinDensity() throw() { return 0; }
-		static Type getThreshold() throw() { return 1; }
+		static uint32_t getMaxDensity() throw() { return 2; }
+		static uint32_t getMinDensity() throw() { return 0; }
+		static uint32_t getThreshold() throw() { return 1; }
 
 	private:
-		Type m_uMaterial;
+		MaterialType m_uMaterial;
 	};
 
 	typedef Material<uint8_t> Material8;

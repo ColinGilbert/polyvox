@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/TypeDef.h"
 
 #include <cassert>
+#include <limits>
 
 namespace PolyVox
 {
@@ -42,12 +43,12 @@ namespace PolyVox
 	///
 	/// \sa Material, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename Type>
+	template <typename DensityType>
 	class Density
 	{
 	public:
 		Density() : m_uDensity(0) {}
-		Density(Type uDensity) : m_uDensity(uDensity) {}
+		Density(DensityType uDensity) : m_uDensity(uDensity) {}
 
 		bool operator==(const Density& rhs) const throw()
 		{
@@ -59,18 +60,18 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
-		Type getDensity() const throw() { return m_uDensity; }
-		Type getMaterial() const throw() { return 1; }
+		DensityType getDensity() const throw() { return m_uDensity; }
+		uint32_t getMaterial() const throw() { return 1; }
 
-		void setDensity(Type uDensity) { m_uDensity = uDensity; }
-		void setMaterial(Type uMaterial) { assert(false); } //Cannot set material on voxel of type Density
+		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
+		void setMaterial(uint32_t uMaterial) { assert(false); } //Cannot set material on voxel of type Density
 
-		static Type getMaxDensity() throw() { return (0x01 << (sizeof(Type) * 8)) - 1; } 
-		static Type getMinDensity() throw() { return 0; }
-		static Type getThreshold() throw() {return  0x01 << ((sizeof(Type) * 8) - 1);}
+		static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
+		static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
+		static DensityType getThreshold() throw() { return (std::numeric_limits<DensityType>::max)() / 2; }
 
 	private:
-		Type m_uDensity;
+		DensityType m_uDensity;
 	};
 
 	typedef Density<uint8_t> Density8;
