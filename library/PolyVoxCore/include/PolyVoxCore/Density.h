@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/TypeDef.h"
 
 #include <cassert>
+#include <limits>
 
 namespace PolyVox
 {
