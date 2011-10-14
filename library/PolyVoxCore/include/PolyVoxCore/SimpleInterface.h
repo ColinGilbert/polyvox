@@ -24,28 +24,20 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SimpleInterface_H__
 #define __PolyVox_SimpleInterface_H__
 
-//Available voxel types
-#include "PolyVoxCore\Density.h"
-#include "PolyVoxCore\Material.h"
-#include "PolyVoxCore\MaterialDensityPair.h"
-
-//Available volumes
-#include "PolyVoxCore\LargeVolume.h"
-#include "PolyVoxCore\RawVolume.h"
-#include "PolyVoxCore\SimpleVolume.h"
-
-//Available extractors
 #include "PolyVoxCore\CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore\MaterialDensityPair.h"
+#include "PolyVoxCore\SimpleVolume.h"
 #include "PolyVoxCore\SurfaceExtractor.h"
 
 namespace PolyVox
 {
 	//The PolyVox simple interface only exposes one voxel type and one volume type. But if you like you can
 	//adjust these typedefs and rebuild the library in order to modify which one volume and voxel is exposed.
-	typedef SimpleVolume<MaterialDensityPair88> BasicVolume;
-	typedef SurfaceMesh<PositionMaterialNormal> BasicMesh;
+	typedef SimpleVolume<MaterialDensityPair88> Volume;
+	typedef SurfaceMesh<PositionMaterialNormal> Mesh;
 
-	void extractCubicMesh(BasicVolume& volume, const Region& region, BasicMesh& resultMesh);
+	void extractCubicMesh(Volume& volume, const Region& region, Mesh& resultMesh);
+	void extractSmoothMesh(Volume& volume, const Region& region, Mesh& resultMesh);
 
 }
 

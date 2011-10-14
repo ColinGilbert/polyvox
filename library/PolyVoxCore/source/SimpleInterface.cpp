@@ -18,16 +18,22 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
 #include "PolyVoxCore\SimpleInterface.h"
 
 namespace PolyVox
 {
-	void extractCubicMesh(BasicVolume& volume, const Region& region, BasicMesh& resultMesh)
+	void extractCubicMesh(Volume& volume, const Region& region, Mesh& resultMesh)
 	{
 		CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair88 > surfaceExtractor(&volume, region, &resultMesh);
+		surfaceExtractor.execute();
+	}
+
+	void extractSmoothMesh(Volume& volume, const Region& region, Mesh& resultMesh)
+	{
+		SurfaceExtractor<SimpleVolume, MaterialDensityPair88 > surfaceExtractor(&volume, region, &resultMesh);
 		surfaceExtractor.execute();
 	}
 }

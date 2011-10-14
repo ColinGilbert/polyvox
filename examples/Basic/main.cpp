@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(BasicVolume& volData, float fRadius)
+void createSphereInVolume(Volume& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -75,11 +75,11 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	BasicVolume volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	Volume volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface
-	BasicMesh mesh;
+	Mesh mesh;
 	//CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair44 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	//surfaceExtractor.execute();
 	extractCubicMesh(volData, volData.getEnclosingRegion(), mesh);
