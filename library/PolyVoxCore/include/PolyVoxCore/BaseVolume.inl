@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Volume<VoxelType>::Volume
+	BaseVolume<VoxelType>::BaseVolume
 	(
 		const Region& regValid
 	)
@@ -36,7 +36,7 @@ namespace PolyVox
 	/// Destroys the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Volume<VoxelType>::~Volume()
+	BaseVolume<VoxelType>::~BaseVolume()
 	{
 	}
 
@@ -46,7 +46,7 @@ namespace PolyVox
 	/// \return The value used for voxels outside of the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getBorderValue(void) const
+	VoxelType BaseVolume<VoxelType>::getBorderValue(void) const
 	{
 		assert(false);
 		return VoxelType();
@@ -56,7 +56,7 @@ namespace PolyVox
 	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Region Volume<VoxelType>::getEnclosingRegion(void) const
+	Region BaseVolume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return m_regValidRegion;
 	}
@@ -66,7 +66,7 @@ namespace PolyVox
 	/// \sa getHeight(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getWidth(void) const
+	int32_t BaseVolume<VoxelType>::getWidth(void) const
 	{
 		return m_regValidRegion.getUpperCorner().getX() - m_regValidRegion.getLowerCorner().getX() + 1;
 	}
@@ -76,7 +76,7 @@ namespace PolyVox
 	/// \sa getWidth(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getHeight(void) const
+	int32_t BaseVolume<VoxelType>::getHeight(void) const
 	{
 		return m_regValidRegion.getUpperCorner().getY() - m_regValidRegion.getLowerCorner().getY() + 1;
 	}
@@ -86,7 +86,7 @@ namespace PolyVox
 	/// \sa getWidth(), getHeight()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getDepth(void) const
+	int32_t BaseVolume<VoxelType>::getDepth(void) const
 	{
 		return m_regValidRegion.getUpperCorner().getZ() - m_regValidRegion.getLowerCorner().getZ() + 1;
 	}
@@ -97,7 +97,7 @@ namespace PolyVox
 	/// \sa getLongestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getShortestSideLength(void) const
+	int32_t BaseVolume<VoxelType>::getShortestSideLength(void) const
 	{
 		return m_uShortestSideLength;
 	}
@@ -108,7 +108,7 @@ namespace PolyVox
 	/// \sa getShortestSideLength(), getDiagonalLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	int32_t Volume<VoxelType>::getLongestSideLength(void) const
+	int32_t BaseVolume<VoxelType>::getLongestSideLength(void) const
 	{
 		return m_uLongestSideLength;
 	}	
@@ -120,7 +120,7 @@ namespace PolyVox
 	/// \sa getShortestSideLength(), getLongestSideLength()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	float Volume<VoxelType>::getDiagonalLength(void) const
+	float BaseVolume<VoxelType>::getDiagonalLength(void) const
 	{
 		return m_fDiagonalLength;
 	}
@@ -132,7 +132,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
 		assert(false);
 		return VoxelType();
@@ -143,7 +143,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType Volume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
+	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		assert(false);
 		return VoxelType();
@@ -153,7 +153,7 @@ namespace PolyVox
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void Volume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
+	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
 		assert(false);
 	}
@@ -166,7 +166,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
+	bool BaseVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
 		assert(false);
 		return false;
@@ -178,7 +178,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool Volume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
+	bool BaseVolume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
 	{
 		assert(false);
 		return false;
@@ -188,7 +188,7 @@ namespace PolyVox
 	/// Note: This function needs reviewing for accuracy...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	uint32_t Volume<VoxelType>::calculateSizeInBytes(void)
+	uint32_t BaseVolume<VoxelType>::calculateSizeInBytes(void)
 	{
 		return getWidth() * getHeight() * getDepth() * sizeof(VoxelType);
 	}	

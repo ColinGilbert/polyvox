@@ -24,11 +24,11 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_LargeVolume_H__
 #define __PolyVox_LargeVolume_H__
 
+#include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxImpl/Block.h"
 #include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Volume.h"
 
 #include <limits>
 #include <cassert>
@@ -150,7 +150,7 @@ namespace PolyVox
 	template <typename VoxelType> class ConstVolumeProxy;
 
 	template <typename VoxelType>
-	class LargeVolume : public Volume<VoxelType>
+	class LargeVolume : public BaseVolume<VoxelType>
 	{
 	public:
 		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
@@ -161,9 +161,9 @@ namespace PolyVox
 		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
 		//class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
 #if defined(_MSC_VER)
-		class Sampler : public Volume<VoxelType>::Sampler< LargeVolume<VoxelType> > //This line works on VS2010
+		class Sampler : public BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> > //This line works on VS2010
 #else
-                class Sampler : public Volume<VoxelType>::template Sampler< LargeVolume<VoxelType> > //This line works on GCC
+                class Sampler : public BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> > //This line works on GCC
 #endif
 		{
 		public:

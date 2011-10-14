@@ -75,6 +75,7 @@ namespace PolyVox
 	};
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
+	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
 }
 
 #endif
