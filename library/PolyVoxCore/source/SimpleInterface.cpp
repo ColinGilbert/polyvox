@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "PolyVoxCore\SimpleInterface.h"
+#include "PolyVoxCore/SimpleInterface.h"
 
 namespace PolyVox
 {

@@ -24,10 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SimpleInterface_H__
 #define __PolyVox_SimpleInterface_H__
 
-#include "PolyVoxCore\CubicSurfaceExtractorWithNormals.h"
-#include "PolyVoxCore\MaterialDensityPair.h"
-#include "PolyVoxCore\SimpleVolume.h"
-#include "PolyVoxCore\SurfaceExtractor.h"
+#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/SimpleVolume.h"
+#include "PolyVoxCore/SurfaceExtractor.h"
 
 namespace PolyVox
 {
