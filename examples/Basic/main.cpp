@@ -23,14 +23,17 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/SimpleInterface.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/SimpleVolume.h"
 
 #include <QApplication>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(Volume& volData, float fRadius)
+void createSphereInVolume(SimpleVolume<MaterialDensityPair44>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -51,10 +54,10 @@ void createSphereInVolume(Volume& volData, float fRadius)
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					uint8_t uDensity = MaterialDensityPair88::getMaxDensity();
+					uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
 
 					//Get the old voxel
-					MaterialDensityPair88 voxel = volData.getVoxelAt(x,y,z);
+					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
 
 					//Modify the density
 					voxel.setDensity(uDensity);
@@ -75,14 +78,13 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	Volume volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	SimpleVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface
-	Mesh mesh;
-	//CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair44 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	//surfaceExtractor.execute();
-	extractCubicMesh(volData, volData.getEnclosingRegion(), mesh);
+	SurfaceMesh<PositionMaterialNormal> mesh;
+	CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair44 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);
