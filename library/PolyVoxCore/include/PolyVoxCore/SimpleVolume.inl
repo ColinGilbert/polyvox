@@ -58,7 +58,7 @@ namespace PolyVox
 		const Region& regValid,
 		uint16_t uBlockSideLength
 	)
-	:Volume<VoxelType>(regValid)
+	:BaseVolume<VoxelType>(regValid)
 	{
 		//Create a volume of the right size.
 		resize(regValid,uBlockSideLength);

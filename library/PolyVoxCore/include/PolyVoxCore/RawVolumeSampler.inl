@@ -32,7 +32,7 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
-		:Volume<VoxelType>::template Sampler< RawVolume<VoxelType> >(volume)
+		:BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >(volume)
 		,mCurrentVoxel(0)
 		,m_bIsCurrentPositionValidInX(false)
 		,m_bIsCurrentPositionValidInY(false)

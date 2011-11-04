@@ -10,6 +10,7 @@ SET(CORE_SRC_FILES
 	source/Log.cpp
 	source/MeshDecimator.cpp
 	source/Region.cpp
+	source/SimpleInterface.cpp
 	source/VertexTypes.cpp
 	source/VoxelFilters.cpp
 )
@@ -23,6 +24,9 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/ArraySizes.h
 	include/PolyVoxCore/AStarPathfinder.h
 	include/PolyVoxCore/AStarPathfinder.inl
+	include/PolyVoxCore/BaseVolume.h
+	include/PolyVoxCore/BaseVolume.inl
+	include/PolyVoxCore/BaseVolumeSampler.inl
 	include/PolyVoxCore/ConstVolumeProxy.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
@@ -52,6 +56,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/RaycastWithCallback.h
 	include/PolyVoxCore/RaycastWithCallback.inl
 	include/PolyVoxCore/Region.h
+	include/PolyVoxCore/SimpleInterface.h
 	include/PolyVoxCore/SimpleVolume.h
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
@@ -63,9 +68,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/VertexTypes.h
-	include/PolyVoxCore/Volume.h
-	include/PolyVoxCore/Volume.inl
-	include/PolyVoxCore/VolumeSampler.inl
 	include/PolyVoxCore/VolumeResampler.h
 	include/PolyVoxCore/VolumeResampler.inl
 	include/PolyVoxCore/VoxelFilters.h

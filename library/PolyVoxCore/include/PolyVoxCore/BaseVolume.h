@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Volume_H__
-#define __PolyVox_Volume_H__
+#ifndef __PolyVox_BaseVolume_H__
+#define __PolyVox_BaseVolume_H__
 
 #include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
@@ -34,7 +34,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class Volume
+	class BaseVolume
 	{
 	public:
 		#ifndef SWIG
@@ -104,12 +104,12 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		Volume
+		BaseVolume
 		(
 			const Region& regValid
 		);
 		/// Destructor
-		~Volume();
+		~BaseVolume();
 
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
@@ -153,7 +153,7 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVoxCore/Volume.inl"
-#include "PolyVoxCore/VolumeSampler.inl"
+#include "PolyVoxCore/BaseVolume.inl"
+#include "PolyVoxCore/BaseVolumeSampler.inl"
 
-#endif //__PolyVox_Volume_H__
+#endif //__PolyVox_BaseVolume_H__

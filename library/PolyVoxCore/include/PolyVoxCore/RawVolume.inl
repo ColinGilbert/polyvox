@@ -36,7 +36,7 @@ namespace PolyVox
 	(
 		const Region& regValid
 	)
-	:Volume<VoxelType>(regValid)
+	:BaseVolume<VoxelType>(regValid)
 	{
 		setBorderValue(VoxelType());
 

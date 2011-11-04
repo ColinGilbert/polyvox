@@ -26,10 +26,10 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxImpl/Utility.h"
 
+#include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Volume.h"
 
 #include <cassert>
 #include <cstdlib> //For abort()
@@ -41,7 +41,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class SimpleVolume : public Volume<VoxelType>
+	class SimpleVolume : public BaseVolume<VoxelType>
 	{
 	public:
 		#ifndef SWIG
@@ -76,9 +76,9 @@ namespace PolyVox
 		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
 		//class Sampler : public VolumeOfVoxelType::template Sampler< SimpleVolume<VoxelType> >
 #if defined(_MSC_VER)
-		class Sampler : public Volume<VoxelType>::Sampler< SimpleVolume<VoxelType> > //This line works on VS2010
+		class Sampler : public BaseVolume<VoxelType>::Sampler< SimpleVolume<VoxelType> > //This line works on VS2010
 #else
-                class Sampler : public Volume<VoxelType>::template Sampler< SimpleVolume<VoxelType> > //This line works on GCC
+                class Sampler : public BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> > //This line works on GCC
 #endif
 		{
 		public:

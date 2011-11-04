@@ -24,25 +24,35 @@ freely, subject to the following restrictions:
 #include "TestVolumeSubclass.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/Vector.h"
-#include "PolyVoxCore/Volume.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
 
 template <typename VoxelType>
-class VolumeSubclass : public Volume<VoxelType>
+class VolumeSubclass : public BaseVolume<VoxelType>
 {
 public:
-	typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
-	class Sampler : public VolumeOfVoxelType::template Sampler< VolumeSubclass<VoxelType> >
+	//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
+	//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
+	//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
+	//option. For now it seems best to 'fix' it with the preprocessor insstead, but maybe the workaround can be reinstated
+	//in the future
+	//typedef BaseVolume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
+	//class Sampler : public VolumeOfVoxelType::template Sampler< VolumeSubclass<VoxelType> >
+	#if defined(_MSC_VER)
+		class Sampler : public BaseVolume<VoxelType>::Sampler< VolumeSubclass<VoxelType> > //This line works on VS2010
+	#else
+		class Sampler : public BaseVolume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> > //This line works on GCC
+	#endif
 	{
 	public:
 		Sampler(VolumeSubclass<VoxelType>* volume)
-			:Volume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >(volume)
+			:BaseVolume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >(volume)
 		{
 			this->mVolume = volume;
 		}
@@ -51,7 +61,7 @@ public:
 
 	/// Constructor for creating a fixed size volume.
 	VolumeSubclass(const Region& regValid)
-		:Volume<VoxelType>(regValid)
+		:BaseVolume<VoxelType>(regValid)
 	{
 		mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
 	}

@@ -61,20 +61,23 @@ namespace PolyVox
 		////////////////////////////////////////////////////////////////////////////////
 		Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 		{
-			uint8_t voxel1nx = volIter.peekVoxel1nx0py0pz().getDensity();
-			uint8_t voxel1px = volIter.peekVoxel1px0py0pz().getDensity();
+			//FIXME - Should actually use DensityType here, both in principle and because the maths may be
+			//faster (and to reduce casts). So it would be good to add a way to get DensityType from a voxel.
+			//But watch out for when the DensityType is unsigned and the difference could be negative.
+			float voxel1nx = static_cast<float>(volIter.peekVoxel1nx0py0pz().getDensity());
+			float voxel1px = static_cast<float>(volIter.peekVoxel1px0py0pz().getDensity());
 
-			uint8_t voxel1ny = volIter.peekVoxel0px1ny0pz().getDensity();
-			uint8_t voxel1py = volIter.peekVoxel0px1py0pz().getDensity();
+			float voxel1ny = static_cast<float>(volIter.peekVoxel0px1ny0pz().getDensity());
+			float voxel1py = static_cast<float>(volIter.peekVoxel0px1py0pz().getDensity());
 
-			uint8_t voxel1nz = volIter.peekVoxel0px0py1nz().getDensity();
-			uint8_t voxel1pz = volIter.peekVoxel0px0py1pz().getDensity();
+			float voxel1nz = static_cast<float>(volIter.peekVoxel0px0py1nz().getDensity());
+			float voxel1pz = static_cast<float>(volIter.peekVoxel0px0py1pz().getDensity());
 
 			return Vector3DFloat
 			(
-				static_cast<float>(voxel1nx) - static_cast<float>(voxel1px),
-				static_cast<float>(voxel1ny) - static_cast<float>(voxel1py),
-				static_cast<float>(voxel1nz) - static_cast<float>(voxel1pz)
+				voxel1nx - voxel1px,
+				voxel1ny - voxel1py,
+				voxel1nz - voxel1pz
 			);
 		}
 
@@ -83,37 +86,40 @@ namespace PolyVox
 			static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 				{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
 
-				const uint8_t pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz().getDensity();
-				const uint8_t pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz().getDensity();
-				const uint8_t pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz().getDensity();
-				const uint8_t pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz().getDensity();
-				const uint8_t pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz().getDensity();
-				const uint8_t pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz().getDensity();
-				const uint8_t pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz().getDensity();
-				const uint8_t pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz().getDensity();
-				const uint8_t pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz().getDensity();
+				//FIXME - Should actually use DensityType here, both in principle and because the maths may be
+				//faster (and to reduce casts). So it would be good to add a way to get DensityType from a voxel.
+				//But watch out for when the DensityType is unsigned and the difference could be negative.
+				const float pVoxel1nx1ny1nz = static_cast<float>(volIter.peekVoxel1nx1ny1nz().getDensity());
+				const float pVoxel1nx1ny0pz = static_cast<float>(volIter.peekVoxel1nx1ny0pz().getDensity());
+				const float pVoxel1nx1ny1pz = static_cast<float>(volIter.peekVoxel1nx1ny1pz().getDensity());
+				const float pVoxel1nx0py1nz = static_cast<float>(volIter.peekVoxel1nx0py1nz().getDensity());
+				const float pVoxel1nx0py0pz = static_cast<float>(volIter.peekVoxel1nx0py0pz().getDensity());
+				const float pVoxel1nx0py1pz = static_cast<float>(volIter.peekVoxel1nx0py1pz().getDensity());
+				const float pVoxel1nx1py1nz = static_cast<float>(volIter.peekVoxel1nx1py1nz().getDensity());
+				const float pVoxel1nx1py0pz = static_cast<float>(volIter.peekVoxel1nx1py0pz().getDensity());
+				const float pVoxel1nx1py1pz = static_cast<float>(volIter.peekVoxel1nx1py1pz().getDensity());
 
-				const uint8_t pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz().getDensity();
-				const uint8_t pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz().getDensity();
-				const uint8_t pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz().getDensity();
-				const uint8_t pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz().getDensity();
-				//const uint8_t pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz().getDensity();
-				const uint8_t pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz().getDensity();
-				const uint8_t pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz().getDensity();
-				const uint8_t pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz().getDensity();
-				const uint8_t pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz().getDensity();
+				const float pVoxel0px1ny1nz = static_cast<float>(volIter.peekVoxel0px1ny1nz().getDensity());
+				const float pVoxel0px1ny0pz = static_cast<float>(volIter.peekVoxel0px1ny0pz().getDensity());
+				const float pVoxel0px1ny1pz = static_cast<float>(volIter.peekVoxel0px1ny1pz().getDensity());
+				const float pVoxel0px0py1nz = static_cast<float>(volIter.peekVoxel0px0py1nz().getDensity());
+				//const float pVoxel0px0py0pz = static_cast<float>(volIter.peekVoxel0px0py0pz().getDensity());
+				const float pVoxel0px0py1pz = static_cast<float>(volIter.peekVoxel0px0py1pz().getDensity());
+				const float pVoxel0px1py1nz = static_cast<float>(volIter.peekVoxel0px1py1nz().getDensity());
+				const float pVoxel0px1py0pz = static_cast<float>(volIter.peekVoxel0px1py0pz().getDensity());
+				const float pVoxel0px1py1pz = static_cast<float>(volIter.peekVoxel0px1py1pz().getDensity());
 
-				const uint8_t pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz().getDensity();
-				const uint8_t pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz().getDensity();
-				const uint8_t pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz().getDensity();
-				const uint8_t pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz().getDensity();
-				const uint8_t pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz().getDensity();
-				const uint8_t pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz().getDensity();
-				const uint8_t pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz().getDensity();
-				const uint8_t pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz().getDensity();
-				const uint8_t pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz().getDensity();
+				const float pVoxel1px1ny1nz = static_cast<float>(volIter.peekVoxel1px1ny1nz().getDensity());
+				const float pVoxel1px1ny0pz = static_cast<float>(volIter.peekVoxel1px1ny0pz().getDensity());
+				const float pVoxel1px1ny1pz = static_cast<float>(volIter.peekVoxel1px1ny1pz().getDensity());
+				const float pVoxel1px0py1nz = static_cast<float>(volIter.peekVoxel1px0py1nz().getDensity());
+				const float pVoxel1px0py0pz = static_cast<float>(volIter.peekVoxel1px0py0pz().getDensity());
+				const float pVoxel1px0py1pz = static_cast<float>(volIter.peekVoxel1px0py1pz().getDensity());
+				const float pVoxel1px1py1nz = static_cast<float>(volIter.peekVoxel1px1py1nz().getDensity());
+				const float pVoxel1px1py0pz = static_cast<float>(volIter.peekVoxel1px1py0pz().getDensity());
+				const float pVoxel1px1py1pz = static_cast<float>(volIter.peekVoxel1px1py1pz().getDensity());
 
-				const int xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				const float xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
 					weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
 					pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
 					weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
@@ -127,7 +133,7 @@ namespace PolyVox
 					weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
 					pVoxel1px1py1pz);
 
-				const int yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
+				const float yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
 					weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
 					pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
 					weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
@@ -141,7 +147,7 @@ namespace PolyVox
 					weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
 					pVoxel1px1py1pz);
 
-				const int zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
+				const float zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
 					weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
 					pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
 					weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
@@ -157,7 +163,7 @@ namespace PolyVox
 
 				//Note: The above actually give gradients going from low density to high density.
 				//For our normals we want the the other way around, so we switch the components as we return them.
-				return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
+				return Vector3DFloat(-xGrad,-yGrad,-zGrad);
 		}
 		////////////////////////////////////////////////////////////////////////////////
 		// End of compiler bug workaroumd.

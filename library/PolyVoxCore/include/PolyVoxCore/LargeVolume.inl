@@ -39,7 +39,7 @@ namespace PolyVox
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 		uint16_t uBlockSideLength
 	)
-	:Volume<VoxelType>(Region::MaxRegion)
+	:BaseVolume<VoxelType>(Region::MaxRegion)
 	{
 		m_funcDataRequiredHandler = dataRequiredHandler;
 		m_funcDataOverflowHandler = dataOverflowHandler;
@@ -86,7 +86,7 @@ namespace PolyVox
 		bool bPagingEnabled,
 		uint16_t uBlockSideLength
 	)
-	:Volume<VoxelType>(regValid)
+	:BaseVolume<VoxelType>(regValid)
 	{
 		m_funcDataRequiredHandler = dataRequiredHandler;
 		m_funcDataOverflowHandler = dataOverflowHandler;
