@@ -73,7 +73,7 @@ namespace PolyVox
 		for(uint32_t ct = 0; ct < m_pOutputMesh->m_vecVertices.size(); ct++)
 		{
 			Vector3DFloat sumOfNormals(0.0f,0.0f,0.0f);
-			for(vector<uint32_t>::const_iterator iter = trianglesUsingVertex[ct].cbegin(); iter != trianglesUsingVertex[ct].cend(); iter++)
+			for(vector<uint32_t>::iterator iter = trianglesUsingVertex[ct].begin(); iter != trianglesUsingVertex[ct].end(); iter++)
 			{
 				sumOfNormals += m_vecTriangles[*iter].normal;
 			}
