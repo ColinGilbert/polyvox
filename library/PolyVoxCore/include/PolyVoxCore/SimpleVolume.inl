@@ -104,7 +104,7 @@ namespace PolyVox
 			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-			SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+			typename SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
 		}
@@ -155,7 +155,7 @@ namespace PolyVox
 		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
 		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
 
-		SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		typename SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
 
