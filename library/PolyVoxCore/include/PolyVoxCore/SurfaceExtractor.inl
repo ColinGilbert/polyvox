@@ -33,13 +33,13 @@ namespace PolyVox
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
-
-		m_meshCurrent->clear();
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
 	void SurfaceExtractor<VolumeType, VoxelType>::execute()
 	{		
+		m_meshCurrent->clear();
+
 		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
 		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
 		uint32_t arraySizes[2]= {uArrayWidth, uArrayHeight}; // Array dimensions

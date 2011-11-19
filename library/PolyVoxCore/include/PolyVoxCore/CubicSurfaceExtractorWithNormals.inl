@@ -29,13 +29,14 @@ namespace PolyVox
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
-	{
-		m_meshCurrent->clear();
+	{		
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
 	void CubicSurfaceExtractorWithNormals<VolumeType, VoxelType>::execute()
 	{		
+		m_meshCurrent->clear();
+
 		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z < m_regSizeInVoxels.getUpperCorner().getZ(); z++)
 		{
 			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y < m_regSizeInVoxels.getUpperCorner().getY(); y++)
