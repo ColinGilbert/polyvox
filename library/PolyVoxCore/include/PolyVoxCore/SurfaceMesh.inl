@@ -103,11 +103,6 @@ namespace PolyVox
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
 		m_vecTriangleIndices.push_back(index2);
-
-		if((m_vecVertices[index0].material == m_vecVertices[index1].material) && (m_vecVertices[index0].material == m_vecVertices[index2].material))
-		{
-			m_mapUsedMaterials.insert(m_vecVertices[index0].material);			
-		}
 	}
 
 	template <typename VertexType>
@@ -131,7 +126,6 @@ namespace PolyVox
 		m_vecVertices.clear();
 		m_vecTriangleIndices.clear();
 		m_vecLodRecords.clear();
-		m_mapUsedMaterials.clear();
 	}
 
 	template <typename VertexType>

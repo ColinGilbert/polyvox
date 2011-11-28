@@ -44,16 +44,16 @@ namespace PolyVox
 				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x < m_regSizeInVoxels.getUpperCorner().getX(); x++)
 				{
 					// these are always positive anyway
-					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
-					uint32_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
-					uint32_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
+					float regX = static_cast<float>(x - m_regSizeInVoxels.getLowerCorner().getX());
+					float regY = static_cast<float>(y - m_regSizeInVoxels.getLowerCorner().getY());
+					float regZ = static_cast<float>(z - m_regSizeInVoxels.getLowerCorner().getZ());
 
 					int currentVoxel = m_volData->getVoxelAt(x,y,z).getDensity() >= VoxelType::getThreshold();
 
 					int plusXVoxel = m_volData->getVoxelAt(x+1,y,z).getDensity()  >= VoxelType::getThreshold();
 					if(currentVoxel > plusXVoxel)
 					{
-						uint32_t material = m_volData->getVoxelAt(x,y,z).getMaterial();
+						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
@@ -65,7 +65,7 @@ namespace PolyVox
 					}
 					if(currentVoxel < plusXVoxel)
 					{
-						int material = m_volData->getVoxelAt(x+1,y,z).getMaterial();
+						float material = static_cast<float>(m_volData->getVoxelAt(x+1,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
@@ -79,7 +79,7 @@ namespace PolyVox
 					int plusYVoxel = m_volData->getVoxelAt(x,y+1,z).getDensity()  >= VoxelType::getThreshold();
 					if(currentVoxel > plusYVoxel)
 					{
-						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
+						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
@@ -91,7 +91,7 @@ namespace PolyVox
 					}
 					if(currentVoxel < plusYVoxel)
 					{
-						int material = m_volData->getVoxelAt(x,y+1,z).getMaterial();
+						float material = static_cast<float>(m_volData->getVoxelAt(x,y+1,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
@@ -105,7 +105,7 @@ namespace PolyVox
 					int plusZVoxel = m_volData->getVoxelAt(x,y,z+1).getDensity()  >= VoxelType::getThreshold();
 					if(currentVoxel > plusZVoxel)
 					{
-						int material = m_volData->getVoxelAt(x,y,z).getMaterial();
+						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
@@ -117,7 +117,7 @@ namespace PolyVox
 					}
 					if(currentVoxel < plusZVoxel)
 					{
-						int material = m_volData->getVoxelAt(x,y,z+1).getMaterial();
+						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z+1).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));

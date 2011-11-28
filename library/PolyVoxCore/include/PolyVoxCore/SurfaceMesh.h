@@ -93,11 +93,6 @@ namespace PolyVox
 		std::vector<VertexType> m_vecVertices;
 
 		std::vector<LodRecord> m_vecLodRecords;
-
-		//The set of materials which are in this mesh. Only those materials
-		//which cover a whole triangle are counted. Materials which only
-		//exist on a material boundary do not count.
-		std::set<uint8_t> m_mapUsedMaterials;
 	};	
 
 	template <typename VertexType>

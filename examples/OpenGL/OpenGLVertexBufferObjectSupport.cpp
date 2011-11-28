@@ -83,7 +83,7 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<PositionMaterialNorma
 		*ptr = vertex.getNormal().getZ();
 		ptr++;
 
-		uint8_t material = vertex.getMaterial() + 0.5;
+		uint8_t material = static_cast<uint8_t>(vertex.getMaterial() + 0.5);
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
 
