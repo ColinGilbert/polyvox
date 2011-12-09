@@ -248,7 +248,7 @@ namespace PolyVox
 
 					VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
 
-					voxel.setDensity(static_cast<VoxelType::DensityType>(average));
+					voxel.setDensity(static_cast<typename VoxelType::DensityType>(average));
 
 					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, voxel);
 
