@@ -33,6 +33,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/// The BaseVolume class provides common functionality and an interface for other volume classes to implement. You should not try to create an instance of this
+	/// class directly. Instead you should use RawVolume, SimpleVolume, or LargeVolume.
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// More details to come...
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	class BaseVolume
 	{
@@ -103,14 +108,6 @@ namespace PolyVox
 		#endif
 
 	public:
-		/// Constructor for creating a fixed size volume.
-		BaseVolume
-		(
-			const Region& regValid
-		);
-		/// Destructor
-		~BaseVolume();
-
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
 		/// Gets a Region representing the extents of the Volume.
@@ -143,6 +140,14 @@ namespace PolyVox
 		uint32_t calculateSizeInBytes(void);
 
 	protected:	
+		/// Constructor for creating a fixed size volume.
+		BaseVolume
+		(
+			const Region& regValid
+		);
+		/// Destructor
+		~BaseVolume();
+
 		//The size of the volume
 		Region m_regValidRegion;
 
