@@ -64,15 +64,11 @@ namespace PolyVox
 			:m_pVolume(pVolume)
 			,m_regValid(regValid)
 		{
-			//Should never get here as it's a private constructor
-			assert(false);
 		}
 
 		//Private assignment operator, so client code can't abuse this class.
 		ConstVolumeProxy& operator=(const ConstVolumeProxy& rhs) throw()
 		{
-			//Should never get here as it's a private assignment operator
-			assert(false);
 		}
 
 		const LargeVolume<VoxelType>& m_pVolume;
