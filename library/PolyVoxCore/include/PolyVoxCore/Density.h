@@ -39,14 +39,21 @@ namespace PolyVox
 	/// funtion is used to determine what material should be assigned to the resulting mesh.
 	///
 	/// This class meets these requirements, although it only actually stores a density value.
-	/// For the getMaterial() function it just returens a constant value of '1'.
+	/// For the getMaterial() function it just returns a constant value of '1'.
 	///
 	/// \sa Material, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename DensityType>
+	template <typename Type>
 	class Density
 	{
 	public:
+		//We expose DensityType and MaterialType in this way so that, when code is
+		//templatised on voxel type, it can determine the underlying storage type
+		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
+		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
+		typedef Type DensityType;
+		typedef uint8_t MaterialType;
+
 		Density() : m_uDensity(0) {}
 		Density(DensityType uDensity) : m_uDensity(uDensity) {}
 
@@ -61,10 +68,10 @@ namespace PolyVox
 		}
 
 		DensityType getDensity() const throw() { return m_uDensity; }
-		uint32_t getMaterial() const throw() { return 1; }
+		MaterialType getMaterial() const throw() { return 1; }
 
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
-		void setMaterial(uint32_t uMaterial) { assert(false); } //Cannot set material on voxel of type Density
+		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
 
 		static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
 		static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }

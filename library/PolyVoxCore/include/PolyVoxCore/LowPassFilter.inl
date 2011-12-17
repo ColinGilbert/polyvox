@@ -118,14 +118,18 @@ namespace PolyVox
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
 	void LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::executeSAT()
 	{
-		const int border = m_uKernelSize - 1;
+		const uint32_t border = (m_uKernelSize - 1) / 2;
 
-		Vector3DInt32 satLowerCorner = m_regSrc.getLowerCorner() - Vector3DInt32(border+1, border+1, border+1);
+		Vector3DInt32 satLowerCorner = m_regSrc.getLowerCorner() - Vector3DInt32(border, border, border);
 		Vector3DInt32 satUpperCorner = m_regSrc.getUpperCorner() + Vector3DInt32(border, border, border);
 
-		RawVolume<uint32_t> satVolume(Region(satLowerCorner, satUpperCorner));
+		//Use floats for the SAT volume to ensure it works with negative
+		//densities and with both integral and floating point input volumes.
+		RawVolume<float> satVolume(Region(satLowerCorner, satUpperCorner));
 
 		//Clear to zeros (necessary?)
+		//FIXME - use Volume::fill() method. Implemented in base class as below
+		//but with optimised implementations in subclasses?
 		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
 			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
@@ -137,9 +141,9 @@ namespace PolyVox
 			}
 		}
 
-		RawVolume<uint32_t>::Sampler satVolumeIter(&satVolume);
+		RawVolume<float>::Sampler satVolumeIter(&satVolume);
 
-		IteratorController<RawVolume<uint32_t>::Sampler> satIterCont;
+		IteratorController<RawVolume<float>::Sampler> satIterCont;
 		satIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
 		satIterCont.m_Iter = &satVolumeIter;
 		satIterCont.reset();
@@ -153,9 +157,9 @@ namespace PolyVox
 
 		do
 		{
-			uint32_t previousSum = satVolumeIter.peekVoxel1nx0py0pz();
+			float previousSum = satVolumeIter.peekVoxel1nx0py0pz();
 
-			uint32_t currentVal = srcVolumeIter.getVoxel().getDensity();
+			float currentVal = static_cast<float>(srcVolumeIter.getVoxel().getDensity());
 
 			satVolumeIter.setVoxel(previousSum + currentVal);
 
@@ -184,8 +188,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					uint32_t previousSum = satVolume.getVoxelAt(x,y-1,z);
-					uint32_t currentSum = satVolume.getVoxelAt(x,y,z);
+					float previousSum = satVolume.getVoxelAt(x,y-1,z);
+					float currentSum = satVolume.getVoxelAt(x,y,z);
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
 				}
@@ -198,8 +202,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					uint32_t previousSum = satVolume.getVoxelAt(x,y,z-1);
-					uint32_t currentSum = satVolume.getVoxelAt(x,y,z);
+					float previousSum = satVolume.getVoxelAt(x,y,z-1);
+					float currentSum = satVolume.getVoxelAt(x,y,z);
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
 				}
@@ -227,24 +231,24 @@ namespace PolyVox
 					int32_t satUpperY = iSrcY + border;
 					int32_t satUpperZ = iSrcZ + border;
 
-					int32_t a = satVolume.getVoxelAt(satLowerX,satLowerY,satLowerZ);
-					int32_t b = satVolume.getVoxelAt(satUpperX,satLowerY,satLowerZ);
-					int32_t c = satVolume.getVoxelAt(satLowerX,satUpperY,satLowerZ);
-					int32_t d = satVolume.getVoxelAt(satUpperX,satUpperY,satLowerZ);
-					int32_t e = satVolume.getVoxelAt(satLowerX,satLowerY,satUpperZ);
-					int32_t f = satVolume.getVoxelAt(satUpperX,satLowerY,satUpperZ);
-					int32_t g = satVolume.getVoxelAt(satLowerX,satUpperY,satUpperZ);
-					int32_t h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
+					float a = satVolume.getVoxelAt(satLowerX,satLowerY,satLowerZ);
+					float b = satVolume.getVoxelAt(satUpperX,satLowerY,satLowerZ);
+					float c = satVolume.getVoxelAt(satLowerX,satUpperY,satLowerZ);
+					float d = satVolume.getVoxelAt(satUpperX,satUpperY,satLowerZ);
+					float e = satVolume.getVoxelAt(satLowerX,satLowerY,satUpperZ);
+					float f = satVolume.getVoxelAt(satUpperX,satLowerY,satUpperZ);
+					float g = satVolume.getVoxelAt(satLowerX,satUpperY,satUpperZ);
+					float h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
 
-					int32_t sum = h+c-d-g-f-a+b+e;
+					float sum = h+c-d-g-f-a+b+e;
 
-					int32_t sideLength = border * 2 + 1;
+					uint32_t sideLength = border * 2 + 1;
 
-					int32_t average = sum / (sideLength*sideLength*sideLength);
+					float average = sum / (static_cast<float>(sideLength*sideLength*sideLength));
 
 					VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
 
-					voxel.setDensity(average);
+					voxel.setDensity(static_cast<typename VoxelType::DensityType>(average));
 
 					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, voxel);
 

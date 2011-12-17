@@ -46,6 +46,13 @@ namespace PolyVox
 	class MaterialDensityPair
 	{
 	public:
+		//We expose DensityType and MaterialType in this way so that, when code is
+		//templatised on voxel type, it can determine the underlying storage type
+		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
+		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
+		typedef Type DensityType;
+		typedef Type MaterialType;
+
 		MaterialDensityPair() : m_uMaterial(0), m_uDensity(0) {}
 		MaterialDensityPair(Type uMaterial, Type uDensity) : m_uMaterial(uMaterial), m_uDensity(uDensity) {}
 
@@ -59,19 +66,19 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
-		Type getDensity() const throw() { return m_uDensity; }
-		Type getMaterial() const throw() { return m_uMaterial; }
+		DensityType getDensity() const throw() { return m_uDensity; }
+		MaterialType getMaterial() const throw() { return m_uMaterial; }
 
-		void setDensity(Type uDensity) { m_uDensity = uDensity; }
-		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
+		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
+		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		static Type getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		static Type getMinDensity() throw() { return 0; }
-		static Type getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
+		static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
+		static DensityType getMinDensity() throw() { return 0; }
+		static DensityType getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
 
 	private:
-		Type m_uMaterial : NoOfMaterialBits;
-		Type m_uDensity : NoOfDensityBits;
+		MaterialType m_uMaterial : NoOfMaterialBits;
+		DensityType m_uDensity : NoOfDensityBits;
 	};
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
