@@ -3,11 +3,11 @@
 <QHelpCollectionProject version="1.0">
 	<assistant>
 		<title>PolyVox Documentation</title>
-		<homePage>qthelp://org.thermite3d.polyvox/api/index.html</homePage>
-		<startPage>qthelp://org.thermite3d.polyvox/api/index.html</startPage>
+		<homePage>qthelp://com.volumesoffun.polyvox/api/index.html</homePage>
+		<startPage>qthelp://com.volumesoffun.polyvox/api/index.html</startPage>
 		<!-- Disable the documentation manager so that there's no option to add more docs to this shell instance -->
 		<enableDocumentationManager>false</enableDocumentationManager>
-		<cacheDirectory>thermite3d/polyvox</cacheDirectory>
+		<cacheDirectory>volumesoffun/polyvox</cacheDirectory>
 	</assistant>
 	<docFiles>
 		<!-- This section says that polyvox.qch will be created from index.qhp when qcollectiongenerator is run -->
