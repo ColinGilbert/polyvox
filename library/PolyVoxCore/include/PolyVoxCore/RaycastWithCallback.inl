@@ -108,15 +108,15 @@ namespace PolyVox
 		int dk = ((z1 < z2) ? 1 : ((z1 > z2) ? -1 : 0));
 
 		float minx = floorf(x1), maxx = minx + 1.0f;
-		float tx = ((x1 > x2) ? (x1 - minx) : (maxx - x1)) / abs(x2 - x1);
+		float tx = ((x1 > x2) ? (x1 - minx) : (maxx - x1)) / std::abs(x2 - x1);
 		float miny = floorf(y1), maxy = miny + 1.0f;
-		float ty = ((y1 > y2) ? (y1 - miny) : (maxy - y1)) / abs(y2 - y1);
+		float ty = ((y1 > y2) ? (y1 - miny) : (maxy - y1)) / std::abs(y2 - y1);
 		float minz = floorf(z1), maxz = minz + 1.0f;
-		float tz = ((z1 > z2) ? (z1 - minz) : (maxz - z1)) / abs(z2 - z1);
+		float tz = ((z1 > z2) ? (z1 - minz) : (maxz - z1)) / std::abs(z2 - z1);
 
-		float deltatx = 1.0f / abs(x2 - x1);
-		float deltaty = 1.0f / abs(y2 - y1);
-		float deltatz = 1.0f / abs(z2 - z1);
+		float deltatx = 1.0f / std::abs(x2 - x1);
+		float deltaty = 1.0f / std::abs(y2 - y1);
+		float deltatz = 1.0f / std::abs(z2 - z1);
 
 		m_sampVolume.setPosition(i,j,k);
 

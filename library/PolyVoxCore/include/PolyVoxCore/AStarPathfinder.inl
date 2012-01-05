@@ -249,7 +249,7 @@ namespace PolyVox
 	float AStarPathfinder<VolumeType, VoxelType>::SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b)
 	{
 		//This is the only heuristic I'm sure of - just use the manhatten distance for the 6-connected case.
-		uint32_t faceSteps = abs(a.getX()-b.getX()) + abs(a.getY()-b.getY()) + abs(a.getZ()-b.getZ());
+		uint32_t faceSteps = std::abs(a.getX()-b.getX()) + std::abs(a.getY()-b.getY()) + std::abs(a.getZ()-b.getZ());
 
 		return faceSteps * 1.0f;
 	}
@@ -270,9 +270,9 @@ namespace PolyVox
 		//Can't say I'm certain about this heuristic - if anyone has
 		//a better idea of what it should be then please let me know.
 		uint32_t array[3];
-		array[0] = abs(a.getX() - b.getX());
-		array[1] = abs(a.getY() - b.getY());
-		array[2] = abs(a.getZ() - b.getZ());
+		array[0] = std::abs(a.getX() - b.getX());
+		array[1] = std::abs(a.getY() - b.getY());
+		array[2] = std::abs(a.getZ() - b.getZ());
 		
 		//Maybe this is better implemented directly
 		//using three compares and two swaps... but not
