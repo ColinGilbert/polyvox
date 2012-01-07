@@ -23,8 +23,14 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	// We try to avoid duplicate vertices by checking whether a vertex has already been added at a given position.
+	// However, it is possible that vertices have the same position but differnt materials. In this case, the
+	// vertices are not true duplicates and both must be added to the mesh. As far as I can tell, it is possible to have
+	// at most six vertices with the same position but different materials. This worst-case scenario happens when we
+	// have a 2x2x2 group of voxels (all with different materials) and then we delete two voxels from opposing corners.
+	// The vertex position at the center of this group is then going to be used by six quads all with different materials.
 	template< template<typename> class VolumeType, typename VoxelType>
-	const uint32_t CubicSurfaceExtractor<VolumeType, VoxelType>::MaxQuadsSharingVertex = 4;
+	const uint32_t CubicSurfaceExtractor<VolumeType, VoxelType>::MaxVerticesPerPosition = 6;
 
 	template< template<typename> class VolumeType, typename VoxelType>
 	CubicSurfaceExtractor<VolumeType, VoxelType>::CubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads)
@@ -43,7 +49,7 @@ namespace PolyVox
 		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2;
 		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2;
 
-		uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxQuadsSharingVertex};
+		uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxVerticesPerPosition};
 		m_previousSliceVertices.resize(arraySize);
 		m_currentSliceVertices.resize(arraySize);
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
@@ -241,7 +247,7 @@ namespace PolyVox
 		uint32_t uX = static_cast<uint32_t>(fX + 0.75f);
 		uint32_t uY = static_cast<uint32_t>(fY + 0.75f);
 
-		for(uint32_t ct = 0; ct < MaxQuadsSharingVertex; ct++)
+		for(uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
 		{
 			IndexAndMaterial& rEntry = existingVertices[uX][uY][ct];
 
@@ -261,10 +267,10 @@ namespace PolyVox
 			}
 		}
 
-		//If we exit the loop here then apparently all the slots were full but none of
-		//them matched. I don't think this can happen so let's put an assert to make sure.
+		// If we exit the loop here then apparently all the slots were full but none of them matched. I don't think
+		// this can happen so let's put an assert to make sure. If you hit this assert then please report it to us!
 		assert(false);
-		return 0;
+		return -1; //Should never happen.
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
@@ -301,7 +307,7 @@ namespace PolyVox
 	bool CubicSurfaceExtractor<VolumeType, VoxelType>::mergeQuads(Quad& q1, Quad& q2)
 	{
 		//All four vertices of a given quad have the same material,
-		//so just check that the first pair or vertices match.
+		//so just check that the first pair of vertices match.
 		if(std::abs(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() - m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial()) < 0.001)
 		{
 			//Now check whether quad 2 is adjacent to quad one by comparing vertices.

@@ -87,10 +87,9 @@ namespace PolyVox
 		//is the user needs per-vertex attributes, or to perform per vertex lighting.
 		bool m_bMergeQuads;
 
-		//Although we try to avoid creating multiple vertices at the same location, sometimes this is unavoidable
-		//if they have different materials. For example, four different materials next to each other would mean
-		//four quads (though more triangles) sharing the vertex. As far as I can tell, four is the worst case scenario.
-		static const uint32_t MaxQuadsSharingVertex;		
+		//This constant defines the maximum number of quads which can share a
+		//vertex in a cubic style mesh. See the initialisation for more details.
+		static const uint32_t MaxVerticesPerPosition;		
 	};
 }
 
