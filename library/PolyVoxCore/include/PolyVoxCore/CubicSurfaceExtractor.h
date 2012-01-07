@@ -89,7 +89,7 @@ namespace PolyVox
 
 		//This constant defines the maximum number of quads which can share a
 		//vertex in a cubic style mesh. See the initialisation for more details.
-		static const uint32_t MaxVerticesPerPosition;		
+		static const uint32_t MaxVerticesPerPosition;
 	};
 }
 
