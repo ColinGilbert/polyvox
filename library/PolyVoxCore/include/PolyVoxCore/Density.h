@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Density_H__
 #define __PolyVox_Density_H__
 
+#include "PolyVoxCore/Voxel.h"
+
 #include "PolyVoxImpl/TypeDef.h"
 
 #include <cassert>
@@ -44,7 +46,7 @@ namespace PolyVox
 	/// \sa Material, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename Type>
-	class Density
+	class Density : public Voxel<Type, uint8_t>
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is
@@ -52,7 +54,7 @@ namespace PolyVox
 		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
 		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
 		typedef Type DensityType;
-		typedef uint8_t MaterialType;
+		typedef uint8_t MaterialType; //Shouldn't define this one...
 
 		Density() : m_uDensity(0) {}
 		Density(DensityType uDensity) : m_uDensity(uDensity) {}

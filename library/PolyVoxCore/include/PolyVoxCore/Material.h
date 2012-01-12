@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Material_H__
 #define __PolyVox_Material_H__
 
+#include "PolyVoxCore/Voxel.h"
+
 #include "PolyVoxImpl/TypeDef.h"
 
 #include <cassert>
@@ -44,14 +46,14 @@ namespace PolyVox
 	/// \sa Density, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename Type>
-	class Material
+	class Material : public Voxel<uint8_t, Type>
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is
 		//templatised on voxel type, it can determine the underlying storage type
 		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
 		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
-		typedef uint8_t DensityType;
+		typedef uint8_t DensityType; //Shouldn't define this one...
 		typedef Type MaterialType;
 
 		Material() : m_uMaterial(0) {}

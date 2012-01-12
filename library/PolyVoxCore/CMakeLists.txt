@@ -70,6 +70,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/VertexTypes.h
 	include/PolyVoxCore/VolumeResampler.h
 	include/PolyVoxCore/VolumeResampler.inl
+	include/PolyVoxCore/Voxel.h
 	include/PolyVoxCore/VoxelFilters.h
 )
 
