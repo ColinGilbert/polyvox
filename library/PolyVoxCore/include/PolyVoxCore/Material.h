@@ -74,11 +74,13 @@ namespace PolyVox
 			//We don't actually have a density, so make one up based on the material.
 			if(m_uMaterial == 0)
 			{
-				return getMinDensity();
+				//return getMinDensity();
+				return 0;
 			}
 			else
 			{
-				return getMaxDensity();
+				//return getMaxDensity();
+				return 2;
 			}
 		}
 
@@ -87,8 +89,8 @@ namespace PolyVox
 		void setDensity(DensityType /*uDensity*/) { assert(false); } //Cannot set density on voxel of type Material
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		static DensityType getMaxDensity() throw() { return 2; }
-		static DensityType getMinDensity() throw() { return 0; }
+		//static DensityType getMaxDensity() throw() { return 2; }
+		//static DensityType getMinDensity() throw() { return 0; }
 		static DensityType getThreshold() throw() { return 1; }
 
 	private:

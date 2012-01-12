@@ -74,8 +74,8 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		static DensityType getMinDensity() throw() { return 0; }
+		//static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
+		//static DensityType getMinDensity() throw() { return 0; }
 		static DensityType getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
 
 	private:
@@ -85,6 +85,14 @@ namespace PolyVox
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
+	
+	template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	class VoxelTypeTraits< MaterialDensityPair<Type, NoOfDensityBits, NoOfMaterialBits> >
+	{
+	public:
+		const static Type MinDensity = 0;
+		const static Type MaxDensity = (0x01 << NoOfDensityBits) - 1;
+	};
 }
 
 #endif

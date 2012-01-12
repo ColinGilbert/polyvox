@@ -52,6 +52,16 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { assert(false); }
 		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } 
 	};
+	
+	// Syntax for templatised traits classes: http://stackoverflow.com/q/8606302/849083
+	template <typename Type>
+	class VoxelTypeTraits
+	{
+	public:
+		const static typename Type::DensityType MinDensity = 0;
+		const static typename Type::DensityType MaxDensity = 0;
+	};
+
 }
 
 #endif //__PolyVox_Voxel_H__

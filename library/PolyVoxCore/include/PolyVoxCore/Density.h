@@ -75,8 +75,8 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
 
-		static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
-		static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
+		//static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
+		//static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
 		static DensityType getThreshold() throw() { return (std::numeric_limits<DensityType>::max)() / 2; }
 
 	private:
@@ -84,6 +84,24 @@ namespace PolyVox
 	};
 
 	typedef Density<uint8_t> Density8;
+	typedef Density<float> DensityFloat;
+	
+	template<typename Type>
+	class VoxelTypeTraits< Density<Type> >
+	{
+	public:
+		const static Type MinDensity = 0;
+		const static Type MaxDensity = 255;
+	};
+	
+	template<>
+	class VoxelTypeTraits< DensityFloat >
+	{
+	public:
+		const static float MinDensity = -1000000.0f;
+		const static float MaxDensity =  1000000.0f;
+	};
+
 }
 
 #endif //__PolyVox_Density_H__

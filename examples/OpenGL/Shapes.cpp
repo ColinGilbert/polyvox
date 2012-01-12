@@ -29,6 +29,9 @@ using namespace PolyVox;
 
 void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
+	int maxDen = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
+	int minDen = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
+	
 	//This vector hold the position of the center of the volume
 	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / 2;
 
@@ -48,7 +51,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
+					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? maxDen : minDen));
 				}
 			}
 		}
@@ -57,6 +60,8 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 
 void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
+	int maxDen = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
+	int minDen = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
 	{
@@ -64,7 +69,7 @@ void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt
 		{
 			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
 			{
-				volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
+				volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? maxDen : minDen));
 			}
 		}
 	}
