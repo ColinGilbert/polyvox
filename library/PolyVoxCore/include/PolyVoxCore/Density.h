@@ -83,23 +83,70 @@ namespace PolyVox
 		DensityType m_uDensity;
 	};
 
-	typedef Density<uint8_t> Density8;
+	// These are the predefined density types. The 8-bit types are sufficient for many purposes (including
+	// most games) but 16-bit and float types do have uses particularly in medical/scientific visualisation.
+	typedef Density<int8_t> DensityI8;
+	typedef Density<uint8_t> DensityU8;
+	typedef Density<int16_t> DensityI16;
+	typedef Density<uint16_t> DensityU16;
 	typedef Density<float> DensityFloat;
+	typedef Density<double> DensityDouble;
+
+	// These types are here for backwards compatibility but they are a little ambiguous as the name doesn't indicate
+	// whether the values are signed. We would recommend using one of the 8 or 16 bit predefined types above instead.
+	typedef Density<uint8_t> Density8;
+	typedef Density<uint16_t> Density16;
 	
-	template<typename Type>
-	class VoxelTypeTraits< Density<Type> >
+	// We have to define all the min and max values explicitly here rather than using std::numeric_limits because we need
+	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.
+	template<>
+	class VoxelTypeTraits< Density<int8_t> >
 	{
 	public:
-		const static Type MinDensity = 0;
-		const static Type MaxDensity = 255;
+		const static int8_t MinDensity = -127;
+		const static int8_t MaxDensity = 127;
+	};
+
+	template<>
+	class VoxelTypeTraits< Density<uint8_t> >
+	{
+	public:
+		const static uint8_t MinDensity = 0; 
+		const static uint8_t MaxDensity = 255;
+	};
+
+	template<>
+	class VoxelTypeTraits< Density<int16_t> >
+	{
+	public:
+		const static int16_t MinDensity = -32767;
+		const static int16_t MaxDensity = 32767;
+	};
+
+	template<>
+	class VoxelTypeTraits< Density<uint16_t> >
+	{
+	public:
+		const static uint16_t MinDensity = 0;
+		const static uint16_t MaxDensity = 65535;
 	};
 	
+	//Constants for float defined in .cpp file as they are not integers.
 	template<>
-	class VoxelTypeTraits< DensityFloat >
+	class VoxelTypeTraits< Density<float> >
 	{
 	public:
-		const static float MinDensity = -1000000.0f;
-		const static float MaxDensity =  1000000.0f;
+		const static float MinDensity;
+		const static float MaxDensity;
+	};
+
+	//Constants for double defined in .cpp file as they are not integers.
+	template<>
+	class VoxelTypeTraits< Density<double> >
+	{
+	public:
+		const static double MinDensity;
+		const static double MaxDensity;
 	};
 
 }

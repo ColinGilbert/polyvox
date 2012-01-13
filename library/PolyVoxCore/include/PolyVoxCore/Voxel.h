@@ -39,10 +39,10 @@ namespace PolyVox
 	class Voxel
 	{
 	public:
-		//We expose DensityType and MaterialType in this way so that, when code is
-		//templatised on voxel type, it can determine the underlying storage type
-		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
-		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
+		// We expose DensityType and MaterialType in this way so that, when code is
+		// templatised on voxel type, it can determine the underlying storage type
+		// using code such as 'VoxelType::DensityType value = voxel.getDensity()'
+		// or 'VoxelType::MaterialType value = voxel.getMaterial()'.
 		typedef DenType DensityType;
 		typedef MatType MaterialType;
 		
@@ -53,6 +53,16 @@ namespace PolyVox
 		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } 
 	};
 	
+	// Various properties of the voxel types can be expressed via types traits, similar to the way std::numeric_limits is implemented.
+	// This has some advantages compared to storing the properties directly in the voxel class. For example, by using traits it is possible
+	// to also apply these properties to primative types which might be desirable (the Volume classes do accept primative types as template
+	// parameters). Also, properties such as MinDensity and MaxDensity would be difficult to represent though class members because they
+	// depend ont the type (float has a very different range from int8_t for example).
+	//
+	// The properties are currently exposed as constants because we need access to them at compile time. Ideally we would like to make them
+	// functions flagged with 'constexpr' as we could then make use of the max() and min() functions in std::numric_limits, but this is not
+	// widely supported by compilers yet. We may change this in the future.
+	//
 	// Syntax for templatised traits classes: http://stackoverflow.com/q/8606302/849083
 	template <typename Type>
 	class VoxelTypeTraits

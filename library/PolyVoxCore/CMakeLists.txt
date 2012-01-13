@@ -6,6 +6,7 @@ PROJECT(PolyVoxCore)
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
+	source/Density.cpp
 	source/GradientEstimators.cpp
 	source/Log.cpp
 	source/MeshDecimator.cpp
