@@ -68,8 +68,8 @@ namespace PolyVox
 	class VoxelTypeTraits
 	{
 	public:
-		const static typename Type::DensityType MinDensity = 0;
-		const static typename Type::DensityType MaxDensity = 0;
+		const static typename Type::DensityType MinDensity;
+		const static typename Type::DensityType MaxDensity;
 	};
 
 }

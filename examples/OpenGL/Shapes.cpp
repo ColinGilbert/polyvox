@@ -29,9 +29,6 @@ using namespace PolyVox;
 
 void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
-	int maxDen = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
-	int minDen = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
-	
 	//This vector hold the position of the center of the volume
 	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / 2;
 
@@ -51,7 +48,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? maxDen : VoxelTypeTraits<MaterialDensityPair44>::MinDensity));
+					//volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? VoxelTypeTraits<MaterialDensityPair44>::MaxDensity : VoxelTypeTraits<MaterialDensityPair44>::MinDensity));
 				}
 			}
 		}

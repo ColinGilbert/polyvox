@@ -99,36 +99,36 @@ namespace PolyVox
 	
 	// We have to define all the min and max values explicitly here rather than using std::numeric_limits because we need
 	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.
-	template<>
+	/*template<>
 	class VoxelTypeTraits< Density<int8_t> >
 	{
 	public:
-		const static int8_t MinDensity = -127;
-		const static int8_t MaxDensity = 127;
-	};
+		const static int8_t MinDensity;
+		const static int8_t MaxDensity;
+	};*/
 
-	template<>
+	/*template<>
 	class VoxelTypeTraits< Density<uint8_t> >
 	{
 	public:
-		const static uint8_t MinDensity = 0; 
-		const static uint8_t MaxDensity = 255;
-	};
+		const static uint8_t MinDensity; 
+		const static uint8_t MaxDensity;
+	};*/
 
-	template<>
+	/*template<>
 	class VoxelTypeTraits< Density<int16_t> >
 	{
 	public:
-		const static int16_t MinDensity = -32767;
-		const static int16_t MaxDensity = 32767;
+		const static int16_t MinDensity;
+		const static int16_t MaxDensity;
 	};
 
 	template<>
 	class VoxelTypeTraits< Density<uint16_t> >
 	{
 	public:
-		const static uint16_t MinDensity = 0;
-		const static uint16_t MaxDensity = 65535;
+		const static uint16_t MinDensity;
+		const static uint16_t MaxDensity;
 	};
 	
 	//Constants for float defined in .cpp file as they are not integers.
@@ -147,7 +147,7 @@ namespace PolyVox
 	public:
 		const static double MinDensity;
 		const static double MaxDensity;
-	};
+	};*/
 
 }
 

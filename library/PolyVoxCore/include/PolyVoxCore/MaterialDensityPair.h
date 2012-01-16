@@ -86,13 +86,13 @@ namespace PolyVox
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
 	
-	template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	/*template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
 	class VoxelTypeTraits< MaterialDensityPair<Type, NoOfDensityBits, NoOfMaterialBits> >
 	{
 	public:
 		const static Type MinDensity = 0;
 		const static Type MaxDensity = (0x01 << NoOfDensityBits) - 1;
-	};
+	};*/
 }
 
 #endif
