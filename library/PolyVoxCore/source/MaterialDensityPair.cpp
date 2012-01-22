@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2010 Matt Williams
+Copyright (c) 2005-2009 David Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -18,43 +18,20 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution.
+    distribution. 	
 *******************************************************************************/
 
-#include "TestVoxels.h"
-
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 
-#include <QtTest>
-
-#include <cfloat> 
-
-using namespace PolyVox;
-
-void TestVoxels::testTraits()
+namespace PolyVox
 {
-	int iValue; float fValue; //Used for temporary storage as the QCOMPARE maro struggles with the complex types.
+	//template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	//const Type VoxelTypeTraits< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >::MinDensity = 0;
+	//template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	//const Type VoxelTypeTraits< Type >::MaxDensity = (0x01 << NoOfDensityBits) - 1;
 	
-	
-	QCOMPARE(VoxelTypeTraits<Density8>::MaxDensity, static_cast<uint8_t>(0));
-	QCOMPARE(VoxelTypeTraits<Density8>::MaxDensity, static_cast<uint8_t>(255));
-	
-	fValue = VoxelTypeTraits<DensityFloat>::MinDensity;
-	QCOMPARE(fValue, FLT_MIN);
-	fValue = VoxelTypeTraits<DensityFloat>::MaxDensity;
-	QCOMPARE(fValue, FLT_MAX);
-	
-	/*iValue = VoxelTypeTraits<Material8>::MinDensity;
-	QCOMPARE(iValue, 0);
-	iValue = VoxelTypeTraits<Material8>::MaxDensity;
-	QCOMPARE(iValue, 0);*/
-	
-	iValue = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
-	QCOMPARE(iValue, 0);
-	iValue = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
-	QCOMPARE(iValue, 15);
-}
-
-QTEST_MAIN(TestVoxels)
+	template<>
+	const uint8_t VoxelTypeTraits< MaterialDensityPair44 >::MinDensity = 0;
+	template<>
+	const uint8_t VoxelTypeTraits< MaterialDensityPair44 >::MaxDensity = 15;
+} 
