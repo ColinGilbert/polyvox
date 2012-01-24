@@ -97,99 +97,55 @@ namespace PolyVox
 	typedef DensityU8 Density8;
 	typedef DensityU16 Density16;
 	
-	// We have to define all the min and max values explicitly here rather than using std::numeric_limits because we need
-	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.
-	
+	// We have to define the min and max values explicitly here rather than using std::numeric_limits because we need
+	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.	
 	template<>
 	class VoxelTypeTraits< DensityI8 >
 	{
 	public:
-		const static typename DensityI8::DensityType MinDensity;
-		const static typename DensityI8::DensityType MaxDensity;
+		const static DensityI8::DensityType MinDensity;
+		const static DensityI8::DensityType MaxDensity;
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityU8 >
 	{
 	public:
-		const static typename DensityU8::DensityType MinDensity;
-		const static typename DensityU8::DensityType MaxDensity;
+		const static DensityU8::DensityType MinDensity;
+		const static DensityU8::DensityType MaxDensity;
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityI16 >
 	{
 	public:
-		const static typename DensityI16::DensityType MinDensity;
-		const static typename DensityI16::DensityType MaxDensity;
+		const static DensityI16::DensityType MinDensity;
+		const static DensityI16::DensityType MaxDensity;
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityU16 >
 	{
 	public:
-		const static typename DensityU16::DensityType MinDensity;
-		const static typename DensityU16::DensityType MaxDensity;
+		const static DensityU16::DensityType MinDensity;
+		const static DensityU16::DensityType MaxDensity;
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityFloat >
 	{
 	public:
-		const static typename DensityFloat::DensityType MinDensity;
-		const static typename DensityFloat::DensityType MaxDensity;
+		const static DensityFloat::DensityType MinDensity;
+		const static DensityFloat::DensityType MaxDensity;
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityDouble >
 	{
 	public:
-		const static typename DensityDouble::DensityType MinDensity;
-		const static typename DensityDouble::DensityType MaxDensity;
+		const static DensityDouble::DensityType MinDensity;
+		const static DensityDouble::DensityType MaxDensity;
 	};
-
-	/*template<>
-	class VoxelTypeTraits< Density<uint8_t> >
-	{
-	public:
-		const static uint8_t MinDensity; 
-		const static uint8_t MaxDensity;
-	};
-
-	template<>
-	class VoxelTypeTraits< Density<int16_t> >
-	{
-	public:
-		const static int16_t MinDensity;
-		const static int16_t MaxDensity;
-	};
-
-	template<>
-	class VoxelTypeTraits< Density<uint16_t> >
-	{
-	public:
-		const static uint16_t MinDensity;
-		const static uint16_t MaxDensity;
-	};
-	
-	//Constants for float defined in .cpp file as they are not integers.
-	template<>
-	class VoxelTypeTraits< Density<float> >
-	{
-	public:
-		const static float MinDensity;
-		const static float MaxDensity;
-	};
-
-	//Constants for double defined in .cpp file as they are not integers.
-	template<>
-	class VoxelTypeTraits< Density<double> >
-	{
-	public:
-		const static double MinDensity;
-		const static double MaxDensity;
-	};*/
-
 }
 
 #endif //__PolyVox_Density_H__

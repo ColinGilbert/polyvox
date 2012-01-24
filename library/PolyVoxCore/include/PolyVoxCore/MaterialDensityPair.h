@@ -90,16 +90,16 @@ namespace PolyVox
 	class VoxelTypeTraits< MaterialDensityPair44 >
 	{
 	public:
-		const static typename MaterialDensityPair44::DensityType MinDensity;
-		const static typename MaterialDensityPair44::DensityType MaxDensity;
+		const static MaterialDensityPair44::DensityType MinDensity;
+		const static MaterialDensityPair44::DensityType MaxDensity;
 	};
 	
 	template<>
 	class VoxelTypeTraits< MaterialDensityPair88 >
 	{
 	public:
-		const static typename MaterialDensityPair88::DensityType MinDensity;
-		const static typename MaterialDensityPair88::DensityType MaxDensity;
+		const static MaterialDensityPair88::DensityType MinDensity;
+		const static MaterialDensityPair88::DensityType MaxDensity;
 	};
 }
 

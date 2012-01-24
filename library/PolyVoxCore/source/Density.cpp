@@ -26,63 +26,22 @@ freely, subject to the following restrictions:
 #include <cfloat> //Can't use <limits> as we need compile time constants.
 
 namespace PolyVox
-{
-	//const typename Density8::DensityType VoxelTypeTraits< Density8 >::MinDensity = 0;
-	//const typename Density8::DensityType VoxelTypeTraits< Density8 >::MaxDensity = 255;
+{	
+	const DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MinDensity = -127;
+	const DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MaxDensity = 127;
 	
-	const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MinDensity = -127;
-	const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MaxDensity = 127;
+	const DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MinDensity = 0;
+	const DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MaxDensity = 255;
 	
-	const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MinDensity = 0;
-	const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MaxDensity = 255;
+	const DensityI16::DensityType VoxelTypeTraits< DensityI16 >::MinDensity = -32767;
+	const DensityI16::DensityType VoxelTypeTraits< DensityI16 >::MaxDensity = 32767;
 	
-	//const typename Density16::DensityType VoxelTypeTraits< Density16 >::MinDensity = 0;
-	//const typename Density16::DensityType VoxelTypeTraits< Density16 >::MaxDensity = 65535;
+	const DensityU16::DensityType VoxelTypeTraits< DensityU16 >::MinDensity = 0;
+	const DensityU16::DensityType VoxelTypeTraits< DensityU16 >::MaxDensity = 65535;
 	
-	const typename DensityI16::DensityType VoxelTypeTraits< DensityI16 >::MinDensity = -32767;
-	const typename DensityI16::DensityType VoxelTypeTraits< DensityI16 >::MaxDensity = 32767;
+	const DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MinDensity = FLT_MIN;
+	const DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MaxDensity = FLT_MAX;
 	
-	const typename DensityU16::DensityType VoxelTypeTraits< DensityU16 >::MinDensity = 0;
-	const typename DensityU16::DensityType VoxelTypeTraits< DensityU16 >::MaxDensity = 65535;
-	
-	const typename DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MinDensity = FLT_MIN;
-	const typename DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MaxDensity = FLT_MAX;
-	
-	const typename DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MinDensity = DBL_MIN;
-	const typename DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MaxDensity = DBL_MAX;
-	
-	//template<>
-	//const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MinDensity = -127;
-	//template<>
-	//const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MaxDensity = 127;
-	
-	//template<>
-	//const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MinDensity = 0;
-	//template<>
-	//const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MaxDensity = 255;
-	
-	/*template<>
-	const uint8_t VoxelTypeTraits< Density8 >::MinDensity = 0;
-	template<>
-	const uint8_t VoxelTypeTraits< Density8 >::MaxDensity = 255;
-	
-	template<>
-	const int16_t VoxelTypeTraits< DensityI16 >::MinDensity = -32767;
-	template<>
-	const int16_t VoxelTypeTraits< DensityI16 >::MaxDensity = 32767;
-	
-	template<>
-	const uint16_t VoxelTypeTraits< Density16 >::MinDensity = 0;
-	template<>
-	const uint16_t VoxelTypeTraits< Density16 >::MaxDensity = 65535;
-	
-	template<>
-	const float VoxelTypeTraits< DensityFloat >::MinDensity = FLT_MIN;
-	template<>
-	const float VoxelTypeTraits< DensityFloat >::MaxDensity = FLT_MAX;
-
-	template<>
-	const double VoxelTypeTraits< DensityDouble >::MinDensity = DBL_MIN;
-	template<>
-	const double VoxelTypeTraits< DensityDouble >::MaxDensity = DBL_MAX;*/
+	const DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MinDensity = DBL_MIN;
+	const DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MaxDensity = DBL_MAX;
 }

@@ -25,9 +25,9 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	const typename MaterialDensityPair44::DensityType VoxelTypeTraits< MaterialDensityPair44 >::MinDensity = 0;
-	const typename MaterialDensityPair44::DensityType VoxelTypeTraits< MaterialDensityPair44 >::MaxDensity = 15;
+	const MaterialDensityPair44::DensityType VoxelTypeTraits< MaterialDensityPair44 >::MinDensity = 0;
+	const MaterialDensityPair44::DensityType VoxelTypeTraits< MaterialDensityPair44 >::MaxDensity = 15;
 	
-	const typename MaterialDensityPair88::DensityType VoxelTypeTraits< MaterialDensityPair88 >::MinDensity = 0;
-	const typename MaterialDensityPair88::DensityType VoxelTypeTraits< MaterialDensityPair88 >::MaxDensity = 255;
+	const MaterialDensityPair88::DensityType VoxelTypeTraits< MaterialDensityPair88 >::MinDensity = 0;
+	const MaterialDensityPair88::DensityType VoxelTypeTraits< MaterialDensityPair88 >::MaxDensity = 255;
 } 

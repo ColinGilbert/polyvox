@@ -72,6 +72,7 @@ namespace PolyVox
 		void shift(const Vector3DInt32& amount);
 		void shiftLowerCorner(const Vector3DInt32& amount);
 		void shiftUpperCorner(const Vector3DInt32& amount);
+		//FIXME - Add dilate and erode functions?
 		/// Deprecated and misleading
 		Vector3DInt32 dimensions(void);
 		/// Deprecated and misleading
