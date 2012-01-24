@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename Type>
-	const Type VoxelTypeTraits<Type>::MinDensity = 0;
+	const bool VoxelTypeTraits<Type>::HasDensity = false;
 	template<typename Type>
-	const Type VoxelTypeTraits<Type>::MaxDensity = 0;
+	const bool VoxelTypeTraits<Type>::HasMaterial = false;
 }
