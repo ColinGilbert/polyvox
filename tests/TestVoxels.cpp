@@ -34,27 +34,45 @@ freely, subject to the following restrictions:
 using namespace PolyVox;
 
 void TestVoxels::testTraits()
-{
-	int iValue; float fValue; //Used for temporary storage as the QCOMPARE maro struggles with the complex types.
+{	
+	QCOMPARE(VoxelTypeTraits<Density8>::MinDensity, Density8::DensityType(0));
+	QCOMPARE(VoxelTypeTraits<Density8>::MaxDensity, Density8::DensityType(255));
 	
+	QCOMPARE(VoxelTypeTraits<DensityI8>::MinDensity, DensityI8::DensityType(-127));
+	QCOMPARE(VoxelTypeTraits<DensityI8>::MaxDensity, DensityI8::DensityType(127));
 	
-	QCOMPARE(VoxelTypeTraits<Density8>::MaxDensity, static_cast<uint8_t>(0));
-	QCOMPARE(VoxelTypeTraits<Density8>::MaxDensity, static_cast<uint8_t>(255));
+	QCOMPARE(VoxelTypeTraits<DensityU8>::MinDensity, DensityU8::DensityType(0));
+	QCOMPARE(VoxelTypeTraits<DensityU8>::MaxDensity, DensityU8::DensityType(255));
 	
-	fValue = VoxelTypeTraits<DensityFloat>::MinDensity;
+	QCOMPARE(VoxelTypeTraits<Density16>::MinDensity, Density16::DensityType(0));
+	QCOMPARE(VoxelTypeTraits<Density16>::MaxDensity, Density16::DensityType(65535));
+	
+	QCOMPARE(VoxelTypeTraits<DensityI16>::MinDensity, DensityI16::DensityType(-32767));
+	QCOMPARE(VoxelTypeTraits<DensityI16>::MaxDensity, DensityI16::DensityType(32767));
+	
+	QCOMPARE(VoxelTypeTraits<DensityU16>::MinDensity, DensityU16::DensityType(0));
+	QCOMPARE(VoxelTypeTraits<DensityU16>::MaxDensity, DensityU16::DensityType(65535));
+	
+	QCOMPARE(VoxelTypeTraits<DensityFloat>::MinDensity, FLT_MIN);
+	QCOMPARE(VoxelTypeTraits<DensityFloat>::MaxDensity, FLT_MAX);
+	
+	QCOMPARE(VoxelTypeTraits<DensityDouble>::MinDensity, DBL_MIN);
+	QCOMPARE(VoxelTypeTraits<DensityDouble>::MaxDensity, DBL_MAX);
+	
+	/*fValue = VoxelTypeTraits<DensityFloat>::MinDensity;
 	QCOMPARE(fValue, FLT_MIN);
 	fValue = VoxelTypeTraits<DensityFloat>::MaxDensity;
-	QCOMPARE(fValue, FLT_MAX);
+	QCOMPARE(fValue, FLT_MAX);*/
 	
 	/*iValue = VoxelTypeTraits<Material8>::MinDensity;
 	QCOMPARE(iValue, 0);
 	iValue = VoxelTypeTraits<Material8>::MaxDensity;
 	QCOMPARE(iValue, 0);*/
 	
-	iValue = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
+	/*iValue = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
 	QCOMPARE(iValue, 0);
 	iValue = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
-	QCOMPARE(iValue, 15);
+	QCOMPARE(iValue, 15);*/
 }
 
 QTEST_MAIN(TestVoxels)

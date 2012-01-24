@@ -94,18 +94,59 @@ namespace PolyVox
 
 	// These types are here for backwards compatibility but they are a little ambiguous as the name doesn't indicate
 	// whether the values are signed. We would recommend using one of the 8 or 16 bit predefined types above instead.
-	typedef Density<uint8_t> Density8;
-	typedef Density<uint16_t> Density16;
+	typedef DensityU8 Density8;
+	typedef DensityU16 Density16;
 	
 	// We have to define all the min and max values explicitly here rather than using std::numeric_limits because we need
 	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.
-	/*template<>
-	class VoxelTypeTraits< Density<int8_t> >
+	
+	template<>
+	class VoxelTypeTraits< DensityI8 >
 	{
 	public:
-		const static int8_t MinDensity;
-		const static int8_t MaxDensity;
-	};*/
+		const static typename DensityI8::DensityType MinDensity;
+		const static typename DensityI8::DensityType MaxDensity;
+	};
+	
+	template<>
+	class VoxelTypeTraits< DensityU8 >
+	{
+	public:
+		const static typename DensityU8::DensityType MinDensity;
+		const static typename DensityU8::DensityType MaxDensity;
+	};
+	
+	template<>
+	class VoxelTypeTraits< DensityI16 >
+	{
+	public:
+		const static typename DensityI16::DensityType MinDensity;
+		const static typename DensityI16::DensityType MaxDensity;
+	};
+	
+	template<>
+	class VoxelTypeTraits< DensityU16 >
+	{
+	public:
+		const static typename DensityU16::DensityType MinDensity;
+		const static typename DensityU16::DensityType MaxDensity;
+	};
+	
+	template<>
+	class VoxelTypeTraits< DensityFloat >
+	{
+	public:
+		const static typename DensityFloat::DensityType MinDensity;
+		const static typename DensityFloat::DensityType MaxDensity;
+	};
+	
+	template<>
+	class VoxelTypeTraits< DensityDouble >
+	{
+	public:
+		const static typename DensityDouble::DensityType MinDensity;
+		const static typename DensityDouble::DensityType MaxDensity;
+	};
 
 	/*template<>
 	class VoxelTypeTraits< Density<uint8_t> >
@@ -113,9 +154,9 @@ namespace PolyVox
 	public:
 		const static uint8_t MinDensity; 
 		const static uint8_t MaxDensity;
-	};*/
+	};
 
-	/*template<>
+	template<>
 	class VoxelTypeTraits< Density<int16_t> >
 	{
 	public:

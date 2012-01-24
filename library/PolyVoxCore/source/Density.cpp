@@ -27,33 +27,62 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	//const typename Density8::DensityType VoxelTypeTraits< Density8 >::MinDensity = 0;
+	//const typename Density8::DensityType VoxelTypeTraits< Density8 >::MaxDensity = 255;
+	
+	const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MinDensity = -127;
+	const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MaxDensity = 127;
+	
+	const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MinDensity = 0;
+	const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MaxDensity = 255;
+	
+	//const typename Density16::DensityType VoxelTypeTraits< Density16 >::MinDensity = 0;
+	//const typename Density16::DensityType VoxelTypeTraits< Density16 >::MaxDensity = 65535;
+	
+	const typename DensityI16::DensityType VoxelTypeTraits< DensityI16 >::MinDensity = -32767;
+	const typename DensityI16::DensityType VoxelTypeTraits< DensityI16 >::MaxDensity = 32767;
+	
+	const typename DensityU16::DensityType VoxelTypeTraits< DensityU16 >::MinDensity = 0;
+	const typename DensityU16::DensityType VoxelTypeTraits< DensityU16 >::MaxDensity = 65535;
+	
+	const typename DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MinDensity = FLT_MIN;
+	const typename DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MaxDensity = FLT_MAX;
+	
+	const typename DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MinDensity = DBL_MIN;
+	const typename DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MaxDensity = DBL_MAX;
+	
+	//template<>
+	//const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MinDensity = -127;
+	//template<>
+	//const typename DensityI8::DensityType VoxelTypeTraits< DensityI8 >::MaxDensity = 127;
+	
+	//template<>
+	//const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MinDensity = 0;
+	//template<>
+	//const typename DensityU8::DensityType VoxelTypeTraits< DensityU8 >::MaxDensity = 255;
+	
+	/*template<>
+	const uint8_t VoxelTypeTraits< Density8 >::MinDensity = 0;
 	template<>
-	const int8_t VoxelTypeTraits< Density<int8_t> >::MinDensity = -127;
-	template<>
-	const int8_t VoxelTypeTraits< Density<int8_t> >::MaxDensity = 127;
+	const uint8_t VoxelTypeTraits< Density8 >::MaxDensity = 255;
 	
 	template<>
-	const uint8_t VoxelTypeTraits< Density<uint8_t> >::MinDensity = 0;
+	const int16_t VoxelTypeTraits< DensityI16 >::MinDensity = -32767;
 	template<>
-	const uint8_t VoxelTypeTraits< Density<uint8_t> >::MaxDensity = 255;
+	const int16_t VoxelTypeTraits< DensityI16 >::MaxDensity = 32767;
 	
 	template<>
-	const int16_t VoxelTypeTraits< Density<int16_t> >::MinDensity = -32767;
+	const uint16_t VoxelTypeTraits< Density16 >::MinDensity = 0;
 	template<>
-	const int16_t VoxelTypeTraits< Density<int16_t> >::MaxDensity = 32767;
+	const uint16_t VoxelTypeTraits< Density16 >::MaxDensity = 65535;
 	
 	template<>
-	const uint16_t VoxelTypeTraits< Density<uint16_t> >::MinDensity = 0;
+	const float VoxelTypeTraits< DensityFloat >::MinDensity = FLT_MIN;
 	template<>
-	const uint16_t VoxelTypeTraits< Density<uint16_t> >::MaxDensity = 65535;
-	
-	template<>
-	const float VoxelTypeTraits< Density<float> >::MinDensity = FLT_MIN;
-	template<>
-	const float VoxelTypeTraits< Density<float> >::MaxDensity = FLT_MAX;
+	const float VoxelTypeTraits< DensityFloat >::MaxDensity = FLT_MAX;
 
 	template<>
-	const double VoxelTypeTraits< Density<double> >::MinDensity = DBL_MIN;
+	const double VoxelTypeTraits< DensityDouble >::MinDensity = DBL_MIN;
 	template<>
-	const double VoxelTypeTraits< Density<double> >::MaxDensity = DBL_MAX;
+	const double VoxelTypeTraits< DensityDouble >::MaxDensity = DBL_MAX;*/
 }
