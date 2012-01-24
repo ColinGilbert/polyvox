@@ -24,12 +24,8 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other RawVolume constructor).
+	/// This constructor creates a volume with a fixed size which is specified as a parameter.
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
-	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
-	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
-	/// \param bPagingEnabled Controls whether or not paging is enabled for this RawVolume.
-	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	RawVolume<VoxelType>::RawVolume
