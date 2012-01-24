@@ -33,8 +33,11 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-void TestVoxels::testTraits()
+void TestVoxels::testVoxelTypeLimits()
 {	
+	// It's worth testing these as they are not all explictily defined (e.g. Density8 is just a 
+	// typedef of DensityI8), and in the future we might define then with bitwise magic or something.
+
 	QCOMPARE(VoxelTypeTraits<Density8>::MinDensity, Density8::DensityType(0));
 	QCOMPARE(VoxelTypeTraits<Density8>::MaxDensity, Density8::DensityType(255));
 	

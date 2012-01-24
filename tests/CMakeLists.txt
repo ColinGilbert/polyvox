@@ -75,4 +75,4 @@ ADD_TEST(VolumeSubclassExtractSurfaceTest ${LATEST_TEST} testExtractSurface)
 
 # ClassName tests
 CREATE_TEST(TestVoxels.h TestVoxels.cpp TestVoxels)
-ADD_TEST(VoxelsTraitsTest ${LATEST_TEST} testTraits)
+ADD_TEST(VoxelsTraitsTest ${LATEST_TEST} testVoxelTypeLimits)

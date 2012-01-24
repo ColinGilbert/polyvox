@@ -31,7 +31,7 @@ class TestVoxels: public QObject
 	Q_OBJECT
 	
 	private slots:
-		void testTraits();
+		void testVoxelTypeLimits();
 };
 
 #endif
