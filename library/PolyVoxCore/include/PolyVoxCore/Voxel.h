@@ -60,7 +60,7 @@ namespace PolyVox
 	// depend ont the type (float has a very different range from int8_t for example).
 	//
 	// The properties are currently exposed as constants because we need access to them at compile time. Ideally we would like to make them
-	// functions flagged with 'constexpr' as we could then make use of the max() and min() functions in std::numric_limits, but this is not
+	// functions flagged with 'constexpr' as we could then make use of the max() and min() functions in std::numeric_limits, but this is not
 	// widely supported by compilers yet. We may change this in the future.
 	//
 	// Syntax for templatised traits classes: http://stackoverflow.com/q/8606302/849083
