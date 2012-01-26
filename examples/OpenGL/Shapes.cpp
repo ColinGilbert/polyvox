@@ -48,7 +48,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					//volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? VoxelTypeTraits<MaterialDensityPair44>::MaxDensity : VoxelTypeTraits<MaterialDensityPair44>::MinDensity));
+					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? VoxelTypeTraits<MaterialDensityPair44>::MaxDensity : VoxelTypeTraits<MaterialDensityPair44>::MinDensity));
 				}
 			}
 		}
