@@ -21,17 +21,18 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/Material.h"
+
+#include <cfloat> //Can't use <limits> as we need compile time constants.
 
 namespace PolyVox
-{
-	const bool VoxelTypeTraits< MaterialDensityPair44 >::HasDensity = true;
-	const bool VoxelTypeTraits< MaterialDensityPair44 >::HasMaterial = true;
-	const MaterialDensityPair44::DensityType VoxelTypeTraits< MaterialDensityPair44 >::MinDensity = 0;
-	const MaterialDensityPair44::DensityType VoxelTypeTraits< MaterialDensityPair44 >::MaxDensity = 15;
-	
-	const bool VoxelTypeTraits< MaterialDensityPair88 >::HasDensity = true;
-	const bool VoxelTypeTraits< MaterialDensityPair88 >::HasMaterial = true;
-	const MaterialDensityPair88::DensityType VoxelTypeTraits< MaterialDensityPair88 >::MinDensity = 0;
-	const MaterialDensityPair88::DensityType VoxelTypeTraits< MaterialDensityPair88 >::MaxDensity = 255;
-} 
+{	
+	const bool VoxelTypeTraits< MaterialU8 >::HasDensity = false;
+	const bool VoxelTypeTraits< MaterialU8 >::HasMaterial = true;
+
+	const bool VoxelTypeTraits< MaterialU16 >::HasDensity = false;
+	const bool VoxelTypeTraits< MaterialU16 >::HasMaterial = true;
+
+	const bool VoxelTypeTraits< MaterialU32 >::HasDensity = false;
+	const bool VoxelTypeTraits< MaterialU32 >::HasMaterial = true;
+}

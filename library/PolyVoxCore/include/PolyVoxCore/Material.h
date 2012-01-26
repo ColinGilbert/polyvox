@@ -97,9 +97,39 @@ namespace PolyVox
 		MaterialType m_uMaterial;
 	};
 
-	typedef Material<uint8_t> Material8;
-	typedef Material<uint16_t> Material16;
-	typedef Material<uint32_t> Material32;
+	typedef Material<uint8_t> MaterialU8;
+	typedef Material<uint16_t> MaterialU16;
+	typedef Material<uint32_t> MaterialU32;
+
+	// These types are here for backwards compatibility but they are a little ambiguous as the name doesn't indicate
+	// whether the values are signed. We would recommend using one of the 8, 16, or 32 bit predefined types above instead.
+	typedef MaterialU8 Material8;
+	typedef MaterialU16 Material16;
+	typedef MaterialU32 Material32;
+
+	template<>
+	class VoxelTypeTraits< MaterialU8 >
+	{
+	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
+	};
+
+	template<>
+	class VoxelTypeTraits< MaterialU16 >
+	{
+	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
+	};
+
+	template<>
+	class VoxelTypeTraits< MaterialU32 >
+	{
+	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
+	};
 }
 
 #endif //__PolyVox_Material_H__

@@ -70,10 +70,10 @@ namespace PolyVox
 		}
 
 		DensityType getDensity() const throw() { return m_uDensity; }
-		MaterialType getMaterial() const throw() { return 1; }
+		//MaterialType getMaterial() const throw() { return 1; }
 
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
-		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
+		//void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
 
 		//static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
 		//static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
@@ -103,6 +103,8 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityI8 >
 	{
 	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
 		const static DensityI8::DensityType MinDensity;
 		const static DensityI8::DensityType MaxDensity;
 	};
@@ -111,6 +113,8 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityU8 >
 	{
 	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
 		const static DensityU8::DensityType MinDensity;
 		const static DensityU8::DensityType MaxDensity;
 	};
@@ -119,6 +123,8 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityI16 >
 	{
 	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
 		const static DensityI16::DensityType MinDensity;
 		const static DensityI16::DensityType MaxDensity;
 	};
@@ -127,6 +133,8 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityU16 >
 	{
 	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
 		const static DensityU16::DensityType MinDensity;
 		const static DensityU16::DensityType MaxDensity;
 	};
@@ -135,6 +143,8 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityFloat >
 	{
 	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
 		const static DensityFloat::DensityType MinDensity;
 		const static DensityFloat::DensityType MaxDensity;
 	};
@@ -143,6 +153,8 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityDouble >
 	{
 	public:
+		const static bool HasDensity;
+		const static bool HasMaterial;
 		const static DensityDouble::DensityType MinDensity;
 		const static DensityDouble::DensityType MaxDensity;
 	};

@@ -9,6 +9,7 @@ SET(CORE_SRC_FILES
 	source/Density.cpp
 	source/GradientEstimators.cpp
 	source/Log.cpp
+	source/Material.cpp
 	source/MaterialDensityPair.cpp
 	source/MeshDecimator.cpp
 	source/Region.cpp
