@@ -59,6 +59,14 @@ namespace PolyVox
 	/// of the RaycastResult structure and the intersectionFound flag is set to true, otherwise
 	/// the intersectionFound flag is set to false.
 	///
+	/// <b>Important Note:</b> These has been confusion in the past with people not realising
+	/// that the length of the direction vector is important. Most graphics API can provide
+	/// a camera position and view direction for picking purposes, but the view direction is
+	/// usually normalised (i.e. of length one). If you use this view direction directly you
+	/// will only iterate over a single voxel and won't find what you are looking for. Instead
+	/// you must scale the direction vector so that it's length represents the maximum distance
+	/// over which you want the ray to be cast.
+	///
 	/// The following code snippet shows how the class is used:
 	/// \code
 	/// Vector3DFloat start(rayOrigin.x(), rayOrigin.y(), rayOrigin.z());
@@ -88,12 +96,12 @@ namespace PolyVox
 	{
 	public:
 		///Constructor
-		Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result);
+		Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result);
 
 		///Sets the start position for the ray.
 		void setStart(const Vector3DFloat& v3dStart);
 		///Set the direction for the ray.
-		void setDirection(const Vector3DFloat& v3dDirection);
+		void setDirection(const Vector3DFloat& v3dDirectionAndLength);
 
 		///Performs the raycast.
 		void execute();
@@ -107,7 +115,7 @@ namespace PolyVox
 		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		Vector3DFloat m_v3dStart;
-		Vector3DFloat m_v3dDirection;
+		Vector3DFloat m_v3dDirectionAndLength;
 		float m_fMaxDistance;
 	};
 }

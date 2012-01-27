@@ -24,11 +24,11 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>
-	RaycastWithCallback<VolumeType, VoxelType>::RaycastWithCallback(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, polyvox_function<bool(const Vector3DInt32& position)> funcCallback)
+	RaycastWithCallback<VolumeType, VoxelType>::RaycastWithCallback(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, polyvox_function<bool(const Vector3DInt32& position)> funcCallback)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
-		,m_v3dDirection(v3dDirection)
+		,m_v3dDirectionAndLength(v3dDirectionAndLength)
 		,m_funcCallback(funcCallback)
 	{
 		//Check the user provided a callback, because it
@@ -43,9 +43,9 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	void RaycastWithCallback<VolumeType, VoxelType>::setDirection(const Vector3DFloat& v3dDirection)
+	void RaycastWithCallback<VolumeType, VoxelType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
 	{
-		m_v3dDirection = v3dDirection;
+		m_v3dDirectionAndLength = v3dDirectionAndLength;
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
@@ -57,7 +57,7 @@ namespace PolyVox
 		Vector3DFloat v3dStart = m_v3dStart + Vector3DFloat(0.5f, 0.5f, 0.5f);
 
 		//Compute the end point
-		Vector3DFloat v3dEnd = v3dStart + m_v3dDirection;
+		Vector3DFloat v3dEnd = v3dStart + m_v3dDirectionAndLength;
 
 		//Do the raycast
 		doRaycast(v3dStart.getX(), v3dStart.getY(), v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());

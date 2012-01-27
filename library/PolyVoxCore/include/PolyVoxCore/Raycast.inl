@@ -27,17 +27,17 @@ namespace PolyVox
 	/// Builds a Raycast object.
 	/// \param volData A pointer to the volume through which the ray will be cast.
 	/// \param v3dStart The starting position of the ray.
-	/// \param v3dDirection The direction of the ray. The length of this vector also
+	/// \param v3dDirectionAndLength The direction of the ray. The length of this vector also
 	/// represents the length of the ray.
 	/// \param result An instance of RaycastResult in which the result will be stored.
 	////////////////////////////////////////////////////////////////////////////////
 	template< template<typename> class VolumeType, typename VoxelType>
-	Raycast<VolumeType, VoxelType>::Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, RaycastResult& result)
+	Raycast<VolumeType, VoxelType>::Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result)
 		:m_result(result)
 		,m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
-		,m_v3dDirection(v3dDirection)
+		,m_v3dDirectionAndLength(v3dDirectionAndLength)
 	{
 	}
 
@@ -51,13 +51,14 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dDirection The direction of the ray. The length of this vector also
+	/// \param v3dDirectionAndLength The direction of the ray. The length of this vector also
 	/// represents the length of the ray.
 	////////////////////////////////////////////////////////////////////////////////
 	template< template<typename> class VolumeType, typename VoxelType>
-	void Raycast<VolumeType, VoxelType>::setDirection(const Vector3DFloat& v3dDirection)
+	void Raycast<VolumeType, VoxelType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
 	{
-		m_v3dDirection = v3dDirection;
+		//FIXME: We should add a warning when the ray direction is of length one, as this seems to be a common mistake. 
+		m_v3dDirectionAndLength = v3dDirectionAndLength;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +73,7 @@ namespace PolyVox
 		Vector3DFloat v3dStart = m_v3dStart + Vector3DFloat(0.5f, 0.5f, 0.5f);
 
 		//Compute the end point
-		Vector3DFloat v3dEnd = v3dStart + m_v3dDirection;
+		Vector3DFloat v3dEnd = v3dStart + m_v3dDirectionAndLength;
 
 		//Do the raycast
 		doRaycast(v3dStart.getX(), v3dStart.getY(), v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());
