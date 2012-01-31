@@ -224,7 +224,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if( BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mYPosInVolume) )
+		if( BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}

@@ -329,7 +329,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mYPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
