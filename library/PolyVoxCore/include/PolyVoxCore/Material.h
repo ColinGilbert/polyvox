@@ -113,6 +113,8 @@ namespace PolyVox
 	public:
 		const static bool HasDensity;
 		const static bool HasMaterial;
+		const static MaterialU8::DensityType MinDensity;
+		const static MaterialU8::DensityType MaxDensity;
 	};
 
 	template<>
@@ -121,6 +123,8 @@ namespace PolyVox
 	public:
 		const static bool HasDensity;
 		const static bool HasMaterial;
+		const static MaterialU16::DensityType MinDensity;
+		const static MaterialU16::DensityType MaxDensity;
 	};
 
 	template<>
@@ -129,6 +133,8 @@ namespace PolyVox
 	public:
 		const static bool HasDensity;
 		const static bool HasMaterial;
+		const static MaterialU32::DensityType MinDensity;
+		const static MaterialU32::DensityType MaxDensity;
 	};
 }
 

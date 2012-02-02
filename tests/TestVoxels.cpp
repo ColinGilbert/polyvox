@@ -63,7 +63,7 @@ void TestVoxels::testVoxelTypeLimits()
 	QCOMPARE(VoxelTypeTraits<DensityDouble>::MaxDensity, DBL_MAX);
 	
 	/*fValue = VoxelTypeTraits<DensityFloat>::MinDensity;
-	QCOMPARE(fValue, FLT_MIN);
+	QCOMPARE(fValue, -FLT_MAX);
 	fValue = VoxelTypeTraits<DensityFloat>::MaxDensity;
 	QCOMPARE(fValue, FLT_MAX);*/
 	

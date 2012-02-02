@@ -48,9 +48,9 @@ namespace PolyVox
 					float regY = static_cast<float>(y - m_regSizeInVoxels.getLowerCorner().getY());
 					float regZ = static_cast<float>(z - m_regSizeInVoxels.getLowerCorner().getZ());
 
-					int currentVoxel = m_volData->getVoxelAt(x,y,z).getDensity() >= VoxelType::getThreshold();
+					int currentVoxel = m_volData->getVoxelAt(x,y,z).getMaterial() != 0;
 
-					int plusXVoxel = m_volData->getVoxelAt(x+1,y,z).getDensity()  >= VoxelType::getThreshold();
+					int plusXVoxel = m_volData->getVoxelAt(x+1,y,z).getMaterial() != 0;
 					if(currentVoxel > plusXVoxel)
 					{
 						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
@@ -76,7 +76,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
 
-					int plusYVoxel = m_volData->getVoxelAt(x,y+1,z).getDensity()  >= VoxelType::getThreshold();
+					int plusYVoxel = m_volData->getVoxelAt(x,y+1,z).getMaterial() != 0;
 					if(currentVoxel > plusYVoxel)
 					{
 						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
@@ -102,7 +102,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
 
-					int plusZVoxel = m_volData->getVoxelAt(x,y,z+1).getDensity()  >= VoxelType::getThreshold();
+					int plusZVoxel = m_volData->getVoxelAt(x,y,z+1).getMaterial() != 0;
 					if(currentVoxel > plusZVoxel)
 					{
 						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());

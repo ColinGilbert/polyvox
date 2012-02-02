@@ -29,4 +29,9 @@ namespace PolyVox
 	const bool VoxelTypeTraits<Type>::HasDensity = false;
 	template<typename Type>
 	const bool VoxelTypeTraits<Type>::HasMaterial = false;
+
+	template<typename Type>
+	const typename Type::DensityType VoxelTypeTraits< Type >::MinDensity = 0;
+	template<typename Type>
+	const typename Type::DensityType VoxelTypeTraits< Type >::MaxDensity = 0;
 }

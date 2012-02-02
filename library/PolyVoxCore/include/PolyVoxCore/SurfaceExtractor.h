@@ -36,7 +36,7 @@ namespace PolyVox
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+		SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename VoxelType::DensityType tThreshold = (VoxelTypeTraits<VoxelType>::MinDensity + VoxelTypeTraits<VoxelType>::MaxDensity) / 2);
 
 		void execute();
 
@@ -205,6 +205,9 @@ namespace PolyVox
 		Region m_regVolumeCropped;*/
 		Region m_regSlicePrevious;
 		Region m_regSliceCurrent;
+
+		//Our threshold value
+		typename VoxelType::DensityType m_tThreshold;
 	};
 }
 

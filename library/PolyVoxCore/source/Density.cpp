@@ -49,11 +49,11 @@ namespace PolyVox
 	
 	const bool VoxelTypeTraits< DensityFloat >::HasDensity = true;
 	const bool VoxelTypeTraits< DensityFloat >::HasMaterial = false;
-	const DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MinDensity = FLT_MIN;
+	const DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MinDensity = -FLT_MAX;
 	const DensityFloat::DensityType VoxelTypeTraits< DensityFloat >::MaxDensity = FLT_MAX;
 	
 	const bool VoxelTypeTraits< DensityDouble >::HasDensity = true;
 	const bool VoxelTypeTraits< DensityDouble >::HasMaterial = false;
-	const DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MinDensity = DBL_MIN;
+	const DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MinDensity = -DBL_MAX;
 	const DensityDouble::DensityType VoxelTypeTraits< DensityDouble >::MaxDensity = DBL_MAX;
 }

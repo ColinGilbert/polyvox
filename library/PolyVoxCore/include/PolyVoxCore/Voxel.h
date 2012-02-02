@@ -70,6 +70,8 @@ namespace PolyVox
 	public:
 		const static bool HasDensity;
 		const static bool HasMaterial;
+		const static typename Type::DensityType MinDensity;
+		const static typename Type::DensityType MaxDensity;
 	};
 
 }

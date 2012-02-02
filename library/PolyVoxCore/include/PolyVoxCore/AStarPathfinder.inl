@@ -37,11 +37,25 @@ namespace PolyVox
 			return false;
 		}
 
-		//and if their density is below the threshold.
-		VoxelType voxel = volData->getVoxelAt(v3dPos);
-		if(voxel.getDensity() >= VoxelType::getThreshold())
+		if(VoxelTypeTraits<VoxelType>::HasDensity)
 		{
-			return false;
+			//and if their density is above the threshold.
+			VoxelType voxel = volData->getVoxelAt(v3dPos);
+			VoxelType::DensityType tThreshold = (VoxelTypeTraits<VoxelType>::MinDensity + VoxelTypeTraits<VoxelType>::MaxDensity) / 2;
+			if(voxel.getDensity() >= tThreshold)
+			{
+				return false;
+			}
+		}
+
+		if(VoxelTypeTraits<VoxelType>::HasMaterial)
+		{
+			//and if their material is not zero.
+			VoxelType voxel = volData->getVoxelAt(v3dPos);
+			if(voxel.getMaterial() != 0)
+			{
+				return false;
+			}
 		}
 
 		return true;

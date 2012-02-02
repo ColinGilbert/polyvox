@@ -34,6 +34,39 @@ using namespace PolyVox;
 void TestAStarPathfinder::testExecute()
 {
 	//The expected path
+
+#ifdef _MSC_VER
+	//The following results work on Windows/VS2010
+	const Vector3DInt32 expectedResult[] = 
+	{
+		Vector3DInt32(0,0,0),
+		Vector3DInt32(1,1,1),
+		Vector3DInt32(1,2,1),
+		Vector3DInt32(1,3,1),
+		Vector3DInt32(1,4,1),
+		Vector3DInt32(1,5,1),
+		Vector3DInt32(1,6,1),
+		Vector3DInt32(1,7,1),
+		Vector3DInt32(1,8,1),
+		Vector3DInt32(2,9,2),
+		Vector3DInt32(3,10,3),
+		Vector3DInt32(3,11,4),
+		Vector3DInt32(4,12,5),
+		Vector3DInt32(5,12,5),
+		Vector3DInt32(6,13,6),
+		Vector3DInt32(7,13,7),
+		Vector3DInt32(8,13,8),
+		Vector3DInt32(9,13,9),
+		Vector3DInt32(10,13,10),
+		Vector3DInt32(11,13,11),
+		Vector3DInt32(12,13,12),
+		Vector3DInt32(13,13,13),
+		Vector3DInt32(14,14,14),
+		Vector3DInt32(15,15,15)
+	};
+
+#else
+
 	//The following results work on Linux/GCC
 	const Vector3DInt32 expectedResult[] = 
 	{
@@ -62,35 +95,7 @@ void TestAStarPathfinder::testExecute()
 		Vector3DInt32(15,15,14),
 		Vector3DInt32(15,15,15),
 	};
-	
-	//The following results work on Windows/VS2010
-	/*const Vector3DInt32 expectedResult[] = 
-	{
-		Vector3DInt32(0,0,0),
-		Vector3DInt32(1,1,1),
-		Vector3DInt32(1,2,1),
-		Vector3DInt32(1,3,1),
-		Vector3DInt32(1,4,1),
-		Vector3DInt32(1,5,1),
-		Vector3DInt32(1,6,1),
-		Vector3DInt32(1,7,1),
-		Vector3DInt32(1,8,1),
-		Vector3DInt32(2,9,2),
-		Vector3DInt32(3,10,3),
-		Vector3DInt32(3,11,4),
-		Vector3DInt32(4,12,5),
-		Vector3DInt32(5,12,5),
-		Vector3DInt32(6,13,6),
-		Vector3DInt32(7,13,7),
-		Vector3DInt32(8,13,8),
-		Vector3DInt32(9,13,9),
-		Vector3DInt32(10,13,10),
-		Vector3DInt32(11,13,11),
-		Vector3DInt32(12,13,12),
-		Vector3DInt32(13,13,13),
-		Vector3DInt32(14,14,14),
-		Vector3DInt32(15,15,15)
-	};*/
+#endif //_MSC_VER
 
 	//Create an empty volume
 	RawVolume<Material8> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 15, 15)));

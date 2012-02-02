@@ -24,11 +24,12 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>
-	SurfaceExtractor<VolumeType, VoxelType>::SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	SurfaceExtractor<VolumeType, VoxelType>::SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename  VoxelType::DensityType tThreshold)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
+		,m_tThreshold(tThreshold)
 	{
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
@@ -229,7 +230,7 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -247,8 +248,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (v011.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 64;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v011.getDensity() < m_tThreshold) iCubeIndex |= 64;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 			else //previous Y not available
@@ -269,8 +270,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
 
-					if (v101.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 32;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v101.getDensity() < m_tThreshold) iCubeIndex |= 32;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -283,10 +284,10 @@ namespace PolyVox
 					uint8_t iPreviousCubeIndexZ = pPreviousBitmask[uXRegSpace][uYRegSpace];
 					iCubeIndex = iPreviousCubeIndexZ >> 4;
 
-					if (v001.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 16;
-					if (v101.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 32;
-					if (v011.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 64;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v001.getDensity() < m_tThreshold) iCubeIndex |= 16;
+					if (v101.getDensity() < m_tThreshold) iCubeIndex |= 32;
+					if (v011.getDensity() < m_tThreshold) iCubeIndex |= 64;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 		}
@@ -311,8 +312,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
 
-					if (v110.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 8;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v110.getDensity() < m_tThreshold) iCubeIndex |= 8;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -329,10 +330,10 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexY;
 
-					if (v010.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 4;
-					if (v110.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 8;
-					if (v011.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 64;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v010.getDensity() < m_tThreshold) iCubeIndex |= 4;
+					if (v110.getDensity() < m_tThreshold) iCubeIndex |= 8;
+					if (v011.getDensity() < m_tThreshold) iCubeIndex |= 64;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 			else //previous Y not available
@@ -352,10 +353,10 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX;
 
-					if (v100.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 2;	
-					if (v110.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 8;
-					if (v101.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 32;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v100.getDensity() < m_tThreshold) iCubeIndex |= 2;	
+					if (v110.getDensity() < m_tThreshold) iCubeIndex |= 8;
+					if (v101.getDensity() < m_tThreshold) iCubeIndex |= 32;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -369,14 +370,14 @@ namespace PolyVox
 					v011 = m_sampVolume.peekVoxel0px1py1pz();
 					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
-					if (v000.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 1;
-					if (v100.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 2;
-					if (v010.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 4;
-					if (v110.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 8;
-					if (v001.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 16;
-					if (v101.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 32;
-					if (v011.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 64;
-					if (v111.getDensity() < VoxelType::getThreshold()) iCubeIndex |= 128;
+					if (v000.getDensity() < m_tThreshold) iCubeIndex |= 1;
+					if (v100.getDensity() < m_tThreshold) iCubeIndex |= 2;
+					if (v010.getDensity() < m_tThreshold) iCubeIndex |= 4;
+					if (v110.getDensity() < m_tThreshold) iCubeIndex |= 8;
+					if (v001.getDensity() < m_tThreshold) iCubeIndex |= 16;
+					if (v101.getDensity() < m_tThreshold) iCubeIndex |= 32;
+					if (v011.getDensity() < m_tThreshold) iCubeIndex |= 64;
+					if (v111.getDensity() < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 		}
@@ -433,7 +434,7 @@ namespace PolyVox
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
 					//float fInterp = static_cast<float>(v100.getDensity() - VoxelType::getMinDensity()) / static_cast<float>(VoxelType::getMaxDensity() - VoxelType::getMinDensity());
-					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
+					float fInterp = static_cast<float>(m_tThreshold - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerCorner().getZ()));
@@ -463,7 +464,7 @@ namespace PolyVox
 					const VoxelType v010 = m_sampVolume.getVoxel();
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v010.getDensity() - v000.getDensity());
+					float fInterp = static_cast<float>(m_tThreshold - v000.getDensity()) / static_cast<float>(v010.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()));
@@ -493,7 +494,7 @@ namespace PolyVox
 					const VoxelType v001 = m_sampVolume.getVoxel();
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(VoxelType::getThreshold() - v000.getDensity()) / static_cast<float>(v001.getDensity() - v000.getDensity());
+					float fInterp = static_cast<float>(m_tThreshold - v000.getDensity()) / static_cast<float>(v001.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()) + fInterp);

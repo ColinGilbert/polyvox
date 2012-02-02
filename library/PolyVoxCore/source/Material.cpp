@@ -29,10 +29,16 @@ namespace PolyVox
 {	
 	const bool VoxelTypeTraits< MaterialU8 >::HasDensity = false;
 	const bool VoxelTypeTraits< MaterialU8 >::HasMaterial = true;
+	const MaterialU8::DensityType VoxelTypeTraits< MaterialU8 >::MinDensity = 0;
+	const MaterialU8::DensityType VoxelTypeTraits< MaterialU8 >::MaxDensity = 0;
 
 	const bool VoxelTypeTraits< MaterialU16 >::HasDensity = false;
 	const bool VoxelTypeTraits< MaterialU16 >::HasMaterial = true;
+	const MaterialU16::DensityType VoxelTypeTraits< MaterialU16 >::MinDensity = 0;
+	const MaterialU16::DensityType VoxelTypeTraits< MaterialU16 >::MaxDensity = 0;
 
 	const bool VoxelTypeTraits< MaterialU32 >::HasDensity = false;
 	const bool VoxelTypeTraits< MaterialU32 >::HasMaterial = true;
+	const MaterialU32::DensityType VoxelTypeTraits< MaterialU32 >::MinDensity = 0;
+	const MaterialU32::DensityType VoxelTypeTraits< MaterialU32 >::MaxDensity = 0;
 }

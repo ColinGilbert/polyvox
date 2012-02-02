@@ -91,10 +91,10 @@ namespace PolyVox
 					volumeSampler.setPosition(x,y,z);
 
 					VoxelType currentVoxel = volumeSampler.getVoxel();
-					bool currentVoxelIsSolid = currentVoxel.getDensity() >= VoxelType::getThreshold();
+					bool currentVoxelIsSolid = currentVoxel.getMaterial() != 0;
 
 					VoxelType negXVoxel = volumeSampler.peekVoxel1nx0py0pz();
-					bool negXVoxelIsSolid = negXVoxel.getDensity()  >= VoxelType::getThreshold();
+					bool negXVoxelIsSolid = negXVoxel.getMaterial() != 0;
 
 					if((currentVoxelIsSolid != negXVoxelIsSolid) && (finalY == false) && (finalZ == false))
 					{
@@ -131,7 +131,7 @@ namespace PolyVox
 					}
 
 					VoxelType negYVoxel = volumeSampler.peekVoxel0px1ny0pz();
-					bool negYVoxelIsSolid = negYVoxel.getDensity()  >= VoxelType::getThreshold();
+					bool negYVoxelIsSolid = negYVoxel.getMaterial() != 0;
 
 					if((currentVoxelIsSolid != negYVoxelIsSolid) && (finalX == false) && (finalZ == false))
 					{
@@ -168,7 +168,7 @@ namespace PolyVox
 					}
 
 					VoxelType negZVoxel = volumeSampler.peekVoxel0px0py1nz();
-					bool negZVoxelIsSolid = negZVoxel.getDensity()  >= VoxelType::getThreshold();
+					bool negZVoxelIsSolid = negZVoxel.getMaterial() != 0;
 
 					if((currentVoxelIsSolid != negZVoxelIsSolid) && (finalX == false) && (finalY == false))
 					{
