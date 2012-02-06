@@ -30,7 +30,7 @@ using namespace PolyVox;
 void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
-	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / 2;
+	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / static_cast<int32_t>(2);
 
 	//This three-level for loop iterates over every voxel in the volume
 	for (int z = 0; z < volData.getWidth(); z++)
