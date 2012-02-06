@@ -74,8 +74,8 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		//static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		//static DensityType getMinDensity() throw() { return 0; }
+		//static DensityType getmaxDensity()() throw() { return (0x01 << NoOfDensityBits) - 1; }
+		//static DensityType getminDensity()() throw() { return 0; }
 		static DensityType getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
 
 	private:
@@ -90,20 +90,20 @@ namespace PolyVox
 	class VoxelTypeTraits< MaterialDensityPair44 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static MaterialDensityPair44::DensityType MinDensity;
-		const static MaterialDensityPair44::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return true; }
+		static MaterialDensityPair44::DensityType minDensity() { return 0; }
+		static MaterialDensityPair44::DensityType maxDensity() { return 15; }
 	};
 	
 	template<>
 	class VoxelTypeTraits< MaterialDensityPair88 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static MaterialDensityPair88::DensityType MinDensity;
-		const static MaterialDensityPair88::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return true; }
+		static MaterialDensityPair88::DensityType minDensity() { return 0; }
+		static MaterialDensityPair88::DensityType maxDensity() { return 255; }
 	};
 }
 

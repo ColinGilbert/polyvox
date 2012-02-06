@@ -31,6 +31,9 @@ freely, subject to the following restrictions:
 #include <cassert>
 #include <limits>
 
+#undef min
+#undef max
+
 namespace PolyVox
 {
 	///This class represents a voxel storing only a density.
@@ -45,8 +48,11 @@ namespace PolyVox
 	///
 	/// \sa Material, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
+
+	// int32_t template parameter is a dummy, required as the compiler expects to be able to declare an
+	// instance of VoxelType::MaterialType without knowing that VoxelType doesn't actually have a material.
 	template <typename Type>
-	class Density : public Voxel<Type, uint8_t>
+	class Density : public Voxel<Type, int32_t>
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is
@@ -54,7 +60,7 @@ namespace PolyVox
 		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
 		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
 		typedef Type DensityType;
-		typedef uint8_t MaterialType; //Shouldn't define this one...
+		typedef int32_t MaterialType; //Shouldn't define this one...
 
 		Density() : m_uDensity(0) {}
 		Density(DensityType uDensity) : m_uDensity(uDensity) {}
@@ -75,8 +81,8 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		//void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
 
-		//static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
-		//static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
+		//static DensityType getmaxDensity()() throw() { return (std::numeric_limits<DensityType>::max)(); } 
+		//static DensityType getminDensity()() throw() { return (std::numeric_limits<DensityType>::min)(); }
 		static DensityType getThreshold() throw() { return (std::numeric_limits<DensityType>::max)() / 2; }
 
 	private:
@@ -103,60 +109,60 @@ namespace PolyVox
 	class VoxelTypeTraits< DensityI8 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static DensityI8::DensityType MinDensity;
-		const static DensityI8::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static DensityI8::DensityType minDensity() { return -std::numeric_limits<DensityI8::DensityType>::max(); }
+		static DensityI8::DensityType maxDensity() { return std::numeric_limits<DensityI8::DensityType>::max(); }
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityU8 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static DensityU8::DensityType MinDensity;
-		const static DensityU8::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static DensityU8::DensityType minDensity() { return std::numeric_limits<DensityU8::DensityType>::min(); }
+		static DensityU8::DensityType maxDensity() { return std::numeric_limits<DensityU8::DensityType>::max(); }
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityI16 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static DensityI16::DensityType MinDensity;
-		const static DensityI16::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static DensityI16::DensityType minDensity() { return -std::numeric_limits<DensityI16::DensityType>::max(); }
+		static DensityI16::DensityType maxDensity() { return std::numeric_limits<DensityI16::DensityType>::max(); }
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityU16 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static DensityU16::DensityType MinDensity;
-		const static DensityU16::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static DensityU16::DensityType minDensity() { return std::numeric_limits<DensityU16::DensityType>::min(); }
+		static DensityU16::DensityType maxDensity() { return std::numeric_limits<DensityU16::DensityType>::max(); }
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityFloat >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static DensityFloat::DensityType MinDensity;
-		const static DensityFloat::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static DensityFloat::DensityType minDensity() { return -std::numeric_limits<DensityFloat::DensityType>::max(); }
+		static DensityFloat::DensityType maxDensity() { return std::numeric_limits<DensityFloat::DensityType>::max(); }
 	};
 	
 	template<>
 	class VoxelTypeTraits< DensityDouble >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static DensityDouble::DensityType MinDensity;
-		const static DensityDouble::DensityType MaxDensity;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static DensityDouble::DensityType minDensity() { return -std::numeric_limits<DensityDouble::DensityType>::max(); }
+		static DensityDouble::DensityType maxDensity() { return std::numeric_limits<DensityDouble::DensityType>::max(); }
 	};
 }
 

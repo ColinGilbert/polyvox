@@ -55,8 +55,8 @@ void createSphereInVolume(SimpleVolume<Density8>& volData, float fRadius)
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					//uint8_t uDensity = Density8::getMaxDensity();
-					uint8_t uDensity = VoxelTypeTraits<Density8>::MaxDensity;
+					//uint8_t uDensity = Density8::getmaxDensity()();
+					uint8_t uDensity = VoxelTypeTraits<Density8>::maxDensity();
 
 					//Get the old voxel
 					Density8 voxel = volData.getVoxelAt(x,y,z);

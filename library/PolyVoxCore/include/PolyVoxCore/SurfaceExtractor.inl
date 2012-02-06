@@ -433,7 +433,7 @@ namespace PolyVox
 					const VoxelType v100 = m_sampVolume.getVoxel();
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
-					//float fInterp = static_cast<float>(v100.getDensity() - VoxelType::getMinDensity()) / static_cast<float>(VoxelType::getMaxDensity() - VoxelType::getMinDensity());
+					//float fInterp = static_cast<float>(v100.getDensity() - VoxelType::getminDensity()()) / static_cast<float>(VoxelType::getmaxDensity()() - VoxelType::getminDensity()());
 					float fInterp = static_cast<float>(m_tThreshold - v000.getDensity()) / static_cast<float>(v100.getDensity() - v000.getDensity());
 					//fInterp = 0.5f;
 
@@ -447,7 +447,7 @@ namespace PolyVox
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
 					uint32_t uMaterial = 0;
-					if(VoxelTypeTraits<VoxelType>::HasMaterial)
+					if(VoxelTypeTraits<VoxelType>::hasMaterial())
 					{
 						uMaterial = (std::max)(v000.getMaterial(), v100.getMaterial());
 					}
@@ -477,7 +477,7 @@ namespace PolyVox
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
 					uint32_t uMaterial = 0;
-					if(VoxelTypeTraits<VoxelType>::HasMaterial)
+					if(VoxelTypeTraits<VoxelType>::hasMaterial())
 					{
 						uMaterial = (std::max)(v000.getMaterial(), v010.getMaterial());
 					}
@@ -507,7 +507,7 @@ namespace PolyVox
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
 					uint32_t uMaterial = 0;
-					if(VoxelTypeTraits<VoxelType>::HasMaterial)
+					if(VoxelTypeTraits<VoxelType>::hasMaterial())
 					{
 						uMaterial = (std::max)(v000.getMaterial(), v001.getMaterial());
 					}

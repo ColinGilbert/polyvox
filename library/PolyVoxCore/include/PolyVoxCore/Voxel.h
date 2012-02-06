@@ -56,7 +56,7 @@ namespace PolyVox
 	// Various properties of the voxel types can be expressed via types traits, similar to the way std::numeric_limits is implemented.
 	// This has some advantages compared to storing the properties directly in the voxel class. For example, by using traits it is possible
 	// to also apply these properties to primative types which might be desirable (the Volume classes do accept primative types as template
-	// parameters). Also, properties such as MinDensity and MaxDensity would be difficult to represent though class members because they
+	// parameters). Also, properties such as minDensity() and maxDensity() would be difficult to represent though class members because they
 	// depend ont the type (float has a very different range from int8_t for example).
 	//
 	// The properties are currently exposed as constants because we need access to them at compile time. Ideally we would like to make them
@@ -68,10 +68,15 @@ namespace PolyVox
 	class VoxelTypeTraits
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static typename Type::DensityType MinDensity;
-		const static typename Type::DensityType MaxDensity;
+		static bool hasDensity() { return false; }
+		static bool hasMaterial() { return false; }
+
+		// These default implementations return an int32_t rather than void so that the result can be
+		// assigned to a variable for all voxel types (even those without density coponents). Calls
+		// to these functions should be protected by calls to hasDensity(), but the compiler still
+		// needs to ensure the assignment is compilable even if hasDensity() returns false.
+		static int32_t minDensity() { assert(false); return 0; } 
+		static int32_t maxDensity() { assert(false); return 0; }
 	};
 
 }

@@ -45,15 +45,18 @@ namespace PolyVox
 	///
 	/// \sa Density, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
+
+	// int32_t template parameter is a dummy, required as the compiler expects to be able to declare an
+	// instance of VoxelType::DensityType without knowing that VoxelType doesn't actually have a density.
 	template <typename Type>
-	class Material : public Voxel<uint8_t, Type>
+	class Material : public Voxel<int32_t, Type> 
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is
 		//templatised on voxel type, it can determine the underlying storage type
 		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
 		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
-		typedef uint8_t DensityType; //Shouldn't define this one...
+		typedef int32_t DensityType;
 		typedef Type MaterialType;
 
 		Material() : m_uMaterial(0) {}
@@ -74,12 +77,12 @@ namespace PolyVox
 			//We don't actually have a density, so make one up based on the material.
 			if(m_uMaterial == 0)
 			{
-				//return getMinDensity();
+				//return getminDensity()();
 				return 0;
 			}
 			else
 			{
-				//return getMaxDensity();
+				//return getmaxDensity()();
 				return 2;
 			}
 		}
@@ -89,8 +92,8 @@ namespace PolyVox
 		void setDensity(DensityType /*uDensity*/) { assert(false); } //Cannot set density on voxel of type Material
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		//static DensityType getMaxDensity() throw() { return 2; }
-		//static DensityType getMinDensity() throw() { return 0; }
+		//static DensityType getmaxDensity()() throw() { return 2; }
+		//static DensityType getminDensity()() throw() { return 0; }
 		static DensityType getThreshold() throw() { return 1; }
 
 	private:
@@ -111,30 +114,30 @@ namespace PolyVox
 	class VoxelTypeTraits< MaterialU8 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static MaterialU8::DensityType MinDensity;
-		const static MaterialU8::DensityType MaxDensity;
+		static bool hasDensity() { return false; }
+		static bool hasMaterial() { return true; }
+		static int minDensity() { assert(false); return 0; }
+		static int maxDensity() { assert(false); return 0; }
 	};
 
 	template<>
 	class VoxelTypeTraits< MaterialU16 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static MaterialU16::DensityType MinDensity;
-		const static MaterialU16::DensityType MaxDensity;
+		static bool hasDensity() { return false; }
+		static bool hasMaterial() { return true; }
+		static int minDensity() { assert(false); return 0; }
+		static int maxDensity() { assert(false); return 0; }
 	};
 
 	template<>
 	class VoxelTypeTraits< MaterialU32 >
 	{
 	public:
-		const static bool HasDensity;
-		const static bool HasMaterial;
-		const static MaterialU32::DensityType MinDensity;
-		const static MaterialU32::DensityType MaxDensity;
+		static bool hasDensity() { return false; }
+		static bool hasMaterial() { return true; }
+		static int minDensity() { assert(false); return 0; }
+		static int maxDensity() { assert(false); return 0; }
 	};
 }
 

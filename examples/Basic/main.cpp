@@ -54,7 +54,7 @@ void createSphereInVolume(SimpleVolume<MaterialDensityPair44>& volData, float fR
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					uint8_t uDensity = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
+					uint8_t uDensity = VoxelTypeTraits<MaterialDensityPair44>::maxDensity();
 
 					//Get the old voxel
 					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);

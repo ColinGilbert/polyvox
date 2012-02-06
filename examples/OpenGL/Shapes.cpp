@@ -48,7 +48,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? VoxelTypeTraits<MaterialDensityPair44>::MaxDensity : VoxelTypeTraits<MaterialDensityPair44>::MinDensity));
+					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? VoxelTypeTraits<MaterialDensityPair44>::maxDensity() : VoxelTypeTraits<MaterialDensityPair44>::minDensity()));
 				}
 			}
 		}
@@ -57,8 +57,8 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 
 void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
-	int maxDen = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
-	int minDen = VoxelTypeTraits<MaterialDensityPair44>::MinDensity;
+	int maxDen = VoxelTypeTraits<MaterialDensityPair44>::maxDensity();
+	int minDen = VoxelTypeTraits<MaterialDensityPair44>::minDensity();
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
 	{

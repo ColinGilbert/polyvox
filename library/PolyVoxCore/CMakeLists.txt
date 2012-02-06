@@ -6,16 +6,12 @@ PROJECT(PolyVoxCore)
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
-	source/Density.cpp
 	source/GradientEstimators.cpp
 	source/Log.cpp
-	source/Material.cpp
-	source/MaterialDensityPair.cpp
 	source/MeshDecimator.cpp
 	source/Region.cpp
 	source/SimpleInterface.cpp
 	source/VertexTypes.cpp
-	source/Voxel.cpp
 	source/VoxelFilters.cpp
 )
 
