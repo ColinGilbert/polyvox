@@ -56,10 +56,10 @@ void TestVoxels::testVoxelTypeLimits()
 	QCOMPARE(VoxelTypeTraits<DensityU16>::minDensity(), DensityU16::DensityType(0));
 	QCOMPARE(VoxelTypeTraits<DensityU16>::maxDensity(), DensityU16::DensityType(65535));
 	
-	QCOMPARE(VoxelTypeTraits<DensityFloat>::minDensity(), FLT_MIN);
+	QCOMPARE(VoxelTypeTraits<DensityFloat>::minDensity(), -FLT_MAX);
 	QCOMPARE(VoxelTypeTraits<DensityFloat>::maxDensity(), FLT_MAX);
 	
-	QCOMPARE(VoxelTypeTraits<DensityDouble>::minDensity(), DBL_MIN);
+	QCOMPARE(VoxelTypeTraits<DensityDouble>::minDensity(), -DBL_MAX);
 	QCOMPARE(VoxelTypeTraits<DensityDouble>::maxDensity(), DBL_MAX);
 	
 	/*fValue = VoxelTypeTraits<DensityFloat>::minDensity();
