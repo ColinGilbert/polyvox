@@ -41,7 +41,7 @@ namespace PolyVox
 		{
 			//and if their density is above the threshold.
 			VoxelType voxel = volData->getVoxelAt(v3dPos);
-			VoxelType::DensityType tThreshold = (VoxelTypeTraits<VoxelType>::minDensity() + VoxelTypeTraits<VoxelType>::maxDensity()) / 2;
+			typename VoxelType::DensityType tThreshold = (VoxelTypeTraits<VoxelType>::minDensity() + VoxelTypeTraits<VoxelType>::maxDensity()) / 2;
 			if(voxel.getDensity() >= tThreshold)
 			{
 				return false;
