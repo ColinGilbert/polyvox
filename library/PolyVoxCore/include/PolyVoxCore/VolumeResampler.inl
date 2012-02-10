@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxImpl\Utility.h"
+
 namespace PolyVox
 {
 	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
@@ -110,14 +112,14 @@ namespace PolyVox
 					VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
 					VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
 
-					uint8_t voxel000Den = voxel000.getDensity();
-					uint8_t voxel001Den = voxel001.getDensity();
-					uint8_t voxel010Den = voxel010.getDensity();
-					uint8_t voxel011Den = voxel011.getDensity();
-					uint8_t voxel100Den = voxel100.getDensity();
-					uint8_t voxel101Den = voxel101.getDensity();
-					uint8_t voxel110Den = voxel110.getDensity();
-					uint8_t voxel111Den = voxel111.getDensity();
+					VoxelType::DensityType voxel000Den = voxel000.getDensity();
+					VoxelType::DensityType voxel001Den = voxel001.getDensity();
+					VoxelType::DensityType voxel010Den = voxel010.getDensity();
+					VoxelType::DensityType voxel011Den = voxel011.getDensity();
+					VoxelType::DensityType voxel100Den = voxel100.getDensity();
+					VoxelType::DensityType voxel101Den = voxel101.getDensity();
+					VoxelType::DensityType voxel110Den = voxel110.getDensity();
+					VoxelType::DensityType voxel111Den = voxel111.getDensity();
 
 					//FIXME - should accept all float parameters, but GCC complains?
 					double dummy;
@@ -125,7 +127,7 @@ namespace PolyVox
 					sy = modf(sy, &dummy);
 					sz = modf(sz, &dummy);
 
-					uint8_t uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
+					VoxelType::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
 
 					VoxelType result;
 					result.setDensity(uInterpolatedDensity);
