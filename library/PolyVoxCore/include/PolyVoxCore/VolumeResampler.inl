@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl\Utility.h"
+#include "PolyVoxImpl/Utility.h"
 
 namespace PolyVox
 {
@@ -112,14 +112,14 @@ namespace PolyVox
 					VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
 					VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
 
-					VoxelType::DensityType voxel000Den = voxel000.getDensity();
-					VoxelType::DensityType voxel001Den = voxel001.getDensity();
-					VoxelType::DensityType voxel010Den = voxel010.getDensity();
-					VoxelType::DensityType voxel011Den = voxel011.getDensity();
-					VoxelType::DensityType voxel100Den = voxel100.getDensity();
-					VoxelType::DensityType voxel101Den = voxel101.getDensity();
-					VoxelType::DensityType voxel110Den = voxel110.getDensity();
-					VoxelType::DensityType voxel111Den = voxel111.getDensity();
+					typename VoxelType::DensityType voxel000Den = voxel000.getDensity();
+					typename VoxelType::DensityType voxel001Den = voxel001.getDensity();
+					typename VoxelType::DensityType voxel010Den = voxel010.getDensity();
+					typename VoxelType::DensityType voxel011Den = voxel011.getDensity();
+					typename VoxelType::DensityType voxel100Den = voxel100.getDensity();
+					typename VoxelType::DensityType voxel101Den = voxel101.getDensity();
+					typename VoxelType::DensityType voxel110Den = voxel110.getDensity();
+					typename VoxelType::DensityType voxel111Den = voxel111.getDensity();
 
 					//FIXME - should accept all float parameters, but GCC complains?
 					double dummy;
@@ -127,7 +127,7 @@ namespace PolyVox
 					sy = modf(sy, &dummy);
 					sz = modf(sz, &dummy);
 
-					VoxelType::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
+					typename VoxelType::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
 
 					VoxelType result;
 					result.setDensity(uInterpolatedDensity);
