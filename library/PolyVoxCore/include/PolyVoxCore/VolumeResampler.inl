@@ -112,14 +112,14 @@ namespace PolyVox
 					VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
 					VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
 
-					VoxelType::DensityType voxel000Den = voxel000.getDensity();
-					VoxelType::DensityType voxel001Den = voxel001.getDensity();
-					VoxelType::DensityType voxel010Den = voxel010.getDensity();
-					VoxelType::DensityType voxel011Den = voxel011.getDensity();
-					VoxelType::DensityType voxel100Den = voxel100.getDensity();
-					VoxelType::DensityType voxel101Den = voxel101.getDensity();
-					VoxelType::DensityType voxel110Den = voxel110.getDensity();
-					VoxelType::DensityType voxel111Den = voxel111.getDensity();
+					VoxelTypeTraits<VoxelType>::DensityType voxel000Den = convertToDensity(voxel000);
+					VoxelTypeTraits<VoxelType>::DensityType voxel001Den = convertToDensity(voxel001);
+					VoxelTypeTraits<VoxelType>::DensityType voxel010Den = convertToDensity(voxel010);
+					VoxelTypeTraits<VoxelType>::DensityType voxel011Den = convertToDensity(voxel011);
+					VoxelTypeTraits<VoxelType>::DensityType voxel100Den = convertToDensity(voxel100);
+					VoxelTypeTraits<VoxelType>::DensityType voxel101Den = convertToDensity(voxel101);
+					VoxelTypeTraits<VoxelType>::DensityType voxel110Den = convertToDensity(voxel110);
+					VoxelTypeTraits<VoxelType>::DensityType voxel111Den = convertToDensity(voxel111);
 
 					//FIXME - should accept all float parameters, but GCC complains?
 					double dummy;
@@ -127,10 +127,11 @@ namespace PolyVox
 					sy = modf(sy, &dummy);
 					sz = modf(sz, &dummy);
 
-					VoxelType::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
+					VoxelTypeTraits<VoxelType>::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
 
 					VoxelType result;
-					result.setDensity(uInterpolatedDensity);
+					//result.setDensity(uInterpolatedDensity);
+					result = uInterpolatedDensity;
 
 					m_pVolDst->setVoxelAt(dx,dy,dz,result);
 				}

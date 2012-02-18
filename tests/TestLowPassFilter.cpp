@@ -63,24 +63,24 @@ void TestLowPassFilter::testExecute()
 	pass1.execute();
 
 	std::cout << "Input volume:" << std::endl;
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(0,0,0).getDensity()) << std::endl; // 32
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(1,1,1).getDensity()) << std::endl; // 0
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(2,2,2).getDensity()) << std::endl; // 3
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(3,3,3).getDensity()) << std::endl; // 0
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(4,4,4).getDensity()) << std::endl; // 32
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(5,5,5).getDensity()) << std::endl; // 0
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(6,6,6).getDensity()) << std::endl; // 32
-	std::cout << "Voxel = " << static_cast<int>(volData.getVoxelAt(7,7,7).getDensity()) << std::endl; // 0
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(0,0,0))) << std::endl; // 32
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(1,1,1))) << std::endl; // 0
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(2,2,2))) << std::endl; // 3
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(3,3,3))) << std::endl; // 0
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(4,4,4))) << std::endl; // 32
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(5,5,5))) << std::endl; // 0
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(6,6,6))) << std::endl; // 32
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(volData.getVoxelAt(7,7,7))) << std::endl; // 0
 
 	std::cout << std::endl << "Output volume:" << std::endl;
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(0,0,0).getDensity()) << std::endl; // 4
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(1,1,1).getDensity()) << std::endl; // 21
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(2,2,2).getDensity()) << std::endl; // 10
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(3,3,3).getDensity()) << std::endl; // 21
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(4,4,4).getDensity()) << std::endl; // 10
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(5,5,5).getDensity()) << std::endl; // 21
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(6,6,6).getDensity()) << std::endl; // 10
-	std::cout << "Voxel = " << static_cast<int>(resultVolume.getVoxelAt(7,7,7).getDensity()) << std::endl; // 4
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(0,0,0))) << std::endl; // 4
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(1,1,1))) << std::endl; // 21
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(2,2,2))) << std::endl; // 10
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(3,3,3))) << std::endl; // 21
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(4,4,4))) << std::endl; // 10
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(5,5,5))) << std::endl; // 21
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(6,6,6))) << std::endl; // 10
+	std::cout << "Voxel = " << static_cast<int>(convertToDensity(resultVolume.getVoxelAt(7,7,7))) << std::endl; // 4
 }
 
 QTEST_MAIN(TestLowPassFilter)

@@ -76,35 +76,35 @@ namespace PolyVox
 					VoxelType tSrcVoxel = srcSampler.getVoxel();
 
 					uint32_t uDensity = 0;
-					uDensity += srcSampler.peekVoxel1nx1ny1nz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx1ny0pz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx1ny1pz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx0py1nz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx0py0pz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx0py1pz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx1py1nz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx1py0pz().getDensity();
-					uDensity += srcSampler.peekVoxel1nx1py1pz().getDensity();
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx1ny1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx1ny0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx1ny1pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx0py1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx0py0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx0py1pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx1py1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx1py0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1nx1py1pz());
 
-					uDensity += srcSampler.peekVoxel0px1ny1nz().getDensity();
-					uDensity += srcSampler.peekVoxel0px1ny0pz().getDensity();
-					uDensity += srcSampler.peekVoxel0px1ny1pz().getDensity();
-					uDensity += srcSampler.peekVoxel0px0py1nz().getDensity();
-					uDensity += srcSampler.peekVoxel0px0py0pz().getDensity();
-					uDensity += srcSampler.peekVoxel0px0py1pz().getDensity();
-					uDensity += srcSampler.peekVoxel0px1py1nz().getDensity();
-					uDensity += srcSampler.peekVoxel0px1py0pz().getDensity();
-					uDensity += srcSampler.peekVoxel0px1py1pz().getDensity();
+					uDensity += convertToDensity(srcSampler.peekVoxel0px1ny1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px1ny0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px1ny1pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px0py1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px0py0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px0py1pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px1py1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px1py0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel0px1py1pz());
 
-					uDensity += srcSampler.peekVoxel1px1ny1nz().getDensity();
-					uDensity += srcSampler.peekVoxel1px1ny0pz().getDensity();
-					uDensity += srcSampler.peekVoxel1px1ny1pz().getDensity();
-					uDensity += srcSampler.peekVoxel1px0py1nz().getDensity();
-					uDensity += srcSampler.peekVoxel1px0py0pz().getDensity();
-					uDensity += srcSampler.peekVoxel1px0py1pz().getDensity();
-					uDensity += srcSampler.peekVoxel1px1py1nz().getDensity();
-					uDensity += srcSampler.peekVoxel1px1py0pz().getDensity();
-					uDensity += srcSampler.peekVoxel1px1py1pz().getDensity();
+					uDensity += convertToDensity(srcSampler.peekVoxel1px1ny1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px1ny0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px1ny1pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px0py1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px0py0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px0py1pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px1py1nz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px1py0pz());
+					uDensity += convertToDensity(srcSampler.peekVoxel1px1py1pz());
 
 					uDensity /= 27;
 

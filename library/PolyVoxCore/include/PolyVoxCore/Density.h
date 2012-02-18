@@ -91,79 +91,23 @@ namespace PolyVox
 
 	// These are the predefined density types. The 8-bit types are sufficient for many purposes (including
 	// most games) but 16-bit and float types do have uses particularly in medical/scientific visualisation.
-	typedef Density<int8_t> DensityI8;
-	typedef Density<uint8_t> DensityU8;
-	typedef Density<int16_t> DensityI16;
-	typedef Density<uint16_t> DensityU16;
-	typedef Density<float> DensityFloat;
-	typedef Density<double> DensityDouble;
+	typedef Density<uint8_t> Density8;
+	
+	template<>
+	class VoxelTypeTraits< Density8 >	
+	{
+	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = true;
+		static const bool HasMaterial = false;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static Density8::DensityType minDensity() { return std::numeric_limits<Density8::DensityType>::min(); }
+		static Density8::DensityType maxDensity() { return std::numeric_limits<Density8::DensityType>::max(); }
+	};
 
-	// These types are here for backwards compatibility but they are a little ambiguous as the name doesn't indicate
-	// whether the values are signed. We would recommend using one of the 8 or 16 bit predefined types above instead.
-	typedef DensityU8 Density8;
-	typedef DensityU16 Density16;
-	
-	// We have to define the min and max values explicitly here rather than using std::numeric_limits because we need
-	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.	
 	template<>
-	class VoxelTypeTraits< DensityI8 >
-	{
-	public:
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
-		static DensityI8::DensityType minDensity() { return -std::numeric_limits<DensityI8::DensityType>::max(); }
-		static DensityI8::DensityType maxDensity() { return std::numeric_limits<DensityI8::DensityType>::max(); }
-	};
-	
-	template<>
-	class VoxelTypeTraits< DensityU8 >
-	{
-	public:
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
-		static DensityU8::DensityType minDensity() { return std::numeric_limits<DensityU8::DensityType>::min(); }
-		static DensityU8::DensityType maxDensity() { return std::numeric_limits<DensityU8::DensityType>::max(); }
-	};
-	
-	template<>
-	class VoxelTypeTraits< DensityI16 >
-	{
-	public:
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
-		static DensityI16::DensityType minDensity() { return -std::numeric_limits<DensityI16::DensityType>::max(); }
-		static DensityI16::DensityType maxDensity() { return std::numeric_limits<DensityI16::DensityType>::max(); }
-	};
-	
-	template<>
-	class VoxelTypeTraits< DensityU16 >
-	{
-	public:
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
-		static DensityU16::DensityType minDensity() { return std::numeric_limits<DensityU16::DensityType>::min(); }
-		static DensityU16::DensityType maxDensity() { return std::numeric_limits<DensityU16::DensityType>::max(); }
-	};
-	
-	template<>
-	class VoxelTypeTraits< DensityFloat >
-	{
-	public:
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
-		static DensityFloat::DensityType minDensity() { return -std::numeric_limits<DensityFloat::DensityType>::max(); }
-		static DensityFloat::DensityType maxDensity() { return std::numeric_limits<DensityFloat::DensityType>::max(); }
-	};
-	
-	template<>
-	class VoxelTypeTraits< DensityDouble >
-	{
-	public:
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
-		static DensityDouble::DensityType minDensity() { return -std::numeric_limits<DensityDouble::DensityType>::max(); }
-		static DensityDouble::DensityType maxDensity() { return std::numeric_limits<DensityDouble::DensityType>::max(); }
-	};
+	typename VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
 }
 
 #endif //__PolyVox_Density_H__

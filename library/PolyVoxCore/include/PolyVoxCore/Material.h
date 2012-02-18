@@ -100,20 +100,16 @@ namespace PolyVox
 		MaterialType m_uMaterial;
 	};
 
-	typedef Material<uint8_t> MaterialU8;
-	typedef Material<uint16_t> MaterialU16;
-	typedef Material<uint32_t> MaterialU32;
-
-	// These types are here for backwards compatibility but they are a little ambiguous as the name doesn't indicate
-	// whether the values are signed. We would recommend using one of the 8, 16, or 32 bit predefined types above instead.
-	typedef MaterialU8 Material8;
-	typedef MaterialU16 Material16;
-	typedef MaterialU32 Material32;
+	typedef Material<uint8_t> Material8;
+	typedef Material<uint16_t> Material16;
 
 	template<>
-	class VoxelTypeTraits< MaterialU8 >
+	class VoxelTypeTraits< Material8 >
 	{
 	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = false;
+		static const bool HasMaterial = true;
 		static bool hasDensity() { return false; }
 		static bool hasMaterial() { return true; }
 		static int minDensity() { assert(false); return 0; }
@@ -121,19 +117,12 @@ namespace PolyVox
 	};
 
 	template<>
-	class VoxelTypeTraits< MaterialU16 >
+	class VoxelTypeTraits< Material16 >
 	{
 	public:
-		static bool hasDensity() { return false; }
-		static bool hasMaterial() { return true; }
-		static int minDensity() { assert(false); return 0; }
-		static int maxDensity() { assert(false); return 0; }
-	};
-
-	template<>
-	class VoxelTypeTraits< MaterialU32 >
-	{
-	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = false;
+		static const bool HasMaterial = true;
 		static bool hasDensity() { return false; }
 		static bool hasMaterial() { return true; }
 		static int minDensity() { assert(false); return 0; }

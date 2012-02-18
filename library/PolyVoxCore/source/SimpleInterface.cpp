@@ -23,6 +23,10 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/SimpleInterface.h"
 
+//DOESN'T BELONG HERE - JUST FOR TESTING!!
+#include "PolyVoxCore/Density.h"
+#include "PolyVoxCore/MaterialDensityPair.h"
+
 namespace PolyVox
 {
 	void extractCubicMesh(Volume& volume, const Region& region, Mesh& resultMesh)

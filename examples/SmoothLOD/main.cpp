@@ -35,7 +35,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<Density8>& volData, float fRadius)
+void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -59,13 +59,13 @@ void createSphereInVolume(SimpleVolume<Density8>& volData, float fRadius)
 					uint8_t uDensity = VoxelTypeTraits<Density8>::maxDensity();
 
 					//Get the old voxel
-					Density8 voxel = volData.getVoxelAt(x,y,z);
+					//uint8_t voxel = volData.getVoxelAt(x,y,z);
 
 					//Modify the density
-					voxel.setDensity(uDensity);
+					//voxel.setDensity(uDensity);
 
 					//Wrte the voxel value into the volume	
-					volData.setVoxelAt(x, y, z, voxel);
+					volData.setVoxelAt(x, y, z, uDensity);
 				}
 
 				//144 in the middle, (144 - 32) at the edges. Threshold of 128 is between these
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<Density8> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 28);
 
 	//Smooth the data - should reimplement this using LowPassFilter
@@ -91,20 +91,20 @@ int main(int argc, char *argv[])
 	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
 	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
 
-	RawVolume<Density8> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
+	RawVolume<uint8_t> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
 
-	VolumeResampler<SimpleVolume, RawVolume, Density8> volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+	VolumeResampler<SimpleVolume, RawVolume, uint8_t> volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 	volumeResampler.execute();
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> meshLowLOD;
-	SurfaceExtractor<RawVolume, Density8 > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
+	SurfaceExtractor<RawVolume, uint8_t > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
 	surfaceExtractor.execute();
 	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> meshHighLOD;
-	SurfaceExtractor<SimpleVolume, Density8 > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
+	SurfaceExtractor<SimpleVolume, uint8_t > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
 	surfaceExtractorHigh.execute();
 	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
 

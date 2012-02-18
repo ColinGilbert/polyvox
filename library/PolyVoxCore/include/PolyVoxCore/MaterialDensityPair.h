@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	///This class represents a voxel storing only a density.
+	/// This class represents a voxel storing only a density.
 	////////////////////////////////////////////////////////////////////////////////
 	/// In order to perform a surface extraction on a LargeVolume, PolyVox needs the underlying
 	/// voxel type to provide both getDensity() and getMaterial() functions. The getDensity()
@@ -90,6 +90,9 @@ namespace PolyVox
 	class VoxelTypeTraits< MaterialDensityPair44 >
 	{
 	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = true;
+		static const bool HasMaterial = true;
 		static bool hasDensity() { return true; }
 		static bool hasMaterial() { return true; }
 		static MaterialDensityPair44::DensityType minDensity() { return 0; }
@@ -100,11 +103,20 @@ namespace PolyVox
 	class VoxelTypeTraits< MaterialDensityPair88 >
 	{
 	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = true;
+		static const bool HasMaterial = true;
 		static bool hasDensity() { return true; }
 		static bool hasMaterial() { return true; }
 		static MaterialDensityPair88::DensityType minDensity() { return 0; }
 		static MaterialDensityPair88::DensityType maxDensity() { return 255; }
 	};
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel);
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
 }
 
 #endif

@@ -68,17 +68,26 @@ namespace PolyVox
 	class VoxelTypeTraits
 	{
 	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = false;
+		static const bool HasMaterial = false;
+
 		static bool hasDensity() { return false; }
 		static bool hasMaterial() { return false; }
 
 		// These default implementations return an int32_t rather than void so that the result can be
-		// assigned to a variable for all voxel types (even those without density coponents). Calls
+		// assigned to a variable for all voxel types (even those without density components). Calls
 		// to these functions should be protected by calls to hasDensity(), but the compiler still
 		// needs to ensure the assignment is compilable even if hasDensity() returns false.
 		static int32_t minDensity() { assert(false); return 0; } 
 		static int32_t maxDensity() { assert(false); return 0; }
 	};
 
+	template<typename VoxelType>
+	typename VoxelTypeTraits<VoxelType>::DensityType convertToDensity(VoxelType voxel)
+	{
+		return voxel;
+	}
 }
 
 #endif //__PolyVox_Voxel_H__
