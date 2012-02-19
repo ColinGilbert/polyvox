@@ -45,7 +45,7 @@ namespace PolyVox
 	/// \sa Density, Material
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
-	class MaterialDensityPair : public Voxel<Type, Type>
+	class MaterialDensityPair
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is

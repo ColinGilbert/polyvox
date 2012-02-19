@@ -30,29 +30,7 @@ freely, subject to the following restrictions:
 #include <limits>
 
 namespace PolyVox
-{
-	/// This class represents a voxel
-	////////////////////////////////////////////////////////////////////////////////
-	/// Detailed description...
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename DenType, typename MatType>
-	class Voxel
-	{
-	public:
-		// We expose DensityType and MaterialType in this way so that, when code is
-		// templatised on voxel type, it can determine the underlying storage type
-		// using code such as 'VoxelType::DensityType value = voxel.getDensity()'
-		// or 'VoxelType::MaterialType value = voxel.getMaterial()'.
-		typedef DenType DensityType;
-		typedef MatType MaterialType;
-		
-		DensityType getDensity() const throw() { assert(false); return 0; }
-		MaterialType getMaterial() const throw() { assert(false); return 0; }
-
-		void setDensity(DensityType uDensity) { assert(false); }
-		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } 
-	};
-	
+{	
 	// Various properties of the voxel types can be expressed via types traits, similar to the way std::numeric_limits is implemented.
 	// This has some advantages compared to storing the properties directly in the voxel class. For example, by using traits it is possible
 	// to also apply these properties to primative types which might be desirable (the Volume classes do accept primative types as template
