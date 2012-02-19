@@ -88,6 +88,19 @@ namespace PolyVox
 	{
 		return voxel;
 	}
+
+	template<>
+	class VoxelTypeTraits< uint8_t >	
+	{
+	public:
+		typedef uint8_t DensityType;
+		static const bool HasDensity = true;
+		static const bool HasMaterial = false;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static uint8_t minDensity() { return 0; }
+		static uint8_t maxDensity() { return 255; }
+	};
 }
 
 #endif //__PolyVox_Voxel_H__

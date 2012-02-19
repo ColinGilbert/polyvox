@@ -63,6 +63,9 @@ ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
 CREATE_TEST(TestRegion.h TestRegion.cpp TestRegion)
 ADD_TEST(RegionEqualityTest ${LATEST_TEST} testEquality)
 
+CREATE_TEST(TestSurfaceExtractor.h TestSurfaceExtractor.cpp TestSurfaceExtractor)
+ADD_TEST(SurfaceExtractorExecuteTest ${LATEST_TEST} testExecute)
+
 #Vector tests
 CREATE_TEST(testvector.h testvector.cpp testvector)
 ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
