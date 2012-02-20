@@ -48,11 +48,6 @@ namespace PolyVox
 	public:
 		typedef uint8_t DensityType;
 		typedef uint8_t MaterialType;
-		static const bool HasDensity = false;
-		static const bool HasMaterial = false;
-
-		static bool hasDensity() { return false; }
-		static bool hasMaterial() { return false; }
 
 		// These default implementations return an int32_t rather than void so that the result can be
 		// assigned to a variable for all voxel types (even those without density components). Calls

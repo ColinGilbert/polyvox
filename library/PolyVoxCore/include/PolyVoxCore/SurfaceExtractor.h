@@ -38,10 +38,6 @@ namespace PolyVox
 	public:
 		typedef uint8_t DensityType;
 		typedef uint8_t MaterialType;
-		static const bool HasDensity = true;
-		static const bool HasMaterial = false;
-		static bool hasDensity() { return true; }
-		static bool hasMaterial() { return false; }
 		static uint8_t minDensity() { return 0; }
 		static uint8_t maxDensity() { return 255; }
 	};
