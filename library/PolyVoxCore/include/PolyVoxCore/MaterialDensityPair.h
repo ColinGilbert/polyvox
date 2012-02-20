@@ -91,6 +91,7 @@ namespace PolyVox
 	{
 	public:
 		typedef uint8_t DensityType;
+		typedef uint8_t MaterialType;
 		static const bool HasDensity = true;
 		static const bool HasMaterial = true;
 		static bool hasDensity() { return true; }
@@ -104,6 +105,7 @@ namespace PolyVox
 	{
 	public:
 		typedef uint8_t DensityType;
+		typedef uint8_t MaterialType;
 		static const bool HasDensity = true;
 		static const bool HasMaterial = true;
 		static bool hasDensity() { return true; }
@@ -111,12 +113,23 @@ namespace PolyVox
 		static MaterialDensityPair88::DensityType minDensity() { return 0; }
 		static MaterialDensityPair88::DensityType maxDensity() { return 255; }
 	};
+}
 
+#include "PolyVoxCore/SurfaceExtractor.h"
+
+namespace PolyVox
+{
 	template<>
 	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel);
 
 	template<>
 	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair44>::MaterialType convertToMaterial(MaterialDensityPair44 voxel);
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType convertToMaterial(MaterialDensityPair88 voxel);
 }
 
 #endif

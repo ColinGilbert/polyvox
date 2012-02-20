@@ -391,28 +391,6 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VoxelType, bool HasMaterialInType = true>
-	struct getMaterialFromVoxel;
-
-	template<typename VoxelType>
-	struct getMaterialFromVoxel<VoxelType, true>
-	{
-		static uint32_t run(VoxelType voxel)
-		{
-			return voxel.getMaterial();
-		}
-	};
-
-	template<typename VoxelType>
-	struct getMaterialFromVoxel<VoxelType, false>
-	{
-		static uint32_t run(VoxelType voxel)
-		{
-			return 0;
-		}
-	};
-
-
 	template< template<typename> class VolumeType, typename VoxelType>
 	void SurfaceExtractor<VolumeType, VoxelType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
@@ -465,8 +443,8 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					uint32_t uMaterial000 = getMaterialFromVoxel<VoxelType, VoxelTypeTraits<VoxelType>::HasMaterial>::run(v000);
-					uint32_t uMaterial100 = getMaterialFromVoxel<VoxelType, VoxelTypeTraits<VoxelType>::HasMaterial>::run(v100);
+					uint32_t uMaterial000 = convertToMaterial(v000);
+					uint32_t uMaterial100 = convertToMaterial(v100);
 					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial100);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
@@ -491,8 +469,8 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					uint32_t uMaterial000 = getMaterialFromVoxel<VoxelType, VoxelTypeTraits<VoxelType>::HasMaterial>::run(v000);
-					uint32_t uMaterial010 = getMaterialFromVoxel<VoxelType, VoxelTypeTraits<VoxelType>::HasMaterial>::run(v010);
+					uint32_t uMaterial000 = convertToMaterial(v000);
+					uint32_t uMaterial010 = convertToMaterial(v010);
 					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial010);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
@@ -517,8 +495,8 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					uint32_t uMaterial000 = getMaterialFromVoxel<VoxelType, VoxelTypeTraits<VoxelType>::HasMaterial>::run(v000);
-					uint32_t uMaterial001 = getMaterialFromVoxel<VoxelType, VoxelTypeTraits<VoxelType>::HasMaterial>::run(v001);
+					uint32_t uMaterial000 = convertToMaterial(v000);
+					uint32_t uMaterial001 = convertToMaterial(v001);
 					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial001);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));

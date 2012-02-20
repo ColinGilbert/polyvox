@@ -51,6 +51,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MeshDecimator.h
 	include/PolyVoxCore/MeshDecimator.inl
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
+	include/PolyVoxCore/PrimitiveVoxelTypes.h
 	include/PolyVoxCore/RawVolume.h
 	include/PolyVoxCore/RawVolume.inl
 	include/PolyVoxCore/RawVolumeSampler.inl

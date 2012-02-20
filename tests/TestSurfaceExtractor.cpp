@@ -35,7 +35,7 @@ using namespace PolyVox;
 
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.
 // They are conceptually the inverse of the 'convertToDensity' function used by the SurfaceExtractor. They probably shouldn't be part
-// of PolyVox, but they might be usful to other tests so we cold move them into a 'Tests.h' or something in tthe future.
+// of PolyVox, but they might be usful to other tests so we cold move them into a 'Tests.h' or something in the future.
 template<typename VoxelType>
 void writeDensityValueToVoxel(typename VoxelTypeTraits<VoxelType>::DensityType valueToWrite, VoxelType& voxel)
 {
@@ -54,6 +54,19 @@ void writeDensityValueToVoxel(typename VoxelTypeTraits<MaterialDensityPair88>::D
 	voxel.setDensity(valueToWrite);
 }
 
+template<typename VoxelType>
+void writeMaterialValueToVoxel(typename VoxelTypeTraits<VoxelType>::MaterialType valueToWrite, VoxelType& voxel)
+{
+	//Most types don't have a material
+	return;
+}
+
+template<>
+void writeMaterialValueToVoxel(typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType valueToWrite, MaterialDensityPair88& voxel)
+{
+	voxel.setMaterial(valueToWrite);
+}
+
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
 void testForType(SurfaceMesh<PositionMaterialNormal>& result)
@@ -69,9 +82,11 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				//Create a density field which changes throughout the volume.
 				VoxelType voxelValue;
+				//Create a density field which changes throughout the volume.
 				writeDensityValueToVoxel<VoxelType>(x + y + z, voxelValue);
+				//Two different materials in two halves of the volume
+				writeMaterialValueToVoxel<VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
 				volData.setVoxelAt(x, y, z, voxelValue);
 			}
 		}
@@ -85,48 +100,61 @@ void TestSurfaceExtractor::testExecute()
 {
 	const static uint32_t uExpectedVertices = 4731;
 	const static uint32_t uExpectedIndices = 12810;
+	const static uint32_t uMaterialToCheck = 3000;
+	const static float fExpectedMaterial = 42.0f;
+	const static float fNoMaterial = 1.0f;
 
 	SurfaceMesh<PositionMaterialNormal> mesh;
 
 	testForType<int8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<uint8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<int16_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<uint16_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<int32_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<uint32_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<float>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<double>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<Density8>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 
 	testForType<MaterialDensityPair88>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);
 }
 
 QTEST_MAIN(TestSurfaceExtractor)

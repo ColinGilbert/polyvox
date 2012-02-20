@@ -32,6 +32,26 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	template<>
+	class VoxelTypeTraits< uint8_t >	
+	{
+	public:
+		typedef uint8_t DensityType;
+		typedef uint8_t MaterialType;
+		static const bool HasDensity = true;
+		static const bool HasMaterial = false;
+		static bool hasDensity() { return true; }
+		static bool hasMaterial() { return false; }
+		static uint8_t minDensity() { return 0; }
+		static uint8_t maxDensity() { return 255; }
+	};
+
+	template<typename VoxelType>
+	typename VoxelTypeTraits<VoxelType>::MaterialType convertToMaterial(VoxelType voxel)
+	{
+		return 1;
+	}
+
 	template< template<typename> class VolumeType, typename VoxelType>
 	class SurfaceExtractor
 	{
