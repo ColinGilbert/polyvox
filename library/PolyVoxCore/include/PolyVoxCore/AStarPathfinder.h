@@ -72,7 +72,7 @@ namespace PolyVox
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
 			Connectivity connectivity = TwentySixConnected,
-			polyvox_function<bool (const VolumeType<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator<VolumeType, VoxelType>,
+			polyvox_function<bool (const VolumeType<VoxelType>*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator,
 			polyvox_function<void (float)> funcProgressCallback = 0
 		)
 			:volume(volData)
