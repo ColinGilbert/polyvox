@@ -44,7 +44,7 @@ namespace PolyVox
 	extern const POLYVOX_API Vector3DInt32 arrayPathfinderCorners[8];
 
 	/// This function provides the default method for checking whether a given voxel
-	/// is vaid for the path computed by the AStarPathfinder.
+	/// is valid for the path computed by the AStarPathfinder.
 	template< template<typename> class VolumeType, typename VoxelType>
 	bool aStarDefaultVoxelValidator(const VolumeType<VoxelType>* volData, const Vector3DInt32& v3dPos);
 
