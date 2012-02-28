@@ -57,7 +57,7 @@ namespace PolyVox
 	:BaseVolume<VoxelType>(regValid)
 	{
 		//Create a volume of the right size.
-		resize(regValid,uBlockSideLength);
+		initialise(regValid,uBlockSideLength);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ namespace PolyVox
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void SimpleVolume<VoxelType>::resize(const Region& regValidRegion, uint16_t uBlockSideLength)
+	void SimpleVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
 		assert(uBlockSideLength > 0);

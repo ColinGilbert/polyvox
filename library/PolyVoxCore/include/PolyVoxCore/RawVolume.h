@@ -144,10 +144,9 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
-		void resize(const Region& regValidRegion);
+private:
+		void initialise(const Region& regValidRegion);
 
-private:	
 		//The block data
 		VoxelType* m_pData;
 
