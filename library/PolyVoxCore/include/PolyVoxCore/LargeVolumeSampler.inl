@@ -55,24 +55,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	int32_t LargeVolume<VoxelType>::Sampler::getPosX(void) const
-	{
-		return this->mXPosInVolume;
-	}
-
-	template <typename VoxelType>
-	int32_t LargeVolume<VoxelType>::Sampler::getPosY(void) const
-	{
-		return this->mYPosInVolume;
-	}
-
-	template <typename VoxelType>
-	int32_t LargeVolume<VoxelType>::Sampler::getPosZ(void) const
-	{
-		return this->mZPosInVolume;
-	}
-
-	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::getSubSampledVoxel(uint8_t uLevel) const
 	{		
 		if(uLevel == 0)

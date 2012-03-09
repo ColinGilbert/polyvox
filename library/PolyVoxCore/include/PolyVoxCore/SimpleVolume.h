@@ -87,9 +87,6 @@ namespace PolyVox
 
 			Sampler& operator=(const Sampler& rhs) throw();
 
-			int32_t getPosX(void) const;
-			int32_t getPosY(void) const;
-			int32_t getPosZ(void) const;
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			inline VoxelType getVoxel(void) const;			
 

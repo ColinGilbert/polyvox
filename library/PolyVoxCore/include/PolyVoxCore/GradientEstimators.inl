@@ -47,9 +47,9 @@ namespace PolyVox
 	template< template<typename> class VolumeType, typename VoxelType>
 	Vector3DFloat computeDecimatedCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
 	{
-		const int32_t x = volIter.getPosX();
-		const int32_t y = volIter.getPosY();
-		const int32_t z = volIter.getPosZ();
+		const int32_t x = volIter.getPosition().getX();
+		const int32_t y = volIter.getPosition().getY();
+		const int32_t z = volIter.getPosition().getZ();
 
 		//FIXME - bitwise way of doing this?
 		VoxelType voxel1nx = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
@@ -72,9 +72,9 @@ namespace PolyVox
 	template< template<typename> class VolumeType, typename VoxelType>
 	Vector3DFloat computeSmoothCentralDifferenceGradient(typename VolumeType<VoxelType>::Sampler& volIter)
 	{
-		int32_t initialX = volIter.getPosX();
-		int32_t initialY = volIter.getPosY();
-		int32_t initialZ = volIter.getPosZ();
+		int32_t initialX = volIter.getPosition().getX();
+		int32_t initialY = volIter.getPosition().getY();
+		int32_t initialZ = volIter.getPosition().getZ();
 
 		//FIXME - bitwise way of doing this?
 		volIter.setPosition(initialX-1, initialY, initialZ);
@@ -189,9 +189,9 @@ namespace PolyVox
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
 
-			int32_t initialX = volIter.getPosX();
-			int32_t initialY = volIter.getPosY();
-			int32_t initialZ = volIter.getPosZ();
+			int32_t initialX = volIter.getPosition().getX();
+			int32_t initialY = volIter.getPosition().getY();
+			int32_t initialZ = volIter.getPosition().getZ();
 
 			volIter.setPosition(initialX-1, initialY-1, initialZ-1);	const float pVoxel1nx1ny1nz = computeSmoothedVoxel(volIter);
 			volIter.setPosition(initialX-1, initialY-1, initialZ );		const float pVoxel1nx1ny0pz = computeSmoothedVoxel(volIter);

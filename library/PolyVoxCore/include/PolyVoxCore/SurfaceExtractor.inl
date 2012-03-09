@@ -531,8 +531,8 @@ namespace PolyVox
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);	
 
 				//Current position
-				const uint32_t uXRegSpace = m_sampVolume.getPosX() - m_regSizeInVoxels.getLowerCorner().getX();
-				const uint32_t uYRegSpace = m_sampVolume.getPosY() - m_regSizeInVoxels.getLowerCorner().getY();
+				const uint32_t uXRegSpace = m_sampVolume.getPosition().getX() - m_regSizeInVoxels.getLowerCorner().getX();
+				const uint32_t uYRegSpace = m_sampVolume.getPosition().getY() - m_regSizeInVoxels.getLowerCorner().getY();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
 				uint8_t iCubeIndex = pPreviousBitmask[uXRegSpace][uYRegSpace];

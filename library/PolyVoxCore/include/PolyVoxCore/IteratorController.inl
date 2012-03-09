@@ -32,7 +32,7 @@ namespace PolyVox
 	template <typename IteratorType>
 	bool IteratorController<IteratorType>::moveForward(void)
 	{
-		Vector3DInt32 v3dInitialPosition(m_Iter->getPosX(), m_Iter->getPosY(), m_Iter->getPosZ());
+		Vector3DInt32 v3dInitialPosition(m_Iter->getPosition().getX(), m_Iter->getPosition().getY(), m_Iter->getPosition().getZ());
 
 		if(v3dInitialPosition.getX() < m_regValid.getUpperCorner().getX())
 		{
