@@ -32,12 +32,13 @@ namespace PolyVox
 	/// \param result An instance of RaycastResult in which the result will be stored.
 	////////////////////////////////////////////////////////////////////////////////
 	template< template<typename> class VolumeType, typename VoxelType>
-	Raycast<VolumeType, VoxelType>::Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result)
+	Raycast<VolumeType, VoxelType>::Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result, polyvox_function<bool(const typename VolumeType<VoxelType>::Sampler& sampler)> funcIsPassable)
 		:m_result(result)
 		,m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
 		,m_v3dDirectionAndLength(v3dDirectionAndLength)
+		,m_funcIsPassable(funcIsPassable)
 	{
 	}
 
@@ -139,7 +140,7 @@ namespace PolyVox
 
 		for(;;)
 		{
-			if(m_sampVolume.getVoxel().getDensity() > VoxelType::getThreshold())
+			if(!m_funcIsPassable(m_sampVolume))
 			{
 				m_result.foundIntersection = true;
 				m_result.intersectionVoxel = Vector3DInt32(i,j,k);

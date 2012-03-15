@@ -33,6 +33,11 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+bool isPassableByRay(const SimpleVolume<Density8>::Sampler& sampler)
+{
+	return sampler.getVoxel().getDensity() < Density8::getThreshold();
+}
+
 void TestRaycast::testExecute()
 {
 	const int32_t uVolumeSideLength = 32;
@@ -67,7 +72,7 @@ void TestRaycast::testExecute()
 	for(int ct = 0; ct < 1000000; ct++)
 	{
 		RaycastResult result;
-		Raycast<SimpleVolume, Density8> raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result);
+		Raycast<SimpleVolume, Density8> raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
 		raycast.execute();
 		if(result.foundIntersection)
 		{
