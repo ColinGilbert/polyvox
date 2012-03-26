@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>
-	AmbientOcclusionCalculator<VolumeType, VoxelType>::AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement)
+	AmbientOcclusionCalculator<VolumeType, VoxelType>::AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement/*, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent*/)
 		:m_region(region)
 		,m_sampVolume(volInput)
 		,m_volInput(volInput)
@@ -33,6 +33,7 @@ namespace PolyVox
 		,m_uNoOfSamplesPerOutputElement(uNoOfSamplesPerOutputElement)
 		,mRandomUnitVectorIndex(0) //Although these could be uninitialised, we 
 		,mRandomVectorIndex(0) //initialise for consistant results in the tests.
+		//,m_funcIsTransparent(funcIsTransparent)
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
 		assert(m_volInput->getWidth() % arrayResult->getDimension(0) == 0);
@@ -74,7 +75,7 @@ namespace PolyVox
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
 
 		RaycastResult raycastResult;
-		Raycast<VolumeType, VoxelType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult);
+		Raycast<VolumeType, VoxelType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult, polyvox_bind(&PolyVox::AmbientOcclusionCalculator<VolumeType,VoxelType>::raycastCallback, this, std::placeholders::_1));
 
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
 		for(uint16_t z = m_region.getLowerCorner().getZ(); z <= m_region.getUpperCorner().getZ(); z += iRatioZ)
@@ -130,5 +131,14 @@ namespace PolyVox
 				}
 			}
 		}
+	}
+
+	template< template<typename> class VolumeType, typename VoxelType>
+	//bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler)
+	bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler)
+	{
+		//VoxelType voxel = sampler.getVoxel();
+		//return m_funcIsTransparent(voxel);
+		return sampler.getVoxel().getMaterial() == 0;
 	}
 }
