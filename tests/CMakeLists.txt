@@ -47,6 +47,9 @@ ADD_TEST(ArrayReadWriteTest ${LATEST_TEST} testReadWrite)
 CREATE_TEST(TestAStarPathfinder.h TestAStarPathfinder.cpp TestAStarPathfinder)
 ADD_TEST(AStarPathfinderExecuteTest ${LATEST_TEST} testExecute)
 
+CREATE_TEST(TestCubicSurfaceExtractor.h TestCubicSurfaceExtractor.cpp TestCubicSurfaceExtractor)
+ADD_TEST(CubicSurfaceExtractorExecuteTest ${LATEST_TEST} testExecute)
+
 # Low pass filter tests
 CREATE_TEST(TestLowPassFilter.h TestLowPassFilter.cpp TestLowPassFilter)
 ADD_TEST(LowPassFilterExecuteTest ${LATEST_TEST} testExecute)
