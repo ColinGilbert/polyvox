@@ -31,6 +31,11 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+bool isVoxelTransparent(Material8 voxel)
+{
+	return voxel.getMaterial() == 0;
+}
+
 void TestAmbientOcclusionGenerator::testExecute()
 {
 	const int32_t g_uVolumeSideLength = 64;
@@ -59,7 +64,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	Array<3, uint8_t> ambientOcclusionResult(ArraySizes(g_uArraySideLength)(g_uArraySideLength)(g_uArraySideLength));
 
 	//Create the ambient occlusion calculator
-	AmbientOcclusionCalculator<SimpleVolume, Material8> calculator(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255);
+	AmbientOcclusionCalculator<SimpleVolume, Material8> calculator(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
 
 	//Execute the calculator
 	calculator.execute();

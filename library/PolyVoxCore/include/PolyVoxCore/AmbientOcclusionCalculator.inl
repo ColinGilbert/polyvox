@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>
-	AmbientOcclusionCalculator<VolumeType, VoxelType>::AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement/*, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent*/)
+	AmbientOcclusionCalculator<VolumeType, VoxelType>::AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent)
 		:m_region(region)
 		,m_sampVolume(volInput)
 		,m_volInput(volInput)
@@ -33,7 +33,7 @@ namespace PolyVox
 		,m_uNoOfSamplesPerOutputElement(uNoOfSamplesPerOutputElement)
 		,mRandomUnitVectorIndex(0) //Although these could be uninitialised, we 
 		,mRandomVectorIndex(0) //initialise for consistant results in the tests.
-		//,m_funcIsTransparent(funcIsTransparent)
+		,m_funcIsTransparent(funcIsTransparent)
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
 		assert(m_volInput->getWidth() % arrayResult->getDimension(0) == 0);
@@ -134,11 +134,13 @@ namespace PolyVox
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
-	//bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler)
+#if defined(_MSC_VER)
 	bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler)
+#else
+	bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler)
+#endif	
 	{
-		//VoxelType voxel = sampler.getVoxel();
-		//return m_funcIsTransparent(voxel);
-		return sampler.getVoxel().getMaterial() == 0;
+		VoxelType voxel = sampler.getVoxel();
+		return m_funcIsTransparent(voxel);
 	}
 }

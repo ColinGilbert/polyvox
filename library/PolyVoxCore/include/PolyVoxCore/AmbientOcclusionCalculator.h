@@ -43,15 +43,18 @@ namespace PolyVox
 	class AmbientOcclusionCalculator
 	{
 	public:
-		AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement/*, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent*/);
+		AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent);
 		~AmbientOcclusionCalculator();
 
 		void execute(void);
 
 	private:
 
-		//bool raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler);
-		bool raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler);
+#if defined(_MSC_VER) //FIXME: To be investigated. Linux version is more general and should be correct.
+		bool raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler);		
+#else
+		bool raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler);
+#endif
 
 		Region m_region;
 		typename VolumeType<VoxelType>::Sampler m_sampVolume;
