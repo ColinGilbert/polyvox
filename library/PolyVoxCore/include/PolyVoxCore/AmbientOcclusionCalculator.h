@@ -31,9 +31,11 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Raycast.h"
 
-//These two should not be here!
-#include "PolyVoxCore/Material.h"
-#include "PolyVoxCore/SimpleVolume.h"
+#if defined(_MSC_VER)
+	//These two should not be here!
+	#include "PolyVoxCore/Material.h"
+	#include "PolyVoxCore/SimpleVolume.h"
+#endif
 
 #include <algorithm>
 

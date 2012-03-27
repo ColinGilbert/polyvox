@@ -24,16 +24,15 @@ freely, subject to the following restrictions:
 #include "TestAmbientOcclusionGenerator.h"
 
 #include "PolyVoxCore/AmbientOcclusionCalculator.h"
-#include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
 
-bool isVoxelTransparent(Material8 voxel)
+bool isVoxelTransparent(uint8_t voxel)
 {
-	return voxel.getMaterial() == 0;
+	return voxel == 0;
 }
 
 void TestAmbientOcclusionGenerator::testExecute()
@@ -41,7 +40,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	const int32_t g_uVolumeSideLength = 64;
 
 	//Create empty volume
-	SimpleVolume<Material8> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
+	SimpleVolume<uint8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
 
 	//Create two solid walls at opposite sides of the volume
 	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
@@ -52,8 +51,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 			{
 				for (int32_t x = 0; x < g_uVolumeSideLength; x++)
 				{
-					Material8 voxel(1);
-					volData.setVoxelAt(x, y, z, voxel);
+					volData.setVoxelAt(x, y, z, 1);
 				}
 			}
 		}
@@ -64,7 +62,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	Array<3, uint8_t> ambientOcclusionResult(ArraySizes(g_uArraySideLength)(g_uArraySideLength)(g_uArraySideLength));
 
 	//Create the ambient occlusion calculator
-	AmbientOcclusionCalculator<SimpleVolume, Material8> calculator(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
+	AmbientOcclusionCalculator<SimpleVolume, uint8_t> calculator(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
 
 	//Execute the calculator
 	calculator.execute();

@@ -33,9 +33,9 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-bool isPassableByRay(const SimpleVolume<Density8>::Sampler& sampler)
+bool isPassableByRay(const SimpleVolume<int8_t>::Sampler& sampler)
 {
-	return sampler.getVoxel().getDensity() < Density8::getThreshold();
+	return sampler.getVoxel() <= 0;
 }
 
 void TestRaycast::testExecute()
@@ -43,25 +43,21 @@ void TestRaycast::testExecute()
 	const int32_t uVolumeSideLength = 32;
 
 	//Create a hollow volume, with solid sides on x and y but with open ends in z.
-	SimpleVolume<Density8> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+	SimpleVolume<int8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
 		for (int32_t y = 0; y < uVolumeSideLength; y++)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				Density8 voxelValue;
-
 				if((x == 0) || (x == uVolumeSideLength-1) || (y == 0) || (y == uVolumeSideLength-1))
 				{
-					voxelValue.setDensity(255);
+					volData.setVoxelAt(x, y, z, 100);
 				}
 				else
 				{
-					voxelValue.setDensity(0);
-				}
-
-				volData.setVoxelAt(x, y, z, voxelValue);
+					volData.setVoxelAt(x, y, z, -100);
+				}				
 			}
 		}
 	}
@@ -72,7 +68,7 @@ void TestRaycast::testExecute()
 	for(int ct = 0; ct < 1000000; ct++)
 	{
 		RaycastResult result;
-		Raycast<SimpleVolume, Density8> raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
+		Raycast<SimpleVolume, int8_t> raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
 		raycast.execute();
 		if(result.foundIntersection)
 		{
