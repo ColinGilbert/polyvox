@@ -41,23 +41,9 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
-	int32_t BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getPosX(void) const
+	Vector3DInt32 BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getPosition(void) const
 	{
-		return mXPosInVolume;
-	}
-
-	template <typename VoxelType>
-	template <typename DerivedVolumeType>
-	int32_t BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getPosY(void) const
-	{
-		return mYPosInVolume;
-	}
-
-	template <typename VoxelType>
-	template <typename DerivedVolumeType>
-	int32_t BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getPosZ(void) const
-	{
-		return mZPosInVolume;
+		return Vector3DInt32(mXPosInVolume, mYPosInVolume, mZPosInVolume);
 	}
 
 	template <typename VoxelType>

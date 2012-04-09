@@ -31,6 +31,9 @@ freely, subject to the following restrictions:
 #include <cassert>
 #include <limits>
 
+#undef min
+#undef max
+
 namespace PolyVox
 {
 	///This class represents a voxel storing only a density.
@@ -45,8 +48,11 @@ namespace PolyVox
 	///
 	/// \sa Material, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
+
+	// int32_t template parameter is a dummy, required as the compiler expects to be able to declare an
+	// instance of VoxelType::MaterialType without knowing that VoxelType doesn't actually have a material.
 	template <typename Type>
-	class Density : public Voxel<Type, uint8_t>
+	class Density
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is
@@ -54,7 +60,7 @@ namespace PolyVox
 		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
 		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
 		typedef Type DensityType;
-		typedef uint8_t MaterialType; //Shouldn't define this one...
+		typedef int32_t MaterialType; //Shouldn't define this one...
 
 		Density() : m_uDensity(0) {}
 		Density(DensityType uDensity) : m_uDensity(uDensity) {}
@@ -70,13 +76,13 @@ namespace PolyVox
 		}
 
 		DensityType getDensity() const throw() { return m_uDensity; }
-		MaterialType getMaterial() const throw() { return 1; }
+		//MaterialType getMaterial() const throw() { return 1; }
 
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
-		void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
+		//void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
 
-		//static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
-		//static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
+		//static DensityType getmaxDensity()() throw() { return (std::numeric_limits<DensityType>::max)(); } 
+		//static DensityType getminDensity()() throw() { return (std::numeric_limits<DensityType>::min)(); }
 		static DensityType getThreshold() throw() { return (std::numeric_limits<DensityType>::max)() / 2; }
 
 	private:
@@ -85,70 +91,20 @@ namespace PolyVox
 
 	// These are the predefined density types. The 8-bit types are sufficient for many purposes (including
 	// most games) but 16-bit and float types do have uses particularly in medical/scientific visualisation.
-	typedef Density<int8_t> DensityI8;
-	typedef Density<uint8_t> DensityU8;
-	typedef Density<int16_t> DensityI16;
-	typedef Density<uint16_t> DensityU16;
-	typedef Density<float> DensityFloat;
-	typedef Density<double> DensityDouble;
-
-	// These types are here for backwards compatibility but they are a little ambiguous as the name doesn't indicate
-	// whether the values are signed. We would recommend using one of the 8 or 16 bit predefined types above instead.
 	typedef Density<uint8_t> Density8;
-	typedef Density<uint16_t> Density16;
 	
-	// We have to define all the min and max values explicitly here rather than using std::numeric_limits because we need
-	// compile time constants. The new 'constexpr' would help here but it's not supported by all compilers at the moment.
-	/*template<>
-	class VoxelTypeTraits< Density<int8_t> >
+	template<>
+	class VoxelTypeTraits< Density8 >	
 	{
 	public:
-		const static int8_t MinDensity;
-		const static int8_t MaxDensity;
-	};*/
-
-	/*template<>
-	class VoxelTypeTraits< Density<uint8_t> >
-	{
-	public:
-		const static uint8_t MinDensity; 
-		const static uint8_t MaxDensity;
-	};*/
-
-	/*template<>
-	class VoxelTypeTraits< Density<int16_t> >
-	{
-	public:
-		const static int16_t MinDensity;
-		const static int16_t MaxDensity;
+		typedef uint8_t DensityType;
+		typedef uint8_t MaterialType;
+		static Density8::DensityType minDensity() { return std::numeric_limits<Density8::DensityType>::min(); }
+		static Density8::DensityType maxDensity() { return std::numeric_limits<Density8::DensityType>::max(); }
 	};
 
 	template<>
-	class VoxelTypeTraits< Density<uint16_t> >
-	{
-	public:
-		const static uint16_t MinDensity;
-		const static uint16_t MaxDensity;
-	};
-	
-	//Constants for float defined in .cpp file as they are not integers.
-	template<>
-	class VoxelTypeTraits< Density<float> >
-	{
-	public:
-		const static float MinDensity;
-		const static float MaxDensity;
-	};
-
-	//Constants for double defined in .cpp file as they are not integers.
-	template<>
-	class VoxelTypeTraits< Density<double> >
-	{
-	public:
-		const static double MinDensity;
-		const static double MaxDensity;
-	};*/
-
+	typename VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
 }
 
 #endif //__PolyVox_Density_H__

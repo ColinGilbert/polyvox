@@ -33,12 +33,12 @@ namespace PolyVox
 	{
 	public:
 		///Constructor
-		RaycastWithCallback(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirection, polyvox_function<bool(const Vector3DInt32& position)> funcCallback);
+		RaycastWithCallback(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, polyvox_function<bool(const Vector3DInt32& position)> funcCallback);
 
 		///Sets the start position for the ray.
 		void setStart(const Vector3DFloat& v3dStart);
 		///Set the direction for the ray.
-		void setDirection(const Vector3DFloat& v3dDirection);
+		void setDirection(const Vector3DFloat& v3dDirectionAndLength);
 
 		///Performs the raycast.
 		void execute();
@@ -52,7 +52,7 @@ namespace PolyVox
 		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 
 		Vector3DFloat m_v3dStart;
-		Vector3DFloat m_v3dDirection;
+		Vector3DFloat m_v3dDirectionAndLength;
 		float m_fMaxDistance;
 	};
 }

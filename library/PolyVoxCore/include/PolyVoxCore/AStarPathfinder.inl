@@ -37,13 +37,6 @@ namespace PolyVox
 			return false;
 		}
 
-		//and if their density is below the threshold.
-		VoxelType voxel = volData->getVoxelAt(v3dPos);
-		if(voxel.getDensity() >= VoxelType::getThreshold())
-		{
-			return false;
-		}
-
 		return true;
 	}
 

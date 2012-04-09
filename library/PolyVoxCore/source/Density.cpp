@@ -23,37 +23,11 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Density.h"
 
-#include <cfloat> //Can't use <limits> as we need compile time constants.
-
 namespace PolyVox
 {
 	template<>
-	const int8_t VoxelTypeTraits< Density<int8_t> >::MinDensity = -127;
-	template<>
-	const int8_t VoxelTypeTraits< Density<int8_t> >::MaxDensity = 127;
-	
-	template<>
-	const uint8_t VoxelTypeTraits< Density<uint8_t> >::MinDensity = 0;
-	template<>
-	const uint8_t VoxelTypeTraits< Density<uint8_t> >::MaxDensity = 255;
-	
-	template<>
-	const int16_t VoxelTypeTraits< Density<int16_t> >::MinDensity = -32767;
-	template<>
-	const int16_t VoxelTypeTraits< Density<int16_t> >::MaxDensity = 32767;
-	
-	template<>
-	const uint16_t VoxelTypeTraits< Density<uint16_t> >::MinDensity = 0;
-	template<>
-	const uint16_t VoxelTypeTraits< Density<uint16_t> >::MaxDensity = 65535;
-	
-	template<>
-	const float VoxelTypeTraits< Density<float> >::MinDensity = FLT_MIN;
-	template<>
-	const float VoxelTypeTraits< Density<float> >::MaxDensity = FLT_MAX;
-
-	template<>
-	const double VoxelTypeTraits< Density<double> >::MinDensity = DBL_MIN;
-	template<>
-	const double VoxelTypeTraits< Density<double> >::MaxDensity = DBL_MAX;
+	typename VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel)
+	{
+		return voxel.getDensity();
+	}
 }

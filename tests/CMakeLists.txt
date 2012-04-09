@@ -59,9 +59,16 @@ ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
 CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
 ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
 
+# Raycast tests
+CREATE_TEST(TestRaycast.h TestRaycast.cpp TestRaycast)
+ADD_TEST(RaycastExecuteTest ${LATEST_TEST} testExecute)
+
 # Region tests
 CREATE_TEST(TestRegion.h TestRegion.cpp TestRegion)
 ADD_TEST(RegionEqualityTest ${LATEST_TEST} testEquality)
+
+CREATE_TEST(TestSurfaceExtractor.h TestSurfaceExtractor.cpp TestSurfaceExtractor)
+ADD_TEST(SurfaceExtractorExecuteTest ${LATEST_TEST} testExecute)
 
 #Vector tests
 CREATE_TEST(testvector.h testvector.cpp testvector)
@@ -73,6 +80,6 @@ ADD_TEST(VectorEqualityTest ${LATEST_TEST} testEquality)
 CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)
 ADD_TEST(VolumeSubclassExtractSurfaceTest ${LATEST_TEST} testExtractSurface)
 
-# ClassName tests
+# Voxel tests
 CREATE_TEST(TestVoxels.h TestVoxels.cpp TestVoxels)
-ADD_TEST(VoxelsTraitsTest ${LATEST_TEST} testTraits)
+ADD_TEST(VoxelsTraitsTest ${LATEST_TEST} testVoxelTypeLimits)

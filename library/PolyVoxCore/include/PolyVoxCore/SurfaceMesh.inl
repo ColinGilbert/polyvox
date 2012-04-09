@@ -100,6 +100,11 @@ namespace PolyVox
 	template <typename VertexType>
 	void SurfaceMesh<VertexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
+		//Make sure the specified indices correspond to valid vertices.
+		assert(index0 < m_vecVertices.size());
+		assert(index1 < m_vecVertices.size());
+		assert(index2 < m_vecVertices.size());
+
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
 		m_vecTriangleIndices.push_back(index2);
@@ -108,6 +113,11 @@ namespace PolyVox
 	template <typename VertexType>
 	void SurfaceMesh<VertexType>::addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
+		//Make sure the specified indices correspond to valid vertices.
+		assert(index0 < m_vecVertices.size());
+		assert(index1 < m_vecVertices.size());
+		assert(index2 < m_vecVertices.size());
+
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
 		m_vecTriangleIndices.push_back(index2);

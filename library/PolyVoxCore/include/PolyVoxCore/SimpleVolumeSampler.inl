@@ -55,24 +55,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	int32_t SimpleVolume<VoxelType>::Sampler::getPosX(void) const
-	{
-		return this->mXPosInVolume;
-	}
-
-	template <typename VoxelType>
-	int32_t SimpleVolume<VoxelType>::Sampler::getPosY(void) const
-	{
-		return this->mYPosInVolume;
-	}
-
-	template <typename VoxelType>
-	int32_t SimpleVolume<VoxelType>::Sampler::getPosZ(void) const
-	{
-		return this->mZPosInVolume;
-	}
-
-	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::Sampler::getSubSampledVoxel(uint8_t uLevel) const
 	{		
 		if(uLevel == 0)
@@ -329,7 +311,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mYPosInVolume) )
+		if( BORDER_LOW(this->mXPosInVolume) && BORDER_HIGH(this->mYPosInVolume) && BORDER_LOW(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}

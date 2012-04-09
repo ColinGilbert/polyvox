@@ -50,21 +50,26 @@ void createSphereInVolume(SimpleVolume<MaterialDensityPair44>& volData, float fR
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
+				uint8_t uDensity = 0;
+				uint8_t uMaterial = 0;
+
 				//If the current voxel is less than 'radius' units from the center then we make it solid.
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					uint8_t uDensity = VoxelTypeTraits<MaterialDensityPair44>::MaxDensity;
-
-					//Get the old voxel
-					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
-
-					//Modify the density
-					voxel.setDensity(uDensity);
-
-					//Wrte the voxel value into the volume	
-					volData.setVoxelAt(x, y, z, voxel);
+					uDensity = VoxelTypeTraits<MaterialDensityPair44>::maxDensity();
+					uMaterial = 1;
 				}
+
+				//Get the old voxel
+				MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
+
+				//Modify the density and material
+				voxel.setDensity(uDensity);
+				voxel.setMaterial(uMaterial);
+
+				//Wrte the voxel value into the volume	
+				volData.setVoxelAt(x, y, z, voxel);
 			}
 		}
 	}

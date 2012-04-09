@@ -50,9 +50,7 @@ namespace PolyVox
 			Sampler(DerivedVolumeType* volume);
 			~Sampler();
 
-			int32_t getPosX(void) const;
-			int32_t getPosY(void) const;
-			int32_t getPosZ(void) const;
+			Vector3DInt32 getPosition(void) const;
 			inline VoxelType getVoxel(void) const;	
 
 			void setPosition(const Vector3DInt32& v3dNewPos);

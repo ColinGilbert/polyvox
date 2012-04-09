@@ -76,6 +76,9 @@ freely, subject to the following restrictions:
 	#define polyvox_bind boost::bind
 	#define polyvox_placeholder_1 _1
 	#define polyvox_placeholder_2 _2
+	
+	#include <boost/static_assert.hpp>
+	#define static_assert BOOST_STATIC_ASSERT
 
 
 	//As long as we're requiring boost, we'll use it to compensate
@@ -98,6 +101,7 @@ freely, subject to the following restrictions:
 	#define polyvox_placeholder_1 std::placeholders::_1
 	#define polyvox_placeholder_2 std::placeholders::_2
 	#define polyvox_hash std::hash
+	//#define static_assert static_assert //we can use this
 #endif
 
 #endif

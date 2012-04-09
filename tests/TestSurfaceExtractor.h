@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2010 Matt Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -18,34 +18,20 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution. 	
+    distribution.
 *******************************************************************************/
 
-#include "PolyVoxCore/MaterialDensityPair.h"
+#ifndef __PolyVox_TestSurfaceExtractor_H__
+#define __PolyVox_TestSurfaceExtractor_H__
 
-namespace PolyVox
+#include <QObject>
+
+class TestSurfaceExtractor: public QObject
 {
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel)
-	{
-		return voxel.getDensity();
-	}
+	Q_OBJECT
+	
+	private slots:
+		void testExecute();
+};
 
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel)
-	{
-		return voxel.getDensity();
-	}
-
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::MaterialType convertToMaterial(MaterialDensityPair44 voxel)
-	{
-		return voxel.getMaterial();
-	}
-
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType convertToMaterial(MaterialDensityPair88 voxel)
-	{
-		return voxel.getMaterial();
-	}
-}
+#endif

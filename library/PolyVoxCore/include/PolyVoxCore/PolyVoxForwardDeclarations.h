@@ -28,10 +28,13 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	//---------- Array ----------
+	////////////////////////////////////////////////////////////////////////////////
+	// Array
+	////////////////////////////////////////////////////////////////////////////////
 	template<uint32_t dimensions, typename ElementType> class Array;
+
 	typedef Array<1,float> Array1DFloat;
-    typedef Array<1,double> Array1DDouble;
+	typedef Array<1,double> Array1DDouble;
 	typedef Array<1,int8_t> Array1DInt8;
 	typedef Array<1,uint8_t> Array1DUint8;
 	typedef Array<1,int16_t> Array1DInt16;
@@ -40,7 +43,7 @@ namespace PolyVox
 	typedef Array<1,uint32_t> Array1DUint32;
 
 	typedef Array<2,float> Array2DFloat;
-    typedef Array<2,double> Array2DDouble;
+	typedef Array<2,double> Array2DDouble;
 	typedef Array<2,int8_t> Array2DInt8;
 	typedef Array<2,uint8_t> Array2DUint8;
 	typedef Array<2,int16_t> Array2DInt16;
@@ -49,51 +52,102 @@ namespace PolyVox
 	typedef Array<2,uint32_t> Array2DUint32;
 
 	typedef Array<3,float> Array3DFloat;
-    typedef Array<3,double> Array3DDouble;
+	typedef Array<3,double> Array3DDouble;
 	typedef Array<3,int8_t> Array3DInt8;
 	typedef Array<3,uint8_t> Array3DUint8;
 	typedef Array<3,int16_t> Array3DInt16;
 	typedef Array<3,uint16_t> Array3DUint16;
 	typedef Array<3,int32_t> Array3DInt32;
 	typedef Array<3,uint32_t> Array3DUint32;
-	//---------------------------------
 
-	template <typename VoxelType> class Block;
-
-	//---------- LargeVolume ----------
-	template <typename VoxelType> class LargeVolume;
-	//---------------------------------
-
-
-	template <typename Type> class Density;
-	typedef Density<uint8_t> Density8;
-	template <typename Type> class Material;
-	typedef Material<uint8_t> Material8;
-	typedef Material<uint16_t> Material16;
-	typedef Material<uint32_t> Material32;
-	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits> class MaterialDensityPair;
-	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
-
-	template <typename VertexType> class SurfaceMesh;
-	class Region;
-	class PositionMaterial;
-	class PositionMaterialNormal;
+	////////////////////////////////////////////////////////////////////////////////
+	// CubicSurfaceExtractor
+	////////////////////////////////////////////////////////////////////////////////
 	template< template<typename> class VolumeType, typename VoxelType> class CubicSurfaceExtractor;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Density
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename Type> class Density;
+
+	typedef Density<int8_t> DensityI8;
+	typedef Density<uint8_t> DensityU8;
+	typedef Density<int16_t> DensityI16;
+	typedef Density<uint16_t> DensityU16;
+	typedef Density<float> DensityFloat;
+	typedef Density<double> DensityDouble;
+
+	typedef DensityU8 Density8; //Backwards compatibility
+	typedef DensityU16 Density16; //Backwards compatibility
+
+	////////////////////////////////////////////////////////////////////////////////
+	// LargeVolume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType> class LargeVolume;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Material
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename Type> class Material;
+
+	typedef Material<uint8_t> MaterialU8;
+	typedef Material<uint16_t> MaterialU16;
+	typedef Material<uint32_t> MaterialU32;
+
+	typedef MaterialU8 Material8;
+	typedef MaterialU16 Material16;
+	typedef MaterialU32 Material32;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// MaterialDensityPair
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits> class MaterialDensityPair;
+
+	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
+	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// PositionMaterial
+	////////////////////////////////////////////////////////////////////////////////
+	class PositionMaterial;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// PositionMaterialNormal
+	////////////////////////////////////////////////////////////////////////////////
+	class PositionMaterialNormal;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// RawVolume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType> class RawVolume;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Region
+	////////////////////////////////////////////////////////////////////////////////
+	class Region;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// SurfaceExtractor
+	////////////////////////////////////////////////////////////////////////////////
 	template< template<typename> class VolumeType, typename VoxelType> class SurfaceExtractor;
 
-	//---------- Vector ----------
+	////////////////////////////////////////////////////////////////////////////////
+	// SurfaceMesh
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VertexType> class SurfaceMesh;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Vector
+	////////////////////////////////////////////////////////////////////////////////
 	template <uint32_t Size, typename Type> class Vector;
 	typedef Vector<3,float> Vector3DFloat;
-    typedef Vector<3,double> Vector3DDouble;
+	typedef Vector<3,double> Vector3DDouble;
 	typedef Vector<3,int8_t> Vector3DInt8;
 	typedef Vector<3,uint8_t> Vector3DUint8;
 	typedef Vector<3,int16_t> Vector3DInt16;
 	typedef Vector<3,uint16_t> Vector3DUint16;
 	typedef Vector<3,int32_t> Vector3DInt32;
 	typedef Vector<3,uint32_t> Vector3DUint32;
-	//----------------------------
-
-	//template <typename VoxelType> class Sampler;
 }
 
 #endif

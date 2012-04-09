@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	///This class represents a voxel storing only a density.
+	/// This class represents a voxel storing only a density.
 	////////////////////////////////////////////////////////////////////////////////
 	/// In order to perform a surface extraction on a LargeVolume, PolyVox needs the underlying
 	/// voxel type to provide both getDensity() and getMaterial() functions. The getDensity()
@@ -45,7 +45,7 @@ namespace PolyVox
 	/// \sa Density, Material
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
-	class MaterialDensityPair : public Voxel<Type, Type>
+	class MaterialDensityPair
 	{
 	public:
 		//We expose DensityType and MaterialType in this way so that, when code is
@@ -74,8 +74,8 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		//static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		//static DensityType getMinDensity() throw() { return 0; }
+		//static DensityType getmaxDensity()() throw() { return (0x01 << NoOfDensityBits) - 1; }
+		//static DensityType getminDensity()() throw() { return 0; }
 		static DensityType getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
 
 	private:
@@ -86,13 +86,42 @@ namespace PolyVox
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
 	
-	/*template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
-	class VoxelTypeTraits< MaterialDensityPair<Type, NoOfDensityBits, NoOfMaterialBits> >
+	template<>
+	class VoxelTypeTraits< MaterialDensityPair44 >
 	{
 	public:
-		const static Type MinDensity = 0;
-		const static Type MaxDensity = (0x01 << NoOfDensityBits) - 1;
-	};*/
+		typedef uint8_t DensityType;
+		typedef uint8_t MaterialType;
+		static MaterialDensityPair44::DensityType minDensity() { return 0; }
+		static MaterialDensityPair44::DensityType maxDensity() { return 15; }
+	};
+	
+	template<>
+	class VoxelTypeTraits< MaterialDensityPair88 >
+	{
+	public:
+		typedef uint8_t DensityType;
+		typedef uint8_t MaterialType;
+		static MaterialDensityPair88::DensityType minDensity() { return 0; }
+		static MaterialDensityPair88::DensityType maxDensity() { return 255; }
+	};
+}
+
+#include "PolyVoxCore/SurfaceExtractor.h"
+
+namespace PolyVox
+{
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel);
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair44>::MaterialType convertToMaterial(MaterialDensityPair44 voxel);
+
+	template<>
+	typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType convertToMaterial(MaterialDensityPair88 voxel);
 }
 
 #endif

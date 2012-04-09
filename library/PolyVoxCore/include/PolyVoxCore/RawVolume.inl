@@ -37,7 +37,7 @@ namespace PolyVox
 		setBorderValue(VoxelType());
 
 		//Create a volume of the right size.
-		resize(regValid);
+		initialise(regValid);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -157,7 +157,7 @@ namespace PolyVox
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void RawVolume<VoxelType>::resize(const Region& regValidRegion)
+	void RawVolume<VoxelType>::initialise(const Region& regValidRegion)
 	{
 		this->m_regValidRegion = regValidRegion;
 

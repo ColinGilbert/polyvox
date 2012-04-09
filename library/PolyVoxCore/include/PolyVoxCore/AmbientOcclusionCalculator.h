@@ -31,6 +31,12 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Raycast.h"
 
+#if defined(_MSC_VER)
+	//These two should not be here!
+	#include "PolyVoxCore/Material.h"
+	#include "PolyVoxCore/SimpleVolume.h"
+#endif
+
 #include <algorithm>
 
 namespace PolyVox
@@ -39,12 +45,19 @@ namespace PolyVox
 	class AmbientOcclusionCalculator
 	{
 	public:
-		AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement);
+		AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent);
 		~AmbientOcclusionCalculator();
 
 		void execute(void);
 
 	private:
+
+#if defined(_MSC_VER) //FIXME: To be investigated. Linux version is more general and should be correct.
+		bool raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler);		
+#else
+		bool raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler);
+#endif
+
 		Region m_region;
 		typename VolumeType<VoxelType>::Sampler m_sampVolume;
 		VolumeType<VoxelType>* m_volInput;
@@ -56,6 +69,8 @@ namespace PolyVox
 		uint16_t mRandomUnitVectorIndex;
 		uint16_t mRandomVectorIndex;
 		uint16_t mIndexIncreament;
+
+		polyvox_function<bool(const VoxelType& voxel)> m_funcIsTransparent;
 	};
 }
 

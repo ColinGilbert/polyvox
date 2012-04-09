@@ -21,12 +21,13 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Voxel.h"
+#include "PolyVoxCore/Material.h"
 
 namespace PolyVox
 {
-	template<typename Type>
-	const typename Type::DensityType VoxelTypeTraits<Type>::MinDensity = 0;
-	template<typename Type>
-	const typename Type::DensityType VoxelTypeTraits<Type>::MaxDensity = 0;
+	//template<>
+	//typename VoxelTypeTraits<Material8>::DensityType convertToDensity(Material8 voxel)
+	//{
+	//	return voxel.getDensity();
+	//}
 }

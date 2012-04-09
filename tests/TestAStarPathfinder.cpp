@@ -31,40 +31,31 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+template< template<typename> class VolumeType, typename VoxelType>
+bool testVoxelValidator(const VolumeType<VoxelType>* volData, const Vector3DInt32& v3dPos)
+{
+	//Voxels are considered valid candidates for the path if they are inside the volume...
+	if(volData->getEnclosingRegion().containsPoint(v3dPos) == false)
+	{
+		return false;
+	}
+
+	VoxelType voxel = volData->getVoxelAt(v3dPos);
+	if(voxel != 0)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 void TestAStarPathfinder::testExecute()
 {
 	//The expected path
-	//The following results work on Linux/GCC
-	const Vector3DInt32 expectedResult[] = 
-	{
-		Vector3DInt32(0,0,0),
-		Vector3DInt32(1,1,1),
-		Vector3DInt32(2,2,1),
-		Vector3DInt32(3,3,1),
-		Vector3DInt32(4,4,1),
-		Vector3DInt32(4,5,1),
-		Vector3DInt32(5,6,1),
-		Vector3DInt32(6,7,2),
-		Vector3DInt32(7,8,3),
-		Vector3DInt32(8,9,3),
-		Vector3DInt32(9,10,3),
-		Vector3DInt32(10,11,3),
-		Vector3DInt32(11,12,4),
-		Vector3DInt32(12,13,5),
-		Vector3DInt32(13,13,6),
-		Vector3DInt32(13,13,7),
-		Vector3DInt32(13,13,8),
-		Vector3DInt32(13,13,9),
-		Vector3DInt32(14,14,10),
-		Vector3DInt32(14,14,11),
-		Vector3DInt32(14,14,12),
-		Vector3DInt32(14,14,13),
-		Vector3DInt32(15,15,14),
-		Vector3DInt32(15,15,15),
-	};
-	
+
+#ifdef _MSC_VER
 	//The following results work on Windows/VS2010
-	/*const Vector3DInt32 expectedResult[] = 
+	const Vector3DInt32 expectedResult[] = 
 	{
 		Vector3DInt32(0,0,0),
 		Vector3DInt32(1,1,1),
@@ -90,10 +81,57 @@ void TestAStarPathfinder::testExecute()
 		Vector3DInt32(13,13,13),
 		Vector3DInt32(14,14,14),
 		Vector3DInt32(15,15,15)
-	};*/
+	};
 
-	//Create an empty volume
-	RawVolume<Material8> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 15, 15)));
+#else
+
+	//The following results work on Linux/GCC
+	const Vector3DInt32 expectedResult[] = 
+	{
+		Vector3DInt32(0,0,0),
+		Vector3DInt32(1,1,1),
+		Vector3DInt32(2,1,2),
+		Vector3DInt32(3,1,3),
+		Vector3DInt32(4,1,4),
+		Vector3DInt32(5,1,5),
+		Vector3DInt32(6,1,5),
+		Vector3DInt32(7,2,6),
+		Vector3DInt32(8,3,7),
+		Vector3DInt32(9,3,8),
+		Vector3DInt32(10,3,9),
+		Vector3DInt32(11,3,10),
+		Vector3DInt32(12,4,11),
+		Vector3DInt32(12,5,11),
+		Vector3DInt32(13,6,12),
+		Vector3DInt32(13,7,13),
+		Vector3DInt32(13,8,13),
+		Vector3DInt32(13,9,13),
+		Vector3DInt32(14,10,14),
+		Vector3DInt32(14,11,14),
+		Vector3DInt32(14,12,14),
+		Vector3DInt32(15,13,15),
+		Vector3DInt32(15,14,15),
+		Vector3DInt32(15,15,15)
+	};
+#endif //_MSC_VER
+
+	const int32_t uVolumeSideLength = 16;
+
+	//Create a volume
+	RawVolume<uint8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+
+	//Clear the volume
+	for(int z = 0; z < uVolumeSideLength; z++)
+	{
+		for(int y = 0; y < uVolumeSideLength; y++)
+		{
+			for(int x = 0; x < uVolumeSideLength; x++)
+			{
+				uint8_t solidVoxel(0);
+				volData.setVoxelAt(x,y,z,solidVoxel);
+			}
+		}
+	}
 
 	//Place a solid cube in the middle of it
 	for(int z = 4; z < 12; z++)
@@ -102,7 +140,7 @@ void TestAStarPathfinder::testExecute()
 		{
 			for(int x = 4; x < 12; x++)
 			{
-				Material8 solidVoxel(1);
+				uint8_t solidVoxel(1);
 				volData.setVoxelAt(x,y,z,solidVoxel);
 			}
 		}
@@ -112,8 +150,8 @@ void TestAStarPathfinder::testExecute()
 	std::list<Vector3DInt32> result;
 
 	//Create an AStarPathfinder
-	AStarPathfinderParams<RawVolume, Material8> params(&volData, Vector3DInt32(0,0,0), Vector3DInt32(15,15,15), &result);
-	AStarPathfinder<RawVolume, Material8> pathfinder(params);
+	AStarPathfinderParams<RawVolume, uint8_t> params(&volData, Vector3DInt32(0,0,0), Vector3DInt32(15,15,15), &result, 1.0f, 10000, TwentySixConnected, &testVoxelValidator<RawVolume, uint8_t>);
+	AStarPathfinder<RawVolume, uint8_t> pathfinder(params);
 
 	//Execute the pathfinder.
 	pathfinder.execute();

@@ -21,31 +21,14 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/MaterialDensityPair.h"
+#ifndef __PolyVox_PrimitiveVoxelTypes_H__
+#define __PolyVox_PrimitiveVoxelTypes_H__
+
+#include "PolyVoxCore/Voxel.h"
 
 namespace PolyVox
-{
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel)
-	{
-		return voxel.getDensity();
-	}
-
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel)
-	{
-		return voxel.getDensity();
-	}
-
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::MaterialType convertToMaterial(MaterialDensityPair44 voxel)
-	{
-		return voxel.getMaterial();
-	}
-
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType convertToMaterial(MaterialDensityPair88 voxel)
-	{
-		return voxel.getMaterial();
-	}
+{	
+	
 }
+
+#endif //__PolyVox_PrimitiveVoxelTypes_H__

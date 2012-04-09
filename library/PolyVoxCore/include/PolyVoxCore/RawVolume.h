@@ -59,9 +59,6 @@ namespace PolyVox
 			Sampler(RawVolume<VoxelType>* volume);
 			~Sampler();
 
-			int32_t getPosX(void) const;
-			int32_t getPosY(void) const;
-			int32_t getPosZ(void) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
@@ -144,10 +141,9 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-		/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
-		void resize(const Region& regValidRegion);
+private:
+		void initialise(const Region& regValidRegion);
 
-private:	
 		//The block data
 		VoxelType* m_pData;
 
