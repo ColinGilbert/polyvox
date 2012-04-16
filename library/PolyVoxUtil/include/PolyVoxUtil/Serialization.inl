@@ -317,7 +317,7 @@ namespace PolyVox
 
 		//Resize the volume
 		//HACK - Forces block size to 32. This functions needs reworking anyway due to large volume support.
-		volume.resize(Region(Vector3DInt32(0,0,0), Vector3DInt32(volumeWidth, volumeHeight, volumeDepth)), 32);
+		volume.resize(Region(Vector3DInt32(0,0,0), Vector3DInt32(volumeWidth-1, volumeHeight-1, volumeDepth-1)), 32);
 
 		//Read data
 		bool firstTime = true;
