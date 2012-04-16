@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -33,7 +32,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<Material8>& volData, float fRadius)
+void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -60,13 +59,13 @@ void createSphereInVolume(SimpleVolume<Material8>& volData, float fRadius)
 				}
 
 				//Get the old voxel
-				Material8 voxel = volData.getVoxelAt(x,y,z);
+				//Material8 voxel = volData.getVoxelAt(x,y,z);
 
 				//Modify the density and material
-				voxel.setMaterial(uMaterial);
+				//voxel.setMaterial(uMaterial);
 
 				//Wrte the voxel value into the volume	
-				volData.setVoxelAt(x, y, z, voxel);
+				volData.setVoxelAt(x, y, z, uMaterial);
 			}
 		}
 	}
@@ -80,12 +79,12 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<Material8> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals<SimpleVolume, Material8 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh, Material8::isQuadNeeded);
+	CubicSurfaceExtractorWithNormals<SimpleVolume, uint8_t > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window

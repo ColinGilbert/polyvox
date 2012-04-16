@@ -31,11 +31,25 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	template<typename VoxelType>
+	bool defaultIsQuadNeeded(VoxelType from, VoxelType to, float& materialToUse)
+	{
+		if((from > 0) && (to == 0))
+		{
+			materialToUse = static_cast<float>(from);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	template< template<typename> class VolumeType, typename VoxelType>
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(VoxelType voxelInFront, VoxelType voxelBehind, float& materialToUse)> funcIsQuadNeededCallback);
+		CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(VoxelType from, VoxelType to, float& materialToUse)> funcIsQuadNeededCallback = defaultIsQuadNeeded<VoxelType>);
 
 		void execute();
 
