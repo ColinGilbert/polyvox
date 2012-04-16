@@ -94,7 +94,7 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	CubicSurfaceExtractorWithNormals<SimpleVolume, VoxelType > extractor(&volData, volData.getEnclosingRegion(), &result, 50);
+	CubicSurfaceExtractorWithNormals<SimpleVolume, VoxelType > extractor(&volData, volData.getEnclosingRegion(), &result, VoxelType::isQuadNeeded);
 	extractor.execute();
 }
 

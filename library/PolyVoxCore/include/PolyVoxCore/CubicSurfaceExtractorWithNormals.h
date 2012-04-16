@@ -35,11 +35,13 @@ namespace PolyVox
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+		CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(VoxelType voxelInFront, VoxelType voxelBehind, float& materialToUse)> funcIsQuadNeededCallback);
 
 		void execute();
 
 	private:
+		polyvox_function<bool(VoxelType voxel0, VoxelType voxel1, float& materialToUse)> m_funcIsQuadNeededCallback;
+
 		//The volume data and a sampler to access it.
 		VolumeType<VoxelType>* m_volData;
 		typename VolumeType<VoxelType>::Sampler m_sampVolume;

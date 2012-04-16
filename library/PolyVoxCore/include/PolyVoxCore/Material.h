@@ -96,6 +96,19 @@ namespace PolyVox
 		//static DensityType getminDensity()() throw() { return 0; }
 		static DensityType getThreshold() throw() { return 1; }
 
+		static bool isQuadNeeded(Material<Type> from, Material<Type> to, float& materialToUse)
+		{
+			if((from.getMaterial() > 0) && (to.getMaterial() == 0))
+			{
+				materialToUse = static_cast<float>(from.getMaterial());
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 	private:
 		MaterialType m_uMaterial;
 	};

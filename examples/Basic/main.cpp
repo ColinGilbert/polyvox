@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<MaterialDensityPair44>& volData, float fRadius)
+void createSphereInVolume(SimpleVolume<Material8>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -50,22 +50,19 @@ void createSphereInVolume(SimpleVolume<MaterialDensityPair44>& volData, float fR
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
-				uint8_t uDensity = 0;
 				uint8_t uMaterial = 0;
 
 				//If the current voxel is less than 'radius' units from the center then we make it solid.
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					uDensity = VoxelTypeTraits<MaterialDensityPair44>::maxDensity();
 					uMaterial = 1;
 				}
 
 				//Get the old voxel
-				MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
+				Material8 voxel = volData.getVoxelAt(x,y,z);
 
 				//Modify the density and material
-				voxel.setDensity(uDensity);
 				voxel.setMaterial(uMaterial);
 
 				//Wrte the voxel value into the volume	
@@ -83,12 +80,12 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	SimpleVolume<Material8> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair44 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	CubicSurfaceExtractorWithNormals<SimpleVolume, Material8 > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh, Material8::isQuadNeeded);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window

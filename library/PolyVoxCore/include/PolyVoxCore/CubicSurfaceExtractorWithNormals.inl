@@ -24,12 +24,14 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template< template<typename> class VolumeType, typename VoxelType>
-	CubicSurfaceExtractorWithNormals<VolumeType, VoxelType>::CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	CubicSurfaceExtractorWithNormals<VolumeType, VoxelType>::CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(VoxelType voxelInFront, VoxelType voxelBehind, float& materialToUse)> funcIsQuadNeededCallback)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
+		,m_funcIsQuadNeededCallback(funcIsQuadNeededCallback)
 	{		
+		assert(m_funcIsQuadNeededCallback);
 	}
 
 	template< template<typename> class VolumeType, typename VoxelType>
@@ -48,12 +50,11 @@ namespace PolyVox
 					float regY = static_cast<float>(y - m_regSizeInVoxels.getLowerCorner().getY());
 					float regZ = static_cast<float>(z - m_regSizeInVoxels.getLowerCorner().getZ());
 
-					int currentVoxel = m_volData->getVoxelAt(x,y,z).getMaterial() != 0;
+					float material = 0.0f;
 
-					int plusXVoxel = m_volData->getVoxelAt(x+1,y,z).getMaterial() != 0;
-					if(currentVoxel > plusXVoxel)
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x+1,y,z), material))
 					{
-						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
+						material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), material));
@@ -63,9 +64,9 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v0,v2,v1);
 						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
-					if(currentVoxel < plusXVoxel)
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x+1,y,z), m_volData->getVoxelAt(x,y,z), material))
 					{
-						float material = static_cast<float>(m_volData->getVoxelAt(x+1,y,z).getMaterial());
+						material = static_cast<float>(m_volData->getVoxelAt(x+1,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), material));
@@ -77,9 +78,9 @@ namespace PolyVox
 					}
 
 					int plusYVoxel = m_volData->getVoxelAt(x,y+1,z).getMaterial() != 0;
-					if(currentVoxel > plusYVoxel)
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x,y+1,z), material))
 					{
-						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
+						material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), material));
@@ -89,9 +90,9 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v0,v1,v2);
 						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
-					if(currentVoxel < plusYVoxel)
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y+1,z), m_volData->getVoxelAt(x,y,z), material))
 					{
-						float material = static_cast<float>(m_volData->getVoxelAt(x,y+1,z).getMaterial());
+						material = static_cast<float>(m_volData->getVoxelAt(x,y+1,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), material));
@@ -103,9 +104,9 @@ namespace PolyVox
 					}
 
 					int plusZVoxel = m_volData->getVoxelAt(x,y,z+1).getMaterial() != 0;
-					if(currentVoxel > plusZVoxel)
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x,y,z+1), material))
 					{
-						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
+						material = static_cast<float>(m_volData->getVoxelAt(x,y,z).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), material));
@@ -115,9 +116,9 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v0,v2,v1);
 						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
-					if(currentVoxel < plusZVoxel)
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z+1), m_volData->getVoxelAt(x,y,z), material))
 					{
-						float material = static_cast<float>(m_volData->getVoxelAt(x,y,z+1).getMaterial());
+						material = static_cast<float>(m_volData->getVoxelAt(x,y,z+1).getMaterial());
 
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), material));
