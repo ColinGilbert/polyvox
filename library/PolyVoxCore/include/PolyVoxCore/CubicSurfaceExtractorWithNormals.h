@@ -31,6 +31,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+
+	//FIXME - Make this a member of CubicSurfaceExtractorWithNormals?
 	template<typename VoxelType>
 	bool defaultIsQuadNeeded(VoxelType from, VoxelType to, float& materialToUse)
 	{
@@ -45,20 +47,20 @@ namespace PolyVox
 		}
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
+	template<typename VolumeType>
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(VoxelType from, VoxelType to, float& materialToUse)> funcIsQuadNeededCallback = defaultIsQuadNeeded<VoxelType>);
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(typename VolumeType::VoxelType from, typename VolumeType::VoxelType to, float& materialToUse)> funcIsQuadNeededCallback = defaultIsQuadNeeded<VolumeType::VoxelType>);
 
 		void execute();
 
 	private:
-		polyvox_function<bool(VoxelType voxel0, VoxelType voxel1, float& materialToUse)> m_funcIsQuadNeededCallback;
+		polyvox_function<bool(typename VolumeType::VoxelType voxel0, typename VolumeType::VoxelType voxel1, float& materialToUse)> m_funcIsQuadNeededCallback;
 
 		//The volume data and a sampler to access it.
-		VolumeType<VoxelType>* m_volData;
-		typename VolumeType<VoxelType>::Sampler m_sampVolume;
+		VolumeType* m_volData;
+		typename VolumeType::Sampler m_sampVolume;
 
 		//The surface patch we are currently filling.
 		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;

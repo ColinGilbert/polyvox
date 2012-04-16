@@ -31,7 +31,7 @@ namespace PolyVox
 {
 	void extractCubicMesh(Volume& volume, const Region& region, Mesh& resultMesh)
 	{
-		CubicSurfaceExtractorWithNormals<SimpleVolume, MaterialDensityPair88 > surfaceExtractor(&volume, region, &resultMesh, MaterialDensityPair88::isQuadNeeded);
+		CubicSurfaceExtractorWithNormals< SimpleVolume<MaterialDensityPair88> > surfaceExtractor(&volume, region, &resultMesh, MaterialDensityPair88::isQuadNeeded);
 		surfaceExtractor.execute();
 	}
 

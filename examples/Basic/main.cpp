@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals<SimpleVolume, uint8_t > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	CubicSurfaceExtractorWithNormals< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	surfaceExtractor.execute();
 
 	//Pass the surface to the OpenGL window
