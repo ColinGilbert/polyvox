@@ -51,7 +51,7 @@ namespace PolyVox
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(typename VolumeType::VoxelType from, typename VolumeType::VoxelType to, float& materialToUse)> funcIsQuadNeededCallback = defaultIsQuadNeeded<VolumeType::VoxelType>);
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(typename VolumeType::VoxelType from, typename VolumeType::VoxelType to, float& materialToUse)> funcIsQuadNeededCallback = defaultIsQuadNeeded<typename VolumeType::VoxelType>);
 
 		void execute();
 
