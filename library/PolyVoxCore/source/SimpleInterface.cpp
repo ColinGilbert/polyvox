@@ -37,7 +37,7 @@ namespace PolyVox
 
 	void extractSmoothMesh(Volume& volume, const Region& region, Mesh& resultMesh)
 	{
-		SurfaceExtractor<SimpleVolume, MaterialDensityPair88 > surfaceExtractor(&volume, region, &resultMesh);
+		SurfaceExtractor< SimpleVolume<MaterialDensityPair88> > surfaceExtractor(&volume, region, &resultMesh);
 		surfaceExtractor.execute();
 	}
 }

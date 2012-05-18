@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
 	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	SurfaceExtractor<LargeVolume, MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
+	SurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(&volData, reg, &mesh);
 	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
 	surfaceExtractor.execute();
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;

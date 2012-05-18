@@ -48,11 +48,11 @@ namespace PolyVox
 		return 1;
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
+	template< typename VolumeType>
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename VoxelTypeTraits<VoxelType>::DensityType tThreshold = (VoxelTypeTraits<VoxelType>::minDensity() + VoxelTypeTraits<VoxelType>::maxDensity()) / 2);
+		SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType tThreshold = (VoxelTypeTraits<typename VolumeType::VoxelType>::minDensity() + VoxelTypeTraits<typename VolumeType::VoxelType>::maxDensity()) / 2);
 
 		void execute();
 
@@ -75,7 +75,7 @@ namespace PolyVox
 		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
 		//See http://stackoverflow.com/questions/1484885/strange-vc-compile-error-c2244 for details.
 		////////////////////////////////////////////////////////////////////////////////
-		Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+		Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType::Sampler& volIter)
 		{
 			//FIXME - Should actually use DensityType here, both in principle and because the maths may be
 			//faster (and to reduce casts). So it would be good to add a way to get DensityType from a voxel.
@@ -97,7 +97,7 @@ namespace PolyVox
 			);
 		}
 
-		Vector3DFloat computeSobelGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+		Vector3DFloat computeSobelGradient(const typename VolumeType::Sampler& volIter)
 		{
 			static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 				{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
@@ -194,8 +194,8 @@ namespace PolyVox
 			const Array2DInt32& m_pCurrentVertexIndicesY);
 
 		//The volume data and a sampler to access it.
-		VolumeType<VoxelType>* m_volData;
-		typename VolumeType<VoxelType>::Sampler m_sampVolume;
+		VolumeType* m_volData;
+		typename VolumeType::Sampler m_sampVolume;
 
 		//Holds a position in volume space.
 		int32_t iXVolSpace;
@@ -223,7 +223,7 @@ namespace PolyVox
 		Region m_regSliceCurrent;
 
 		//Our threshold value
-		typename VoxelTypeTraits<VoxelType>::DensityType m_tThreshold;
+		typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType m_tThreshold;
 	};
 }
 

@@ -92,7 +92,7 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	SurfaceExtractor<SimpleVolume, VoxelType > extractor(&volData, volData.getEnclosingRegion(), &result, 50);
+	SurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, 50);
 	extractor.execute();
 }
 

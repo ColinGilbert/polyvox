@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
-	SurfaceExtractor<VolumeType, VoxelType>::SurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename VoxelTypeTraits<VoxelType>::DensityType tThreshold)
+	template<typename VolumeType>
+	SurfaceExtractor<VolumeType>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType tThreshold)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -36,8 +36,8 @@ namespace PolyVox
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void SurfaceExtractor<VolumeType, VoxelType>::execute()
+	template<typename VolumeType>
+	void SurfaceExtractor<VolumeType>::execute()
 	{		
 		m_meshCurrent->clear();
 
@@ -125,9 +125,9 @@ namespace PolyVox
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
+	template<typename VolumeType>
 	template<bool isPrevZAvail>
-	uint32_t SurfaceExtractor<VolumeType, VoxelType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t SurfaceExtractor<VolumeType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -191,20 +191,20 @@ namespace PolyVox
 		return m_uNoOfOccupiedCells;
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
+	template<typename VolumeType>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void SurfaceExtractor<VolumeType, VoxelType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	void SurfaceExtractor<VolumeType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		uint8_t iCubeIndex = 0;
 
-		VoxelType v000;
-		VoxelType v100;
-		VoxelType v010;
-		VoxelType v110;
-		VoxelType v001;
-		VoxelType v101;
-		VoxelType v011;
-		VoxelType v111;
+		VolumeType::VoxelType v000;
+		VolumeType::VoxelType v100;
+		VolumeType::VoxelType v010;
+		VolumeType::VoxelType v110;
+		VolumeType::VoxelType v001;
+		VolumeType::VoxelType v101;
+		VolumeType::VoxelType v011;
+		VolumeType::VoxelType v111;
 
 		if(isPrevZAvail)
 		{
@@ -391,8 +391,8 @@ namespace PolyVox
 		}
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void SurfaceExtractor<VolumeType, VoxelType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	template<typename VolumeType>
+	void SurfaceExtractor<VolumeType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -423,14 +423,14 @@ namespace PolyVox
 
 
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
-				const VoxelType v000 = m_sampVolume.getVoxel();
+				const VolumeType::VoxelType v000 = m_sampVolume.getVoxel();
 				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					m_sampVolume.movePositiveX();
-					const VoxelType v100 = m_sampVolume.getVoxel();
+					const VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v100) - convertToDensity(v000));
@@ -456,7 +456,7 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 8)
 				{
 					m_sampVolume.movePositiveY();
-					const VoxelType v010 = m_sampVolume.getVoxel();
+					const VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v010) - convertToDensity(v000));
@@ -482,7 +482,7 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 256)
 				{
 					m_sampVolume.movePositiveZ();
-					const VoxelType v001 = m_sampVolume.getVoxel();
+					const VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v001) - convertToDensity(v000));
@@ -509,8 +509,8 @@ namespace PolyVox
 		}
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void SurfaceExtractor<VolumeType, VoxelType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	template<typename VolumeType>
+	void SurfaceExtractor<VolumeType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,
