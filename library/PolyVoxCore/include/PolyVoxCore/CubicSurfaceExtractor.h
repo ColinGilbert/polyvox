@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
+	template<typename VolumeType>
 	class CubicSurfaceExtractor
 	{
 		struct IndexAndMaterial
@@ -57,7 +57,7 @@ namespace PolyVox
 		};
 
 	public:
-		CubicSurfaceExtractor(VolumeType<VoxelType>* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true);
+		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true);
 
 		void execute();		
 
@@ -67,7 +67,7 @@ namespace PolyVox
 		bool mergeQuads(Quad& q1, Quad& q2);
 
 		//The volume data and a sampler to access it.
-		VolumeType<VoxelType>* m_volData;
+		VolumeType* m_volData;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
