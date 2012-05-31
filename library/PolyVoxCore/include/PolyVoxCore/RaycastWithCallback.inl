@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
-	RaycastWithCallback<VolumeType, VoxelType>::RaycastWithCallback(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, polyvox_function<bool(const Vector3DInt32& position)> funcCallback)
+	template<typename VolumeType>
+	RaycastWithCallback<VolumeType>::RaycastWithCallback(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, polyvox_function<bool(const Vector3DInt32& position)> funcCallback)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
@@ -36,20 +36,20 @@ namespace PolyVox
 		assert(m_funcCallback);
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void RaycastWithCallback<VolumeType, VoxelType>::setStart(const Vector3DFloat& v3dStart)
+	template<typename VolumeType>
+	void RaycastWithCallback<VolumeType>::setStart(const Vector3DFloat& v3dStart)
 	{
 		m_v3dStart = v3dStart;
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void RaycastWithCallback<VolumeType, VoxelType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
+	template<typename VolumeType>
+	void RaycastWithCallback<VolumeType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
 	{
 		m_v3dDirectionAndLength = v3dDirectionAndLength;
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void RaycastWithCallback<VolumeType, VoxelType>::execute(void)
+	template<typename VolumeType>
+	void RaycastWithCallback<VolumeType>::execute(void)
 	{
 		//The doRaycast function is assuming that it is iterating over the areas defined between
 		//voxels. We actually want to define the areas as being centered on voxels (as this is
@@ -92,8 +92,8 @@ namespace PolyVox
 	//  It should simply read "if (ty <= tz)".
 	//
 	//	This error was reported by Joey Hammer (PixelActive). 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void RaycastWithCallback<VolumeType, VoxelType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
+	template<typename VolumeType>
+	void RaycastWithCallback<VolumeType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
 		int i = (int)floorf(x1);
 		int j = (int)floorf(y1);
