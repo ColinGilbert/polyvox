@@ -62,7 +62,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	Array<3, uint8_t> ambientOcclusionResult(ArraySizes(g_uArraySideLength)(g_uArraySideLength)(g_uArraySideLength));
 
 	//Create the ambient occlusion calculator
-	AmbientOcclusionCalculator<SimpleVolume, uint8_t> calculator(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
+	AmbientOcclusionCalculator< SimpleVolume<uint8_t> > calculator(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
 
 	//Execute the calculator
 	calculator.execute();

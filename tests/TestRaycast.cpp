@@ -68,7 +68,7 @@ void TestRaycast::testExecute()
 	for(int ct = 0; ct < 1000000; ct++)
 	{
 		RaycastResult result;
-		Raycast<SimpleVolume, int8_t> raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
+		Raycast< SimpleVolume<int8_t> > raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
 		raycast.execute();
 		if(result.foundIntersection)
 		{

@@ -31,8 +31,8 @@ namespace PolyVox
 	/// represents the length of the ray.
 	/// \param result An instance of RaycastResult in which the result will be stored.
 	////////////////////////////////////////////////////////////////////////////////
-	template< template<typename> class VolumeType, typename VoxelType>
-	Raycast<VolumeType, VoxelType>::Raycast(VolumeType<VoxelType>* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result, polyvox_function<bool(const typename VolumeType<VoxelType>::Sampler& sampler)> funcIsPassable)
+	template<typename VolumeType>
+	Raycast<VolumeType>::Raycast(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result, polyvox_function<bool(const typename VolumeType::Sampler& sampler)> funcIsPassable)
 		:m_result(result)
 		,m_volData(volData)
 		,m_sampVolume(volData)
@@ -45,8 +45,8 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dStart The starting position of the ray.
 	////////////////////////////////////////////////////////////////////////////////
-	template< template<typename> class VolumeType, typename VoxelType>
-	void Raycast<VolumeType, VoxelType>::setStart(const Vector3DFloat& v3dStart)
+	template<typename VolumeType>
+	void Raycast<VolumeType>::setStart(const Vector3DFloat& v3dStart)
 	{
 		m_v3dStart = v3dStart;
 	}
@@ -55,8 +55,8 @@ namespace PolyVox
 	/// \param v3dDirectionAndLength The direction of the ray. The length of this vector also
 	/// represents the length of the ray.
 	////////////////////////////////////////////////////////////////////////////////
-	template< template<typename> class VolumeType, typename VoxelType>
-	void Raycast<VolumeType, VoxelType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
+	template<typename VolumeType>
+	void Raycast<VolumeType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
 	{
 		//FIXME: We should add a warning when the ray direction is of length one, as this seems to be a common mistake. 
 		m_v3dDirectionAndLength = v3dDirectionAndLength;
@@ -65,8 +65,8 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// The result is stored in the RaycastResult instance which was passed to the constructor.
 	////////////////////////////////////////////////////////////////////////////////
-	template< template<typename> class VolumeType, typename VoxelType>
-	void Raycast<VolumeType, VoxelType>::execute(void)
+	template<typename VolumeType>
+	void Raycast<VolumeType>::execute(void)
 	{
 		//The doRaycast function is assuming that it is iterating over the areas defined between
 		//voxels. We actually want to define the areas as being centered on voxels (as this is
@@ -109,8 +109,8 @@ namespace PolyVox
 	//  It should simply read "if (ty <= tz)".
 	//
 	//	This error was reported by Joey Hammer (PixelActive). 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void Raycast<VolumeType, VoxelType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
+	template<typename VolumeType>
+	void Raycast<VolumeType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
 	{
 		int i = (int)floorf(x1);
 		int j = (int)floorf(y1);

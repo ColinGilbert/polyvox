@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
-	AmbientOcclusionCalculator<VolumeType, VoxelType>::AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent)
+	template<typename VolumeType>
+	AmbientOcclusionCalculator<VolumeType>::AmbientOcclusionCalculator(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> funcIsTransparent)
 		:m_region(region)
 		,m_sampVolume(volInput)
 		,m_volInput(volInput)
@@ -50,13 +50,13 @@ namespace PolyVox
 		mIndexIncreament = 1;
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	AmbientOcclusionCalculator<VolumeType, VoxelType>::~AmbientOcclusionCalculator()
+	template<typename VolumeType>
+	AmbientOcclusionCalculator<VolumeType>::~AmbientOcclusionCalculator()
 	{
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	void AmbientOcclusionCalculator<VolumeType, VoxelType>::execute(void)
+	template<typename VolumeType>
+	void AmbientOcclusionCalculator<VolumeType>::execute(void)
 	{
 		const int iRatioX = m_volInput->getWidth()  / m_arrayResult->getDimension(0);
 		const int iRatioY = m_volInput->getHeight() / m_arrayResult->getDimension(1);
@@ -75,7 +75,7 @@ namespace PolyVox
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
 
 		RaycastResult raycastResult;
-		Raycast<VolumeType, VoxelType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult, polyvox_bind(&PolyVox::AmbientOcclusionCalculator<VolumeType,VoxelType>::raycastCallback, this, std::placeholders::_1));
+		Raycast<VolumeType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult, polyvox_bind(&PolyVox::AmbientOcclusionCalculator<VolumeType>::raycastCallback, this, std::placeholders::_1));
 
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
 		for(uint16_t z = m_region.getLowerCorner().getZ(); z <= m_region.getUpperCorner().getZ(); z += iRatioZ)
@@ -133,14 +133,10 @@ namespace PolyVox
 		}
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-#if defined(_MSC_VER)
-	bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler)
-#else
-	bool AmbientOcclusionCalculator<VolumeType, VoxelType>::raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler)
-#endif	
+	template<typename VolumeType>
+	bool AmbientOcclusionCalculator<VolumeType>::raycastCallback(const typename VolumeType::Sampler& sampler)
 	{
-		VoxelType voxel = sampler.getVoxel();
+		VolumeType::VoxelType voxel = sampler.getVoxel();
 		return m_funcIsTransparent(voxel);
 	}
 }

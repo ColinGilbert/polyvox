@@ -41,26 +41,21 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
+	template<typename VolumeType>
 	class AmbientOcclusionCalculator
 	{
 	public:
-		AmbientOcclusionCalculator(VolumeType<VoxelType>* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const VoxelType& voxel)> funcIsTransparent);
+		AmbientOcclusionCalculator(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> funcIsTransparent);
 		~AmbientOcclusionCalculator();
 
 		void execute(void);
 
 	private:
-
-#if defined(_MSC_VER) //FIXME: To be investigated. Linux version is more general and should be correct.
-		bool raycastCallback(const typename SimpleVolume<VoxelType>::Sampler& sampler);		
-#else
-		bool raycastCallback(const typename VolumeType<VoxelType>::Sampler& sampler);
-#endif
+		bool raycastCallback(const typename VolumeType::Sampler& sampler);
 
 		Region m_region;
-		typename VolumeType<VoxelType>::Sampler m_sampVolume;
-		VolumeType<VoxelType>* m_volInput;
+		typename VolumeType::Sampler m_sampVolume;
+		VolumeType* m_volInput;
 		Array<3, uint8_t>* m_arrayResult;
 		float m_fRayLength;
 
@@ -70,7 +65,7 @@ namespace PolyVox
 		uint16_t mRandomVectorIndex;
 		uint16_t mIndexIncreament;
 
-		polyvox_function<bool(const VoxelType& voxel)> m_funcIsTransparent;
+		polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> m_funcIsTransparent;
 	};
 }
 
