@@ -150,8 +150,8 @@ void TestAStarPathfinder::testExecute()
 	std::list<Vector3DInt32> result;
 
 	//Create an AStarPathfinder
-	AStarPathfinderParams<RawVolume, uint8_t> params(&volData, Vector3DInt32(0,0,0), Vector3DInt32(15,15,15), &result, 1.0f, 10000, TwentySixConnected, &testVoxelValidator<RawVolume, uint8_t>);
-	AStarPathfinder<RawVolume, uint8_t> pathfinder(params);
+	AStarPathfinderParams< RawVolume<uint8_t> > params(&volData, Vector3DInt32(0,0,0), Vector3DInt32(15,15,15), &result, 1.0f, 10000, TwentySixConnected, &testVoxelValidator<RawVolume, uint8_t>);
+	AStarPathfinder< RawVolume<uint8_t> > pathfinder(params);
 
 	//Execute the pathfinder.
 	pathfinder.execute();
