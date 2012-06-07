@@ -23,18 +23,18 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType, typename VoxelType>
-	Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+	template<typename VolumeType>
+	Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType::Sampler& volIter)
 	{
 		//FIXME - bitwise way of doing this?
-		VoxelType voxel1nx = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
-		VoxelType voxel1px = volIter.peekVoxel1px0py0pz() > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1nx = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1px = volIter.peekVoxel1px0py0pz() > 0 ? 1: 0;
 
-		VoxelType voxel1ny = volIter.peekVoxel0px1ny0pz() > 0 ? 1: 0;
-		VoxelType voxel1py = volIter.peekVoxel0px1py0pz() > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1ny = volIter.peekVoxel0px1ny0pz() > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1py = volIter.peekVoxel0px1py0pz() > 0 ? 1: 0;
 
-		VoxelType voxel1nz = volIter.peekVoxel0px0py1nz() > 0 ? 1: 0;
-		VoxelType voxel1pz = volIter.peekVoxel0px0py1pz() > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1nz = volIter.peekVoxel0px0py1nz() > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1pz = volIter.peekVoxel0px0py1pz() > 0 ? 1: 0;
 
 		return Vector3DFloat
 		(
@@ -44,22 +44,22 @@ namespace PolyVox
 		);
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	Vector3DFloat computeDecimatedCentralDifferenceGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+	template<typename VolumeType>
+	Vector3DFloat computeDecimatedCentralDifferenceGradient(const typename VolumeType::Sampler& volIter)
 	{
 		const int32_t x = volIter.getPosition().getX();
 		const int32_t y = volIter.getPosition().getY();
 		const int32_t z = volIter.getPosition().getZ();
 
 		//FIXME - bitwise way of doing this?
-		VoxelType voxel1nx = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
-		VoxelType voxel1px = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1nx = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1px = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
 
-		VoxelType voxel1ny = volIter.getVoxelAt(x  , y-2,z  ) > 0 ? 1: 0;
-		VoxelType voxel1py = volIter.getVoxelAt(x  , y-2,z  ) > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1ny = volIter.getVoxelAt(x  , y-2,z  ) > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1py = volIter.getVoxelAt(x  , y-2,z  ) > 0 ? 1: 0;
 
-		VoxelType voxel1nz = volIter.getVoxelAt(x  , y  ,z-2) > 0 ? 1: 0;
-		VoxelType voxel1pz = volIter.getVoxelAt(x  , y  ,z-2) > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1nz = volIter.getVoxelAt(x  , y  ,z-2) > 0 ? 1: 0;
+		VolumeType::VoxelType voxel1pz = volIter.getVoxelAt(x  , y  ,z-2) > 0 ? 1: 0;
 
 		return Vector3DFloat
 		(
@@ -69,8 +69,8 @@ namespace PolyVox
 		);
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	Vector3DFloat computeSmoothCentralDifferenceGradient(typename VolumeType<VoxelType>::Sampler& volIter)
+	template<typename VolumeType>
+	Vector3DFloat computeSmoothCentralDifferenceGradient(typename VolumeType::Sampler& volIter)
 	{
 		int32_t initialX = volIter.getPosition().getX();
 		int32_t initialY = volIter.getPosition().getY();
@@ -100,41 +100,41 @@ namespace PolyVox
 		);
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	Vector3DFloat computeSobelGradient(const typename VolumeType<VoxelType>::Sampler& volIter)
+	template<typename VolumeType>
+	Vector3DFloat computeSobelGradient(const typename VolumeType::Sampler& volIter)
 	{
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
 
-			const VoxelType pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx1ny1nz = volIter.peekVoxel1nx1ny1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx1ny0pz = volIter.peekVoxel1nx1ny0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx1ny1pz = volIter.peekVoxel1nx1ny1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx0py1nz = volIter.peekVoxel1nx0py1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx0py0pz = volIter.peekVoxel1nx0py0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx0py1pz = volIter.peekVoxel1nx0py1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx1py1nz = volIter.peekVoxel1nx1py1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx1py0pz = volIter.peekVoxel1nx1py0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1nx1py1pz = volIter.peekVoxel1nx1py1pz() > 0 ? 1: 0;
 
-			const VoxelType pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz() > 0 ? 1: 0;
-			//const VoxelType pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px1ny1nz = volIter.peekVoxel0px1ny1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px1ny0pz = volIter.peekVoxel0px1ny0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px1ny1pz = volIter.peekVoxel0px1ny1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px0py1nz = volIter.peekVoxel0px0py1nz() > 0 ? 1: 0;
+			//const VolumeType::VoxelType pVoxel0px0py0pz = volIter.peekVoxel0px0py0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px0py1pz = volIter.peekVoxel0px0py1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px1py1nz = volIter.peekVoxel0px1py1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px1py0pz = volIter.peekVoxel0px1py0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel0px1py1pz = volIter.peekVoxel0px1py1pz() > 0 ? 1: 0;
 
-			const VoxelType pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz() > 0 ? 1: 0;
-			const VoxelType pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px1ny1nz = volIter.peekVoxel1px1ny1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px1ny0pz = volIter.peekVoxel1px1ny0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px1ny1pz = volIter.peekVoxel1px1ny1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px0py1nz = volIter.peekVoxel1px0py1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px0py0pz = volIter.peekVoxel1px0py0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px0py1pz = volIter.peekVoxel1px0py1pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px1py1nz = volIter.peekVoxel1px1py1nz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px1py0pz = volIter.peekVoxel1px1py0pz() > 0 ? 1: 0;
+			const VolumeType::VoxelType pVoxel1px1py1pz = volIter.peekVoxel1px1py1pz() > 0 ? 1: 0;
 
 			const int xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
 				weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
@@ -183,8 +183,8 @@ namespace PolyVox
 			return Vector3DFloat(static_cast<float>(-xGrad),static_cast<float>(-yGrad),static_cast<float>(-zGrad));
 	}
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	Vector3DFloat computeSmoothSobelGradient(typename VolumeType<VoxelType>::Sampler& volIter)
+	template<typename VolumeType>
+	Vector3DFloat computeSmoothSobelGradient(typename VolumeType::Sampler& volIter)
 	{
 		static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
 			{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
