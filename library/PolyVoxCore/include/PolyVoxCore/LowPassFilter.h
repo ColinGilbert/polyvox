@@ -30,22 +30,22 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
+	template< typename SrcVolumeType, typename DestVolumeType>
 	class LowPassFilter
 	{
 	public:
-		LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst, uint32_t uKernelSize);
+		LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DestVolumeType* pVolDst, Region regDst, uint32_t uKernelSize);
 
 		void execute();
 		void executeSAT();
 
 	private:
 		//Source data
-		SrcVolumeType<VoxelType>* m_pVolSrc;
+		SrcVolumeType* m_pVolSrc;
 		Region m_regSrc;
 
 		//Destination data
-		DestVolumeType<VoxelType>* m_pVolDst;
+		DestVolumeType* m_pVolDst;
 		Region m_regDst;
 
 		//Kernel size

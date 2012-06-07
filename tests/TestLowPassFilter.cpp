@@ -58,7 +58,7 @@ void TestLowPassFilter::testExecute()
 
 	RawVolume<Density8> resultVolume(reg);
 
-	LowPassFilter<RawVolume, RawVolume, Density8> pass1(&volData, reg, &resultVolume, reg, 5);
+	LowPassFilter< RawVolume<Density8>, RawVolume<Density8> > pass1(&volData, reg, &resultVolume, reg, 5);
 
 	pass1.execute();
 

@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
-	LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::LowPassFilter(SrcVolumeType<VoxelType>* pVolSrc, Region regSrc, DestVolumeType<VoxelType>* pVolDst, Region regDst, uint32_t uKernelSize)
+	template< typename SrcVolumeType, typename DestVolumeType>
+	LowPassFilter<SrcVolumeType, DestVolumeType>::LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DestVolumeType* pVolDst, Region regDst, uint32_t uKernelSize)
 		:m_pVolSrc(pVolSrc)
 		,m_regSrc(regSrc)
 		,m_pVolDst(pVolDst)
@@ -43,8 +43,8 @@ namespace PolyVox
 		}
 	}
 
-	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
-	void LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::execute()
+	template< typename SrcVolumeType, typename DestVolumeType>
+	void LowPassFilter<SrcVolumeType, DestVolumeType>::execute()
 	{
 		int32_t iSrcMinX = m_regSrc.getLowerCorner().getX();
 		int32_t iSrcMinY = m_regSrc.getLowerCorner().getY();
@@ -62,7 +62,7 @@ namespace PolyVox
 		//int32_t iDstMaxY = m_regDst.getUpperCorner().getY();
 		//int32_t iDstMaxZ = m_regDst.getUpperCorner().getZ();
 
-		typename SrcVolumeType<VoxelType>::Sampler srcSampler(m_pVolSrc);
+		typename SrcVolumeType::Sampler srcSampler(m_pVolSrc);
 
 		for(int32_t iSrcZ = iSrcMinZ, iDstZ = iDstMinZ; iSrcZ <= iSrcMaxZ; iSrcZ++, iDstZ++)
 		{
@@ -73,7 +73,7 @@ namespace PolyVox
 					//VoxelType tSrcVoxel = m_pVolSrc->getVoxelAt(iSrcX, iSrcY, iSrcZ);
 					srcSampler.setPosition(iSrcX, iSrcY, iSrcZ);
 
-					VoxelType tSrcVoxel = srcSampler.getVoxel();
+					SrcVolumeType::VoxelType tSrcVoxel = srcSampler.getVoxel();
 
 					uint32_t uDensity = 0;
 					uDensity += convertToDensity(srcSampler.peekVoxel1nx1ny1nz());
@@ -115,8 +115,8 @@ namespace PolyVox
 		}
 	}
 
-	template< template<typename> class SrcVolumeType, template<typename> class DestVolumeType, typename VoxelType>
-	void LowPassFilter<SrcVolumeType, DestVolumeType, VoxelType>::executeSAT()
+	template< typename SrcVolumeType, typename DestVolumeType>
+	void LowPassFilter<SrcVolumeType, DestVolumeType>::executeSAT()
 	{
 		const uint32_t border = (m_uKernelSize - 1) / 2;
 
@@ -148,9 +148,9 @@ namespace PolyVox
 		satIterCont.m_Iter = &satVolumeIter;
 		satIterCont.reset();
 
-		typename SrcVolumeType<VoxelType>::Sampler srcVolumeIter(m_pVolSrc);
+		typename SrcVolumeType::Sampler srcVolumeIter(m_pVolSrc);
 
-		IteratorController<typename SrcVolumeType<VoxelType>::Sampler> srcIterCont;
+		IteratorController<typename SrcVolumeType::Sampler> srcIterCont;
 		srcIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
 		srcIterCont.m_Iter = &srcVolumeIter;
 		srcIterCont.reset();
@@ -246,9 +246,10 @@ namespace PolyVox
 
 					float average = sum / (static_cast<float>(sideLength*sideLength*sideLength));
 
-					VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
+					//Note: These lines need consideration if src and dest have different voxel types.
+					SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
 
-					voxel.setDensity(static_cast<typename VoxelType::DensityType>(average));
+					voxel.setDensity(static_cast<typename SrcVolumeType::VoxelType::DensityType>(average));
 
 					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, voxel);
 
