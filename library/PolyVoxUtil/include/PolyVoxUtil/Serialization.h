@@ -42,29 +42,29 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// THESE FUNCTIONS ARE DEPRECATED. USE VERSIONED 'loadVolume' AND 'saveVolume' INSTEAD.
 	////////////////////////////////////////////////////////////////////////////////
-	template< template<typename> class VolumeType, typename VoxelType>
-	polyvox_shared_ptr< VolumeType<VoxelType> > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
-	template< template<typename> class VolumeType, typename VoxelType>
-	void saveVolumeRaw(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	polyvox_shared_ptr< VolumeType > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	void saveVolumeRaw(std::ostream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	polyvox_shared_ptr< VolumeType<VoxelType> > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
-	template< template<typename> class VolumeType, typename VoxelType>
-	void saveVolumeRle(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	polyvox_shared_ptr< VolumeType > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	void saveVolumeRle(std::ostream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
 
 	////////////////////////////////////////////////////////////////////////////////
 	// END OF DEPRECATED FUNCTIONS
 	////////////////////////////////////////////////////////////////////////////////
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	bool loadVolume(std::istream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
-	template< template<typename> class VolumeType, typename VoxelType>
-	bool saveVolume(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	bool loadVolume(std::istream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	bool saveVolume(std::ostream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
 
-	template< template<typename> class VolumeType, typename VoxelType>
-	bool loadVersion0(std::istream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
-	template< template<typename> class VolumeType, typename VoxelType>
-	bool saveVersion0(std::ostream& stream, VolumeType<VoxelType>& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	bool loadVersion0(std::istream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
+	template< typename VolumeType >
+	bool saveVersion0(std::ostream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
 }
 
 #include "PolyVoxUtil/Serialization.inl"

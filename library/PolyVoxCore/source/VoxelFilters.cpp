@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< template<typename> class VolumeType>
-	float computeSmoothedVoxel(typename VolumeType<uint8_t>::Sampler& volIter)
+	template< typename VolumeType >
+	float computeSmoothedVoxel(typename VolumeType::Sampler& volIter)
 	{
 		float sum = 0.0;
 

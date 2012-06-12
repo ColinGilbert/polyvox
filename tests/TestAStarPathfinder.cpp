@@ -31,8 +31,8 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-template< template<typename> class VolumeType, typename VoxelType>
-bool testVoxelValidator(const VolumeType<VoxelType>* volData, const Vector3DInt32& v3dPos)
+template< typename VolumeType>
+bool testVoxelValidator(const VolumeType* volData, const Vector3DInt32& v3dPos)
 {
 	//Voxels are considered valid candidates for the path if they are inside the volume...
 	if(volData->getEnclosingRegion().containsPoint(v3dPos) == false)
@@ -40,7 +40,7 @@ bool testVoxelValidator(const VolumeType<VoxelType>* volData, const Vector3DInt3
 		return false;
 	}
 
-	VoxelType voxel = volData->getVoxelAt(v3dPos);
+	VolumeType::VoxelType voxel = volData->getVoxelAt(v3dPos);
 	if(voxel != 0)
 	{
 		return false;
@@ -150,7 +150,7 @@ void TestAStarPathfinder::testExecute()
 	std::list<Vector3DInt32> result;
 
 	//Create an AStarPathfinder
-	AStarPathfinderParams< RawVolume<uint8_t> > params(&volData, Vector3DInt32(0,0,0), Vector3DInt32(15,15,15), &result, 1.0f, 10000, TwentySixConnected, &testVoxelValidator<RawVolume, uint8_t>);
+	AStarPathfinderParams< RawVolume<uint8_t> > params(&volData, Vector3DInt32(0,0,0), Vector3DInt32(15,15,15), &result, 1.0f, 10000, TwentySixConnected, &testVoxelValidator<RawVolume<uint8_t> >);
 	AStarPathfinder< RawVolume<uint8_t> > pathfinder(params);
 
 	//Execute the pathfinder.
