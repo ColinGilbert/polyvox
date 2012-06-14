@@ -73,7 +73,7 @@ namespace PolyVox
 					//VoxelType tSrcVoxel = m_pVolSrc->getVoxelAt(iSrcX, iSrcY, iSrcZ);
 					srcSampler.setPosition(iSrcX, iSrcY, iSrcZ);
 
-					SrcVolumeType::VoxelType tSrcVoxel = srcSampler.getVoxel();
+					typename SrcVolumeType::VoxelType tSrcVoxel = srcSampler.getVoxel();
 
 					uint32_t uDensity = 0;
 					uDensity += convertToDensity(srcSampler.peekVoxel1nx1ny1nz());
@@ -247,7 +247,7 @@ namespace PolyVox
 					float average = sum / (static_cast<float>(sideLength*sideLength*sideLength));
 
 					//Note: These lines need consideration if src and dest have different voxel types.
-					SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
+					typename SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
 
 					voxel.setDensity(static_cast<typename SrcVolumeType::VoxelType::DensityType>(average));
 

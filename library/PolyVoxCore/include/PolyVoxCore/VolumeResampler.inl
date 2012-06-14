@@ -65,7 +65,7 @@ namespace PolyVox
 				for(int32_t sx = m_regSrc.getLowerCorner().getX(), dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); sx++,dx++)
 				{
 					//Note: Consider what should happen if src and dest have different voxel types.
-					SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
+					typename SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
 					m_pVolDst->setVoxelAt(dx,dy,dz,voxel);
 				}
 			}
@@ -104,23 +104,23 @@ namespace PolyVox
 					sz += m_regSrc.getLowerCorner().getZ();
 
 					sampler.setPosition(sx,sy,sz);
-					SrcVolumeType::VoxelType voxel000 = sampler.peekVoxel0px0py0pz();
-					SrcVolumeType::VoxelType voxel001 = sampler.peekVoxel0px0py1pz();
-					SrcVolumeType::VoxelType voxel010 = sampler.peekVoxel0px1py0pz();
-					SrcVolumeType::VoxelType voxel011 = sampler.peekVoxel0px1py1pz();
-					SrcVolumeType::VoxelType voxel100 = sampler.peekVoxel1px0py0pz();
-					SrcVolumeType::VoxelType voxel101 = sampler.peekVoxel1px0py1pz();
-					SrcVolumeType::VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
-					SrcVolumeType::VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
+					typename SrcVolumeType::VoxelType voxel000 = sampler.peekVoxel0px0py0pz();
+					typename SrcVolumeType::VoxelType voxel001 = sampler.peekVoxel0px0py1pz();
+					typename SrcVolumeType::VoxelType voxel010 = sampler.peekVoxel0px1py0pz();
+					typename SrcVolumeType::VoxelType voxel011 = sampler.peekVoxel0px1py1pz();
+					typename SrcVolumeType::VoxelType voxel100 = sampler.peekVoxel1px0py0pz();
+					typename SrcVolumeType::VoxelType voxel101 = sampler.peekVoxel1px0py1pz();
+					typename SrcVolumeType::VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
+					typename SrcVolumeType::VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
 
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel000Den = convertToDensity(voxel000);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel001Den = convertToDensity(voxel001);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel010Den = convertToDensity(voxel010);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel011Den = convertToDensity(voxel011);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel100Den = convertToDensity(voxel100);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel101Den = convertToDensity(voxel101);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel110Den = convertToDensity(voxel110);
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType voxel111Den = convertToDensity(voxel111);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel000Den = convertToDensity(voxel000);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel001Den = convertToDensity(voxel001);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel010Den = convertToDensity(voxel010);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel011Den = convertToDensity(voxel011);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel100Den = convertToDensity(voxel100);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel101Den = convertToDensity(voxel101);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel110Den = convertToDensity(voxel110);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel111Den = convertToDensity(voxel111);
 
 					//FIXME - should accept all float parameters, but GCC complains?
 					double dummy;
@@ -129,10 +129,10 @@ namespace PolyVox
 					sz = modf(sz, &dummy);
 
 					//Note: Consider what should happen if src and dest have different voxel types.
-					typename VoxelTypeTraits<SrcVolumeType::VoxelType>::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
+					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
 
 					//Note: Consider what should happen if src and dest have different voxel types.
-					DestVolumeType::VoxelType result;
+					typename DestVolumeType::VoxelType result;
 					//result.setDensity(uInterpolatedDensity);
 					result = uInterpolatedDensity;
 
