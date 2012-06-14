@@ -1,7 +1,6 @@
 %module Vector
 %{
 #include "Vector.h"
-//#include "PolyVoxCore/include/PolyVoxCStdInt.h"
 %}
 
 %include "Vector.h"
