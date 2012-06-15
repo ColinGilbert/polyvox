@@ -109,7 +109,7 @@ namespace PolyVox
 namespace PolyVox
 {
 	template<>
-	typename VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
+	VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
 
 	template<>
 	class ConvertToDensity<Density8>

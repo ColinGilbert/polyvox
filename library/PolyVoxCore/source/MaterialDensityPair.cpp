@@ -26,13 +26,13 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel)
+	VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel)
 	{
 		return voxel.getDensity();
 	}
 
 	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel)
+	VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel)
 	{
 		return voxel.getDensity();
 	}

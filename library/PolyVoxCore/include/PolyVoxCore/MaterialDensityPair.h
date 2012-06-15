@@ -125,10 +125,10 @@ namespace PolyVox
 namespace PolyVox
 {
 	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel);
+	VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel);
 
 	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
+	VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
 
 	template<>
 	class ConvertToDensity<MaterialDensityPair44>

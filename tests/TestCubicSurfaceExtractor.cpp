@@ -44,13 +44,13 @@ void writeDensityValueToVoxel(typename VoxelTypeTraits<VoxelType>::DensityType v
 }
 
 template<>
-void writeDensityValueToVoxel(typename VoxelTypeTraits<Density8>::DensityType valueToWrite, Density8& voxel)
+void writeDensityValueToVoxel(VoxelTypeTraits<Density8>::DensityType valueToWrite, Density8& voxel)
 {
 	voxel.setDensity(valueToWrite);
 }
 
 template<>
-void writeDensityValueToVoxel(typename VoxelTypeTraits<MaterialDensityPair88>::DensityType valueToWrite, MaterialDensityPair88& voxel)
+void writeDensityValueToVoxel(VoxelTypeTraits<MaterialDensityPair88>::DensityType valueToWrite, MaterialDensityPair88& voxel)
 {
 	voxel.setDensity(valueToWrite);
 }
@@ -63,7 +63,7 @@ void writeMaterialValueToVoxel(typename VoxelTypeTraits<VoxelType>::MaterialType
 }
 
 template<>
-void writeMaterialValueToVoxel(typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType valueToWrite, MaterialDensityPair88& voxel)
+void writeMaterialValueToVoxel(VoxelTypeTraits<MaterialDensityPair88>::MaterialType valueToWrite, MaterialDensityPair88& voxel)
 {
 	voxel.setMaterial(valueToWrite);
 }
