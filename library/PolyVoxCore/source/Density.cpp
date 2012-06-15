@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<>
-	typename VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel)
+	VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel)
 	{
 		return voxel.getDensity();
 	}

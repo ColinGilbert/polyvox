@@ -197,14 +197,14 @@ namespace PolyVox
 	{
 		uint8_t iCubeIndex = 0;
 
-		VolumeType::VoxelType v000;
-		VolumeType::VoxelType v100;
-		VolumeType::VoxelType v010;
-		VolumeType::VoxelType v110;
-		VolumeType::VoxelType v001;
-		VolumeType::VoxelType v101;
-		VolumeType::VoxelType v011;
-		VolumeType::VoxelType v111;
+		typename VolumeType::VoxelType v000;
+		typename VolumeType::VoxelType v100;
+		typename VolumeType::VoxelType v010;
+		typename VolumeType::VoxelType v110;
+		typename VolumeType::VoxelType v001;
+		typename VolumeType::VoxelType v101;
+		typename VolumeType::VoxelType v011;
+		typename VolumeType::VoxelType v111;
 
 		ConvertToDensity<VolumeType::VoxelType> DensityConverter;
 
@@ -427,14 +427,14 @@ namespace PolyVox
 
 
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
-				const VolumeType::VoxelType v000 = m_sampVolume.getVoxel();
+				const typename VolumeType::VoxelType v000 = m_sampVolume.getVoxel();
 				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 				/* Find the vertices where the surface intersects the cube */
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					m_sampVolume.movePositiveX();
-					const VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
+					const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v100) - convertToDensity(v000));
@@ -460,7 +460,7 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 8)
 				{
 					m_sampVolume.movePositiveY();
-					const VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
+					const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v010) - convertToDensity(v000));
@@ -486,7 +486,7 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 256)
 				{
 					m_sampVolume.movePositiveZ();
-					const VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
+					const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
 					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v001) - convertToDensity(v000));

@@ -136,7 +136,7 @@ namespace PolyVox
 	template<typename VolumeType>
 	bool AmbientOcclusionCalculator<VolumeType>::raycastCallback(const typename VolumeType::Sampler& sampler)
 	{
-		VolumeType::VoxelType voxel = sampler.getVoxel();
+		typename VolumeType::VoxelType voxel = sampler.getVoxel();
 		return m_funcIsTransparent(voxel);
 	}
 }

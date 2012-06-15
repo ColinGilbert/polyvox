@@ -33,7 +33,7 @@ endif()
 
 add_subdirectory(PolyVoxCore)
 add_subdirectory(PolyVoxUtil)
-#add_subdirectory(bindings)
+add_subdirectory(bindings)
 
 #Set up install paths e.g. for PolyVoxConfig.cmake
 if(WIN32)

@@ -1,8 +1,8 @@
 find_package(SWIG)
-if(SWIG_FOUND)
+find_package(PythonLibs)
+if(SWIG_FOUND AND PYTHONLIBS_FOUND)
 	include(${SWIG_USE_FILE})
 	
-	find_package(PythonLibs)
 	include_directories(${PYTHON_INCLUDE_PATH})
 	include_directories(${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
 	link_directories(${PolyVoxCore_BINARY_DIR})
