@@ -131,10 +131,40 @@ namespace PolyVox
 	typename VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
 
 	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::MaterialType convertToMaterial(MaterialDensityPair44 voxel);
+	class ConvertToDensity<MaterialDensityPair44>
+	{
+	public:
+		typedef uint32_t DensityType;
+
+		DensityType operator()(MaterialDensityPair44 voxel);
+	};
 
 	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType convertToMaterial(MaterialDensityPair88 voxel);
+	class ConvertToDensity<MaterialDensityPair88>
+	{
+	public:
+		typedef uint32_t DensityType;
+
+		DensityType operator()(MaterialDensityPair88 voxel);
+	};
+
+	template<>
+	class ConvertToMaterial<MaterialDensityPair44>
+	{
+	public:
+		typedef uint32_t MaterialType;
+
+		MaterialType operator()(MaterialDensityPair44 voxel);
+	};
+
+	template<>
+	class ConvertToMaterial<MaterialDensityPair88>
+	{
+	public:
+		typedef uint32_t MaterialType;
+
+		MaterialType operator()(MaterialDensityPair88 voxel);
+	};
 }
 
 #endif

@@ -102,9 +102,23 @@ namespace PolyVox
 		static Density8::DensityType minDensity() { return std::numeric_limits<Density8::DensityType>::min(); }
 		static Density8::DensityType maxDensity() { return std::numeric_limits<Density8::DensityType>::max(); }
 	};
+}
 
+#include "PolyVoxCore/SurfaceExtractor.h" //VERY UGLY THAT WE NEED THIS!!! TO BE CONSIDERED...
+
+namespace PolyVox
+{
 	template<>
 	typename VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
+
+	template<>
+	class ConvertToDensity<Density8>
+	{
+	public:
+		typedef uint8_t DensityType;
+
+		DensityType operator()(Density8 voxel);
+	};
 }
 
 #endif //__PolyVox_Density_H__

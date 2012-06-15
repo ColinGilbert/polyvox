@@ -206,6 +206,8 @@ namespace PolyVox
 		VolumeType::VoxelType v011;
 		VolumeType::VoxelType v111;
 
+		ConvertToDensity<VolumeType::VoxelType> DensityConverter;
+
 		if(isPrevZAvail)
 		{
 			if(isPrevYAvail)
@@ -230,7 +232,7 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (DensityConverter(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -397,6 +399,8 @@ namespace PolyVox
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
 	{
+		ConvertToMaterial<VolumeType::VoxelType> converter;
+
 		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 		const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
 
@@ -443,9 +447,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					uint32_t uMaterial000 = convertToMaterial(v000);
-					uint32_t uMaterial100 = convertToMaterial(v100);
-					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial100);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial000 = converter(v000);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial100 = converter(v100);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -469,8 +473,8 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					uint32_t uMaterial000 = convertToMaterial(v000);
-					uint32_t uMaterial010 = convertToMaterial(v010);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial000 = converter(v000);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial010 = converter(v010);
 					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial010);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
@@ -495,8 +499,8 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					uint32_t uMaterial000 = convertToMaterial(v000);
-					uint32_t uMaterial001 = convertToMaterial(v001);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial000 = converter(v000);
+					ConvertToMaterial<VolumeType::VoxelType>::MaterialType uMaterial001 = converter(v001);
 					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial001);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));

@@ -43,10 +43,26 @@ namespace PolyVox
 	};
 
 	template<typename VoxelType>
-	typename VoxelTypeTraits<VoxelType>::MaterialType convertToMaterial(VoxelType voxel)
+	class ConvertToDensity
 	{
-		return 1;
-	}
+	public:
+		typedef VoxelType DensityType;
+		DensityType operator()(VoxelType voxel)
+		{
+			return voxel;
+		}
+	};
+
+	template<typename VoxelType>
+	class ConvertToMaterial
+	{
+	public:
+		typedef float MaterialType;
+		MaterialType operator()(VoxelType voxel)
+		{
+			return 1;
+		}
+	};
 
 	template< typename VolumeType>
 	class SurfaceExtractor

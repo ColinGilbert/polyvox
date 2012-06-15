@@ -37,14 +37,26 @@ namespace PolyVox
 		return voxel.getDensity();
 	}
 
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair44>::MaterialType convertToMaterial(MaterialDensityPair44 voxel)
+	//template<>
+	ConvertToDensity<MaterialDensityPair44>::DensityType ConvertToDensity<MaterialDensityPair44>::operator()(MaterialDensityPair44 voxel)
+	{
+		return voxel.getDensity();
+	}
+
+	//template<>
+	ConvertToDensity<MaterialDensityPair88>::DensityType ConvertToDensity<MaterialDensityPair88>::operator()(MaterialDensityPair88 voxel)
+	{
+		return voxel.getDensity();
+	}
+
+	//template<>
+	ConvertToMaterial<MaterialDensityPair44>::MaterialType ConvertToMaterial<MaterialDensityPair44>::operator()(MaterialDensityPair44 voxel)
 	{
 		return voxel.getMaterial();
 	}
 
-	template<>
-	typename VoxelTypeTraits<MaterialDensityPair88>::MaterialType convertToMaterial(MaterialDensityPair88 voxel)
+	//template<>
+	ConvertToMaterial<MaterialDensityPair88>::MaterialType ConvertToMaterial<MaterialDensityPair88>::operator()(MaterialDensityPair88 voxel)
 	{
 		return voxel.getMaterial();
 	}

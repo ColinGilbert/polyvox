@@ -30,4 +30,10 @@ namespace PolyVox
 	{
 		return voxel.getDensity();
 	}
+
+	//template<>
+	ConvertToDensity<Density8>::DensityType ConvertToDensity<Density8>::operator()(Density8 voxel)
+	{
+		return voxel.getDensity();
+	}
 }
