@@ -33,9 +33,9 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength)
-		:m_uSideLength(0)
+		:m_tUncompressedData(0)
+		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_tUncompressedData(0)
 		,m_bIsCompressed(true)
 		,m_bIsUncompressedDataModified(true)
 	{

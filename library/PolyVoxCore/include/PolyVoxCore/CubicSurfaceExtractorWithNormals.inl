@@ -25,11 +25,11 @@ namespace PolyVox
 {
 	template<typename VolumeType>
 	CubicSurfaceExtractorWithNormals<VolumeType>::CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(typename VolumeType::VoxelType from, typename VolumeType::VoxelType to, float& materialToUse)> funcIsQuadNeededCallback)
-		:m_volData(volData)
+		:m_funcIsQuadNeededCallback(funcIsQuadNeededCallback)
+		,m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
-		,m_funcIsQuadNeededCallback(funcIsQuadNeededCallback)
 	{		
 		assert(m_funcIsQuadNeededCallback);
 	}

@@ -34,11 +34,11 @@ namespace PolyVox
 	template<typename VolumeType>
 	Raycast<VolumeType>::Raycast(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result, polyvox_function<bool(const typename VolumeType::Sampler& sampler)> funcIsPassable)
 		:m_result(result)
+		,m_funcIsPassable(funcIsPassable)
 		,m_volData(volData)
 		,m_sampVolume(volData)
 		,m_v3dStart(v3dStart)
 		,m_v3dDirectionAndLength(v3dDirectionAndLength)
-		,m_funcIsPassable(funcIsPassable)
 	{
 	}
 
