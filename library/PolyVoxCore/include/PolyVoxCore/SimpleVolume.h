@@ -145,11 +145,6 @@ namespace PolyVox
 			const Region& regValid,
 			uint16_t uBlockSideLength = 32
 		);
-		/// Deprecated constructor - do not use.
-		SimpleVolume
-		(
-			int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
-		);
 		/// Destructor
 		~SimpleVolume();
 

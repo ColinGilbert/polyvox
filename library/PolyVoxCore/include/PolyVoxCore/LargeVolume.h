@@ -255,11 +255,6 @@ namespace PolyVox
 			bool bPagingEnabled = false,
 			uint16_t uBlockSideLength = 32
 		);
-		/// Deprecated constructor - do not use.
-		LargeVolume
-		(
-			int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
-		);
 		/// Destructor
 		~LargeVolume();
 

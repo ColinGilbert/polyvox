@@ -24,27 +24,6 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
-	/// Deprecated - do not use this constructor.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	SimpleVolume<VoxelType>::SimpleVolume
-	(
-		int32_t dont_use_this_constructor_1, int32_t dont_use_this_constructor_2, int32_t dont_use_this_constructor_3
-	)
-	{
-		//In earlier verions of PolyVox the constructor took three values indicating width, height, and depth. However, this
-		//causes confusion because these three parameters can be interpreted as two function pointers and a block size instead,
-		//hence calling a different constructor. And simply removing this constructor will cause confusion because existing
-		//code with three parameters will then always resolve to the constructor with two function pointers and a block size.
-		//
-		//Eventually this constructor will be removed, it's just here to make people change their code to the new version.
-		//
-		//IF YOU HIT THIS ASSERT/ABORT, CHANGE YOUR CODE TO USE THE CONSTRUCTOR TAKING A 'Region' INSTEAD.
-		assert(false);
-		abort();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter.
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
 	////////////////////////////////////////////////////////////////////////////////
