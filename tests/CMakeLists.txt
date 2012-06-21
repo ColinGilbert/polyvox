@@ -35,6 +35,11 @@ REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 # ADD_TEST(ClassNameFeature1Test ${LATEST_TEST} testFeature1)
 # ADD_TEST(ClassNameFeature2Test ${LATEST_TEST} testFeature2)
 
+# Python tests
+IF(BUILD_BINDINGS)
+	ADD_TEST(PythonSurfaceExtractorTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestSurfaceExtractor.py)
+ENDIF()
+
 # AmbientOcclusionGenerator tests
 CREATE_TEST(TestAmbientOcclusionGenerator.h TestAmbientOcclusionGenerator.cpp TestAmbientOcclusionGenerator)
 ADD_TEST(AmbientOcclusionGeneratorExecuteTest ${LATEST_TEST} testExecute)
