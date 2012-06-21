@@ -2,33 +2,40 @@
 
 #define POLYVOX_API
 
-%rename(equals) operator==;
-%rename(notEqualTo) operator!=;
-%rename(lessThan) operator<;
-%rename(greaterThan) operator>;
-%rename(lessThanOrEqualTo) operator<=;
-%rename(greaterThanOrEqualTo) operator>=;
-%rename(assignment) operator=;
-%rename(additionAssignment) operator+=;
-%rename(subtractionAssignment) operator-=;
-%rename(multiplicationAssignment) operator*=;
-%rename(divisionAssignment) operator/=;
-%rename(arrayOperator) operator[];
+//This macro allows us to use Python properties on our classes
+%define PROPERTY(type,name,getter,setter)
+%extend type {
+	%pythoncode %{
+		__swig_getmethods__["name"] = getter
+		__swig_setmethods__["name"] = setter
+		if _newclass: name = property(getter, setter)
+	%}
+};
+%enddef
+
+//Put this in an %extend section to wrap operator<< as __str__
+%define STR()
+const char* __str__() {
+	std::ostringstream out;
+	out << *$self;
+	return out.str().c_str();
+}
+%enddef
 
 %include "stdint.i"
 %include "std_vector.i"
 %include "Vector.i"
+%include "Density.i"
 //%include "Material.i"
-//%include "Density.i"
-//%include "Region.i"
-//%include "SimpleVolume.i"
+%include "Region.i"
+%include "SimpleVolume.i"
 //%include "TypeDef.i"
 //%include "SubArray.i"
 //%include "Array.i"
-//%include "VertexTypes.i"
-//%include "SurfaceMesh.i"
+%include "VertexTypes.i"
+%include "SurfaceMesh.i"
 //%include "SimpleVolumeSampler.i"
-//%include "SurfaceExtractor.i"
+%include "SurfaceExtractor.i"
 //%include "CubicSurfaceExtractor.i"
 //%include "CubicSurfaceExtractorWithNormals.i"
 //%include "MeshDecimator.i"
