@@ -9,6 +9,7 @@ Contents:
 	install
 	principles
 	tutorial1
+	changelog
 
 
 Indices and tables
