@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Material_H__
 #define __PolyVox_Material_H__
 
-#include "PolyVoxCore/SurfaceExtractionController.h" //We'll specialise the controller contained in here
 #include "PolyVoxCore/Voxel.h"
 
 #include "PolyVoxImpl/TypeDef.h"
@@ -116,24 +115,6 @@ namespace PolyVox
 
 	typedef Material<uint8_t> Material8;
 	typedef Material<uint16_t> Material16;
-
-	template <typename Type>
-	class SurfaceExtractionController< Material<Type> >
-	{
-	public:
-		typedef int32_t DensityType;
-		typedef float MaterialType;
-
-		DensityType convertToDensity(Material<Type> voxel)
-		{
-			return voxel.getDensity();
-		}
-
-		MaterialType convertToMaterial(Material<Type> voxel)
-		{
-			return voxel.getMaterial();
-		}
-	};
 
 	template<>
 	class VoxelTypeTraits< Material8 >
