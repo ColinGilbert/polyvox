@@ -1,0 +1,14 @@
+Changes for PolyVox version 0.2
+===============================
+This is the first revision for which we have produced a changelog, as we are now trying to streamline our development and release process. Hence this changelog entry is not going to be as structured as we hope they will be in the future. I'm writing it from memory, rather than having carefully kept track of all the relevent changes as I made them.
+
+Refactor of basic voxel types
+-----------------------------
+Previous versions of PolyVox provided classes representing voxel data, such as MaterialDensityPair88. These classes were required to expose certain function such as getDensity() and getMaterial(). This is no longer the case as now even primitive data types such as floats and ints can be used as voxels. You can also create new classes to represent voxel data and it is entirely up to you what kind of properties they have.
+
+As an example, imagine you might want to store lighting values in a volume and propergate them according to some algorithm you devise. In this case the voxel data has no concept of densities or materials and there is no need to provide them. Algorithms which conceptually operate on densities (such as the Marching Cubes Surface Extractor) will not be able to operate on your lighting data but this would not make sense anyway.
+
+Because algorithms now know nothing about the structure of the underlying voxels, some utility functions/classes are required. The principle is similar to the std::sort algorithm, which knows nothing about the type of data it is operating on but is told how to compare any two values via a comparator function object. In this sense, it will be useful to have an understanding of how algorithms such as std::sort are used.
+
+We have continued to provide the Density, Material, and MaterialDensityPair classes to ease the transition into the new system, but really they should just be considered as examples of how you might create your own voxel types.
+
