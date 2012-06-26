@@ -21,13 +21,28 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Density.h"
+#ifndef __PolyVox_SurfaceExtractionController_H__
+#define __PolyVox_SurfaceExtractionController_H__
 
 namespace PolyVox
 {
-	template<>
-	VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel)
+	template<typename VoxelType>
+	class SurfaceExtractionController
 	{
-		return voxel.getDensity();
-	}
+	public:
+		typedef VoxelType DensityType;
+		typedef float MaterialType;
+
+		DensityType convertToDensity(VoxelType voxel)
+		{
+			return voxel;
+		}
+
+		MaterialType convertToMaterial(VoxelType voxel)
+		{
+			return 1;
+		}
+	};
 }
+
+#endif

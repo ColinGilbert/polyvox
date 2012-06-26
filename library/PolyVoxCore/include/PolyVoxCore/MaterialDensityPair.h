@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MaterialDensityPair_H__
 #define __PolyVox_MaterialDensityPair_H__
 
+#include "PolyVoxCore/SurfaceExtractionController.h" //We'll specialise the controller contained in here
 #include "PolyVoxCore/Voxel.h"
 
 #include "PolyVoxImpl/TypeDef.h"
@@ -96,6 +97,24 @@ namespace PolyVox
 		DensityType m_uDensity : NoOfDensityBits;
 	};
 
+	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	class SurfaceExtractionController< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
+	{
+	public:
+		typedef Type DensityType;
+		typedef Type MaterialType;
+
+		DensityType convertToDensity(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> voxel)
+		{
+			return voxel.getDensity();
+		}
+
+		MaterialType convertToMaterial(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> voxel)
+		{
+			return voxel.getMaterial();
+		}
+	};
+
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
 	
@@ -129,24 +148,6 @@ namespace PolyVox
 
 	template<>
 	VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
-
-	template<>
-	class ConvertToDensity<MaterialDensityPair44>
-	{
-	public:
-		typedef uint32_t DensityType;
-
-		DensityType operator()(MaterialDensityPair44 voxel);
-	};
-
-	template<>
-	class ConvertToDensity<MaterialDensityPair88>
-	{
-	public:
-		typedef uint32_t DensityType;
-
-		DensityType operator()(MaterialDensityPair88 voxel);
-	};
 
 	template<>
 	class ConvertToMaterial<MaterialDensityPair44>

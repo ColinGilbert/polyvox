@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/SurfaceExtractionController.h"
 
 namespace PolyVox
 {
@@ -40,17 +41,6 @@ namespace PolyVox
 		typedef uint8_t MaterialType;
 		static uint8_t minDensity() { return 0; }
 		static uint8_t maxDensity() { return 255; }
-	};
-
-	template<typename VoxelType>
-	class ConvertToDensity
-	{
-	public:
-		typedef VoxelType DensityType;
-		DensityType operator()(VoxelType voxel)
-		{
-			return voxel;
-		}
 	};
 
 	template<typename VoxelType>
@@ -240,6 +230,9 @@ namespace PolyVox
 
 		//Our threshold value
 		typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType m_tThreshold;
+
+		//Used to convert arbitrary voxel types in densities and materials.
+		SurfaceExtractionController<typename VolumeType::VoxelType> m_controller;
 	};
 }
 

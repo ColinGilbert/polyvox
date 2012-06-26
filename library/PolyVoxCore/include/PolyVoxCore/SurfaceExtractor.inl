@@ -206,8 +206,6 @@ namespace PolyVox
 		typename VolumeType::VoxelType v011;
 		typename VolumeType::VoxelType v111;
 
-		ConvertToDensity<typename VolumeType::VoxelType> DensityConverter;
-
 		if(isPrevZAvail)
 		{
 			if(isPrevYAvail)
@@ -232,7 +230,7 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (DensityConverter(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -250,8 +248,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					if (convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 			else //previous Y not available
@@ -272,8 +270,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
 
-					if (convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -286,10 +284,10 @@ namespace PolyVox
 					uint8_t iPreviousCubeIndexZ = pPreviousBitmask[uXRegSpace][uYRegSpace];
 					iCubeIndex = iPreviousCubeIndexZ >> 4;
 
-					if (convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
-					if (convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
-					if (convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
+					if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+					if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 		}
@@ -314,8 +312,8 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
 
-					if (convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -332,10 +330,10 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexY;
 
-					if (convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
-					if (convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
-					if (convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
+					if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+					if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 			else //previous Y not available
@@ -355,10 +353,10 @@ namespace PolyVox
 
 					iCubeIndex = iPreviousCubeIndexX;
 
-					if (convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;	
-					if (convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
-					if (convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;	
+					if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+					if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 				else //previous X not available
 				{
@@ -372,14 +370,14 @@ namespace PolyVox
 					v011 = m_sampVolume.peekVoxel0px1py1pz();
 					v111 = m_sampVolume.peekVoxel1px1py1pz();
 
-					if (convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
-					if (convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;
-					if (convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
-					if (convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
-					if (convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
-					if (convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
-					if (convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
-					if (convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
+					if (m_controller.convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;
+					if (m_controller.convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
+					if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+					if (m_controller.convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
+					if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+					if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 				}
 			}
 		}
@@ -399,8 +397,6 @@ namespace PolyVox
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
 	{
-		ConvertToMaterial<typename VolumeType::VoxelType> converter;
-
 		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 		const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
 
@@ -437,7 +433,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v100) - convertToDensity(v000));
+					float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerCorner().getZ()));
 
@@ -447,9 +443,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial000 = converter(v000);
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial100 = converter(v100);
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial100 = m_controller.convertToMaterial(v100);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -463,7 +459,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v010) - convertToDensity(v000));
+					float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()));
 
@@ -473,9 +469,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial000 = converter(v000);
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial010 = converter(v010);
-					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial010);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial010 = m_controller.convertToMaterial(v010);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial010);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -489,7 +485,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(m_tThreshold - convertToDensity(v000)) / static_cast<float>(convertToDensity(v001) - convertToDensity(v000));
+					float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()) + fInterp);
 
@@ -499,9 +495,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial000 = converter(v000);
-					typename ConvertToMaterial<typename VolumeType::VoxelType>::MaterialType uMaterial001 = converter(v001);
-					uint32_t uMaterial = (std::max)(uMaterial000, uMaterial001);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial001 = m_controller.convertToMaterial(v001);
+					typename SurfaceExtractionController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial001);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);

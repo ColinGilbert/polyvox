@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Density_H__
 #define __PolyVox_Density_H__
 
+#include "PolyVoxCore/SurfaceExtractionController.h" //We'll specialise the controller contained in here
 #include "PolyVoxCore/Voxel.h"
 
 #include "PolyVoxImpl/TypeDef.h"
@@ -102,6 +103,24 @@ namespace PolyVox
 		static Density8::DensityType minDensity() { return std::numeric_limits<Density8::DensityType>::min(); }
 		static Density8::DensityType maxDensity() { return std::numeric_limits<Density8::DensityType>::max(); }
 	};
+
+	template <typename Type>
+	class SurfaceExtractionController< Density<Type> >
+	{
+	public:
+		typedef Type DensityType;
+		typedef float MaterialType;
+
+		DensityType convertToDensity(Density<Type> voxel)
+		{
+			return voxel.getDensity();
+		}
+
+		MaterialType convertToMaterial(Density<Type> voxel)
+		{
+			return 1;
+		}
+	};
 }
 
 #include "PolyVoxCore/SurfaceExtractor.h" //VERY UGLY THAT WE NEED THIS!!! TO BE CONSIDERED...
@@ -110,15 +129,6 @@ namespace PolyVox
 {
 	template<>
 	VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
-
-	template<>
-	class ConvertToDensity<Density8>
-	{
-	public:
-		typedef uint8_t DensityType;
-
-		DensityType operator()(Density8 voxel);
-	};
 }
 
 #endif //__PolyVox_Density_H__
