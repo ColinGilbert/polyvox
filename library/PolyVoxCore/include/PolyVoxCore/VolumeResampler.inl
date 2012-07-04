@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< typename SrcVolumeType, typename DestVolumeType>
-	VolumeResampler<SrcVolumeType, DestVolumeType>::VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DestVolumeType* pVolDst, Region regDst)
+	template< typename SrcVolumeType, typename DstVolumeType>
+	VolumeResampler<SrcVolumeType, DstVolumeType>::VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst)
 		:m_pVolSrc(pVolSrc)
 		,m_regSrc(regSrc)
 		,m_pVolDst(pVolDst)
@@ -34,8 +34,8 @@ namespace PolyVox
 	{
 	}
 
-	template< typename SrcVolumeType, typename DestVolumeType>
-	void VolumeResampler<SrcVolumeType, DestVolumeType>::execute()
+	template< typename SrcVolumeType, typename DstVolumeType>
+	void VolumeResampler<SrcVolumeType, DstVolumeType>::execute()
 	{
 		int32_t uSrcWidth = m_regSrc.getUpperCorner().getX() - m_regSrc.getLowerCorner().getX() + 1;
 		int32_t uSrcHeight = m_regSrc.getUpperCorner().getY() - m_regSrc.getLowerCorner().getY() + 1;
@@ -55,8 +55,8 @@ namespace PolyVox
 		}
 	}
 
-	template< typename SrcVolumeType, typename DestVolumeType>
-	void VolumeResampler<SrcVolumeType, DestVolumeType>::resampleSameSize()
+	template< typename SrcVolumeType, typename DstVolumeType>
+	void VolumeResampler<SrcVolumeType, DstVolumeType>::resampleSameSize()
 	{
 		for(int32_t sz = m_regSrc.getLowerCorner().getZ(), dz = m_regDst.getLowerCorner().getZ(); dz <= m_regDst.getUpperCorner().getZ(); sz++, dz++)
 		{
@@ -65,15 +65,15 @@ namespace PolyVox
 				for(int32_t sx = m_regSrc.getLowerCorner().getX(), dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); sx++,dx++)
 				{
 					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
-					const typename DestVolumeType::VoxelType& tDestVoxel = static_cast<DestVolumeType::VoxelType>(m_pVolSrc->getVoxelAt(sx,sy,sz));
-					m_pVolDst->setVoxelAt(dx,dy,dz,tDestVoxel);
+					const typename DstVolumeType::VoxelType& tDstVoxel = static_cast<DstVolumeType::VoxelType>(m_pVolSrc->getVoxelAt(sx,sy,sz));
+					m_pVolDst->setVoxelAt(dx,dy,dz,tDstVoxel);
 				}
 			}
 		}
 	}
 
-	template< typename SrcVolumeType, typename DestVolumeType>
-	void VolumeResampler<SrcVolumeType, DestVolumeType>::resampleArbitrary()
+	template< typename SrcVolumeType, typename DstVolumeType>
+	void VolumeResampler<SrcVolumeType, DstVolumeType>::resampleArbitrary()
 	{
 		float srcWidth  = m_regSrc.getUpperCorner().getX() - m_regSrc.getLowerCorner().getX();
 		float srcHeight = m_regSrc.getUpperCorner().getY() - m_regSrc.getLowerCorner().getY();
@@ -121,7 +121,7 @@ namespace PolyVox
 
 					typename SrcVolumeType::VoxelType tInterpolatedValue = trilinearlyInterpolate<float>(voxel000,voxel100,voxel010,voxel110,voxel001,voxel101,voxel011,voxel111,sx,sy,sz);
 
-					typename DestVolumeType::VoxelType result = static_cast<DestVolumeType::VoxelType>(tInterpolatedValue);
+					typename DstVolumeType::VoxelType result = static_cast<DstVolumeType::VoxelType>(tInterpolatedValue);
 					m_pVolDst->setVoxelAt(dx,dy,dz,result);
 				}
 			}

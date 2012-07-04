@@ -28,11 +28,11 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< typename SrcVolumeType, typename DestVolumeType>
+	template< typename SrcVolumeType, typename DstVolumeType>
 	class VolumeResampler
 	{
 	public:
-		VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DestVolumeType* pVolDst, Region regDst);
+		VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst);
 
 		void execute();
 
@@ -45,7 +45,7 @@ namespace PolyVox
 		Region m_regSrc;
 
 		//Destination data
-		DestVolumeType* m_pVolDst;
+		DstVolumeType* m_pVolDst;
 		Region m_regDst;
 	};
 

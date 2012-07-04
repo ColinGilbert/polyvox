@@ -152,7 +152,7 @@ namespace PolyVox
 
 		void buildConnectivityData(void);
 
-		bool attemptEdgeCollapse(uint32_t uSrc, uint32_t uDest);
+		bool attemptEdgeCollapse(uint32_t uSrc, uint32_t uDst);
 
 		const SurfaceMesh<VertexType>* m_pInputMesh;
 		SurfaceMesh<VertexType>* m_pOutputMesh;
@@ -160,7 +160,7 @@ namespace PolyVox
 		uint32_t performDecimationPass(float m_fMinDotProductForCollapse);
 		bool isSubset(std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> a, std::bitset<RFF_NO_OF_REGION_FACE_FLAGS> b);
 
-		bool canCollapseEdge(uint32_t uSrc, uint32_t uDest);
+		bool canCollapseEdge(uint32_t uSrc, uint32_t uDst);
 		bool canCollapseNormalEdge(uint32_t uSrc, uint32_t uDst);
 		bool canCollapseRegionEdge(uint32_t uSrc, uint32_t uDst);
 		bool canCollapseMaterialEdge(uint32_t uSrc, uint32_t uDst);

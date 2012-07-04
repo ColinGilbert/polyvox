@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< typename SrcVolumeType, typename DestVolumeType>
-	LowPassFilter<SrcVolumeType, DestVolumeType>::LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DestVolumeType* pVolDst, Region regDst, uint32_t uKernelSize)
+	template< typename SrcVolumeType, typename DstVolumeType>
+	LowPassFilter<SrcVolumeType, DstVolumeType>::LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst, uint32_t uKernelSize)
 		:m_pVolSrc(pVolSrc)
 		,m_regSrc(regSrc)
 		,m_pVolDst(pVolDst)
@@ -43,8 +43,8 @@ namespace PolyVox
 		}
 	}
 
-	template< typename SrcVolumeType, typename DestVolumeType>
-	void LowPassFilter<SrcVolumeType, DestVolumeType>::execute()
+	template< typename SrcVolumeType, typename DstVolumeType>
+	void LowPassFilter<SrcVolumeType, DstVolumeType>::execute()
 	{
 		int32_t iSrcMinX = m_regSrc.getLowerCorner().getX();
 		int32_t iSrcMinY = m_regSrc.getLowerCorner().getY();
@@ -114,8 +114,8 @@ namespace PolyVox
 		}
 	}
 
-	template< typename SrcVolumeType, typename DestVolumeType>
-	void LowPassFilter<SrcVolumeType, DestVolumeType>::executeSAT()
+	template< typename SrcVolumeType, typename DstVolumeType>
+	void LowPassFilter<SrcVolumeType, DstVolumeType>::executeSAT()
 	{
 		const uint32_t border = (m_uKernelSize - 1) / 2;
 
@@ -210,17 +210,17 @@ namespace PolyVox
 		}
 
 		//Now compute the average
-		const Vector3DInt32& v3dDestLowerCorner = m_regDst.getLowerCorner();
-		const Vector3DInt32& v3dDestUpperCorner = m_regDst.getUpperCorner();
+		const Vector3DInt32& v3dDstLowerCorner = m_regDst.getLowerCorner();
+		const Vector3DInt32& v3dDstUpperCorner = m_regDst.getUpperCorner();
 
 		const Vector3DInt32& v3dSrcLowerCorner = m_regSrc.getLowerCorner();
 		const Vector3DInt32& v3dSrcUpperCorner = m_regSrc.getUpperCorner();
 
-		for(int32_t iDstZ = v3dDestLowerCorner.getZ(), iSrcZ = v3dSrcLowerCorner.getZ(); iDstZ <= v3dDestUpperCorner.getZ(); iDstZ++, iSrcZ++)
+		for(int32_t iDstZ = v3dDstLowerCorner.getZ(), iSrcZ = v3dSrcLowerCorner.getZ(); iDstZ <= v3dDstUpperCorner.getZ(); iDstZ++, iSrcZ++)
 		{
-			for(int32_t iDstY = v3dDestLowerCorner.getY(), iSrcY = v3dSrcLowerCorner.getY(); iDstY <= v3dDestUpperCorner.getY(); iDstY++, iSrcY++)
+			for(int32_t iDstY = v3dDstLowerCorner.getY(), iSrcY = v3dSrcLowerCorner.getY(); iDstY <= v3dDstUpperCorner.getY(); iDstY++, iSrcY++)
 			{
-				for(int32_t iDstX = v3dDestLowerCorner.getX(), iSrcX = v3dSrcLowerCorner.getX(); iDstX <= v3dDestUpperCorner.getX(); iDstX++, iSrcX++)
+				for(int32_t iDstX = v3dDstLowerCorner.getX(), iSrcX = v3dSrcLowerCorner.getX(); iDstX <= v3dDstUpperCorner.getX(); iDstX++, iSrcX++)
 				{
 					int32_t satLowerX = iSrcX - border - 1;
 					int32_t satLowerY = iSrcY - border - 1;
