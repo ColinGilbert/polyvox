@@ -64,9 +64,9 @@ namespace PolyVox
 			{
 				for(int32_t sx = m_regSrc.getLowerCorner().getX(), dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); sx++,dx++)
 				{
-					//Note: Consider what should happen if src and dest have different voxel types.
-					typename SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
-					m_pVolDst->setVoxelAt(dx,dy,dz,voxel);
+					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
+					const typename DestVolumeType::VoxelType& tDestVoxel = static_cast<DestVolumeType::VoxelType>(m_pVolSrc->getVoxelAt(sx,sy,sz));
+					m_pVolDst->setVoxelAt(dx,dy,dz,tDestVoxel);
 				}
 			}
 		}
@@ -104,23 +104,14 @@ namespace PolyVox
 					sz += m_regSrc.getLowerCorner().getZ();
 
 					sampler.setPosition(sx,sy,sz);
-					typename SrcVolumeType::VoxelType voxel000 = sampler.peekVoxel0px0py0pz();
-					typename SrcVolumeType::VoxelType voxel001 = sampler.peekVoxel0px0py1pz();
-					typename SrcVolumeType::VoxelType voxel010 = sampler.peekVoxel0px1py0pz();
-					typename SrcVolumeType::VoxelType voxel011 = sampler.peekVoxel0px1py1pz();
-					typename SrcVolumeType::VoxelType voxel100 = sampler.peekVoxel1px0py0pz();
-					typename SrcVolumeType::VoxelType voxel101 = sampler.peekVoxel1px0py1pz();
-					typename SrcVolumeType::VoxelType voxel110 = sampler.peekVoxel1px1py0pz();
-					typename SrcVolumeType::VoxelType voxel111 = sampler.peekVoxel1px1py1pz();
-
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel000Den = convertToDensity(voxel000);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel001Den = convertToDensity(voxel001);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel010Den = convertToDensity(voxel010);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel011Den = convertToDensity(voxel011);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel100Den = convertToDensity(voxel100);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel101Den = convertToDensity(voxel101);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel110Den = convertToDensity(voxel110);
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType voxel111Den = convertToDensity(voxel111);
+					const typename SrcVolumeType::VoxelType& voxel000 = sampler.peekVoxel0px0py0pz();
+					const typename SrcVolumeType::VoxelType& voxel001 = sampler.peekVoxel0px0py1pz();
+					const typename SrcVolumeType::VoxelType& voxel010 = sampler.peekVoxel0px1py0pz();
+					const typename SrcVolumeType::VoxelType& voxel011 = sampler.peekVoxel0px1py1pz();
+					const typename SrcVolumeType::VoxelType& voxel100 = sampler.peekVoxel1px0py0pz();
+					const typename SrcVolumeType::VoxelType& voxel101 = sampler.peekVoxel1px0py1pz();
+					const typename SrcVolumeType::VoxelType& voxel110 = sampler.peekVoxel1px1py0pz();
+					const typename SrcVolumeType::VoxelType& voxel111 = sampler.peekVoxel1px1py1pz();
 
 					//FIXME - should accept all float parameters, but GCC complains?
 					double dummy;
@@ -128,14 +119,9 @@ namespace PolyVox
 					sy = modf(sy, &dummy);
 					sz = modf(sz, &dummy);
 
-					//Note: Consider what should happen if src and dest have different voxel types.
-					typename VoxelTypeTraits<typename SrcVolumeType::VoxelType>::DensityType uInterpolatedDensity = trilinearlyInterpolate<float>(voxel000Den,voxel100Den,voxel010Den,voxel110Den,voxel001Den,voxel101Den,voxel011Den,voxel111Den,sx,sy,sz);
+					typename SrcVolumeType::VoxelType tInterpolatedValue = trilinearlyInterpolate<float>(voxel000,voxel100,voxel010,voxel110,voxel001,voxel101,voxel011,voxel111,sx,sy,sz);
 
-					//Note: Consider what should happen if src and dest have different voxel types.
-					typename DestVolumeType::VoxelType result;
-					//result.setDensity(uInterpolatedDensity);
-					result = uInterpolatedDensity;
-
+					typename DestVolumeType::VoxelType result = static_cast<DestVolumeType::VoxelType>(tInterpolatedValue);
 					m_pVolDst->setVoxelAt(dx,dy,dz,result);
 				}
 			}
