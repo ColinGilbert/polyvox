@@ -76,6 +76,18 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
+		Density<Type>& operator+=(const Density<Type>& rhs)
+		{
+			m_uDensity += rhs.m_uDensity;
+			return *this;
+		}
+
+		Density<Type>& operator/=(uint32_t rhs)
+		{
+			m_uDensity /= rhs;
+			return *this;
+		}
+
 		DensityType getDensity() const throw() { return m_uDensity; }
 		//MaterialType getMaterial() const throw() { return 1; }
 

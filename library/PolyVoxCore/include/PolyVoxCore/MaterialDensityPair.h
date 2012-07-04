@@ -69,6 +69,24 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
+		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>& operator+=(const MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>& rhs)
+		{
+			m_uDensity += rhs.m_uDensity;
+
+			// What should we do with the material? Conceptually the idea of adding materials makes no sense, but for our
+			// purposes we consider the 'sum' of two materials to just be the max. At least this way it is commutative.
+			m_uMaterial = (std::max)(m_uMaterial, rhs.m_uMaterial);
+
+			return *this;
+		}
+
+		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>& operator/=(uint32_t rhs)
+		{
+			// There's nothing sensible we can do with the material, so this function only affects the density.
+			m_uDensity /= rhs;
+			return *this;
+		}
+
 		DensityType getDensity() const throw() { return m_uDensity; }
 		MaterialType getMaterial() const throw() { return m_uMaterial; }
 

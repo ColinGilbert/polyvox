@@ -12,3 +12,4 @@ Because algorithms now know nothing about the structure of the underlying voxels
 
 We have continued to provide the Density, Material, and MaterialDensityPair classes to ease the transition into the new system, but really they should just be considered as examples of how you might create your own voxel types.
 
+Some algothms assume that basic mathematical operations can be applied to voxel types. For example, the LowPassFilter needs to compute the average of a set of voxels, and to do this it need to be possible to add voxels together and divide by an integer. Obviously these operations are provided by primitive types, but it means that if you want to use the LowPassfilter on custom voxel types then these types need to provide operator+=, operator/=, etc. These have been added to the Density and MaterialDensityPair classes, but not to the Material class. This reflects the fact that applying a low pass filter to a material volume does not make conceptual sense.
