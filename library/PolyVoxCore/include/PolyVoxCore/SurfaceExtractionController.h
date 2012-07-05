@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SurfaceExtractionController_H__
 #define __PolyVox_SurfaceExtractionController_H__
 
+#include <limits>
+
 namespace PolyVox
 {
 	template<typename VoxelType>
@@ -41,6 +43,12 @@ namespace PolyVox
 		MaterialType convertToMaterial(VoxelType voxel)
 		{
 			return 1;
+		}
+
+		DensityType getThreshold(void)
+		{
+			// Returns a threshold value halfway between the min and max possible values.
+			return ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
 		}
 	};
 }

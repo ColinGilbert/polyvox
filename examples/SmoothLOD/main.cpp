@@ -56,7 +56,7 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 				{
 					//Our new density value
 					//uint8_t uDensity = Density8::getmaxDensity()();
-					uint8_t uDensity = VoxelTypeTraits<Density8>::maxDensity();
+					uint8_t uDensity = std::numeric_limits<uint8_t>::max();
 
 					//Get the old voxel
 					//uint8_t voxel = volData.getVoxelAt(x,y,z);

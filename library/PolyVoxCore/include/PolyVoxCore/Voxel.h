@@ -56,12 +56,6 @@ namespace PolyVox
 		static int32_t minDensity() { assert(false); return 0; } 
 		static int32_t maxDensity() { assert(false); return 0; }
 	};
-
-	template<typename VoxelType>
-	typename VoxelTypeTraits<VoxelType>::DensityType convertToDensity(VoxelType voxel)
-	{
-		return voxel;
-	}
 }
 
 #endif //__PolyVox_Voxel_H__

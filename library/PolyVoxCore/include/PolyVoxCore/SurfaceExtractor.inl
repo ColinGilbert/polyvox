@@ -24,16 +24,18 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType>
-	SurfaceExtractor<VolumeType>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType tThreshold)
+	SurfaceExtractor<VolumeType>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
-		,m_tThreshold(tThreshold)
 	{
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
+
+		//FIXME - Check is m_controller is guarenteed to be valid at this point?!
+		m_tThreshold = m_controller.getThreshold();
 	}
 
 	template<typename VolumeType>

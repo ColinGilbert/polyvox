@@ -89,14 +89,10 @@ namespace PolyVox
 		}
 
 		DensityType getDensity() const throw() { return m_uDensity; }
-		//MaterialType getMaterial() const throw() { return 1; }
-
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
-		//void setMaterial(MaterialType /*uMaterial*/) { assert(false); } //Cannot set material on voxel of type Density
 
-		//static DensityType getmaxDensity()() throw() { return (std::numeric_limits<DensityType>::max)(); } 
-		//static DensityType getminDensity()() throw() { return (std::numeric_limits<DensityType>::min)(); }
-		static DensityType getThreshold() throw() { return (std::numeric_limits<DensityType>::max)() / 2; }
+		static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
+		static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
 
 	private:
 		DensityType m_uDensity;
@@ -132,15 +128,13 @@ namespace PolyVox
 		{
 			return 1;
 		}
+
+		DensityType getThreshold(void)
+		{
+			// Returns a threshold value halfway between the min and max possible values.
+			return (Density<Type>::getMinDensity() + Density<Type>::getMaxDensity()) / 2;
+		}
 	};
-}
-
-#include "PolyVoxCore/SurfaceExtractor.h" //VERY UGLY THAT WE NEED THIS!!! TO BE CONSIDERED...
-
-namespace PolyVox
-{
-	template<>
-	VoxelTypeTraits<Density8>::DensityType convertToDensity(Density8 voxel);
 }
 
 #endif //__PolyVox_Density_H__

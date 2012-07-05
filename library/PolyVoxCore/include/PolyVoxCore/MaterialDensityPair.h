@@ -93,9 +93,8 @@ namespace PolyVox
 		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		//static DensityType getmaxDensity()() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		//static DensityType getminDensity()() throw() { return 0; }
-		static DensityType getThreshold() throw() {return  0x01 << (NoOfDensityBits - 1);}
+		static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
+		static DensityType getMinDensity() throw() { return 0; }
 
 		static bool isQuadNeeded(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> from, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> to, float& materialToUse)
 		{
@@ -131,6 +130,12 @@ namespace PolyVox
 		{
 			return voxel.getMaterial();
 		}
+
+		DensityType getThreshold(void)
+		{
+			// Returns a threshold value halfway between the min and max possible values.
+			return (MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMinDensity() + MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMaxDensity()) / 2;
+		}
 	};
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
@@ -154,35 +159,6 @@ namespace PolyVox
 		typedef uint8_t MaterialType;
 		static MaterialDensityPair88::DensityType minDensity() { return 0; }
 		static MaterialDensityPair88::DensityType maxDensity() { return 255; }
-	};
-}
-
-#include "PolyVoxCore/SurfaceExtractor.h"
-
-namespace PolyVox
-{
-	template<>
-	VoxelTypeTraits<MaterialDensityPair44>::DensityType convertToDensity(MaterialDensityPair44 voxel);
-
-	template<>
-	VoxelTypeTraits<MaterialDensityPair88>::DensityType convertToDensity(MaterialDensityPair88 voxel);
-
-	template<>
-	class ConvertToMaterial<MaterialDensityPair44>
-	{
-	public:
-		typedef uint32_t MaterialType;
-
-		MaterialType operator()(MaterialDensityPair44 voxel);
-	};
-
-	template<>
-	class ConvertToMaterial<MaterialDensityPair88>
-	{
-	public:
-		typedef uint32_t MaterialType;
-
-		MaterialType operator()(MaterialDensityPair88 voxel);
 	};
 }
 

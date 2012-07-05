@@ -50,7 +50,7 @@ void createPerlinVolumeSlow(LargeVolume<MaterialDensityPair44>& volData)
 
 				perlinVal += 1.0f;
 				perlinVal *= 0.5f;
-				perlinVal *= VoxelTypeTraits<MaterialDensityPair44>::maxDensity();
+				perlinVal *= MaterialDensityPair44::getMaxDensity();
 
 				MaterialDensityPair44 voxel;
 
@@ -60,12 +60,12 @@ void createPerlinVolumeSlow(LargeVolume<MaterialDensityPair44>& volData)
 				/*if(perlinVal < 0.0f)
 				{
 					voxel.setMaterial(245);
-					voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::maxDensity());
+					voxel.setDensity(MaterialDensityPair44::getMaxDensity());
 				}
 				else
 				{
 					voxel.setMaterial(0);
-					voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::minDensity());
+					voxel.setDensity(MaterialDensityPair44::getMinDensity());
 				}*/
 
 				volData.setVoxelAt(x, y, z, voxel);
@@ -105,12 +105,12 @@ void createPerlinVolumeSlow(LargeVolume<MaterialDensityPair44>& volData)
 							if(perlinVal < 0.0f)
 							{
 								voxel.setMaterial(245);
-								voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::maxDensity());
+								voxel.setDensity(MaterialDensityPair44::getMaxDensity());
 							}
 							else
 							{
 								voxel.setMaterial(0);
-								voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::minDensity());
+								voxel.setDensity(MaterialDensityPair44::getMinDensity());
 							}
 
 							volData.setVoxelAt(x, y, z, voxel);
@@ -143,12 +143,12 @@ void createPerlinTerrain(LargeVolume<MaterialDensityPair44>& volData)
 				if(z < perlinVal)
 				{
 					voxel.setMaterial(245);
-					voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::maxDensity());
+					voxel.setDensity(MaterialDensityPair44::getMaxDensity());
 				}
 				else
 				{
 					voxel.setMaterial(0);
-					voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::minDensity());
+					voxel.setDensity(MaterialDensityPair44::getMinDensity());
 				}
 
 				volData.setVoxelAt(x, y, z, voxel);
@@ -181,7 +181,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DF
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					uint8_t uDensity = VoxelTypeTraits<MaterialDensityPair44>::maxDensity();
+					uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
 
 					//Get the old voxel
 					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
@@ -219,17 +219,17 @@ void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::
 					if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
 						// tunnel
 						voxel.setMaterial(0);
-						voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::minDensity());
+						voxel.setDensity(MaterialDensityPair44::getMinDensity());
 					} else {
 						// solid
 						voxel.setMaterial(245);
-						voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::maxDensity());
+						voxel.setDensity(MaterialDensityPair44::getMaxDensity());
 					}
 				}
 				else
 				{
 					voxel.setMaterial(0);
-					voxel.setDensity(VoxelTypeTraits<MaterialDensityPair44>::minDensity());
+					voxel.setDensity(MaterialDensityPair44::getMinDensity());
 				}
 
 				volume.setVoxelAt(x, y, z, voxel);

@@ -72,29 +72,8 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
-		DensityType getDensity() const throw()
-		{
-			//We don't actually have a density, so make one up based on the material.
-			if(m_uMaterial == 0)
-			{
-				//return getminDensity()();
-				return 0;
-			}
-			else
-			{
-				//return getmaxDensity()();
-				return 2;
-			}
-		}
-
 		MaterialType getMaterial() const throw() { return m_uMaterial; }
-
-		void setDensity(DensityType /*uDensity*/) { assert(false); } //Cannot set density on voxel of type Material
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
-
-		//static DensityType getmaxDensity()() throw() { return 2; }
-		//static DensityType getminDensity()() throw() { return 0; }
-		static DensityType getThreshold() throw() { return 1; }
 
 		static bool isQuadNeeded(Material<Type> from, Material<Type> to, float& materialToUse)
 		{

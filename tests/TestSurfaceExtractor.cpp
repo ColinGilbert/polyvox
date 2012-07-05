@@ -37,32 +37,32 @@ using namespace PolyVox;
 // They are conceptually the inverse of the 'convertToDensity' function used by the SurfaceExtractor. They probably shouldn't be part
 // of PolyVox, but they might be usful to other tests so we cold move them into a 'Tests.h' or something in the future.
 template<typename VoxelType>
-void writeDensityValueToVoxel(typename VoxelTypeTraits<VoxelType>::DensityType valueToWrite, VoxelType& voxel)
+void writeDensityValueToVoxel(int valueToWrite, VoxelType& voxel)
 {
 	voxel = valueToWrite;
 }
 
 template<>
-void writeDensityValueToVoxel(VoxelTypeTraits<Density8>::DensityType valueToWrite, Density8& voxel)
+void writeDensityValueToVoxel(int valueToWrite, Density8& voxel)
 {
 	voxel.setDensity(valueToWrite);
 }
 
 template<>
-void writeDensityValueToVoxel(VoxelTypeTraits<MaterialDensityPair88>::DensityType valueToWrite, MaterialDensityPair88& voxel)
+void writeDensityValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 {
 	voxel.setDensity(valueToWrite);
 }
 
 template<typename VoxelType>
-void writeMaterialValueToVoxel(typename VoxelTypeTraits<VoxelType>::MaterialType valueToWrite, VoxelType& voxel)
+void writeMaterialValueToVoxel(int valueToWrite, VoxelType& voxel)
 {
 	//Most types don't have a material
 	return;
 }
 
 template<>
-void writeMaterialValueToVoxel(VoxelTypeTraits<MaterialDensityPair88>::MaterialType valueToWrite, MaterialDensityPair88& voxel)
+void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 {
 	voxel.setMaterial(valueToWrite);
 }
@@ -92,7 +92,8 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	SurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, 50);
+	// THIS TEST IS BROKEN BECAUSE CUSTOM THRESHOLDS ARE TEMOPRARILY NOT WORKING.
+	SurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result/*, 50*/);
 	extractor.execute();
 }
 
