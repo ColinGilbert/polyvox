@@ -65,7 +65,7 @@ namespace PolyVox
 				for(int32_t sx = m_regSrc.getLowerCorner().getX(), dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); sx++,dx++)
 				{
 					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
-					const typename DstVolumeType::VoxelType& tDstVoxel = static_cast<DstVolumeType::VoxelType>(m_pVolSrc->getVoxelAt(sx,sy,sz));
+					const typename DstVolumeType::VoxelType& tDstVoxel = static_cast<typename DstVolumeType::VoxelType>(m_pVolSrc->getVoxelAt(sx,sy,sz));
 					m_pVolDst->setVoxelAt(dx,dy,dz,tDstVoxel);
 				}
 			}
@@ -121,7 +121,7 @@ namespace PolyVox
 
 					typename SrcVolumeType::VoxelType tInterpolatedValue = trilinearlyInterpolate<float>(voxel000,voxel100,voxel010,voxel110,voxel001,voxel101,voxel011,voxel111,sx,sy,sz);
 
-					typename DstVolumeType::VoxelType result = static_cast<DstVolumeType::VoxelType>(tInterpolatedValue);
+					typename DstVolumeType::VoxelType result = static_cast<typename DstVolumeType::VoxelType>(tInterpolatedValue);
 					m_pVolDst->setVoxelAt(dx,dy,dz,result);
 				}
 			}
