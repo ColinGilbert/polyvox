@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<typename VolumeType>
-	SurfaceExtractor<VolumeType>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	template<typename VolumeType, typename Controller>
+	SurfaceExtractor<VolumeType, Controller>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -38,8 +38,8 @@ namespace PolyVox
 		m_tThreshold = m_controller.getThreshold();
 	}
 
-	template<typename VolumeType>
-	void SurfaceExtractor<VolumeType>::execute()
+	template<typename VolumeType, typename Controller>
+	void SurfaceExtractor<VolumeType, Controller>::execute()
 	{		
 		m_meshCurrent->clear();
 
@@ -127,9 +127,9 @@ namespace PolyVox
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 	}
 
-	template<typename VolumeType>
+	template<typename VolumeType, typename Controller>
 	template<bool isPrevZAvail>
-	uint32_t SurfaceExtractor<VolumeType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t SurfaceExtractor<VolumeType, Controller>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -193,9 +193,9 @@ namespace PolyVox
 		return m_uNoOfOccupiedCells;
 	}
 
-	template<typename VolumeType>
+	template<typename VolumeType, typename Controller>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void SurfaceExtractor<VolumeType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	void SurfaceExtractor<VolumeType, Controller>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -393,8 +393,8 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VolumeType>
-	void SurfaceExtractor<VolumeType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	template<typename VolumeType, typename Controller>
+	void SurfaceExtractor<VolumeType, Controller>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -511,8 +511,8 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VolumeType>
-	void SurfaceExtractor<VolumeType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	template<typename VolumeType, typename Controller>
+	void SurfaceExtractor<VolumeType, Controller>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,

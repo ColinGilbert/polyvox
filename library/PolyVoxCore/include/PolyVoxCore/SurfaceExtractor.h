@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< typename VolumeType>
+	template< typename VolumeType, typename Controller = SurfaceExtractionController<typename VolumeType::VoxelType> >
 	class SurfaceExtractor
 	{
 	public:
@@ -212,7 +212,8 @@ namespace PolyVox
 		typename SurfaceExtractionController<typename VolumeType::VoxelType>::DensityType m_tThreshold;
 
 		//Used to convert arbitrary voxel types in densities and materials.
-		SurfaceExtractionController<typename VolumeType::VoxelType> m_controller;
+		//SurfaceExtractionController<typename VolumeType::VoxelType> m_controller;
+		Controller m_controller;
 	};
 }
 
