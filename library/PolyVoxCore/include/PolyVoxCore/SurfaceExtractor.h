@@ -33,16 +33,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<>
-	class VoxelTypeTraits< uint8_t >	
-	{
-	public:
-		typedef uint8_t DensityType;
-		typedef uint8_t MaterialType;
-		static uint8_t minDensity() { return 0; }
-		static uint8_t maxDensity() { return 255; }
-	};
-
 	template< typename VolumeType>
 	class SurfaceExtractor
 	{
@@ -218,7 +208,8 @@ namespace PolyVox
 		Region m_regSliceCurrent;
 
 		//Our threshold value
-		typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType m_tThreshold;
+		//typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType m_tThreshold;
+		typename SurfaceExtractionController<typename VolumeType::VoxelType>::DensityType m_tThreshold;
 
 		//Used to convert arbitrary voxel types in densities and materials.
 		SurfaceExtractionController<typename VolumeType::VoxelType> m_controller;

@@ -101,16 +101,6 @@ namespace PolyVox
 	// These are the predefined density types. The 8-bit types are sufficient for many purposes (including
 	// most games) but 16-bit and float types do have uses particularly in medical/scientific visualisation.
 	typedef Density<uint8_t> Density8;
-	
-	template<>
-	class VoxelTypeTraits< Density8 >	
-	{
-	public:
-		typedef uint8_t DensityType;
-		typedef uint8_t MaterialType;
-		static Density8::DensityType minDensity() { return std::numeric_limits<Density8::DensityType>::min(); }
-		static Density8::DensityType maxDensity() { return std::numeric_limits<Density8::DensityType>::max(); }
-	};
 
 	template <typename Type>
 	class SurfaceExtractionController< Density<Type> >

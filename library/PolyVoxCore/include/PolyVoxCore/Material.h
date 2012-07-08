@@ -94,25 +94,6 @@ namespace PolyVox
 
 	typedef Material<uint8_t> Material8;
 	typedef Material<uint16_t> Material16;
-
-	template<>
-	class VoxelTypeTraits< Material8 >
-	{
-	public:
-		typedef uint8_t DensityType;
-		typedef uint8_t MaterialType;
-		static int minDensity() { assert(false); return 0; }
-		static int maxDensity() { assert(false); return 0; }
-	};
-
-	template<>
-	class VoxelTypeTraits< Material16 >
-	{
-	public:
-		typedef uint8_t DensityType;
-		static int minDensity() { assert(false); return 0; }
-		static int maxDensity() { assert(false); return 0; }
-	};
 }
 
 #endif //__PolyVox_Material_H__

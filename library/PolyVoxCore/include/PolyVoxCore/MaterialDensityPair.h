@@ -140,26 +140,6 @@ namespace PolyVox
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
 	typedef MaterialDensityPair<uint16_t, 8, 8> MaterialDensityPair88;
-	
-	template<>
-	class VoxelTypeTraits< MaterialDensityPair44 >
-	{
-	public:
-		typedef uint8_t DensityType;
-		typedef uint8_t MaterialType;
-		static MaterialDensityPair44::DensityType minDensity() { return 0; }
-		static MaterialDensityPair44::DensityType maxDensity() { return 15; }
-	};
-	
-	template<>
-	class VoxelTypeTraits< MaterialDensityPair88 >
-	{
-	public:
-		typedef uint8_t DensityType;
-		typedef uint8_t MaterialType;
-		static MaterialDensityPair88::DensityType minDensity() { return 0; }
-		static MaterialDensityPair88::DensityType maxDensity() { return 255; }
-	};
 }
 
 #endif
