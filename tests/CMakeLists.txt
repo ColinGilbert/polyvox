@@ -87,7 +87,3 @@ ADD_TEST(VectorEqualityTest ${LATEST_TEST} testEquality)
 # Volume subclass tests
 CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)
 ADD_TEST(VolumeSubclassExtractSurfaceTest ${LATEST_TEST} testExtractSurface)
-
-# Voxel tests
-CREATE_TEST(TestVoxels.h TestVoxels.cpp TestVoxels)
-ADD_TEST(VoxelsTraitsTest ${LATEST_TEST} testVoxelTypeLimits)
