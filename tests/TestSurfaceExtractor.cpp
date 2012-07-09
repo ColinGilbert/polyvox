@@ -32,6 +32,32 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+// Test our ability to modify the behaviour of the SurfaceExtractor. This simple example only modifies
+// the threshold (and actually this can be achieved by passing a parameter to the constructor of the
+// DefaultSurfaceExtractionController) but you could implement custom behaviour in the other members
+// if you wanted too. Actually, it's not clear if this ability is really useful because I can't think
+// what you'd modify apart from the threshold but the ability is at least available. Also, the
+// DefaultSurfaceExtractionController is templatised whereas this exmple shows that controllers don't
+// have to be.
+class CustomSurfaceExtractionController
+{
+public:
+	float convertToDensity(float voxel)
+	{
+		return voxel;
+	}
+
+	float convertToMaterial(float voxel)
+	{
+		return 1;
+	}
+
+	float getThreshold(void)
+	{
+		return 50.0f;
+	}
+};
+
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.
 // They are conceptually the inverse of the 'convertToDensity' function used by the SurfaceExtractor. They probably shouldn't be part
 // of PolyVox, but they might be usful to other tests so we cold move them into a 'Tests.h' or something in the future.
@@ -96,6 +122,30 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 	extractor.execute();
 }
 
+void testCustomController(SurfaceMesh<PositionMaterialNormal>& result)
+{
+	const int32_t uVolumeSideLength = 32;
+
+	//Create empty volume
+	SimpleVolume<float> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+
+	for (int32_t z = 0; z < uVolumeSideLength; z++)
+	{
+		for (int32_t y = 0; y < uVolumeSideLength; y++)
+		{
+			for (int32_t x = 0; x < uVolumeSideLength; x++)
+			{
+				float voxelValue = x + y + z;
+				volData.setVoxelAt(x, y, z, voxelValue);
+			}
+		}
+	}
+
+	CustomSurfaceExtractionController controller;
+	SurfaceExtractor< SimpleVolume<float>, CustomSurfaceExtractionController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
+	extractor.execute();
+}
+
 void TestSurfaceExtractor::testExecute()
 {
 	const static uint32_t uExpectedVertices = 4731;
@@ -106,6 +156,7 @@ void TestSurfaceExtractor::testExecute()
 
 	SurfaceMesh<PositionMaterialNormal> mesh;
 
+	//Run the test for various voxel types.
 	testForType<int8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
@@ -155,6 +206,12 @@ void TestSurfaceExtractor::testExecute()
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);
+
+	//Test whether the CustomSurfaceExtractor works.
+	testCustomController(mesh);
+	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
+	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
