@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename Controller>
-	SurfaceExtractor<VolumeType, Controller>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result)
+	SurfaceExtractor<VolumeType, Controller>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller())
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -34,7 +34,7 @@ namespace PolyVox
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 
-		//FIXME - Check is m_controller is guarenteed to be valid at this point?!
+		m_controller = controller;
 		m_tThreshold = m_controller.getThreshold();
 	}
 

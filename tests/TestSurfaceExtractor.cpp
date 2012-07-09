@@ -32,7 +32,6 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.
 // They are conceptually the inverse of the 'convertToDensity' function used by the SurfaceExtractor. They probably shouldn't be part
 // of PolyVox, but they might be usful to other tests so we cold move them into a 'Tests.h' or something in the future.
@@ -92,8 +91,8 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	// THIS TEST IS BROKEN BECAUSE CUSTOM THRESHOLDS ARE TEMOPRARILY NOT WORKING.
-	SurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result/*, 50*/);
+	SurfaceExtractionController<VoxelType> controller(50);
+	SurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
 	extractor.execute();
 }
 

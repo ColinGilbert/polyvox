@@ -37,7 +37,7 @@ namespace PolyVox
 	class SurfaceExtractor
 	{
 	public:
-		SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result);
+		SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller());
 
 		void execute();
 

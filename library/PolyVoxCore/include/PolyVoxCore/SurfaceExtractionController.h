@@ -35,6 +35,16 @@ namespace PolyVox
 		typedef VoxelType DensityType;
 		typedef float MaterialType;
 
+		SurfaceExtractionController(void)
+		{
+			m_tThreshold = ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
+		}
+
+		SurfaceExtractionController(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
+		}
+
 		DensityType convertToDensity(VoxelType voxel)
 		{
 			return voxel;
@@ -48,8 +58,11 @@ namespace PolyVox
 		DensityType getThreshold(void)
 		{
 			// Returns a threshold value halfway between the min and max possible values.
-			return ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
+			return m_tThreshold;
 		}
+
+	private:
+		DensityType m_tThreshold;
 	};
 }
 

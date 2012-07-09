@@ -121,6 +121,17 @@ namespace PolyVox
 		typedef Type DensityType;
 		typedef Type MaterialType;
 
+		SurfaceExtractionController(void)
+		{
+			// Default to a threshold value halfway between the min and max possible values.
+			m_tThreshold = (MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMinDensity() + MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMaxDensity()) / 2;
+		}
+
+		SurfaceExtractionController(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
+		}
+
 		DensityType convertToDensity(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> voxel)
 		{
 			return voxel.getDensity();
@@ -132,10 +143,12 @@ namespace PolyVox
 		}
 
 		DensityType getThreshold(void)
-		{
-			// Returns a threshold value halfway between the min and max possible values.
-			return (MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMinDensity() + MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMaxDensity()) / 2;
-		}
+		{			
+			return m_tThreshold;
+		}		
+
+	private:
+		DensityType m_tThreshold;
 	};
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;
