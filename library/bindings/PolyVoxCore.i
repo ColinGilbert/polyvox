@@ -22,6 +22,8 @@ const char* __str__() {
 }
 %enddef
 
+%feature("autodoc", "1");
+
 %include "stdint.i"
 %include "std_vector.i"
 %include "Vector.i"
