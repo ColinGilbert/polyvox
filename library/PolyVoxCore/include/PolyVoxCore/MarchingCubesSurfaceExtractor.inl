@@ -444,9 +444,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial100 = m_controller.convertToMaterial(v100);
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial100 = m_controller.convertToMaterial(v100);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -470,9 +470,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial010 = m_controller.convertToMaterial(v010);
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial010);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial010 = m_controller.convertToMaterial(v010);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial010);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -496,9 +496,9 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial001 = m_controller.convertToMaterial(v001);
-					typename MarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial001);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial001 = m_controller.convertToMaterial(v001);
+					typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial001);
 
 					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);

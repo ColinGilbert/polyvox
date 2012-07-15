@@ -29,18 +29,18 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VoxelType>
-	class MarchingCubesController
+	class DefaultMarchingCubesController
 	{
 	public:
 		typedef VoxelType DensityType;
 		typedef float MaterialType;
 
-		MarchingCubesController(void)
+		DefaultMarchingCubesController(void)
 		{
 			m_tThreshold = ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
 		}
 
-		MarchingCubesController(DensityType tThreshold)
+		DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
 		}

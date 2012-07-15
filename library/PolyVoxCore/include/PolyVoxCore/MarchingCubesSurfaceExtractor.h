@@ -29,11 +29,11 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxCore/MarchingCubesController.h"
+#include "PolyVoxCore/DefaultMarchingCubesController.h"
 
 namespace PolyVox
 {
-	template< typename VolumeType, typename Controller = MarchingCubesController<typename VolumeType::VoxelType> >
+	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
@@ -209,10 +209,10 @@ namespace PolyVox
 
 		//Our threshold value
 		//typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType m_tThreshold;
-		typename MarchingCubesController<typename VolumeType::VoxelType>::DensityType m_tThreshold;
+		typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::DensityType m_tThreshold;
 
 		//Used to convert arbitrary voxel types in densities and materials.
-		//MarchingCubesController<typename VolumeType::VoxelType> m_controller;
+		//DefaultMarchingCubesController<typename VolumeType::VoxelType> m_controller;
 		Controller m_controller;
 	};
 }

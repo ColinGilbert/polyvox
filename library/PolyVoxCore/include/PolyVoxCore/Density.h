@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Density_H__
 #define __PolyVox_Density_H__
 
-#include "PolyVoxCore/MarchingCubesController.h" //We'll specialise the controller contained in here
+#include "PolyVoxCore/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 #include "PolyVoxCore/Voxel.h"
 
 #include "PolyVoxImpl/TypeDef.h"
@@ -103,19 +103,19 @@ namespace PolyVox
 	typedef Density<uint8_t> Density8;
 
 	template <typename Type>
-	class MarchingCubesController< Density<Type> >
+	class DefaultMarchingCubesController< Density<Type> >
 	{
 	public:
 		typedef Type DensityType;
 		typedef float MaterialType;
 
-		MarchingCubesController(void)
+		DefaultMarchingCubesController(void)
 		{
 			// Default to a threshold value halfway between the min and max possible values.
 			m_tThreshold = (Density<Type>::getMinDensity() + Density<Type>::getMaxDensity()) / 2;
 		}
 
-		MarchingCubesController(DensityType tThreshold)
+		DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
 		}
