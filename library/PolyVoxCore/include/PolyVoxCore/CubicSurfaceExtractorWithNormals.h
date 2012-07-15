@@ -34,11 +34,11 @@ namespace PolyVox
 
 	//FIXME - Make this a member of CubicSurfaceExtractorWithNormals?
 	template<typename VoxelType>
-	bool defaultIsQuadNeeded(VoxelType from, VoxelType to, float& materialToUse)
+	bool defaultIsQuadNeeded(VoxelType back, VoxelType front, float& materialToUse)
 	{
-		if((from > 0) && (to == 0))
+		if((back > 0) && (front == 0))
 		{
-			materialToUse = static_cast<float>(from);
+			materialToUse = static_cast<float>(back);
 			return true;
 		}
 		else
