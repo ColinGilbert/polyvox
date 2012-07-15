@@ -42,7 +42,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	///The LargeVolume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
+	/// The LargeVolume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// A LargeVolume is essentially a 3D array in which each element (or <i>voxel</i>) is identified by a three dimensional (x,y,z) coordinate.
 	/// We use the LargeVolume class to store our data in an efficient way, and it is the input to many of the algorithms (such as the surface
