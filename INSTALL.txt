@@ -7,7 +7,7 @@ Requirements
 
 To build PolyVox you need:
 
-* `CMake <http://cmake.org>`_ 2.6 or greater
+* `CMake <http://cmake.org>`_ 2.8.3 or greater
 * A C++ compiler with support for some C++0x features (GCC 4.3 or VC 2010 seem to work)
 
 With the following optional packages:
@@ -51,7 +51,7 @@ The other available settings for PolyVox are:
 ``ENABLE_BINDINGS`` (``ON`` or ``OFF``)
 	Should the Python bindings to PolyVox be built. This requires the Python development libraries and SWIG to be installed. Defaults to ``ON``.
 
-``BUILD_STATIC_LIBRARIES`` and ``BUILD_DYNAMIC_LIBRARIES`` (``ON`` or ``OFF``)
+``ENABLE_STATIC_LIBRARIES`` and ``ENABLE_DYNAMIC_LIBRARIES`` (``ON`` or ``OFF``)
 	Choose whether static (``.a``) or dynamic libraries (``.so``) should be built. On Linux both are built by default.
 
 ``CMAKE_BUILD_TYPE`` (``Debug``, ``Release``, ``RelWithDebInfo`` or ``MinSizeRel``)
