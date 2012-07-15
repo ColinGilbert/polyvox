@@ -21,26 +21,26 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_SurfaceExtractionController_H__
-#define __PolyVox_SurfaceExtractionController_H__
+#ifndef __PolyVox_MarchingCubesController_H__
+#define __PolyVox_MarchingCubesController_H__
 
 #include <limits>
 
 namespace PolyVox
 {
 	template<typename VoxelType>
-	class SurfaceExtractionController
+	class MarchingCubesController
 	{
 	public:
 		typedef VoxelType DensityType;
 		typedef float MaterialType;
 
-		SurfaceExtractionController(void)
+		MarchingCubesController(void)
 		{
 			m_tThreshold = ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
 		}
 
-		SurfaceExtractionController(DensityType tThreshold)
+		MarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
 		}

@@ -34,12 +34,12 @@ using namespace PolyVox;
 
 // Test our ability to modify the behaviour of the MarchingCubesSurfaceExtractor. This simple example only modifies
 // the threshold (and actually this can be achieved by passing a parameter to the constructor of the
-// DefaultSurfaceExtractionController) but you could implement custom behaviour in the other members
+// DefaultMarchingCubesController) but you could implement custom behaviour in the other members
 // if you wanted too. Actually, it's not clear if this ability is really useful because I can't think
 // what you'd modify apart from the threshold but the ability is at least available. Also, the
-// DefaultSurfaceExtractionController is templatised whereas this exmple shows that controllers don't
+// DefaultMarchingCubesController is templatised whereas this exmple shows that controllers don't
 // have to be.
-class CustomSurfaceExtractionController
+class CustomMarchingCubesController
 {
 public:
 	float convertToDensity(float voxel)
@@ -117,7 +117,7 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	SurfaceExtractionController<VoxelType> controller(50);
+	MarchingCubesController<VoxelType> controller(50);
 	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
 	extractor.execute();
 }
@@ -141,8 +141,8 @@ void testCustomController(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	CustomSurfaceExtractionController controller;
-	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomSurfaceExtractionController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
+	CustomMarchingCubesController controller;
+	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomMarchingCubesController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
 	extractor.execute();
 }
 

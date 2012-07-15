@@ -38,7 +38,7 @@ const char* __str__() {
 %include "VertexTypes.i"
 %include "SurfaceMesh.i"
 //%include "SimpleVolumeSampler.i"
-%include "SurfaceExtractionController.i"
+%include "MarchingCubesController.i"
 %include "MarchingCubesSurfaceExtractor.i"
 //%include "CubicSurfaceExtractor.i"
 //%include "CubicSurfaceExtractorWithNormals.i"

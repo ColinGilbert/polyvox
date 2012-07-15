@@ -62,7 +62,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
 	include/PolyVoxCore/SimpleVolumeSampler.inl
-	include/PolyVoxCore/SurfaceExtractionController.h
+	include/PolyVoxCore/MarchingCubesController.h
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.h
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/SurfaceMesh.h

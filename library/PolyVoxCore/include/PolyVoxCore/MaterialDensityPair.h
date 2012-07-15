@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MaterialDensityPair_H__
 #define __PolyVox_MaterialDensityPair_H__
 
-#include "PolyVoxCore/SurfaceExtractionController.h" //We'll specialise the controller contained in here
+#include "PolyVoxCore/MarchingCubesController.h" //We'll specialise the controller contained in here
 #include "PolyVoxCore/Voxel.h"
 
 #include "PolyVoxImpl/TypeDef.h"
@@ -115,19 +115,19 @@ namespace PolyVox
 	};
 
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
-	class SurfaceExtractionController< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
+	class MarchingCubesController< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
 	{
 	public:
 		typedef Type DensityType;
 		typedef Type MaterialType;
 
-		SurfaceExtractionController(void)
+		MarchingCubesController(void)
 		{
 			// Default to a threshold value halfway between the min and max possible values.
 			m_tThreshold = (MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMinDensity() + MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMaxDensity()) / 2;
 		}
 
-		SurfaceExtractionController(DensityType tThreshold)
+		MarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
 		}
