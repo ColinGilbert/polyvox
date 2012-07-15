@@ -208,11 +208,9 @@ namespace PolyVox
 		Region m_regSliceCurrent;
 
 		//Our threshold value
-		//typename VoxelTypeTraits<typename VolumeType::VoxelType>::DensityType m_tThreshold;
-		typename DefaultMarchingCubesController<typename VolumeType::VoxelType>::DensityType m_tThreshold;
+		typename Controller::DensityType m_tThreshold;
 
 		//Used to convert arbitrary voxel types in densities and materials.
-		//DefaultMarchingCubesController<typename VolumeType::VoxelType> m_controller;
 		Controller m_controller;
 	};
 }

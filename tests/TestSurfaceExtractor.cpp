@@ -42,6 +42,9 @@ using namespace PolyVox;
 class CustomMarchingCubesController
 {
 public:
+	typedef float DensityType;
+	typedef float MaterialType;
+
 	float convertToDensity(float voxel)
 	{
 		return voxel;
