@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/MeshDecimator.h"
-#include "PolyVoxCore/SurfaceExtractor.h"
+#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 
 //Some namespaces we need
 using namespace std;
@@ -89,7 +89,7 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
 
 					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > mesh(new SurfaceMesh<PositionMaterialNormal>);
-					SurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
+					MarchingCubesSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
 					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > decimatedMesh(new SurfaceMesh<PositionMaterialNormal>);

@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #include "OpenGLWidget.h"
 
 #include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/SurfaceExtractor.h"
+#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -98,13 +98,13 @@ int main(int argc, char *argv[])
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> meshLowLOD;
-	SurfaceExtractor< RawVolume<uint8_t> > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
+	MarchingCubesSurfaceExtractor< RawVolume<uint8_t> > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
 	surfaceExtractor.execute();
 	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> meshHighLOD;
-	SurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
+	MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
 	surfaceExtractorHigh.execute();
 	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
 

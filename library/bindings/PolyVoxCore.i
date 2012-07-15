@@ -39,7 +39,7 @@ const char* __str__() {
 %include "SurfaceMesh.i"
 //%include "SimpleVolumeSampler.i"
 %include "SurfaceExtractionController.i"
-%include "SurfaceExtractor.i"
+%include "MarchingCubesSurfaceExtractor.i"
 //%include "CubicSurfaceExtractor.i"
 //%include "CubicSurfaceExtractorWithNormals.i"
 //%include "MeshDecimator.i"

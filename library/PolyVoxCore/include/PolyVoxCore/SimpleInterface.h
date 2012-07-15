@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/SimpleVolume.h"
-#include "PolyVoxCore/SurfaceExtractor.h"
+#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 
 namespace PolyVox
 {

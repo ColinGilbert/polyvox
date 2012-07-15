@@ -26,13 +26,13 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Density.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/SimpleVolume.h"
-#include "PolyVoxCore/SurfaceExtractor.h"
+#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
 
-// Test our ability to modify the behaviour of the SurfaceExtractor. This simple example only modifies
+// Test our ability to modify the behaviour of the MarchingCubesSurfaceExtractor. This simple example only modifies
 // the threshold (and actually this can be achieved by passing a parameter to the constructor of the
 // DefaultSurfaceExtractionController) but you could implement custom behaviour in the other members
 // if you wanted too. Actually, it's not clear if this ability is really useful because I can't think
@@ -59,7 +59,7 @@ public:
 };
 
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.
-// They are conceptually the inverse of the 'convertToDensity' function used by the SurfaceExtractor. They probably shouldn't be part
+// They are conceptually the inverse of the 'convertToDensity' function used by the MarchingCubesSurfaceExtractor. They probably shouldn't be part
 // of PolyVox, but they might be usful to other tests so we cold move them into a 'Tests.h' or something in the future.
 template<typename VoxelType>
 void writeDensityValueToVoxel(int valueToWrite, VoxelType& voxel)
@@ -118,7 +118,7 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 	}
 
 	SurfaceExtractionController<VoxelType> controller(50);
-	SurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
+	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
 	extractor.execute();
 }
 
@@ -142,7 +142,7 @@ void testCustomController(SurfaceMesh<PositionMaterialNormal>& result)
 	}
 
 	CustomSurfaceExtractionController controller;
-	SurfaceExtractor< SimpleVolume<float>, CustomSurfaceExtractionController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
+	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomSurfaceExtractionController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
 	extractor.execute();
 }
 
