@@ -96,11 +96,11 @@ namespace PolyVox
 		static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
 		static DensityType getMinDensity() throw() { return 0; }
 
-		static bool isQuadNeeded(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> from, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> to, float& materialToUse)
+		static bool isQuadNeeded(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, float& materialToUse)
 		{
-			if((from.getMaterial() > 0) && (to.getMaterial() == 0))
+			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
-				materialToUse = static_cast<float>(from.getMaterial());
+				materialToUse = static_cast<float>(back.getMaterial());
 				return true;
 			}
 			else
