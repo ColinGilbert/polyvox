@@ -13,8 +13,6 @@ FIND_PACKAGE(Doxygen)
 set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 
-#set_package_properties(Sphinx PROPERTIES TYPE OPTIONAL PURPOSE "Building the manual")
-
 # Qt is required for building the tests, the example and optionally for bundling the documentation
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtTest)
 INCLUDE(${QT_USE_FILE})
@@ -76,17 +74,14 @@ ENDIF()
 
 ADD_SUBDIRECTORY(documentation)
 
-set_package_properties(SWIG PROPERTIES DESCRIPTION "Bindings generator" URL http://www.swig.org)
-set_package_properties(PythonLibs PROPERTIES DESCRIPTION "Programming language" URL http://www.python.org)
-
-add_feature_info("Static libraries" BUILD_STATIC_LIBRARIES "Will static libraries be built")
-add_feature_info("Dynamic libraries" BUILD_DYNAMIC_LIBRARIES "Will dynamic libraries be built")
+add_feature_info("Static libraries" ENABLE_STATIC_LIBRARIES "Will static libraries be built")
+add_feature_info("Dynamic libraries" ENABLE_DYNAMIC_LIBRARIES "Will dynamic libraries be built")
 add_feature_info("Examples" ENABLE_EXAMPLES "Examples of PolyVox usage")
-add_feature_info("Tests" BUILD_TESTING "Unit tests")
-add_feature_info("API docs" DOXYGEN_FOUND "HTML documentation of the API")
-add_feature_info("Manual" ENABLE_EXAMPLES "HTML user's manual")
+add_feature_info("Tests" ENABLE_TESTS "Unit tests")
 add_feature_info("Bindings" BUILD_BINDINGS "SWIG bindings")
-add_feature_info("Qt Help" BUILD_AND_BUNDLE_DOCS "API docs and manual in Qt Help format")
+add_feature_info("API docs" DOXYGEN_FOUND "HTML documentation of the API")
+add_feature_info("Qt Help" BUILD_AND_BUNDLE_DOCS "API docs in Qt Help format")
+add_feature_info("Manual" BUILD_MANUAL "HTML user's manual")
 
 feature_summary(WHAT ALL)
 
@@ -94,8 +89,8 @@ feature_summary(WHAT ALL)
 MESSAGE(STATUS "")
 MESSAGE(STATUS "Summary")
 MESSAGE(STATUS "-------")
-MESSAGE(STATUS "Static libraries:    " ${BUILD_STATIC_LIBRARIES})
-MESSAGE(STATUS "Dynamic libraries:   " ${BUILD_DYNAMIC_LIBRARIES})
+MESSAGE(STATUS "Static libraries:    " ${ENABLE_STATIC_LIBRARIES})
+MESSAGE(STATUS "Dynamic libraries:   " ${ENABLE_DYNAMIC_LIBRARIES})
 MESSAGE(STATUS "Build examples:      " ${ENABLE_EXAMPLES})
 MESSAGE(STATUS "Build tests:         " ${ENABLE_TESTS})
 MESSAGE(STATUS "Build bindings:      " ${BUILD_BINDINGS})
