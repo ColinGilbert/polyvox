@@ -3,7 +3,7 @@ find_program(SPHINXBUILD_EXECUTABLE sphinx-build DOC "The location of the sphinx
 #if(SPHINXBUILD_EXECUTABLE AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 if(SPHINXBUILD_EXECUTABLE)
 	message(STATUS "Found `sphinx-build` at ${SPHINXBUILD_EXECUTABLE}")
-	set(BUILD_MANUAL YES PARENT_SCOPE)
+	set(BUILD_MANUAL ON PARENT_SCOPE)
 	
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/conf.in.py ${CMAKE_CURRENT_BINARY_DIR}/conf.py @ONLY)
 	#Generates the HTML docs and the Qt help file which can be opened with "assistant -collectionFile thermite.qhc"
@@ -22,5 +22,5 @@ else()
 	if(NOT QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 		message(STATUS "`qhelpgenerator` was not found. Try setting QT_QCOLLECTIONGENERATOR_EXECUTABLE to its location.")
 	endif()
-	set(BUILD_MANUAL NO PARENT_SCOPE)
+	set(BUILD_MANUAL OFF PARENT_SCOPE)
 endif()
