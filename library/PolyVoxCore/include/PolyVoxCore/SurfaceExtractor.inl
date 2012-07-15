@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename Controller>
-	SurfaceExtractor<VolumeType, Controller>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller())
+	SurfaceExtractor<VolumeType, Controller>::SurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
