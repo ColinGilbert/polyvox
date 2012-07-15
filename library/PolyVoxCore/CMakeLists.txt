@@ -43,6 +43,9 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Log.h
 	include/PolyVoxCore/LowPassFilter.h
 	include/PolyVoxCore/LowPassFilter.inl
+	include/PolyVoxCore/MarchingCubesController.h
+	include/PolyVoxCore/MarchingCubesSurfaceExtractor.h
+	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MeshDecimator.h
@@ -62,9 +65,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
 	include/PolyVoxCore/SimpleVolumeSampler.inl
-	include/PolyVoxCore/MarchingCubesController.h
-	include/PolyVoxCore/MarchingCubesSurfaceExtractor.h
-	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/SurfaceMesh.h
 	include/PolyVoxCore/SurfaceMesh.inl
 	include/PolyVoxCore/Vector.h
