@@ -75,9 +75,9 @@ namespace PolyVox
 			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
 			const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
 
-			const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-			const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-			const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
+			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
+			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
+			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
 			typename SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 

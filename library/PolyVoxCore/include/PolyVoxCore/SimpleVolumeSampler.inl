@@ -115,9 +115,9 @@ namespace PolyVox
 		const int32_t uYBlock = this->mYPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
 		const int32_t uZBlock = this->mZPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
 
-		const uint16_t uXPosInBlock = this->mXPosInVolume - (uXBlock << this->mVolume->m_uBlockSideLengthPower);
-		const uint16_t uYPosInBlock = this->mYPosInVolume - (uYBlock << this->mVolume->m_uBlockSideLengthPower);
-		const uint16_t uZPosInBlock = this->mZPosInVolume - (uZBlock << this->mVolume->m_uBlockSideLengthPower);
+		const uint16_t uXPosInBlock = static_cast<uint16_t>(this->mXPosInVolume - (uXBlock << this->mVolume->m_uBlockSideLengthPower));
+		const uint16_t uYPosInBlock = static_cast<uint16_t>(this->mYPosInVolume - (uYBlock << this->mVolume->m_uBlockSideLengthPower));
+		const uint16_t uZPosInBlock = static_cast<uint16_t>(this->mZPosInVolume - (uZBlock << this->mVolume->m_uBlockSideLengthPower));
 
 		const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
 				uYPosInBlock * this->mVolume->m_uBlockSideLength + 
