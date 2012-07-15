@@ -214,7 +214,6 @@ namespace PolyVox
 		const Vector3DInt32& v3dDstUpperCorner = m_regDst.getUpperCorner();
 
 		const Vector3DInt32& v3dSrcLowerCorner = m_regSrc.getLowerCorner();
-		const Vector3DInt32& v3dSrcUpperCorner = m_regSrc.getUpperCorner();
 
 		for(int32_t iDstZ = v3dDstLowerCorner.getZ(), iSrcZ = v3dSrcLowerCorner.getZ(); iDstZ <= v3dDstUpperCorner.getZ(); iDstZ++, iSrcZ++)
 		{

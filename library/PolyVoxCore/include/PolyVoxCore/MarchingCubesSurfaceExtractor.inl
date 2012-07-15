@@ -400,7 +400,6 @@ namespace PolyVox
 		Array2DInt32& m_pCurrentVertexIndicesZ)
 	{
 		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-		const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
 
 		//Iterate over each cell in the region
 		for(int32_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); iYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); iYVolSpace++)
