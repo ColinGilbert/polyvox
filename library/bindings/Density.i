@@ -3,7 +3,6 @@
 #include "Density.h"
 %}
 
-%include "Voxel.h"
 %include "MarchingCubesSurfaceExtractor.h"
 %include "Density.h"
 

@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Material_H__
 #define __PolyVox_Material_H__
 
-#include "PolyVoxCore/Voxel.h"
-
 #include "PolyVoxImpl/TypeDef.h"
 
 #include <cassert>

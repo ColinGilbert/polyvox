@@ -25,7 +25,6 @@ freely, subject to the following restrictions:
 #define __PolyVox_MaterialDensityPair_H__
 
 #include "PolyVoxCore/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
-#include "PolyVoxCore/Voxel.h"
 
 #include "PolyVoxImpl/TypeDef.h"
 

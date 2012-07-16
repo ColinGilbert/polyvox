@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
-#include "PolyVoxCore/Voxel.h"
 
 #include <list>
 #include <stdexcept> //For runtime_error
