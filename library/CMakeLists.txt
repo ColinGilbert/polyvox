@@ -2,35 +2,6 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(PolyVox)
 
-#By default only build static libraries on Windows but both on Linux
-#If we ever require CMake 2.8 then use http://www.kitware.com/blog/home/post/82
-option(ENABLE_STATIC_LIBRARIES "Build static libraries" ON)
-if(WIN32)
-	option(ENABLE_DYNAMIC_LIBRARIES "Build dynamic libraries" OFF)
-else()
-	option(ENABLE_DYNAMIC_LIBRARIES "Build dynamic libraries" ON)
-endif()
-
-if(WIN32)
-	#If both are enabled then diable the dyanamic build
-	if(ENABLE_STATIC_LIBRARIES AND ENABLE_DYNAMIC_LIBRARIES)
-		message(STATUS "Building both static and dynamic libraries is not supported on Windows. Disabling dynamic libraries.")
-		set(ENABLE_DYNAMIC_LIBRARIES OFF CACHE BOOL "Build dynamic libraries" FORCE)
-	endif()
-	#If both are diabled then re-enable the static build
-	if(NOT ENABLE_STATIC_LIBRARIES AND NOT ENABLE_DYNAMIC_LIBRARIES)
-		message(STATUS "Both dynamic and static libraries were disabled - re-enabling static build.")
-		set(ENABLE_STATIC_LIBRARIES ON CACHE BOOL "Build static libraries" FORCE)
-	endif()
-else()
-	#It's nonsense to disble both so on Linux, re-enable both.
-	if(NOT ENABLE_STATIC_LIBRARIES AND NOT ENABLE_DYNAMIC_LIBRARIES)
-		message(STATUS "Both dynamic and static libraries were disabled - re-enabling both.")
-		set(ENABLE_STATIC_LIBRARIES ON CACHE BOOL "Build static libraries" FORCE)
-		set(ENABLE_DYNAMIC_LIBRARIES ON CACHE BOOL "Build dynamic libraries" FORCE)
-	endif()
-endif()
-
 add_subdirectory(PolyVoxCore)
 add_subdirectory(PolyVoxUtil)
 add_subdirectory(bindings)
