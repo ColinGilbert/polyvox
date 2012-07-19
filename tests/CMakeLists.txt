@@ -17,7 +17,7 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 ENDMACRO(CREATE_TEST)
 
 IF(NOT QT_QTTEST_FOUND)
-	MESSAGE(STATUS "QtTest not found. Either install it or disable tests by setting BUILD_TESTING to OFF")
+	MESSAGE(STATUS "QtTest not found. Either install it or disable tests by setting ENABLE_TESTS to OFF")
 ENDIF()
 
 INCLUDE_DIRECTORIES(${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
