@@ -101,6 +101,9 @@ namespace PolyVox
 	// most games) but 16-bit and float types do have uses particularly in medical/scientific visualisation.
 	typedef Density<uint8_t> Density8;
 
+	/**
+	 * This is a specialisation of DefaultMarchingCubesController for the Density voxel type
+	 */
 	template <typename Type>
 	class DefaultMarchingCubesController< Density<Type> >
 	{
