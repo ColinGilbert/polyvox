@@ -11,7 +11,6 @@ MARK_AS_ADVANCED(FORCE POLYVOX_VERSION)
 include(FeatureSummary)
 
 FIND_PACKAGE(Doxygen)
-set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 
 SET(LIBRARY_TYPE "DYNAMIC" CACHE STRING "Should the library be STATIC or DYNAMIC")
@@ -23,9 +22,15 @@ ENDIF()
 # Qt is required for building the tests, the example and optionally for bundling the documentation
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtTest)
 INCLUDE(${QT_USE_FILE})
-set_package_properties(Qt4 PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
-set_package_properties(Qt4 PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
-set_package_properties(Qt4 PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
+if(CMAKE_VERSION VERSION_LESS "2.8.6")
+	set_package_info(Doxygen "API documentation generator" http://www.doxygen.org "Building the API documentation")
+	set_package_info(Qt4 "C++ framework" http://qt-project.org "Building the examples and tests")
+else()
+	set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
+	set_package_properties(Qt4 PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
+	set_package_properties(Qt4 PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
+	set_package_properties(Qt4 PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
+endif()
 
 if(MSVC AND (MSVC_VERSION LESS 1600))
 	# Require boost for older (pre-vc2010) Visual Studio compilers
