@@ -220,7 +220,7 @@ man_pages = [
 #intersphinx_mapping = {'http://docs.python.org/': None}
 
 doxylink = {
-	'polyvox' : ('@CMAKE_CURRENT_BINARY_DIR@/../library/PolyVox.tag', '../library/doc/html/')
+	'polyvox' : ('@CMAKE_CURRENT_BINARY_DIR@/../library/PolyVox.tag', '../library/doc/html/') #Make this '../api/' for uploading
 }
 
 #This must be lowercase for QtHelp
