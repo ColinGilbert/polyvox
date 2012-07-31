@@ -1,0 +1,13 @@
+**************************
+Frequently Asked Questions
+**************************
+
+Should I store my environment in a single big volume or break it down into several smaller ones?
+------------------------------------------------------------------------------------------------
+You should usually store your environment in a single big volume, and if you are going to deviate from this then you should be aware of the implications.
+
+All PolyVox algorithms operate on a single volume, and there are a number of algorithms which require fast access the the neighbours of a given voxel. PolyVox volumes make it easy to access these neighbours, but if you split your environment across several volumes then PolyVox no longer knows how to access them for voxels on the edge of the volume. This will cause visible artifacts between extracted meshes, meshes will contain unessesary triangles on the faces of volumes, and normal calculation from volume data will not work correctly.
+
+The most common reason for people *thinking* they should break their environment into seperate volumes is in order to allow for paging of big terrains. The idea would be that volumes which are distant from the camera can be removed from memory, and that the set of active volumes can be updated as the camera moves. However, the LargeVolume already implements this behaviour internally, in that it breaks the data down into a set of non-overlapping blocks. The difference between the LargeVolume implementation vs a home-grown approach of paging smaller volumes is that PolyVox understands how to access neighbouring blocks in a LargeVolume.
+
+That said, there are times when you might want to use seperate volumes provided you understand the above. An example might be if you had a number of planets in space, in which case each planet could safely be a seperate volume. These planets never touch, and so the artifacts which would occur on volume boundaries are never seen.
