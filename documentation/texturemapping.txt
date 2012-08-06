@@ -30,6 +30,6 @@ Triplanar Texturing
 The most common approach to texture mapping smooth voxel terrain is to use Triplanar Texturing. Actually we do not need to go into too much detail here as there are a number of other references available [references] but we will summarise the process. 
 
 Blending between materials
-
+--------------------------
 Storage of textures
 ===================
