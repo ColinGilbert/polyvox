@@ -1,0 +1,35 @@
+******************************
+Texture mapping PolyVox meshes
+******************************
+The PolyVox library is only concerned with operations on volume data (such as extracting a mesh from from a volume) and deliberatly avoids the issue of rendering such data. This means PolyVox is not tied to any bparticualr graphics API or rendering engine, and makes it much easier to integrate PolyVox with existing technology, because in general a PolyVox mesh can be treated the same as any other mesh. However, the texturing of a PolyVox mesh is usually handled a little differently, and so the purpose of tis document is to provide some ideas about where to start with the process of tesxture mapping PolyVox meshes.
+
+This document is aimed at readers in one of two positions:
+	1) You are trying to texture 'Minecraft-style' terrain with cubic blocks and a number of different materials.
+	2) You are trying to texture smooth terrain produce my the Marching Cubes (or similar) algoritm)
+These are absollutly not the limit of PolyVox, and you can choose much more advanced rendering approaches if you wish. For example, in the past we have texture mapped a voxel earth from a cube map, and used an animated procedural texture based on Perlin noise for the magma at the denter of the earth. However, if you are aiming for such advanced techniques then we assume you understand the basics in this document and have enough knowledge to expand the ideas youslf. But do feel free to drop by and ask questions on out forum.
+
+Traditionally meshes are textured by providing a pair of UV texture coordinates for each vertex, and these UV coordinates determine which parts of a texture maps to each vertex. The process of texturing PolyVox meshes is more complex for a couple of reasons:
+1) PolyVox does not provide UV coordinates for each vertex.
+2) Voxel terrain (particulaly Minecraft-style) often involves many more textures than the GPU can read at a time.
+By readin this document you should learn how to work around the above problems.
+
+Mapping textures to mesh geometry
+================================
+The lack of UV coordinates means some reativity is requried in order to apply texture maps to meshes. But before we get to that, we will first try to unserstand the rational behind PolyVox not providing UV coordinates in the first place. This rational is different for the smooth voxel meshes vs the cubic voxel meshes.
+
+Rational
+--------
+The problem with texturing smooth voxel meshes is simply that the geometry can get very complex and it is not clear how the mapping between mesh geometry and a texture should be performed. In a traditional heightmap-based terrain this relationship is obvious as the texture map and heightmap simply line up diretly. But for more complex shapes some form of 'UV unwrapping' is usually perfomred to define this relationship. This is usually done by an artist with the help of a 3D modeling package and so is a semi-automatic process, but is time comsuming and driven by the artists idea of what looks right for their particualar scene. Even though fully automatic UV unwrapping is possibly it is usualy prohibitavly slow.
+
+Even if such an unwrapping was possible in a reasonable timeframe, the next problem is that it would be invalidated as soon as the mesh changed. Enabling dynamic terrain manipulation is one of the appealing factors of voxel terrain terrain, and is this use case were discarded then the user may as well just model their terrain in an existing 3D modelling package and texture there. For these reasons we do not attempt to generate and UV coordinates for smooth voxel meshes.
+
+The rational in the cubic case is almost the opposite. For Minecraft style terrain you want to simply line up an instance of a texture with each face of a cube, and generating the texture coorordinates for this is very easy. In fact it's so easy that there's no point in doing it - the logic can instead be implemented in a shader which in turn allows the size of each vertex to be much smaller.
+
+Triplanar Texturing
+-------------------
+The most common approach to texture mapping smooth voxel terrain is to use Triplanar Texturing. Actually we do not need to go into too much detail here as there are a number of other references available [references] but we will summarise the process. 
+
+Blending between materials
+
+Storage of textures
+===================
