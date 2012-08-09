@@ -32,6 +32,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.inl
+	include/PolyVoxCore/DefaultIsQuadNeeded.h
 	include/PolyVoxCore/DefaultMarchingCubesController.h
 	include/PolyVoxCore/Density.h
 	include/PolyVoxCore/GradientEstimators.h

@@ -23,19 +23,18 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<typename VolumeType>
-	CubicSurfaceExtractorWithNormals<VolumeType>::CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, polyvox_function<bool(typename VolumeType::VoxelType from, typename VolumeType::VoxelType to, float& materialToUse)> funcIsQuadNeededCallback)
-		:m_funcIsQuadNeededCallback(funcIsQuadNeededCallback)
-		,m_volData(volData)
+	template<typename VolumeType, typename IsQuadNeeded>
+	CubicSurfaceExtractorWithNormals<VolumeType, IsQuadNeeded>::CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, IsQuadNeeded isQuadNeeded)
+		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
 	{		
-		assert(m_funcIsQuadNeededCallback);
+		m_funcIsQuadNeededCallback = isQuadNeeded;
 	}
 
-	template<typename VolumeType>
-	void CubicSurfaceExtractorWithNormals<VolumeType>::execute()
+	template<typename VolumeType, typename IsQuadNeeded>
+	void CubicSurfaceExtractorWithNormals<VolumeType, IsQuadNeeded>::execute()
 	{		
 		m_meshCurrent->clear();
 

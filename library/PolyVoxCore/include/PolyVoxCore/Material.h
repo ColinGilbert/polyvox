@@ -73,19 +73,6 @@ namespace PolyVox
 		MaterialType getMaterial() const throw() { return m_uMaterial; }
 		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
 
-		static bool isQuadNeeded(Material<Type> back, Material<Type> front, float& materialToUse)
-		{
-			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
-			{
-				materialToUse = static_cast<float>(back.getMaterial());
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
 	private:
 		MaterialType m_uMaterial;
 	};

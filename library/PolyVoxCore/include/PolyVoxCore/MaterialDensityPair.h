@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MaterialDensityPair_H__
 #define __PolyVox_MaterialDensityPair_H__
 
+#include "PolyVoxCore/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
 #include "PolyVoxCore/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 
 #include "PolyVoxImpl/TypeDef.h"
@@ -95,7 +96,16 @@ namespace PolyVox
 		static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
 		static DensityType getMinDensity() throw() { return 0; }
 
-		static bool isQuadNeeded(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, float& materialToUse)
+	private:
+		MaterialType m_uMaterial : NoOfMaterialBits;
+		DensityType m_uDensity : NoOfDensityBits;
+	};
+
+	template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
+	class DefaultIsQuadNeeded< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
+	{
+	public:
+		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, float& materialToUse)
 		{
 			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
@@ -107,10 +117,6 @@ namespace PolyVox
 				return false;
 			}
 		}
-
-	private:
-		MaterialType m_uMaterial : NoOfMaterialBits;
-		DensityType m_uDensity : NoOfDensityBits;
 	};
 
 	template <typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
