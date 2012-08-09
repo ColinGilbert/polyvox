@@ -31,20 +31,21 @@ namespace PolyVox
 	// The vertex position at the center of this group is then going to be used by six quads all with different materials.
 	// One futher note - we can actually have eight quads sharing a vertex position (imagine two 1x1x10 rows of voxels
 	// sharing a common edge) but in this case all eight quads will not have different materials.
-	template<typename VolumeType>
-	const uint32_t CubicSurfaceExtractor<VolumeType>::MaxVerticesPerPosition = 6;
+	template<typename VolumeType, typename IsQuadNeeded>
+	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 6;
 
-	template<typename VolumeType>
-	CubicSurfaceExtractor<VolumeType>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads)
+	template<typename VolumeType, typename IsQuadNeeded>
+	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
 		,m_bMergeQuads(bMergeQuads)
 	{
+		m_funcIsQuadNeededCallback = isQuadNeeded;
 	}
 
-	template<typename VolumeType>
-	void CubicSurfaceExtractor<VolumeType>::execute()
+	template<typename VolumeType, typename IsQuadNeeded>
+	void CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::execute()
 	{
 		m_meshCurrent->clear();
 
@@ -243,8 +244,8 @@ namespace PolyVox
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 	}
 
-	template<typename VolumeType>
-	int32_t CubicSurfaceExtractor<VolumeType>::addVertex(float fX, float fY, float fZ, uint32_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
+	template<typename VolumeType, typename IsQuadNeeded>
+	int32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::addVertex(float fX, float fY, float fZ, uint32_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		uint32_t uX = static_cast<uint32_t>(fX + 0.75f);
 		uint32_t uY = static_cast<uint32_t>(fY + 0.75f);
@@ -275,8 +276,8 @@ namespace PolyVox
 		return -1; //Should never happen.
 	}
 
-	template<typename VolumeType>
-	bool CubicSurfaceExtractor<VolumeType>::performQuadMerging(std::list<Quad>& quads)
+	template<typename VolumeType, typename IsQuadNeeded>
+	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::performQuadMerging(std::list<Quad>& quads)
 	{
 		bool bDidMerge = false;
 		for(typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
@@ -305,8 +306,8 @@ namespace PolyVox
 		return bDidMerge;
 	}
 
-	template<typename VolumeType>
-	bool CubicSurfaceExtractor<VolumeType>::mergeQuads(Quad& q1, Quad& q2)
+	template<typename VolumeType, typename IsQuadNeeded>
+	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
 	{
 		//All four vertices of a given quad have the same material,
 		//so just check that the first pair of vertices match.

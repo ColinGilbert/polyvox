@@ -27,11 +27,12 @@ freely, subject to the following restrictions:
 #include "PolyVoxImpl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/DefaultIsQuadNeeded.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 
 namespace PolyVox
 {
-	template<typename VolumeType>
+	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
 	class CubicSurfaceExtractor
 	{
 		struct IndexAndMaterial
@@ -57,7 +58,7 @@ namespace PolyVox
 		};
 
 	public:
-		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true);
+		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 
 		void execute();		
 
@@ -65,6 +66,8 @@ namespace PolyVox
 		int32_t addVertex(float fX, float fY, float fZ, uint32_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
 		bool performQuadMerging(std::list<Quad>& quads);
 		bool mergeQuads(Quad& q1, Quad& q2);
+
+		IsQuadNeeded m_funcIsQuadNeededCallback;
 
 		//The volume data and a sampler to access it.
 		VolumeType* m_volData;

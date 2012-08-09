@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxImpl/TypeDef.h"
 
+#include "PolyVoxCore/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
+
 #include <cassert>
 
 namespace PolyVox
@@ -79,6 +81,24 @@ namespace PolyVox
 
 	typedef Material<uint8_t> Material8;
 	typedef Material<uint16_t> Material16;
+
+	template<typename Type>
+	class DefaultIsQuadNeeded< Material<Type> >
+	{
+	public:
+		bool operator()(Material<Type> back, Material<Type> front, float& materialToUse)
+		{
+			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
+			{
+				materialToUse = static_cast<float>(back.getMaterial());
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
 }
 
 #endif //__PolyVox_Material_H__
