@@ -72,7 +72,6 @@ namespace PolyVox
 		m_vecQuads[PositiveZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
 
 		typename VolumeType::Sampler volumeSampler(m_volData);	
-		Quad quad;
 		
 		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ(); z++)
 		{
@@ -104,22 +103,12 @@ namespace PolyVox
 						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
 
 						if(currentVoxelIsSolid > negXVoxelIsSolid)
-						{								
-							quad.vertices[0] = v0;
-							quad.vertices[1] = v1;
-							quad.vertices[2] = v2;
-							quad.vertices[3] = v3;
-
-							m_vecQuads[NegativeX][regX].push_back(quad);
+						{							
+							m_vecQuads[NegativeX][regX].push_back(Quad(v0, v1, v2, v3));
 						}
 						else											
 						{
-							quad.vertices[0] = v0;
-							quad.vertices[1] = v3;
-							quad.vertices[2] = v2;
-							quad.vertices[3] = v1;
-
-							m_vecQuads[PositiveX][regX].push_back(quad);
+							m_vecQuads[PositiveX][regX].push_back(Quad(v0, v3, v2, v1));
 						}
 					}
 
@@ -138,22 +127,12 @@ namespace PolyVox
 						if(currentVoxelIsSolid > negYVoxelIsSolid)
 						{
 							//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
-							quad.vertices[0] = v0;
-							quad.vertices[1] = v3;
-							quad.vertices[2] = v2;
-							quad.vertices[3] = v1;
-
-							m_vecQuads[NegativeY][regY].push_back(quad);
+							m_vecQuads[NegativeY][regY].push_back(Quad(v0, v3, v2, v1));
 						}
 						else
 						{
 							//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
-							quad.vertices[0] = v0;
-							quad.vertices[1] = v1;
-							quad.vertices[2] = v2;
-							quad.vertices[3] = v3;
-
-							m_vecQuads[PositiveY][regY].push_back(quad);
+							m_vecQuads[PositiveY][regY].push_back(Quad(v0, v1, v2, v3));
 						}
 					}
 
@@ -171,21 +150,11 @@ namespace PolyVox
 	
 						if(currentVoxelIsSolid > negZVoxelIsSolid)
 						{
-							quad.vertices[0] = v0;
-							quad.vertices[1] = v1;
-							quad.vertices[2] = v2;
-							quad.vertices[3] = v3;
-
-							m_vecQuads[NegativeZ][regZ].push_back(quad);
+							m_vecQuads[NegativeZ][regZ].push_back(Quad(v0, v1, v2, v3));
 						}
 						else
 						{
-							quad.vertices[0] = v0;
-							quad.vertices[1] = v3;
-							quad.vertices[2] = v2;
-							quad.vertices[3] = v1;
-
-							m_vecQuads[PositiveZ][regZ].push_back(quad);
+							m_vecQuads[PositiveZ][regZ].push_back(Quad(v0, v3, v2, v1));
 						}
 					}
 				}
