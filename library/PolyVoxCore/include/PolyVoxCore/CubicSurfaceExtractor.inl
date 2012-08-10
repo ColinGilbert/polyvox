@@ -74,20 +74,17 @@ namespace PolyVox
 		typename VolumeType::Sampler volumeSampler(m_volData);	
 		Quad quad;
 		
-		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ() + 1; z++)
+		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ(); z++)
 		{
 			uint32_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
-			bool finalZ = (z == m_regSizeInVoxels.getUpperCorner().getZ() + 1);
 
-			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY() + 1; y++)
+			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY(); y++)
 			{
 				uint32_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
-				bool finalY = (y == m_regSizeInVoxels.getUpperCorner().getY() + 1);
 
-				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX() + 1; x++)
+				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX(); x++)
 				{
-					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();
-					bool finalX = (x == m_regSizeInVoxels.getUpperCorner().getX() + 1);					
+					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();				
 
 					volumeSampler.setPosition(x,y,z);
 
@@ -97,109 +94,98 @@ namespace PolyVox
 					typename VolumeType::VoxelType negXVoxel = volumeSampler.peekVoxel1nx0py0pz();
 					bool negXVoxelIsSolid = negXVoxel.getMaterial() != 0;
 
-					if((currentVoxelIsSolid != negXVoxelIsSolid) && (finalY == false) && (finalZ == false))
+					if(currentVoxelIsSolid != negXVoxelIsSolid)
 					{
 						uint32_t material = (std::max)(currentVoxel.getMaterial(), negXVoxel.getMaterial());
 
-						// Check to ensure that when a voxel solid/non-solid change is right on a region border, the vertices are generated on the solid side of the region border
-						if(((currentVoxelIsSolid > negXVoxelIsSolid) && finalX == false) || ((currentVoxelIsSolid < negXVoxelIsSolid) && regX != 0))
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);	
+						uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
+						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+
+						if(currentVoxelIsSolid > negXVoxelIsSolid)
+						{								
+							quad.vertices[0] = v0;
+							quad.vertices[1] = v1;
+							quad.vertices[2] = v2;
+							quad.vertices[3] = v3;
+
+							m_vecQuads[NegativeX][regX].push_back(quad);
+						}
+						else											
 						{
-							uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-							uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);	
-							uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
-							uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							quad.vertices[0] = v0;
+							quad.vertices[1] = v3;
+							quad.vertices[2] = v2;
+							quad.vertices[3] = v1;
 
-							if(currentVoxelIsSolid > negXVoxelIsSolid)
-							{								
-								quad.vertices[0] = v0;
-								quad.vertices[1] = v1;
-								quad.vertices[2] = v2;
-								quad.vertices[3] = v3;
-
-								m_vecQuads[NegativeX][regX].push_back(quad);
-							}
-							else											
-							{
-								quad.vertices[0] = v0;
-								quad.vertices[1] = v3;
-								quad.vertices[2] = v2;
-								quad.vertices[3] = v1;
-
-								m_vecQuads[PositiveX][regX].push_back(quad);
-							}
-
+							m_vecQuads[PositiveX][regX].push_back(quad);
 						}
 					}
 
 					typename VolumeType::VoxelType negYVoxel = volumeSampler.peekVoxel0px1ny0pz();
 					bool negYVoxelIsSolid = negYVoxel.getMaterial() != 0;
 
-					if((currentVoxelIsSolid != negYVoxelIsSolid) && (finalX == false) && (finalZ == false))
+					if(currentVoxelIsSolid != negYVoxelIsSolid)
 					{
 						int material = (std::max)(currentVoxel.getMaterial(),negYVoxel.getMaterial());
 
-						if(((currentVoxelIsSolid > negYVoxelIsSolid) && finalY == false) || ((currentVoxelIsSolid < negYVoxelIsSolid) && regY != 0))
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
+						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
+						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+
+						if(currentVoxelIsSolid > negYVoxelIsSolid)
 						{
-							uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-							uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
-							uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
-							uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+							//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
+							quad.vertices[0] = v0;
+							quad.vertices[1] = v3;
+							quad.vertices[2] = v2;
+							quad.vertices[3] = v1;
 
-							if(currentVoxelIsSolid > negYVoxelIsSolid)
-							{
-								//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
-								quad.vertices[0] = v0;
-								quad.vertices[1] = v3;
-								quad.vertices[2] = v2;
-								quad.vertices[3] = v1;
+							m_vecQuads[NegativeY][regY].push_back(quad);
+						}
+						else
+						{
+							//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
+							quad.vertices[0] = v0;
+							quad.vertices[1] = v1;
+							quad.vertices[2] = v2;
+							quad.vertices[3] = v3;
 
-								m_vecQuads[NegativeY][regY].push_back(quad);
-							}
-							else
-							{
-								//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
-								quad.vertices[0] = v0;
-								quad.vertices[1] = v1;
-								quad.vertices[2] = v2;
-								quad.vertices[3] = v3;
-
-								m_vecQuads[PositiveY][regY].push_back(quad);
-							}
+							m_vecQuads[PositiveY][regY].push_back(quad);
 						}
 					}
 
 					typename VolumeType::VoxelType negZVoxel = volumeSampler.peekVoxel0px0py1nz();
 					bool negZVoxelIsSolid = negZVoxel.getMaterial() != 0;
 
-					if((currentVoxelIsSolid != negZVoxelIsSolid) && (finalX == false) && (finalY == false))
+					if(currentVoxelIsSolid != negZVoxelIsSolid)
 					{
 						int material = (std::max)(currentVoxel.getMaterial(), negZVoxel.getMaterial());
 
-						if(((currentVoxelIsSolid > negZVoxelIsSolid) && finalZ == false) || ((currentVoxelIsSolid < negZVoxelIsSolid) && regZ != 0))
-						{
-							uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-							uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-							uint32_t v2 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-							uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);							
+						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v2 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
+						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);							
 	
-							if(currentVoxelIsSolid > negZVoxelIsSolid)
-							{
-								quad.vertices[0] = v0;
-								quad.vertices[1] = v1;
-								quad.vertices[2] = v2;
-								quad.vertices[3] = v3;
+						if(currentVoxelIsSolid > negZVoxelIsSolid)
+						{
+							quad.vertices[0] = v0;
+							quad.vertices[1] = v1;
+							quad.vertices[2] = v2;
+							quad.vertices[3] = v3;
 
-								m_vecQuads[NegativeZ][regZ].push_back(quad);
-							}
-							else
-							{
-								quad.vertices[0] = v0;
-								quad.vertices[1] = v3;
-								quad.vertices[2] = v2;
-								quad.vertices[3] = v1;
+							m_vecQuads[NegativeZ][regZ].push_back(quad);
+						}
+						else
+						{
+							quad.vertices[0] = v0;
+							quad.vertices[1] = v3;
+							quad.vertices[2] = v2;
+							quad.vertices[3] = v1;
 
-								m_vecQuads[PositiveZ][regZ].push_back(quad);
-							}
+							m_vecQuads[PositiveZ][regZ].push_back(quad);
 						}
 					}
 				}
