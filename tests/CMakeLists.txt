@@ -14,6 +14,7 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	ELSE(WIN32)
 		SET(LATEST_TEST ${CMAKE_CURRENT_BINARY_DIR}/${executablename})
 	ENDIF(WIN32)
+	SET_PROPERTY(TARGET ${executablename} PROPERTY FOLDER "tests")
 ENDMACRO(CREATE_TEST)
 
 IF(NOT QT_QTTEST_FOUND)

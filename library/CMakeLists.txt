@@ -38,6 +38,7 @@ if(DOXYGEN_FOUND)
 		VERBATIM
 	)
 	set_target_properties(doc PROPERTIES PROJECT_LABEL "Documentation") #Set label seen in IDE
+	set_property(TARGET doc PROPERTY FOLDER "library/doc")
 	
 	#If we found qcollectiongenerator then do more processing
 	if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
