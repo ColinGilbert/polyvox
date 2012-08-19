@@ -55,10 +55,42 @@ if(normal.x > 0.9) // x must be one while y and z are zero
 .
 .
 
-You might also choose to sample a different texture for each of the axes, in order to apply a different texture to each face of your cubes. If so, you probably want to pack your differnt face textures together using an approach like thos described later in this document for multiple material textures.
+You might also choose to sample a different texture for each of the axes, in order to apply a different texture to each face of your cubes. If so, you probably want to pack your differnt face textures together using an approach like those described later in this document for multiple material textures.
 
+Using the material identifier
+-----------------------------
+So far we have assumed that only a single material is being used for the entire voxel world, but this is seldom the case. It is common to associate a paticular material with each voxel so that it can represent (for example) rock, wood, sand or any other material as required. The usual approach is to store a simple integer identifier with each voxel, and then map this identifier to material properties within you application.
+
+Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor understand the concept of a material being associated with a voxel, and they will take into account when generating a mesh. Specifically, they will both copy the material identifer into the vertex data of the output mesh, so you can pass it through to your shaders and use it to affect the way the surface is rendered.
+
+The following code snippet assumes that you have passed the material identifier to your shaders and that you can access it in the fragment shader (see the section 'Blending between materials' to understand the implications of the interpolation which occurs). It then chooses what colour to draw the polygon based on this identifier:
+
+vec4 fragmentColour = vec4(1, 1, 1, 1); // We'll fill this in below
+if(materialId < 0.5) //Avoid '==' when working with floats.
+{
+	fragmentColour = vec4(1, 0, 0, 1) // Draw material 0 as red.
+}
+else if(materialId < 1.5) //Avoid '==' when working with floats.
+{
+	fragmentColour = vec4(0, 1, 0, 1) // Draw material 1 as green.
+}
+else if(materialId < 2.5) //Avoid '==' when working with floats.
+{
+	fragmentColour = vec4(0, 0, 1, 1) // Draw material 2 as blue.
+}
+
+This is a very simple example, and such use of conditional branching within the shader may not be the best approach for your purposes as it incurs some performance overhead and becomes unweildy with a large number of materials. Other approaches include encoding a colour directly into the material identifier, or using the idenifier as an index into a texture atlas or array.
+
+Note that PolyVox currently stores that material identifier for the vertex as a float, but this will probably change in the future to use the same type as is stored in the volume. It will then be up to you which type you pass to the GPU (older GPUs may not support integer values) but if you do use floats then watch out for precision issues and avoid equality comparisons.
 
 Blending between materials
 --------------------------
+An additional complication when working with smooth voxel terrain is that it is usually desirable to blend smoothly when adjacent voxels have different materials. This situation does not occur with cubic meshes because the texture is considered to be per-face instead of per-vertex, and PolyVox enforces this by ensuring that all the vertices of a given quad have the same material.
+
+With a smooth mesh it is possible that each of the three vertices of any given triangle have different material identifiers (see figure below). If this is not explicitely handled then the graphics hardware will interpolate these material values across the face of the triangle. the is usually not desirable because if, for example, the three material identifiers are {1, 1, 8} then the interpolated values will pass through all identifiers between one and eight, which includes a number of completely unrelated materials. Fundermentally, the concept of interpolating between material identifiers does not make sense, because if we have 1='grass', 2='rock' and 3='sand' then it does not make sense to say rock is the average of grass and sand.
+
+There are a couple approaches we can adopt to combat this problem. One approach is to attach an alpha value to each vertex so that certain corners of a triangle can be faded out. If a trangle has the same material value at each vertex then we also give it full alpha at each vertex and the triangle draws normally.  
+
+
 Storage of textures
 ===================
