@@ -91,9 +91,13 @@ With a smooth mesh it is possible that each of the three vertices of any given t
 
 There are a couple approaches we can adopt to combat this problem. One approach is to attach an alpha value to each vertex so that corners of a triangle can optionally be faded out. If a triangle has the same material value at each vertex then we also give it full alpha at each vertex and the triangle draws normally, but if it has a differnt material for each vertex then we duplicate the triangle three times (once for each material). Each new triangle should then use the same material at each vertex, this material being one of those from the original triangle. The alpha values of the vertices of the new triangles are set such that when the three triangles are drawn on top of each other with additive alpha blending, the desired smoothly shaded triangle results.
 
-One drawback of this approach is that the mesh needs to be drawn with alpha blending enabled, which is both costly and also allows previously drawn geometry to show through. Therefore, before any alpha blended geometry is drawn, you also need to draw the triangle solidly in black. This whole process is rather difficult to explain, but hopefully this diagram of the inputs and outputs makes it clearer:
+One drawback of this approach is that the mesh needs to be drawn with alpha blending enabled, which is both costly and also allows previously drawn geometry to show through. Therefore, before any alpha blended geometry is drawn, you also need to draw the triangle solidly in black (which in turn means one of your material identifier need to be reserved as solid black - we use material zero below). This whole process is rather difficult to explain, but hopefully this diagram of the inputs and outputs makes it clearer:
 
-Both of these processes are a lot of work, and add costs such as increasing the amount of geometry being rendered, increasing the size of the vertex data, and adding the cost of alpha blending. However, it can be noted that most of the triangles in a given smooth mesh only use a single material, and so it may well be useful to actually split the input mesh into two parts. The first part would contain only 
+//Diagram
+
+//Add kers approach.
+
+Both of these processes are a lot of work, and add costs such as increasing the amount of geometry being rendered, increasing the size of the vertex data, and adding the cost of alpha blending. However, it can be noted that most of the triangles in a given smooth mesh only use a single material, and so it may well be useful to actually split the input mesh into two parts. The first part would contain only those triangles which use a single material whilst the second prt would contain only those triangles which use two or three materials. This limits the amount of geometry to which we need to apply the complex operations described previously, but on the other hand it increases the batch count as a single mesh is now rendered as two batches instead of one. 
 
 Storage of textures
 ===================
