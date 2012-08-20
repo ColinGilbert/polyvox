@@ -93,11 +93,31 @@ There are a couple approaches we can adopt to combat this problem. One approach 
 
 One drawback of this approach is that the mesh needs to be drawn with alpha blending enabled, which is both costly and also allows previously drawn geometry to show through. Therefore, before any alpha blended geometry is drawn, you also need to draw the triangle solidly in black (which in turn means one of your material identifier need to be reserved as solid black - we use material zero below). This whole process is rather difficult to explain, but hopefully this diagram of the inputs and outputs makes it clearer:
 
-//Diagram
+//NOTE - Actually this doesn't work. The black triangles need different blending so must be drawn seperatly. we should recommend first off all that the mesh is split into single/multi material parts, and then come on to the approaches for multimaterial handling. Also consider the issue of whether the rendering order of triangles is guarenteed... but does this matter if black is a seperate pass? Also, what about drawing white triangles and then using multiplicative blending? No, this doesn't help because the white triangles would still need to be drawn seperatly as mutiplying by white is no better than adding black. Subtractive blending maybe? I don't think so... Custom blend process? Using alpha anc colour sperately? Check the options here.
+
+//MaterialBlending diagram
 
 //Add kers approach.
 
 Both of these processes are a lot of work, and add costs such as increasing the amount of geometry being rendered, increasing the size of the vertex data, and adding the cost of alpha blending. However, it can be noted that most of the triangles in a given smooth mesh only use a single material, and so it may well be useful to actually split the input mesh into two parts. The first part would contain only those triangles which use a single material whilst the second prt would contain only those triangles which use two or three materials. This limits the amount of geometry to which we need to apply the complex operations described previously, but on the other hand it increases the batch count as a single mesh is now rendered as two batches instead of one. 
 
+Actual implementation of these material blending approaches is left as an excercise to the reader, though it is possible that in the future we will add some utility functions to PolyVox to assist with tasks such as splitting the mesh or adding the extra vertex attributes. Our test implementations have performed the mesh processing on the CPU before the mesh is uploaded to the graphics card, but it does seem like there is a lot of potential for implementing these approaches in the geometry shader.
+
 Storage of textures
 ===================
+The other major challenge in texturing voxel based geometry is now we handle the large number of textures which such environments often require. As an example, a game like Minecraft has hundreds of different material types each with their own texture. The traditional approach to mesh texturing is to bind textures to *texture units* on the GPU before rendering a batch, but even modern GPUs only allow between 16-64 textures to be bound at a time. In this section we discuss various solutions to overcoming this limitation.
+
+Seperate texture units
+----------------------
+Before we make things uncessesarily complicated, you should consider whether you do actually need the hundreds of textures discussed earlier. If you actually only need a few textures then the simplest solution may indeed be to pass them in in different texture units. You can then choose between the textures using a series of if statements, or a switch statement if the material identifiers are integer values. Keep in mind that you may need to reserve some texture units for additional data such as normal maps or shadow maps.
+
+Splitting the mesh
+------------------
+Texture atlases
+---------------
+Volume slices
+-------------
+Texture arrays
+--------------
+Bindless rendering
+------------------
