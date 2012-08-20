@@ -133,11 +133,12 @@ It is possible to combat these problems but the solution are non-trivial. You wi
 
 Volume slices
 -------------
-The idea here is similar to the texture atlas approach, but rather than packing texture side-by-sidein an atlas they re instead packed as slices in a volumes texture.
-
-more data? simplifies indexing?
+The idea here is similar to the texture atlas approach, but rather than packing texture side-by-side in an atlas they are instead packed as slices in a volumes texture. We haven't actually tested this yet but in theory it would have a couple of benefits. Firstly, it simplifies the addressing of the texture as there is no need to offset/scale the UV coordinates, and the W coordinate (the slice index) can be more easily computed from the material identifier. Secondly, a single volume texture will usually be able to hold more texels than a single 2D texture (for example, 512x512x512 is bigger than 4096x4096). However, volume textures are not so widely supported and may be particularly problematic on mobile hardware.
 
 Texture arrays
 --------------
+These provide the perfect solution to the problem of handling a large number of textures... at least if they are supported by your hardware. They were introduced with OpenGL 3 and Direct3D 10, but older versions of OpenGL may still be able to access the functionality via extensions. As the name suggests they allow you to bind an array of textures to the shader, and the advantage compated to a texture atlas is that the hardware understands that the textures are seperate and so avoids the filtering and mipmapping issues. Beyond the hardware requirements, the only real limitation is that all the textures must be the same size.
+
 Bindless rendering
 ------------------
+We don't have much to say about this option as it needs significant research, but bindless rendering is one of the new OpenGL extensions to come out of Nvidia. The idea is that it removes the abstraction of needing to 'bind' a texture to a particular texture unit, and instead allows more direct access to the texture data on the GPU. This means you can have access to a much larger number of textures from your shader. Sounds useful, but we've yet to investigate it.
