@@ -105,18 +105,38 @@ Actual implementation of these material blending approaches is left as an excerc
 
 Storage of textures
 ===================
-The other major challenge in texturing voxel based geometry is now we handle the large number of textures which such environments often require. As an example, a game like Minecraft has hundreds of different material types each with their own texture. The traditional approach to mesh texturing is to bind textures to *texture units* on the GPU before rendering a batch, but even modern GPUs only allow between 16-64 textures to be bound at a time. In this section we discuss various solutions to overcoming this limitation.
+The other major challenge in texturing voxel based geometry is now we handle the large number of textures which such environments often require. As an example, a game like Minecraft has hundreds of different material types each with their own texture. The traditional approach to mesh texturing is to bind textures to *texture units* on the GPU before rendering a batch, but even modern GPUs only allow between 16-64 textures to be bound at a time. In this section we discuss various solutions to overcoming this limitation. there are various tradeoffs involved, but if you are targetting hardware with support for *texture arrays* (roughly OpenGL 3 and Direct3D 10 onwards) then we can save you some time and tell you that they are almost certainly the best solution. Otherwise you have to understand the various pros and cons of the other approaches.
 
 Seperate texture units
 ----------------------
-Before we make things uncessesarily complicated, you should consider whether you do actually need the hundreds of textures discussed earlier. If you actually only need a few textures then the simplest solution may indeed be to pass them in in different texture units. You can then choose between the textures using a series of if statements, or a switch statement if the material identifiers are integer values. Keep in mind that you may need to reserve some texture units for additional data such as normal maps or shadow maps.
+Before we make things uncessesarily complicated, you should consider whether you do actually need the hundreds of textures discussed earlier. If you actually only need a few textures then the simplest solution may indeed be to pass them in in different texture units. You can then choose between the textures using a series of if statements, or a switch statement if the material identifiers are integer values. There is probably some performance overhead here, but you may find it is acceptable for a small number of textures. Keep in mind that you may need to reserve some texture units for additional texture data such as normal maps or shadow maps.
 
 Splitting the mesh
 ------------------
+If your required number of textures do indeed exceed the available number of textures units or you want to avoid the overhead of the texture selection logic in you fragment shader, then one option is to break the mesh down into a number of pieces. Let's say you have a mesh which contains one hundred different materials. As an extreme solution you could break it down into one hundred seperate meshes, and for each mesh you could then bind the single texture before drawing the geometry. Obviously this will dramatically increase the batch count of your scene and so is not recommended.
+
+A more practical approach would be to break the mesh into a smaller number of peices such that each mesh uses several textures but less than the maximum number of texture units. For example, our mesh with one hundred materials could be split into ten meshes, the first of which contains those triangles using materials 0-9, the seconds contains those triangles using materials 10-19, and so forth. There is a trade off here between the number of batches and the number of textures units used per batch.
+
 Texture atlases
 ---------------
+Probably the most widely used solution to this problem is to pack a number of textures together into a single large texture, and to our knowledge this is the approach used by Minecraft. For example, if each of you textures are 256x256 texels, and if the maximum texture size supported by your target hardware is 4096x4096 texels, then you can pack 16 x 16 = 256 small textures into the larger one. If this isn't enough (or if your input textures are larger than 256x256) then you can also combine this approach with multiple texture units or the mesh splitting described previously.
+
+//Diagram of texture arrays
+
+However, there are a number of problems with packing textures like this. Most obviously, it limits the size of your textures as they now have to be significantly smaller then the maximum texture size. whether this is a problem will really depend on you application.
+
+Next, it means you have to adjust you UV coordinates to correctly address a given texture inside the atlas. UV coordinates for a single texture would normally vary between 0.0 and 1.0 in both dimensions, but when packed into a texture atlas each textures uses only a small part of this range. You will need to apply offsts and scaling factors to your UV coordinates to address your texture correctly.
+
+However, the biggest problem with texture atlases is that they causes problems with texture filtering and with mipmaps. The filtering problem occurs because graphics hardware usually samples the surrounding texels and performs linear interpolation to compute the colour of a given sample point, and when multiple textures are packed together these surrounding texels can actually come from a neighbouring packed texture rather than wrapping round to sample the other side of the same packed texture. The mipmap problem occurs because for the highest mipmap levels (such as 1x1 or 2x2) multiple textures are being are being averaged together.
+
+It is possible to combat these problems but the solution are non-trivial. You will want to limit the number of miplevels which you use, and probably provide custom shader code to handle the wrapping of texture coordinates, the sampling of MIP maps, and the caculation of interpolated values. You can also try adding a border around all your packed textures, perhaps by duplicating each texture and offsetting by half its size. Even so, it's not clear to us at this point whether the the various artefacts can be completely removed. Minecraft handles it by completely disabling texture filtering and using the resulting pixelated look as part of it's asthetic.
+
 Volume slices
 -------------
+The idea here is similar to the texture atlas approach, but rather than packing texture side-by-sidein an atlas they re instead packed as slices in a volumes texture.
+
+more data? simplifies indexing?
+
 Texture arrays
 --------------
 Bindless rendering
