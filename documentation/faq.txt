@@ -17,3 +17,6 @@ The usual reason why people attempt to break their terrain into separate volumes
 Note that although you should only use a single volume for your data, it is still recommended that you split the mesh data into multiple pieces so that they can be culled against the view frustum, and so that you can update the smaller pieces more quickly when you need to. You can extract meshes from different parts of the volume by passing a Region to the surface extractor.
 
 Lastly, note that there are exceptions to the 'one volume' rule. An example might be if you had a number of planets in space, in which case each planet could safely be a separate volume. These planets never touch, and so the artifacts which would occur on volume boundaries do not cause a problem.
+
+Can I combine smooth meshes with cubic ones?
+--------------------------------------------
