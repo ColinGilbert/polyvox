@@ -4,18 +4,21 @@ Texture Mapping
 The PolyVox library is only concerned with operations on volume data (such as extracting a mesh from from a volume) and deliberatly avoids the issue of rendering any resulting polygon meshes. This means PolyVox is not tied to any particular graphics API or rendering engine, and makes it much easier to integrate PolyVox with existing technology, because in general a PolyVox mesh can be treated the same as any other mesh. However, the texturing of a PolyVox mesh is usually handled a little differently, and so the purpose of this document is to provide some ideas about where to start with this process.
 
 This document is aimed at readers in one of two positions:
-	1) You are trying to texture 'Minecraft-style' terrain with cubic blocks and a number of different materials.
-	2) You are trying to texture smooth terrain produced by the Marching Cubes (or similar) algoritm.
+
+1) You are trying to texture 'Minecraft-style' terrain with cubic blocks and a number of different materials.
+2) You are trying to texture smooth terrain produced by the Marching Cubes (or similar) algoritm.
+
 These are certainly not the limit of PolyVox, and you can choose much more advanced texturing approaches if you wish. For example, in the past we have texture mapped a voxel Earth from a cube map and used an animated *procedural* texture (based on Perlin noise) for the magma at the center of the Earth. However, if you are aiming for such advanced techniques then we assume you understand the basics in this document and have enough knowledge to expand the ideas yourself. But do feel free to drop by and ask questions on our forum.
 
 Traditionally meshes are textured by providing a pair of UV texture coordinates for each vertex, and these UV coordinates determine which parts of a texture maps to each vertex. The process of texturing PolyVox meshes is more complex for a couple of reasons:
-	1) PolyVox does not provide UV coordinates for each vertex.
-	2) Voxel terrain (particulaly Minecraft-style) often involves many more textures than the GPU can read at a time.
+
+1) PolyVox does not provide UV coordinates for each vertex.
+2) Voxel terrain (particulaly Minecraft-style) often involves many more textures than the GPU can read at a time.
 
 By reading this document you should learn how to work around the above problems, though you will almost certainly need to follow provided links and do some further reading as we have only summarised the key ideas here.
 
 Mapping textures to mesh geometry
-================================
+=================================
 The lack of UV coordinates means some lateral thinking is requried in order to apply texture maps to meshes. But before we get to that, we will first try to explain the rational behind PolyVox not providing UV coordinates in the first place. This rational is different for the smooth voxel meshes vs the cubic voxel meshes.
 
 Rational
@@ -30,29 +33,33 @@ Triplanar Texturing
 -------------------
 The most common approach to texture mapping smooth voxel terrain is to use *triplanar texturing*. The basic idea is to project a texture along all three main axes and blend between the three texture samples according to the surface normal. As an example, suppose that we wish to write a fragment shader to apply a single texture to our terrain, and that we have access to both the world space position of the fragment and also its normalised surface normal. Also, note that your textures should be set to wrap because the world space position will quickly go outside the bounds of 0.0-1.0. The world space position will need to have been passed through from earlier in the pipeline while the normal can be computed using one of the approaches in the lighting (link) document. The shader code would then look something like this [footnote: code is untested as is simplified compared to real world code. hopefully it compiles, but if not it should still give you an idea of how it works]:
 
-// Take the three texture samples
-vec4 sampleX = texture2d(inputTexture, worldSpacePos.yz); // Project along x axis
-vec4 sampleY = texture2d(inputTexture, worldSpacePos.xz); // Project along y axis
-vec4 sampleZ = texture2d(inputTexture, worldSpacePos.xy); // Project along z axis
+.. code-block:: c++
 
-// Blend the samples according to the normal
-vec4 blendedColour = sampleX * normal.x + sampleY * normal.y + sampleZ * normal.z; 
+	// Take the three texture samples
+	vec4 sampleX = texture2d(inputTexture, worldSpacePos.yz); // Project along x axis
+	vec4 sampleY = texture2d(inputTexture, worldSpacePos.xz); // Project along y axis
+	vec4 sampleZ = texture2d(inputTexture, worldSpacePos.xy); // Project along z axis
+	
+	// Blend the samples according to the normal
+	vec4 blendedColour = sampleX * normal.x + sampleY * normal.y + sampleZ * normal.z; 
 
 Note that this approach will lead to the texture repeating once every world unit, and so in practice you may wish to scale the world space positions to make the texture appear the desired size. Also this technique can be extended to work with normal mapping though we won't go into the details here.
 
 This idea of triplanar texturing can be applied to the cubic meshes as well, and in some ways it can be considered to be even simpler. With cubic meshes the normal always points exactly along one of the main axes, and so it is not necessary to sample the texture three times nor to blend the results. Instead you can use conditional branching in the fragment shader to determine which pair of values out of {x,y,z} should be used as the texture coordintes. Something like:
 
-vec4 sample = vec4(0, 0, 0, 0); // We'll fill this in below
-// Assume the normal is normalised.
-if(normal.x > 0.9) // x must be one while y and z are zero
-{
-	//Project onto yz plane
-	sample = texture2D(inputTexture, worldSpacePos.yz);
-}
-// Now similar logic for the other two axes.
-.
-.
-.
+.. code-block:: c++
+
+	vec4 sample = vec4(0, 0, 0, 0); // We'll fill this in below
+	// Assume the normal is normalised.
+	if(normal.x > 0.9) // x must be one while y and z are zero
+	{
+		//Project onto yz plane
+		sample = texture2D(inputTexture, worldSpacePos.yz);
+	}
+	// Now similar logic for the other two axes.
+	.
+	.
+	.
 
 You might also choose to sample a different texture for each of the axes, in order to apply a different texture to each face of your cubes. If so, you probably want to pack your differnt face textures together using an approach like those described later in this document for multiple material textures. Another (untested) idea would be to use the normal to select a face on a 1x1x1 cubemap, and have the cubemap face contain an index value for addressing the correct face texture. This could bypass the conditional logic above.
 
@@ -64,22 +71,24 @@ Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor understand t
 
 The following code snippet assumes that you have passed the material identifier to your shaders and that you can access it in the fragment shader. It then chooses which colour to draw the polygon based on this identifier:
 
-vec4 fragmentColour = vec4(1, 1, 1, 1); // Default value 
-if(materialId < 0.5) //Avoid '==' when working with floats.
-{
-	fragmentColour = vec4(1, 0, 0, 1) // Draw material 0 as red.
-}
-else if(materialId < 1.5) //Avoid '==' when working with floats.
-{
-	fragmentColour = vec4(0, 1, 0, 1) // Draw material 1 as green.
-}
-else if(materialId < 2.5) //Avoid '==' when working with floats.
-{
-	fragmentColour = vec4(0, 0, 1, 1) // Draw material 2 as blue.
-}
-.
-.
-.
+.. code-block:: c++
+
+	vec4 fragmentColour = vec4(1, 1, 1, 1); // Default value 
+	if(materialId < 0.5) //Avoid '==' when working with floats.
+	{
+		fragmentColour = vec4(1, 0, 0, 1) // Draw material 0 as red.
+	}
+	else if(materialId < 1.5) //Avoid '==' when working with floats.
+	{
+		fragmentColour = vec4(0, 1, 0, 1) // Draw material 1 as green.
+	}
+	else if(materialId < 2.5) //Avoid '==' when working with floats.
+	{
+		fragmentColour = vec4(0, 0, 1, 1) // Draw material 2 as blue.
+	}
+	.
+	.
+	.
 
 This is a very simple example, and such use of conditional branching within the shader may not be the best approach as it incurs some performance overhead and becomes unweildy with a large number of materials. Other approaches include encoding a colour directly into the material identifier, or using the idenifier as an index into a texture atlas or array.
 
@@ -138,7 +147,7 @@ However, the biggest problem with texture atlases is that they causes problems w
 It is possible to combat these problems but the solution are non-trivial. You will want to limit the number of miplevels which you use, and probably provide custom shader code to handle the wrapping of texture coordinates, the sampling of MIP maps, and the calculation of interpolated values. You can also try adding a border around all your packed textures, perhaps by duplicating each texture and offsetting by half its size. Even so, it's not clear to us at this point whether the the various artefacts can be completely removed. Minecraft handles it by completely disabling texture filtering and using the resulting pixelated look as part of its asthetic.
 
 3D texture slices
--------------
+-----------------
 The idea here is similar to the texture atlas approach, but rather than packing texture side-by-side in an atlas they are instead packed as slices in a 3D texture. We haven't actually tested this yet but in theory it would have a couple of benefits. Firstly, it simplifies the addressing of the texture as there is no need to offset/scale the UV coordinates, and the W coordinate (the slice index) can be more easily computed from the material identifier. Secondly, a single volume texture will usually be able to hold more texels than a single 2D texture (for example, 512x512x512 is bigger than 4096x4096). Lastly, it should simplify the filtering problem as packed textures are no longer tiled and so should wrap correctly.
 
 However, MIP mapping will probably be more complex than the texture atlas case because even the first MIP level will involve combining adjacent slices. Volume textures are also not so widely supported and may be particularly problematic on mobile hardware.
