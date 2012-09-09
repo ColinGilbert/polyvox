@@ -10,10 +10,6 @@ Contents:
 	principles
 	tutorial1
 	changelog
-	Threading
-	TextureMapping
-	LevelOfDetail
-	ModifyingTerrain
 
 
 Indices and tables

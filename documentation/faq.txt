@@ -20,3 +20,6 @@ Lastly, note that there are exceptions to the 'one volume' rule. An example migh
 
 Can I combine smooth meshes with cubic ones?
 --------------------------------------------
+We have never attempted to do this but in theory it should be possible. One option is simply to generate two meshes (one using the MarchingCubesSurfaceExtractor and the other using the CubicSurfaceExtractor) and render them on top of eachother while allowing the depth buffer to resolve the intersections. Combining these two meshes into a single mesh is likely to be difficult as they use different vertex formats and have different texturing requirements (see the document on texture mapping).
+
+An alternative possibility may be to create a new surface extractor based on the Surface Nets (link) algorithm. The idea here is that the mesh would start with a cubic shape, but as the net was stretched it would be smoothed. The degree of smoothing could be controlled by a voxel property which could allow the full range from cubic to smooth to exist in a single mesh. As mention ed above, this may mean that some extra work has to be put into a fragment shader which is capable of texturring this kind of mesh. Come by the forums of you want to discuss this further.
