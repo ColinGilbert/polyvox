@@ -64,4 +64,4 @@ It might be useful to provide a thread safe wrapper around the volume classes, a
 
 OpenMP
 ------
-This is a standard for extending C++ with compiler directives which allow the compiler to automatically parallise sections of code. Most likely this could be used to parallise some of the loops which occur in image processing tasks.
+This is a standard for extending C++ with compiler directives which allow the compiler to automatically parallise sections of code. Most likely this could be used to parallelise some of the loops which occur in image processing tasks.

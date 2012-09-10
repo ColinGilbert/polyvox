@@ -6,10 +6,17 @@ Contents:
 .. toctree::
 	:maxdepth: 2
 
+	Prerequisites
 	install
-	principles
+	principles	
+	Lighting
+	TextureMapping
+	ModifyingTerrain
+	LevelOfDetail
+	Threading
 	tutorial1
 	changelog
+	FAQ
 
 
 Indices and tables
