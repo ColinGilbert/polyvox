@@ -59,7 +59,7 @@ namespace PolyVox
 	/// of the RaycastResult structure and the intersectionFound flag is set to true, otherwise
 	/// the intersectionFound flag is set to false.
 	///
-	/// <b>Important Note:</b> These has been confusion in the past with people not realising
+	/// **Important Note:** These has been confusion in the past with people not realising
 	/// that the length of the direction vector is important. Most graphics API can provide
 	/// a camera position and view direction for picking purposes, but the view direction is
 	/// usually normalised (i.e. of length one). If you use this view direction directly you

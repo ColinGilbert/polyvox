@@ -50,7 +50,8 @@ namespace PolyVox
 	/// We use the LargeVolume class to store our data in an efficient way, and it is the input to many of the algorithms (such as the surface
 	/// extractors) which form the heart of PolyVox. The LargeVolume class is templatised so that different types of data can be stored within each voxel.
 	///
-	/// <b> Basic usage</b>
+	/// Basic usage
+	/// -----------
 	///
 	/// The following code snippet shows how to construct a volume and demonstrates basic usage:
 	///
@@ -75,8 +76,8 @@ namespace PolyVox
 	/// Lastly the example prints out some properties of the LargeVolume. Note that the dimentsions getWidth(), getHeight(), and getDepth() are inclusive, such
 	/// that the width is 64 when the range of valid x coordinates goes from 0 to 63.
 	/// 
-	/// <b>Data Representaion</b>
-	///
+	/// Data Representaion
+	/// ------------------
 	/// If stored carelessly, volume data can take up a huge amount of memory. For example, a volume of dimensions 1024x1024x1024 with
 	/// 1 byte per voxel will require 1GB of memory if stored in an uncompressed form. Natuarally our LargeVolume class is much more efficient
 	/// than this and it is worth understanding (at least at a high level) the approach which is used.
@@ -91,8 +92,8 @@ namespace PolyVox
 	/// is touched a timestamp is updated on the corresponding block. When the cache becomes full the block with the oldest timestamp is
 	/// recompressed and moved out of the cache.
 	///
-	/// <b>Achieving high compression rates</b>
-	///
+	/// Achieving high compression rates
+	/// --------------------------------
 	/// The compression rates which can be achieved can vary significantly depending the nature of the data you are storing, but you can
 	/// encourage high compression rates by making your data as homogenous as possible. If you are simply storing a material with each
 	/// voxel then this will probably happen naturally. Games such as Minecraft which use this approach will typically involve large areas
@@ -103,8 +104,8 @@ namespace PolyVox
 	/// on the boundary) does not benefit the surface and is very hard to compress effectively. You may wish to apply some thresholding to 
 	/// your density values to reduce this problem (this threasholding should only be applied to voxels who don't contribute to the surface).
 	///
-	/// <b>Paging large volumes</b>
-	///
+	/// Paging large volumes
+	/// --------------------
 	/// The compression scheme described previously will typically allow you to load several billion voxels into a few hundred megabytes of memory, 
 	/// though as explained the exact compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a
 	/// mechanism by which parts of the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a
@@ -134,8 +135,8 @@ namespace PolyVox
 	/// that you don't actually have to do anything with the data - you could simply decide that once it gets removed from memory it doesn't matter
 	/// anymore. But you still need to be ready to then provide something to PolyVox (even if it's just default data) in the event that it is requested.
 	///
-	/// <b>Cache-aware traversal</b>
-	///
+	/// Cache-aware traversal
+	/// ---------------------
 	/// You might be suprised at just how many cache misses can occur when you traverse the volume in a naive manner. Consider a 1024x1024x1024 volume
 	/// with blocks of size 32x32x32. And imagine you iterate over this volume with a simple three-level for loop which iterates over x, the y, then z.
 	/// If you start at position (0,0,0) then ny the time you reach position (1023,0,0) you have touched 1024 voxels along one edge of the volume and
@@ -148,8 +149,8 @@ namespace PolyVox
 	/// and (31,31,31), then process all the voxels between (32,0,0) and (63,0,0), and so forth. Using this approach you will have no cache misses even
 	/// is your cache sise is only one. Of course the logic is more complex, but writing code in such a cache-aware manner may be beneficial in some situations.
 	///
-	/// <b>Threading</b>
-	///
+	/// Threading
+	/// ---------
 	/// The LargeVolume class does not make any guarentees about thread safety. You should ensure that all accesses are performed from the same thread.
 	/// This is true even if you are only reading data from the volume, as concurrently reading from different threads can invalidate the contents
 	/// of the block cache (amoung other problems).
