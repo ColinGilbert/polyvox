@@ -4,13 +4,16 @@ Texture Mapping
 The PolyVox library is only concerned with operations on volume data (such as extracting a mesh from from a volume) and deliberatly avoids the issue of rendering any resulting polygon meshes. This means PolyVox is not tied to any particular graphics API or rendering engine, and makes it much easier to integrate PolyVox with existing technology, because in general a PolyVox mesh can be treated the same as any other mesh. However, the texturing of a PolyVox mesh is usually handled a little differently, and so the purpose of this document is to provide some ideas about where to start with this process.
 
 This document is aimed at readers in one of two positions:
-1) You are trying to texture 'Minecraft-style' terrain with cubic blocks and a number of different materials.
-2) You are trying to texture smooth terrain produced by the Marching Cubes (or similar) algoritm.
+
+1. You are trying to texture 'Minecraft-style' terrain with cubic blocks and a number of different materials.
+2. You are trying to texture smooth terrain produced by the Marching Cubes (or similar) algoritm.
+
 These are certainly not the limit of PolyVox, and you can choose much more advanced texturing approaches if you wish. For example, in the past we have texture mapped a voxel Earth from a cube map and used an animated *procedural* texture (based on Perlin noise) for the magma at the center of the Earth. However, if you are aiming for such advanced techniques then we assume you understand the basics in this document and have enough knowledge to expand the ideas yourself. But do feel free to drop by and ask questions on our forum.
 
 Traditionally meshes are textured by providing a pair of UV texture coordinates for each vertex, and these UV coordinates determine which parts of a texture maps to each vertex. The process of texturing PolyVox meshes is more complex for a couple of reasons:
-1) PolyVox does not provide UV coordinates for each vertex.
-2) Voxel terrain (particulaly Minecraft-style) often involves many more textures than the GPU can read at a time.
+
+1. PolyVox does not provide UV coordinates for each vertex.
+2. Voxel terrain (particulaly Minecraft-style) often involves many more textures than the GPU can read at a time.
 
 By reading this document you should learn how to work around the above problems, though you will almost certainly need to follow provided links and do some further reading as we have only summarised the key ideas here.
 
@@ -30,7 +33,8 @@ Triplanar Texturing
 -------------------
 The most common approach to texture mapping smooth voxel terrain is to use *triplanar texturing*. The basic idea is to project a texture along all three main axes and blend between the three texture samples according to the surface normal. As an example, suppose that we wish to write a fragment shader to apply a single texture to our terrain, and assume that we have access to both the world space position of the fragment and also its normalised surface normal. Also, note that your textures should be set to wrap because the world space position will quickly go outside the bounds of 0.0-1.0. The world space position will need to have been passed through from earlier in the pipeline while the normal can be computed using one of the approaches in the lighting (link) document. The shader code would then look something like this [footnote: code is untested as is simplified compared to real world code. hopefully it compiles, but if not it should still give you an idea of how it works]:
 
-.. code-block:: c++
+.. code-block:: glsl
+
 	// Take the three texture samples
 	vec4 sampleX = texture2d(inputTexture, worldSpacePos.yz); // Project along x axis
 	vec4 sampleY = texture2d(inputTexture, worldSpacePos.xz); // Project along y axis
@@ -43,7 +47,8 @@ Note that this approach will lead to the texture repeating once every world unit
 
 This idea of triplanar texturing can be applied to the cubic meshes as well, and in some ways it can be considered to be even simpler. With cubic meshes the normal always points exactly along one of the main axes, and so it is not necessary to sample the texture three times nor to blend the results. Instead you can use conditional branching in the fragment shader to determine which pair of values out of {x,y,z} should be used as the texture coordintes. Something like:
 
-.. code-block:: c++
+.. code-block:: glsl
+
 	vec4 sample = vec4(0, 0, 0, 0); // We'll fill this in below
 	// Assume the normal is normalised.
 	if(normal.x > 0.9) // x must be one while y and z are zero
@@ -66,7 +71,8 @@ Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor understand t
 
 The following code snippet assumes that you have passed the material identifier to your shaders and that you can access it in the fragment shader. It then chooses which colour to draw the polygon based on this identifier:
 
-.. code-block:: c++
+.. code-block:: glsl
+
 	vec4 fragmentColour = vec4(1, 1, 1, 1); // Default value 
 	if(materialId < 0.5) //Avoid '==' when working with floats.
 	{
@@ -98,7 +104,7 @@ ADD FIGURE HERE
 
 There are a couple approaches we can adopt to combat this problem. However, the solutions do have some performance and/or memory cost so we should first realise that this issue only applies to a small number of the tringles in the mesh. Typically most triangles will be using the same material for all three vertices, and so it is almost certainly worth splitting the mesh into two pieces. One peice will contain all the triangles which have the same material and can be rendered as normal. The other peice will contain all the triangles which have a mix of materials, and for these we use the more complex rendering techniques below. Note that splitting the mesh like this will also increase the batch count so it may not be desirable in all circumstances.
 
-NOTE - THESE SOLUTIONS ARE WORK IN PROGRESS. CORRECTLY BLENDING MATERIAL IS AN AREA WHICH WE ARE STILL RESEARCHING, AND IN THE MEAN TIME YOU MIGHT ALSO BE INTERESTED IN OUR ARTICLE IN GAME ENGINE GEMS.
+NOTE - THESE SOLUTIONS ARE WORK IN PROGRESS. CORRECTLY BLENDING MATERIAL IS AN AREA WHICH WE ARE STILL RESEARCHING, AND IN THE MEAN TIME YOU MIGHT ALSO BE INTERESTED IN OUR ARTICLE IN GAME ENGINE GEMS. See: http://books.google.com/books?id=WNfD2u8nIlIC&lpg=PR1&dq=game%20engine%20gems&pg=PA39#v=onepage&q&f=false
 
 One approach is to attach an alpha value to each vertex so that corners of a triangle can optionally be faded out. If a triangle has the same material value at each vertex then we also give it full alpha at each vertex and the triangle draws normally, but if it has a differnt material for each vertex then we duplicate the triangle three times (once for each material). Each new triangle should then use the same material at each vertex, this material being one of those from the original triangle. The alpha values of the vertices of the new triangles are set such that when the three triangles are drawn on top of each other with additive alpha blending, the desired smoothly shaded triangle results.
 
@@ -128,13 +134,11 @@ If your required number of textures do indeed exceed the available number of tex
 
 A more practical approach would be to break the mesh into a smaller number of pieces such that each mesh uses several textures but less than the maximum number of texture units. For example, our mesh with one hundred materials could be split into ten meshes, the first of which contains those triangles using materials 0-9, the seconds contains those triangles using materials 10-19, and so forth. There is a trade off here between the number of batches and the number of textures units used per batch.
 
-Furthermore, you could realise that although a your terrain may use hundreds of different textures, any given region is likely to use only a small fraction of those. We have yet to experiment with this, but it seems if you region uses only (for example) materials 12, 47, and 231, then you could conceptually map these materials to the first three textures slots. This means that for each region you draw the mapping between material IDs and texture untis would be different. This may require some complex logic in the application but could allow you to do much more with only a few texture units. We will investigate this furthr in the future.
+Furthermore, you could realise that although your terrain may use hundreds of different textures, any given region is likely to use only a small fraction of those. We have yet to experiment with this, but it seems if you region uses only (for example) materials 12, 47, and 231, then you could conceptually map these materials to the first three textures slots. This means that for each region you draw the mapping between material IDs and texture untis would be different. This may require some complex logic in the application but could allow you to do much more with only a few texture units. We will investigate this furthr in the future.
 
 Texture atlases
 ---------------
 Probably the most widely used method is to pack a number of textures together into a single large texture, and to our knowledge this is the approach used by Minecraft. For example, if each of your textures are 256x256 texels, and if the maximum texture size supported by your target hardware is 4096x4096 texels, then you can pack 16 x 16 = 256 small textures into the larger one. If this isn't enough (or if your input textures are larger than 256x256) then you can also combine this approach with multiple texture units or with the mesh splitting described previously.
-
-//Diagram of texture atlases
 
 However, there are a number of problems with packing textures like this. Most obviously, it limits the size of your textures as they now have to be significantly smaller then the maximum texture size. Whether this is a problem will really depend on your application.
 
@@ -142,7 +146,7 @@ Next, it means you have to adjust your UV coordinates to correctly address a giv
 
 However, the biggest problem with texture atlases is that they causes problems with texture filtering and with mipmaps. The filtering problem occurs because graphics hardware usually samples the surrounding texels and performs linear interpolation to compute the colour of a given sample point, but when multiple textures are packed together these surrounding texels can actually come from a neighbouring packed texture rather than wrapping round to sample on the other side of the same packed texture. The mipmap problem occurs because for the highest mipmap levels (such as 1x1 or 2x2) multiple textures are being are being averaged together.
 
-It is possible to combat these problems but the solution are non-trivial. You will want to limit the number of miplevels which you use, and probably provide custom shader code to handle the wrapping of texture coordinates, the sampling of MIP maps, and the calculation of interpolated values. You can also try adding a border around all your packed textures, perhaps by duplicating each texture and offsetting by half its size. Even so, it's not clear to us at this point whether the the various artefacts can be completely removed. Minecraft handles it by completely disabling texture filtering and using the resulting pixelated look as part of its asthetic.
+It is possible to combat these problems but the solutions are non-trivial. You will want to limit the number of miplevels which you use, and probably provide custom shader code to handle the wrapping of texture coordinates, the sampling of MIP maps, and the calculation of interpolated values. You can also try adding a border around all your packed textures, perhaps by duplicating each texture and offsetting by half its size. Even so, it's not clear to us at this point whether the the various artefacts can be completely removed. Minecraft handles it by completely disabling texture filtering and using the resulting pixelated look as part of its asthetic.
 
 3D texture slices
 -----------------

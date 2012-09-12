@@ -32,6 +32,16 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/// The CubicSurfaceExtractor creates a mesh in which each voxel appears to be rendered as a cube
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// Games such as Minecraft and Voxatron have a unique graphical style in which each voxel in the world appears to be rendered as a single cube. Actually rendering a cube for each voxel would be very expensive, but in practice the only faces which need to be drawn are those which lie on the boundary between solid and empty voxels. The CubicSurfaceExtractor can be used to create such a mesh from PolyVox volume data. As an example, images from Minecraft and Voxatron are shown below:
+	///
+	/// \image html MinecraftAndVoxatron.jpg
+	///
+	/// Before we get into the specifics of the CubicSurfaceExtractor, it is useful to understand the principles which apply to *all* PolyVox surface extractors and which are described in the Surface Extraction document (ADD LINK). From here on, it is assumed that you are familier with PolyVox regions and how they are used to limit surface extraction to a particular part of the volume.
+	///
+	/// The images shown above shoulld hopefully make it clear how the resulting mesh should look, but the process is more easily explained in 2D. Hopefully you will find that the extension to 3D is intuitive.
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
 	class CubicSurfaceExtractor
 	{

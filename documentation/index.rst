@@ -1,10 +1,10 @@
 Welcome to PolyVox's documentation!
 ===================================
 
-Contents:
+User Guide:
 
 .. toctree::
-	:maxdepth: 2
+	:maxdepth: 1
 
 	Prerequisites
 	install
@@ -14,7 +14,20 @@ Contents:
 	ModifyingTerrain
 	LevelOfDetail
 	Threading
+	
+
+Examples:
+
+.. toctree::
+	:maxdepth: 1
+	
 	tutorial1
+	
+Other Information:
+
+.. toctree::
+	:maxdepth: 1
+	
 	changelog
 	FAQ
 
