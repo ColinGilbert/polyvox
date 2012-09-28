@@ -101,12 +101,14 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, 1, midPos-10), Vector3DInt32(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
-	//Smooth part of the volume
-	RawVolume<MaterialDensityPair44> tempVolume(PolyVox::Region(0,0,0,128, 128, 128));
-	LowPassFilter< LargeVolume<MaterialDensityPair44>, RawVolume<MaterialDensityPair44> > pass1(&volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
-	pass1.executeSAT();
-	LowPassFilter< RawVolume<MaterialDensityPair44>, LargeVolume<MaterialDensityPair44> > pass2(&tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
-	pass2.executeSAT();
+	//I've removed this smoothing because it doesn't really make sense to apply a low pass filter to a volume with material values. 
+	//I could implement the mathematical operators for MaterialDensityPair in such a way that they ignores the materials but this 
+	//seems to be setting a bad example. Users can add this operators in their own classes if they want smoothing.
+	//RawVolume<MaterialDensityPair44> tempVolume(PolyVox::Region(0,0,0,128, 128, 128));
+	//LowPassFilter< LargeVolume<MaterialDensityPair44>, RawVolume<MaterialDensityPair44> > pass1(&volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
+	//pass1.executeSAT();
+	//LowPassFilter< RawVolume<MaterialDensityPair44>, LargeVolume<MaterialDensityPair44> > pass2(&tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
+	//pass2.executeSAT();
 
 	QApplication app(argc, argv);
 
