@@ -152,20 +152,19 @@ namespace PolyVox
 		srcIterCont.m_Iter = &srcVolumeIter;
 		srcIterCont.reset();
 
-		/*do
+		do
 		{
-			AccumulationType previousSum = satVolumeIter.peekVoxel1nx0py0pz();
-
-			AccumulationType currentVal = srcVolumeIter.getVoxel();
+			AccumulationType previousSum = static_cast<AccumulationType>(satVolumeIter.peekVoxel1nx0py0pz());
+			AccumulationType currentVal = static_cast<AccumulationType>(srcVolumeIter.getVoxel());
 
 			satVolumeIter.setVoxel(previousSum + currentVal);
 
 			srcIterCont.moveForward();
 
-		}while(satIterCont.moveForward());*/
+		}while(satIterCont.moveForward());
 
 		//Build SAT in three passes
-		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		/*for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
 			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
 			{
@@ -174,12 +173,10 @@ namespace PolyVox
 					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x-1,y,z));
 					AccumulationType currentVal = static_cast<AccumulationType>(m_pVolSrc->getVoxelAt(x,y,z));
 
-					AccumulationType sum = previousSum + currentVal;
-
-					satVolume.setVoxelAt(x,y,z,sum);
+					satVolume.setVoxelAt(x,y,z,previousSum + currentVal);
 				}
 			}
-		}
+		}*/
 
 		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
@@ -239,28 +236,10 @@ namespace PolyVox
 					AccumulationType h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
 
 					AccumulationType sum = h+c-d-g-f-a+b+e;
-
 					uint32_t sideLength = border * 2 + 1;
-
 					AccumulationType average = sum / (sideLength*sideLength*sideLength);
 
-					//Note: These lines need consideration if src and dest have different voxel types.
-					//typename SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
-
-					//voxel.setDensity(static_cast<typename SrcVolumeType::VoxelType::DensityType>(average));
-
 					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, static_cast<DstVolumeType::VoxelType>(average));
-
-
-					//float maxSolid = border * 2/* + 1*/;
-					/*maxSolid = maxSolid * maxSolid * maxSolid;
-
-					float percentSolid = noSolid / maxSolid;
-					float percentEmpty = 1.0f - percentSolid;
-
-					(*mAmbientOcclusionVolume)[ambVolZ][ambVolY][ambVolX] = 255 * percentEmpty;*/
-
-					//(*mAmbientOcclusionVolume)[ambVolZ][ambVolY][ambVolX] = 255 - ((h+c-d-g-f-a+b+e) * 19); //FIXME - should not be 9
 				}
 			}
 		}
