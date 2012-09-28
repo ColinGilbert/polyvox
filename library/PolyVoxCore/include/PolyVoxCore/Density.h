@@ -36,17 +36,9 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	///This class represents a voxel storing only a density.
+	/// This class represents a voxel storing only a density.
 	////////////////////////////////////////////////////////////////////////////////
-	/// In order to perform a surface extraction on a LargeVolume, PolyVox needs the underlying
-	/// voxel type to provide both getDensity() and getMaterial() functions. The getDensity()
-	/// function is used to determine if a voxel is 'solid', and if it is then the getMaterial()
-	/// funtion is used to determine what material should be assigned to the resulting mesh.
-	///
-	/// This class meets these requirements, although it only actually stores a density value.
-	/// For the getMaterial() function it just returns a constant value of '1'.
-	///
-	/// \sa Material, MaterialDensityPair
+	/// Detailed description...
 	////////////////////////////////////////////////////////////////////////////////
 
 	// int32_t template parameter is a dummy, required as the compiler expects to be able to declare an
@@ -62,8 +54,17 @@ namespace PolyVox
 		typedef Type DensityType;
 		typedef int32_t MaterialType; //Shouldn't define this one...
 
+		/// Constructor
 		Density() : m_uDensity(0) {}
+
+		/// Copy constructor
 		Density(DensityType uDensity) : m_uDensity(uDensity) {}
+
+		/// Copy constructor with cast
+		template <typename CastType> explicit Density(const Density<CastType>& density) throw()
+		{
+			m_uDensity = static_cast<Type>(density.getDensity());
+		}
 
 		bool operator==(const Density& rhs) const throw()
 		{
@@ -75,9 +76,19 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
+		// For densities we can supply mathematical operators which behave in an intuitive way.
+		// In particular the ability to add and subtract densities is important in order to
+		// apply an averaging filter. The ability to divide by an integer is also needed for
+		// this same purpose.
 		Density<Type>& operator+=(const Density<Type>& rhs)
 		{
 			m_uDensity += rhs.m_uDensity;
+			return *this;
+		}
+
+		Density<Type>& operator-=(const Density<Type>& rhs)
+		{
+			m_uDensity -= rhs.m_uDensity;
 			return *this;
 		}
 
@@ -97,9 +108,36 @@ namespace PolyVox
 		DensityType m_uDensity;
 	};
 
+	template <typename Type>
+	Density<Type> operator+(const Density<Type>& lhs, const Density<Type>& rhs) throw()
+	{
+		Density<Type> result = lhs;
+		result += rhs;
+		return result;
+	}
+
+	template <typename Type>
+	Density<Type> operator-(const Density<Type>& lhs, const Density<Type>& rhs) throw()
+	{
+		Density<Type> result = lhs;
+		result -= rhs;
+		return result;
+	}
+
+	template <typename Type>
+	Density<Type> operator/(const Density<Type>& lhs, uint32_t rhs) throw()
+	{
+		Density<Type> result = lhs;
+		result /= rhs;
+		return result;
+	}
+
 	// These are the predefined density types. The 8-bit types are sufficient for many purposes (including
 	// most games) but 16-bit and float types do have uses particularly in medical/scientific visualisation.
 	typedef Density<uint8_t> Density8;
+	typedef Density<uint16_t> Density16;
+	typedef Density<uint32_t> Density32;
+	typedef Density<float> DensityFloat;
 
 	/**
 	 * This is a specialisation of DefaultMarchingCubesController for the Density voxel type
