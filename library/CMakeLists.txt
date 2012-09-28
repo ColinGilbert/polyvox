@@ -59,8 +59,8 @@ if(DOXYGEN_FOUND)
 		SOURCES Doxyfile.in polyvox.qhcp.in Mainpage.dox
 		VERBATIM
 	)
-	set_target_properties(doc PROPERTIES PROJECT_LABEL "Documentation") #Set label seen in IDE
-	set_property(TARGET doc PROPERTY FOLDER "Documentation/API Reference")
+	set_target_properties(doc PROPERTIES PROJECT_LABEL "API Reference") #Set label seen in IDE
+	set_property(TARGET doc PROPERTY FOLDER "Documentation")
 	
 	#If we found qcollectiongenerator then do more processing
 	if(QT_QCOLLECTIONGENERATOR_EXECUTABLE)
