@@ -47,19 +47,13 @@ namespace PolyVox
 	class Density
 	{
 	public:
-		//We expose DensityType and MaterialType in this way so that, when code is
-		//templatised on voxel type, it can determine the underlying storage type
-		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
-		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
-		typedef Type DensityType;
-		typedef int32_t MaterialType; //Shouldn't define this one...
-
 		/// Constructor
 		Density() : m_uDensity(0) {}
 
 		/// Copy constructor
-		Density(DensityType uDensity) : m_uDensity(uDensity) {}
+		Density(Type uDensity) : m_uDensity(uDensity) {}
 
+		// The LowPassFilter uses this to convert between normal and accumulated types.
 		/// Copy constructor with cast
 		template <typename CastType> explicit Density(const Density<CastType>& density) throw()
 		{
@@ -98,14 +92,14 @@ namespace PolyVox
 			return *this;
 		}
 
-		DensityType getDensity() const throw() { return m_uDensity; }
-		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
+		Type getDensity() const throw() { return m_uDensity; }
+		void setDensity(Type uDensity) { m_uDensity = uDensity; }
 
-		static DensityType getMaxDensity() throw() { return (std::numeric_limits<DensityType>::max)(); } 
-		static DensityType getMinDensity() throw() { return (std::numeric_limits<DensityType>::min)(); }
+		static Type getMaxDensity() throw() { return (std::numeric_limits<Type>::max)(); } 
+		static Type getMinDensity() throw() { return (std::numeric_limits<Type>::min)(); }
 
 	private:
-		DensityType m_uDensity;
+		Type m_uDensity;
 	};
 
 	template <typename Type>
