@@ -59,7 +59,7 @@ IF(MSVC)
 	SET_TARGET_PROPERTIES(SmoothLODExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
 ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(SmoothLODExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
-SET_PROPERTY(TARGET SmoothLODExample PROPERTY FOLDER "examples/SmoothLOD")
+SET_PROPERTY(TARGET SmoothLODExample PROPERTY FOLDER "Examples/SmoothLOD")
 
 #Install - Only install the example in Windows
 IF(WIN32)

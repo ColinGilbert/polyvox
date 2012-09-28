@@ -36,7 +36,7 @@ if(SPHINXBUILD_EXECUTABLE)
 		COMMENT "Building PolyVox manual"
 	)
 	add_dependencies(manual doc)
-	SET_PROPERTY(TARGET manual PROPERTY FOLDER "documentation")
+	SET_PROPERTY(TARGET manual PROPERTY FOLDER "Documentation/Manual")
 else()
 	if(NOT SPHINXBUILD_EXECUTABLE)
 		message(STATUS "`sphinx-build` was not found. Try setting SPHINXBUILD_EXECUTABLE to its location.")

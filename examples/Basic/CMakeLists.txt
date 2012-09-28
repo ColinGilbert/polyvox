@@ -59,7 +59,7 @@ IF(MSVC)
 	SET_TARGET_PROPERTIES(BasicExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(BasicExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
-SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "examples/Basic")
+SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "Examples/Basic")
 
 #Install - Only install the example in Windows
 IF(WIN32)
