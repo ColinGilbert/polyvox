@@ -33,31 +33,27 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-bool foundIntersection;
-
-bool isPassableByRay(const SimpleVolume<int8_t>::Sampler& sampler)
-{
-	if(sampler.getVoxel() > 0)
-	{
-		foundIntersection = true;
-	}
-	return sampler.getVoxel() <= 0;
-}
-
 // This is the callback functor which is called by the raycast() function for every voxel it touches.
 // It's primary purpose is to tell the raycast whether or not to continue (i.e. it tests whether the
-// ray has hit a solid voxel). Because the instance of this class is passed to the raycast() function by reference we can also use it to encapsulate some state.
+// ray has hit a solid voxel). Because the instance of this class is passed to the raycast() function
+// by reference we can also use it to encapsulate some state. We're testing this by counting the total
+// number of voxels touched.
 class MyFunctor
 {
 public:
+	MyFunctor()
+		:m_uTotalVoxelsTouched(0)
+	{
+	}
+
 	bool operator()(const SimpleVolume<int8_t>::Sampler& sampler)
 	{
-		if(sampler.getVoxel() > 0)
-		{
-			foundIntersection = true;
-		}
+		m_uTotalVoxelsTouched++;
+
 		return sampler.getVoxel() <= 0;
 	}
+
+	uint32_t m_uTotalVoxelsTouched;
 };
 
 void TestRaycast::testExecute()
@@ -84,36 +80,34 @@ void TestRaycast::testExecute()
 		}
 	}
 
-	QTime timer;
-	timer.start();
-
 	//Cast rays from the centre. Roughly 2/3 should escape.
 	Vector3DFloat start (uVolumeSideLength / 2, uVolumeSideLength / 2, uVolumeSideLength / 2);
+	
+	// For demonstration purposes we are using the same function object for all raycasts.
+	// Therefore, the state it maintains (total voxels touched) is accumulated over all raycsts.
+	MyFunctor myFunctor;
+
+	// We could have counted the total number of hits in the same way as the total number of voxels
+	// touched, but for demonstration and testing purposes we are making use of the raycast return value
+	// and counting them seperatly in this variable.
 	int hits = 0;
+
+	// Cast a large number of random rays
 	for(int ct = 0; ct < 1000000; ct++)
 	{
-		/*RaycastResult result;
-		Raycast< SimpleVolume<int8_t> > raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
-		raycast.execute();
-		if(result.foundIntersection)
-		{
-			hits++;
-		}*/
+		MyRaycastResult result = raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, myFunctor);
 
-		foundIntersection = false;
-		MyFunctor myFunctor;
-		raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, myFunctor);
-
-		if(foundIntersection)
+		if(result == MyRaycastResults::Interupted)
 		{
 			hits++;
 		}
 	}	
 
-	std::cout << "Finished in " << timer.elapsed() << "ms" << std::endl;
-
-	//Check the number of hits.
+	// Check the number of hits.
 	QCOMPARE(hits, 687494);
+
+	// Check the total number of voxels touched
+	QCOMPARE(myFunctor.m_uTotalVoxelsTouched, static_cast<uint32_t>(486219343));
 }
 
 QTEST_MAIN(TestRaycast)

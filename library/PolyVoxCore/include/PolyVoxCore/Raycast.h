@@ -121,8 +121,18 @@ namespace PolyVox
 		float m_fMaxDistance;
 	};
 
+	namespace MyRaycastResults
+	{
+		enum MyRaycastResult
+		{
+			Completed,
+			Interupted
+		};
+	}
+	typedef MyRaycastResults::MyRaycastResult MyRaycastResult;
+
 	template<typename VolumeType, typename Callback>
-	void raycast(VolumeType* volData, /*const*/ Vector3DFloat/*&*/ v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
+	MyRaycastResult raycast(VolumeType* volData, /*const*/ Vector3DFloat/*&*/ v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
 	{
 		VolumeType::Sampler sampler(volData);
 
@@ -173,7 +183,7 @@ namespace PolyVox
 			{
 				//m_result.foundIntersection = true;
 				//m_result.intersectionVoxel = Vector3DInt32(i,j,k);
-				return;
+				return MyRaycastResults::Interupted;
 			}
 			//m_result.previousVoxel = Vector3DInt32(i,j,k);
 
@@ -203,6 +213,8 @@ namespace PolyVox
 				if(dk == -1) sampler.moveNegativeZ();
 			}
 		}
+
+		return MyRaycastResults::Completed;
 	}
 }
 

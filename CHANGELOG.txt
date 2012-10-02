@@ -30,3 +30,6 @@ It's been unclassed (makes sense, removes template parameters).
 Switch from std::function to STL approach.
 Note functor is passed by reference rather than by value.
 Remove 0.5 offset?
+Resolved endpoints vs direction confusion
+Prevent short directions
+Prevent infinite loops (by preventing long directions?
