@@ -33,10 +33,32 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+bool foundIntersection;
+
 bool isPassableByRay(const SimpleVolume<int8_t>::Sampler& sampler)
 {
+	if(sampler.getVoxel() > 0)
+	{
+		foundIntersection = true;
+	}
 	return sampler.getVoxel() <= 0;
 }
+
+// This is the callback functor which is called by the raycast() function for every voxel it touches.
+// It's primary purpose is to tell the raycast whether or not to continue (i.e. it tests whether the
+// ray has hit a solid voxel). Because the instance of this class is passed to the raycast() function by reference we can also use it to encapsulate some state.
+class MyFunctor
+{
+public:
+	bool operator()(const SimpleVolume<int8_t>::Sampler& sampler)
+	{
+		if(sampler.getVoxel() > 0)
+		{
+			foundIntersection = true;
+		}
+		return sampler.getVoxel() <= 0;
+	}
+};
 
 void TestRaycast::testExecute()
 {
@@ -62,19 +84,33 @@ void TestRaycast::testExecute()
 		}
 	}
 
+	QTime timer;
+	timer.start();
+
 	//Cast rays from the centre. Roughly 2/3 should escape.
 	Vector3DFloat start (uVolumeSideLength / 2, uVolumeSideLength / 2, uVolumeSideLength / 2);
 	int hits = 0;
 	for(int ct = 0; ct < 1000000; ct++)
 	{
-		RaycastResult result;
+		/*RaycastResult result;
 		Raycast< SimpleVolume<int8_t> > raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, result, isPassableByRay);
 		raycast.execute();
 		if(result.foundIntersection)
 		{
 			hits++;
+		}*/
+
+		foundIntersection = false;
+		MyFunctor myFunctor;
+		raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, myFunctor);
+
+		if(foundIntersection)
+		{
+			hits++;
 		}
-	}
+	}	
+
+	std::cout << "Finished in " << timer.elapsed() << "ms" << std::endl;
 
 	//Check the number of hits.
 	QCOMPARE(hits, 687494);
