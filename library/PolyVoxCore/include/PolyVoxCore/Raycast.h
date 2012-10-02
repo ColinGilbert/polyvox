@@ -132,24 +132,19 @@ namespace PolyVox
 	typedef MyRaycastResults::MyRaycastResult MyRaycastResult;
 
 	template<typename VolumeType, typename Callback>
-	MyRaycastResult raycast(VolumeType* volData, /*const*/ Vector3DFloat/*&*/ v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
+	MyRaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback)
 	{
 		VolumeType::Sampler sampler(volData);
 
 		//The doRaycast function is assuming that it is iterating over the areas defined between
 		//voxels. We actually want to define the areas as being centered on voxels (as this is
-		//what the CubicSurfaceExtractor generates). We add (0.5,0.5,0.5) here to adjust for this.
-		v3dStart = v3dStart + Vector3DFloat(0.5f, 0.5f, 0.5f);
-
-		//Compute the end point
-		Vector3DFloat v3dEnd = v3dStart + v3dDirectionAndLength;
-
-		float x1 = v3dStart.getX();
-		float y1 = v3dStart.getY();
-		float z1 = v3dStart.getZ();
-		float x2 = v3dEnd.getX();
-		float y2 = v3dEnd.getY();
-		float z2 = v3dEnd.getZ();
+		//what the CubicSurfaceExtractor generates). We add 0.5 here to adjust for this.
+		float x1 = v3dStart.getX() + 0.5f;
+		float y1 = v3dStart.getY() + 0.5f;
+		float z1 = v3dStart.getZ() + 0.5f;
+		float x2 = v3dEnd.getX() + 0.5f;
+		float y2 = v3dEnd.getY() + 0.5f;
+		float z2 = v3dEnd.getZ() + 0.5f;
 		
 		int i = (int)floorf(x1);
 		int j = (int)floorf(y1);
@@ -215,6 +210,13 @@ namespace PolyVox
 		}
 
 		return MyRaycastResults::Completed;
+	}
+
+	template<typename VolumeType, typename Callback>
+	MyRaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
+	{
+		Vector3DFloat v3dEnd = v3dStart + v3dDirectionAndLength;
+		return raycastWithEndpoints<VolumeType, Callback>(volData, v3dStart, v3dEnd, callback);
 	}
 }
 

@@ -95,7 +95,7 @@ void TestRaycast::testExecute()
 	// Cast a large number of random rays
 	for(int ct = 0; ct < 1000000; ct++)
 	{
-		MyRaycastResult result = raycast(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, myFunctor);
+		MyRaycastResult result = raycastWithDirection(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, myFunctor);
 
 		if(result == MyRaycastResults::Interupted)
 		{
