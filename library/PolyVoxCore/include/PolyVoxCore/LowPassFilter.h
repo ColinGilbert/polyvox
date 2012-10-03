@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< typename SrcVolumeType, typename DstVolumeType>
+	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
 	class LowPassFilter
 	{
 	public:
