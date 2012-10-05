@@ -79,8 +79,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/RawVolumeSampler.inl
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
-	include/PolyVoxCore/RaycastWithCallback.h
-	include/PolyVoxCore/RaycastWithCallback.inl
 	include/PolyVoxCore/Region.h
 	include/PolyVoxCore/SimpleInterface.h
 	include/PolyVoxCore/SimpleVolume.h
