@@ -30,10 +30,7 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-bool isVoxelTransparent(uint8_t voxel)
-{
-	return voxel == 0;
-}
+
 
 void TestAmbientOcclusionGenerator::testExecute()
 {
@@ -62,7 +59,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	Array<3, uint8_t> ambientOcclusionResult(ArraySizes(g_uArraySideLength)(g_uArraySideLength)(g_uArraySideLength));
 
 	// Calculate the ambient occlusion values
-	calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
+	calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255/*, isVoxelTransparent*/);
 	
 	//Check the results by sampling along a line though the centre of the volume. Because
 	//of the two walls we added, samples in the middle are darker than those at the edge.
