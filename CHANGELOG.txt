@@ -17,3 +17,20 @@ Some algothms assume that basic mathematical operations can be applied to voxel 
 Changes to build system
 -----------------------
 In order to make the build system easier to use, a number of CMake variables were changed to be more consistent. See :doc:`install` for details on the new variable naming.
+
+Changes to CubicSurfaceExtractor
+--------------------------------
+The behaviour of the CubicSurfaceExtractor has been changed such that it no longer handles some edge cases. Because each generated quad lies between two voxels it can be unclear which region should 'own' a quad when the two voxels are from different regions. The previous version of the CubicSurfaceExtractor would attempt to handle this automatically, but as a result it was possible to get two quads existing at the same position in space. This can cause problems with transparency and with physics, as well as making it harder to decide which regions need to be updated when a voxel is changed.
+
+The new system simplifies the behaviour of this surface extractor but does require a bit of care on the part of the user. You should be clear on the rules controlling when quads are generated and to which regions they will belong. To aid with this we have significantly improved the API documentation for the CubicSurfaceExtractor so be sure to have a look.
+
+Changes to Raycast
+------------------
+It's been unclassed (makes sense, removes template parameters).
+Switch from std::function to STL approach.
+Note functor is passed by reference rather than by value.
+Resolved endpoints vs direction confusion
+
+Changes to AmbientOcclusionCalculator
+-------------------------------------
+It's been unclassed and is now called calculateAmbientOcclusion.
