@@ -53,7 +53,7 @@ namespace PolyVox
 	//
 	//	This error was reported by Joey Hammer (PixelActive).
 	template<typename VolumeType, typename Callback>
-	MyRaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback)
+	RaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback)
 	{
 		VolumeType::Sampler sampler(volData);
 
@@ -96,7 +96,7 @@ namespace PolyVox
 		{
 			if(!callback(sampler))
 			{
-				return MyRaycastResults::Interupted;
+				return RaycastResults::Interupted;
 			}
 
 			if(tx <= ty && tx <= tz)
@@ -126,11 +126,11 @@ namespace PolyVox
 			}
 		}
 
-		return MyRaycastResults::Completed;
+		return RaycastResults::Completed;
 	}
 
 	template<typename VolumeType, typename Callback>
-	MyRaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
+	RaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
 	{
 		Vector3DFloat v3dEnd = v3dStart + v3dDirectionAndLength;
 		return raycastWithEndpoints<VolumeType, Callback>(volData, v3dStart, v3dEnd, callback);

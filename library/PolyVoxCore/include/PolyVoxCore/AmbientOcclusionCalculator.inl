@@ -90,9 +90,9 @@ namespace PolyVox
 						v3dRayDirection *= fRayLength;
 						
 						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
-						MyRaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
+						RaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 
-						if(result == MyRaycastResults::Completed)
+						if(result == RaycastResults::Completed)
 						{
 							++uVisibleDirections;
 						}

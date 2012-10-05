@@ -28,15 +28,15 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	namespace MyRaycastResults
+	namespace RaycastResults
 	{
-		enum MyRaycastResult
+		enum RaycastResult
 		{
 			Completed,
 			Interupted
 		};
 	}
-	typedef MyRaycastResults::MyRaycastResult MyRaycastResult;
+	typedef RaycastResults::RaycastResult RaycastResult;
 
 	/// OUT OF DATE SINCE UNCLASSING
 	////////////////////////////////////////////////////////////////////////////////
@@ -87,10 +87,10 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 
 	template<typename VolumeType, typename Callback>
-	MyRaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback);
+	RaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback);
 
 	template<typename VolumeType, typename Callback>
-	MyRaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback);
+	RaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback);
 }
 
 #include "PolyVoxCore/Raycast.inl"

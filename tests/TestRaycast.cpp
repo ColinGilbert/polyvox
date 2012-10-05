@@ -38,10 +38,10 @@ using namespace PolyVox;
 // ray has hit a solid voxel). Because the instance of this class is passed to the raycast() function
 // by reference we can also use it to encapsulate some state. We're testing this by counting the total
 // number of voxels touched.
-class MyFunctor
+class RaycastTestFunctor
 {
 public:
-	MyFunctor()
+	RaycastTestFunctor()
 		:m_uTotalVoxelsTouched(0)
 	{
 	}
@@ -85,7 +85,7 @@ void TestRaycast::testExecute()
 	
 	// For demonstration purposes we are using the same function object for all raycasts.
 	// Therefore, the state it maintains (total voxels touched) is accumulated over all raycsts.
-	MyFunctor myFunctor;
+	RaycastTestFunctor raycastTestFunctor;
 
 	// We could have counted the total number of hits in the same way as the total number of voxels
 	// touched, but for demonstration and testing purposes we are making use of the raycast return value
@@ -95,9 +95,9 @@ void TestRaycast::testExecute()
 	// Cast a large number of random rays
 	for(int ct = 0; ct < 1000000; ct++)
 	{
-		MyRaycastResult result = raycastWithDirection(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, myFunctor);
+		RaycastResult result = raycastWithDirection(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, raycastTestFunctor);
 
-		if(result == MyRaycastResults::Interupted)
+		if(result == RaycastResults::Interupted)
 		{
 			hits++;
 		}
@@ -107,7 +107,7 @@ void TestRaycast::testExecute()
 	QCOMPARE(hits, 687494);
 
 	// Check the total number of voxels touched
-	QCOMPARE(myFunctor.m_uTotalVoxelsTouched, static_cast<uint32_t>(486219343));
+	QCOMPARE(raycastTestFunctor.m_uTotalVoxelsTouched, static_cast<uint32_t>(486219343));
 }
 
 QTEST_MAIN(TestRaycast)
