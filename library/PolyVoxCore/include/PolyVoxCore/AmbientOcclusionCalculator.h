@@ -68,40 +68,31 @@ namespace PolyVox
 		polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> m_funcIsTransparent;
 	};
 
-	class IsVoxelTransparent
-	{
-	public:
-		bool operator()(uint8_t voxel)
-		{
-			return voxel == 0;
-		}
-	};
-
-	template<typename IsTransparentCallback>
+	template<typename IsVoxelTransparentCallback>
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
 	public:
-		AmbientOcclusionCalculatorRaycastCallback()
+		AmbientOcclusionCalculatorRaycastCallback(IsVoxelTransparentCallback isVoxelTransparentCallback)
 		{
+			mIsVoxelTransparentCallback = isVoxelTransparentCallback;
 		}
 
 		bool operator()(const SimpleVolume<uint8_t>::Sampler& sampler)
 		{
-			//return sampler.getVoxel() == 0;
-			//return IsTransparentCallback(sampler.getVoxel());
-
 			uint8_t sample = sampler.getVoxel();
-
+			
 			bool direct = sample == 0;
-			IsTransparentCallback funcToCall;
-			bool func = funcToCall(sample);
+			bool func = mIsVoxelTransparentCallback(sample);
 			assert(direct == func);
+
 			return direct;
 		}
+
+		IsVoxelTransparentCallback mIsVoxelTransparentCallback;
 	};
 
-	template<typename VolumeType/*, typename IsTransparentCallback*/>
-	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement/*, IsTransparentCallback funcIsTransparent*/)
+	template<typename VolumeType, typename IsVoxelTransparentCallback>
+	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
 		Region m_region = region;
 		typename VolumeType::Sampler m_sampVolume(volInput);
@@ -186,7 +177,11 @@ namespace PolyVox
 							++uVisibleDirections;
 						}*/
 
-						MyRaycastResult result = raycastWithDirection(m_volInput, v3dRayStart, v3dRayDirection, AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparent>());
+						//IsVoxelTransparent isVoxelTransparent;
+
+						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
+
+						MyRaycastResult result = raycastWithDirection(m_volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 						if(result == MyRaycastResults::Completed)
 						{
 							++uVisibleDirections;
