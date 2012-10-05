@@ -41,33 +41,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<typename VolumeType>
-	class AmbientOcclusionCalculator
-	{
-	public:
-		AmbientOcclusionCalculator(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> funcIsTransparent);
-		~AmbientOcclusionCalculator();
-
-		void execute(void);
-
-	private:
-		bool raycastCallback(const typename VolumeType::Sampler& sampler);
-
-		Region m_region;
-		typename VolumeType::Sampler m_sampVolume;
-		VolumeType* m_volInput;
-		Array<3, uint8_t>* m_arrayResult;
-		float m_fRayLength;
-
-		uint8_t m_uNoOfSamplesPerOutputElement;
-
-		uint16_t mRandomUnitVectorIndex;
-		uint16_t mRandomVectorIndex;
-		uint16_t mIndexIncreament;
-
-		polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> m_funcIsTransparent;
-	};
-
 	template<typename IsVoxelTransparentCallback>
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
@@ -94,37 +67,29 @@ namespace PolyVox
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
-		Region m_region = region;
 		typename VolumeType::Sampler m_sampVolume(volInput);
-		VolumeType* m_volInput = volInput;
-		Array<3, uint8_t>* m_arrayResult = arrayResult;
-		float m_fRayLength = fRayLength;
 
-		uint8_t m_uNoOfSamplesPerOutputElement = uNoOfSamplesPerOutputElement;
-
-		uint16_t mRandomUnitVectorIndex = 0;
-		uint16_t mRandomVectorIndex = 0;
-		uint16_t mIndexIncreament;
-
-		//polyvox_function<bool(const typename VolumeType::VoxelType& voxel)> m_funcIsTransparent = funcIsTransparent;
+		uint16_t uRandomUnitVectorIndex = 0;
+		uint16_t uRandomVectorIndex = 0;
+		uint16_t uIndexIncreament;
 
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
-		assert(m_volInput->getWidth() % arrayResult->getDimension(0) == 0);
-		assert(m_volInput->getHeight() % arrayResult->getDimension(1) == 0);
-		assert(m_volInput->getDepth() % arrayResult->getDimension(2) == 0);
+		assert(volInput->getWidth() % arrayResult->getDimension(0) == 0);
+		assert(volInput->getHeight() % arrayResult->getDimension(1) == 0);
+		assert(volInput->getDepth() % arrayResult->getDimension(2) == 0);
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
 		//sure they are different for different regions which helps reduce tiling patterns in the results.
-		mRandomUnitVectorIndex += m_region.getLowerCorner().getX() + m_region.getLowerCorner().getY() + m_region.getLowerCorner().getZ();
-		mRandomVectorIndex += m_region.getLowerCorner().getX() + m_region.getLowerCorner().getY() + m_region.getLowerCorner().getZ();
+		uRandomUnitVectorIndex += region.getLowerCorner().getX() + region.getLowerCorner().getY() + region.getLowerCorner().getZ();
+		uRandomVectorIndex += region.getLowerCorner().getX() + region.getLowerCorner().getY() + region.getLowerCorner().getZ();
 
 		//This value helps us jump around in the array a bit more, so the
 		//nth 'random' value isn't always followed by the n+1th 'random' value.
-		mIndexIncreament = 1;
+		uIndexIncreament = 1;
 
-		const int iRatioX = m_volInput->getWidth()  / m_arrayResult->getDimension(0);
-		const int iRatioY = m_volInput->getHeight() / m_arrayResult->getDimension(1);
-		const int iRatioZ = m_volInput->getDepth()  / m_arrayResult->getDimension(2);
+		const int iRatioX = volInput->getWidth()  / arrayResult->getDimension(0);
+		const int iRatioY = volInput->getHeight() / arrayResult->getDimension(1);
+		const int iRatioZ = volInput->getDepth()  / arrayResult->getDimension(2);
 
 		const float fRatioX = iRatioX;
 		const float fRatioY = iRatioY;
@@ -138,15 +103,12 @@ namespace PolyVox
 
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
 
-		//RaycastResult raycastResult;
-		//Raycast<VolumeType> raycast(m_volInput, Vector3DFloat(0.0f,0.0f,0.0f), Vector3DFloat(1.0f,1.0f,1.0f), raycastResult, polyvox_bind(&PolyVox::AmbientOcclusionCalculator<VolumeType>::raycastCallback, this, std::placeholders::_1));
-
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
-		for(uint16_t z = m_region.getLowerCorner().getZ(); z <= m_region.getUpperCorner().getZ(); z += iRatioZ)
+		for(uint16_t z = region.getLowerCorner().getZ(); z <= region.getUpperCorner().getZ(); z += iRatioZ)
 		{
-			for(uint16_t y = m_region.getLowerCorner().getY(); y <= m_region.getUpperCorner().getY(); y += iRatioY)
+			for(uint16_t y = region.getLowerCorner().getY(); y <= region.getUpperCorner().getY(); y += iRatioY)
 			{
-				for(uint16_t x = m_region.getLowerCorner().getX(); x <= m_region.getUpperCorner().getX(); x += iRatioX)
+				for(uint16_t x = region.getLowerCorner().getX(); x <= region.getUpperCorner().getX(); x += iRatioX)
 				{
 					//Compute a start position corresponding to 
 					//the centre of the cell in the output array.
@@ -157,31 +119,20 @@ namespace PolyVox
 					//Keep track of how many rays did not hit anything
 					uint8_t uVisibleDirections = 0;
 
-					for(int ct = 0; ct < m_uNoOfSamplesPerOutputElement; ct++)
+					for(int ct = 0; ct < uNoOfSamplesPerOutputElement; ct++)
 					{						
 						//We take a random vector with components going from -1 to 1 and scale it to go from -halfRatio to +halfRatio.
 						//This jitter value moves our sample point from the center of the array cell to somewhere else in the array cell
-						Vector3DFloat v3dJitter = randomVectors[(mRandomVectorIndex += (++mIndexIncreament)) % 1019]; //Prime number helps avoid repetition on sucessive loops.
+						Vector3DFloat v3dJitter = randomVectors[(uRandomVectorIndex += (++uIndexIncreament)) % 1019]; //Prime number helps avoid repetition on sucessive loops.
 						v3dJitter *= v3dHalfRatio;
 						const Vector3DFloat v3dRayStart = v3dStart + v3dJitter;
 
-						Vector3DFloat v3dRayDirection = randomUnitVectors[(mRandomUnitVectorIndex += (++mIndexIncreament)) % 1021]; //Differenct prime number.
-						v3dRayDirection *= m_fRayLength;
+						Vector3DFloat v3dRayDirection = randomUnitVectors[(uRandomUnitVectorIndex += (++uIndexIncreament)) % 1021]; //Differenct prime number.
+						v3dRayDirection *= fRayLength;
 						
-						/*raycast.setStart(v3dRayStart);
-						raycast.setDirection(v3dRayDirection);
-						raycast.execute();
-
-						if(raycastResult.foundIntersection == false)
-						{
-							++uVisibleDirections;
-						}*/
-
-						//IsVoxelTransparent isVoxelTransparent;
-
 						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
+						MyRaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 
-						MyRaycastResult result = raycastWithDirection(m_volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 						if(result == MyRaycastResults::Completed)
 						{
 							++uVisibleDirections;
@@ -189,7 +140,7 @@ namespace PolyVox
 					}
 
 					float fVisibility;
-					if(m_uNoOfSamplesPerOutputElement == 0)
+					if(uNoOfSamplesPerOutputElement == 0)
 					{
 						//The user might request zero samples (I've done this in the past while debugging - I don't want to
 						//wait for ambient occlusion but I do want as valid result for rendering). Avoid the divide by zero.
@@ -197,11 +148,11 @@ namespace PolyVox
 					}
 					else
 					{
-						fVisibility = static_cast<float>(uVisibleDirections) / static_cast<float>(m_uNoOfSamplesPerOutputElement);
+						fVisibility = static_cast<float>(uVisibleDirections) / static_cast<float>(uNoOfSamplesPerOutputElement);
 						assert((fVisibility >= 0.0f) && (fVisibility <= 1.0f));
 					}
 
-					(*m_arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = static_cast<uint8_t>(255.0f * fVisibility);
+					(*arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = static_cast<uint8_t>(255.0f * fVisibility);
 				}
 			}
 		}
