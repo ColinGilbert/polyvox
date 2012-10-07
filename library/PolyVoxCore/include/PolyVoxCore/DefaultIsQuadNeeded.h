@@ -24,17 +24,19 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_DefaultIsQuadNeeded_H__
 #define __PolyVox_DefaultIsQuadNeeded_H__
 
+#include <cstdint>
+
 namespace PolyVox
 {
 	template<typename VoxelType>
 	class DefaultIsQuadNeeded
 	{
 	public:
-		bool operator()(VoxelType back, VoxelType front, float& materialToUse)
+		bool operator()(VoxelType back, VoxelType front, uint32_t& materialToUse)
 		{
 			if((back > 0) && (front == 0))
 			{
-				materialToUse = static_cast<float>(back);
+				materialToUse = static_cast<uint32_t>(back);
 				return true;
 			}
 			else

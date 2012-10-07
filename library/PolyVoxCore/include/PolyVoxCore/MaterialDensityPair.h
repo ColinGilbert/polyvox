@@ -90,11 +90,11 @@ namespace PolyVox
 	class DefaultIsQuadNeeded< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
 	{
 	public:
-		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, float& materialToUse)
+		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, uint32_t& materialToUse)
 		{
 			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
-				materialToUse = static_cast<float>(back.getMaterial());
+				materialToUse = static_cast<uint32_t>(back.getMaterial());
 				return true;
 			}
 			else

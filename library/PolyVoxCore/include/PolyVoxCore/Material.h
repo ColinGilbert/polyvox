@@ -72,11 +72,11 @@ namespace PolyVox
 	class DefaultIsQuadNeeded< Material<Type> >
 	{
 	public:
-		bool operator()(Material<Type> back, Material<Type> front, float& materialToUse)
+		bool operator()(Material<Type> back, Material<Type> front, uint32_t& materialToUse)
 		{
 			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
-				materialToUse = static_cast<float>(back.getMaterial());
+				materialToUse = static_cast<uint32_t>(back.getMaterial());
 				return true;
 			}
 			else

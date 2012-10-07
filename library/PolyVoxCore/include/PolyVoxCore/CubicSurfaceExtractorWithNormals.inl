@@ -49,7 +49,7 @@ namespace PolyVox
 					float regY = static_cast<float>(y - m_regSizeInVoxels.getLowerCorner().getY());
 					float regZ = static_cast<float>(z - m_regSizeInVoxels.getLowerCorner().getZ());
 
-					float material = 0.0f;
+					uint32_t material = 0.0f;
 
 					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x+1,y,z), material))
 					{
