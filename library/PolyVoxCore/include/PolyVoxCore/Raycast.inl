@@ -55,7 +55,7 @@ namespace PolyVox
 	template<typename VolumeType, typename Callback>
 	RaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback)
 	{
-		VolumeType::Sampler sampler(volData);
+		typename VolumeType::Sampler sampler(volData);
 
 		//The doRaycast function is assuming that it is iterating over the areas defined between
 		//voxels. We actually want to define the areas as being centered on voxels (as this is

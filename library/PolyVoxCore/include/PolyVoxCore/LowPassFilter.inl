@@ -106,7 +106,7 @@ namespace PolyVox
 					tSrcVoxel /= 27;
 
 					//tSrcVoxel.setDensity(uDensity);
-					m_pVolDst->setVoxelAt(iSrcX, iSrcY, iSrcZ, static_cast<DstVolumeType::VoxelType>(tSrcVoxel));
+					m_pVolDst->setVoxelAt(iSrcX, iSrcY, iSrcZ, static_cast<typename DstVolumeType::VoxelType>(tSrcVoxel));
 				}
 			}
 		}
@@ -138,9 +138,9 @@ namespace PolyVox
 			}
 		}
 
-		RawVolume<AccumulationType>::Sampler satVolumeIter(&satVolume);
+		typename RawVolume<AccumulationType>::Sampler satVolumeIter(&satVolume);
 
-		IteratorController<RawVolume<AccumulationType>::Sampler> satIterCont;
+		IteratorController<typename RawVolume<AccumulationType>::Sampler> satIterCont;
 		satIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
 		satIterCont.m_Iter = &satVolumeIter;
 		satIterCont.reset();
@@ -239,7 +239,7 @@ namespace PolyVox
 					uint32_t sideLength = border * 2 + 1;
 					AccumulationType average = sum / (sideLength*sideLength*sideLength);
 
-					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, static_cast<DstVolumeType::VoxelType>(average));
+					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, static_cast<typename DstVolumeType::VoxelType>(average));
 				}
 			}
 		}
