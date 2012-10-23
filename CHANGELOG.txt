@@ -26,11 +26,12 @@ The new system simplifies the behaviour of this surface extractor but does requi
 
 Changes to Raycast
 ------------------
-It's been unclassed (makes sense, removes template parameters).
-Switch from std::function to STL approach.
-Note functor is passed by reference rather than by value.
-Resolved endpoints vs direction confusion
+The raaycasting functionality was previously in a class (Raycast) but now it is provided by standalone functions. This is basically because there is no need for it to be a class, and it complicated usage. The new functions are called 'raycastWithDirection' and 'raycastWithEndpoints' which helps remove the previous ambiguity regarding the meaning of the two vectors which are passed as parameters.
+
+The callback functionalilty (called for each processed voxel to determine whether to continue and also perform additional processing) is no longer implemented as an std::function. Instead the standard STL approach is used where a function or function object is used a a template parameter. This is faster than the std::function solution and should also be easier to integrate with other languages.
+
+Usage of the new raycasting is demonstrated by a unit test.
 
 Changes to AmbientOcclusionCalculator
 -------------------------------------
-It's been unclassed and is now called calculateAmbientOcclusion.
+The AmbientOcclusionCalculator has also been unclassed and is now called calculateAmbientOcclusion. The unit test has been updated to demsonstrate the new usage.
