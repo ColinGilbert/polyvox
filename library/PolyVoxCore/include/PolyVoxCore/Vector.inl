@@ -602,15 +602,15 @@ namespace PolyVox
     template <uint32_t Size, typename Type>
         inline void Vector<Size, Type>::normalise(void) throw()
     {
-        double length = this->length();
+        Type tLength = this->length();
 		//FIXME - throw div by zero exception?
-		if(length < 0.0001f)
+		if(tLength < 0.0001f)
 		{
 			return;
 		}
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] /= static_cast<Type>(length);
+			m_tElements[ct] /= tLength;
 		}
     }
 }//namespace PolyVox

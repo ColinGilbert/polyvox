@@ -50,7 +50,7 @@ public:
 		return voxel;
 	}
 
-	float convertToMaterial(float voxel)
+	float convertToMaterial(float /*voxel*/)
 	{
 		return 1;
 	}
@@ -83,7 +83,7 @@ void writeDensityValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 }
 
 template<typename VoxelType>
-void writeMaterialValueToVoxel(int valueToWrite, VoxelType& voxel)
+void writeMaterialValueToVoxel(int /*valueToWrite*/, VoxelType& /*voxel*/)
 {
 	//Most types don't have a material
 	return;
