@@ -141,8 +141,8 @@ namespace PolyVox
 			uint32_t v2 = m_vecTriangles[ct].v2;
 
 			bool allMatch = 
-				(m_pOutputMesh->m_vecVertices[v0].material == m_pOutputMesh->m_vecVertices[v1].material) && 
-				(m_pOutputMesh->m_vecVertices[v1].material == m_pOutputMesh->m_vecVertices[v2].material);
+				(m_pOutputMesh->m_vecVertices[v0].material - m_pOutputMesh->m_vecVertices[v1].material < 0.001f) && 
+				(m_pOutputMesh->m_vecVertices[v1].material - m_pOutputMesh->m_vecVertices[v2].material < 0.001f);
 
 			if(!allMatch)
 			{
