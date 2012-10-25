@@ -58,10 +58,6 @@ namespace PolyVox
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 
-		uint32_t uRegionWidth  = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
-		uint32_t uRegionHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
-		uint32_t uRegionDepth  = m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 1;
-
 		m_vecQuads[NegativeX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
 		m_vecQuads[PositiveX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
 
@@ -217,7 +213,7 @@ namespace PolyVox
 			}
 
 			//If we have an existing vertex and the material matches then we can return it.
-			if(rEntry.uMaterial == uMaterialIn)
+			if(rEntry.uMaterial == static_cast<int32_t>(uMaterialIn))
 			{
 				return rEntry.iIndex;
 			}
