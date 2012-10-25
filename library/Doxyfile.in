@@ -38,7 +38,7 @@ PROJECT_NUMBER         = ${POLYVOX_VERSION}
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          =
+PROJECT_BRIEF          = "Open source voxel management library"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
@@ -1072,7 +1072,7 @@ DOCSET_BUNDLE_ID       = com.volumesoffun.polyvox
 # identify the documentation publisher. This should be a reverse domain-name
 # style string, e.g. com.mycompany.MyDocSet.documentation.
 
-DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
+DOCSET_PUBLISHER_ID    = com.volumesoffun.polyvox
 
 # The GENERATE_PUBLISHER_NAME tag identifies the documentation publisher.
 
