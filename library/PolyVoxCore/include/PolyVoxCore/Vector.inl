@@ -516,7 +516,7 @@ namespace PolyVox
     }
 
 	/**
-	NOTE: This function does not make much sense on integer Vectors.
+	\note This function does not make much sense on integer Vectors.
     \return Length of the Vector.
     */
     template <uint32_t Size, typename Type>
@@ -543,7 +543,7 @@ namespace PolyVox
     This function is commutative, such that a.angleTo(b) == b.angleTo(a). The angle
     returned is in radians and varies between 0 and 3.14(pi). It is always positive.
 
-	NOTE: This function does not make much sense on integer Vectors.
+	\note This function does not make much sense on integer Vectors.
 
     \param Vector3D The Vector to find the angle to.
     \return The angle between them in radians.
@@ -597,7 +597,7 @@ namespace PolyVox
     /**
     Divides the i, j, and k components by the length to give a Vector of length 1.0.
 
-	NOTE: This function does not make much sense on integer Vectors.
+	\note This function does not make much sense on integer Vectors.
     */
     template <uint32_t Size, typename Type>
         inline void Vector<Size, Type>::normalise(void) throw()

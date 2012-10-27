@@ -92,10 +92,18 @@ namespace PolyVox
 			return *this;
 		}
 
+		/// \return The current density of the voxel
 		Type getDensity() const throw() { return m_uDensity; }
+		/**
+		 * Set the density of the voxel
+		 * 
+		 * \param uDensity The density to set to
+		 */
 		void setDensity(Type uDensity) { m_uDensity = uDensity; }
 
+		/// \return The maximum allowed density of the voxel
 		static Type getMaxDensity() throw() { return (std::numeric_limits<Type>::max)(); } 
+		/// \return The minimum allowed density of the voxel
 		static Type getMinDensity() throw() { return (std::numeric_limits<Type>::min)(); }
 
 	private:

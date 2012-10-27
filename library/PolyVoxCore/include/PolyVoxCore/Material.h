@@ -58,7 +58,13 @@ namespace PolyVox
 			return !(*this == rhs);
 		}
 
+		/// \return The current material value of the voxel
 		Type getMaterial() const throw() { return m_uMaterial; }
+		/**
+		 * Set the material value of the voxel
+		 * 
+		 * \param uDensity The material to set to
+		 */
 		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 
 	private:

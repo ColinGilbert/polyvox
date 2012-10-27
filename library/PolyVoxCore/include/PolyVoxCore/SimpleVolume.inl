@@ -50,7 +50,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The border value is returned whenever an atempt is made to read a voxel which
+	/// The border value is returned whenever an attempt is made to read a voxel which
 	/// is outside the extents of the volume.
 	/// \return The value used for voxels outside of the volume
 	////////////////////////////////////////////////////////////////////////////////
@@ -230,7 +230,9 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Note: This function needs reviewing for accuracy...
+	/// \todo This function needs reviewing for accuracy...
+	///
+	/// \return The number of bytes used
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	uint32_t SimpleVolume<VoxelType>::calculateSizeInBytes(void)

@@ -30,10 +30,13 @@ namespace PolyVox
 {
 	namespace RaycastResults
 	{
+		/**
+		 * The results of a raycast
+		 */
 		enum RaycastResult
 		{
-			Completed,
-			Interupted
+			Completed, ///< If the ray passed through the volume without being interupted
+			Interupted ///< If the ray was interupted while travelling
 		};
 	}
 	typedef RaycastResults::RaycastResult RaycastResult;

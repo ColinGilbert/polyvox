@@ -39,6 +39,12 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/**
+	 * \file
+	 * 
+	 * Ambient occlusion
+	 */
+	
 	template<typename IsVoxelTransparentCallback>
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
