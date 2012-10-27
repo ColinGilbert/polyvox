@@ -39,10 +39,6 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	SET_PROPERTY(TARGET ${executablename} PROPERTY FOLDER "Tests")
 ENDMACRO(CREATE_TEST)
 
-IF(NOT QT_QTTEST_FOUND)
-	MESSAGE(STATUS "QtTest not found. Either install it or disable tests by setting ENABLE_TESTS to OFF")
-ENDIF()
-
 INCLUDE_DIRECTORIES(${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
 REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 

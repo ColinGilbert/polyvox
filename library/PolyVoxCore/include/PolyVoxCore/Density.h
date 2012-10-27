@@ -159,7 +159,7 @@ namespace PolyVox
 			return voxel.getDensity();
 		}
 
-		MaterialType convertToMaterial(Density<Type> voxel)
+		MaterialType convertToMaterial(Density<Type> /*voxel*/)
 		{
 			return 1;
 		}

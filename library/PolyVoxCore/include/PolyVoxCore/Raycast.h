@@ -40,6 +40,8 @@ namespace PolyVox
 
 	/// OUT OF DATE SINCE UNCLASSING
 	////////////////////////////////////////////////////////////////////////////////
+	/// \file Raycast.h
+	///
 	/// The principle behind raycasting is to fire a 'ray' through the volume and determine
 	/// what (if anything) that ray hits. This simple test can be used for the purpose of
 	/// picking, visibility checks, lighting calculations, or numerous other applications.
