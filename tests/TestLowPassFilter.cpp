@@ -61,7 +61,9 @@ void TestLowPassFilter::testExecute()
 	LowPassFilter< RawVolume<Density8>, RawVolume<Density8>, Density16 > lowPassfilter(&volData, reg, &resultVolume, reg, 5);
 
 	//Test the normal implementation
-	lowPassfilter.execute();
+	QBENCHMARK {
+		lowPassfilter.execute();
+	}
 	QCOMPARE(resultVolume.getVoxelAt(0,0,0), Density8(4));
 	QCOMPARE(resultVolume.getVoxelAt(1,1,1), Density8(21));
 	QCOMPARE(resultVolume.getVoxelAt(2,2,2), Density8(10));

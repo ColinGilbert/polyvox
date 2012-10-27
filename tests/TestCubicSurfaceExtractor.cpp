@@ -154,7 +154,9 @@ void TestCubicSurfaceExtractor::testExecute()
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);*/
 
-	testForType<MaterialDensityPair88>(mesh);
+	QBENCHMARK {
+		testForType<MaterialDensityPair88>(mesh);
+	}
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);

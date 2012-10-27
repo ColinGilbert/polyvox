@@ -154,7 +154,9 @@ void TestAStarPathfinder::testExecute()
 	AStarPathfinder< RawVolume<uint8_t> > pathfinder(params);
 
 	//Execute the pathfinder.
-	pathfinder.execute();
+	QBENCHMARK {
+		pathfinder.execute();
+	}
 
 	//Make sure the right number of steps were created.
 	QCOMPARE(result.size(), static_cast<size_t>(24));

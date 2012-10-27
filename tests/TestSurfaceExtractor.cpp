@@ -160,7 +160,9 @@ void TestSurfaceExtractor::testExecute()
 	SurfaceMesh<PositionMaterialNormal> mesh;
 
 	//Run the test for various voxel types.
-	testForType<int8_t>(mesh);
+	QBENCHMARK {
+		testForType<int8_t>(mesh);
+	}
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
