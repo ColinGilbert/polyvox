@@ -42,13 +42,17 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// THESE FUNCTIONS ARE DEPRECATED. USE VERSIONED 'loadVolume' AND 'saveVolume' INSTEAD.
 	////////////////////////////////////////////////////////////////////////////////
+	/// \deprecated Use versioned loadVolume instead
 	template< typename VolumeType >
 	polyvox_shared_ptr< VolumeType > loadVolumeRaw(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	/// \deprecated Use versioned saveVolume instead
 	template< typename VolumeType >
 	void saveVolumeRaw(std::ostream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
 
+	/// \deprecated Use versioned loadVolume instead
 	template< typename VolumeType >
 	polyvox_shared_ptr< VolumeType > loadVolumeRle(std::istream& stream, VolumeSerializationProgressListener* progressListener = 0);
+	/// \deprecated Use versioned saveVolume instead
 	template< typename VolumeType >
 	void saveVolumeRle(std::ostream& stream, VolumeType& volume, VolumeSerializationProgressListener* progressListener = 0);
 

@@ -168,6 +168,7 @@ namespace PolyVox
 		m_v3dUpperCorner.setZ((std::min)(m_v3dUpperCorner.getZ(), other.m_v3dUpperCorner.getZ()));
 	}
 
+	/// \deprecated Use getLowerCorner and getUpperCorner instead
 	int32_t Region::depth(void) const
 	{
 		//This function is deprecated and wrong.
@@ -175,6 +176,7 @@ namespace PolyVox
 		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ();
 	}
 
+	/// \deprecated Use getLowerCorner and getUpperCorner instead
 	int32_t Region::height(void) const
 	{
 		//This function is deprecated and wrong.
@@ -198,6 +200,7 @@ namespace PolyVox
 		m_v3dUpperCorner += amount;
 	}
 
+	/// \deprecated Use getLowerCorner and getUpperCorner instead
 	Vector3DInt32 Region::dimensions(void)
 	{
 		//This function is deprecated and wrong.
@@ -205,6 +208,7 @@ namespace PolyVox
 		return m_v3dUpperCorner - m_v3dLowerCorner;
 	}
 
+	/// \deprecated Use getLowerCorner and getUpperCorner instead
 	int32_t Region::width(void) const
 	{
 		//This function is deprecated and wrong.
