@@ -25,6 +25,12 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/**
+	 * \param pVolSrc
+	 * \param regSrc
+	 * \param[out] pVolDst
+	 * \param regDst
+	 */
 	template< typename SrcVolumeType, typename DstVolumeType>
 	VolumeResampler<SrcVolumeType, DstVolumeType>::VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst)
 		:m_pVolSrc(pVolSrc)
