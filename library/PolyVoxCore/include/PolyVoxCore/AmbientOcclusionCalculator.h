@@ -49,9 +49,8 @@ namespace PolyVox
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
 	public:
-		AmbientOcclusionCalculatorRaycastCallback(IsVoxelTransparentCallback isVoxelTransparentCallback)
+		AmbientOcclusionCalculatorRaycastCallback(IsVoxelTransparentCallback isVoxelTransparentCallback) : mIsVoxelTransparentCallback(isVoxelTransparentCallback)
 		{
-			mIsVoxelTransparentCallback = isVoxelTransparentCallback;
 		}
 
 		bool operator()(const SimpleVolume<uint8_t>::Sampler& sampler)
@@ -65,13 +64,19 @@ namespace PolyVox
 			return direct;
 		}
 
-		IsVoxelTransparentCallback mIsVoxelTransparentCallback;
+		const IsVoxelTransparentCallback& mIsVoxelTransparentCallback;
 	};
 
 	// NOTE: The callback needs to be a functor not a function. I haven't been
 	// able to work the required template magic to get functions working as well.
+	// 
+	// Matt: If you make the function take a "IsVoxelTransparentCallback&&" then
+	// it will forward it on. Works for functors, functions and lambdas.
+	// This will be 'perfect forwarding' using 'universal references'
+	// This will require C++11 rvalue references which is why I haven't made the
+	// change yet.
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
-	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback);
+	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, const IsVoxelTransparentCallback& isVoxelTransparentCallback);
 }
 
 #include "PolyVoxCore/AmbientOcclusionCalculator.inl"

@@ -33,11 +33,16 @@ using namespace PolyVox;
 class IsVoxelTransparent
 {
 public:
-	bool operator()(uint8_t voxel)
+	bool operator()(uint8_t voxel) const
 	{
 		return voxel == 0;
 	}
 };
+
+bool isVoxelTransparentFunction(uint8_t voxel)
+{
+	return voxel == 0;
+}
 
 void TestAmbientOcclusionGenerator::testExecute()
 {
@@ -78,6 +83,12 @@ void TestAmbientOcclusionGenerator::testExecute()
 	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][16][16]), 103);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][24][16]), 123);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult[16][31][16]), 173);
+	
+	//Just run a quick test to make sure that it compiles when taking a function pointer
+	calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 8, &isVoxelTransparentFunction);
+	
+	//Also test it using a lambda
+	//calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 8, [](uint8_t voxel){return voxel == 0;});
 }
 
 QTEST_MAIN(TestAmbientOcclusionGenerator)
