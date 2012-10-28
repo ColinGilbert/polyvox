@@ -23,6 +23,14 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/**
+	 * \param volInput The volume to calculate the ambient occlusion for
+	 * \param[out] arrayResult The output of the calculator
+	 * \param region The region of the volume for which the occlusion should be calculated
+	 * \param fRayLength The length for each test ray
+	 * \param uNoOfSamplesPerOutputElement The number of samples to calculate the occlusion
+	 * \param isVoxelTransparentCallback A callback which takes a \a VoxelType and returns a \a bool whether the voxel is transparent
+	 */
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, const IsVoxelTransparentCallback& isVoxelTransparentCallback)
 	{
@@ -81,12 +89,12 @@ namespace PolyVox
 					for(int ct = 0; ct < uNoOfSamplesPerOutputElement; ct++)
 					{						
 						//We take a random vector with components going from -1 to 1 and scale it to go from -halfRatio to +halfRatio.
-						//This jitter value moves our sample point from the center of the array cell to somewhere else in the array cell
-						Vector3DFloat v3dJitter = randomVectors[(uRandomVectorIndex += (++uIndexIncreament)) % 1019]; //Prime number helps avoid repetition on sucessive loops.
+						//This jitter value moves our sample point from the centre of the array cell to somewhere else in the array cell
+						Vector3DFloat v3dJitter = randomVectors[(uRandomVectorIndex += (++uIndexIncreament)) % 1019]; //Prime number helps avoid repetition on successive loops.
 						v3dJitter *= v3dHalfRatio;
 						const Vector3DFloat v3dRayStart = v3dStart + v3dJitter;
 
-						Vector3DFloat v3dRayDirection = randomUnitVectors[(uRandomUnitVectorIndex += (++uIndexIncreament)) % 1021]; //Differenct prime number.
+						Vector3DFloat v3dRayDirection = randomUnitVectors[(uRandomUnitVectorIndex += (++uIndexIncreament)) % 1021]; //Different prime number.
 						v3dRayDirection *= fRayLength;
 						
 						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
