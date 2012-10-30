@@ -163,7 +163,7 @@ namespace PolyVox
 	/// Increasing the size of the block cache will increase memory but may improve performance.
 	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
 	/// volume data and then set it to a smaller value (e.g.64) for general processing.
-	/// \param uBlockCacheSize The number of blocks for which uncompressed data can be cached.
+	/// \param uMaxNumberOfUncompressedBlocks The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks)
@@ -175,7 +175,7 @@ namespace PolyVox
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Increasing the number of blocks in memory causes fewer calls to dataRequiredHandler()/dataOverflowHandler()
-	/// \param uMaxBlocks The number of blocks
+	/// \param uMaxNumberOfBlocksInMemory The number of blocks
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory)

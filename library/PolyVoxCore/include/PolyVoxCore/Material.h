@@ -63,7 +63,7 @@ namespace PolyVox
 		/**
 		 * Set the material value of the voxel
 		 * 
-		 * \param uDensity The material to set to
+		 * \param uMaterial The material to set to
 		 */
 		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 

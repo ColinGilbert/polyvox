@@ -489,7 +489,7 @@ namespace PolyVox
     }
 
 	/**
-	\param tX The new value for the Y component of a 2, 3, or 4 dimensional Vector.
+	\param tY The new value for the Y component of a 2, 3, or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
         inline void Vector<Size, Type>::setY(Type tY) throw()
@@ -498,7 +498,7 @@ namespace PolyVox
     }
 
 	/**
-	\param tX The new value for the Z component of a 3 or 4 dimensional Vector.
+	\param tZ The new value for the Z component of a 3 or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
         inline void Vector<Size, Type>::setZ(Type tZ) throw()
@@ -507,7 +507,7 @@ namespace PolyVox
     }
 
 	/**
-	\param tX The new value for the W component of a 4 dimensional Vector.
+	\param tW The new value for the W component of a 4 dimensional Vector.
 	*/
 	template <uint32_t Size, typename Type>
         inline void Vector<Size, Type>::setW(Type tW) throw()
@@ -545,7 +545,7 @@ namespace PolyVox
 
 	\note This function does not make much sense on integer Vectors.
 
-    \param Vector3D The Vector to find the angle to.
+    \param vector The Vector to find the angle to.
     \return The angle between them in radians.
     */
     template <uint32_t Size, typename Type>
@@ -562,8 +562,7 @@ namespace PolyVox
 	right-hand rule such that if the two vectors are given by the index
 	finger and middle finger respectively then the cross product is given
 	by the thumb.
-    \param a first Vector.
-    \param b Second Vector.
+    \param vector The vector to cross with this
     \return The value of the cross product.
     \see dot()
     */

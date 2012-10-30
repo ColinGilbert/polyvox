@@ -26,6 +26,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter.
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
+	/// \param uBlockSideLength The size of the block to use within the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::SimpleVolume
