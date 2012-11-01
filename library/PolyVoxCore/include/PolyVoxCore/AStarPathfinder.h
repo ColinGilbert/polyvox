@@ -70,7 +70,7 @@ namespace PolyVox
 			std::list<Vector3DInt32>* listResult,
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
-			Connectivity connectivity = TwentySixConnected,
+			Connectivity requiredConnectivity = TwentySixConnected,
 			polyvox_function<bool (const VolumeType*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator,
 			polyvox_function<void (float)> funcProgressCallback = 0
 		)
@@ -78,7 +78,7 @@ namespace PolyVox
 			,start(v3dStart)
 			,end(v3dEnd)
 			,result(listResult)
-			,connectivity(connectivity)
+			,connectivity(requiredConnectivity)
 			,hBias(fHBias)
 			,maxNumberOfNodes(uMaxNoOfNodes)
 			,isVoxelValidForPath(funcIsVoxelValidForPath)

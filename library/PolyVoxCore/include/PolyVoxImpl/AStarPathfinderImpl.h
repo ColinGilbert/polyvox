@@ -92,8 +92,7 @@ namespace PolyVox
 
 		float f(void) const
 		{
-			float f = gVal + hVal;
-			return f;
+			return gVal + hVal;
 		}
 	};
 

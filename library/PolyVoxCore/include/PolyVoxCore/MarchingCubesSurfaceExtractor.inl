@@ -137,7 +137,6 @@ namespace PolyVox
 		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
 
 		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-		uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
 
 		//Process the lower left corner
 		int32_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
