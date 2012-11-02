@@ -38,11 +38,11 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
 
 	//This three-level for loop iterates over every voxel in the volume
-	for (int z = 0; z < volData.getWidth(); z++)
+	for (int z = 0; z < volData.getDepth(); z++)
 	{
 		for (int y = 0; y < volData.getHeight(); y++)
 		{
-			for (int x = 0; x < volData.getDepth(); x++)
+			for (int x = 0; x < volData.getWidth(); x++)
 			{
 				//Store our current position as a vector...
 				Vector3DFloat v3dCurrentPos(x,y,z);	
