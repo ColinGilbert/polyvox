@@ -59,6 +59,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Density.h
 	include/PolyVoxCore/GradientEstimators.h
 	include/PolyVoxCore/GradientEstimators.inl
+	include/PolyVoxCore/Interpolation.h
 	include/PolyVoxCore/IteratorController.h
 	include/PolyVoxCore/IteratorController.inl
 	include/PolyVoxCore/LargeVolume.h

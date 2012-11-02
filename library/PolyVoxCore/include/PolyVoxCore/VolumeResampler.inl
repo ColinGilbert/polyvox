@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Utility.h"
+#include "PolyVoxCore/Interpolation.h"
 
 namespace PolyVox
 {
@@ -125,7 +125,7 @@ namespace PolyVox
 					sy = modf(sy, &dummy);
 					sz = modf(sz, &dummy);
 
-					typename SrcVolumeType::VoxelType tInterpolatedValue = trilinearlyInterpolate<float>(voxel000,voxel100,voxel010,voxel110,voxel001,voxel101,voxel011,voxel111,sx,sy,sz);
+					typename SrcVolumeType::VoxelType tInterpolatedValue = trilerp<float>(voxel000,voxel100,voxel010,voxel110,voxel001,voxel101,voxel011,voxel111,sx,sy,sz);
 
 					typename DstVolumeType::VoxelType result = static_cast<typename DstVolumeType::VoxelType>(tInterpolatedValue);
 					m_pVolDst->setVoxelAt(dx,dy,dz,result);
