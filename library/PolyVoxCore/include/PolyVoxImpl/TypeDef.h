@@ -69,9 +69,6 @@ freely, subject to the following restrictions:
 	#include <boost/function.hpp>
 	#define polyvox_function boost::function
 
-	#include <boost/functional/hash.hpp>
-	#define polyvox_hash boost::hash
-
 	#include <boost/bind.hpp>
 	#define polyvox_bind boost::bind
 	#define polyvox_placeholder_1 _1
@@ -100,7 +97,6 @@ freely, subject to the following restrictions:
 	#define polyvox_bind std::bind
 	#define polyvox_placeholder_1 std::placeholders::_1
 	#define polyvox_placeholder_2 std::placeholders::_2
-	#define polyvox_hash std::hash
 	//#define static_assert static_assert //we can use this
 #endif
 
