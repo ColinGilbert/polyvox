@@ -174,7 +174,8 @@ namespace PolyVox
 		float SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
 		float EighteenConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
 		float TwentySixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
-		float computeH(const Vector3DInt32& a, const Vector3DInt32& b);		
+		float computeH(const Vector3DInt32& a, const Vector3DInt32& b);
+		uint32_t hash(uint32_t a);
 
 		//Node containers
 		AllNodesContainer allNodes;

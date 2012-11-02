@@ -313,11 +313,17 @@ namespace PolyVox
 		//bias means it is much les likely that two paths are exactly the same
 		//length, and so far fewer nodes must be expanded to find the shortest path.
 		//See http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html#S12
-		polyvox_hash<uint32_t> uint32Hash;
-		uint32_t hashValX = uint32Hash(a.getX());
-		uint32_t hashValY = uint32Hash(a.getY());
-		uint32_t hashValZ = uint32Hash(a.getZ());
-		uint32_t hashVal = hashValX ^ hashValY ^ hashValZ;
+
+		//Note that if the hash is zero we can have differences between the Linux vs. Windows
+		//(or perhaps GCC vs. VS) versions of the code. This is probably because of the way
+		//sorting inside the std::set works (i.e. one system swaps values which are identical
+		//while the other one doesn't - both approaches are valid). For the same reason we want
+		//to make sure that position (x,y,z) has a differnt hash from e.g. position (x,z,y).
+		uint32_t aX = (a.getX() << 16) & 0x00FF0000;
+		uint32_t aY = (a.getY() <<  8) & 0x0000FF00;
+		uint32_t aZ = (a.getZ()      ) & 0x000000FF;
+		uint32_t hashVal = hash(aX | aY | aZ);
+
 		//Stop hashVal going over 65535, and divide by 1000000 to make sure it is small.
 		hashVal &= 0x0000FFFF;
 		float fHash = hashVal / 1000000.0f;
@@ -325,5 +331,19 @@ namespace PolyVox
 		//Apply the hash and return
 		hVal += fHash;
 		return hVal;
+	}
+
+	// Robert Jenkins' 32 bit integer hash function
+	// http://www.concentric.net/~ttwang/tech/inthash.htm
+	template<typename VolumeType>
+	uint32_t AStarPathfinder<VolumeType>::hash( uint32_t a)
+	{
+		a = (a+0x7ed55d16) + (a<<12);
+		a = (a^0xc761c23c) ^ (a>>19);
+		a = (a+0x165667b1) + (a<<5);
+		a = (a+0xd3a2646c) ^ (a<<9);
+		a = (a+0xfd7046c5) + (a<<3);
+		a = (a^0xb55a4f09) ^ (a>>16);
+		return a;
 	}
 }
