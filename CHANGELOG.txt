@@ -35,3 +35,11 @@ Usage of the new raycasting is demonstrated by a unit test.
 Changes to AmbientOcclusionCalculator
 -------------------------------------
 The AmbientOcclusionCalculator has also been unclassed and is now called calculateAmbientOcclusion. The unit test has been updated to demsonstrate the new usage.
+
+Changes to A* pathfinder
+------------------------
+The A* pathfinder has always had differnt (but equally valid) results when building in Visual Studio vs. GCC. This is now fixed and results are consistent between platforms.
+
+Copy and move semantics
+-----------------------
+All volume classes now have protecected copy constructors and assignment operators to prevent you from accidently copying them (which is expensive). Look at the VolumeResample if you really do want to copy some volume data.
