@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename Type>
-        Type lerp(
+	Type lerp(
         const Type& v0,const Type& v1,
         const float x)
     {
@@ -42,7 +42,7 @@ namespace PolyVox
     }
 
 	template <typename Type>
-        Type bilerp(
+	Type bilerp(
         const Type& v00,const Type& v10,const Type& v01,const Type& v11,
         const float x, const float y)
     {
@@ -60,7 +60,7 @@ namespace PolyVox
     }
 
 	template <typename Type>
-        Type trilerp(
+	Type trilerp(
         const Type& v000,const Type& v100,const Type& v010,const Type& v110,
         const Type& v001,const Type& v101,const Type& v011,const Type& v111,
         const float x, const float y, const float z)
