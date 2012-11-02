@@ -42,7 +42,7 @@ namespace PolyVox
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	BaseVolume<VoxelType>::BaseVolume(const BaseVolume<VoxelType>& rhs)
+	BaseVolume<VoxelType>::BaseVolume(const BaseVolume<VoxelType>& /*rhs*/)
 	{
 		assert(false); // See function comment above.
 	}
@@ -63,7 +63,7 @@ namespace PolyVox
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	BaseVolume<VoxelType>& BaseVolume<VoxelType>::operator=(const BaseVolume<VoxelType>& rhs)
+	BaseVolume<VoxelType>& BaseVolume<VoxelType>::operator=(const BaseVolume<VoxelType>& /*rhs*/)
 	{
 		assert(false); // See function comment above.
 	}
@@ -160,7 +160,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
 	{
 		assert(false);
 		return VoxelType();
@@ -171,7 +171,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
+	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& /*v3dPos*/) const
 	{
 		assert(false);
 		return VoxelType();
@@ -181,7 +181,7 @@ namespace PolyVox
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
+	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& /*tBorder*/) 
 	{
 		assert(false);
 	}
@@ -194,7 +194,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool BaseVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
+	bool BaseVolume<VoxelType>::setVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, VoxelType /*tValue*/)
 	{
 		assert(false);
 		return false;
@@ -206,7 +206,7 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	bool BaseVolume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
+	bool BaseVolume<VoxelType>::setVoxelAt(const Vector3DInt32& /*v3dPos*/, VoxelType /*tValue*/)
 	{
 		assert(false);
 		return false;

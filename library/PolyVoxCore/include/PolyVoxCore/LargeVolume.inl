@@ -83,7 +83,7 @@ namespace PolyVox
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	LargeVolume<VoxelType>::LargeVolume(const LargeVolume<VoxelType>& rhs)
+	LargeVolume<VoxelType>::LargeVolume(const LargeVolume<VoxelType>& /*rhs*/)
 	{
 		assert(false); // See function comment above.
 	}
@@ -106,7 +106,7 @@ namespace PolyVox
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& rhs)
+	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& /*rhs*/)
 	{
 		assert(false); // See function comment above.
 	}
