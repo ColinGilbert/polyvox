@@ -51,10 +51,6 @@ bool testVoxelValidator(const VolumeType* volData, const Vector3DInt32& v3dPos)
 
 void TestAStarPathfinder::testExecute()
 {
-	//The expected path
-
-#ifdef _MSC_VER
-	//The following results work on Windows/VS2010
 	const Vector3DInt32 expectedResult[] = 
 	{
 		Vector3DInt32(0,0,0),
@@ -82,38 +78,6 @@ void TestAStarPathfinder::testExecute()
 		Vector3DInt32(14,14,15),
 		Vector3DInt32(15,15,15)
 	};
-
-#else
-
-	//The following results work on Linux/GCC
-	const Vector3DInt32 expectedResult[] = 
-	{
-		Vector3DInt32(0,0,0),
-		Vector3DInt32(1,1,1),
-		Vector3DInt32(2,2,1),
-		Vector3DInt32(3,3,1),
-		Vector3DInt32(4,4,1),
-		Vector3DInt32(4,5,1),
-		Vector3DInt32(5,6,1),
-		Vector3DInt32(6,7,2),
-		Vector3DInt32(7,8,3),
-		Vector3DInt32(8,9,3),
-		Vector3DInt32(9,10,3),
-		Vector3DInt32(10,11,3),
-		Vector3DInt32(11,12,4),
-		Vector3DInt32(12,13,5),
-		Vector3DInt32(13,13,6),
-		Vector3DInt32(13,13,7),
-		Vector3DInt32(13,13,8),
-		Vector3DInt32(13,13,9),
-		Vector3DInt32(14,14,10),
-		Vector3DInt32(14,14,11),
-		Vector3DInt32(14,14,12),
-		Vector3DInt32(14,14,13),
-		Vector3DInt32(15,15,14),
-		Vector3DInt32(15,15,15)
-	};
-#endif //_MSC_VER
 
 	const int32_t uVolumeSideLength = 16;
 
