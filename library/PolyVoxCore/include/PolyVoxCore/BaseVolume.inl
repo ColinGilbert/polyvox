@@ -23,13 +23,28 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	////////////////////////////////////////////////////////////////////////////////
+	/// This is protected because you should never create a BaseVolume directly, you should instead use one of the derived classes.
+	///
+	/// \sa RawVolume, SimpleVolume, LargeVolume
+	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	BaseVolume<VoxelType>::BaseVolume
-	(
-		const Region& regValid
-	)
+	BaseVolume<VoxelType>::BaseVolume(const Region& regValid)
 		:m_regValidRegion(regValid)
 	{
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	BaseVolume<VoxelType>::BaseVolume(const BaseVolume<VoxelType>& rhs)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -38,6 +53,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::~BaseVolume()
 	{
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	BaseVolume<VoxelType>& BaseVolume<VoxelType>::operator=(const BaseVolume<VoxelType>& rhs)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

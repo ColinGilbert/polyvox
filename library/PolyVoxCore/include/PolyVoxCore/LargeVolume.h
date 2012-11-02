@@ -297,7 +297,14 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-private:
+	protected:
+		/// Copy constructor
+		LargeVolume(const LargeVolume& rhs);
+
+		/// Assignment operator
+		LargeVolume& operator=(const LargeVolume& rhs);
+
+	private:
 		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
 
 		/// gets called when a new region is allocated and needs to be filled

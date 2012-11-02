@@ -152,11 +152,8 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		SimpleVolume
-		(
-			const Region& regValid,
-			uint16_t uBlockSideLength = 32
-		);
+		SimpleVolume(const Region& regValid, uint16_t uBlockSideLength = 32);
+
 		/// Destructor
 		~SimpleVolume();
 
@@ -177,7 +174,14 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-private:	
+	protected:
+		/// Copy constructor
+		SimpleVolume(const SimpleVolume& rhs);
+
+		/// Assignment operator
+		SimpleVolume& operator=(const SimpleVolume& rhs);
+
+	private:	
 		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
 
 		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;

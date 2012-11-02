@@ -29,15 +29,24 @@ namespace PolyVox
 	/// \param uBlockSideLength The size of the block to use within the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	SimpleVolume<VoxelType>::SimpleVolume
-	(
-		const Region& regValid,
-		uint16_t uBlockSideLength
-	)
-	:BaseVolume<VoxelType>(regValid)
+	SimpleVolume<VoxelType>::SimpleVolume(const Region& regValid, uint16_t uBlockSideLength)
+		:BaseVolume<VoxelType>(regValid)
 	{
 		//Create a volume of the right size.
 		initialise(regValid,uBlockSideLength);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	SimpleVolume<VoxelType>::SimpleVolume(const SimpleVolume<VoxelType>& rhs)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +57,19 @@ namespace PolyVox
 	{
 		delete[] m_pBlocks;
 		delete[] m_pUncompressedBorderData;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	SimpleVolume<VoxelType>& SimpleVolume<VoxelType>::operator=(const SimpleVolume<VoxelType>& rhs)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

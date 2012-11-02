@@ -76,6 +76,19 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	LargeVolume<VoxelType>::LargeVolume(const LargeVolume<VoxelType>& rhs)
+	{
+		assert(false); // See function comment above.
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
 	/// Destroys the volume The destructor will call flushAll() to ensure that a paging volume has the chance to save it's data via the dataOverflowHandler() if desired.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -83,6 +96,19 @@ namespace PolyVox
 	{
 		flushAll();
 		delete[] m_pUncompressedBorderData;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& rhs)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

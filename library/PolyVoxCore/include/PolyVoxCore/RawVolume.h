@@ -117,10 +117,8 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		RawVolume
-		(
-			const Region& regValid
-		);
+		RawVolume(const Region& regValid);
+
 		/// Destructor
 		~RawVolume();
 
@@ -141,7 +139,14 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-private:
+	protected:
+		/// Copy constructor
+		RawVolume(const RawVolume& rhs);
+
+		/// Assignment operator
+		RawVolume& operator=(const RawVolume& rhs);
+
+	private:
 		void initialise(const Region& regValidRegion);
 
 		//The block data

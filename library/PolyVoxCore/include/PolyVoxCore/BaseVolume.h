@@ -141,12 +141,16 @@ namespace PolyVox
 
 	protected:	
 		/// Constructor for creating a fixed size volume.
-		BaseVolume
-		(
-			const Region& regValid
-		);
+		BaseVolume(const Region& regValid);
+
+		/// Copy constructor
+		BaseVolume(const BaseVolume& rhs);
+
 		/// Destructor
 		~BaseVolume();
+
+		/// Assignment operator
+		BaseVolume& operator=(const BaseVolume& rhs);
 
 		//The size of the volume
 		Region m_regValidRegion;
