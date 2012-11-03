@@ -56,12 +56,8 @@ namespace PolyVox
 		bool operator()(const SimpleVolume<uint8_t>::Sampler& sampler)
 		{
 			uint8_t sample = sampler.getVoxel();
-			
-			bool direct = sample == 0;
-			bool func = mIsVoxelTransparentCallback(sample);
-			assert(direct == func);
-
-			return direct;
+			bool func = (*(mIsVoxelTransparentCallback))(sample);
+			return func;
 		}
 
 		const IsVoxelTransparentCallback& mIsVoxelTransparentCallback;
