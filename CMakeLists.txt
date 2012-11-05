@@ -57,7 +57,7 @@ endif()
 
 if(MSVC AND (MSVC_VERSION LESS 1600))
 	# Require boost for older (pre-vc2010) Visual Studio compilers
-	# See library/include/polyvoximpl/TypeDef.h
+	# See library/include/polyvoxcore/impl/TypeDef.h
 	find_package(Boost REQUIRED)
 	include_directories(${Boost_INCLUDE_DIRS})
 endif()

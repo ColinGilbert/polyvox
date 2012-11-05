@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_ForwardDeclarations_H__
 #define __PolyVox_ForwardDeclarations_H__
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 namespace PolyVox
 {

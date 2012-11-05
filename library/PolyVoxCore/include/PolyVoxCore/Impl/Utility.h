@@ -21,15 +21,17 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MarchingCubeTables_H__
-#define __PolyVox_MarchingCubeTables_H__
+#ifndef __PolyVox_Utility_H__
+#define __PolyVox_Utility_H__
 
-#include "PolyVoxCore/PolyVoxImpl/TypeDef.h"
+#include "PolyVoxCore/Impl/TypeDef.h"
+
+#include <cassert>
 
 namespace PolyVox
 {
-	extern const POLYVOX_API int edgeTable[256];
-	extern const POLYVOX_API int triTable[256][16];
+	POLYVOX_API uint8_t logBase2(uint32_t uInput);
+	POLYVOX_API bool isPowerOf2(uint32_t uInput);
 }
 
 #endif

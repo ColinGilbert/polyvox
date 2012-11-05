@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SurfaceMesh_H__
 #define __PolyVox_SurfaceMesh_H__
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/VertexTypes.h" //Should probably do away with this on in the future...

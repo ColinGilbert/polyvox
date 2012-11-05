@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_AStarPathfinder_H__
 #define __PolyVox_AStarPathfinder_H__
 
-#include "PolyVoxImpl/AStarPathfinderImpl.h"
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/AStarPathfinderImpl.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
 

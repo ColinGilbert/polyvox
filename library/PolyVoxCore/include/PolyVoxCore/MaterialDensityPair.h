@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
 #include "PolyVoxCore/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 namespace PolyVox
 {

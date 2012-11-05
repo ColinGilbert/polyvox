@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SimpleVolume_H__
 #define __PolyVox_SimpleVolume_H__
 
-#include "PolyVoxImpl/Utility.h"
+#include "Impl/Utility.h"
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/Log.h"

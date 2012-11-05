@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SurfaceExtractor_H__
 #define __PolyVox_SurfaceExtractor_H__
 
-#include "PolyVoxImpl/MarchingCubesTables.h"
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/MarchingCubesTables.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/SurfaceMesh.h"

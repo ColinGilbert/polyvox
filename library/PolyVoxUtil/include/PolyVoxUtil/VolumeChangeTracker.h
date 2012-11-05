@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VolumeChangeTracker_H__
 #define __PolyVox_VolumeChangeTracker_H__
 
-#include "PolyVoxImpl/Utility.h"
+#include "Impl/Utility.h"
 
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/SurfaceMesh.h"

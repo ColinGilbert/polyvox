@@ -21,16 +21,15 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_RandomVectors_H__
-#define __PolyVox_RandomVectors_H__
+#ifndef __PolyVox_MarchingCubeTables_H__
+#define __PolyVox_MarchingCubeTables_H__
 
-#include "PolyVoxCore/PolyVoxImpl/TypeDef.h"
-
-#include "PolyVoxCore/Vector.h"
+#include "PolyVoxCore/Impl/TypeDef.h"
 
 namespace PolyVox
-{	
-	extern POLYVOX_API const Vector3DFloat randomVectors[];
+{
+	extern const POLYVOX_API int edgeTable[256];
+	extern const POLYVOX_API int triTable[256][16];
 }
 
-#endif //__PolyVox_RandomVectors_H__
+#endif
