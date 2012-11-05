@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 // http://local.wasp.uwa.edu.au/~pbourke/geometry/polygonise/index.html
 
-#include "PolyVoxImpl/MarchingCubesTables.h"
+#include "PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h"
 
 namespace PolyVox
 {

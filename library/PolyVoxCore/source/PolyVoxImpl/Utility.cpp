@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/Utility.h"
+#include "PolyVoxCore/PolyVoxImpl/Utility.h"
 
 #include <cassert>
 #include <stdexcept>

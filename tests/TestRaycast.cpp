@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Raycast.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
-#include "PolyVoxImpl/RandomUnitVectors.h"
+#include "PolyVoxCore/PolyVoxImpl/RandomUnitVectors.h"
 
 #include <QtTest>
 

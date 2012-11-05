@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/RandomVectors.h"
+#include "PolyVoxCore/PolyVoxImpl/RandomVectors.h"
 
 namespace PolyVox
 {	

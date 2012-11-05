@@ -104,18 +104,18 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
-	include/PolyVoxImpl/ArraySizesImpl.h
-	include/PolyVoxImpl/ArraySizesImpl.inl
-	include/PolyVoxImpl/AStarPathfinderImpl.h
-	include/PolyVoxImpl/Block.h
-	include/PolyVoxImpl/Block.inl
-	include/PolyVoxImpl/MarchingCubesTables.h
-	include/PolyVoxImpl/RandomUnitVectors.h
-	include/PolyVoxImpl/RandomVectors.h
-	include/PolyVoxImpl/SubArray.h
-	include/PolyVoxImpl/SubArray.inl
-	include/PolyVoxImpl/TypeDef.h
-	include/PolyVoxImpl/Utility.h
+	include/PolyVoxCore/PolyVoxImpl/ArraySizesImpl.h
+	include/PolyVoxCore/PolyVoxImpl/ArraySizesImpl.inl
+	include/PolyVoxCore/PolyVoxImpl/AStarPathfinderImpl.h
+	include/PolyVoxCore/PolyVoxImpl/Block.h
+	include/PolyVoxCore/PolyVoxImpl/Block.inl
+	include/PolyVoxCore/PolyVoxImpl/MarchingCubesTables.h
+	include/PolyVoxCore/PolyVoxImpl/RandomUnitVectors.h
+	include/PolyVoxCore/PolyVoxImpl/RandomVectors.h
+	include/PolyVoxCore/PolyVoxImpl/SubArray.h
+	include/PolyVoxCore/PolyVoxImpl/SubArray.inl
+	include/PolyVoxCore/PolyVoxImpl/TypeDef.h
+	include/PolyVoxCore/PolyVoxImpl/Utility.h
 )
 
 #NOTE: The following line should be uncommented when building shared libs.

@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxImpl/Utility.h"
+#include "PolyVoxCore/PolyVoxImpl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"
 #include "OpenGLVertexBufferObjectSupport.h"

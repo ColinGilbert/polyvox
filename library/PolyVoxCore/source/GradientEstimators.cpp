@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "PolyVoxCore/PolyVoxImpl/TypeDef.h"
 
 #include "PolyVoxCore/GradientEstimators.h"
 
