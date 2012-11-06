@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SubArray_H__
 #define __PolyVox_SubArray_H__
 
-#include "Impl/TypeDef.h"
+#include "PolyVoxCore/Impl/TypeDef.h"
 
 namespace PolyVox
 {
@@ -83,6 +83,6 @@ namespace PolyVox
 	};
 }//namespace PolyVox
 
-#include "Impl/SubArray.inl"
+#include "PolyVoxCore/Impl/SubArray.inl"
 
 #endif //__PolyVox_SubArray_H__
