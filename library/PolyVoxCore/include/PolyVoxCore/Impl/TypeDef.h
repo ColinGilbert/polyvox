@@ -30,7 +30,9 @@ freely, subject to the following restrictions:
   #define POLYVOX_HELPER_IMPORT __declspec(dllimport)
   #define POLYVOX_HELPER_EXPORT __declspec(dllexport)
   #define POLYVOX_HELPER_LOCAL
+  #define POLYVOX_DEPRECATED __declspec(deprecated)
 #else
+  #define POLYVOX_DEPRECATED __attribute__((deprecated))
   #if __GNUC__ >= 4
     #define POLYVOX_HELPER_IMPORT __attribute__ ((visibility("default")))
     #define POLYVOX_HELPER_EXPORT __attribute__ ((visibility("default")))
