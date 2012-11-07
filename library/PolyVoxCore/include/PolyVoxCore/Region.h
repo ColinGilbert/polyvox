@@ -66,17 +66,17 @@ namespace PolyVox
 		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
 		void cropTo(const Region& other);
 		/// Deprecated and misleading
-		int32_t depth(void) const;
+		POLYVOX_DEPRECATED int32_t depth(void) const;
 		/// Deprecated and misleading
-		int32_t height(void) const;
+		POLYVOX_DEPRECATED int32_t height(void) const;
 		void shift(const Vector3DInt32& amount);
 		void shiftLowerCorner(const Vector3DInt32& amount);
 		void shiftUpperCorner(const Vector3DInt32& amount);
 		//FIXME - Add dilate and erode functions?
 		/// Deprecated and misleading
-		Vector3DInt32 dimensions(void);
+		POLYVOX_DEPRECATED Vector3DInt32 dimensions(void);
 		/// Deprecated and misleading
-		int32_t width(void) const;
+		POLYVOX_DEPRECATED int32_t width(void) const;
 
 	private:
 		Vector3DInt32 m_v3dLowerCorner;
