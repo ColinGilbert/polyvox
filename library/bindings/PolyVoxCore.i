@@ -1,6 +1,7 @@
 %module PolyVoxCore
 
 #define POLYVOX_API
+#define __attribute__(x) //Silence DEPRECATED errors
 
 //This macro allows us to use Python properties on our classes
 %define PROPERTY(type,name,getter,setter)
@@ -43,3 +44,4 @@ const char* __str__() {
 //%include "CubicSurfaceExtractor.i"
 //%include "CubicSurfaceExtractorWithNormals.i"
 //%include "MeshDecimator.i"
+
