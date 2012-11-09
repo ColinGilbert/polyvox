@@ -67,7 +67,7 @@ namespace PolyVox
 		}
 
 		//Private assignment operator, so client code can't abuse this class.
-		ConstVolumeProxy& operator=(const ConstVolumeProxy& rhs) throw()
+		ConstVolumeProxy& operator=(const ConstVolumeProxy& rhs)
 		{
 		}
 

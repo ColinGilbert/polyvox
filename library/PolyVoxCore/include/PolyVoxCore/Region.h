@@ -45,9 +45,9 @@ namespace PolyVox
 		Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ);
 
 		///Equality Operator.
-        bool operator==(const Region& rhs) const throw();
+        bool operator==(const Region& rhs) const;
 		///Inequality Operator.
-        bool operator!=(const Region& rhs) const throw();
+        bool operator!=(const Region& rhs) const;
 
 		const Vector3DInt32& getLowerCorner(void) const;
 		const Vector3DInt32& getUpperCorner(void) const;

@@ -40,7 +40,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	typename LargeVolume<VoxelType>::Sampler& LargeVolume<VoxelType>::Sampler::operator=(const typename LargeVolume<VoxelType>::Sampler& rhs) throw()
+	typename LargeVolume<VoxelType>::Sampler& LargeVolume<VoxelType>::Sampler::operator=(const typename LargeVolume<VoxelType>::Sampler& rhs)
 	{
 		if(this == &rhs)
 		{

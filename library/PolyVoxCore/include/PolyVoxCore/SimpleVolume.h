@@ -87,7 +87,7 @@ namespace PolyVox
 			Sampler(SimpleVolume<VoxelType>* volume);
 			~Sampler();
 
-			Sampler& operator=(const Sampler& rhs) throw();
+			Sampler& operator=(const Sampler& rhs);
 
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			/// Get the value of the current voxel

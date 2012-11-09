@@ -44,12 +44,12 @@ namespace PolyVox
 		MaterialDensityPair() : m_uMaterial(0), m_uDensity(0) {}
 		MaterialDensityPair(Type uMaterial, Type uDensity) : m_uMaterial(uMaterial), m_uDensity(uDensity) {}
 
-		bool operator==(const MaterialDensityPair& rhs) const throw()
+		bool operator==(const MaterialDensityPair& rhs) const
 		{
 			return (m_uMaterial == rhs.m_uMaterial) && (m_uDensity == rhs.m_uDensity);
 		};
 
-		bool operator!=(const MaterialDensityPair& rhs) const throw()
+		bool operator!=(const MaterialDensityPair& rhs) const
 		{
 			return !(*this == rhs);
 		}
@@ -72,14 +72,14 @@ namespace PolyVox
 			return *this;
 		}
 
-		Type getDensity() const throw() { return m_uDensity; }
-		Type getMaterial() const throw() { return m_uMaterial; }
+		Type getDensity() const { return m_uDensity; }
+		Type getMaterial() const { return m_uMaterial; }
 
 		void setDensity(Type uDensity) { m_uDensity = uDensity; }
 		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 
-		static Type getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		static Type getMinDensity() throw() { return 0; }
+		static Type getMaxDensity() { return (0x01 << NoOfDensityBits) - 1; }
+		static Type getMinDensity() { return 0; }
 
 	private:
 		Type m_uMaterial : NoOfMaterialBits;
