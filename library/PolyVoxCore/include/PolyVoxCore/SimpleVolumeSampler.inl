@@ -43,7 +43,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	typename SimpleVolume<VoxelType>::Sampler& SimpleVolume<VoxelType>::Sampler::operator=(const typename SimpleVolume<VoxelType>::Sampler& rhs) throw()
+	typename SimpleVolume<VoxelType>::Sampler& SimpleVolume<VoxelType>::Sampler::operator=(const typename SimpleVolume<VoxelType>::Sampler& rhs)
 	{
 		if(this == &rhs)
 		{

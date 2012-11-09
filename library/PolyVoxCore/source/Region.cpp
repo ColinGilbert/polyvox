@@ -66,7 +66,7 @@ namespace PolyVox
     \return true if the Regions match.
     \see operator!=
     */
-    bool Region::operator==(const Region& rhs) const throw()
+    bool Region::operator==(const Region& rhs) const
     {
 		return ((m_v3dLowerCorner == rhs.m_v3dLowerCorner) && (m_v3dUpperCorner == rhs.m_v3dUpperCorner));
     }
@@ -77,7 +77,7 @@ namespace PolyVox
     \return true if the Regions do not match.
     \see operator==
     */
-    bool Region::operator!=(const Region& rhs) const throw()
+    bool Region::operator!=(const Region& rhs) const
     {
 		return !(*this == rhs);
     }

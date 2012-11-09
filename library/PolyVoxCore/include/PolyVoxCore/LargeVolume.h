@@ -176,7 +176,7 @@ namespace PolyVox
 			Sampler(LargeVolume<VoxelType>* volume);
 			~Sampler();
 
-			Sampler& operator=(const Sampler& rhs) throw();
+			Sampler& operator=(const Sampler& rhs);
 
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			inline VoxelType getVoxel(void) const;			

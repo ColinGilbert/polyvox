@@ -48,18 +48,18 @@ namespace PolyVox
 		Material() : m_uMaterial(0) {}
 		Material(Type uMaterial) : m_uMaterial(uMaterial) {}
 
-		bool operator==(const Material& rhs) const throw()
+		bool operator==(const Material& rhs) const
 		{
 			return (m_uMaterial == rhs.m_uMaterial);
 		};
 
-		bool operator!=(const Material& rhs) const throw()
+		bool operator!=(const Material& rhs) const
 		{
 			return !(*this == rhs);
 		}
 
 		/// \return The current material value of the voxel
-		Type getMaterial() const throw() { return m_uMaterial; }
+		Type getMaterial() const { return m_uMaterial; }
 		/**
 		 * Set the material value of the voxel
 		 * 
