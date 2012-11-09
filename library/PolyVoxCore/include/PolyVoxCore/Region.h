@@ -30,6 +30,21 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/**
+	Represents a part of a Volume.
+
+	Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
+	it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
+	be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
+	of the volume, there by giving a number of meshes which can be culled and rendered seperately.
+
+	The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
+	bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
+	<em>inclusive</em>. The class also provides functions for modifying the regions in a variety of ways.
+
+	\Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
+	about these definitions.
+	*/
 #ifdef SWIG
 	class Region
 #else
@@ -51,6 +66,24 @@ namespace PolyVox
 
 		const Vector3DInt32& getLowerCorner(void) const;
 		const Vector3DInt32& getUpperCorner(void) const;
+
+		/// Gets the width of the region measured in voxels
+		int32_t getWidthInVoxels(void) const;
+		/// Gets the height of the region measured in voxels
+		int32_t getHeightInVoxels(void) const;
+		/// Gets the depth of the region measured in voxels
+		int32_t getDepthInVoxels(void) const;
+		/// Gets the dimensions of the region measured in voxels
+		Vector3DInt32 getDimensionsInVoxels(void) const;
+
+		/// Gets the width of the region measured in cells
+		int32_t getWidthInCells(void) const;
+		/// Gets the height of the region measured in cells
+		int32_t getHeightInCells(void) const;
+		/// Gets the depth of the region measured in cells
+		int32_t getDepthInCells(void) const;
+		/// Gets the dimensions of the region measured in cells
+		Vector3DInt32 getDimensionsInCells(void) const;
 
 		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
