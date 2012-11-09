@@ -1,6 +1,7 @@
 %module PolyVoxCore
 
 #define POLYVOX_API
+%include "Impl/TypeDef.h"
 #define __attribute__(x) //Silence DEPRECATED errors
 
 //This macro allows us to use Python properties on our classes
