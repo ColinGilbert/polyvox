@@ -64,8 +64,10 @@ namespace PolyVox
 	/// The above applies for a cubic mesh, for a Marching Cubes mesh you need to parametise
 	/// the MeshDecimator and resulting SurfaceMesh on the 'PositionMaterialNormal' type
 	/// instead of the 'PositionMaterial' type.
+	///
+	/// \deprecated
 	template <typename VertexType>
-	class MeshDecimator
+	class POLYVOX_DEPRECATED MeshDecimator
 	{
 		//Used to keep track of when a vertex is
 		//on one or more faces of  the region

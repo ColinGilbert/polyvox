@@ -33,8 +33,9 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {	
 	/// Voxel scene manager
+	/// \deprecated
 	template <typename VoxelType>
-	class VolumeChangeTracker
+	class POLYVOX_DEPRECATED VolumeChangeTracker
 	{
 	public:
 		//Constructors, etc

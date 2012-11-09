@@ -2,6 +2,18 @@ Changes for PolyVox version 0.2
 ===============================
 This is the first revision for which we have produced a changelog, as we are now trying to streamline our development and release process. Hence this changelog entry is not going to be as structured as we hope they will be in the future. I'm writing it from memory, rather than having carefully kept track of all the relevent changes as I made them.
 
+Deprecated functionality
+------------------------
+The following functionality is considered deprecated in this release of PolyVox and will probably be removed in future versions.
+
+MeshDecimator: The mesh decimator was intended to reduce the amount of trianges in generated meshes but it has always had problems. It's far too slow and not very robust. For cubic mehes it is no longer needed anyway as the CubicSurfaceExtractor has built in decimation which is much more effective. For smooth (marching cubes) meshes there is no single alternative. You can consider downsampling the volume before you run the surface extractor (see the SmoothLODExample), and in the future we may add support for an external mesh processing library.
+
+SimpleInterface: This was added so that people could create volumes without knowing about templates, and also to provide a target which was easier to wrap with SWIG. But overall we'd rather focus on geting the real SWIG bindings to work. The SimpleInterface is also extreamly limited in the functionality it provides.
+
+Serialisation: This is a difficult one. The current serialisation is rather old and only deals with loading/saving a whole volume at a time. It would make much more sense if it could serialise regions instead of whole volumes, and if it could handle compression. It would then be useful for serialising the data which is paged into and out of the LargeVolume, as well as other uses. Both these changes would likely require braking the current format and interface. It is likely that serialisation will return to PolyVox in the future, but for now we would suggest just implementing your own.
+
+VolumeChangeTracker: The idea behind this was was to provide a utility class to help the user keep track of which regions have been modified so they know when they need the surface extractor to be run again. But overall we'd rather keep such higher level functionality in user code as there are multiple ways it can be implemented. The current implementation is also old and does not support very large/infinite volumes, for example.
+
 Refactor of basic voxel types
 -----------------------------
 Previous versions of PolyVox provided classes representing voxel data, such as MaterialDensityPair88. These classes were required to expose certain function such as getDensity() and getMaterial(). This is no longer the case as now even primitive data types such as floats and ints can be used as voxels. You can also create new classes to represent voxel data and it is entirely up to you what kind of properties they have.
@@ -26,7 +38,7 @@ The new system simplifies the behaviour of this surface extractor but does requi
 
 Changes to Raycast
 ------------------
-The raaycasting functionality was previously in a class (Raycast) but now it is provided by standalone functions. This is basically because there is no need for it to be a class, and it complicated usage. The new functions are called 'raycastWithDirection' and 'raycastWithEndpoints' which helps remove the previous ambiguity regarding the meaning of the two vectors which are passed as parameters.
+The raycasting functionality was previously in a class (Raycast) but now it is provided by standalone functions. This is basically because there is no need for it to be a class, and it complicated usage. The new functions are called 'raycastWithDirection' and 'raycastWithEndpoints' which helps remove the previous ambiguity regarding the meaning of the two vectors which are passed as parameters.
 
 The callback functionalilty (called for each processed voxel to determine whether to continue and also perform additional processing) is no longer implemented as an std::function. Instead the standard STL approach is used where a function or function object is used a a template parameter. This is faster than the std::function solution and should also be easier to integrate with other languages.
 
