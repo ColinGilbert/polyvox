@@ -67,7 +67,7 @@ namespace PolyVox
 	///
 	/// \deprecated
 	template <typename VertexType>
-	class POLYVOX_DEPRECATED MeshDecimator
+	class MeshDecimator
 	{
 		//Used to keep track of when a vertex is
 		//on one or more faces of  the region
@@ -143,10 +143,10 @@ namespace PolyVox
 
 	public:
 		///Constructor
-		MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold = 0.95f);
+		POLYVOX_DEPRECATED MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold = 0.95f);
 
 		///Performs the decimation.
-		void execute();
+		POLYVOX_DEPRECATED void execute();
 
 	private:
 
