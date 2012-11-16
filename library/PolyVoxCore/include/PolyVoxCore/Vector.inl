@@ -601,7 +601,7 @@ namespace PolyVox
     template <uint32_t Size, typename Type>
         inline void Vector<Size, Type>::normalise(void)
     {
-        Type tLength = this->length();
+        Type tLength = static_cast<Type>(this->length());
 		//FIXME - throw div by zero exception?
 		if(tLength < 0.0001f)
 		{
