@@ -57,8 +57,8 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 
 void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
-	int maxDen = MaterialDensityPair44::getMaxDensity();
-	int minDen = MaterialDensityPair44::getMinDensity();
+	uint8_t maxDen = MaterialDensityPair44::getMaxDensity();
+	uint8_t minDen = MaterialDensityPair44::getMinDensity();
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
 	{
