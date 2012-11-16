@@ -32,4 +32,6 @@ namespace PolyVox
 	float computeSmoothedVoxel(typename VolumeType::Sampler& volIter);
 }
 
+#include "PolyVoxCore/VoxelFilters.inl"
+
 #endif

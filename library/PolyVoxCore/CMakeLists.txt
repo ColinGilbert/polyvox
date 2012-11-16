@@ -28,13 +28,11 @@ PROJECT(PolyVoxCore)
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
-	source/GradientEstimators.cpp
 	source/Log.cpp
 	source/MeshDecimator.cpp
 	source/Region.cpp
 	source/SimpleInterface.cpp
 	source/VertexTypes.cpp
-	source/VoxelFilters.cpp
 )
 
 #Projects headers files
@@ -94,6 +92,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/VolumeResampler.h
 	include/PolyVoxCore/VolumeResampler.inl
 	include/PolyVoxCore/VoxelFilters.h
+	include/PolyVoxCore/VoxelFilters.inl
 )
 
 SET(IMPL_SRC_FILES
