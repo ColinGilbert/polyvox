@@ -1,11 +1,11 @@
 *************
 Prerequisites
 *************
-The PolyVox library is aimed at experinced games and graphics programmers who wish to incorporate voxel environments into their applications. It is not a drop in solution, but instead provides a set of building blocks which you can use to construct a complete system. Most of the functionality could be considered quite low-level. For example, it provides mesh extractors to generate a surface from volume data but requires the application developer to handle all tasks related to scene management and rendering of such data.
+The PolyVox library is aimed at experienced games and graphics programmers who wish to incorporate voxel environments into their applications. It is not a drop in solution, but instead provides a set of building blocks which you can use to construct a complete system. Most of the functionality could be considered quite low-level. For example, it provides mesh extractors to generate a surface from volume data but requires the application developer to handle all tasks related to scene management and rendering of such data.
 
 As a result you will need a decent amount of graphics programming experience to effectively make use of the library. The purpose of this document is to highlight some of the core areas with which you will need to be familier. In some cases we also provide links to places where you can find more information about the subject in question.
 
-You should also be aware that voxel terrain is still an open research area and has not yet seen widespread adoption in games and simulations. There are many questions to which we do not currently know the best answer and so you may have to do some research and experimentation yourself when trying to opbtain your desired result. Please do let us know if you come up with a trick or technique which you think could benefit other users.
+You should also be aware that voxel terrain is still an open research area and has not yet seen widespread adoption in games and simulations. There are many questions to which we do not currently know the best answer and so you may have to do some research and experimentation yourself when trying to obtain your desired result. Please do let us know if you come up with a trick or technique which you think could benefit other users.
 
 Programming
 ===========
