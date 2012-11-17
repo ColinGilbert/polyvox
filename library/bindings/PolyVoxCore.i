@@ -26,6 +26,9 @@ const char* __str__() {
 
 %feature("autodoc", "1");
 
+//This will rename "operator=" to "assign" since Python doesn't have assignment
+%rename(assign) *::operator=;
+
 %include "stdint.i"
 %include "std_vector.i"
 %include "Vector.i"
