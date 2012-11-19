@@ -56,7 +56,7 @@ SOURCE_GROUP("Headers" FILES ${INC_FILES})
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR})
 LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #Build
