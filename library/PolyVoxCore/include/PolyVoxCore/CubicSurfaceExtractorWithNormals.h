@@ -40,7 +40,6 @@ namespace PolyVox
 		void execute();
 
 	private:
-		//polyvox_function<bool(typename VolumeType::VoxelType voxel0, typename VolumeType::VoxelType voxel1, float& materialToUse)> m_funcIsQuadNeededCallback;
 		IsQuadNeeded m_funcIsQuadNeededCallback;
 
 		//The volume data and a sampler to access it.

@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SimpleVolume_H__
 #define __PolyVox_SimpleVolume_H__
 
-#include "PolyVoxImpl/Utility.h"
+#include "Impl/Utility.h"
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/Log.h"
@@ -45,6 +45,7 @@ namespace PolyVox
 	{
 	public:
 		#ifndef SWIG
+		//Could be made private?
 		class Block
 		{
 		public:
@@ -82,24 +83,35 @@ namespace PolyVox
 #endif
 		{
 		public:
+			/// Construct a new Sampler
 			Sampler(SimpleVolume<VoxelType>* volume);
 			~Sampler();
 
-			Sampler& operator=(const Sampler& rhs) throw();
+			Sampler& operator=(const Sampler& rhs);
 
 			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
-			inline VoxelType getVoxel(void) const;			
-
+			/// Get the value of the current voxel
+			inline VoxelType getVoxel(void) const;
+			
+			/// Set the current voxel position
 			void setPosition(const Vector3DInt32& v3dNewPos);
+			/// Set the current voxel position
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
+			/// Set the value of the current voxel
 			inline bool setVoxel(VoxelType tValue);
 
+			/// Increase the \a x position by \a 1
 			void movePositiveX(void);
+			/// Increase the \a y position by \a 1
 			void movePositiveY(void);
+			/// Increase the \a z position by \a 1
 			void movePositiveZ(void);
 
+			/// Decrease the \a x position by \a 1
 			void moveNegativeX(void);
+			/// Decrease the \a y position by \a 1
 			void moveNegativeY(void);
+			/// Decrease the \a z position by \a 1
 			void moveNegativeZ(void);
 
 			inline VoxelType peekVoxel1nx1ny1nz(void) const;
@@ -140,11 +152,8 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		SimpleVolume
-		(
-			const Region& regValid,
-			uint16_t uBlockSideLength = 32
-		);
+		SimpleVolume(const Region& regValid, uint16_t uBlockSideLength = 32);
+
 		/// Destructor
 		~SimpleVolume();
 
@@ -165,7 +174,14 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-private:	
+	protected:
+		/// Copy constructor
+		SimpleVolume(const SimpleVolume& rhs);
+
+		/// Assignment operator
+		SimpleVolume& operator=(const SimpleVolume& rhs);
+
+	private:	
 		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
 
 		Block* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;

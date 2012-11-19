@@ -66,7 +66,7 @@ namespace PolyVox
     \return true if the Regions match.
     \see operator!=
     */
-    bool Region::operator==(const Region& rhs) const throw()
+    bool Region::operator==(const Region& rhs) const
     {
 		return ((m_v3dLowerCorner == rhs.m_v3dLowerCorner) && (m_v3dUpperCorner == rhs.m_v3dUpperCorner));
     }
@@ -77,7 +77,7 @@ namespace PolyVox
     \return true if the Regions do not match.
     \see operator==
     */
-    bool Region::operator!=(const Region& rhs) const throw()
+    bool Region::operator!=(const Region& rhs) const
     {
 		return !(*this == rhs);
     }
@@ -90,7 +90,47 @@ namespace PolyVox
 	const Vector3DInt32& Region::getUpperCorner(void) const
 	{
 		return m_v3dUpperCorner;
-	}	
+	}
+
+	int32_t Region::getWidthInVoxels(void) const
+	{
+		return getWidthInCells() + 1;
+	}
+
+	int32_t Region::getHeightInVoxels(void) const
+	{
+		return getHeightInCells() + 1;
+	}
+
+	int32_t Region::getDepthInVoxels(void) const
+	{
+		return getDepthInCells() + 1;
+	}
+
+	Vector3DInt32 Region::getDimensionsInVoxels(void) const
+	{
+		return getDimensionsInCells() + Vector3DInt32(1, 1, 1);
+	}
+
+	int32_t Region::getWidthInCells(void) const
+	{
+		return m_v3dUpperCorner.getX() - m_v3dLowerCorner.getX();
+	}
+
+	int32_t Region::getHeightInCells(void) const
+	{
+		return m_v3dUpperCorner.getY() - m_v3dLowerCorner.getY();
+	}
+
+	Vector3DInt32 Region::getDimensionsInCells(void) const
+	{
+		return m_v3dUpperCorner - m_v3dLowerCorner;
+	}
+
+	int32_t Region::getDepthInCells(void) const
+	{
+		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ();
+	}
 
 	void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)
 	{
@@ -168,6 +208,7 @@ namespace PolyVox
 		m_v3dUpperCorner.setZ((std::min)(m_v3dUpperCorner.getZ(), other.m_v3dUpperCorner.getZ()));
 	}
 
+	/// \deprecated Use getDepthInVoxels() or getDepthInCells() instead
 	int32_t Region::depth(void) const
 	{
 		//This function is deprecated and wrong.
@@ -175,6 +216,7 @@ namespace PolyVox
 		return m_v3dUpperCorner.getZ() - m_v3dLowerCorner.getZ();
 	}
 
+	/// \deprecated Use getHeightInVoxels() or getHeightInCells() instead
 	int32_t Region::height(void) const
 	{
 		//This function is deprecated and wrong.
@@ -198,6 +240,7 @@ namespace PolyVox
 		m_v3dUpperCorner += amount;
 	}
 
+	/// \deprecated Use getDimensionsInVoxels() or getDimensionsInCells() instead
 	Vector3DInt32 Region::dimensions(void)
 	{
 		//This function is deprecated and wrong.
@@ -205,6 +248,7 @@ namespace PolyVox
 		return m_v3dUpperCorner - m_v3dLowerCorner;
 	}
 
+	/// \deprecated Use getWidthInVoxels() or getWidthInCells() instead
 	int32_t Region::width(void) const
 	{
 		//This function is deprecated and wrong.

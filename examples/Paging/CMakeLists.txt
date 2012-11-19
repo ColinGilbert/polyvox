@@ -61,7 +61,7 @@ IF(MSVC)
 	SET_TARGET_PROPERTIES(PagingExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(PagingExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
-SET_PROPERTY(TARGET PagingExample PROPERTY FOLDER "examples/Paging")
+SET_PROPERTY(TARGET PagingExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows
 IF(WIN32)

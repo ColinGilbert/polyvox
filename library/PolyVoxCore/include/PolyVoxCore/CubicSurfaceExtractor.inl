@@ -58,10 +58,6 @@ namespace PolyVox
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 
-		uint32_t uRegionWidth  = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
-		uint32_t uRegionHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
-		uint32_t uRegionDepth  = m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 1;
-
 		m_vecQuads[NegativeX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
 		m_vecQuads[PositiveX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
 
@@ -87,75 +83,73 @@ namespace PolyVox
 
 					volumeSampler.setPosition(x,y,z);
 
+					uint32_t material; //Filled in by callback
 					typename VolumeType::VoxelType currentVoxel = volumeSampler.getVoxel();
-					bool currentVoxelIsSolid = currentVoxel.getMaterial() != 0;
-
 					typename VolumeType::VoxelType negXVoxel = volumeSampler.peekVoxel1nx0py0pz();
-					bool negXVoxelIsSolid = negXVoxel.getMaterial() != 0;
-
-					if(currentVoxelIsSolid != negXVoxelIsSolid)
-					{
-						uint32_t material = (std::max)(currentVoxel.getMaterial(), negXVoxel.getMaterial());
-
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);	
-						uint32_t v2 = addVertex(regX - 0.5f, regY + 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
-						uint32_t v3 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-
-						if(currentVoxelIsSolid > negXVoxelIsSolid)
-						{							
-							m_vecQuads[NegativeX][regX].push_back(Quad(v0, v1, v2, v3));
-						}
-						else											
-						{
-							m_vecQuads[PositiveX][regX].push_back(Quad(v0, v3, v2, v1));
-						}
-					}
-
 					typename VolumeType::VoxelType negYVoxel = volumeSampler.peekVoxel0px1ny0pz();
-					bool negYVoxelIsSolid = negYVoxel.getMaterial() != 0;
+					typename VolumeType::VoxelType negZVoxel = volumeSampler.peekVoxel0px0py1nz();
 
-					if(currentVoxelIsSolid != negYVoxelIsSolid)
+					// X
+					if(m_funcIsQuadNeededCallback(currentVoxel, negXVoxel, material))
 					{
-						int material = (std::max)(currentVoxel.getMaterial(),negYVoxel.getMaterial());
+						uint32_t v0 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+						uint32_t v2 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+						uint32_t v3 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v1 = addVertex(regX - 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);							
-						uint32_t v2 = addVertex(regX + 0.5f, regY - 0.5f, regZ + 0.5f, material, m_currentSliceVertices);
-						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-
-						if(currentVoxelIsSolid > negYVoxelIsSolid)
-						{
-							//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
-							m_vecQuads[NegativeY][regY].push_back(Quad(v0, v3, v2, v1));
-						}
-						else
-						{
-							//NOTE: For some reason y windong is opposite of X and Z. Investigate this...
-							m_vecQuads[PositiveY][regY].push_back(Quad(v0, v1, v2, v3));
-						}
+						m_vecQuads[NegativeX][regX].push_back(Quad(v0, v1, v2, v3));
 					}
 
-					typename VolumeType::VoxelType negZVoxel = volumeSampler.peekVoxel0px0py1nz();
-					bool negZVoxelIsSolid = negZVoxel.getMaterial() != 0;
-
-					if(currentVoxelIsSolid != negZVoxelIsSolid)
+					if(m_funcIsQuadNeededCallback(negXVoxel, currentVoxel, material))
 					{
-						int material = (std::max)(currentVoxel.getMaterial(), negZVoxel.getMaterial());
+						uint32_t v0 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+						uint32_t v2 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+						uint32_t v3 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
 
-						uint32_t v0 = addVertex(regX - 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v1 = addVertex(regX - 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v2 = addVertex(regX + 0.5f, regY + 0.5f, regZ - 0.5f, material, m_previousSliceVertices);
-						uint32_t v3 = addVertex(regX + 0.5f, regY - 0.5f, regZ - 0.5f, material, m_previousSliceVertices);							
-	
-						if(currentVoxelIsSolid > negZVoxelIsSolid)
-						{
-							m_vecQuads[NegativeZ][regZ].push_back(Quad(v0, v1, v2, v3));
-						}
-						else
-						{
-							m_vecQuads[PositiveZ][regZ].push_back(Quad(v0, v3, v2, v1));
-						}
+						m_vecQuads[PositiveX][regX].push_back(Quad(v0, v3, v2, v1));
+					}
+
+					// Y
+					if(m_funcIsQuadNeededCallback(currentVoxel, negYVoxel, material))
+					{
+						uint32_t v0 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v2 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+						uint32_t v3 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+
+						m_vecQuads[NegativeY][regY].push_back(Quad(v0, v1, v2, v3));
+					}
+
+					if(m_funcIsQuadNeededCallback(negYVoxel, currentVoxel, material))
+					{
+						uint32_t v0 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v2 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+						uint32_t v3 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) + 0.5f, material, m_currentSliceVertices);
+
+						m_vecQuads[PositiveY][regY].push_back(Quad(v0, v3, v2, v1));
+					}
+
+					// Z
+					if(m_funcIsQuadNeededCallback(currentVoxel, negZVoxel, material))
+					{
+						uint32_t v0 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v2 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v3 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+
+						m_vecQuads[NegativeZ][regZ].push_back(Quad(v0, v1, v2, v3));
+					}
+
+					if(m_funcIsQuadNeededCallback(negZVoxel, currentVoxel, material))
+					{
+						uint32_t v0 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v1 = addVertex(static_cast<float>(regX) - 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v2 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) + 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+						uint32_t v3 = addVertex(static_cast<float>(regX) + 0.5f, static_cast<float>(regY) - 0.5f, static_cast<float>(regZ) - 0.5f, material, m_previousSliceVertices);
+
+						m_vecQuads[PositiveZ][regZ].push_back(Quad(v0, v3, v2, v1));
 					}
 				}
 			}
@@ -219,7 +213,7 @@ namespace PolyVox
 			}
 
 			//If we have an existing vertex and the material matches then we can return it.
-			if(rEntry.uMaterial == uMaterialIn)
+			if(rEntry.uMaterial == static_cast<int32_t>(uMaterialIn))
 			{
 				return rEntry.iIndex;
 			}

@@ -3,6 +3,7 @@
 #include "Material.h"
 %}
 
+%include "DefaultIsQuadNeeded.h"
 %include "Material.h"
 
 %template(Material8) PolyVox::Material<uint8_t>;

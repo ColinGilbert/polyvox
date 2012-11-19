@@ -36,8 +36,10 @@ namespace PolyVox
 	typedef SimpleVolume<MaterialDensityPair88> Volume;
 	typedef SurfaceMesh<PositionMaterialNormal> Mesh;
 
-	void extractCubicMesh(Volume& volume, const Region& region, Mesh& resultMesh);
-	void extractSmoothMesh(Volume& volume, const Region& region, Mesh& resultMesh);
+	/// \deprecated
+	POLYVOX_DEPRECATED void extractCubicMesh(Volume& volume, const Region& region, Mesh& resultMesh);
+	/// \deprecated
+	POLYVOX_DEPRECATED void extractSmoothMesh(Volume& volume, const Region& region, Mesh& resultMesh);
 
 }
 

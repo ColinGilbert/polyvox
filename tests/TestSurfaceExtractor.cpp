@@ -50,7 +50,7 @@ public:
 		return voxel;
 	}
 
-	float convertToMaterial(float voxel)
+	float convertToMaterial(float /*voxel*/)
 	{
 		return 1;
 	}
@@ -83,7 +83,7 @@ void writeDensityValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 }
 
 template<typename VoxelType>
-void writeMaterialValueToVoxel(int valueToWrite, VoxelType& voxel)
+void writeMaterialValueToVoxel(int /*valueToWrite*/, VoxelType& /*voxel*/)
 {
 	//Most types don't have a material
 	return;
@@ -160,7 +160,9 @@ void TestSurfaceExtractor::testExecute()
 	SurfaceMesh<PositionMaterialNormal> mesh;
 
 	//Run the test for various voxel types.
-	testForType<int8_t>(mesh);
+	QBENCHMARK {
+		testForType<int8_t>(mesh);
+	}
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);

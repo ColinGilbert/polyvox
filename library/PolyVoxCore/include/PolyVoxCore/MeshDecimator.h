@@ -64,6 +64,8 @@ namespace PolyVox
 	/// The above applies for a cubic mesh, for a Marching Cubes mesh you need to parametise
 	/// the MeshDecimator and resulting SurfaceMesh on the 'PositionMaterialNormal' type
 	/// instead of the 'PositionMaterial' type.
+	///
+	/// \deprecated
 	template <typename VertexType>
 	class MeshDecimator
 	{
@@ -141,10 +143,10 @@ namespace PolyVox
 
 	public:
 		///Constructor
-		MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold = 0.95f);
+		POLYVOX_DEPRECATED MeshDecimator(const SurfaceMesh<VertexType>* pInputMesh, SurfaceMesh<VertexType>* pOutputMesh, float fEdgeCollapseThreshold = 0.95f);
 
 		///Performs the decimation.
-		void execute();
+		POLYVOX_DEPRECATED void execute();
 
 	private:
 

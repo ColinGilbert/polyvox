@@ -28,16 +28,26 @@ namespace PolyVox
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	RawVolume<VoxelType>::RawVolume
-	(
-		const Region& regValid
-	)
-	:BaseVolume<VoxelType>(regValid)
+	RawVolume<VoxelType>::RawVolume(const Region& regValid)
+		:BaseVolume<VoxelType>(regValid)
 	{
 		setBorderValue(VoxelType());
 
 		//Create a volume of the right size.
 		initialise(regValid);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	RawVolume<VoxelType>::RawVolume(const RawVolume<VoxelType>& /*rhs*/)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +58,19 @@ namespace PolyVox
 	{
 		delete[] m_pData;
 		m_pData = 0;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
+	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
+	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	///
+	/// \sa VolumeResampler
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	RawVolume<VoxelType>& RawVolume<VoxelType>::operator=(const RawVolume<VoxelType>& /*rhs*/)
+	{
+		assert(false); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

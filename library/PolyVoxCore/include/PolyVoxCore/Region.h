@@ -24,12 +24,27 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Region_H__
 #define __PolyVox_Region_H__
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Vector.h"
 
 namespace PolyVox
 {
+	/**
+	Represents a part of a Volume.
+
+	Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
+	it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
+	be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
+	of the volume, there by giving a number of meshes which can be culled and rendered seperately.
+
+	The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
+	bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
+	<em>inclusive</em>. The class also provides functions for modifying the regions in a variety of ways.
+
+	\Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
+	about these definitions.
+	*/
 #ifdef SWIG
 	class Region
 #else
@@ -45,12 +60,30 @@ namespace PolyVox
 		Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ);
 
 		///Equality Operator.
-        bool operator==(const Region& rhs) const throw();
+        bool operator==(const Region& rhs) const;
 		///Inequality Operator.
-        bool operator!=(const Region& rhs) const throw();
+        bool operator!=(const Region& rhs) const;
 
 		const Vector3DInt32& getLowerCorner(void) const;
 		const Vector3DInt32& getUpperCorner(void) const;
+
+		/// Gets the width of the region measured in voxels
+		int32_t getWidthInVoxels(void) const;
+		/// Gets the height of the region measured in voxels
+		int32_t getHeightInVoxels(void) const;
+		/// Gets the depth of the region measured in voxels
+		int32_t getDepthInVoxels(void) const;
+		/// Gets the dimensions of the region measured in voxels
+		Vector3DInt32 getDimensionsInVoxels(void) const;
+
+		/// Gets the width of the region measured in cells
+		int32_t getWidthInCells(void) const;
+		/// Gets the height of the region measured in cells
+		int32_t getHeightInCells(void) const;
+		/// Gets the depth of the region measured in cells
+		int32_t getDepthInCells(void) const;
+		/// Gets the dimensions of the region measured in cells
+		Vector3DInt32 getDimensionsInCells(void) const;
 
 		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
@@ -66,17 +99,17 @@ namespace PolyVox
 		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
 		void cropTo(const Region& other);
 		/// Deprecated and misleading
-		int32_t depth(void) const;
+		POLYVOX_DEPRECATED int32_t depth(void) const;
 		/// Deprecated and misleading
-		int32_t height(void) const;
+		POLYVOX_DEPRECATED int32_t height(void) const;
 		void shift(const Vector3DInt32& amount);
 		void shiftLowerCorner(const Vector3DInt32& amount);
 		void shiftUpperCorner(const Vector3DInt32& amount);
 		//FIXME - Add dilate and erode functions?
 		/// Deprecated and misleading
-		Vector3DInt32 dimensions(void);
+		POLYVOX_DEPRECATED Vector3DInt32 dimensions(void);
 		/// Deprecated and misleading
-		int32_t width(void) const;
+		POLYVOX_DEPRECATED int32_t width(void) const;
 
 	private:
 		Vector3DInt32 m_v3dLowerCorner;

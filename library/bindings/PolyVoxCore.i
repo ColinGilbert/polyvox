@@ -1,6 +1,8 @@
 %module PolyVoxCore
 
 #define POLYVOX_API
+%include "Impl/TypeDef.h"
+#define __attribute__(x) //Silence DEPRECATED errors
 
 //This macro allows us to use Python properties on our classes
 %define PROPERTY(type,name,getter,setter)
@@ -24,6 +26,9 @@ const char* __str__() {
 
 %feature("autodoc", "1");
 
+//This will rename "operator=" to "assign" since Python doesn't have assignment
+%rename(assign) *::operator=;
+
 %include "stdint.i"
 %include "std_vector.i"
 %include "Vector.i"
@@ -43,3 +48,4 @@ const char* __str__() {
 //%include "CubicSurfaceExtractor.i"
 //%include "CubicSurfaceExtractorWithNormals.i"
 //%include "MeshDecimator.i"
+

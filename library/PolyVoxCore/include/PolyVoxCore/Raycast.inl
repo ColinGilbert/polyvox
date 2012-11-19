@@ -23,63 +23,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	////////////////////////////////////////////////////////////////////////////////
-	/// Builds a Raycast object.
-	/// \param volData A pointer to the volume through which the ray will be cast.
-	/// \param v3dStart The starting position of the ray.
-	/// \param v3dDirectionAndLength The direction of the ray. The length of this vector also
-	/// represents the length of the ray.
-	/// \param result An instance of RaycastResult in which the result will be stored.
-	////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType>
-	Raycast<VolumeType>::Raycast(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result, polyvox_function<bool(const typename VolumeType::Sampler& sampler)> funcIsPassable)
-		:m_result(result)
-		,m_funcIsPassable(funcIsPassable)
-		,m_volData(volData)
-		,m_sampVolume(volData)
-		,m_v3dStart(v3dStart)
-		,m_v3dDirectionAndLength(v3dDirectionAndLength)
-	{
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dStart The starting position of the ray.
-	////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType>
-	void Raycast<VolumeType>::setStart(const Vector3DFloat& v3dStart)
-	{
-		m_v3dStart = v3dStart;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dDirectionAndLength The direction of the ray. The length of this vector also
-	/// represents the length of the ray.
-	////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType>
-	void Raycast<VolumeType>::setDirection(const Vector3DFloat& v3dDirectionAndLength)
-	{
-		//FIXME: We should add a warning when the ray direction is of length one, as this seems to be a common mistake. 
-		m_v3dDirectionAndLength = v3dDirectionAndLength;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// The result is stored in the RaycastResult instance which was passed to the constructor.
-	////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType>
-	void Raycast<VolumeType>::execute(void)
-	{
-		//The doRaycast function is assuming that it is iterating over the areas defined between
-		//voxels. We actually want to define the areas as being centered on voxels (as this is
-		//what the CubicSurfaceExtractor generates). We add (0.5,0.5,0.5) here to adjust for this.
-		Vector3DFloat v3dStart = m_v3dStart + Vector3DFloat(0.5f, 0.5f, 0.5f);
-
-		//Compute the end point
-		Vector3DFloat v3dEnd = v3dStart + m_v3dDirectionAndLength;
-
-		//Do the raycast
-		doRaycast(v3dStart.getX(), v3dStart.getY(), v3dStart.getZ(), v3dEnd.getX(), v3dEnd.getY(), v3dEnd.getZ());
-	}
-
 	// This function is based on Christer Ericson's code and description of the 'Uniform Grid Intersection Test' in
 	// 'Real Time Collision Detection'. The following information from the errata on the book website is also relevent:
 	//
@@ -92,8 +35,8 @@ namespace PolyVox
 	//	Thanks to Jetro Lauha of Fathammer in Helsinki, Finland for reporting this error.
 	//
 	//	Jetro also points out that the computations of i, j, iend, and jend are incorrectly rounded if the line
-	//  coordinates are allowed to go negative. While that was not really the intent of the code — that is, I
-	//  assumed grids to be numbered from (0, 0) to (m, n) — I'm at fault for not making my assumption clear.
+	//  coordinates are allowed to go negative. While that was not really the intent of the code -- that is, I
+	//  assumed grids to be numbered from (0, 0) to (m, n) -- I'm at fault for not making my assumption clear.
 	//  Where it is important to handle negative line coordinates the computation of these variables should be
 	//  changed to something like this:
 	//
@@ -108,10 +51,38 @@ namespace PolyVox
 	//	page 328. The if-statement that reads "if (ty <= tx && ty <= tz)" has a superfluous condition.
 	//  It should simply read "if (ty <= tz)".
 	//
-	//	This error was reported by Joey Hammer (PixelActive). 
-	template<typename VolumeType>
-	void Raycast<VolumeType>::doRaycast(float x1, float y1, float z1, float x2, float y2, float z2)
+	//	This error was reported by Joey Hammer (PixelActive).
+	
+	/**
+	 * Cast a ray through a volume by specifying the start and end positions
+	 * 
+	 * The ray will move from \a v3dStart to \a v3dEnd, calling \a callback for each
+	 * voxel it passes through until \a callback returns \a false. In this case it
+	 * returns a RaycastResults::Interupted. If it passes from start to end
+	 * without \a callback returning \a false, it returns RaycastResults::Completed.
+	 * 
+	 * \param volData The volume to pass the ray though
+	 * \param v3dStart The start position in the volume
+	 * \param v3dEnd The end position in the volume
+	 * \param callback The callback to call for each voxel
+	 * 
+	 * \return A RaycastResults designating whether the ray hit anything or not
+	 */
+	template<typename VolumeType, typename Callback>
+	RaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback)
 	{
+		typename VolumeType::Sampler sampler(volData);
+
+		//The doRaycast function is assuming that it is iterating over the areas defined between
+		//voxels. We actually want to define the areas as being centered on voxels (as this is
+		//what the CubicSurfaceExtractor generates). We add 0.5 here to adjust for this.
+		float x1 = v3dStart.getX() + 0.5f;
+		float y1 = v3dStart.getY() + 0.5f;
+		float z1 = v3dStart.getZ() + 0.5f;
+		float x2 = v3dEnd.getX() + 0.5f;
+		float y2 = v3dEnd.getY() + 0.5f;
+		float z2 = v3dEnd.getZ() + 0.5f;
+		
 		int i = (int)floorf(x1);
 		int j = (int)floorf(y1);
 		int k = (int)floorf(z1);
@@ -135,18 +106,14 @@ namespace PolyVox
 		float minz = floorf(z1), maxz = minz + 1.0f;
 		float tz = ((z1 > z2) ? (z1 - minz) : (maxz - z1)) * deltatz;
 
-		m_sampVolume.setPosition(i,j,k);
-		m_result.previousVoxel = Vector3DInt32(i,j,k);
+		sampler.setPosition(i,j,k);
 
 		for(;;)
 		{
-			if(!m_funcIsPassable(m_sampVolume))
+			if(!callback(sampler))
 			{
-				m_result.foundIntersection = true;
-				m_result.intersectionVoxel = Vector3DInt32(i,j,k);
-				return;
+				return RaycastResults::Interupted;
 			}
-			m_result.previousVoxel = Vector3DInt32(i,j,k);
 
 			if(tx <= ty && tx <= tz)
 			{
@@ -154,30 +121,58 @@ namespace PolyVox
 				tx += deltatx;
 				i += di;
 
-				if(di == 1) m_sampVolume.movePositiveX();
-				if(di == -1) m_sampVolume.moveNegativeX();
+				if(di == 1) sampler.movePositiveX();
+				if(di == -1) sampler.moveNegativeX();
 			} else if (ty <= tz)
 			{
 				if(j == jend) break;
 				ty += deltaty;
 				j += dj;
 
-				if(dj == 1) m_sampVolume.movePositiveY();
-				if(dj == -1) m_sampVolume.moveNegativeY();
+				if(dj == 1) sampler.movePositiveY();
+				if(dj == -1) sampler.moveNegativeY();
 			} else 
 			{
 				if(k == kend) break;
 				tz += deltatz;
 				k += dk;
 
-				if(dk == 1) m_sampVolume.movePositiveZ();
-				if(dk == -1) m_sampVolume.moveNegativeZ();
+				if(dk == 1) sampler.movePositiveZ();
+				if(dk == -1) sampler.moveNegativeZ();
 			}
 		}
 
-		//Didn't hit anything
-		m_result.foundIntersection = false;
-		m_result.intersectionVoxel = Vector3DInt32(0,0,0);
-		m_result.previousVoxel = Vector3DInt32(0,0,0);
+		return RaycastResults::Completed;
+	}
+
+	/**
+	 * Cast a ray through a volume by specifying the start and a direction
+	 * 
+	 * The ray will move from \a v3dStart along \a v3dDirectionAndLength, calling 
+	 * \a callback for each voxel it passes through until \a callback returns 
+	 * \a false. In this case it returns a RaycastResults::Interupted. If it 
+	 * passes from start to end without \a callback returning \a false, it 
+	 * returns RaycastResults::Completed.
+	 * 
+	 * \note These has been confusion in the past with people not realising
+	 * that the length of the direction vector is important. Most graphics API can provide
+	 * a camera position and view direction for picking purposes, but the view direction is
+	 * usually normalised (i.e. of length one). If you use this view direction directly you
+	 * will only iterate over a single voxel and won't find what you are looking for. Instead
+	 * you must scale the direction vector so that it's length represents the maximum distance
+	 * over which you want the ray to be cast.
+	 * 
+	 * \param volData The volume to pass the ray though
+	 * \param v3dStart The start position in the volume
+	 * \param v3dDirectionAndLength The direction and length of the ray
+	 * \param callback The callback to call for each voxel
+	 * 
+	 * \return A RaycastResults designating whether the ray hit anything or not
+	 */
+	template<typename VolumeType, typename Callback>
+	RaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback)
+	{
+		Vector3DFloat v3dEnd = v3dStart + v3dDirectionAndLength;
+		return raycastWithEndpoints<VolumeType, Callback>(volData, v3dStart, v3dEnd, callback);
 	}
 }

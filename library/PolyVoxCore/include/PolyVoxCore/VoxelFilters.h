@@ -24,12 +24,14 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VoxelFilters_H__
 #define __PolyVox_VoxelFilters_H__
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 namespace PolyVox
 {
 	template< typename VolumeType >
 	float computeSmoothedVoxel(typename VolumeType::Sampler& volIter);
 }
+
+#include "PolyVoxCore/VoxelFilters.inl"
 
 #endif

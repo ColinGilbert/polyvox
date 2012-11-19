@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/GradientEstimators.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/MeshDecimator.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 
 //Some namespaces we need
@@ -92,10 +91,6 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 					MarchingCubesSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
-					polyvox_shared_ptr< SurfaceMesh<PositionMaterialNormal> > decimatedMesh(new SurfaceMesh<PositionMaterialNormal>);
-					MeshDecimator<PositionMaterialNormal> decimator(mesh.get(), decimatedMesh.get(), 0.95f);
-					decimator.execute();
-
 					//decimatedMesh->generateAveragedFaceNormals(true);
 
 					//computeNormalsForVertices(m_volData, *(decimatedMesh.get()), SOBEL_SMOOTHED);
@@ -110,12 +105,12 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 						if(m_bUseOpenGLVertexBufferObjects)
 						{
-							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(decimatedMesh.get()));					
+							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(mesh.get()));					
 							m_mapOpenGLSurfaceMeshes.insert(make_pair(v3dRegPos, openGLSurfaceMesh));
 						}
 						//else
 						//{
-							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, decimatedMesh));
+							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, mesh));
 						//}
 						//delete meshCurrent;
 					}

@@ -28,13 +28,11 @@ PROJECT(PolyVoxCore)
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
-	source/GradientEstimators.cpp
 	source/Log.cpp
 	source/MeshDecimator.cpp
 	source/Region.cpp
 	source/SimpleInterface.cpp
 	source/VertexTypes.cpp
-	source/VoxelFilters.cpp
 )
 
 #Projects headers files
@@ -59,6 +57,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Density.h
 	include/PolyVoxCore/GradientEstimators.h
 	include/PolyVoxCore/GradientEstimators.inl
+	include/PolyVoxCore/Interpolation.h
 	include/PolyVoxCore/IteratorController.h
 	include/PolyVoxCore/IteratorController.inl
 	include/PolyVoxCore/LargeVolume.h
@@ -79,8 +78,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/RawVolumeSampler.inl
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
-	include/PolyVoxCore/RaycastWithCallback.h
-	include/PolyVoxCore/RaycastWithCallback.inl
 	include/PolyVoxCore/Region.h
 	include/PolyVoxCore/SimpleInterface.h
 	include/PolyVoxCore/SimpleVolume.h
@@ -95,28 +92,29 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/VolumeResampler.h
 	include/PolyVoxCore/VolumeResampler.inl
 	include/PolyVoxCore/VoxelFilters.h
+	include/PolyVoxCore/VoxelFilters.inl
 )
 
 SET(IMPL_SRC_FILES
-	source/PolyVoxImpl/MarchingCubesTables.cpp
-	source/PolyVoxImpl/RandomUnitVectors.cpp
-	source/PolyVoxImpl/RandomVectors.cpp
-	source/PolyVoxImpl/Utility.cpp
+	source/Impl/MarchingCubesTables.cpp
+	source/Impl/RandomUnitVectors.cpp
+	source/Impl/RandomVectors.cpp
+	source/Impl/Utility.cpp
 )
 
 SET(IMPL_INC_FILES
-	include/PolyVoxImpl/ArraySizesImpl.h
-	include/PolyVoxImpl/ArraySizesImpl.inl
-	include/PolyVoxImpl/AStarPathfinderImpl.h
-	include/PolyVoxImpl/Block.h
-	include/PolyVoxImpl/Block.inl
-	include/PolyVoxImpl/MarchingCubesTables.h
-	include/PolyVoxImpl/RandomUnitVectors.h
-	include/PolyVoxImpl/RandomVectors.h
-	include/PolyVoxImpl/SubArray.h
-	include/PolyVoxImpl/SubArray.inl
-	include/PolyVoxImpl/TypeDef.h
-	include/PolyVoxImpl/Utility.h
+	include/PolyVoxCore/Impl/ArraySizesImpl.h
+	include/PolyVoxCore/Impl/ArraySizesImpl.inl
+	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
+	include/PolyVoxCore/Impl/Block.h
+	include/PolyVoxCore/Impl/Block.inl
+	include/PolyVoxCore/Impl/MarchingCubesTables.h
+	include/PolyVoxCore/Impl/RandomUnitVectors.h
+	include/PolyVoxCore/Impl/RandomVectors.h
+	include/PolyVoxCore/Impl/SubArray.h
+	include/PolyVoxCore/Impl/SubArray.inl
+	include/PolyVoxCore/Impl/TypeDef.h
+	include/PolyVoxCore/Impl/Utility.h
 )
 
 #NOTE: The following line should be uncommented when building shared libs.
@@ -126,8 +124,8 @@ SET(IMPL_INC_FILES
 SOURCE_GROUP("Sources" FILES ${CORE_SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${CORE_INC_FILES})
 
-SOURCE_GROUP("Sources\\PolyVoxImpl" FILES ${IMPL_SRC_FILES})
-SOURCE_GROUP("Headers\\PolyVoxImpl" FILES ${IMPL_INC_FILES})
+SOURCE_GROUP("Sources\\Impl" FILES ${IMPL_SRC_FILES})
+SOURCE_GROUP("Headers\\Impl" FILES ${IMPL_INC_FILES})
 
 #Tell CMake the paths
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -144,7 +142,7 @@ IF(LIBRARY_TYPE STREQUAL "DYNAMIC")
 	ADD_LIBRARY(PolyVoxCore SHARED ${CORE_SRC_FILES} ${CORE_INC_FILES} ${IMPL_SRC_FILES} ${IMPL_INC_FILES})
 	SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES COMPILE_FLAGS "-DPOLYVOX_SHARED_EXPORTS")
 ENDIF()
-SET_PROPERTY(TARGET PolyVoxCore PROPERTY FOLDER "library/PolyVoxCore")
+SET_PROPERTY(TARGET PolyVoxCore PROPERTY FOLDER "Library")
 
 SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
 IF(MSVC)
@@ -159,7 +157,7 @@ IF(WIN32)
 		ARCHIVE DESTINATION PolyVoxCore/lib COMPONENT library
 	)
 
-	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
+	#Install the core header files, including the ones in the Impl subfolder.
 	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
 	
 	#On windows, we also install the debug information. It's unfortunate that we have to hard-code
@@ -174,6 +172,6 @@ ELSE(WIN32)
 		ARCHIVE DESTINATION lib COMPONENT library
 	)
 
-	#Install the core header files, including the ones in the PolyVoxImpl subfolder.
+	#Install the core header files, including the ones in the Impl subfolder.
 	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
 ENDIF(WIN32)

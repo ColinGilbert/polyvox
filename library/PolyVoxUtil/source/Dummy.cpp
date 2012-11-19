@@ -1,4 +1,4 @@
-#include "PolyVoxImpl/TypeDef.h"
+#include "PolyVoxCore/Impl/TypeDef.h"
 
 namespace PolyVox
 {	

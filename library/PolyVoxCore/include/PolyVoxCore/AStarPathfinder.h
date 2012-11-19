@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_AStarPathfinder_H__
 #define __PolyVox_AStarPathfinder_H__
 
-#include "PolyVoxImpl/AStarPathfinderImpl.h"
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/AStarPathfinderImpl.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
 
@@ -70,7 +70,7 @@ namespace PolyVox
 			std::list<Vector3DInt32>* listResult,
 			float fHBias = 1.0,
 			uint32_t uMaxNoOfNodes = 10000,
-			Connectivity connectivity = TwentySixConnected,
+			Connectivity requiredConnectivity = TwentySixConnected,
 			polyvox_function<bool (const VolumeType*, const Vector3DInt32&)> funcIsVoxelValidForPath = &aStarDefaultVoxelValidator,
 			polyvox_function<void (float)> funcProgressCallback = 0
 		)
@@ -78,7 +78,7 @@ namespace PolyVox
 			,start(v3dStart)
 			,end(v3dEnd)
 			,result(listResult)
-			,connectivity(connectivity)
+			,connectivity(requiredConnectivity)
 			,hBias(fHBias)
 			,maxNumberOfNodes(uMaxNoOfNodes)
 			,isVoxelValidForPath(funcIsVoxelValidForPath)
@@ -174,7 +174,8 @@ namespace PolyVox
 		float SixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
 		float EighteenConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
 		float TwentySixConnectedCost(const Vector3DInt32& a, const Vector3DInt32& b);
-		float computeH(const Vector3DInt32& a, const Vector3DInt32& b);		
+		float computeH(const Vector3DInt32& a, const Vector3DInt32& b);
+		uint32_t hash(uint32_t a);
 
 		//Node containers
 		AllNodesContainer allNodes;

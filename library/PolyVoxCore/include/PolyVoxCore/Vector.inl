@@ -30,7 +30,7 @@ namespace PolyVox
     \param y y component to set.
     */
     template <uint32_t Size,typename Type>
-        Vector<Size,Type>::Vector(Type x, Type y) throw()
+        Vector<Size,Type>::Vector(Type x, Type y)
     {
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -44,7 +44,7 @@ namespace PolyVox
 	\param z z component to set.
 	*/
 	template <uint32_t Size,typename Type>
-		Vector<Size,Type>::Vector(Type x, Type y, Type z) throw()
+		Vector<Size,Type>::Vector(Type x, Type y, Type z)
 	{
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -60,7 +60,7 @@ namespace PolyVox
 	\param w w component to set.
 	*/
 	template <uint32_t Size,typename Type>
-		Vector<Size,Type>::Vector(Type x, Type y, Type z, Type w) throw()
+		Vector<Size,Type>::Vector(Type x, Type y, Type z, Type w)
 	{
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -72,7 +72,7 @@ namespace PolyVox
 	Creates a Vector object but does not initialise it.
 	*/
 	template <uint32_t Size, typename Type>
-		Vector<Size, Type>::Vector(void) throw()
+		Vector<Size, Type>::Vector(void)
 	{
 	}
 
@@ -81,7 +81,7 @@ namespace PolyVox
     \param vector A reference to the Vector to be copied.
     */
     template <uint32_t Size, typename Type>
-        Vector<Size, Type>::Vector(const Vector<Size, Type>& vector) throw()
+        Vector<Size, Type>::Vector(const Vector<Size, Type>& vector)
     {
 		std::memcpy(m_tElements, vector.m_tElements, sizeof(Type) * Size);
     }
@@ -97,7 +97,7 @@ namespace PolyVox
 	*/
 	template <uint32_t Size, typename Type>
 		template <typename CastType>
-		Vector<Size, Type>::Vector(const Vector<Size, CastType>& vector) throw()
+		Vector<Size, Type>::Vector(const Vector<Size, CastType>& vector)
 	{
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -109,7 +109,7 @@ namespace PolyVox
     Destroys the Vector.
     */
     template <uint32_t Size, typename Type>
-        Vector<Size, Type>::~Vector(void) throw()
+        Vector<Size, Type>::~Vector(void)
     {
     }
 
@@ -119,7 +119,7 @@ namespace PolyVox
     \return A reference to the result to allow chaining.
     */
     template <uint32_t Size, typename Type>
-        Vector<Size, Type>& Vector<Size, Type>::operator=(const Vector<Size, Type>& rhs) throw()
+        Vector<Size, Type>& Vector<Size, Type>::operator=(const Vector<Size, Type>& rhs)
     {
         if(this == &rhs)
 		{
@@ -136,7 +136,7 @@ namespace PolyVox
     \see operator!=
     */
     template <uint32_t Size, typename Type>
-        inline bool Vector<Size, Type>::operator==(const Vector<Size, Type> &rhs) const throw()
+        inline bool Vector<Size, Type>::operator==(const Vector<Size, Type> &rhs) const
     {
 		bool equal = true;
         for(uint32_t ct = 0; ct < Size; ++ct)
@@ -157,7 +157,7 @@ namespace PolyVox
     \see operator==
     */
     template <uint32_t Size, typename Type>
-        inline bool Vector<Size, Type>::operator!=(const Vector<Size, Type> &rhs) const throw()
+        inline bool Vector<Size, Type>::operator!=(const Vector<Size, Type> &rhs) const
     {
 		return !(*this == rhs); //Just call equality operator and invert the result.
     }
@@ -170,7 +170,7 @@ namespace PolyVox
     \see operator!=
     */
     template <uint32_t Size, typename Type>
-        inline bool Vector<Size, Type>::operator<(const Vector<Size, Type> &rhs) const throw()
+        inline bool Vector<Size, Type>::operator<(const Vector<Size, Type> &rhs) const
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -188,7 +188,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator+=(const Vector<Size, Type>& rhs) throw()
+        inline Vector<Size, Type>& Vector<Size, Type>::operator+=(const Vector<Size, Type>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -203,7 +203,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator-=(const Vector<Size, Type>& rhs) throw()
+        inline Vector<Size, Type>& Vector<Size, Type>::operator-=(const Vector<Size, Type>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -218,7 +218,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Vector<Size, Type>& rhs) throw()
+        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Vector<Size, Type>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -233,7 +233,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Vector<Size, Type>& rhs) throw()
+        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Vector<Size, Type>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -248,7 +248,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Type& rhs) throw()
+        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Type& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -263,7 +263,7 @@ namespace PolyVox
 	\return The resulting Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Type& rhs) throw()
+        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Type& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -279,7 +279,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
 	{
 		Vector<Size,Type> result = lhs;
 		result += rhs;
@@ -293,7 +293,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
 	{
 		Vector<Size,Type> result = lhs;
 		result -= rhs;
@@ -307,7 +307,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
 	{
 		Vector<Size,Type> result = lhs;
 		result *= rhs;
@@ -321,7 +321,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs) throw()
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
 	{
 		Vector<Size,Type> result = lhs;
 		result /= rhs;
@@ -335,7 +335,7 @@ namespace PolyVox
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs)
 	{
 		Vector<Size,Type> result = lhs;
 		result *= rhs;
@@ -349,7 +349,7 @@ namespace PolyVox
 	\return The resulting Vector.
     */
 	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs) throw()
+	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs)
 	{
 		Vector<Size,Type> result = lhs;
 		result /= rhs;
@@ -363,7 +363,7 @@ namespace PolyVox
     \return A reference to the output stream to allow chaining.
     */
     template <uint32_t Size, typename Type>
-        std::ostream& operator<<(std::ostream& os, const Vector<Size, Type>& vector) throw()
+        std::ostream& operator<<(std::ostream& os, const Vector<Size, Type>& vector)
     {
         os << "(";
 		for(uint32_t ct = 0; ct < Size; ++ct)
@@ -384,7 +384,7 @@ namespace PolyVox
 	\return The element.
 	*/
 	template <uint32_t Size, typename Type>
-		inline Type Vector<Size, Type>::getElement(uint32_t index) const throw()
+		inline Type Vector<Size, Type>::getElement(uint32_t index) const
 	{
 		return m_tElements[index];
 	}
@@ -393,7 +393,7 @@ namespace PolyVox
     \return A const reference to the X component of a 1, 2, 3, or 4 dimensional Vector.
     */
     template <uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::getX(void) const throw()
+        inline Type Vector<Size, Type>::getX(void) const
     {
         return m_tElements[0];
     }	
@@ -402,7 +402,7 @@ namespace PolyVox
 	\return A const reference to the Y component of a 2, 3, or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::getY(void) const throw()
+        inline Type Vector<Size, Type>::getY(void) const
     {
         return m_tElements[1];
     }	
@@ -411,7 +411,7 @@ namespace PolyVox
 	\return A const reference to the Z component of a 3 or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::getZ(void) const throw()
+        inline Type Vector<Size, Type>::getZ(void) const
     {
         return m_tElements[2];
     }	
@@ -420,7 +420,7 @@ namespace PolyVox
 	\return A const reference to the W component of a 4 dimensional Vector.
 	*/
 	template <uint32_t Size, typename Type>
-		inline Type Vector<Size, Type>::getW(void) const throw()
+		inline Type Vector<Size, Type>::getW(void) const
 	{
 		return m_tElements[3];
 	}  
@@ -430,7 +430,7 @@ namespace PolyVox
 	\param tValue The new value for the element.
 	*/
 	template <uint32_t Size, typename Type>
-		inline void Vector<Size, Type>::setElement(uint32_t index, Type tValue) throw()
+		inline void Vector<Size, Type>::setElement(uint32_t index, Type tValue)
 	{
 		m_tElements[index] = tValue;
 	}
@@ -441,7 +441,7 @@ namespace PolyVox
     \param y y component to set.
     */
     template <uint32_t Size,typename Type>
-        inline void Vector<Size,Type>::setElements(Type x, Type y) throw()
+        inline void Vector<Size,Type>::setElements(Type x, Type y)
     {
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -455,7 +455,7 @@ namespace PolyVox
 	\param z z component to set.
 	*/
 	template <uint32_t Size,typename Type>
-		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z) throw()
+		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z)
 	{
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -471,7 +471,7 @@ namespace PolyVox
 	\param w w component to set.
 	*/
 	template <uint32_t Size,typename Type>
-		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z, Type w) throw()
+		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z, Type w)
 	{
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -483,44 +483,44 @@ namespace PolyVox
 	\param tX The new value for the X component of a 1, 2, 3, or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setX(Type tX) throw()
+        inline void Vector<Size, Type>::setX(Type tX)
     {
         m_tElements[0] = tX;
     }
 
 	/**
-	\param tX The new value for the Y component of a 2, 3, or 4 dimensional Vector.
+	\param tY The new value for the Y component of a 2, 3, or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setY(Type tY) throw()
+        inline void Vector<Size, Type>::setY(Type tY)
     {
         m_tElements[1] = tY;
     }
 
 	/**
-	\param tX The new value for the Z component of a 3 or 4 dimensional Vector.
+	\param tZ The new value for the Z component of a 3 or 4 dimensional Vector.
 	*/
     template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setZ(Type tZ) throw()
+        inline void Vector<Size, Type>::setZ(Type tZ)
     {
         m_tElements[2] = tZ;
     }
 
 	/**
-	\param tX The new value for the W component of a 4 dimensional Vector.
+	\param tW The new value for the W component of a 4 dimensional Vector.
 	*/
 	template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setW(Type tW) throw()
+        inline void Vector<Size, Type>::setW(Type tW)
     {
         m_tElements[3] = tW;
     }
 
 	/**
-	NOTE: This function does not make much sense on integer Vectors.
+	\note This function does not make much sense on integer Vectors.
     \return Length of the Vector.
     */
     template <uint32_t Size, typename Type>
-        inline double Vector<Size, Type>::length(void) const throw()
+        inline double Vector<Size, Type>::length(void) const
     {
         return sqrt(lengthSquared());
     }
@@ -529,7 +529,7 @@ namespace PolyVox
     \return Squared length of the Vector.
     */
     template <uint32_t Size, typename Type>
-        inline double Vector<Size, Type>::lengthSquared(void) const throw()
+        inline double Vector<Size, Type>::lengthSquared(void) const
     {
 		double result = 0.0f;
 		for(uint32_t ct = 0; ct < Size; ++ct)
@@ -543,13 +543,13 @@ namespace PolyVox
     This function is commutative, such that a.angleTo(b) == b.angleTo(a). The angle
     returned is in radians and varies between 0 and 3.14(pi). It is always positive.
 
-	NOTE: This function does not make much sense on integer Vectors.
+	\note This function does not make much sense on integer Vectors.
 
-    \param Vector3D The Vector to find the angle to.
+    \param vector The Vector to find the angle to.
     \return The angle between them in radians.
     */
     template <uint32_t Size, typename Type>
-        inline double Vector<Size, Type>::angleTo(const Vector<Size, Type>& vector) const throw()
+        inline double Vector<Size, Type>::angleTo(const Vector<Size, Type>& vector) const
     {
         return acos(dot(vector) / (vector.length() * this->length()));
     }
@@ -562,13 +562,12 @@ namespace PolyVox
 	right-hand rule such that if the two vectors are given by the index
 	finger and middle finger respectively then the cross product is given
 	by the thumb.
-    \param a first Vector.
-    \param b Second Vector.
+    \param vector The vector to cross with this
     \return The value of the cross product.
     \see dot()
     */
     template <uint32_t Size, typename Type>
-        inline Vector<Size, Type> Vector<Size, Type>::cross(const Vector<Size, Type>& vector) const throw()
+        inline Vector<Size, Type> Vector<Size, Type>::cross(const Vector<Size, Type>& vector) const
     {
         Type i = vector.getZ() * this->getY() - vector.getY() * this->getZ();
         Type j = vector.getX() * this->getZ() - vector.getZ() * this->getX();
@@ -584,7 +583,7 @@ namespace PolyVox
     \see cross()
     */
     template <uint32_t Size, typename Type>
-    inline Type Vector<Size, Type>::dot(const Vector<Size, Type>& rhs) const throw()
+    inline Type Vector<Size, Type>::dot(const Vector<Size, Type>& rhs) const
     {
         Type dotProduct = static_cast<Type>(0);
 		for(uint32_t ct = 0; ct < Size; ++ct)
@@ -597,20 +596,20 @@ namespace PolyVox
     /**
     Divides the i, j, and k components by the length to give a Vector of length 1.0.
 
-	NOTE: This function does not make much sense on integer Vectors.
+	\note This function does not make much sense on integer Vectors.
     */
     template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::normalise(void) throw()
+        inline void Vector<Size, Type>::normalise(void)
     {
-        double length = this->length();
+        Type tLength = static_cast<Type>(this->length());
 		//FIXME - throw div by zero exception?
-		if(length < 0.0001f)
+		if(tLength < 0.0001f)
 		{
 			return;
 		}
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] /= static_cast<Type>(length);
+			m_tElements[ct] /= tLength;
 		}
     }
 }//namespace PolyVox

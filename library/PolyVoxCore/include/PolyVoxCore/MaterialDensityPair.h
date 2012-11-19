@@ -27,21 +27,13 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
 #include "PolyVoxCore/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 namespace PolyVox
 {
 	/// This class represents a voxel storing only a density.
 	////////////////////////////////////////////////////////////////////////////////
-	/// In order to perform a surface extraction on a LargeVolume, PolyVox needs the underlying
-	/// voxel type to provide both getDensity() and getMaterial() functions. The getDensity()
-	/// function is used to determine if a voxel is 'solid', and if it is then the getMaterial()
-	/// funtion is used to determine what material should be assigned to the resulting mesh.
-	///
-	/// This class meets these requirements, and does so by storing and returning both a material
-	/// and a density value. Via the template parameters it is possible to control how much
-	/// precision is given to each. For example, if you create a class with 8 bits of storage,
-	/// you might choose to allocate 6 bits for the density and 2 bits for the material.
+	/// Detailed description...
 	///
 	/// \sa Density, Material
 	////////////////////////////////////////////////////////////////////////////////
@@ -49,22 +41,15 @@ namespace PolyVox
 	class MaterialDensityPair
 	{
 	public:
-		//We expose DensityType and MaterialType in this way so that, when code is
-		//templatised on voxel type, it can determine the underlying storage type
-		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
-		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
-		typedef Type DensityType;
-		typedef Type MaterialType;
-
 		MaterialDensityPair() : m_uMaterial(0), m_uDensity(0) {}
 		MaterialDensityPair(Type uMaterial, Type uDensity) : m_uMaterial(uMaterial), m_uDensity(uDensity) {}
 
-		bool operator==(const MaterialDensityPair& rhs) const throw()
+		bool operator==(const MaterialDensityPair& rhs) const
 		{
 			return (m_uMaterial == rhs.m_uMaterial) && (m_uDensity == rhs.m_uDensity);
 		};
 
-		bool operator!=(const MaterialDensityPair& rhs) const throw()
+		bool operator!=(const MaterialDensityPair& rhs) const
 		{
 			return !(*this == rhs);
 		}
@@ -87,29 +72,29 @@ namespace PolyVox
 			return *this;
 		}
 
-		DensityType getDensity() const throw() { return m_uDensity; }
-		MaterialType getMaterial() const throw() { return m_uMaterial; }
+		Type getDensity() const { return m_uDensity; }
+		Type getMaterial() const { return m_uMaterial; }
 
-		void setDensity(DensityType uDensity) { m_uDensity = uDensity; }
-		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
+		void setDensity(Type uDensity) { m_uDensity = uDensity; }
+		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 
-		static DensityType getMaxDensity() throw() { return (0x01 << NoOfDensityBits) - 1; }
-		static DensityType getMinDensity() throw() { return 0; }
+		static Type getMaxDensity() { return (0x01 << NoOfDensityBits) - 1; }
+		static Type getMinDensity() { return 0; }
 
 	private:
-		MaterialType m_uMaterial : NoOfMaterialBits;
-		DensityType m_uDensity : NoOfDensityBits;
+		Type m_uMaterial : NoOfMaterialBits;
+		Type m_uDensity : NoOfDensityBits;
 	};
 
 	template<typename Type, uint8_t NoOfMaterialBits, uint8_t NoOfDensityBits>
 	class DefaultIsQuadNeeded< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
 	{
 	public:
-		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, float& materialToUse)
+		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, uint32_t& materialToUse)
 		{
 			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
-				materialToUse = static_cast<float>(back.getMaterial());
+				materialToUse = static_cast<uint32_t>(back.getMaterial());
 				return true;
 			}
 			else

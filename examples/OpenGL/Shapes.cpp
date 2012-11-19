@@ -33,11 +33,11 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / static_cast<int32_t>(2);
 
 	//This three-level for loop iterates over every voxel in the volume
-	for (int z = 0; z < volData.getWidth(); z++)
+	for (int z = 0; z < volData.getDepth(); z++)
 	{
 		for (int y = 0; y < volData.getHeight(); y++)
 		{
-			for (int x = 0; x < volData.getDepth(); x++)
+			for (int x = 0; x < volData.getWidth(); x++)
 			{
 				//Store our current position as a vector...
 				Vector3DInt32 v3dCurrentPos(x,y,z);	
@@ -57,8 +57,8 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 
 void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
-	int maxDen = MaterialDensityPair44::getMaxDensity();
-	int minDen = MaterialDensityPair44::getMinDensity();
+	uint8_t maxDen = MaterialDensityPair44::getMaxDensity();
+	uint8_t minDen = MaterialDensityPair44::getMinDensity();
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
 	{

@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Material_H__
 #define __PolyVox_Material_H__
 
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
 
@@ -34,14 +34,7 @@ namespace PolyVox
 {
 	///This class represents a voxel storing only a material.
 	////////////////////////////////////////////////////////////////////////////////
-	/// In order to perform a surface extraction on a LargeVolume, PolyVox needs the underlying
-	/// voxel type to provide both getDensity() and getMaterial() functions. The getDensity()
-	/// function is used to determine if a voxel is 'solid', and if it is then the getMaterial()
-	/// funtion is used to determine what material should be assigned to the resulting mesh.
-	///
-	/// This class meets these requirements, although it only actually stores a material value.
-	/// For the getDensity() function it simply returns the smallest possible density if the
-	/// material is zero and the largest possible density if the material is not zero.
+	/// Detailed description...
 	///
 	/// \sa Density, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
@@ -52,31 +45,30 @@ namespace PolyVox
 	class Material
 	{
 	public:
-		//We expose DensityType and MaterialType in this way so that, when code is
-		//templatised on voxel type, it can determine the underlying storage type
-		//using code such as 'VoxelType::DensityType value = voxel.getDensity()'
-		//or 'VoxelType::MaterialType value = voxel.getMaterial()'.
-		typedef int32_t DensityType;
-		typedef Type MaterialType;
-
 		Material() : m_uMaterial(0) {}
-		Material(MaterialType uMaterial) : m_uMaterial(uMaterial) {}
+		Material(Type uMaterial) : m_uMaterial(uMaterial) {}
 
-		bool operator==(const Material& rhs) const throw()
+		bool operator==(const Material& rhs) const
 		{
 			return (m_uMaterial == rhs.m_uMaterial);
 		};
 
-		bool operator!=(const Material& rhs) const throw()
+		bool operator!=(const Material& rhs) const
 		{
 			return !(*this == rhs);
 		}
 
-		MaterialType getMaterial() const throw() { return m_uMaterial; }
-		void setMaterial(MaterialType uMaterial) { m_uMaterial = uMaterial; }
+		/// \return The current material value of the voxel
+		Type getMaterial() const { return m_uMaterial; }
+		/**
+		 * Set the material value of the voxel
+		 * 
+		 * \param uMaterial The material to set to
+		 */
+		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 
 	private:
-		MaterialType m_uMaterial;
+		Type m_uMaterial;
 	};
 
 	typedef Material<uint8_t> Material8;
@@ -86,11 +78,11 @@ namespace PolyVox
 	class DefaultIsQuadNeeded< Material<Type> >
 	{
 	public:
-		bool operator()(Material<Type> back, Material<Type> front, float& materialToUse)
+		bool operator()(Material<Type> back, Material<Type> front, uint32_t& materialToUse)
 		{
 			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
-				materialToUse = static_cast<float>(back.getMaterial());
+				materialToUse = static_cast<uint32_t>(back.getMaterial());
 				return true;
 			}
 			else

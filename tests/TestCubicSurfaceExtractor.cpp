@@ -104,7 +104,6 @@ void TestCubicSurfaceExtractor::testExecute()
 	const static uint32_t uExpectedIndices = 9936;
 	const static uint32_t uMaterialToCheck = 3000;
 	const static float fExpectedMaterial = 42.0f;
-	const static float fNoMaterial = 1.0f;
 	const static uint32_t uIndexToCheck = 2000;
 	const static uint32_t uExpectedIndex = 1334;
 
@@ -155,7 +154,9 @@ void TestCubicSurfaceExtractor::testExecute()
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);*/
 
-	testForType<MaterialDensityPair88>(mesh);
+	QBENCHMARK {
+		testForType<MaterialDensityPair88>(mesh);
+	}
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);

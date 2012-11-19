@@ -23,8 +23,15 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template< typename SrcVolumeType, typename DstVolumeType>
-	LowPassFilter<SrcVolumeType, DstVolumeType>::LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst, uint32_t uKernelSize)
+	/**
+	 * \param pVolSrc
+	 * \param regSrc
+	 * \param[out] pVolDst
+	 * \param regDst
+	 * \param uKernelSize
+	 */
+	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
+	LowPassFilter<SrcVolumeType, DstVolumeType, AccumulationType>::LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst, uint32_t uKernelSize)
 		:m_pVolSrc(pVolSrc)
 		,m_regSrc(regSrc)
 		,m_pVolDst(pVolDst)
@@ -43,8 +50,8 @@ namespace PolyVox
 		}
 	}
 
-	template< typename SrcVolumeType, typename DstVolumeType>
-	void LowPassFilter<SrcVolumeType, DstVolumeType>::execute()
+	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
+	void LowPassFilter<SrcVolumeType, DstVolumeType, AccumulationType>::execute()
 	{
 		int32_t iSrcMinX = m_regSrc.getLowerCorner().getX();
 		int32_t iSrcMinY = m_regSrc.getLowerCorner().getY();
@@ -70,52 +77,50 @@ namespace PolyVox
 			{
 				for(int32_t iSrcX = iSrcMinX, iDstX = iDstMinX; iSrcX <= iSrcMaxX; iSrcX++, iDstX++)
 				{
-					//VoxelType tSrcVoxel = m_pVolSrc->getVoxelAt(iSrcX, iSrcY, iSrcZ);
+					AccumulationType tSrcVoxel(0);
 					srcSampler.setPosition(iSrcX, iSrcY, iSrcZ);
 
-					typename SrcVolumeType::VoxelType tSrcVoxel = srcSampler.getVoxel();
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx1ny1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx1ny0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx1ny1pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx0py1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx0py0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx0py1pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx1py1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx1py0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1nx1py1pz());
 
-					tSrcVoxel += srcSampler.peekVoxel1nx1ny1nz();
-					tSrcVoxel += srcSampler.peekVoxel1nx1ny0pz();
-					tSrcVoxel += srcSampler.peekVoxel1nx1ny1pz();
-					tSrcVoxel += srcSampler.peekVoxel1nx0py1nz();
-					tSrcVoxel += srcSampler.peekVoxel1nx0py0pz();
-					tSrcVoxel += srcSampler.peekVoxel1nx0py1pz();
-					tSrcVoxel += srcSampler.peekVoxel1nx1py1nz();
-					tSrcVoxel += srcSampler.peekVoxel1nx1py0pz();
-					tSrcVoxel += srcSampler.peekVoxel1nx1py1pz();
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px1ny1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px1ny0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px1ny1pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px0py1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px0py0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px0py1pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px1py1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px1py0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel0px1py1pz());
 
-					tSrcVoxel += srcSampler.peekVoxel0px1ny1nz();
-					tSrcVoxel += srcSampler.peekVoxel0px1ny0pz();
-					tSrcVoxel += srcSampler.peekVoxel0px1ny1pz();
-					tSrcVoxel += srcSampler.peekVoxel0px0py1nz();
-					//tSrcVoxel += srcSampler.peekVoxel0px0py0pz();
-					tSrcVoxel += srcSampler.peekVoxel0px0py1pz();
-					tSrcVoxel += srcSampler.peekVoxel0px1py1nz();
-					tSrcVoxel += srcSampler.peekVoxel0px1py0pz();
-					tSrcVoxel += srcSampler.peekVoxel0px1py1pz();
-
-					tSrcVoxel += srcSampler.peekVoxel1px1ny1nz();
-					tSrcVoxel += srcSampler.peekVoxel1px1ny0pz();
-					tSrcVoxel += srcSampler.peekVoxel1px1ny1pz();
-					tSrcVoxel += srcSampler.peekVoxel1px0py1nz();
-					tSrcVoxel += srcSampler.peekVoxel1px0py0pz();
-					tSrcVoxel += srcSampler.peekVoxel1px0py1pz();
-					tSrcVoxel += srcSampler.peekVoxel1px1py1nz();
-					tSrcVoxel += srcSampler.peekVoxel1px1py0pz();
-					tSrcVoxel += srcSampler.peekVoxel1px1py1pz();
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px1ny1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px1ny0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px1ny1pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px0py1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px0py0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px0py1pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px1py1nz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px1py0pz());
+					tSrcVoxel += static_cast<AccumulationType>(srcSampler.peekVoxel1px1py1pz());
 
 					tSrcVoxel /= 27;
 
 					//tSrcVoxel.setDensity(uDensity);
-					m_pVolDst->setVoxelAt(iSrcX, iSrcY, iSrcZ, tSrcVoxel);
+					m_pVolDst->setVoxelAt(iSrcX, iSrcY, iSrcZ, static_cast<typename DstVolumeType::VoxelType>(tSrcVoxel));
 				}
 			}
 		}
 	}
 
-	template< typename SrcVolumeType, typename DstVolumeType>
-	void LowPassFilter<SrcVolumeType, DstVolumeType>::executeSAT()
+	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
+	void LowPassFilter<SrcVolumeType, DstVolumeType, AccumulationType>::executeSAT()
 	{
 		const uint32_t border = (m_uKernelSize - 1) / 2;
 
@@ -124,7 +129,7 @@ namespace PolyVox
 
 		//Use floats for the SAT volume to ensure it works with negative
 		//densities and with both integral and floating point input volumes.
-		RawVolume<float> satVolume(Region(satLowerCorner, satUpperCorner));
+		RawVolume<AccumulationType> satVolume(Region(satLowerCorner, satUpperCorner));
 
 		//Clear to zeros (necessary?)
 		//FIXME - use Volume::fill() method. Implemented in base class as below
@@ -140,9 +145,9 @@ namespace PolyVox
 			}
 		}
 
-		RawVolume<float>::Sampler satVolumeIter(&satVolume);
+		typename RawVolume<AccumulationType>::Sampler satVolumeIter(&satVolume);
 
-		IteratorController<RawVolume<float>::Sampler> satIterCont;
+		IteratorController<typename RawVolume<AccumulationType>::Sampler> satIterCont;
 		satIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
 		satIterCont.m_Iter = &satVolumeIter;
 		satIterCont.reset();
@@ -156,9 +161,8 @@ namespace PolyVox
 
 		do
 		{
-			float previousSum = satVolumeIter.peekVoxel1nx0py0pz();
-
-			float currentVal = static_cast<float>(srcVolumeIter.getVoxel().getDensity());
+			AccumulationType previousSum = static_cast<AccumulationType>(satVolumeIter.peekVoxel1nx0py0pz());
+			AccumulationType currentVal = static_cast<AccumulationType>(srcVolumeIter.getVoxel());
 
 			satVolumeIter.setVoxel(previousSum + currentVal);
 
@@ -173,8 +177,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					uint32_t previousSum = satVolume.getVoxelAt(x-1,y,z);
-					uint32_t currentVal = m_pVolSrc->getVoxelAt(x,y,z).getDensity();
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x-1,y,z));
+					AccumulationType currentVal = static_cast<AccumulationType>(m_pVolSrc->getVoxelAt(x,y,z));
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentVal);
 				}
@@ -187,8 +191,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					float previousSum = satVolume.getVoxelAt(x,y-1,z);
-					float currentSum = satVolume.getVoxelAt(x,y,z);
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y-1,z));
+					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y,z));
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
 				}
@@ -201,8 +205,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					float previousSum = satVolume.getVoxelAt(x,y,z-1);
-					float currentSum = satVolume.getVoxelAt(x,y,z);
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y,z-1));
+					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y,z));
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
 				}
@@ -229,38 +233,20 @@ namespace PolyVox
 					int32_t satUpperY = iSrcY + border;
 					int32_t satUpperZ = iSrcZ + border;
 
-					float a = satVolume.getVoxelAt(satLowerX,satLowerY,satLowerZ);
-					float b = satVolume.getVoxelAt(satUpperX,satLowerY,satLowerZ);
-					float c = satVolume.getVoxelAt(satLowerX,satUpperY,satLowerZ);
-					float d = satVolume.getVoxelAt(satUpperX,satUpperY,satLowerZ);
-					float e = satVolume.getVoxelAt(satLowerX,satLowerY,satUpperZ);
-					float f = satVolume.getVoxelAt(satUpperX,satLowerY,satUpperZ);
-					float g = satVolume.getVoxelAt(satLowerX,satUpperY,satUpperZ);
-					float h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
+					AccumulationType a = satVolume.getVoxelAt(satLowerX,satLowerY,satLowerZ);
+					AccumulationType b = satVolume.getVoxelAt(satUpperX,satLowerY,satLowerZ);
+					AccumulationType c = satVolume.getVoxelAt(satLowerX,satUpperY,satLowerZ);
+					AccumulationType d = satVolume.getVoxelAt(satUpperX,satUpperY,satLowerZ);
+					AccumulationType e = satVolume.getVoxelAt(satLowerX,satLowerY,satUpperZ);
+					AccumulationType f = satVolume.getVoxelAt(satUpperX,satLowerY,satUpperZ);
+					AccumulationType g = satVolume.getVoxelAt(satLowerX,satUpperY,satUpperZ);
+					AccumulationType h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
 
-					float sum = h+c-d-g-f-a+b+e;
-
+					AccumulationType sum = h+c-d-g-f-a+b+e;
 					uint32_t sideLength = border * 2 + 1;
+					AccumulationType average = sum / (sideLength*sideLength*sideLength);
 
-					float average = sum / (static_cast<float>(sideLength*sideLength*sideLength));
-
-					//Note: These lines need consideration if src and dest have different voxel types.
-					typename SrcVolumeType::VoxelType voxel = m_pVolSrc->getVoxelAt(iDstX, iDstY, iDstZ);
-
-					voxel.setDensity(static_cast<typename SrcVolumeType::VoxelType::DensityType>(average));
-
-					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, voxel);
-
-
-					//float maxSolid = border * 2/* + 1*/;
-					/*maxSolid = maxSolid * maxSolid * maxSolid;
-
-					float percentSolid = noSolid / maxSolid;
-					float percentEmpty = 1.0f - percentSolid;
-
-					(*mAmbientOcclusionVolume)[ambVolZ][ambVolY][ambVolX] = 255 * percentEmpty;*/
-
-					//(*mAmbientOcclusionVolume)[ambVolZ][ambVolY][ambVolX] = 255 - ((h+c-d-g-f-a+b+e) * 19); //FIXME - should not be 9
+					m_pVolDst->setVoxelAt(iDstX, iDstY, iDstZ, static_cast<typename DstVolumeType::VoxelType>(average));
 				}
 			}
 		}

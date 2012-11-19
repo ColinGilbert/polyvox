@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_SurfaceExtractor_H__
 #define __PolyVox_SurfaceExtractor_H__
 
-#include "PolyVoxImpl/MarchingCubesTables.h"
-#include "PolyVoxImpl/TypeDef.h"
+#include "Impl/MarchingCubesTables.h"
+#include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/SurfaceMesh.h"
@@ -48,7 +48,7 @@ namespace PolyVox
 
 		//Compute the cell bitmask for a given cell.
 		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask);
+		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace);
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
 		void generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
@@ -181,16 +181,6 @@ namespace PolyVox
 		//The volume data and a sampler to access it.
 		VolumeType* m_volData;
 		typename VolumeType::Sampler m_sampVolume;
-
-		//Holds a position in volume space.
-		int32_t iXVolSpace;
-		int32_t iYVolSpace;
-		int32_t iZVolSpace;
-
-		//Holds a position in region space.
-		uint32_t uXRegSpace;
-		uint32_t uYRegSpace;
-		uint32_t uZRegSpace;
 
 		//Used to return the number of cells in a slice which contain triangles.
 		uint32_t m_uNoOfOccupiedCells;

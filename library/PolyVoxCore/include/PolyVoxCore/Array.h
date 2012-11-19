@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Array_H__
 #define __PolyVox_Array_H__
 
-#include "PolyVoxImpl/SubArray.h"
+#include "Impl/SubArray.h"
 
 #include "PolyVoxCore/ArraySizes.h" //Not strictly required, but convienient
 

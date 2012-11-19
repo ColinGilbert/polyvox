@@ -28,24 +28,23 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	/// Stores the result of a raycast operation.
-	////////////////////////////////////////////////////////////////////////////////
-	/// A instance of this structure is passed to a Raycast object, and is filled in
-	/// as the ray traverses the volume. The 'foundIntersection' field indicates whether
-	/// the ray hit any solid voxels, and if so the 'intersectionVoxel' field indicates
-	///the voxel's position
-	////////////////////////////////////////////////////////////////////////////////
-	struct RaycastResult
+	namespace RaycastResults
 	{
-		///Indicates whether an intersection was found
-		bool foundIntersection;
-		///If an intersection was found then this field holds the intersecting voxel, otherwise it is undefined.
-		Vector3DInt32 intersectionVoxel;
-		Vector3DInt32 previousVoxel;
-	};
+		/**
+		 * The results of a raycast
+		 */
+		enum RaycastResult
+		{
+			Completed, ///< If the ray passed through the volume without being interupted
+			Interupted ///< If the ray was interupted while travelling
+		};
+	}
+	typedef RaycastResults::RaycastResult RaycastResult;
 
-	/// The Raycast class can be used to find the fist filled voxel along a given path.
+	/// OUT OF DATE SINCE UNCLASSING
 	////////////////////////////////////////////////////////////////////////////////
+	/// \file Raycast.h
+	///
 	/// The principle behind raycasting is to fire a 'ray' through the volume and determine
 	/// what (if anything) that ray hits. This simple test can be used for the purpose of
 	/// picking, visibility checks, lighting calculations, or numerous other applications.
@@ -59,7 +58,7 @@ namespace PolyVox
 	/// of the RaycastResult structure and the intersectionFound flag is set to true, otherwise
 	/// the intersectionFound flag is set to false.
 	///
-	/// <b>Important Note:</b> These has been confusion in the past with people not realising
+	/// **Important Note:** These has been confusion in the past with people not realising
 	/// that the length of the direction vector is important. Most graphics API can provide
 	/// a camera position and view direction for picking purposes, but the view direction is
 	/// usually normalised (i.e. of length one). If you use this view direction directly you
@@ -91,35 +90,12 @@ namespace PolyVox
 	/// surace extractors. It's behaviour with the Marching Cubes surface extractor has not
 	/// been tested yet.
 	////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType>
-	class Raycast
-	{
-	public:
-		///Constructor
-		Raycast(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, RaycastResult& result, polyvox_function<bool(const typename VolumeType::Sampler& sampler)> funcIsPassable);
 
-		///Sets the start position for the ray.
-		void setStart(const Vector3DFloat& v3dStart);
-		///Set the direction for the ray.
-		void setDirection(const Vector3DFloat& v3dDirectionAndLength);
+	template<typename VolumeType, typename Callback>
+	RaycastResult raycastWithEndpoints(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dEnd, Callback& callback);
 
-		///Performs the raycast.
-		void execute();
-
-	private:
-		RaycastResult& m_result;
-
-		polyvox_function<bool(const typename VolumeType::Sampler& position)> m_funcIsPassable;
-
-		void doRaycast(float x1, float y1, float z1, float x2, float y2, float z2);
-
-		VolumeType* m_volData;
-		typename VolumeType::Sampler m_sampVolume;
-
-		Vector3DFloat m_v3dStart;
-		Vector3DFloat m_v3dDirectionAndLength;
-		float m_fMaxDistance;
-	};
+	template<typename VolumeType, typename Callback>
+	RaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback);
 }
 
 #include "PolyVoxCore/Raycast.inl"

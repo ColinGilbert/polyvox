@@ -26,7 +26,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// Builds a MeshDecimator.
 	/// \param pInputMesh A pointer to the mesh to be decimated.
-	/// \param pOutputMesh A pointer to where the result should be stored. Any existing
+	/// \param[out] pOutputMesh A pointer to where the result should be stored. Any existing
 	/// contents will be deleted.
 	/// \param fEdgeCollapseThreshold This is only use in the case of a Marching Cubes
 	/// surface and controls how close two normals must be to collapse. The dot product

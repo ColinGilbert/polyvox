@@ -28,6 +28,9 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/**
+	 * \param volume The SimpleVolume you want to sample
+	 */
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::Sampler::Sampler(SimpleVolume<VoxelType>* volume)
 		:BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >(volume)
@@ -40,7 +43,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	typename SimpleVolume<VoxelType>::Sampler& SimpleVolume<VoxelType>::Sampler::operator=(const typename SimpleVolume<VoxelType>::Sampler& rhs) throw()
+	typename SimpleVolume<VoxelType>::Sampler& SimpleVolume<VoxelType>::Sampler::operator=(const typename SimpleVolume<VoxelType>::Sampler& rhs)
 	{
 		if(this == &rhs)
 		{
@@ -91,19 +94,30 @@ namespace PolyVox
 			return tValue;
 		}
 	}
-
+	
+	/**
+	 * \return The current voxel
+	 */
 	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
 		return *mCurrentVoxel;
 	}
-
+	
+	/**
+	 * \param v3dNewPos The position to set to
+	 */
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::setPosition(const Vector3DInt32& v3dNewPos)
 	{
 		setPosition(v3dNewPos.getX(), v3dNewPos.getY(), v3dNewPos.getZ());
 	}
-
+	
+	/**
+	 * \param xPos The \a x position to set to
+	 * \param yPos The \a y position to set to
+	 * \param zPos The \a z position to set to
+	 */
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
 	{
@@ -134,7 +148,16 @@ namespace PolyVox
 			mCurrentVoxel = this->mVolume->m_pUncompressedBorderData + uVoxelIndexInBlock;
 		}
 	}
-
+	
+	/**
+	 * \details
+	 * 
+	 * This function checks that the current voxel position that you're trying
+	 * to set is not outside the volume. If it is, this function returns
+	 * \a false, otherwise it will return \a true.
+	 * 
+	 * \param tValue The value to set to voxel to
+	 */
 	template <typename VoxelType>
 	bool SimpleVolume<VoxelType>::Sampler::setVoxel(VoxelType tValue)
 	{

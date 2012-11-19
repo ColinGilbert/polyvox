@@ -3,9 +3,7 @@
 
 The PolyVox documentation.\n
 
-For a brief introduction, see the \ref tutorial.
-
-To see how to use CMake with %PolyVox, see \ref cmake.
+See the <a href="../manual/index.html">manual</a> for help and tutorials.
 
 
 \author David Williams

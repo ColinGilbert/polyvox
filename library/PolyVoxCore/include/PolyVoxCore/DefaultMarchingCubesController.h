@@ -107,7 +107,7 @@ namespace PolyVox
 		/// The default implementation of this function just returns the constant '1'. There's not much else it can do, as it needs to work with primitive
 		/// types and the actual value of the type is already being considered to be the density. Specialisations of this class can modify this behaviour.
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		MaterialType convertToMaterial(VoxelType voxel)
+		MaterialType convertToMaterial(VoxelType /*voxel*/)
 		{
 			return 1;
 		}

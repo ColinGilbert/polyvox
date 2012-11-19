@@ -136,18 +136,17 @@ namespace PolyVox
 		const int32_t iMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
 		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
 
-		iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
-		uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ();
+		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 
 		//Process the lower left corner
-		iYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
-		iXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
+		int32_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
+		int32_t iXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
 
-		uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
-		uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
+		uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
+		uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
 		m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
-		computeBitmaskForCell<false, false, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask);
+		computeBitmaskForCell<false, false, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask, uXRegSpace, uYRegSpace);
 
 		//Process the edge where x is minimal.
 		iXVolSpace = m_regSliceCurrent.getLowerCorner().getX();
@@ -159,7 +158,7 @@ namespace PolyVox
 
 			m_sampVolume.movePositiveY();
 
-			computeBitmaskForCell<false, true, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask);
+			computeBitmaskForCell<false, true, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask, uXRegSpace, uYRegSpace);
 		}
 
 		//Process the edge where y is minimal.
@@ -172,7 +171,7 @@ namespace PolyVox
 
 			m_sampVolume.movePositiveX();
 
-			computeBitmaskForCell<true, false, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask);
+			computeBitmaskForCell<true, false, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask, uXRegSpace, uYRegSpace);
 		}
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
@@ -186,7 +185,7 @@ namespace PolyVox
 
 				m_sampVolume.movePositiveX();
 
-				computeBitmaskForCell<true, true, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask);
+				computeBitmaskForCell<true, true, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask, uXRegSpace, uYRegSpace);
 			}
 		}
 
@@ -195,7 +194,7 @@ namespace PolyVox
 
 	template<typename VolumeType, typename Controller>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -385,7 +384,7 @@ namespace PolyVox
 		}
 
 		//Save the bitmask
-		pCurrentBitmask[uXRegSpace][iYVolSpace- m_regSizeInVoxels.getLowerCorner().getY()] = iCubeIndex;
+		pCurrentBitmask[uXRegSpace][uYRegSpace] = iCubeIndex;
 
 		if(edgeTable[iCubeIndex] != 0)
 		{
