@@ -76,34 +76,34 @@ namespace PolyVox
 		//The doRaycast function is assuming that it is iterating over the areas defined between
 		//voxels. We actually want to define the areas as being centered on voxels (as this is
 		//what the CubicSurfaceExtractor generates). We add 0.5 here to adjust for this.
-		float x1 = v3dStart.getX() + 0.5f;
-		float y1 = v3dStart.getY() + 0.5f;
-		float z1 = v3dStart.getZ() + 0.5f;
-		float x2 = v3dEnd.getX() + 0.5f;
-		float y2 = v3dEnd.getY() + 0.5f;
-		float z2 = v3dEnd.getZ() + 0.5f;
+		const float x1 = v3dStart.getX() + 0.5f;
+		const float y1 = v3dStart.getY() + 0.5f;
+		const float z1 = v3dStart.getZ() + 0.5f;
+		const float x2 = v3dEnd.getX() + 0.5f;
+		const float y2 = v3dEnd.getY() + 0.5f;
+		const float z2 = v3dEnd.getZ() + 0.5f;
 		
 		int i = (int)floorf(x1);
 		int j = (int)floorf(y1);
 		int k = (int)floorf(z1);
 
-		int iend = (int)floorf(x2);
-		int jend = (int)floorf(y2);
-		int kend = (int)floorf(z2);
+		const int iend = (int)floorf(x2);
+		const int jend = (int)floorf(y2);
+		const int kend = (int)floorf(z2);
 
-		int di = ((x1 < x2) ? 1 : ((x1 > x2) ? -1 : 0));
-		int dj = ((y1 < y2) ? 1 : ((y1 > y2) ? -1 : 0));
-		int dk = ((z1 < z2) ? 1 : ((z1 > z2) ? -1 : 0));
+		const int di = ((x1 < x2) ? 1 : ((x1 > x2) ? -1 : 0));
+		const int dj = ((y1 < y2) ? 1 : ((y1 > y2) ? -1 : 0));
+		const int dk = ((z1 < z2) ? 1 : ((z1 > z2) ? -1 : 0));
 
-		float deltatx = 1.0f / std::abs(x2 - x1);
-		float deltaty = 1.0f / std::abs(y2 - y1);
-		float deltatz = 1.0f / std::abs(z2 - z1);
+		const float deltatx = 1.0f / std::abs(x2 - x1);
+		const float deltaty = 1.0f / std::abs(y2 - y1);
+		const float deltatz = 1.0f / std::abs(z2 - z1);
 
-		float minx = floorf(x1), maxx = minx + 1.0f;
+		const float minx = floorf(x1), maxx = minx + 1.0f;
 		float tx = ((x1 > x2) ? (x1 - minx) : (maxx - x1)) * deltatx;
-		float miny = floorf(y1), maxy = miny + 1.0f;
+		const float miny = floorf(y1), maxy = miny + 1.0f;
 		float ty = ((y1 > y2) ? (y1 - miny) : (maxy - y1)) * deltaty;
-		float minz = floorf(z1), maxz = minz + 1.0f;
+		const float minz = floorf(z1), maxz = minz + 1.0f;
 		float tz = ((z1 > z2) ? (z1 - minz) : (maxz - z1)) * deltatz;
 
 		sampler.setPosition(i,j,k);

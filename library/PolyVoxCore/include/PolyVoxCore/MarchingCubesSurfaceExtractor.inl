@@ -29,13 +29,12 @@ namespace PolyVox
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
+		,m_controller(controller)
+		,m_tThreshold(m_controller.getThreshold())
 	{
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
-
-		m_controller = controller;
-		m_tThreshold = m_controller.getThreshold();
 	}
 
 	template<typename VolumeType, typename Controller>
@@ -43,9 +42,9 @@ namespace PolyVox
 	{		
 		m_meshCurrent->clear();
 
-		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
-		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
-		uint32_t arraySizes[2]= {uArrayWidth, uArrayHeight}; // Array dimensions
+		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 1;
+		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 1;
+		const uint32_t arraySizes[2]= {uArrayWidth, uArrayHeight}; // Array dimensions
 
 		//For edge indices
 		Array2DInt32 m_pPreviousVertexIndicesX(arraySizes);
@@ -136,7 +135,7 @@ namespace PolyVox
 		const int32_t iMaxXVolSpace = m_regSliceCurrent.getUpperCorner().getX();
 		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperCorner().getY();
 
-		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
+		const int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 
 		//Process the lower left corner
 		int32_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY();
@@ -145,6 +144,7 @@ namespace PolyVox
 		uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
 		uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY();
 
+		
 		m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
 		computeBitmaskForCell<false, false, isPrevZAvail>(pPreviousBitmask, pCurrentBitmask, uXRegSpace, uYRegSpace);
 
@@ -398,7 +398,7 @@ namespace PolyVox
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
 	{
-		int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
+		const int32_t iZVolSpace = m_regSliceCurrent.getLowerCorner().getZ();
 
 		//Iterate over each cell in the region
 		for(int32_t iYVolSpace = m_regSliceCurrent.getLowerCorner().getY(); iYVolSpace <= m_regSliceCurrent.getUpperCorner().getY(); iYVolSpace++)
@@ -411,7 +411,7 @@ namespace PolyVox
 				const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = pCurrentBitmask[uXRegSpace][uYRegSpace];
+				const uint8_t iCubeIndex = pCurrentBitmask[uXRegSpace][uYRegSpace];
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -433,7 +433,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
+					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerCorner().getZ()));
 
@@ -443,12 +443,12 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					typename Controller::MaterialType uMaterial100 = m_controller.convertToMaterial(v100);
-					typename Controller::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
+					const typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					const typename Controller::MaterialType uMaterial100 = m_controller.convertToMaterial(v100);
+					const typename Controller::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial100);
 
-					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
-					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
+					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeX();
@@ -459,7 +459,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
+					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()));
 
@@ -469,12 +469,12 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					typename Controller::MaterialType uMaterial010 = m_controller.convertToMaterial(v010);
-					typename Controller::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial010);
+					const typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					const typename Controller::MaterialType uMaterial010 = m_controller.convertToMaterial(v010);
+					const typename Controller::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial010);
 
-					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
-					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
+					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeY();
@@ -485,7 +485,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
-					float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
+					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()) + fInterp);
 
@@ -495,12 +495,12 @@ namespace PolyVox
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
 					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					typename Controller::MaterialType uMaterial001 = m_controller.convertToMaterial(v001);
-					typename Controller::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial001);
+					const typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
+					const typename Controller::MaterialType uMaterial001 = m_controller.convertToMaterial(v001);
+					const typename Controller::MaterialType uMaterial = (std::max)(uMaterial000, uMaterial001);
 
-					PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
-					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
+					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()][iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeZ();
@@ -523,11 +523,12 @@ namespace PolyVox
 			indlist[i] = -1;
 		}
 
+		const int32_t iZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
+		
 		for(int32_t iYVolSpace = m_regSlicePrevious.getLowerCorner().getY(); iYVolSpace <= m_regSizeInCells.getUpperCorner().getY(); iYVolSpace++)
 		{
 			for(int32_t iXVolSpace = m_regSlicePrevious.getLowerCorner().getX(); iXVolSpace <= m_regSizeInCells.getUpperCorner().getX(); iXVolSpace++)
-			{		
-				int32_t iZVolSpace = m_regSlicePrevious.getLowerCorner().getZ();
+			{
 				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);	
 
 				//Current position
@@ -535,7 +536,7 @@ namespace PolyVox
 				const uint32_t uYRegSpace = m_sampVolume.getPosition().getY() - m_regSizeInVoxels.getLowerCorner().getY();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				uint8_t iCubeIndex = pPreviousBitmask[uXRegSpace][uYRegSpace];
+				const uint8_t iCubeIndex = pPreviousBitmask[uXRegSpace][uYRegSpace];
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -607,9 +608,9 @@ namespace PolyVox
 
 				for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
 				{
-					int32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
-					int32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
-					int32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
+					const int32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
+					const int32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
+					const int32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
 
 					if((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
 					{
