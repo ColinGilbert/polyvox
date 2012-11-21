@@ -34,8 +34,6 @@ namespace PolyVox
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
-		typename VolumeType::Sampler m_sampVolume(volInput);
-
 		uint16_t uRandomUnitVectorIndex = 0;
 		uint16_t uRandomVectorIndex = 0;
 		uint16_t uIndexIncreament;
