@@ -6,9 +6,11 @@
 
 %include "Vector.h"
 
+#ifdef SWIGPYTHON
 PROPERTY(PolyVox::Vector, x, getX, setX)
 PROPERTY(PolyVox::Vector, y, getY, setY)
 PROPERTY(PolyVox::Vector, z, getZ, setZ)
+#endif
 
 %extend PolyVox::Vector {
 	PolyVox::Vector __add__(const PolyVox::Vector& rhs) {
