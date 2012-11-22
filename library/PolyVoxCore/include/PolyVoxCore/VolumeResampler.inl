@@ -83,13 +83,13 @@ namespace PolyVox
 	template< typename SrcVolumeType, typename DstVolumeType>
 	void VolumeResampler<SrcVolumeType, DstVolumeType>::resampleArbitrary()
 	{
-		float srcWidth  = m_regSrc.getWidthInVoxels();
-		float srcHeight = m_regSrc.getHeightInVoxels();
-		float srcDepth  = m_regSrc.getDepthInVoxels();
+		float srcWidth  = m_regSrc.getWidthInCells();
+		float srcHeight = m_regSrc.getHeightInCells();
+		float srcDepth  = m_regSrc.getDepthInCells();
 
-		float dstWidth  = m_regDst.getWidthInVoxels();
-		float dstHeight = m_regDst.getHeightInVoxels();
-		float dstDepth  = m_regDst.getDepthInVoxels();
+		float dstWidth  = m_regDst.getWidthInCells();
+		float dstHeight = m_regDst.getHeightInCells();
+		float dstDepth  = m_regDst.getDepthInCells();
 		
 		float fScaleX = srcWidth / dstWidth;
 		float fScaleY = srcHeight / dstHeight;
