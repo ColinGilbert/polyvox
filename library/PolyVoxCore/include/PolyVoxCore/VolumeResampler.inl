@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Interpolation.h"
 
+#include <cmath>
+
 namespace PolyVox
 {
 	/**
@@ -32,7 +34,7 @@ namespace PolyVox
 	 * \param regDst
 	 */
 	template< typename SrcVolumeType, typename DstVolumeType>
-	VolumeResampler<SrcVolumeType, DstVolumeType>::VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst)
+	VolumeResampler<SrcVolumeType, DstVolumeType>::VolumeResampler(SrcVolumeType* pVolSrc, const Region &regSrc, DstVolumeType* pVolDst, const Region& regDst)
 		:m_pVolSrc(pVolSrc)
 		,m_regSrc(regSrc)
 		,m_pVolDst(pVolDst)
