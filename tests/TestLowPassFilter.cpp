@@ -58,7 +58,7 @@ void TestLowPassFilter::testExecute()
 
 	RawVolume<Density8> resultVolume(reg);
 
-	LowPassFilter< RawVolume<Density8>, RawVolume<Density8>, Density16 > lowPassfilter(&volData, reg, &resultVolume, reg, 5);
+	LowPassFilter< RawVolume<Density8>, RawVolume<Density8>, Density16 > lowPassfilter(&volData, reg, &resultVolume, reg, 3);
 
 	//Test the normal implementation
 	QBENCHMARK {
@@ -74,16 +74,17 @@ void TestLowPassFilter::testExecute()
 	QCOMPARE(resultVolume.getVoxelAt(7,7,7), Density8(4));
 
 	//Test the SAT implmentation
-	//FIXME - Shouldn't the results be the same as the normal case?
-	lowPassfilter.executeSAT();
+	QBENCHMARK {
+		lowPassfilter.executeSAT();
+	}
 	QCOMPARE(resultVolume.getVoxelAt(0,0,0), Density8(4));
-	QCOMPARE(resultVolume.getVoxelAt(1,1,1), Density8(8));
-	QCOMPARE(resultVolume.getVoxelAt(2,2,2), Density8(19));
-	QCOMPARE(resultVolume.getVoxelAt(3,3,3), Density8(12));
-	QCOMPARE(resultVolume.getVoxelAt(4,4,4), Density8(19));
-	QCOMPARE(resultVolume.getVoxelAt(5,5,5), Density8(12));
-	QCOMPARE(resultVolume.getVoxelAt(6,6,6), Density8(8));
-	QCOMPARE(resultVolume.getVoxelAt(7,7,7), Density8(2));
+	QCOMPARE(resultVolume.getVoxelAt(1,1,1), Density8(21));
+	QCOMPARE(resultVolume.getVoxelAt(2,2,2), Density8(10));
+	QCOMPARE(resultVolume.getVoxelAt(3,3,3), Density8(21));
+	QCOMPARE(resultVolume.getVoxelAt(4,4,4), Density8(10));
+	QCOMPARE(resultVolume.getVoxelAt(5,5,5), Density8(21));
+	QCOMPARE(resultVolume.getVoxelAt(6,6,6), Density8(10));
+	QCOMPARE(resultVolume.getVoxelAt(7,7,7), Density8(4));
 }
 
 QTEST_MAIN(TestLowPassFilter)
