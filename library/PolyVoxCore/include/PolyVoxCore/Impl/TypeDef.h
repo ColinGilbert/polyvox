@@ -104,4 +104,12 @@ freely, subject to the following restrictions:
 	//#define static_assert static_assert //we can use this
 #endif
 
+#if defined(HAS_CXX11_CONSTEXPR)
+	#define polyvox_constexpr_const constexpr //constexpr which falls back to const
+	#define polyvox_constexpr constexpr //constexpr which falls back to nothing
+#else
+	#define polyvox_constexpr_const const
+	#define polyvox_constexpr
+#endif
+
 #endif
