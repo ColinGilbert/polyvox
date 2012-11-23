@@ -67,9 +67,6 @@ freely, subject to the following restrictions:
 	//To support old (pre-vc2010) Microsoft compilers we use boost to replace the
 	//std::shared_ptr and potentially other C++0x features. To use this capability you
 	//will need to make sure you have boost installed on your system.
-	#include <boost/smart_ptr.hpp>
-	#define polyvox_shared_ptr boost::shared_ptr
-
 	#include <boost/function.hpp>
 	#define polyvox_function boost::function
 
@@ -80,8 +77,6 @@ freely, subject to the following restrictions:
 #else
 	//We have a decent compiler - use real C++0x features
 	#include <functional>
-	#include <memory>
-	#define polyvox_shared_ptr std::shared_ptr
 	#define polyvox_function std::function
 	#define polyvox_bind std::bind
 	#define polyvox_placeholder_1 std::placeholders::_1
@@ -113,6 +108,14 @@ freely, subject to the following restrictions:
 	using boost::uint8_t;
 	using boost::uint16_t;
 	using boost::uint32_t;
+#endif
+
+#if defined(HAS_CXX11_SHARED_PTR)
+	#include <memory>
+	#define polyvox_shared_ptr std::shared_ptr
+#else
+	#include <boost/smart_ptr.hpp>
+	#define polyvox_shared_ptr boost::shared_ptr
 #endif
 
 #endif
