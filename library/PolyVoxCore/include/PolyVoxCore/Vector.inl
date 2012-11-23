@@ -24,17 +24,41 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
     //-------------------------- Constructors, etc ---------------------------------
+	/**
+	Creates a Vector object but does not initialise it.
+	*/
+	template <uint32_t Size, typename StorageType, typename OperationType>
+	Vector<Size, StorageType, OperationType>::Vector(void)
+	{
+	}
+
+	/**
+    Creates a Vector object and initialises it with given values.
+    \param x x component to set.
+    */
+    template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType>::Vector(StorageType tFillValue)
+    {
+		for(uint32_t ct = 0; ct < Size; ct++)
+		{
+			m_tElements[ct] = tFillValue;
+		}
+    }
+
     /**
     Creates a Vector object and initialises it with given values.
     \param x x component to set.
     \param y y component to set.
     */
-    template <uint32_t Size,typename Type>
-        Vector<Size,Type>::Vector(Type x, Type y)
+    template <uint32_t Size,typename StorageType, typename OperationType>
+    Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y)
     {
+#ifndef SWIGPYTHON // SWIG instantiates all constructors, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size == 2, "This constructor should only be used for vectors with two elements.");
+#endif
+
 		m_tElements[0] = x;
 		m_tElements[1] = y;
-
     }
 
 	/**
@@ -43,9 +67,13 @@ namespace PolyVox
 	\param y y component to set.
 	\param z z component to set.
 	*/
-	template <uint32_t Size,typename Type>
-		Vector<Size,Type>::Vector(Type x, Type y, Type z)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z)
 	{
+#ifndef SWIGPYTHON // SWIG instantiates all constructors, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size == 3, "This constructor should only be used for vectors with three elements.");
+#endif
+
 		m_tElements[0] = x;
 		m_tElements[1] = y;
 		m_tElements[2] = z;
@@ -59,31 +87,27 @@ namespace PolyVox
 	\param z z component to set.
 	\param w w component to set.
 	*/
-	template <uint32_t Size,typename Type>
-		Vector<Size,Type>::Vector(Type x, Type y, Type z, Type w)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z, StorageType w)
 	{
+#ifndef SWIGPYTHON // SWIG instantiates all constructors, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size == 4, "This constructor should only be used for vectors with four elements.");
+#endif
+
 		m_tElements[0] = x;
 		m_tElements[1] = y;
 		m_tElements[2] = z;
 		m_tElements[3] = w;
 	}
 
-	/**
-	Creates a Vector object but does not initialise it.
-	*/
-	template <uint32_t Size, typename Type>
-		Vector<Size, Type>::Vector(void)
-	{
-	}
-
     /**
     Copy constructor builds object based on object passed as parameter.
     \param vector A reference to the Vector to be copied.
     */
-    template <uint32_t Size, typename Type>
-        Vector<Size, Type>::Vector(const Vector<Size, Type>& vector)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	Vector<Size, StorageType, OperationType>::Vector(const Vector<Size, StorageType, OperationType>& vector)
     {
-		std::memcpy(m_tElements, vector.m_tElements, sizeof(Type) * Size);
+		std::memcpy(m_tElements, vector.m_tElements, sizeof(StorageType) * Size);
     }
 
 	/**
@@ -95,22 +119,30 @@ namespace PolyVox
 
 	\param vector A reference to the Vector to be copied.
 	*/
-	template <uint32_t Size, typename Type>
-		template <typename CastType>
-		Vector<Size, Type>::Vector(const Vector<Size, CastType>& vector)
+	template <uint32_t Size, typename StorageType, typename OperationType>
+	template <typename CastType>
+		Vector<Size, StorageType, OperationType>::Vector(const Vector<Size, CastType>& vector)
 	{
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] = static_cast<Type>(vector.getElement(ct));
+			m_tElements[ct] = static_cast<StorageType>(vector.getElement(ct));
 		}
 	}
 
     /**
     Destroys the Vector.
     */
-    template <uint32_t Size, typename Type>
-        Vector<Size, Type>::~Vector(void)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	Vector<Size, StorageType, OperationType>::~Vector(void)
     {
+		// We put the static_asserts in the destructor because there is one one of these,
+		// where as there are multiple constructors.
+
+		// Force a vector to have a length greater than one. There is no need for a
+		// vector with one element, and supporting this would cause confusion over the
+		// behaviour of the constructor taking a single value, as this fills all elements
+		// to that value rather than just the first one.
+		static_assert(Size > 1, "Vector must have a length greater than one.");
     }
 
     /**
@@ -118,14 +150,14 @@ namespace PolyVox
     \param rhs Vector to assign to.
     \return A reference to the result to allow chaining.
     */
-    template <uint32_t Size, typename Type>
-        Vector<Size, Type>& Vector<Size, Type>::operator=(const Vector<Size, Type>& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator=(const Vector<Size, StorageType, OperationType>& rhs)
     {
         if(this == &rhs)
 		{
 			return *this;
 		}
-        std::memcpy(m_tElements, rhs.m_tElements, sizeof(Type) * Size);
+        std::memcpy(m_tElements, rhs.m_tElements, sizeof(StorageType) * Size);
         return *this;
     }
 
@@ -135,8 +167,8 @@ namespace PolyVox
     \return true if the Vectors match.
     \see operator!=
     */
-    template <uint32_t Size, typename Type>
-        inline bool Vector<Size, Type>::operator==(const Vector<Size, Type> &rhs) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline bool Vector<Size, StorageType, OperationType>::operator==(const Vector<Size, StorageType, OperationType> &rhs) const
     {
 		bool equal = true;
         for(uint32_t ct = 0; ct < Size; ++ct)
@@ -156,8 +188,8 @@ namespace PolyVox
     \return true if the Vectors do not match.
     \see operator==
     */
-    template <uint32_t Size, typename Type>
-        inline bool Vector<Size, Type>::operator!=(const Vector<Size, Type> &rhs) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline bool Vector<Size, StorageType, OperationType>::operator!=(const Vector<Size, StorageType, OperationType> &rhs) const
     {
 		return !(*this == rhs); //Just call equality operator and invert the result.
     }
@@ -169,8 +201,8 @@ namespace PolyVox
     \return true if this is less than the parameter
     \see operator!=
     */
-    template <uint32_t Size, typename Type>
-        inline bool Vector<Size, Type>::operator<(const Vector<Size, Type> &rhs) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline bool Vector<Size, StorageType, OperationType>::operator<(const Vector<Size, StorageType, OperationType> &rhs) const
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -187,8 +219,8 @@ namespace PolyVox
     \param rhs Vector to add
     \return The resulting Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator+=(const Vector<Size, Type>& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator+=(const Vector<Size, StorageType, OperationType>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -202,8 +234,8 @@ namespace PolyVox
     \param rhs Vector to subtract
     \return The resulting Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator-=(const Vector<Size, Type>& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator-=(const Vector<Size, StorageType, OperationType>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -217,8 +249,8 @@ namespace PolyVox
     \param rhs Vector to multiply by
     \return The resulting Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Vector<Size, Type>& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator*=(const Vector<Size, StorageType, OperationType>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -232,8 +264,8 @@ namespace PolyVox
     \param rhs Vector to divide by
     \return The resulting Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Vector<Size, Type>& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator/=(const Vector<Size, StorageType, OperationType>& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -247,8 +279,8 @@ namespace PolyVox
     \param rhs the number the Vector is multiplied by.
     \return The resulting Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator*=(const Type& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator*=(const StorageType& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -262,8 +294,8 @@ namespace PolyVox
 	\param rhs the number the Vector is divided by.
 	\return The resulting Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type>& Vector<Size, Type>::operator/=(const Type& rhs)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType>& Vector<Size, StorageType, OperationType>::operator/=(const StorageType& rhs)
     {
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
@@ -278,10 +310,10 @@ namespace PolyVox
     \param rhs Vector to add.
     \return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator+(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType> operator+(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs)
 	{
-		Vector<Size,Type> result = lhs;
+		Vector<Size,StorageType,OperationType> result = lhs;
 		result += rhs;
 		return result;
 	}
@@ -292,10 +324,10 @@ namespace PolyVox
     \param rhs Vector to subtract.
     \return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator-(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType> operator-(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs)
 	{
-		Vector<Size,Type> result = lhs;
+		Vector<Size,StorageType,OperationType> result = lhs;
 		result -= rhs;
 		return result;
 	}
@@ -306,10 +338,10 @@ namespace PolyVox
     \param rhs Vector to multiply by.
     \return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType> operator*(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs)
 	{
-		Vector<Size,Type> result = lhs;
+		Vector<Size,StorageType,OperationType> result = lhs;
 		result *= rhs;
 		return result;
 	}
@@ -320,10 +352,10 @@ namespace PolyVox
     \param rhs Vector to divide by.
     \return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Vector<Size,Type>& rhs)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType> operator/(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs)
 	{
-		Vector<Size,Type> result = lhs;
+		Vector<Size,StorageType,OperationType> result = lhs;
 		result /= rhs;
 		return result;
 	}
@@ -334,10 +366,10 @@ namespace PolyVox
     \param rhs the number the Vector is multiplied by.
     \return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator*(const Vector<Size,Type>& lhs, const Type& rhs)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType> operator*(const Vector<Size,StorageType,OperationType>& lhs, const StorageType& rhs)
 	{
-		Vector<Size,Type> result = lhs;
+		Vector<Size,StorageType,OperationType> result = lhs;
 		result *= rhs;
 		return result;
 	}
@@ -348,10 +380,10 @@ namespace PolyVox
 	\param rhs the number the Vector is divided by.
 	\return The resulting Vector.
     */
-	template <uint32_t Size,typename Type>
-	    Vector<Size,Type> operator/(const Vector<Size,Type>& lhs, const Type& rhs)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	Vector<Size,StorageType,OperationType> operator/(const Vector<Size,StorageType,OperationType>& lhs, const StorageType& rhs)
 	{
-		Vector<Size,Type> result = lhs;
+		Vector<Size,StorageType,OperationType> result = lhs;
 		result /= rhs;
 		return result;
 	}
@@ -362,8 +394,8 @@ namespace PolyVox
     \param vector The Vector to write to the stream.
     \return A reference to the output stream to allow chaining.
     */
-    template <uint32_t Size, typename Type>
-        std::ostream& operator<<(std::ostream& os, const Vector<Size, Type>& vector)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	std::ostream& operator<<(std::ostream& os, const Vector<Size, StorageType, OperationType>& vector)
     {
         os << "(";
 		for(uint32_t ct = 0; ct < Size; ++ct)
@@ -383,45 +415,54 @@ namespace PolyVox
 	\param index The index of the element to return.
 	\return The element.
 	*/
-	template <uint32_t Size, typename Type>
-		inline Type Vector<Size, Type>::getElement(uint32_t index) const
+	template <uint32_t Size, typename StorageType, typename OperationType>
+	inline StorageType Vector<Size, StorageType, OperationType>::getElement(uint32_t index) const
 	{
+		assert(index < Size);
 		return m_tElements[index];
 	}
 
     /**
     \return A const reference to the X component of a 1, 2, 3, or 4 dimensional Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::getX(void) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline StorageType Vector<Size, StorageType, OperationType>::getX(void) const
     {
-        return m_tElements[0];
+        return m_tElements[0]; // This is fine, a Vector always contains at least two elements.
     }	
 
 	/**
 	\return A const reference to the Y component of a 2, 3, or 4 dimensional Vector.
 	*/
-    template <uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::getY(void) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline StorageType Vector<Size, StorageType, OperationType>::getY(void) const
     {
-        return m_tElements[1];
+        return m_tElements[1]; // This is fine, a Vector always contains at least two elements.
     }	
 
 	/**
 	\return A const reference to the Z component of a 3 or 4 dimensional Vector.
 	*/
-    template <uint32_t Size, typename Type>
-        inline Type Vector<Size, Type>::getZ(void) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline StorageType Vector<Size, StorageType, OperationType>::getZ(void) const
     {
+#ifndef SWIGPYTHON // SWIG instantiates all getters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size >= 3, "You can only get the 'z' component from a vector with at least three elements.");
+#endif
+
         return m_tElements[2];
     }	
 
 	/**
 	\return A const reference to the W component of a 4 dimensional Vector.
 	*/
-	template <uint32_t Size, typename Type>
-		inline Type Vector<Size, Type>::getW(void) const
+	template <uint32_t Size, typename StorageType, typename OperationType>
+	inline StorageType Vector<Size, StorageType, OperationType>::getW(void) const
 	{
+#ifndef SWIGPYTHON // SWIG instantiates all getters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size >= 4, "You can only get the 'w' component from a vector with at least four elements.");
+#endif
+
 		return m_tElements[3];
 	}  
 
@@ -429,9 +470,10 @@ namespace PolyVox
 	\param index The index of the element to set.
 	\param tValue The new value for the element.
 	*/
-	template <uint32_t Size, typename Type>
-		inline void Vector<Size, Type>::setElement(uint32_t index, Type tValue)
+	template <uint32_t Size, typename StorageType, typename OperationType>
+	inline void Vector<Size, StorageType, OperationType>::setElement(uint32_t index, StorageType tValue)
 	{
+		assert(index < Size);
 		m_tElements[index] = tValue;
 	}
 
@@ -440,12 +482,12 @@ namespace PolyVox
     \param x x component to set.
     \param y y component to set.
     */
-    template <uint32_t Size,typename Type>
-        inline void Vector<Size,Type>::setElements(Type x, Type y)
+    template <uint32_t Size,typename StorageType, typename OperationType>
+	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y)
     {
+		// This is fine, a Vector always contains at least two elements.
 		m_tElements[0] = x;
 		m_tElements[1] = y;
-
     }
 
 	/**
@@ -454,13 +496,15 @@ namespace PolyVox
 	\param y y component to set.
 	\param z z component to set.
 	*/
-	template <uint32_t Size,typename Type>
-		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z)
 	{
+#ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size >= 3, "You can only use this version of setElements() on a vector with at least three elements.");
+#endif
 		m_tElements[0] = x;
 		m_tElements[1] = y;
 		m_tElements[2] = z;
-
 	}
 
 	/**
@@ -470,9 +514,12 @@ namespace PolyVox
 	\param z z component to set.
 	\param w w component to set.
 	*/
-	template <uint32_t Size,typename Type>
-		inline void Vector<Size,Type>::setElements(Type x, Type y, Type z, Type w)
+	template <uint32_t Size,typename StorageType, typename OperationType>
+	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z, StorageType w)
 	{
+#ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size >= 4, "You can only use this version of setElements() on a vector with at least four elements.");
+#endif
 		m_tElements[0] = x;
 		m_tElements[1] = y;
 		m_tElements[2] = z;
@@ -482,36 +529,42 @@ namespace PolyVox
 	/**
 	\param tX The new value for the X component of a 1, 2, 3, or 4 dimensional Vector.
 	*/
-    template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setX(Type tX)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline void Vector<Size, StorageType, OperationType>::setX(StorageType tX)
     {
-        m_tElements[0] = tX;
+        m_tElements[0] = tX; // This is fine, a Vector always contains at least two elements.
     }
 
 	/**
 	\param tY The new value for the Y component of a 2, 3, or 4 dimensional Vector.
 	*/
-    template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setY(Type tY)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline void Vector<Size, StorageType, OperationType>::setY(StorageType tY)
     {
-        m_tElements[1] = tY;
+        m_tElements[1] = tY; // This is fine, a Vector always contains at least two elements.
     }
 
 	/**
 	\param tZ The new value for the Z component of a 3 or 4 dimensional Vector.
 	*/
-    template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setZ(Type tZ)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline void Vector<Size, StorageType, OperationType>::setZ(StorageType tZ)
     {
+#ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size >= 3, "You can only set the 'w' component from a vector with at least three elements.");
+#endif
         m_tElements[2] = tZ;
     }
 
 	/**
 	\param tW The new value for the W component of a 4 dimensional Vector.
 	*/
-	template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::setW(Type tW)
+	template <uint32_t Size, typename StorageType, typename OperationType>
+	inline void Vector<Size, StorageType, OperationType>::setW(StorageType tW)
     {
+#ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
+		static_assert(Size >= 4, "You can only set the 'w' component from a vector with at least four elements.");
+#endif
         m_tElements[3] = tW;
     }
 
@@ -519,8 +572,8 @@ namespace PolyVox
 	\note This function does not make much sense on integer Vectors.
     \return Length of the Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline double Vector<Size, Type>::length(void) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline double Vector<Size, StorageType, OperationType>::length(void) const
     {
         return sqrt(lengthSquared());
     }
@@ -528,8 +581,8 @@ namespace PolyVox
     /**
     \return Squared length of the Vector.
     */
-    template <uint32_t Size, typename Type>
-        inline double Vector<Size, Type>::lengthSquared(void) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline double Vector<Size, StorageType, OperationType>::lengthSquared(void) const
     {
 		double result = 0.0f;
 		for(uint32_t ct = 0; ct < Size; ++ct)
@@ -548,8 +601,8 @@ namespace PolyVox
     \param vector The Vector to find the angle to.
     \return The angle between them in radians.
     */
-    template <uint32_t Size, typename Type>
-        inline double Vector<Size, Type>::angleTo(const Vector<Size, Type>& vector) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline double Vector<Size, StorageType, OperationType>::angleTo(const Vector<Size, StorageType, OperationType>& vector) const
     {
         return acos(dot(vector) / (vector.length() * this->length()));
     }
@@ -566,13 +619,13 @@ namespace PolyVox
     \return The value of the cross product.
     \see dot()
     */
-    template <uint32_t Size, typename Type>
-        inline Vector<Size, Type> Vector<Size, Type>::cross(const Vector<Size, Type>& vector) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline Vector<Size, StorageType, OperationType> Vector<Size, StorageType, OperationType>::cross(const Vector<Size, StorageType, OperationType>& vector) const
     {
-        Type i = vector.getZ() * this->getY() - vector.getY() * this->getZ();
-        Type j = vector.getX() * this->getZ() - vector.getZ() * this->getX();
-        Type k = vector.getY() * this->getX() - vector.getX() * this->getY();
-        return Vector<Size, Type>(i,j,k);
+        StorageType i = vector.getZ() * this->getY() - vector.getY() * this->getZ();
+        StorageType j = vector.getX() * this->getZ() - vector.getZ() * this->getX();
+        StorageType k = vector.getY() * this->getX() - vector.getX() * this->getY();
+        return Vector<Size, StorageType, OperationType>(i,j,k);
     }
 
     /**
@@ -582,10 +635,10 @@ namespace PolyVox
     \return The value of the dot product.
     \see cross()
     */
-    template <uint32_t Size, typename Type>
-    inline Type Vector<Size, Type>::dot(const Vector<Size, Type>& rhs) const
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline StorageType Vector<Size, StorageType, OperationType>::dot(const Vector<Size, StorageType, OperationType>& rhs) const
     {
-        Type dotProduct = static_cast<Type>(0);
+        StorageType dotProduct = static_cast<StorageType>(0);
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
 			dotProduct += m_tElements[ct] * rhs.m_tElements[ct];
@@ -598,10 +651,10 @@ namespace PolyVox
 
 	\note This function does not make much sense on integer Vectors.
     */
-    template <uint32_t Size, typename Type>
-        inline void Vector<Size, Type>::normalise(void)
+    template <uint32_t Size, typename StorageType, typename OperationType>
+	inline void Vector<Size, StorageType, OperationType>::normalise(void)
     {
-        Type tLength = static_cast<Type>(this->length());
+        StorageType tLength = static_cast<StorageType>(this->length());
 		//FIXME - throw div by zero exception?
 		if(tLength < 0.0001f)
 		{

@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "Impl/TypeDef.h"
 
+#include "PolyVoxForwardDeclarations.h"
+
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/DefaultIsQuadNeeded.h"
 #include "PolyVoxCore/SurfaceMesh.h"
@@ -73,7 +75,7 @@ namespace PolyVox
 	///
 	/// Another scenario which sometimes results in confusion is when you wish to extract a region which corresponds to the whole volume, partcularly when solid voxels extend right to the edge of the volume.  
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
+	template<typename VolumeType, typename IsQuadNeeded>
 	class CubicSurfaceExtractor
 	{
 		struct IndexAndMaterial

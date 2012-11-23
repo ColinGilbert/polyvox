@@ -63,7 +63,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// CubicSurfaceExtractor
 	////////////////////////////////////////////////////////////////////////////////
-	template< typename VolumeType> class CubicSurfaceExtractor;
+	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> > class CubicSurfaceExtractor;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// Density
@@ -139,15 +139,34 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// Vector
 	////////////////////////////////////////////////////////////////////////////////
-	template <uint32_t Size, typename Type> class Vector;
-	typedef Vector<3,float> Vector3DFloat;
-	typedef Vector<3,double> Vector3DDouble;
-	typedef Vector<3,int8_t> Vector3DInt8;
-	typedef Vector<3,uint8_t> Vector3DUint8;
-	typedef Vector<3,int16_t> Vector3DInt16;
-	typedef Vector<3,uint16_t> Vector3DUint16;
-	typedef Vector<3,int32_t> Vector3DInt32;
-	typedef Vector<3,uint32_t> Vector3DUint32;
+	template <uint32_t Size, typename StorageType, typename OperationType = StorageType> class Vector;
+
+	typedef Vector<2,float,float> Vector2DFloat;
+    typedef Vector<2,double,double> Vector2DDouble;
+	typedef Vector<2,int8_t,int32_t> Vector2DInt8;
+	typedef Vector<2,uint8_t,int32_t> Vector2DUint8;
+	typedef Vector<2,int16_t,int32_t> Vector2DInt16;
+	typedef Vector<2,uint16_t,int32_t> Vector2DUint16;
+	typedef Vector<2,int32_t,int32_t> Vector2DInt32;
+	typedef Vector<2,uint32_t,int32_t> Vector2DUint32;
+
+	typedef Vector<3,float,float> Vector3DFloat;
+    typedef Vector<3,double,double> Vector3DDouble;
+	typedef Vector<3,int8_t,int32_t> Vector3DInt8;
+	typedef Vector<3,uint8_t,int32_t> Vector3DUint8;
+	typedef Vector<3,int16_t,int32_t> Vector3DInt16;
+	typedef Vector<3,uint16_t,int32_t> Vector3DUint16;
+	typedef Vector<3,int32_t,int32_t> Vector3DInt32;
+	typedef Vector<3,uint32_t,int32_t> Vector3DUint32;
+
+	typedef Vector<4,float,float> Vector4DFloat;
+    typedef Vector<4,double,double> Vector4DDouble;
+	typedef Vector<4,int8_t,int32_t> Vector4DInt8;
+	typedef Vector<4,uint8_t,int32_t> Vector4DUint8;
+	typedef Vector<4,int16_t,int32_t> Vector4DInt16;
+	typedef Vector<4,uint16_t,int32_t> Vector4DUint16;
+	typedef Vector<4,int32_t,int32_t> Vector4DInt32;
+	typedef Vector<4,uint32_t,int32_t> Vector4DUint32;
 }
 
 #endif

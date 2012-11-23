@@ -22,25 +22,25 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 	PolyVox::Vector __div__(const PolyVox::Vector& rhs) {
 		return *$self / rhs;
 	}
-	PolyVox::Vector __div__(const Type& rhs) {
+	PolyVox::Vector __div__(const StorageType& rhs) {
 		return *$self / rhs;
 	}
 	PolyVox::Vector __mul__(const PolyVox::Vector& rhs) {
 		return *$self * rhs;
 	}
-	PolyVox::Vector __mul__(const Type& rhs) {
+	PolyVox::Vector __mul__(const StorageType& rhs) {
 		return *$self * rhs;
 	}
 	STR()
 };
 
-%template(Vector3DFloat) PolyVox::Vector<3,float>;
-%template(Vector3DDouble) PolyVox::Vector<3,double>;
-%template(Vector3DInt8) PolyVox::Vector<3,int8_t>;
-%template(Vector3DUint8) PolyVox::Vector<3,uint8_t>;
-%template(Vector3DInt16) PolyVox::Vector<3,int16_t>;
-%template(Vector3DUint16) PolyVox::Vector<3,uint16_t>;
-%template(Vector3DInt32) PolyVox::Vector<3,int32_t>;
-%template(Vector3DUint32) PolyVox::Vector<3,uint32_t>;
+%template(Vector3DFloat) PolyVox::Vector<3,float,float>;
+%template(Vector3DDouble) PolyVox::Vector<3,double,double>;
+%template(Vector3DInt8) PolyVox::Vector<3,int8_t,int32_t>;
+%template(Vector3DUint8) PolyVox::Vector<3,uint8_t,int32_t>;
+%template(Vector3DInt16) PolyVox::Vector<3,int16_t,int32_t>;
+%template(Vector3DUint16) PolyVox::Vector<3,uint16_t,int32_t>;
+%template(Vector3DInt32) PolyVox::Vector<3,int32_t,int32_t>;
+%template(Vector3DUint32) PolyVox::Vector<3,uint32_t,int32_t>;
 
 //%rename(assign) Vector3DFloat::operator=;
