@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TypeDef_H__
 #define __PolyVox_TypeDef_H__
 
+#include "PolyVoxCore/Impl/CompilerCapabilities.h"
+
 //Definitions needed to make library functions accessable
 // See http://gcc.gnu.org/wiki/Visibility for more info.
 #if defined _WIN32 || defined __CYGWIN__

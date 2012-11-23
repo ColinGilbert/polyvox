@@ -1,0 +1,6 @@
+#ifndef __PolyVox_CompilerCapabilities_H__
+#define __PolyVox_CompilerCapabilities_H__
+
+#cmakedefine HAS_CXX11_CONSTEXPR
+
+#endif

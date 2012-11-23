@@ -24,6 +24,9 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(PolyVoxCore)
 
+#Set up the C++11 feature header file based on the CheckCXX11Features script
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h)
+
 #Projects source files
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
@@ -128,7 +131,7 @@ SOURCE_GROUP("Sources\\Impl" FILES ${IMPL_SRC_FILES})
 SOURCE_GROUP("Headers\\Impl" FILES ${IMPL_INC_FILES})
 
 #Tell CMake the paths
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 #Core
 #Build
