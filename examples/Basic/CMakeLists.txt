@@ -25,22 +25,14 @@ PROJECT(BasicExample)
 
 #Projects source files
 SET(SRC_FILES
-	glew/glew.cpp
-	
 	main.cpp
 	OpenGLWidget.cpp
-	)
+)
 
 #Projects headers files	
 SET(INC_FILES	
-	glew/glew.h
-	glew/glxew.h
-	glew/wglew.h
-	
 	OpenGLWidget.h
-	)
-
-ADD_DEFINITIONS(-DGLEW_STATIC)
+)
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
@@ -50,7 +42,7 @@ SOURCE_GROUP("Headers" FILES ${INC_FILES})
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_SOURCE_DIR}/include ${GLEW_SOURCE_DIR})
 LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #Build
@@ -58,7 +50,7 @@ ADD_EXECUTABLE(BasicExample ${SRC_FILES})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(BasicExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(BasicExample ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
+TARGET_LINK_LIBRARIES(BasicExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows
