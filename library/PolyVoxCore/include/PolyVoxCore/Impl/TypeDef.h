@@ -77,20 +77,8 @@ freely, subject to the following restrictions:
 	#define polyvox_bind boost::bind
 	#define polyvox_placeholder_1 _1
 	#define polyvox_placeholder_2 _2
-
-
-	//As long as we're requiring boost, we'll use it to compensate
-	//for the missing cstdint header too.
-	#include <boost/cstdint.hpp>
-	using boost::int8_t;
-	using boost::int16_t;
-	using boost::int32_t;
-	using boost::uint8_t;
-	using boost::uint16_t;
-	using boost::uint32_t;
 #else
 	//We have a decent compiler - use real C++0x features
-	#include <cstdint>
 	#include <functional>
 	#include <memory>
 	#define polyvox_shared_ptr std::shared_ptr
@@ -113,6 +101,18 @@ freely, subject to the following restrictions:
 #else
 	#include <boost/static_assert.hpp>
 	#define static_assert BOOST_STATIC_ASSERT
+#endif
+
+#if defined(HAS_CXX11_CSTDINT_H)
+	#include <cstdint>
+#else
+	#include <boost/cstdint.hpp>
+	using boost::int8_t;
+	using boost::int16_t;
+	using boost::int32_t;
+	using boost::uint8_t;
+	using boost::uint16_t;
+	using boost::uint32_t;
 #endif
 
 #endif

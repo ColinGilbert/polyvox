@@ -5,4 +5,6 @@
 
 #cmakedefine HAS_CXX11_STATIC_ASSERT
 
+#cmakedefine HAS_CXX11_CSTDINT_H
+
 #endif
