@@ -77,9 +77,6 @@ freely, subject to the following restrictions:
 	#define polyvox_bind boost::bind
 	#define polyvox_placeholder_1 _1
 	#define polyvox_placeholder_2 _2
-	
-	#include <boost/static_assert.hpp>
-	#define static_assert BOOST_STATIC_ASSERT
 
 
 	//As long as we're requiring boost, we'll use it to compensate
@@ -101,7 +98,6 @@ freely, subject to the following restrictions:
 	#define polyvox_bind std::bind
 	#define polyvox_placeholder_1 std::placeholders::_1
 	#define polyvox_placeholder_2 std::placeholders::_2
-	//#define static_assert static_assert //we can use this
 #endif
 
 #if defined(HAS_CXX11_CONSTEXPR)
@@ -110,6 +106,13 @@ freely, subject to the following restrictions:
 #else
 	#define polyvox_constexpr_const const
 	#define polyvox_constexpr
+#endif
+
+#if defined(HAS_CXX11_STATIC_ASSERT)
+	//In this case we can just use static_assert
+#else
+	#include <boost/static_assert.hpp>
+	#define static_assert BOOST_STATIC_ASSERT
 #endif
 
 #endif
