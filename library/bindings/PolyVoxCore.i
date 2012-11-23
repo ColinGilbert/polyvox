@@ -1,6 +1,7 @@
 %module PolyVoxCore
 
 #define POLYVOX_API
+%include "PolyVoxCore/Impl/CompilerCapabilities.h"
 %include "Impl/TypeDef.h"
 #define __attribute__(x) //Silence DEPRECATED errors
 
