@@ -141,6 +141,13 @@ namespace PolyVox
 		/// Tests whether the given position is contained in the 'z' range of this Region.
 		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
 
+		/// Enlarges the Region so that it contains the specified position.
+		void accumulate(int32_t iX, int32_t iY, int32_t iZ);
+		/// Enlarges the Region so that it contains the specified position.
+		void accumulate(const Vector3DInt32& v3dPos);
+		/// Enlarges the Region so that it contains the specified Region.
+		void accumulate(const Region& reg);
+
 		/// Crops the extents of this Region accoring to another Region.
 		void cropTo(const Region& other);
 

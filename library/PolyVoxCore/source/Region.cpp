@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Region.h"
 
+#include <cassert>
 #include <limits>
 
 namespace PolyVox
@@ -45,6 +46,48 @@ namespace PolyVox
 		Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)()),
 		Vector3DInt32((std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)())
 	);
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param iX The 'x' component of the position to accumulate.
+	/// \param iY The 'y' component of the position to accumulate.
+	/// \param iZ The 'z' component of the position to accumulate.
+	////////////////////////////////////////////////////////////////////////////////
+	void Region::accumulate(int32_t iX, int32_t iY, int32_t iZ)
+	{
+		m_iLowerX = ((std::min)(m_iLowerX, iX));
+		m_iLowerY = ((std::min)(m_iLowerY, iY));
+		m_iLowerZ = ((std::min)(m_iLowerZ, iZ));
+		m_iUpperX = ((std::max)(m_iUpperX, iX));
+		m_iUpperY = ((std::max)(m_iUpperY, iY));
+		m_iUpperZ = ((std::max)(m_iUpperZ, iZ));
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The position to accumulate.
+	////////////////////////////////////////////////////////////////////////////////
+	void Region::accumulate(const Vector3DInt32& v3dPos)
+	{
+		accumulate(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Note that this is not the same as computing the union of two Regions (as the result of
+	/// such a union may not be a shape which can be exactly represented by a Region). Instead,
+	/// the result is simply big enough to contain both this Region and the one passed as a parameter.
+	/// \param reg The Region to accumulate. This must be valid as defined by the isValid() function.
+	/// \sa isValid()
+	////////////////////////////////////////////////////////////////////////////////
+	void Region::accumulate(const Region& reg)
+	{
+		assert(reg.isValid(), "The result of accumulating an invalid region is not defined.");
+
+		m_iLowerX = ((std::min)(m_iLowerX, reg.getLowerX()));
+		m_iLowerY = ((std::min)(m_iLowerY, reg.getLowerY()));
+		m_iLowerZ = ((std::min)(m_iLowerZ, reg.getLowerZ()));
+		m_iUpperX = ((std::max)(m_iUpperX, reg.getUpperX()));
+		m_iUpperY = ((std::max)(m_iUpperY, reg.getUpperY()));
+		m_iUpperZ = ((std::max)(m_iUpperZ, reg.getUpperZ()));
+	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Constructs a Region and clears all extents to zero.
@@ -229,7 +272,7 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// After calling this functions, the extents of this Region are given by the union
+	/// After calling this functions, the extents of this Region are given by the intersection
 	/// of this Region and the one it was cropped to.
 	/// \param other The Region to crop to.
 	////////////////////////////////////////////////////////////////////////////////
