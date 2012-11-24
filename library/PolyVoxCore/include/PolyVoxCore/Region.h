@@ -69,6 +69,10 @@ namespace PolyVox
 		int32_t getLowerY(void) const;
 		int32_t getLowerZ(void) const;
 
+		int32_t getUpperX(void) const;
+		int32_t getUpperY(void) const;
+		int32_t getUpperZ(void) const;
+
 		Vector3DInt32 getLowerCorner(void) const;
 		Vector3DInt32 getUpperCorner(void) const;
 

@@ -107,6 +107,21 @@ namespace PolyVox
 		return m_iLowerZ;
 	}
 
+	int32_t Region::getUpperX(void) const
+	{
+		return m_iUpperX;
+	}
+
+	int32_t Region::getUpperY(void) const
+	{
+		return m_iUpperY;
+	}
+
+	int32_t Region::getUpperZ(void) const
+	{
+		return m_iUpperZ;
+	}
+
 	Vector3DInt32 Region::getLowerCorner(void) const
 	{
 		return Vector3DInt32(m_iLowerX, m_iLowerY, m_iLowerZ);
