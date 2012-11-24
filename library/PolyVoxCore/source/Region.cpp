@@ -27,12 +27,19 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 	const Region Region::MaxRegion
 	(
 		Vector3DInt32((std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)()),
 		Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)())
 	);
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// This Region is not considered valid as defined by isValid(). It's main application
+	/// is to initialise a Region to this value and then() accumulate positions. The result
+	/// of this will be a Region which encompasses all positions specified.
+	////////////////////////////////////////////////////////////////////////////////
 	const Region Region::InvertedRegion
 	(
 		Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)()),
@@ -109,6 +116,13 @@ namespace PolyVox
 		return !(*this == rhs);
     }
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in all directions. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
 		return (pos.getX() <= m_iUpperX - boundary)
@@ -119,6 +133,13 @@ namespace PolyVox
 			&& (pos.getZ() >= m_iLowerZ + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in all directions. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPoint(const Vector3DInt32& pos, uint8_t boundary) const
 	{
 		return (pos.getX() <= m_iUpperX - boundary)
@@ -129,42 +150,89 @@ namespace PolyVox
 			&& (pos.getZ() >= m_iLowerZ + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in the 'x' direction. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPointInX(float pos, float boundary) const
 	{
 		return (pos <= m_iUpperX - boundary)
 			&& (pos >= m_iLowerX + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in the 'x' direction. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPointInX(int32_t pos, uint8_t boundary) const
 	{
 		return (pos <= m_iUpperX - boundary)
 			&& (pos >= m_iLowerX + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in the 'y' direction. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPointInY(float pos, float boundary) const
 	{
 		return (pos <= m_iUpperY - boundary)
 			&& (pos >= m_iLowerY + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in the 'y' direction. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPointInY(int32_t pos, uint8_t boundary) const
 	{
 		return (pos <= m_iUpperY - boundary) 
 			&& (pos >= m_iLowerY + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in the 'z' direction. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPointInZ(float pos, float boundary) const
 	{
 		return (pos <= m_iUpperZ - boundary)
 			&& (pos >= m_iLowerZ + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The boundary value can be used to ensure a position is only considered to be inside
+	/// the Region if it is that far in in the 'z' direction. Also, the test is inclusive such 
+	/// that positions lying exactly on the edge of the Region are considered to be inside it.
+	/// \param pos The position to test.
+	/// \param boundary The desired boundary value.
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::containsPointInZ(int32_t pos, uint8_t boundary) const
 	{
 		return (pos <= m_iUpperZ - boundary)
 			&& (pos >= m_iLowerZ + boundary);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// After calling this functions, the extents of this Region are given by the union
+	/// of this Region and the one it was cropped to.
+	/// \param other The Region to crop to.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::cropTo(const Region& other)
 	{
 		m_iLowerX = ((std::max)(m_iLowerX, other.m_iLowerX));
@@ -175,6 +243,11 @@ namespace PolyVox
 		m_iUpperZ = ((std::min)(m_iUpperZ, other.m_iUpperZ));
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The same amount of dilation is applied in all directions. Negative dilations
+	/// are possible but you should prefer the erode() function for clarity.
+	/// \param iAmount The amount to dilate by.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::dilate(int32_t iAmount)
 	{
 		m_iLowerX -= iAmount;
@@ -186,6 +259,13 @@ namespace PolyVox
 		m_iUpperZ += iAmount;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The dilation can be specified seperatly for each direction. Negative dilations
+	/// are possible but you should prefer the erode() function for clarity.
+	/// \param iAmountX The amount to dilate by in 'x'.
+	/// \param iAmountY The amount to dilate by in 'y'.
+	/// \param iAmountZ The amount to dilate by in 'z'.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::dilate(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX -= iAmountX;
@@ -197,11 +277,21 @@ namespace PolyVox
 		m_iUpperZ += iAmountZ;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The dilation can be specified seperatly for each direction. Negative dilations
+	/// are possible but you should prefer the erode() function for clarity.
+	/// \param v3dAmount The amount to dilate by (one components for each direction).
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::dilate(const Vector3DInt32& v3dAmount)
 	{
 		dilate(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The same amount of erosion is applied in all directions. Negative erosions
+	/// are possible but you should prefer the dilate() function for clarity.
+	/// \param iAmount The amount to erode by.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::erode(int32_t iAmount)
 	{
 		m_iLowerX += iAmount;
@@ -213,6 +303,13 @@ namespace PolyVox
 		m_iUpperZ -= iAmount;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The erosion can be specified seperatly for each direction. Negative erosions
+	/// are possible but you should prefer the dilate() function for clarity.
+	/// \param iAmountX The amount to erode by in 'x'.
+	/// \param iAmountY The amount to erode by in 'y'.
+	/// \param iAmountZ The amount to erode by in 'z'.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::erode(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX += iAmountX;
@@ -224,28 +321,48 @@ namespace PolyVox
 		m_iUpperZ -= iAmountZ;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// The erosion can be specified seperatly for each direction. Negative erosions
+	/// are possible but you should prefer the dilate() function for clarity.
+	/// \param v3dAmount The amount to erode by (one components for each direction).
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::erode(const Vector3DInt32& v3dAmount)
 	{
 		erode(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
 	bool Region::isValid(void)
 	{
 		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param iAmountX The amount to move the Region by in 'x'.
+	/// \param iAmountY The amount to move the Region by in 'y'.
+	/// \param iAmountZ The amount to move the Region by in 'z'.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::shift(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		shiftLowerCorner(iAmountX, iAmountY, iAmountZ);
 		shiftUpperCorner(iAmountX, iAmountY, iAmountZ);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dAmount The amount to move the Region by.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::shift(const Vector3DInt32& v3dAmount)
 	{
 		shiftLowerCorner(v3dAmount);
 		shiftUpperCorner(v3dAmount);
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param iAmountX The amount to move the lower corner by in 'x'.
+	/// \param iAmountY The amount to move the lower corner by in 'y'.
+	/// \param iAmountZ The amount to move the lower corner by in 'z'.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::shiftLowerCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX += iAmountX;
@@ -253,11 +370,19 @@ namespace PolyVox
 		m_iLowerZ += iAmountZ;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dAmount The amount to move the lower corner by.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::shiftLowerCorner(const Vector3DInt32& v3dAmount)
 	{
 		shiftLowerCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param iAmountX The amount to move the upper corner by in 'x'.
+	/// \param iAmountY The amount to move the upper corner by in 'y'.
+	/// \param iAmountZ The amount to move the upper corner by in 'z'.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iUpperX += iAmountX;
@@ -265,6 +390,9 @@ namespace PolyVox
 		m_iUpperZ += iAmountZ;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dAmount The amount to move the upper corner by.
+	////////////////////////////////////////////////////////////////////////////////
 	void Region::shiftUpperCorner(const Vector3DInt32& v3dAmount)
 	{
 		shiftUpperCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());

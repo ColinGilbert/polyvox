@@ -53,7 +53,9 @@ namespace PolyVox
 	{
 	public:
 
+		/// A Region with the lower corner set as low as possible and the upper corner set as high as possible.
 		static const Region MaxRegion;
+		/// A Region with the lower corner set as high as possible and the upper corner set as low as possible.
 		static const Region InvertedRegion;
 
 		/// Constructor
