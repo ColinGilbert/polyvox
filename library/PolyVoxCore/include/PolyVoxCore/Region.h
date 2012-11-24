@@ -65,6 +65,10 @@ namespace PolyVox
 		/// Inequality Operator.
         bool operator!=(const Region& rhs) const;
 
+		int32_t getLowerX(void) const;
+		int32_t getLowerY(void) const;
+		int32_t getLowerZ(void) const;
+
 		Vector3DInt32 getLowerCorner(void) const;
 		Vector3DInt32 getUpperCorner(void) const;
 
