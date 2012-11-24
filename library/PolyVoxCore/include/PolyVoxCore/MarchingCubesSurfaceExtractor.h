@@ -189,7 +189,7 @@ namespace PolyVox
 		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;
 
 		//Information about the region we are currently processing
-		const Region m_regSizeInVoxels;
+		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
 		/*Region m_regSizeInVoxelsCropped;
 		Region m_regSizeInVoxelsUncropped;
@@ -201,7 +201,7 @@ namespace PolyVox
 		Controller m_controller;
 
 		//Our threshold value
-		const typename Controller::DensityType m_tThreshold;
+		typename Controller::DensityType m_tThreshold;
 	};
 }
 
