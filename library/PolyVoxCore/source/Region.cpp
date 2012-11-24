@@ -217,23 +217,39 @@ namespace PolyVox
 		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
 	}
 
-	void Region::shift(const Vector3DInt32& amount)
+	void Region::shift(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
-		shiftLowerCorner(amount);
-		shiftUpperCorner(amount);
+		shiftLowerCorner(iAmountX, iAmountY, iAmountZ);
+		shiftUpperCorner(iAmountX, iAmountY, iAmountZ);
 	}
 
-	void Region::shiftLowerCorner(const Vector3DInt32& amount)
+	void Region::shift(const Vector3DInt32& v3dAmount)
 	{
-		m_iLowerX += amount.getX();
-		m_iLowerY += amount.getY();
-		m_iLowerZ += amount.getZ();
+		shiftLowerCorner(v3dAmount);
+		shiftUpperCorner(v3dAmount);
 	}
 
-	void Region::shiftUpperCorner(const Vector3DInt32& amount)
+	void Region::shiftLowerCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
-		m_iUpperX += amount.getX();
-		m_iUpperY += amount.getY();
-		m_iUpperZ += amount.getZ();
+		m_iLowerX += iAmountX;
+		m_iLowerY += iAmountY;
+		m_iLowerZ += iAmountZ;
+	}
+
+	void Region::shiftLowerCorner(const Vector3DInt32& v3dAmount)
+	{
+		shiftLowerCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+	}
+
+	void Region::shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	{
+		m_iUpperX += iAmountX;
+		m_iUpperY += iAmountY;
+		m_iUpperZ += iAmountZ;
+	}
+
+	void Region::shiftUpperCorner(const Vector3DInt32& v3dAmount)
+	{
+		shiftUpperCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 }

@@ -56,8 +56,11 @@ namespace PolyVox
 		static const Region MaxRegion;
 		static const Region InvertedRegion;
 
+		/// Constructor
 		Region();
+		/// Constructor
 		Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner);
+		/// Constructor
 		Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ);
 
 		/// Equality Operator.
@@ -65,14 +68,22 @@ namespace PolyVox
 		/// Inequality Operator.
         bool operator!=(const Region& rhs) const;
 
+		/// Gets the 'x' position of the lower corner.
 		int32_t getLowerX(void) const;
+		/// Gets the 'y' position of the lower corner.
 		int32_t getLowerY(void) const;
+		/// Gets the 'z' position of the lower corner.
 		int32_t getLowerZ(void) const;
+		/// Gets the 'x' position of the upper corner.
 		int32_t getUpperX(void) const;
+		/// Gets the 'y' position of the upper corner.
 		int32_t getUpperY(void) const;
+		/// Gets the 'z' position of the upper corner.
 		int32_t getUpperZ(void) const;
 
+		/// Gets the position of the lower corner.
 		Vector3DInt32 getLowerCorner(void) const;
+		/// Gets the position of the upper corner.
 		Vector3DInt32 getUpperCorner(void) const;
 
 		/// Gets the width of the region measured in voxels
@@ -93,40 +104,74 @@ namespace PolyVox
 		/// Gets the dimensions of the region measured in cells
 		Vector3DInt32 getDimensionsInCells(void) const;
 
+		/// Sets the 'x' position of the lower corner.
 		void setLowerX(int32_t iX);
+		/// Sets the 'y' position of the lower corner.
 		void setLowerY(int32_t iY);
+		/// Sets the 'z' position of the lower corner.
 		void setLowerZ(int32_t iZ);
+		/// Sets the 'x' position of the upper corner.
 		void setUpperX(int32_t iX);
+		/// Sets the 'y' position of the upper corner.
 		void setUpperY(int32_t iY);
+		/// Sets the 'z' position of the upper corner.
 		void setUpperZ(int32_t iZ);
 
+		/// Sets the position of the lower corner.
 		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
+		/// Sets the position of the upper corner.
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);
 
+		/// Tests whether the given point is contained in this Region.
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
+		/// Tests whether the given point is contained in this Region.
 		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;
+		/// Tests whether the given position is contained in the 'x' range of this Region.
 		bool containsPointInX(float pos, float boundary = 0.0f) const;
+		/// Tests whether the given position is contained in the 'x' range of this Region.
 		bool containsPointInX(int32_t pos, uint8_t boundary = 0) const;
+		/// Tests whether the given position is contained in the 'y' range of this Region.
 		bool containsPointInY(float pos, float boundary = 0.0f) const;
+		/// Tests whether the given position is contained in the 'y' range of this Region.
 		bool containsPointInY(int32_t pos, uint8_t boundary = 0) const;
+		/// Tests whether the given position is contained in the 'z' range of this Region.
 		bool containsPointInZ(float pos, float boundary = 0.0f) const;
+		/// Tests whether the given position is contained in the 'z' range of this Region.
 		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
 
+		/// Crops the extents of this Region accoring to another Region.
 		void cropTo(const Region& other);
 
+		/// Enlarges this region by the amount specified.
 		void dilate(int32_t iAmount);
+		/// Enlarges this region by the amounts specified.
 		void dilate(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Enlarges this region by the amounts specified.
 		void dilate(const Vector3DInt32& v3dAmount);
 
+		/// Shrinks this region by the amount specified.
 		void erode(int32_t iAmount);
+		/// Shrinks this region by the amounts specified.
 		void erode(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Shrinks this region by the amounts specified.
 		void erode(const Vector3DInt32& v3dAmount);
 
+		/// Tests whether all components of the upper corner are at least
+		/// as great as the corresponding components of the lower corner.
 		bool isValid(void);
 
-		void shift(const Vector3DInt32& amount);
-		void shiftLowerCorner(const Vector3DInt32& amount);
-		void shiftUpperCorner(const Vector3DInt32& amount);		
+		/// Moves the Region by the amount specified.
+		void shift(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Moves the Region by the amount specified.
+		void shift(const Vector3DInt32& v3dAmount);
+		/// Moves the lower corner of the Region by the amount specified.
+		void shiftLowerCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Moves the lower corner of the Region by the amount specified.
+		void shiftLowerCorner(const Vector3DInt32& v3dAmount);
+		/// Moves the upper corner of the Region by the amount specified.
+		void shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Moves the upper corner of the Region by the amount specified.
+		void shiftUpperCorner(const Vector3DInt32& v3dAmount);		
 
 	private:
 		int32_t m_iLowerX;
