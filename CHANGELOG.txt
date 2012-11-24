@@ -1,3 +1,6 @@
+Changes for PolyVox version 0.3
+===============================
+
 Changes for PolyVox version 0.2
 ===============================
 This is the first revision for which we have produced a changelog, as we are now trying to streamline our development and release process. Hence this changelog entry is not going to be as structured as we hope they will be in the future. We're writing it from memory, rather than having carefully kept track of all the relevant changes as we made them.
