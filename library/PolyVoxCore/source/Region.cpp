@@ -39,6 +39,9 @@ namespace PolyVox
 		Vector3DInt32((std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)())
 	);
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Constructs a Region and clears all extents to zero.
+	////////////////////////////////////////////////////////////////////////////////
 	Region::Region()
 		:m_iLowerX(0)
 		,m_iLowerY(0)
@@ -49,6 +52,11 @@ namespace PolyVox
 	{
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Constructs a Region and sets the lower and upper corners to the specified values.
+	/// \param v3dLowerCorner The desired lower corner of the Region.
+	/// \param v3dUpperCorner The desired upper corner of the Region.
+	////////////////////////////////////////////////////////////////////////////////
 	Region::Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner)
 		:m_iLowerX(v3dLowerCorner.getX())
 		,m_iLowerY(v3dLowerCorner.getY())
@@ -59,6 +67,15 @@ namespace PolyVox
 	{
 	}
 
+	////////////////////////////////////////////////////////////////////////////////
+	/// Constructs a Region and sets the extents to the specified values.
+	/// \param iLowerX The desired lower 'x' extent of the Region.
+	/// \param iLowerY The desired lower 'y' extent of the Region.
+	/// \param iLowerZ The desired lower 'z' extent of the Region.
+	/// \param iUpperX The desired upper 'x' extent of the Region.
+	/// \param iUpperY The desired upper 'y' extent of the Region.
+	/// \param iUpperZ The desired upper 'z' extent of the Region.
+	////////////////////////////////////////////////////////////////////////////////
 	Region::Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ)
 		:m_iLowerX(iLowerX)
 		,m_iLowerY(iLowerY)
@@ -69,24 +86,24 @@ namespace PolyVox
 	{
 	}
 
-	/**
-    Checks whether two Regions are equal.
-    \param rhs The Region to compare to.
-    \return true if the Regions match.
-    \see operator!=
-    */
+	////////////////////////////////////////////////////////////////////////////////
+	/// Two regions are considered equal if all their extents match.
+	/// \param rhs The Region to compare to.
+    /// \return true if the Regions match.
+    /// \sa operator!=
+	////////////////////////////////////////////////////////////////////////////////
     bool Region::operator==(const Region& rhs) const
     {
 		return ((m_iLowerX == rhs.m_iLowerX) && (m_iLowerY == rhs.m_iLowerY) && (m_iLowerZ == rhs.m_iLowerZ)
 			&&  (m_iUpperX == rhs.m_iUpperX) && (m_iUpperY == rhs.m_iUpperY) && (m_iUpperZ == rhs.m_iUpperZ));
     }
 
-	/**
-    Checks whether two Regions are not equal.
-    \param rhs The Region to compare to.
-    \return true if the Regions do not match.
-    \see operator==
-    */
+	////////////////////////////////////////////////////////////////////////////////
+	/// Two regions are considered different if any of their extents differ.
+	/// \param rhs The Region to compare to.
+    /// \return true if the Regions are different.
+    /// \sa operator==
+	////////////////////////////////////////////////////////////////////////////////
     bool Region::operator!=(const Region& rhs) const
     {
 		return !(*this == rhs);
