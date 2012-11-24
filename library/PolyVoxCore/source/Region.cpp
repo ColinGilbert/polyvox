@@ -306,4 +306,26 @@ namespace PolyVox
 		m_iUpperY += amount.getY();
 		m_iUpperZ += amount.getZ();
 	}
+
+	void Region::dilate(int32_t amount)
+	{
+		m_iLowerX -= amount;
+		m_iLowerY -= amount;
+		m_iLowerZ -= amount;
+
+		m_iUpperX += amount;
+		m_iUpperY += amount;
+		m_iUpperZ += amount;
+	}
+
+	void Region::erode(int32_t amount)
+	{
+		m_iLowerX += amount;
+		m_iLowerY += amount;
+		m_iLowerZ += amount;
+
+		m_iUpperX -= amount;
+		m_iUpperY -= amount;
+		m_iUpperZ -= amount;
+	}
 }

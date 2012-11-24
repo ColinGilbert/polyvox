@@ -120,6 +120,9 @@ namespace PolyVox
 		void shiftLowerCorner(const Vector3DInt32& amount);
 		void shiftUpperCorner(const Vector3DInt32& amount);
 		//FIXME - Add dilate and erode functions?
+
+		void dilate(int32_t amount);
+		void erode(int32_t amount);
 		
 
 	private:
