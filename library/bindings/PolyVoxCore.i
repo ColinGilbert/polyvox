@@ -24,6 +24,16 @@ const char* __str__() {
 }
 %enddef
 
+//Centralise this to avoid repeating ourselves
+//This macro will be called in the volume interface files to define the various volume types.
+%define VOLUMETYPES(shortname, class)
+%template(shortname ## Density8) class<PolyVox::Density8>;
+%template(shortname ## Material8) class<PolyVox::Material8>;
+%template(shortname ## Material16) class<PolyVox::Material16>;
+%template(shortname ## MaterialDensityPair44) class<PolyVox::MaterialDensityPair44>;
+%template(shortname ## MaterialDensityPair88) class<PolyVox::MaterialDensityPair88>;
+%enddef
+
 %feature("autodoc", "1");
 
 //This will rename "operator=" to "assign" since Python doesn't have assignment
