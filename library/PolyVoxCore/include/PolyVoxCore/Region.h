@@ -136,6 +136,134 @@ namespace PolyVox
 		int32_t m_iUpperY;
 		int32_t m_iUpperZ;
 	};
+
+	// Functions to be inlined to to be in the header rather than the .cpp.
+	// 'inline' keyword is used for the definition rather than the declaration.
+	// See also http://www.parashift.com/c++-faq-lite/inline-functions.html
+
+	inline int32_t Region::getLowerX(void) const
+	{
+		return m_iLowerX;
+	}
+
+	inline int32_t Region::getLowerY(void) const
+	{
+		return m_iLowerY;
+	}
+
+	inline int32_t Region::getLowerZ(void) const
+	{
+		return m_iLowerZ;
+	}
+
+	inline int32_t Region::getUpperX(void) const
+	{
+		return m_iUpperX;
+	}
+
+	inline int32_t Region::getUpperY(void) const
+	{
+		return m_iUpperY;
+	}
+
+	inline int32_t Region::getUpperZ(void) const
+	{
+		return m_iUpperZ;
+	}
+
+	inline Vector3DInt32 Region::getLowerCorner(void) const
+	{
+		return Vector3DInt32(m_iLowerX, m_iLowerY, m_iLowerZ);
+	}
+
+	inline Vector3DInt32 Region::getUpperCorner(void) const
+	{
+		return Vector3DInt32(m_iUpperX, m_iUpperY, m_iUpperZ);
+	}
+
+	inline int32_t Region::getWidthInVoxels(void) const
+	{
+		return getWidthInCells() + 1;
+	}
+
+	inline int32_t Region::getHeightInVoxels(void) const
+	{
+		return getHeightInCells() + 1;
+	}
+
+	inline int32_t Region::getDepthInVoxels(void) const
+	{
+		return getDepthInCells() + 1;
+	}
+
+	inline Vector3DInt32 Region::getDimensionsInVoxels(void) const
+	{
+		return getDimensionsInCells() + Vector3DInt32(1, 1, 1);
+	}
+
+	inline int32_t Region::getWidthInCells(void) const
+	{
+		return m_iUpperX - m_iLowerX;
+	}
+
+	inline int32_t Region::getHeightInCells(void) const
+	{
+		return m_iUpperY - m_iLowerY;
+	}
+
+	inline Vector3DInt32 Region::getDimensionsInCells(void) const
+	{
+		return Vector3DInt32(getWidthInCells(), getHeightInCells(), getDepthInCells());
+	}
+
+	inline int32_t Region::getDepthInCells(void) const
+	{
+		return m_iUpperZ - m_iLowerZ;
+	}
+
+	inline void Region::setLowerX(int32_t iX)
+	{
+		m_iLowerX = iX;
+	}
+
+	inline void Region::setLowerY(int32_t iY)
+	{
+		m_iLowerY = iY;
+	}
+
+	inline void Region::setLowerZ(int32_t iZ)
+	{
+		m_iLowerZ = iZ;
+	}
+
+	inline void Region::setUpperX(int32_t iX)
+	{
+		m_iUpperX = iX;
+	}
+
+	inline void Region::setUpperY(int32_t iY)
+	{
+		m_iUpperY = iY;
+	}
+
+	inline void Region::setUpperZ(int32_t iZ)
+	{
+		m_iUpperZ = iZ;
+	}
+
+	inline void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)
+	{
+		m_iLowerX = v3dLowerCorner.getX();
+		m_iLowerY = v3dLowerCorner.getY();
+		m_iLowerZ = v3dLowerCorner.getZ();
+	}
+
+	inline void Region::setUpperCorner(const Vector3DInt32& v3dUpperCorner)
+	{
+		m_iUpperX = v3dUpperCorner.getX();
+		m_iUpperY = v3dUpperCorner.getY();
+		m_iUpperZ = v3dUpperCorner.getZ();
+	}
 }
 
 #endif
