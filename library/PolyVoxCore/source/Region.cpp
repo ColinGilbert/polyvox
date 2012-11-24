@@ -172,11 +172,6 @@ namespace PolyVox
 		return m_iUpperZ - m_iLowerZ;
 	}
 
-	bool Region::isValid(void)
-	{
-		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
-	}
-
 	void Region::setLowerX(int32_t iX)
 	{
 		m_iLowerX = iX;
@@ -287,26 +282,6 @@ namespace PolyVox
 		m_iUpperZ = ((std::min)(m_iUpperZ, other.m_iUpperZ));
 	}
 
-	void Region::shift(const Vector3DInt32& amount)
-	{
-		shiftLowerCorner(amount);
-		shiftUpperCorner(amount);
-	}
-
-	void Region::shiftLowerCorner(const Vector3DInt32& amount)
-	{
-		m_iLowerX += amount.getX();
-		m_iLowerY += amount.getY();
-		m_iLowerZ += amount.getZ();
-	}
-
-	void Region::shiftUpperCorner(const Vector3DInt32& amount)
-	{
-		m_iUpperX += amount.getX();
-		m_iUpperY += amount.getY();
-		m_iUpperZ += amount.getZ();
-	}
-
 	void Region::dilate(int32_t iAmount)
 	{
 		m_iLowerX -= iAmount;
@@ -359,5 +334,30 @@ namespace PolyVox
 	void Region::erode(const Vector3DInt32& v3dAmount)
 	{
 		erode(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+	}
+
+	bool Region::isValid(void)
+	{
+		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
+	}
+
+	void Region::shift(const Vector3DInt32& amount)
+	{
+		shiftLowerCorner(amount);
+		shiftUpperCorner(amount);
+	}
+
+	void Region::shiftLowerCorner(const Vector3DInt32& amount)
+	{
+		m_iLowerX += amount.getX();
+		m_iLowerY += amount.getY();
+		m_iLowerZ += amount.getZ();
+	}
+
+	void Region::shiftUpperCorner(const Vector3DInt32& amount)
+	{
+		m_iUpperX += amount.getX();
+		m_iUpperY += amount.getY();
+		m_iUpperZ += amount.getZ();
 	}
 }

@@ -93,8 +93,6 @@ namespace PolyVox
 		/// Gets the dimensions of the region measured in cells
 		Vector3DInt32 getDimensionsInCells(void) const;
 
-		bool isValid(void);
-
 		void setLowerX(int32_t iX);
 		void setLowerY(int32_t iY);
 		void setLowerZ(int32_t iZ);
@@ -107,28 +105,28 @@ namespace PolyVox
 
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
 		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;
-		//FIXME - Don't like these. Make containsPoint take flags indicating which axes to check?
 		bool containsPointInX(float pos, float boundary = 0.0f) const;
 		bool containsPointInX(int32_t pos, uint8_t boundary = 0) const;
 		bool containsPointInY(float pos, float boundary = 0.0f) const;
 		bool containsPointInY(int32_t pos, uint8_t boundary = 0) const;
 		bool containsPointInZ(float pos, float boundary = 0.0f) const;
 		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
+
 		void cropTo(const Region& other);
-		
-		void shift(const Vector3DInt32& amount);
-		void shiftLowerCorner(const Vector3DInt32& amount);
-		void shiftUpperCorner(const Vector3DInt32& amount);
 
 		void dilate(int32_t iAmount);
 		void dilate(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
 		void dilate(const Vector3DInt32& v3dAmount);
 
-
 		void erode(int32_t iAmount);
 		void erode(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
 		void erode(const Vector3DInt32& v3dAmount);
-		
+
+		bool isValid(void);
+
+		void shift(const Vector3DInt32& amount);
+		void shiftLowerCorner(const Vector3DInt32& amount);
+		void shiftUpperCorner(const Vector3DInt32& amount);		
 
 	private:
 		int32_t m_iLowerX;
