@@ -52,8 +52,10 @@ EXTRACTOR(shortname, LargeVolume)
 
 %feature("autodoc", "1");
 
+#ifdef SWIGPYTHON
 //This will rename "operator=" to "assign" since Python doesn't have assignment
 %rename(assign) *::operator=;
+#endif
 
 %include "stdint.i"
 %include "std_vector.i"
@@ -67,14 +69,11 @@ EXTRACTOR(shortname, LargeVolume)
 %include "SimpleVolume.i"
 %include "RawVolume.i"
 %include "LargeVolume.i"
-//%include "TypeDef.i"
 //%include "SubArray.i"
 //%include "Array.i"
 %include "VertexTypes.i"
 %include "SurfaceMesh.i"
-//%include "SimpleVolumeSampler.i"
 %include "MarchingCubesSurfaceExtractor.i"
 //%include "CubicSurfaceExtractor.i"
 //%include "CubicSurfaceExtractorWithNormals.i"
 //%include "MeshDecimator.i"
-
