@@ -8,4 +8,4 @@
 %include "SimpleVolume.h"
 %include "MarchingCubesSurfaceExtractor.h"
 
-%template(SurfaceExtractorSimpleVolumeDensity8) PolyVox::MarchingCubesSurfaceExtractor<PolyVox::SimpleVolume<PolyVox::Density8> >;
+EXTRACTORS(MarchingCubesSurfaceExtractor)

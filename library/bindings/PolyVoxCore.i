@@ -34,6 +34,22 @@ const char* __str__() {
 %template(class ## MaterialDensityPair88) PolyVox::class<PolyVox::MaterialDensityPair88>;
 %enddef
 
+//Template based on voxel type
+%define EXTRACTOR(class, volumetype)
+%template(class ## volumetype ## Density8) PolyVox::class<PolyVox::volumetype<PolyVox::Density8> >;
+//%template(class ## volumetype ## Material8) PolyVox::class<PolyVox::volumetype<PolyVox::Material8> >;
+//%template(class ## volumetype ## Material16) PolyVox::class<PolyVox::volumetype<PolyVox::Material16> >;
+%template(class ## volumetype ## MaterialDensityPair44) PolyVox::class<PolyVox::volumetype<PolyVox::MaterialDensityPair44> >;
+%template(class ## volumetype ## MaterialDensityPair88) PolyVox::class<PolyVox::volumetype<PolyVox::MaterialDensityPair88> >;
+%enddef
+
+//Template based on volume type
+%define EXTRACTORS(shortname)
+EXTRACTOR(shortname, SimpleVolume)
+EXTRACTOR(shortname, RawVolume)
+EXTRACTOR(shortname, LargeVolume)
+%enddef
+
 %feature("autodoc", "1");
 
 //This will rename "operator=" to "assign" since Python doesn't have assignment
