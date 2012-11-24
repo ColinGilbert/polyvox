@@ -37,6 +37,7 @@ const char* __str__() {
 %include "Material.i"
 %include "MaterialDensityPair.i"
 %include "Region.i"
+%include "BaseVolume.i"
 %include "SimpleVolume.i"
 //%include "TypeDef.i"
 //%include "SubArray.i"
