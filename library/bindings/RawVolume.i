@@ -9,4 +9,4 @@
 %include "Density.h"
 %include "RawVolume.h"
 
-VOLUMETYPES(RawVolume, PolyVox::RawVolume)
+VOLUMETYPES(RawVolume)

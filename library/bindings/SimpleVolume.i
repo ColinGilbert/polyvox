@@ -9,4 +9,4 @@
 %include "Density.h"
 %include "SimpleVolume.h"
 
-VOLUMETYPES(SimpleVolume, PolyVox::SimpleVolume)
+VOLUMETYPES(SimpleVolume)

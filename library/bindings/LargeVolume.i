@@ -9,4 +9,4 @@
 %include "Density.h"
 %include "LargeVolume.h"
 
-VOLUMETYPES(LargeVolume, PolyVox::LargeVolume)
+VOLUMETYPES(LargeVolume)
