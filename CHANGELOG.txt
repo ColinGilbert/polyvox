@@ -1,5 +1,6 @@
 Changes for PolyVox version 0.3
 ===============================
+Just a test change (delete this)
 
 Changes for PolyVox version 0.2
 ===============================
