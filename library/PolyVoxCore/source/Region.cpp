@@ -177,6 +177,36 @@ namespace PolyVox
 		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
 	}
 
+	void Region::setLowerX(int32_t iX)
+	{
+		m_iLowerX = iX;
+	}
+
+	void Region::setLowerY(int32_t iY)
+	{
+		m_iLowerY = iY;
+	}
+
+	void Region::setLowerZ(int32_t iZ)
+	{
+		m_iLowerZ = iZ;
+	}
+
+	void Region::setUpperX(int32_t iX)
+	{
+		m_iUpperX = iX;
+	}
+
+	void Region::setUpperY(int32_t iY)
+	{
+		m_iUpperY = iY;
+	}
+
+	void Region::setUpperZ(int32_t iZ)
+	{
+		m_iUpperZ = iZ;
+	}
+
 	void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)
 	{
 		m_iLowerX = v3dLowerCorner.getX();
@@ -275,5 +305,27 @@ namespace PolyVox
 		m_iUpperX += amount.getX();
 		m_iUpperY += amount.getY();
 		m_iUpperZ += amount.getZ();
+	}
+
+	void Region::dilate(int32_t amount)
+	{
+		m_iLowerX -= amount;
+		m_iLowerY -= amount;
+		m_iLowerZ -= amount;
+
+		m_iUpperX += amount;
+		m_iUpperY += amount;
+		m_iUpperZ += amount;
+	}
+
+	void Region::erode(int32_t amount)
+	{
+		m_iLowerX += amount;
+		m_iLowerY += amount;
+		m_iLowerZ += amount;
+
+		m_iUpperX -= amount;
+		m_iUpperY -= amount;
+		m_iUpperZ -= amount;
 	}
 }
