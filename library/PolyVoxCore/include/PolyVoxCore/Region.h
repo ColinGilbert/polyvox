@@ -68,7 +68,6 @@ namespace PolyVox
 		int32_t getLowerX(void) const;
 		int32_t getLowerY(void) const;
 		int32_t getLowerZ(void) const;
-
 		int32_t getUpperX(void) const;
 		int32_t getUpperY(void) const;
 		int32_t getUpperZ(void) const;
@@ -95,6 +94,13 @@ namespace PolyVox
 		Vector3DInt32 getDimensionsInCells(void) const;
 
 		bool isValid(void);
+
+		void setLowerX(int32_t iX);
+		void setLowerY(int32_t iY);
+		void setLowerZ(int32_t iZ);
+		void setUpperX(int32_t iX);
+		void setUpperY(int32_t iY);
+		void setUpperZ(int32_t iZ);
 
 		void setLowerCorner(const Vector3DInt32& v3dLowerCorner);
 		void setUpperCorner(const Vector3DInt32& v3dUpperCorner);

@@ -177,6 +177,36 @@ namespace PolyVox
 		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
 	}
 
+	void Region::setLowerX(int32_t iX)
+	{
+		m_iLowerX = iX;
+	}
+
+	void Region::setLowerY(int32_t iY)
+	{
+		m_iLowerY = iY;
+	}
+
+	void Region::setLowerZ(int32_t iZ)
+	{
+		m_iLowerZ = iZ;
+	}
+
+	void Region::setUpperX(int32_t iX)
+	{
+		m_iUpperX = iX;
+	}
+
+	void Region::setUpperY(int32_t iY)
+	{
+		m_iUpperY = iY;
+	}
+
+	void Region::setUpperZ(int32_t iZ)
+	{
+		m_iUpperZ = iZ;
+	}
+
 	void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)
 	{
 		m_iLowerX = v3dLowerCorner.getX();
