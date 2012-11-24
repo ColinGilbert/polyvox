@@ -50,6 +50,7 @@ const char* __str__() {
 %include "BaseVolume.i"
 %include "SimpleVolume.i"
 %include "RawVolume.i"
+%include "LargeVolume.i"
 //%include "TypeDef.i"
 //%include "SubArray.i"
 //%include "Array.i"

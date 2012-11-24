@@ -166,6 +166,7 @@ namespace PolyVox
 		//in the future
 		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
 		//class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
+		#ifndef SWIG
 #if defined(_MSC_VER)
 		class Sampler : public BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> > //This line works on VS2010
 #else
@@ -243,6 +244,7 @@ namespace PolyVox
 			Block<VoxelType> block;
 			uint32_t timestamp;
 		};
+		#endif
 
 	public:		
 		/// Constructor for creating a very large paging volume.
