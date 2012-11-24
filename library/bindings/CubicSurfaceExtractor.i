@@ -5,4 +5,4 @@
 
 %include "CubicSurfaceExtractor.h"
 
-EXTRACTORS(MarchingCubesSurfaceExtractor)
+EXTRACTORS(CubicSurfaceExtractor)
