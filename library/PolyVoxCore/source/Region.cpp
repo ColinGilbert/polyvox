@@ -307,25 +307,57 @@ namespace PolyVox
 		m_iUpperZ += amount.getZ();
 	}
 
-	void Region::dilate(int32_t amount)
+	void Region::dilate(int32_t iAmount)
 	{
-		m_iLowerX -= amount;
-		m_iLowerY -= amount;
-		m_iLowerZ -= amount;
+		m_iLowerX -= iAmount;
+		m_iLowerY -= iAmount;
+		m_iLowerZ -= iAmount;
 
-		m_iUpperX += amount;
-		m_iUpperY += amount;
-		m_iUpperZ += amount;
+		m_iUpperX += iAmount;
+		m_iUpperY += iAmount;
+		m_iUpperZ += iAmount;
 	}
 
-	void Region::erode(int32_t amount)
+	void Region::dilate(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
-		m_iLowerX += amount;
-		m_iLowerY += amount;
-		m_iLowerZ += amount;
+		m_iLowerX -= iAmountX;
+		m_iLowerY -= iAmountY;
+		m_iLowerZ -= iAmountZ;
 
-		m_iUpperX -= amount;
-		m_iUpperY -= amount;
-		m_iUpperZ -= amount;
+		m_iUpperX += iAmountX;
+		m_iUpperY += iAmountY;
+		m_iUpperZ += iAmountZ;
+	}
+
+	void Region::dilate(const Vector3DInt32& v3dAmount)
+	{
+		dilate(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+	}
+
+	void Region::erode(int32_t iAmount)
+	{
+		m_iLowerX += iAmount;
+		m_iLowerY += iAmount;
+		m_iLowerZ += iAmount;
+
+		m_iUpperX -= iAmount;
+		m_iUpperY -= iAmount;
+		m_iUpperZ -= iAmount;
+	}
+
+	void Region::erode(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	{
+		m_iLowerX += iAmountX;
+		m_iLowerY += iAmountY;
+		m_iLowerZ += iAmountZ;
+
+		m_iUpperX -= iAmountX;
+		m_iUpperY -= iAmountY;
+		m_iUpperZ -= iAmountZ;
+	}
+
+	void Region::erode(const Vector3DInt32& v3dAmount)
+	{
+		erode(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 }
