@@ -39,6 +39,7 @@ const char* __str__() {
 %include "Region.i"
 %include "BaseVolume.i"
 %include "SimpleVolume.i"
+%include "RawVolume.i"
 //%include "TypeDef.i"
 //%include "SubArray.i"
 //%include "Array.i"
