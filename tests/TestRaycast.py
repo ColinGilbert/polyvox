@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-sys.path.append("library/bindings/")
+sys.path.append("../library/bindings/")
 
 import unittest
 import PolyVoxCore
