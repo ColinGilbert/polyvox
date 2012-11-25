@@ -1,5 +1,6 @@
 Changes for PolyVox version 0.3
 ===============================
+The Region class has been tidied up and enhanced with new functionality. It now contains functions for dilating (enlarging) and eroding (shrinking) regions, as well as 'accumulate()' functions which ensure the Region contains a given point. The concept of an invalid region has also been introduced - this is one whose lower corner is greater than it's upper corner.
 
 Changes for PolyVox version 0.2
 ===============================
