@@ -79,7 +79,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	void Region::accumulate(const Region& reg)
 	{
-		assert(reg.isValid(), "The result of accumulating an invalid region is not defined.");
+		assert(reg.isValid()); //The result of accumulating an invalid region is not defined.
 
 		m_iLowerX = ((std::min)(m_iLowerX, reg.getLowerX()));
 		m_iLowerY = ((std::min)(m_iLowerY, reg.getLowerY()));
