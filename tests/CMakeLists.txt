@@ -51,6 +51,7 @@ REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 # Python tests
 IF(BUILD_BINDINGS)
 	ADD_TEST(PythonSurfaceExtractorTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestSurfaceExtractor.py)
+	ADD_TEST(PythonRaycastTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestRaycast.py)
 ENDIF()
 
 # AmbientOcclusionGenerator tests
