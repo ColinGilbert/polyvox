@@ -30,21 +30,25 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	/**
-	Represents a part of a Volume.
-
-	Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
-	it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
-	be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
-	of the volume, there by giving a number of meshes which can be culled and rendered seperately.
-
-	The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
-	bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
-	<em>inclusive</em>. The class also provides functions for modifying the regions in a variety of ways.
-
-	\Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
-	about these definitions.
-	*/
+	/// Represents a part of a Volume.
+	////////////////////////////////////////////////////////////////////////////////
+	/// Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
+	/// it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
+	/// be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
+	/// of the volume, there by giving a number of meshes which can be culled and rendered seperately.
+	///
+	/// The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
+	/// bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
+	/// <em>inclusive</em>.
+	///
+	/// As well as the expected set of getters and setters, this class also provide utility functions for increasing and decresing
+	/// the size of the Region, shifting the Region in 3D space, testing whether it contains a given position, enlarging it so that
+	/// it does contain a given position, croppng it to another Region, and various other utility functions.
+	///
+	/// \Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
+	/// about these definitions.
+	///
+	////////////////////////////////////////////////////////////////////////////////
 #ifdef SWIG
 	class Region
 #else
@@ -167,7 +171,7 @@ namespace PolyVox
 
 		/// Tests whether all components of the upper corner are at least
 		/// as great as the corresponding components of the lower corner.
-		bool isValid(void);
+		bool isValid(void) const;
 
 		/// Moves the Region by the amount specified.
 		void shift(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
