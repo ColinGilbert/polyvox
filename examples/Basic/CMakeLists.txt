@@ -34,6 +34,8 @@ SET(INC_FILES
 	OpenGLWidget.h
 )
 
+add_definitions(-DGLEW_STATIC)
+
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
