@@ -28,7 +28,7 @@ public:
 		{
 			return false; //Make this raise a Python exception
 		}
-		PyObject *args = Py_BuildValue("(l)", sampler.getVoxel().getDensity()); //TODO pass the sampler object itself in
+		PyObject *args = Py_BuildValue("(l)", sampler.getVoxel()); //TODO pass the sampler object itself in
 		PyObject *result = PyObject_Call(func,args,0);
 		Py_DECREF(args);
 		Py_XDECREF(result);
@@ -50,5 +50,4 @@ PolyVox::RaycastResult raycastWithEndpointsPython(VolumeType* volData, const Pol
 template<typename VolumeType, typename Callback>
 PolyVox::RaycastResult raycastWithEndpointsPython(VolumeType* volData, const PolyVox::Vector3DFloat& v3dStart, const PolyVox::Vector3DFloat& v3dEnd, PyObject *callback);
 
-%template(raycastWithEndpointsSimpleVolumeDensity8) raycastWithEndpointsPython<PolyVox::SimpleVolume<PolyVox::Density8>, PyCallback<PolyVox::SimpleVolume<PolyVox::Density8> > >;
-//%template(raycastWithEndpointsSimpleVolumeMaterial8) raycastWithEndpointsPython<PolyVox::SimpleVolume<PolyVox::Material8>, PyCallback<PolyVox::SimpleVolume<PolyVox::Material8> > >;
+%template(raycastWithEndpointsSimpleVolumeuint8) raycastWithEndpointsPython<PolyVox::SimpleVolume<uint8_t>, PyCallback<PolyVox::SimpleVolume<uint8_t> > >;

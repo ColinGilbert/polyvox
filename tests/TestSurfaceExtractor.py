@@ -11,11 +11,11 @@ class TestSurfaceExtractor(unittest.TestCase):
 		
 		#Create a small volume
 		r = PolyVoxCore.Region(PolyVoxCore.Vector3DInt32(0,0,0), PolyVoxCore.Vector3DInt32(31,31,31))
-		vol = PolyVoxCore.SimpleVolumeDensity8(r)
+		vol = PolyVoxCore.SimpleVolumeuint8(r)
 		#Set one single voxel to have a reasonably high density
-		vol.setVoxelAt(PolyVoxCore.Vector3DInt32(5, 5, 5), PolyVoxCore.Density8(200))
+		vol.setVoxelAt(PolyVoxCore.Vector3DInt32(5, 5, 5), 200)
 		self.mesh = PolyVoxCore.SurfaceMeshPositionMaterialNormal()
-		extractor = PolyVoxCore.MarchingCubesSurfaceExtractorSimpleVolumeDensity8(vol, r, self.mesh)
+		extractor = PolyVoxCore.MarchingCubesSurfaceExtractorSimpleVolumeuint8(vol, r, self.mesh)
 		extractor.execute()
 	
 	def test_num_vertices(self):

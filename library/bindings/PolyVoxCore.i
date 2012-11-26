@@ -27,20 +27,24 @@ const char* __str__() {
 //Centralise this to avoid repeating ourselves
 //This macro will be called in the volume interface files to define the various volume types.
 %define VOLUMETYPES(class)
-%template(class ## Density8) PolyVox::class<PolyVox::Density8>;
-%template(class ## Material8) PolyVox::class<PolyVox::Material8>;
-%template(class ## Material16) PolyVox::class<PolyVox::Material16>;
-%template(class ## MaterialDensityPair44) PolyVox::class<PolyVox::MaterialDensityPair44>;
-%template(class ## MaterialDensityPair88) PolyVox::class<PolyVox::MaterialDensityPair88>;
+%template(class ## int8) PolyVox::class<int8_t>;
+%template(class ## int16) PolyVox::class<int16_t>;
+%template(class ## int32) PolyVox::class<int32_t>;
+%template(class ## uint8) PolyVox::class<uint8_t>;
+%template(class ## uint16) PolyVox::class<uint16_t>;
+%template(class ## uint32) PolyVox::class<uint32_t>;
+%template(class ## float) PolyVox::class<float>;
 %enddef
 
 //Template based on voxel type
 %define EXTRACTOR(class, volumetype)
-%template(class ## volumetype ## Density8) PolyVox::class<PolyVox::volumetype<PolyVox::Density8> >;
-//%template(class ## volumetype ## Material8) PolyVox::class<PolyVox::volumetype<PolyVox::Material8> >;
-//%template(class ## volumetype ## Material16) PolyVox::class<PolyVox::volumetype<PolyVox::Material16> >;
-%template(class ## volumetype ## MaterialDensityPair44) PolyVox::class<PolyVox::volumetype<PolyVox::MaterialDensityPair44> >;
-%template(class ## volumetype ## MaterialDensityPair88) PolyVox::class<PolyVox::volumetype<PolyVox::MaterialDensityPair88> >;
+%template(class ## volumetype ## int8) PolyVox::class<PolyVox::volumetype<int8_t> >;
+%template(class ## volumetype ## int16) PolyVox::class<PolyVox::volumetype<int16_t> >;
+%template(class ## volumetype ## int32) PolyVox::class<PolyVox::volumetype<int32_t> >;
+%template(class ## volumetype ## uint8) PolyVox::class<PolyVox::volumetype<uint8_t> >;
+%template(class ## volumetype ## uint16) PolyVox::class<PolyVox::volumetype<uint16_t> >;
+%template(class ## volumetype ## uint32) PolyVox::class<PolyVox::volumetype<uint32_t> >;
+%template(class ## volumetype ## float) PolyVox::class<PolyVox::volumetype<float> >;
 %enddef
 
 //Template based on volume type
@@ -61,9 +65,6 @@ EXTRACTOR(shortname, LargeVolume)
 %include "std_vector.i"
 %include "Vector.i"
 %include "DefaultMarchingCubesController.i"
-%include "Density.i"
-%include "Material.i"
-%include "MaterialDensityPair.i"
 %include "Region.i"
 %include "BaseVolume.i"
 %include "SimpleVolume.i"
