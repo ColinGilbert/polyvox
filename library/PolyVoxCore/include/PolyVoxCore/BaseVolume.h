@@ -125,7 +125,7 @@ namespace PolyVox
 		/// Gets the value used for voxels which are outside the volume
 		VoxelType getBorderValue(void) const;
 		/// Gets a Region representing the extents of the Volume.
-		Region getEnclosingRegion(void) const;
+		const Region& getEnclosingRegion(void) const;
 		/// Gets the width of the volume in voxels.
 		int32_t getWidth(void) const;
 		/// Gets the height of the volume in voxels.

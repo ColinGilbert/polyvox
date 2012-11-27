@@ -84,7 +84,7 @@ namespace PolyVox
 	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Region BaseVolume<VoxelType>::getEnclosingRegion(void) const
+	const Region& BaseVolume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return m_regValidRegion;
 	}
