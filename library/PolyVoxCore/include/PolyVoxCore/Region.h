@@ -155,19 +155,19 @@ namespace PolyVox
 		/// Crops the extents of this Region accoring to another Region.
 		void cropTo(const Region& other);
 
-		/// Enlarges this region by the amount specified.
-		void dilate(int32_t iAmount);
-		/// Enlarges this region by the amounts specified.
-		void dilate(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
-		/// Enlarges this region by the amounts specified.
-		void dilate(const Vector3DInt32& v3dAmount);
+		/// Grows this region by the amount specified.
+		void grow(int32_t iAmount);
+		/// Grows this region by the amounts specified.
+		void grow(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Grows this region by the amounts specified.
+		void grow(const Vector3DInt32& v3dAmount);
 
 		/// Shrinks this region by the amount specified.
-		void erode(int32_t iAmount);
+		void shrink(int32_t iAmount);
 		/// Shrinks this region by the amounts specified.
-		void erode(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		void shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
 		/// Shrinks this region by the amounts specified.
-		void erode(const Vector3DInt32& v3dAmount);
+		void shrink(const Vector3DInt32& v3dAmount);
 
 		/// Tests whether all components of the upper corner are at least
 		/// as great as the corresponding components of the lower corner.

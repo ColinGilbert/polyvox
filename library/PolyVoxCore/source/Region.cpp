@@ -287,11 +287,11 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The same amount of dilation is applied in all directions. Negative dilations
-	/// are possible but you should prefer the erode() function for clarity.
-	/// \param iAmount The amount to dilate by.
+	/// The same amount of growth is applied in all directions. Negative growth
+	/// is possible but you should prefer the shrink() function for clarity.
+	/// \param iAmount The amount to grow by.
 	////////////////////////////////////////////////////////////////////////////////
-	void Region::dilate(int32_t iAmount)
+	void Region::grow(int32_t iAmount)
 	{
 		m_iLowerX -= iAmount;
 		m_iLowerY -= iAmount;
@@ -303,13 +303,13 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The dilation can be specified seperatly for each direction. Negative dilations
-	/// are possible but you should prefer the erode() function for clarity.
-	/// \param iAmountX The amount to dilate by in 'x'.
-	/// \param iAmountY The amount to dilate by in 'y'.
-	/// \param iAmountZ The amount to dilate by in 'z'.
+	/// The amount can be specified seperatly for each direction. Negative growth
+	/// is possible but you should prefer the shrink() function for clarity.
+	/// \param iAmountX The amount to grow by in 'x'.
+	/// \param iAmountY The amount to grow by in 'y'.
+	/// \param iAmountZ The amount to grow by in 'z'.
 	////////////////////////////////////////////////////////////////////////////////
-	void Region::dilate(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	void Region::grow(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX -= iAmountX;
 		m_iLowerY -= iAmountY;
@@ -321,21 +321,21 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The dilation can be specified seperatly for each direction. Negative dilations
-	/// are possible but you should prefer the erode() function for clarity.
-	/// \param v3dAmount The amount to dilate by (one components for each direction).
+	/// The amount can be specified seperatly for each direction. Negative growth
+	/// is possible but you should prefer the shrink() function for clarity.
+	/// \param v3dAmount The amount to grow by (one component for each direction).
 	////////////////////////////////////////////////////////////////////////////////
-	void Region::dilate(const Vector3DInt32& v3dAmount)
+	void Region::grow(const Vector3DInt32& v3dAmount)
 	{
-		dilate(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+		grow(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The same amount of erosion is applied in all directions. Negative erosions
-	/// are possible but you should prefer the dilate() function for clarity.
-	/// \param iAmount The amount to erode by.
+	/// The same amount of shrinkage is applied in all directions. Negative shrinkage
+	/// is possible but you should prefer the grow() function for clarity.
+	/// \param iAmount The amount to shrink by.
 	////////////////////////////////////////////////////////////////////////////////
-	void Region::erode(int32_t iAmount)
+	void Region::shrink(int32_t iAmount)
 	{
 		m_iLowerX += iAmount;
 		m_iLowerY += iAmount;
@@ -347,13 +347,13 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The erosion can be specified seperatly for each direction. Negative erosions
-	/// are possible but you should prefer the dilate() function for clarity.
-	/// \param iAmountX The amount to erode by in 'x'.
-	/// \param iAmountY The amount to erode by in 'y'.
-	/// \param iAmountZ The amount to erode by in 'z'.
+	/// The amount can be specified seperatly for each direction. Negative shrinkage
+	/// is possible but you should prefer the grow() function for clarity.
+	/// \param iAmountX The amount to shrink by in 'x'.
+	/// \param iAmountY The amount to shrink by in 'y'.
+	/// \param iAmountZ The amount to shrink by in 'z'.
 	////////////////////////////////////////////////////////////////////////////////
-	void Region::erode(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	void Region::shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX += iAmountX;
 		m_iLowerY += iAmountY;
@@ -365,13 +365,13 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The erosion can be specified seperatly for each direction. Negative erosions
-	/// are possible but you should prefer the dilate() function for clarity.
-	/// \param v3dAmount The amount to erode by (one components for each direction).
+	/// The amount can be specified seperatly for each direction. Negative shrinkage
+	/// is possible but you should prefer the grow() function for clarity.
+	/// \param v3dAmount The amount to shrink by (one component for each direction).
 	////////////////////////////////////////////////////////////////////////////////
-	void Region::erode(const Vector3DInt32& v3dAmount)
+	void Region::shrink(const Vector3DInt32& v3dAmount)
 	{
-		erode(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+		shrink(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
