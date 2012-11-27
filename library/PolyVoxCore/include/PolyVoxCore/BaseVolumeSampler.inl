@@ -30,6 +30,8 @@ namespace PolyVox
 		,mXPosInVolume(0)
 		,mYPosInVolume(0)
 		,mZPosInVolume(0)
+		,m_eWrapMode(WrapModes::Clamp/*CHANGE*/) //FIXME - Default to border as it's faster?
+		,m_tBorder(0)
 	{
 	}
 
@@ -76,6 +78,14 @@ namespace PolyVox
 	bool BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::setVoxel(VoxelType tValue)
 	{
 		return mVolume->setVoxelAt(mXPosInVolume, mYPosInVolume, mZPosInVolume, tValue);
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
+	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::setWrapMode(WrapMode eWrapMode, VoxelType tBorder)
+	{
+		m_eWrapMode = eWrapMode;
+		m_tBorder = tBorder;
 	}
 
 	template <typename VoxelType>

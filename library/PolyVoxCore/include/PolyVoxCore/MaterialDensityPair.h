@@ -42,6 +42,10 @@ namespace PolyVox
 	{
 	public:
 		MaterialDensityPair() : m_uMaterial(0), m_uDensity(0) {}
+
+		// FIXME - This is a bit odd... we need to allow the MaterialDensityPair to be initialised with a single integer
+		// and PolyVox often initialises voxels by calling VoxelType(0). Is there a better way we should handle this?
+		MaterialDensityPair(Type tValue) : m_uMaterial(tValue), m_uDensity(tValue) {}
 		MaterialDensityPair(Type uMaterial, Type uDensity) : m_uMaterial(uMaterial), m_uDensity(uDensity) {}
 
 		bool operator==(const MaterialDensityPair& rhs) const

@@ -38,6 +38,16 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// More details to come...
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	namespace WrapModes
+	{
+		enum WrapMode
+		{
+			Clamp = 0,
+			Border = 1
+		};
+	}
+	typedef WrapModes::WrapMode WrapMode;
+
 	template <typename _VoxelType>
 	class BaseVolume
 	{
@@ -58,6 +68,7 @@ namespace PolyVox
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
 			inline bool setVoxel(VoxelType tValue);
+			void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType(0));
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -104,6 +115,9 @@ namespace PolyVox
 			int32_t mXPosInVolume;
 			int32_t mYPosInVolume;
 			int32_t mZPosInVolume;
+
+			WrapMode m_eWrapMode;
+			VoxelType m_tBorder;
 		};
 		#endif
 
