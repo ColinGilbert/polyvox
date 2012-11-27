@@ -30,7 +30,7 @@ namespace PolyVox
 		,mXPosInVolume(0)
 		,mYPosInVolume(0)
 		,mZPosInVolume(0)
-		,m_eWrapMode(WrapModes::Clamp/*CHANGE*/) //FIXME - Default to border as it's faster?
+		,m_eWrapMode(WrapModes::Border)
 		,m_tBorder(0)
 	{
 	}
