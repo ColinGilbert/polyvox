@@ -162,13 +162,6 @@ namespace PolyVox
 		/// Grows this region by the amounts specified.
 		void grow(const Vector3DInt32& v3dAmount);
 
-		/// Shrinks this region by the amount specified.
-		void shrink(int32_t iAmount);
-		/// Shrinks this region by the amounts specified.
-		void shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
-		/// Shrinks this region by the amounts specified.
-		void shrink(const Vector3DInt32& v3dAmount);
-
 		/// Tests whether all components of the upper corner are at least
 		/// as great as the corresponding components of the lower corner.
 		bool isValid(void) const;
@@ -185,6 +178,13 @@ namespace PolyVox
 		void shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
 		/// Moves the upper corner of the Region by the amount specified.
 		void shiftUpperCorner(const Vector3DInt32& v3dAmount);		
+
+		/// Shrinks this region by the amount specified.
+		void shrink(int32_t iAmount);
+		/// Shrinks this region by the amounts specified.
+		void shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
+		/// Shrinks this region by the amounts specified.
+		void shrink(const Vector3DInt32& v3dAmount);
 
 	private:
 		int32_t m_iLowerX;

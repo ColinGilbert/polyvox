@@ -331,50 +331,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The same amount of shrinkage is applied in all directions. Negative shrinkage
-	/// is possible but you should prefer the grow() function for clarity.
-	/// \param iAmount The amount to shrink by.
-	////////////////////////////////////////////////////////////////////////////////
-	void Region::shrink(int32_t iAmount)
-	{
-		m_iLowerX += iAmount;
-		m_iLowerY += iAmount;
-		m_iLowerZ += iAmount;
-
-		m_iUpperX -= iAmount;
-		m_iUpperY -= iAmount;
-		m_iUpperZ -= iAmount;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// The amount can be specified seperatly for each direction. Negative shrinkage
-	/// is possible but you should prefer the grow() function for clarity.
-	/// \param iAmountX The amount to shrink by in 'x'.
-	/// \param iAmountY The amount to shrink by in 'y'.
-	/// \param iAmountZ The amount to shrink by in 'z'.
-	////////////////////////////////////////////////////////////////////////////////
-	void Region::shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
-	{
-		m_iLowerX += iAmountX;
-		m_iLowerY += iAmountY;
-		m_iLowerZ += iAmountZ;
-
-		m_iUpperX -= iAmountX;
-		m_iUpperY -= iAmountY;
-		m_iUpperZ -= iAmountZ;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// The amount can be specified seperatly for each direction. Negative shrinkage
-	/// is possible but you should prefer the grow() function for clarity.
-	/// \param v3dAmount The amount to shrink by (one component for each direction).
-	////////////////////////////////////////////////////////////////////////////////
-	void Region::shrink(const Vector3DInt32& v3dAmount)
-	{
-		shrink(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////
 	bool Region::isValid(void) const
 	{
@@ -439,5 +395,49 @@ namespace PolyVox
 	void Region::shiftUpperCorner(const Vector3DInt32& v3dAmount)
 	{
 		shiftUpperCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// The same amount of shrinkage is applied in all directions. Negative shrinkage
+	/// is possible but you should prefer the grow() function for clarity.
+	/// \param iAmount The amount to shrink by.
+	////////////////////////////////////////////////////////////////////////////////
+	void Region::shrink(int32_t iAmount)
+	{
+		m_iLowerX += iAmount;
+		m_iLowerY += iAmount;
+		m_iLowerZ += iAmount;
+
+		m_iUpperX -= iAmount;
+		m_iUpperY -= iAmount;
+		m_iUpperZ -= iAmount;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// The amount can be specified seperatly for each direction. Negative shrinkage
+	/// is possible but you should prefer the grow() function for clarity.
+	/// \param iAmountX The amount to shrink by in 'x'.
+	/// \param iAmountY The amount to shrink by in 'y'.
+	/// \param iAmountZ The amount to shrink by in 'z'.
+	////////////////////////////////////////////////////////////////////////////////
+	void Region::shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	{
+		m_iLowerX += iAmountX;
+		m_iLowerY += iAmountY;
+		m_iLowerZ += iAmountZ;
+
+		m_iUpperX -= iAmountX;
+		m_iUpperY -= iAmountY;
+		m_iUpperZ -= iAmountZ;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// The amount can be specified seperatly for each direction. Negative shrinkage
+	/// is possible but you should prefer the grow() function for clarity.
+	/// \param v3dAmount The amount to shrink by (one component for each direction).
+	////////////////////////////////////////////////////////////////////////////////
+	void Region::shrink(const Vector3DInt32& v3dAmount)
+	{
+		shrink(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 }
