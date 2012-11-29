@@ -131,15 +131,15 @@ namespace PolyVox
 		void setW(StorageType tW);
 
         ///Get the length of the vector.
-        double length(void) const;
+        float length(void) const;
         ///Get the squared length of the vector.
-        double lengthSquared(void) const;
+        OperationType lengthSquared(void) const;
         ///Find the angle between this vector and that which is passed as a parameter.
-        double angleTo(const Vector<Size,StorageType,OperationType>& vector) const;
+        float angleTo(const Vector<Size,StorageType,OperationType>& vector) const;
         ///Find the cross product between this vector and the vector passed as a parameter.
         Vector<Size,StorageType,OperationType> cross(const Vector<Size,StorageType,OperationType>& vector) const;
         ///Find the dot product between this vector and the vector passed as a parameter.
-        StorageType dot(const Vector<Size,StorageType,OperationType>& rhs) const;
+        OperationType dot(const Vector<Size,StorageType,OperationType>& rhs) const;
         ///Normalise the vector.
         void normalise(void);
 
