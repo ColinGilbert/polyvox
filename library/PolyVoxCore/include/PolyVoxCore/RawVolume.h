@@ -55,6 +55,14 @@ namespace PolyVox
                 class Sampler : public BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> > //This line works on GCC
 #endif
 		{
+			static const uint8_t Current = 0x01;
+			static const uint8_t  PositiveX = 0x02;
+			static const uint8_t  NegativeX = 0x04;
+			static const uint8_t  PositiveY = 0x08;
+			static const uint8_t  NegativeY = 0x10;
+			static const uint8_t  PositiveZ = 0x20;
+			static const uint8_t  NegativeZ = 0x40;
+
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
 			~Sampler();
@@ -106,10 +114,13 @@ namespace PolyVox
 		private:
 			VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 			bool isCurrentPositionValid(void) const;
-
+			bool checkValidFlags(uint8_t uFlagsToCheck) const;
+			void updateValidFlagsState(void);
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
+
+			uint8_t m_uValidFlags;
 
 			//Whether the current position is inside the volume
 			//FIXME - Replace these with flags
