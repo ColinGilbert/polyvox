@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
+#include <bitset>
 #include <cassert>
 #include <cstdlib> //For abort()
 #include <limits>
@@ -55,13 +56,21 @@ namespace PolyVox
                 class Sampler : public BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> > //This line works on GCC
 #endif
 		{
-			static const uint8_t Current = 0x01;
-			static const uint8_t  PositiveX = 0x02;
-			static const uint8_t  NegativeX = 0x04;
-			static const uint8_t  PositiveY = 0x08;
-			static const uint8_t  NegativeY = 0x10;
-			static const uint8_t  PositiveZ = 0x20;
-			static const uint8_t  NegativeZ = 0x40;
+			static const uint8_t CurrentShift   = 0;
+			static const uint8_t PositiveXShift = 1;
+			static const uint8_t NegativeXShift = 2;
+			static const uint8_t PositiveYShift = 3;
+			static const uint8_t NegativeYShift = 4;
+			static const uint8_t PositiveZShift = 5;
+			static const uint8_t NegativeZShift = 6;
+
+			static const uint8_t Current   = 1 << CurrentShift;
+			static const uint8_t PositiveX = 1 << PositiveXShift;
+			static const uint8_t NegativeX = 1 << NegativeXShift;
+			static const uint8_t PositiveY = 1 << PositiveYShift;
+			static const uint8_t NegativeY = 1 << NegativeYShift;
+			static const uint8_t PositiveZ = 1 << PositiveZShift;
+			static const uint8_t NegativeZ = 1 << NegativeZShift;
 
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
@@ -113,13 +122,13 @@ namespace PolyVox
 
 		private:
 			VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-			bool checkValidFlags(uint8_t uFlagsToCheck) const;
+			bool checkValidFlags(std::bitset<7> uFlagsToCheck) const;
 			void updateValidFlagsState(void);
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 
-			uint8_t m_uValidFlags;
+			std::bitset<7> m_uValidFlags;
 		};
 		#endif
 

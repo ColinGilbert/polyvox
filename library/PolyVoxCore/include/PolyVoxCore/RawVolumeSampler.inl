@@ -98,8 +98,26 @@ namespace PolyVox
 		this->mXPosInVolume++;
 		++mCurrentVoxel;
 
-		//FIXME - Can be faster by just 'shifting' the flags.
-		updateValidFlagsState();
+		// Update the valid position flags
+		if(checkValidFlags(Current | PositiveX))
+		{
+			// We've just checked that the old 'Current' and old 'PositiveX' are both valid. That means we are not
+			// leaving the volume, and we know we haven't moved along the other two axes. The new 'NegativeX' takes
+			// on the value of the old 'Current', and the new 'Current' takes in the value of the old 'PositiveX'.
+			// Because we know these are both set we can set both 'NegativeX' and 'Current' to true.
+			m_uValidFlags |= (NegativeX | Current);
+
+			// PositiveX is more tricky because it's a new voxel we haven't seen yet. It could be outside the volume,
+			// but only in the 'X' direction because that's the way we are moving
+			m_uValidFlags[PositiveXShift] = this->mXPosInVolume < this->mVolume->getEnclosingRegion().getUpperX();
+		}
+		else
+		{
+			// We're moving from a position which was outside the volume. Note that moving in 'X' can still cause
+			// the validity of Y and Z to change as we could start grazing along a face of the volume. It's safest
+			// just to compute all the flags fully.
+			updateValidFlagsState();
+		}
 	}
 
 	template <typename VoxelType>
@@ -108,8 +126,18 @@ namespace PolyVox
 		this->mYPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth();
 
-		//FIXME - Can be faster by just 'shifting' the flags.
-		updateValidFlagsState();
+		// Update the valid position flags
+		if(checkValidFlags(Current | PositiveY))
+		{
+			// See comments in movePositiveX().
+			m_uValidFlags |= (NegativeY | Current);
+			m_uValidFlags[PositiveYShift] = this->mYPosInVolume < this->mVolume->getEnclosingRegion().getUpperY();
+		}
+		else
+		{
+			// See comments in movePositiveX().
+			updateValidFlagsState();
+		}
 	}
 
 	template <typename VoxelType>
@@ -118,8 +146,18 @@ namespace PolyVox
 		this->mZPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
 
-		//FIXME - Can be faster by just 'shifting' the flags.
-		updateValidFlagsState();
+		// Update the valid position flags
+		if(checkValidFlags(Current | PositiveZ))
+		{
+			// See comments in movePositiveX().
+			m_uValidFlags |= (NegativeZ | Current);
+			m_uValidFlags[PositiveZShift] = this->mZPosInVolume < this->mVolume->getEnclosingRegion().getUpperZ();
+		}
+		else
+		{
+			// See comments in movePositiveX().
+			updateValidFlagsState();
+		}
 	}
 
 	template <typename VoxelType>
@@ -128,8 +166,18 @@ namespace PolyVox
 		this->mXPosInVolume--;
 		--mCurrentVoxel;
 
-		//FIXME - Can be faster by just 'shifting' the flags.
-		updateValidFlagsState();
+		// Update the valid position flags
+		if(checkValidFlags(Current | NegativeX))
+		{
+			// See comments in movePositiveX().
+			m_uValidFlags |= (PositiveX | Current);
+			m_uValidFlags[NegativeXShift] = this->mXPosInVolume > this->mVolume->getEnclosingRegion().getLowerX();
+		}
+		else
+		{
+			// See comments in movePositiveX().
+			updateValidFlagsState();
+		}
 	}
 
 	template <typename VoxelType>
@@ -138,8 +186,18 @@ namespace PolyVox
 		this->mYPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth();
 
-		//FIXME - Can be faster by just 'shifting' the flags.
-		updateValidFlagsState();
+		// Update the valid position flags
+		if(checkValidFlags(Current | NegativeY))
+		{
+			// See comments in movePositiveX().
+			m_uValidFlags |= (PositiveY | Current);
+			m_uValidFlags[NegativeYShift] = this->mYPosInVolume > this->mVolume->getEnclosingRegion().getLowerY();
+		}
+		else
+		{
+			// See comments in movePositiveX().
+			updateValidFlagsState();
+		}
 	}
 
 	template <typename VoxelType>
@@ -148,8 +206,18 @@ namespace PolyVox
 		this->mZPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
 
-		//FIXME - Can be faster by just 'shifting' the flags.
-		updateValidFlagsState();
+		// Update the valid position flags
+		if(checkValidFlags(Current | NegativeZ))
+		{
+			// See comments in movePositiveX().
+			m_uValidFlags |= (PositiveZ | Current);
+			m_uValidFlags[NegativeZShift] = this->mZPosInVolume > this->mVolume->getEnclosingRegion().getLowerZ();
+		}
+		else
+		{
+			// See comments in movePositiveX().
+			updateValidFlagsState();
+		}
 	}
 
 	template <typename VoxelType>
@@ -465,7 +533,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	inline bool RawVolume<VoxelType>::Sampler::checkValidFlags(uint8_t uFlagsToCheck) const
+	inline bool RawVolume<VoxelType>::Sampler::checkValidFlags(std::bitset<7> uFlagsToCheck) const
 	{
 		return (m_uValidFlags & uFlagsToCheck) == uFlagsToCheck;
 	}
