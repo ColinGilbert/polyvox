@@ -30,9 +30,6 @@ namespace PolyVox
 		:BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >(volume)
 		,mCurrentVoxel(0)
 		,m_uValidFlags(0)
-		,m_bIsCurrentPositionValidInX(false)
-		,m_bIsCurrentPositionValidInY(false)
-		,m_bIsCurrentPositionValidInZ(false)
 	{
 	}
 
@@ -44,7 +41,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
-		if(isCurrentPositionValid())
+		if(checkValidFlags(Current))
 		{
 			return *mCurrentVoxel;
 		}
@@ -78,18 +75,13 @@ namespace PolyVox
 
 		mCurrentVoxel = this->mVolume->m_pData + uVoxelIndex;
 
-		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(xPos);
-		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(yPos);
-		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(zPos);
-
 		updateValidFlagsState();
 	}
 
 	template <typename VoxelType>
 	bool RawVolume<VoxelType>::Sampler::setVoxel(VoxelType tValue)
 	{
-		//return m_bIsCurrentPositionValid ? *mCurrentVoxel : this->mVolume->getBorderValue();
-		if(m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ)
+		if(checkValidFlags(Current))
 		{
 			*mCurrentVoxel = tValue;
 			return true;
@@ -105,7 +97,6 @@ namespace PolyVox
 	{
 		this->mXPosInVolume++;
 		++mCurrentVoxel;
-		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(this->mXPosInVolume);
 
 		//FIXME - Can be faster by just 'shifting' the flags.
 		updateValidFlagsState();
@@ -116,7 +107,6 @@ namespace PolyVox
 	{
 		this->mYPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth();
-		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(this->mYPosInVolume);
 
 		//FIXME - Can be faster by just 'shifting' the flags.
 		updateValidFlagsState();
@@ -127,7 +117,6 @@ namespace PolyVox
 	{
 		this->mZPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
-		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(this->mZPosInVolume);
 
 		//FIXME - Can be faster by just 'shifting' the flags.
 		updateValidFlagsState();
@@ -138,7 +127,6 @@ namespace PolyVox
 	{
 		this->mXPosInVolume--;
 		--mCurrentVoxel;
-		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(this->mXPosInVolume);
 
 		//FIXME - Can be faster by just 'shifting' the flags.
 		updateValidFlagsState();
@@ -149,7 +137,6 @@ namespace PolyVox
 	{
 		this->mYPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth();
-		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(this->mYPosInVolume);
 
 		//FIXME - Can be faster by just 'shifting' the flags.
 		updateValidFlagsState();
@@ -160,7 +147,6 @@ namespace PolyVox
 	{
 		this->mZPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
-		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(this->mZPosInVolume);
 
 		//FIXME - Can be faster by just 'shifting' the flags.
 		updateValidFlagsState();
@@ -476,12 +462,6 @@ namespace PolyVox
 				}
 			}
 		}
-	}
-
-	template <typename VoxelType>
-	bool RawVolume<VoxelType>::Sampler::isCurrentPositionValid(void) const
-	{
-		return m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ;
 	}
 
 	template <typename VoxelType>
