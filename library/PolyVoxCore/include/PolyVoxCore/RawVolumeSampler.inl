@@ -247,7 +247,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | NegativeZ))
+		if(checkValidFlags(Current | NegativeY | NegativeZ))
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
