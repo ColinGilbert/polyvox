@@ -545,23 +545,36 @@ namespace PolyVox
 		int32_t yPos = this->mYPosInVolume;
 		int32_t zPos = this->mZPosInVolume;
 
-		//FIXME - Can we speed this up?
 		if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 1))
 		{
-			//We're well inside the region so all flags can be set.
+			// This is the most common case, where the position being set is well within the volume. We can just set all the flags to true.
 			m_uValidFlags = Current | PositiveX | NegativeX | PositiveY | NegativeY | PositiveZ | NegativeZ;
 		}
 		else
 		{	
-			m_uValidFlags = 0;
-			//FIXME - replace with versions which don't build Vector3DInt32.
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 0)) m_uValidFlags |= Current;
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos+1, yPos, zPos, 0)) m_uValidFlags |= PositiveX;
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos-1, yPos, zPos, 0)) m_uValidFlags |= NegativeX;
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos+1, zPos, 0)) m_uValidFlags |= PositiveY;
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos-1, zPos, 0)) m_uValidFlags |= NegativeY;
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos+1, 0)) m_uValidFlags |= PositiveZ;
-			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos-1, 0)) m_uValidFlags |= NegativeZ;
+			// We're not well inside the volume, so we could be on the edge of we could be outside. Determine which it is.
+			m_uValidFlags[CurrentShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 0);
+
+			if(m_uValidFlags[Current])
+			{
+				// If we're on the edge then we can simplify the logic by only checking one bound as we know current position is valid.
+				m_uValidFlags[PositiveXShift] = xPos < this->mVolume->getEnclosingRegion().getUpperX();
+				m_uValidFlags[PositiveYShift] = yPos < this->mVolume->getEnclosingRegion().getUpperY();
+				m_uValidFlags[PositiveZShift] = zPos < this->mVolume->getEnclosingRegion().getUpperZ();
+				m_uValidFlags[NegativeXShift] = xPos > this->mVolume->getEnclosingRegion().getLowerX();
+				m_uValidFlags[NegativeYShift] = yPos > this->mVolume->getEnclosingRegion().getLowerY();
+				m_uValidFlags[NegativeZShift] = zPos > this->mVolume->getEnclosingRegion().getLowerZ();
+			}
+			else
+			{
+				// We're outside the volume... hard to optimise for this (uncommon) case so do the full calculations for each position.
+				m_uValidFlags[PositiveXShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos+1, yPos, zPos, 0);
+				m_uValidFlags[PositiveYShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos+1, zPos, 0);
+				m_uValidFlags[PositiveZShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos+1, 0);
+				m_uValidFlags[NegativeXShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos-1, yPos, zPos, 0);				
+				m_uValidFlags[NegativeYShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos-1, zPos, 0);				
+				m_uValidFlags[NegativeZShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos-1, 0);
+			}
 		}
 	}
 }
