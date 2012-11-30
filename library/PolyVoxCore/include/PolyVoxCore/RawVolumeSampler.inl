@@ -546,8 +546,7 @@ namespace PolyVox
 		int32_t zPos = this->mZPosInVolume;
 
 		//FIXME - Can we speed this up?
-		//FIXME - replace with versions which don't build Vector3DInt32.
-		if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos), 1))
+		if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 1))
 		{
 			//We're well inside the region so all flags can be set.
 			m_uValidFlags = Current | PositiveX | NegativeX | PositiveY | NegativeY | PositiveZ | NegativeZ;
@@ -556,13 +555,13 @@ namespace PolyVox
 		{	
 			m_uValidFlags = 0;
 			//FIXME - replace with versions which don't build Vector3DInt32.
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos), 0)) m_uValidFlags |= Current;
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos+1, yPos, zPos), 0)) m_uValidFlags |= PositiveX;
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos-1, yPos, zPos), 0)) m_uValidFlags |= NegativeX;
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos+1, zPos), 0)) m_uValidFlags |= PositiveY;
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos-1, zPos), 0)) m_uValidFlags |= NegativeY;
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos+1), 0)) m_uValidFlags |= PositiveZ;
-			if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(xPos, yPos, zPos-1), 0)) m_uValidFlags |= NegativeZ;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 0)) m_uValidFlags |= Current;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos+1, yPos, zPos, 0)) m_uValidFlags |= PositiveX;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos-1, yPos, zPos, 0)) m_uValidFlags |= NegativeX;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos+1, zPos, 0)) m_uValidFlags |= PositiveY;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos-1, zPos, 0)) m_uValidFlags |= NegativeY;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos+1, 0)) m_uValidFlags |= PositiveZ;
+			if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos-1, 0)) m_uValidFlags |= NegativeZ;
 		}
 	}
 }
