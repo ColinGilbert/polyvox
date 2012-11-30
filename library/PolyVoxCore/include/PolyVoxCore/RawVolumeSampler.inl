@@ -169,7 +169,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && NegativeY && NegativeZ))
+		if(checkValidFlags(Current | NegativeX | NegativeY | NegativeZ))
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -179,7 +179,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && NegativeY))
+		if(checkValidFlags(Current | NegativeX | NegativeY))
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth());
 		}
@@ -189,7 +189,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && NegativeY && PositiveZ))
+		if(checkValidFlags(Current | NegativeX | NegativeY | PositiveZ))
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -199,7 +199,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && NegativeZ))
+		if(checkValidFlags(Current | NegativeX | NegativeZ))
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -209,7 +209,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX))
+		if(checkValidFlags(Current | NegativeX))
 		{
 			return *(mCurrentVoxel - 1);
 		}
@@ -219,7 +219,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && PositiveZ))
+		if(checkValidFlags(Current | NegativeX | PositiveZ))
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -229,7 +229,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && PositiveY && NegativeZ))
+		if(checkValidFlags(Current | NegativeX | PositiveY | NegativeZ))
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -239,7 +239,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && PositiveY))
+		if(checkValidFlags(Current | NegativeX | PositiveY))
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth());
 		}
@@ -249,7 +249,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && PositiveY && PositiveZ))
+		if(checkValidFlags(Current | NegativeX | PositiveY | PositiveZ))
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -261,7 +261,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		if(checkValidFlags(Current && NegativeX && NegativeZ))
+		if(checkValidFlags(Current | NegativeX | NegativeZ))
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -271,7 +271,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeY))
+		if(checkValidFlags(Current | NegativeY))
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth());
 		}
@@ -281,7 +281,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
 	{
-		if(checkValidFlags(Current && NegativeY && PositiveZ))
+		if(checkValidFlags(Current | NegativeY | PositiveZ))
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -291,7 +291,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
 	{
-		if(checkValidFlags(Current && NegativeZ))
+		if(checkValidFlags(Current | NegativeZ))
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -311,7 +311,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveZ))
+		if(checkValidFlags(Current | PositiveZ))
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -321,7 +321,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
 	{
-		if(checkValidFlags(Current && PositiveY && NegativeZ))
+		if(checkValidFlags(Current | PositiveY | NegativeZ))
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -331,7 +331,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveY))
+		if(checkValidFlags(Current | PositiveY))
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth());
 		}
@@ -341,7 +341,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveY && PositiveZ))
+		if(checkValidFlags(Current | PositiveY | PositiveZ))
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -353,7 +353,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && NegativeY && NegativeZ))
+		if(checkValidFlags(Current | PositiveX | NegativeY | NegativeZ))
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -363,7 +363,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && NegativeY))
+		if(checkValidFlags(Current | PositiveX | NegativeY))
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth());
 		}
@@ -373,7 +373,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && NegativeY && PositiveZ))
+		if(checkValidFlags(Current | PositiveX | NegativeY | PositiveZ))
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -383,7 +383,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && NegativeZ))
+		if(checkValidFlags(Current | PositiveX | NegativeZ))
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -393,7 +393,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX))
+		if(checkValidFlags(Current | PositiveX))
 		{
 			return *(mCurrentVoxel + 1);
 		}
@@ -403,7 +403,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && PositiveZ))
+		if(checkValidFlags(Current | PositiveX | PositiveZ))
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -413,7 +413,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && PositiveY && NegativeZ))
+		if(checkValidFlags(Current | PositiveX | PositiveY | NegativeZ))
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -423,7 +423,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && PositiveY))
+		if(checkValidFlags(Current | PositiveX | PositiveY))
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth());
 		}
@@ -433,7 +433,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
 	{
-		if(checkValidFlags(Current && PositiveX && PositiveY && PositiveZ))
+		if(checkValidFlags(Current | PositiveX | PositiveY | PositiveZ))
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
