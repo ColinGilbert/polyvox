@@ -23,13 +23,22 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore\Impl\Utility.h"
 
+#define BORDER_LOWX(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getX())
+#define BORDER_HIGHX(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getX())
+#define BORDER_LOWY(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getY())
+#define BORDER_HIGHY(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getY())
+#define BORDER_LOWZ(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getZ())
+#define BORDER_HIGHZ(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getZ())
+
 namespace PolyVox
 {
 	template <typename VoxelType>
 	RawVolume<VoxelType>::Sampler::Sampler(RawVolume<VoxelType>* volume)
 		:BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >(volume)
 		,mCurrentVoxel(0)
-		,m_uValidFlags(0)
+		,m_bIsCurrentPositionValidInX(false)
+		,m_bIsCurrentPositionValidInY(false)
+		,m_bIsCurrentPositionValidInZ(false)
 	{
 	}
 
@@ -41,7 +50,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
-		if(checkValidFlags(Current))
+		if(isCurrentPositionValid())
 		{
 			return *mCurrentVoxel;
 		}
@@ -75,13 +84,16 @@ namespace PolyVox
 
 		mCurrentVoxel = this->mVolume->m_pData + uVoxelIndex;
 
-		updateValidFlagsState();
+		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(xPos);
+		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(yPos);
+		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(zPos);
 	}
 
 	template <typename VoxelType>
 	bool RawVolume<VoxelType>::Sampler::setVoxel(VoxelType tValue)
 	{
-		if(checkValidFlags(Current))
+		//return m_bIsCurrentPositionValid ? *mCurrentVoxel : this->mVolume->getBorderValue();
+		if(m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ)
 		{
 			*mCurrentVoxel = tValue;
 			return true;
@@ -97,27 +109,7 @@ namespace PolyVox
 	{
 		this->mXPosInVolume++;
 		++mCurrentVoxel;
-
-		// Update the valid position flags
-		if(checkValidFlags(Current | PositiveX))
-		{
-			// We've just checked that the old 'Current' and old 'PositiveX' are both valid. That means we are not
-			// leaving the volume, and we know we haven't moved along the other two axes. The new 'NegativeX' takes
-			// on the value of the old 'Current', and the new 'Current' takes in the value of the old 'PositiveX'.
-			// Because we know these are both set we can set both 'NegativeX' and 'Current' to true.
-			m_uValidFlags |= (NegativeX | Current);
-
-			// PositiveX is more tricky because it's a new voxel we haven't seen yet. It could be outside the volume,
-			// but only in the 'X' direction because that's the way we are moving
-			m_uValidFlags[PositiveXShift] = this->mXPosInVolume < this->mVolume->getEnclosingRegion().getUpperX();
-		}
-		else
-		{
-			// We're moving from a position which was outside the volume. Note that moving in 'X' can still cause
-			// the validity of Y and Z to change as we could start grazing along a face of the volume. It's safest
-			// just to compute all the flags fully.
-			updateValidFlagsState();
-		}
+		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(this->mXPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -125,19 +117,7 @@ namespace PolyVox
 	{
 		this->mYPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth();
-
-		// Update the valid position flags
-		if(checkValidFlags(Current | PositiveY))
-		{
-			// See comments in movePositiveX().
-			m_uValidFlags |= (NegativeY | Current);
-			m_uValidFlags[PositiveYShift] = this->mYPosInVolume < this->mVolume->getEnclosingRegion().getUpperY();
-		}
-		else
-		{
-			// See comments in movePositiveX().
-			updateValidFlagsState();
-		}
+		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(this->mYPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -145,19 +125,7 @@ namespace PolyVox
 	{
 		this->mZPosInVolume++;
 		mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
-
-		// Update the valid position flags
-		if(checkValidFlags(Current | PositiveZ))
-		{
-			// See comments in movePositiveX().
-			m_uValidFlags |= (NegativeZ | Current);
-			m_uValidFlags[PositiveZShift] = this->mZPosInVolume < this->mVolume->getEnclosingRegion().getUpperZ();
-		}
-		else
-		{
-			// See comments in movePositiveX().
-			updateValidFlagsState();
-		}
+		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -165,19 +133,7 @@ namespace PolyVox
 	{
 		this->mXPosInVolume--;
 		--mCurrentVoxel;
-
-		// Update the valid position flags
-		if(checkValidFlags(Current | NegativeX))
-		{
-			// See comments in movePositiveX().
-			m_uValidFlags |= (PositiveX | Current);
-			m_uValidFlags[NegativeXShift] = this->mXPosInVolume > this->mVolume->getEnclosingRegion().getLowerX();
-		}
-		else
-		{
-			// See comments in movePositiveX().
-			updateValidFlagsState();
-		}
+		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(this->mXPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -185,19 +141,7 @@ namespace PolyVox
 	{
 		this->mYPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth();
-
-		// Update the valid position flags
-		if(checkValidFlags(Current | NegativeY))
-		{
-			// See comments in movePositiveX().
-			m_uValidFlags |= (PositiveY | Current);
-			m_uValidFlags[NegativeYShift] = this->mYPosInVolume > this->mVolume->getEnclosingRegion().getLowerY();
-		}
-		else
-		{
-			// See comments in movePositiveX().
-			updateValidFlagsState();
-		}
+		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(this->mYPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -205,25 +149,13 @@ namespace PolyVox
 	{
 		this->mZPosInVolume--;
 		mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
-
-		// Update the valid position flags
-		if(checkValidFlags(Current | NegativeZ))
-		{
-			// See comments in movePositiveX().
-			m_uValidFlags |= (PositiveZ | Current);
-			m_uValidFlags[NegativeZShift] = this->mZPosInVolume > this->mVolume->getEnclosingRegion().getLowerZ();
-		}
-		else
-		{
-			// See comments in movePositiveX().
-			updateValidFlagsState();
-		}
+		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | NegativeY | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -233,7 +165,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | NegativeY))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth());
 		}
@@ -243,7 +175,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | NegativeY | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -253,7 +185,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -263,7 +195,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1);
 		}
@@ -273,7 +205,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -283,7 +215,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | PositiveY | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -293,7 +225,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | PositiveY))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth());
 		}
@@ -303,7 +235,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeX | PositiveY | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -315,7 +247,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		if(checkValidFlags(Current | NegativeY | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWX(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -325,7 +257,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeY))
+		if((this->isCurrentPositionValid()) && BORDER_LOWY(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth());
 		}
@@ -335,7 +267,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
 	{
-		if(checkValidFlags(Current | NegativeY | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -345,7 +277,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
 	{
-		if(checkValidFlags(Current | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -355,7 +287,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py0pz(void) const
 	{
-		if(checkValidFlags(Current))
+		if((this->isCurrentPositionValid()))
 		{
 			return *mCurrentVoxel;
 		}
@@ -365,7 +297,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -375,7 +307,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
 	{
-		if(checkValidFlags(Current | PositiveY | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -385,7 +317,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveY))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHY(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth());
 		}
@@ -395,7 +327,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveY | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -407,7 +339,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | NegativeY | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -417,7 +349,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | NegativeY))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth());
 		}
@@ -427,7 +359,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | NegativeY | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -437,7 +369,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -447,7 +379,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1);
 		}
@@ -457,7 +389,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -467,7 +399,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | PositiveY | NegativeZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_LOWZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() - this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -477,7 +409,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | PositiveY))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth());
 		}
@@ -487,7 +419,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
 	{
-		if(checkValidFlags(Current | PositiveX | PositiveY | PositiveZ))
+		if((this->isCurrentPositionValid()) && BORDER_HIGHX(this->mXPosInVolume) && BORDER_HIGHY(this->mYPosInVolume) && BORDER_HIGHZ(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
@@ -533,48 +465,15 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	inline bool RawVolume<VoxelType>::Sampler::checkValidFlags(std::bitset<7> uFlagsToCheck) const
+	bool RawVolume<VoxelType>::Sampler::isCurrentPositionValid(void) const
 	{
-		return (m_uValidFlags & uFlagsToCheck) == uFlagsToCheck;
-	}
-
-	template <typename VoxelType>
-	void RawVolume<VoxelType>::Sampler::updateValidFlagsState(void)
-	{
-		int32_t xPos = this->mXPosInVolume;
-		int32_t yPos = this->mYPosInVolume;
-		int32_t zPos = this->mZPosInVolume;
-
-		if(this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 1))
-		{
-			// This is the most common case, where the position being set is well within the volume. We can just set all the flags to true.
-			m_uValidFlags = Current | PositiveX | NegativeX | PositiveY | NegativeY | PositiveZ | NegativeZ;
-		}
-		else
-		{	
-			// We're not well inside the volume, so we could be on the edge of we could be outside. Determine which it is.
-			m_uValidFlags[CurrentShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos, 0);
-
-			if(m_uValidFlags[Current])
-			{
-				// If we're on the edge then we can simplify the logic by only checking one bound as we know current position is valid.
-				m_uValidFlags[PositiveXShift] = xPos < this->mVolume->getEnclosingRegion().getUpperX();
-				m_uValidFlags[PositiveYShift] = yPos < this->mVolume->getEnclosingRegion().getUpperY();
-				m_uValidFlags[PositiveZShift] = zPos < this->mVolume->getEnclosingRegion().getUpperZ();
-				m_uValidFlags[NegativeXShift] = xPos > this->mVolume->getEnclosingRegion().getLowerX();
-				m_uValidFlags[NegativeYShift] = yPos > this->mVolume->getEnclosingRegion().getLowerY();
-				m_uValidFlags[NegativeZShift] = zPos > this->mVolume->getEnclosingRegion().getLowerZ();
-			}
-			else
-			{
-				// We're outside the volume... hard to optimise for this (uncommon) case so do the full calculations for each position.
-				m_uValidFlags[PositiveXShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos+1, yPos, zPos, 0);
-				m_uValidFlags[PositiveYShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos+1, zPos, 0);
-				m_uValidFlags[PositiveZShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos+1, 0);
-				m_uValidFlags[NegativeXShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos-1, yPos, zPos, 0);				
-				m_uValidFlags[NegativeYShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos-1, zPos, 0);				
-				m_uValidFlags[NegativeZShift] = this->mVolume->getEnclosingRegion().containsPoint(xPos, yPos, zPos-1, 0);
-			}
-		}
+		return m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ;
 	}
 }
+
+#undef BORDER_LOWX
+#undef BORDER_HIGHX
+#undef BORDER_LOWY
+#undef BORDER_HIGHY
+#undef BORDER_LOWZ
+#undef BORDER_HIGHZ

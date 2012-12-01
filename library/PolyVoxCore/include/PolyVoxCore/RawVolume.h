@@ -29,7 +29,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
-#include <bitset>
 #include <cassert>
 #include <cstdlib> //For abort()
 #include <limits>
@@ -56,22 +55,6 @@ namespace PolyVox
                 class Sampler : public BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> > //This line works on GCC
 #endif
 		{
-			static const uint8_t CurrentShift   = 0;
-			static const uint8_t PositiveXShift = 1;
-			static const uint8_t NegativeXShift = 2;
-			static const uint8_t PositiveYShift = 3;
-			static const uint8_t NegativeYShift = 4;
-			static const uint8_t PositiveZShift = 5;
-			static const uint8_t NegativeZShift = 6;
-
-			static const uint8_t Current   = 1 << CurrentShift;
-			static const uint8_t PositiveX = 1 << PositiveXShift;
-			static const uint8_t NegativeX = 1 << NegativeXShift;
-			static const uint8_t PositiveY = 1 << PositiveYShift;
-			static const uint8_t NegativeY = 1 << NegativeYShift;
-			static const uint8_t PositiveZ = 1 << PositiveZShift;
-			static const uint8_t NegativeZ = 1 << NegativeZShift;
-
 		public:
 			Sampler(RawVolume<VoxelType>* volume);
 			~Sampler();
@@ -122,13 +105,17 @@ namespace PolyVox
 
 		private:
 			VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-			bool checkValidFlags(std::bitset<7> uFlagsToCheck) const;
-			void updateValidFlagsState(void);
+			bool isCurrentPositionValid(void) const;
+
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
 
-			std::bitset<7> m_uValidFlags;
+			//Whether the current position is inside the volume
+			//FIXME - Replace these with flags
+			bool m_bIsCurrentPositionValidInX;
+			bool m_bIsCurrentPositionValidInY;
+			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 
