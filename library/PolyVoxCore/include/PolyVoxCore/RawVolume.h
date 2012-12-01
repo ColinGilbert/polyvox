@@ -105,17 +105,9 @@ namespace PolyVox
 
 		private:
 			VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-			bool isCurrentPositionValid(void) const;
-
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
-
-			//Whether the current position is inside the volume
-			//FIXME - Replace these with flags
-			bool m_bIsCurrentPositionValidInX;
-			bool m_bIsCurrentPositionValidInY;
-			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 
