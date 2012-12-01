@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore\Impl\Utility.h"
-
 #define CAN_GO_NEG_X(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getX())
 #define CAN_GO_POS_X(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getX())
 #define CAN_GO_NEG_Y(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getY())
@@ -429,44 +427,6 @@ namespace PolyVox
 			return *(mCurrentVoxel + 1 + this->mVolume->getWidth() + this->mVolume->getWidth() * this->mVolume->getHeight());
 		}
 		return this->getVoxelAt(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::Sampler::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
-	{
-		if(this->mVolume->getEnclosingRegion().containsPoint(Vector3DInt32(uXPos, uYPos, uZPos))) //Would be better if we didn't have to build the Vector but could pass seperate params.
-		{
-			return this->mVolume->getVoxelAt(uXPos, uYPos, uZPos);
-		}
-		else
-		{
-			switch(m_eWrapMode)
-			{
-				case WrapModes::Clamp:
-				{
-					const Vector3DInt32& lowerCorner = this->mVolume->m_regValidRegion.getLowerCorner();
-					const Vector3DInt32& upperCorner = this->mVolume->m_regValidRegion.getUpperCorner();
-
-					int32_t iClampedX = clamp(uXPos, lowerCorner.getX(), upperCorner.getX());
-					int32_t iClampedY = clamp(uYPos, lowerCorner.getY(), upperCorner.getY());
-					int32_t iClampedZ = clamp(uZPos, lowerCorner.getZ(), upperCorner.getZ());
-
-					return this->mVolume->getVoxelAt(iClampedX, iClampedY, iClampedZ);
-					//No need to break as we've returned
-				}
-				case WrapModes::Border:
-				{
-					return this->m_tBorder;
-					//No need to break as we've returned
-				}
-				default:
-				{
-					//Should never happen
-					assert(false);
-					return VoxelType(0);
-				}
-			}
-		}
 	}
 }
 
