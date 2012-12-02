@@ -179,7 +179,8 @@ namespace PolyVox
 
 			Sampler& operator=(const Sampler& rhs);
 
-			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
+			/// \deprecated
+			POLYVOX_DEPRECATED VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);

@@ -89,7 +89,8 @@ namespace PolyVox
 
 			Sampler& operator=(const Sampler& rhs);
 
-			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
+			/// \deprecated
+			POLYVOX_DEPRECATED VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			/// Get the value of the current voxel
 			inline VoxelType getVoxel(void) const;
 			
