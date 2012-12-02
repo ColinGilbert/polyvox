@@ -73,10 +73,6 @@ ADD_TEST(CubicSurfaceExtractorExecuteTest ${LATEST_TEST} testExecute)
 CREATE_TEST(TestLowPassFilter.h TestLowPassFilter.cpp TestLowPassFilter)
 ADD_TEST(LowPassFilterExecuteTest ${LATEST_TEST} testExecute)
 
-# LargeVolume tests
-CREATE_TEST(testvolume.h testvolume.cpp testvolume)
-ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
-
 # Material tests
 CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
 ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
@@ -97,6 +93,12 @@ CREATE_TEST(testvector.h testvector.cpp testvector)
 ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
 ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
 ADD_TEST(VectorEqualityTest ${LATEST_TEST} testEquality)
+
+# Volume tests
+CREATE_TEST(testvolume.h testvolume.cpp testvolume)
+ADD_TEST(LargeVolumeTest ${LATEST_TEST} testLargeVolume)
+ADD_TEST(RawVolumeTest ${LATEST_TEST} testRawVolume)
+ADD_TEST(SimpleVolumeTest ${LATEST_TEST} testSimpleVolume)
 
 # Volume subclass tests
 CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)

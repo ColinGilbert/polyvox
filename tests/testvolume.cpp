@@ -50,19 +50,19 @@ int32_t complexVolumeTest(void)
 	return testVolume.getVoxelAt(10,20,30);
 }
 
-void TestVolume::testLarge()
+void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
 	QCOMPARE(result, static_cast<int32_t>(60));
 }
 
-void TestVolume::testRaw()
+void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
 	QCOMPARE(result, static_cast<int32_t>(60));
 }
 
-void TestVolume::testSimple()
+void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
 	QCOMPARE(result, static_cast<int32_t>(60));
