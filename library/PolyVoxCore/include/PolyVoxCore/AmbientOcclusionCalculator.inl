@@ -98,6 +98,8 @@ namespace PolyVox
 						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
 						RaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 
+						// Note - The performance of this could actually be improved it we exited as soon
+						// as the ray left the volume. The raycast test has an example of how to do this.
 						if(result == RaycastResults::Completed)
 						{
 							++uVisibleDirections;
