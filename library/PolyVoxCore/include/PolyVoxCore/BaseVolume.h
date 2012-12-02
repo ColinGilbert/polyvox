@@ -65,6 +65,8 @@ namespace PolyVox
 			Vector3DInt32 getPosition(void) const;
 			inline VoxelType getVoxel(void) const;	
 
+			bool isCurrentPositionValid(void) const;
+
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
 			inline bool setVoxel(VoxelType tValue);
@@ -110,7 +112,6 @@ namespace PolyVox
 
 		protected:
 			VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-			bool isCurrentPositionValid(void) const;
 
 			DerivedVolumeType* mVolume;
 

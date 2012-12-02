@@ -62,6 +62,13 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	template <typename DerivedVolumeType>
+	bool inline BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::isCurrentPositionValid(void) const
+	{
+		return m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ;
+	}
+
+	template <typename VoxelType>
+	template <typename DerivedVolumeType>
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::setPosition(const Vector3DInt32& v3dNewPos)
 	{
 		setPosition(v3dNewPos.getX(), v3dNewPos.getY(), v3dNewPos.getZ());
@@ -373,12 +380,5 @@ namespace PolyVox
 				}
 			}
 		}
-	}
-
-	template <typename VoxelType>
-	template <typename DerivedVolumeType>
-	bool inline BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::isCurrentPositionValid(void) const
-	{
-		return m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ;
 	}
 }
