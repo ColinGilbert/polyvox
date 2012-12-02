@@ -24,30 +24,48 @@ freely, subject to the following restrictions:
 #include "testvolume.h"
 
 #include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/RawVolume.h"
+#include "PolyVoxCore/SimpleVolume.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
 
-void TestVolume::testSize()
+template <typename VolumeType>
+int32_t complexVolumeTest(void)
 {
-	const int32_t g_uVolumeSideLength = 128;
-	LargeVolume<uint8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
-
-	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
+	//VolumeType testVolume(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
+	VolumeType testVolume(Region(0, 0, 0, 63, 63, 63));
+	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
 	{
-		for (int32_t y = 0; y < g_uVolumeSideLength; y++)
+		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
 		{
-			for (int32_t x = 0; x < g_uVolumeSideLength; x++)
+			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
 			{
-				volData.setVoxelAt(x,y,z,255);
+				testVolume.setVoxelAt(x, y, z, x + y + z);
 			}
 		}
 	}
-	
-	QCOMPARE(volData.getWidth(), g_uVolumeSideLength);
-	QCOMPARE(volData.getHeight(), g_uVolumeSideLength);
-	QCOMPARE(volData.getDepth(), g_uVolumeSideLength);
+
+	return testVolume.getVoxelAt(10,20,30);
+}
+
+void TestVolume::testLarge()
+{
+	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
+	QCOMPARE(result, static_cast<int32_t>(60));
+}
+
+void TestVolume::testRaw()
+{
+	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
+	QCOMPARE(result, static_cast<int32_t>(60));
+}
+
+void TestVolume::testSimple()
+{
+	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
+	QCOMPARE(result, static_cast<int32_t>(60));
 }
 
 QTEST_MAIN(TestVolume)

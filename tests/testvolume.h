@@ -31,7 +31,9 @@ class TestVolume: public QObject
 	Q_OBJECT
 	
 	private slots:
-		void testSize();
+		void testLarge();
+		void testRaw();
+		void testSimple();
 };
 
 #endif
