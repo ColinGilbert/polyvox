@@ -51,7 +51,7 @@ namespace PolyVox
 	template <typename Type>
 	inline Type clamp(const Type& value, const Type& low, const Type& high)
 	{
-		return std::min(high, std::max(low, value));
+		return (std::min)(high, (std::max)(low, value));
 	}
 }
 
