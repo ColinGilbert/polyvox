@@ -47,25 +47,38 @@ int32_t complexVolumeTest(void)
 		}
 	}
 
-	return testVolume.getVoxelAt(10,20,30);
+	int32_t sum = 0;
+
+	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	{
+		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
+		{
+			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
+			{
+				sum += testVolume.getVoxelAt(x, y, z);
+			}
+		}
+	}
+
+	return sum;
 }
 
 void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(60));
+	QCOMPARE(result, static_cast<int32_t>(24772608));
 }
 
 void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(60));
+	QCOMPARE(result, static_cast<int32_t>(24772608));
 }
 
 void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(60));
+	QCOMPARE(result, static_cast<int32_t>(24772608));
 }
 
 QTEST_MAIN(TestVolume)
