@@ -31,10 +31,7 @@ SET(UTIL_SRC_FILES
 
 #Projects headers files
 SET(UTIL_INC_FILES
-	include/PolyVoxUtil/Serialization.h
-	include/PolyVoxUtil/Serialization.inl
-	include/PolyVoxUtil/VolumeChangeTracker.h	
-	include/PolyVoxUtil/VolumeChangeTracker.inl
+	#Nothing here at the moment...
 )
 
 ADD_DEFINITIONS(-DPOLYVOX_SHARED_EXPORTS) #Export symbols in the .dll
