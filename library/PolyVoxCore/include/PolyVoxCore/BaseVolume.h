@@ -183,6 +183,9 @@ namespace PolyVox
 		int32_t m_uLongestSideLength;
 		int32_t m_uShortestSideLength;
 		float m_fDiagonalLength;
+
+		//The border value
+		VoxelType m_tBorderValue;
 	};
 }
 

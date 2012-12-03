@@ -31,6 +31,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::BaseVolume(const Region& regValid)
 		:m_regValidRegion(regValid)
+		,m_tBorderValue(0)
 	{
 	}
 
@@ -76,8 +77,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getBorderValue(void) const
 	{
-		assert(false);
-		return VoxelType();
+		return m_tBorderValue;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -181,9 +181,9 @@ namespace PolyVox
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& /*tBorder*/) 
+	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
-		assert(false);
+		m_tBorderValue = tBorder;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

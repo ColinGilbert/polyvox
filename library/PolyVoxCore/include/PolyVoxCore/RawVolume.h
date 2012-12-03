@@ -117,15 +117,11 @@ namespace PolyVox
 		/// Destructor
 		~RawVolume();
 
-		/// Gets the value used for voxels which are outside the volume
-		VoxelType getBorderValue(void) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
-		/// Sets the value used for voxels which are outside the volume
-		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
@@ -146,9 +142,6 @@ namespace PolyVox
 
 		//The block data
 		VoxelType* m_pData;
-
-		//The border value
-		VoxelType m_tBorderValue;
 	};
 }
 
