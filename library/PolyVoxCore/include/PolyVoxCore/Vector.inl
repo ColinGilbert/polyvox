@@ -573,23 +573,23 @@ namespace PolyVox
     \return Length of the Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
-	inline double Vector<Size, StorageType, OperationType>::length(void) const
+	inline float Vector<Size, StorageType, OperationType>::length(void) const
     {
-        return sqrt(lengthSquared());
+        return sqrt(static_cast<float>(lengthSquared()));
     }
 
     /**
     \return Squared length of the Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
-	inline double Vector<Size, StorageType, OperationType>::lengthSquared(void) const
+	inline OperationType Vector<Size, StorageType, OperationType>::lengthSquared(void) const
     {
-		double result = 0.0f;
+		OperationType tLengthSquared = static_cast<OperationType>(0);
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			result += m_tElements[ct] * m_tElements[ct];
+			tLengthSquared += static_cast<OperationType>(m_tElements[ct]) * static_cast<OperationType>(m_tElements[ct]);
 		}
-		return result;
+		return tLengthSquared;
     }
 
     /**
@@ -602,9 +602,9 @@ namespace PolyVox
     \return The angle between them in radians.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
-	inline double Vector<Size, StorageType, OperationType>::angleTo(const Vector<Size, StorageType, OperationType>& vector) const
+	inline float Vector<Size, StorageType, OperationType>::angleTo(const Vector<Size, StorageType, OperationType>& vector) const
     {
-        return acos(dot(vector) / (vector.length() * this->length()));
+        return acos(static_cast<float>(dot(vector)) / (vector.length() * this->length()));
     }
 
     /**
@@ -636,12 +636,12 @@ namespace PolyVox
     \see cross()
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
-	inline StorageType Vector<Size, StorageType, OperationType>::dot(const Vector<Size, StorageType, OperationType>& rhs) const
+	inline OperationType Vector<Size, StorageType, OperationType>::dot(const Vector<Size, StorageType, OperationType>& rhs) const
     {
-        StorageType dotProduct = static_cast<StorageType>(0);
+        OperationType dotProduct = static_cast<OperationType>(0);
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			dotProduct += m_tElements[ct] * rhs.m_tElements[ct];
+			dotProduct += static_cast<OperationType>(m_tElements[ct]) * static_cast<OperationType>(rhs.m_tElements[ct]);
 		}
 		return dotProduct;
     }

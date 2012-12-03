@@ -622,8 +622,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	float LargeVolume<VoxelType>::calculateCompressionRatio(void)
 	{
-		float fRawSize = m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType);
-		float fCompressedSize = calculateSizeInBytes();
+		float fRawSize = static_cast<float>(m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType));
+		float fCompressedSize = static_cast<float>(calculateSizeInBytes());
 		return fCompressedSize/fRawSize;
 	}
 

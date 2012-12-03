@@ -29,9 +29,7 @@ SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
 	source/Log.cpp
-	source/MeshDecimator.cpp
 	source/Region.cpp
-	source/SimpleInterface.cpp
 	source/VertexTypes.cpp
 )
 
@@ -70,8 +68,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
-	include/PolyVoxCore/MeshDecimator.h
-	include/PolyVoxCore/MeshDecimator.inl
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/RawVolume.h
 	include/PolyVoxCore/RawVolume.inl
@@ -79,7 +75,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
-	include/PolyVoxCore/SimpleInterface.h
 	include/PolyVoxCore/SimpleVolume.h
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
