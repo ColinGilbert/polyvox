@@ -95,7 +95,6 @@ namespace PolyVox
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
 		flushAll();
-		delete[] m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -109,17 +108,6 @@ namespace PolyVox
 	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& /*rhs*/)
 	{
 		assert(false); // See function comment above.
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// The border value is returned whenever an atempt is made to read a voxel which
-	/// is outside the extents of the volume.
-	/// \return The value used for voxels outside of the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getBorderValue(void) const
-	{
-		return *m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -211,17 +199,6 @@ namespace PolyVox
 			flushAll();
 		}
 		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param tBorder The value to use for voxels outside the volume.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
-	{
-		/*Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
-		return pUncompressedBorderBlock->fill(tBorder);*/
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -414,7 +391,6 @@ namespace PolyVox
 		m_uTimestamper = 0;
 		m_uMaxNumberOfUncompressedBlocks = 16;
 		m_uBlockSideLength = uBlockSideLength;
-		m_pUncompressedBorderData = 0;
 		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
@@ -436,10 +412,6 @@ namespace PolyVox
 
 		//Clear the previous data
 		m_pBlocks.clear();
-
-		//Create the border block
-		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
 
 		//Other properties we might find useful later
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
@@ -646,12 +618,6 @@ namespace PolyVox
 		//Memory used by the block cache.
 		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(LoadedBlock);
 		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-
-		//Memory used by border data.
-		if(m_pUncompressedBorderData)
-		{
-			uSizeInBytes += m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-		}
 
 		return uSizeInBytes;
 	}
