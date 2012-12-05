@@ -77,7 +77,7 @@ freely, subject to the following restrictions:
 	#define polyvox_placeholder_2 _2
 	
 	#include <boost/static_assert.hpp>
-	#define static_assert BOOST_STATIC_ASSERT
+	#define static_assert(condition, message) BOOST_STATIC_ASSERT(condition)
 
 
 	//As long as we're requiring boost, we'll use it to compensate
