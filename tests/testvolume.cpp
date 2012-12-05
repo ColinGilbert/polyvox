@@ -34,8 +34,7 @@ using namespace PolyVox;
 template <typename VolumeType>
 int32_t complexVolumeTest(void)
 {
-	//VolumeType testVolume(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
-	VolumeType testVolume(Region(0, 0, 0, 63, 63, 63));
+	VolumeType testVolume(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
 	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
 	{
 		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
@@ -66,19 +65,19 @@ int32_t complexVolumeTest(void)
 void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(24772608));
+	QCOMPARE(result, static_cast<int32_t>(201446400));
 }
 
 void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(24772608));
+	QCOMPARE(result, static_cast<int32_t>(201446400));
 }
 
 void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(24772608));
+	QCOMPARE(result, static_cast<int32_t>(201446400));
 }
 
 QTEST_MAIN(TestVolume)
