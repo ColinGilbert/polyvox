@@ -177,8 +177,6 @@ namespace PolyVox
 			Sampler(LargeVolume<VoxelType>* volume);
 			~Sampler();
 
-			Sampler& operator=(const Sampler& rhs);
-
 			/// \deprecated
 			POLYVOX_DEPRECATED VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			inline VoxelType getVoxel(void) const;			

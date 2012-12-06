@@ -43,21 +43,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	typename SimpleVolume<VoxelType>::Sampler& SimpleVolume<VoxelType>::Sampler::operator=(const typename SimpleVolume<VoxelType>::Sampler& rhs)
-	{
-		if(this == &rhs)
-		{
-			return *this;
-		}
-        this->mVolume = rhs.mVolume;
-		this->mXPosInVolume = rhs.mXPosInVolume;
-		this->mYPosInVolume = rhs.mYPosInVolume;
-		this->mZPosInVolume = rhs.mZPosInVolume;
-		mCurrentVoxel = rhs.mCurrentVoxel;
-        return *this;
-	}
-
-	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::Sampler::getSubSampledVoxel(uint8_t uLevel) const
 	{		
 		if(uLevel == 0)

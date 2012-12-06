@@ -66,7 +66,7 @@ int32_t complexVolumeTest(void)
 	//Test border wrap mode
 	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
 	{
-		//Just a few slices from y
+		//Extending outside in y
 		for(int y = testVolume.getEnclosingRegion().getLowerY() - 3; y <= testVolume.getEnclosingRegion().getUpperY() + 5; y++)
 		{
 			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
@@ -81,12 +81,63 @@ int32_t complexVolumeTest(void)
 	{
 		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
 		{
-			//Just a few slices from y
+			//Extending outside in x
 			for(int x = testVolume.getEnclosingRegion().getLowerX() - 2; x <= testVolume.getEnclosingRegion().getUpperX() + 4; x++)
 			{
 				result += testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Clamp);
 			}
 		}
+	}
+
+	//Test the sampler setPosition
+	/*VolumeType::Sampler sampler(&testVolume);
+	sampler.setWrapMode(WrapModes::Border, 1);
+
+	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
+	{
+		for(int y = testVolume.getEnclosingRegion().getLowerY() - 1; y <= testVolume.getEnclosingRegion().getUpperY() + 3; y++)
+		{
+			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
+			{
+				sampler.setPosition(x,y,z);
+				result += sampler.getVoxel();
+			}
+		}
+	}*/
+
+	//Test the sampler move functions
+	VolumeType::Sampler xSampler(&testVolume);
+	VolumeType::Sampler ySampler(&testVolume);
+	VolumeType::Sampler zSampler(&testVolume);
+	VolumeType::Sampler sampler(&testVolume);
+
+	xSampler.setWrapMode(WrapModes::Border, 1);
+	ySampler.setWrapMode(WrapModes::Border, 1);
+	zSampler.setWrapMode(WrapModes::Border, 1);
+	sampler.setWrapMode(WrapModes::Border, 1);
+
+	//zSampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, testVolume.getEnclosingRegion().getLowerZ() - 2);
+	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
+	{
+		//ySampler = zSampler;
+		ySampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, z);
+		for(int y = testVolume.getEnclosingRegion().getLowerY() - 1; y <= testVolume.getEnclosingRegion().getUpperY() + 3; y++)
+		{
+			xSampler = ySampler;
+			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
+			{
+				sampler.setPosition(x,y,z);
+
+				int32_t sample = sampler.isCurrentPositionValid();
+				int32_t xSample = xSampler.isCurrentPositionValid();
+				assert(sample == xSample);
+
+				result += xSampler.getVoxel();
+				xSampler.movePositiveX();
+			}
+			ySampler.movePositiveY();
+		}
+		//zSampler.movePositiveZ();
 	}
 
 	return result;
@@ -95,19 +146,19 @@ int32_t complexVolumeTest(void)
 void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(616456320));
+	QCOMPARE(result, static_cast<int32_t>(818107008));
 }
 
 void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(616456320));
+	QCOMPARE(result, static_cast<int32_t>(818107008));
 }
 
 void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(616456320));
+	QCOMPARE(result, static_cast<int32_t>(818107008));
 }
 
 QTEST_MAIN(TestVolume)
