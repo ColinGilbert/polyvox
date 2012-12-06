@@ -95,7 +95,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
-		if(isCurrentPositionValid())
+		if(this->isCurrentPositionValid())
 		{
 			return *mCurrentVoxel;
 		}
@@ -115,7 +115,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::setPosition(int32_t xPos, int32_t yPos, int32_t zPos)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::setPosition(xPos, yPos, zPos);
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::setPosition(xPos, yPos, zPos);
 
 		// Then we update the voxel pointer
 		const int32_t uXBlock = this->mXPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
@@ -157,7 +157,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::movePositiveX();
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
 		if((this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
@@ -176,7 +176,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::movePositiveY();
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
 		if((this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
@@ -195,7 +195,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::movePositiveZ();
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
 		if((this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
@@ -214,7 +214,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::moveNegativeX();
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
 		if((this->mXPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0)
@@ -233,7 +233,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::moveNegativeY();
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
 		if((this->mYPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0)
@@ -252,7 +252,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
 		// Base version updates position and validity flags.
-		BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> >::moveNegativeZ();
+		BaseVolume<VoxelType>::template Sampler< LargeVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
 		if((this->mZPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0)

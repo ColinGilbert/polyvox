@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore\Impl\Utility.h"
+#include "PolyVoxCore/Impl/Utility.h"
 
 namespace PolyVox
 {

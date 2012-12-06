@@ -130,7 +130,7 @@ namespace PolyVox
 		}
 		else
 		{
-			return getBorderValue();
+			return this->getBorderValue();
 		}
 	}
 
@@ -158,12 +158,12 @@ namespace PolyVox
 			case WrapModes::Clamp:
 			{
 				//Perform clamping
-				uXPos = (std::max)(uXPos, m_regValidRegion.getLowerX());
-				uYPos = (std::max)(uYPos, m_regValidRegion.getLowerY());
-				uZPos = (std::max)(uZPos, m_regValidRegion.getLowerZ());
-				uXPos = (std::min)(uXPos, m_regValidRegion.getUpperX());
-				uYPos = (std::min)(uYPos, m_regValidRegion.getUpperY());
-				uZPos = (std::min)(uZPos, m_regValidRegion.getUpperZ());
+				uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
+				uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
+				uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
+				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
+				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
+				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
 
 				//Get the voxel value
 				return getVoxel(uXPos, uYPos, uZPos);
@@ -171,7 +171,7 @@ namespace PolyVox
 			}
 			case WrapModes::Border:
 			{
-				if(m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 				{
 					return getVoxel(uXPos, uYPos, uZPos);
 				}
