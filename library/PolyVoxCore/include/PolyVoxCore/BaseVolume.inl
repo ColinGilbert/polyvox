@@ -160,6 +160,30 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
 	{
 		assert(false);
@@ -172,6 +196,30 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& /*v3dPos*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
 		assert(false);
 		return VoxelType();

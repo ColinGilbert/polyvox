@@ -34,7 +34,10 @@ using namespace PolyVox;
 template <typename VolumeType>
 int32_t complexVolumeTest(void)
 {
+	//Create the volume
 	VolumeType testVolume(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
+
+	//Fill the volume with some data
 	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
 	{
 		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
@@ -46,38 +49,65 @@ int32_t complexVolumeTest(void)
 		}
 	}
 
-	int32_t sum = 0;
+	int32_t result = 0;
 
+	//Test the getVoxel function
 	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
 	{
 		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
 		{
 			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
 			{
-				sum += testVolume.getVoxelAt(x, y, z);
+				result += testVolume.getVoxel(x, y, z);
 			}
 		}
 	}
 
-	return sum;
+	//Test border wrap mode
+	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	{
+		//Just a few slices from y
+		for(int y = testVolume.getEnclosingRegion().getLowerY() - 3; y <= testVolume.getEnclosingRegion().getUpperY() + 5; y++)
+		{
+			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
+			{
+				result += testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Border, 3);
+			}
+		}
+	}
+
+	//Test clamp wrap mode
+	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	{
+		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
+		{
+			//Just a few slices from y
+			for(int x = testVolume.getEnclosingRegion().getLowerX() - 2; x <= testVolume.getEnclosingRegion().getUpperX() + 4; x++)
+			{
+				result += testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Clamp);
+			}
+		}
+	}
+
+	return result;
 }
 
 void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(201446400));
+	QCOMPARE(result, static_cast<int32_t>(616456320));
 }
 
 void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(201446400));
+	QCOMPARE(result, static_cast<int32_t>(616456320));
 }
 
 void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(201446400));
+	QCOMPARE(result, static_cast<int32_t>(616456320));
 }
 
 QTEST_MAIN(TestVolume)

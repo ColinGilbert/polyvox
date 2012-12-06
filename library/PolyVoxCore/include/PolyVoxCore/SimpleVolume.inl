@@ -78,6 +78,40 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
+	VoxelType SimpleVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	{
+		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+
+		typename SimpleVolume<VoxelType>::Block* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+
+		return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType SimpleVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos) const
+	{
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
@@ -108,6 +142,62 @@ namespace PolyVox
 	VoxelType SimpleVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType SimpleVolume<VoxelType>::getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		switch(eWrapMode)
+		{
+			case WrapModes::Clamp:
+			{
+				//Perform clamping
+				uXPos = (std::max)(uXPos, m_regValidRegion.getLowerX());
+				uYPos = (std::max)(uYPos, m_regValidRegion.getLowerY());
+				uZPos = (std::max)(uZPos, m_regValidRegion.getLowerZ());
+				uXPos = (std::min)(uXPos, m_regValidRegion.getUpperX());
+				uYPos = (std::min)(uYPos, m_regValidRegion.getUpperY());
+				uZPos = (std::min)(uZPos, m_regValidRegion.getUpperZ());
+
+				//Get the voxel value
+				return getVoxel(uXPos, uYPos, uZPos);
+				//No need to break as we've returned
+			}
+			case WrapModes::Border:
+			{
+				if(m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+				{
+					return getVoxel(uXPos, uYPos, uZPos);
+				}
+				else
+				{
+					return tBorder;
+				}
+				//No need to break as we've returned
+			}
+			default:
+			{
+				//Should never happen
+				assert(false);
+				return VoxelType(0);
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType SimpleVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		return getVoxelWithWrapping(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
