@@ -131,25 +131,46 @@ int32_t complexVolumeTest(void)
 		zSampler.movePositiveZ();
 	}
 
+	xSampler.setWrapMode(WrapModes::Clamp);
+	ySampler.setWrapMode(WrapModes::Border, 1);
+	zSampler.setWrapMode(WrapModes::Clamp, -1);
+
+	zSampler.setPosition(testVolume.getEnclosingRegion().getUpperX() + 2, testVolume.getEnclosingRegion().getUpperY() + 3, testVolume.getEnclosingRegion().getUpperZ() + 1);
+	for(int z = 0; z < testVolume.getEnclosingRegion().getDepthInVoxels() + 8; z++)
+	{
+		ySampler = zSampler;
+		for(int y = 0; y < testVolume.getEnclosingRegion().getHeightInVoxels() + 3; y++)
+		{
+			xSampler = ySampler;
+			for(int x = 0; x < testVolume.getEnclosingRegion().getWidthInVoxels() + 5; x++)
+			{
+				result += xSampler.getVoxel();
+				xSampler.moveNegativeX();
+			}
+			ySampler.moveNegativeY();
+		}
+		zSampler.moveNegativeZ();
+	}
+
 	return result;
 }
 
 void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(1018940544));
+	QCOMPARE(result, static_cast<int32_t>(1244008559));
 }
 
 void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(1018940544));
+	QCOMPARE(result, static_cast<int32_t>(1244008559));
 }
 
 void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(1018940544));
+	QCOMPARE(result, static_cast<int32_t>(1244008559));
 }
 
 QTEST_MAIN(TestVolume)
