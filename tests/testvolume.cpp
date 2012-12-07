@@ -106,10 +106,10 @@ int32_t complexVolumeTest(void)
 	}*/
 
 	//Test the sampler move functions
-	VolumeType::Sampler xSampler(&testVolume);
-	VolumeType::Sampler ySampler(&testVolume);
-	VolumeType::Sampler zSampler(&testVolume);
-	VolumeType::Sampler sampler(&testVolume);
+	typename VolumeType::Sampler xSampler(&testVolume);
+	typename VolumeType::Sampler ySampler(&testVolume);
+	typename VolumeType::Sampler zSampler(&testVolume);
+	typename VolumeType::Sampler sampler(&testVolume);
 
 	xSampler.setWrapMode(WrapModes::Border, 1);
 	ySampler.setWrapMode(WrapModes::Border, 1);
