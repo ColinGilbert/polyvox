@@ -68,16 +68,23 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::setPosition(xPos, yPos, zPos);
 
 		// Then we update the voxel pointer
-		const Vector3DInt32& v3dLowerCorner = this->mVolume->m_regValidRegion.getLowerCorner();
-		int32_t iLocalXPos = xPos - v3dLowerCorner.getX();
-		int32_t iLocalYPos = yPos - v3dLowerCorner.getY();
-		int32_t iLocalZPos = zPos - v3dLowerCorner.getZ();
+		if(this->isCurrentPositionValid())
+		{
+			const Vector3DInt32& v3dLowerCorner = this->mVolume->m_regValidRegion.getLowerCorner();
+			int32_t iLocalXPos = xPos - v3dLowerCorner.getX();
+			int32_t iLocalYPos = yPos - v3dLowerCorner.getY();
+			int32_t iLocalZPos = zPos - v3dLowerCorner.getZ();
 
-		const int32_t uVoxelIndex = iLocalXPos + 
-				iLocalYPos * this->mVolume->getWidth() + 
-				iLocalZPos * this->mVolume->getWidth() * this->mVolume->getHeight();
+			const int32_t uVoxelIndex = iLocalXPos + 
+					iLocalYPos * this->mVolume->getWidth() + 
+					iLocalZPos * this->mVolume->getWidth() * this->mVolume->getHeight();
 
-		mCurrentVoxel = this->mVolume->m_pData + uVoxelIndex;
+			mCurrentVoxel = this->mVolume->m_pData + uVoxelIndex;
+		}
+		else
+		{
+			mCurrentVoxel = 0;
+		}
 	}
 
 	template <typename VoxelType>
@@ -102,7 +109,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid())
+		if(this->isCurrentPositionValid() && mCurrentVoxel )
 		{
 			++mCurrentVoxel;
 		}
@@ -119,7 +126,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid())
+		if(this->isCurrentPositionValid() && mCurrentVoxel )
 		{
 			mCurrentVoxel += this->mVolume->getWidth();
 		}
@@ -136,7 +143,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid())
+		if(this->isCurrentPositionValid() && mCurrentVoxel )
 		{
 			mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
 		}
@@ -153,7 +160,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid())
+		if(this->isCurrentPositionValid() && mCurrentVoxel )
 		{
 			--mCurrentVoxel;
 		}
@@ -170,7 +177,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid())
+		if(this->isCurrentPositionValid() && mCurrentVoxel )
 		{
 			mCurrentVoxel -= this->mVolume->getWidth();
 		}
@@ -187,7 +194,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid())
+		if(this->isCurrentPositionValid() && mCurrentVoxel )
 		{
 			mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
 		}

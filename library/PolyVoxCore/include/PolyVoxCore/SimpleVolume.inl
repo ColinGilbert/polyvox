@@ -306,6 +306,10 @@ namespace PolyVox
 		uBlockY -= m_regValidRegionInBlocks.getLowerCorner().getY();
 		uBlockZ -= m_regValidRegionInBlocks.getLowerCorner().getZ();
 
+		assert(uBlockX >= 0);
+		assert(uBlockY >= 0);
+		assert(uBlockZ >= 0);
+
 		//Compute the block index
 		uint32_t uBlockIndex =
 				uBlockX + 
