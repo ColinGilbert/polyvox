@@ -90,7 +90,7 @@ int32_t complexVolumeTest(void)
 	}
 
 	//Test the sampler setPosition
-	/*VolumeType::Sampler sampler(&testVolume);
+	VolumeType::Sampler sampler(&testVolume);
 	sampler.setWrapMode(WrapModes::Border, 1);
 
 	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
@@ -103,35 +103,26 @@ int32_t complexVolumeTest(void)
 				result += sampler.getVoxel();
 			}
 		}
-	}*/
+	}
 
 	//Test the sampler move functions
 	typename VolumeType::Sampler xSampler(&testVolume);
 	typename VolumeType::Sampler ySampler(&testVolume);
 	typename VolumeType::Sampler zSampler(&testVolume);
-	typename VolumeType::Sampler sampler(&testVolume);
 
 	xSampler.setWrapMode(WrapModes::Border, 1);
-	ySampler.setWrapMode(WrapModes::Border, 1);
-	zSampler.setWrapMode(WrapModes::Border, 1);
-	sampler.setWrapMode(WrapModes::Border, 1);
+	ySampler.setWrapMode(WrapModes::Clamp, 1);
+	zSampler.setWrapMode(WrapModes::Border, -3);
 
 	zSampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, testVolume.getEnclosingRegion().getLowerZ() - 2);
 	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
 	{
 		ySampler = zSampler;
-		//ySampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, z);
 		for(int y = testVolume.getEnclosingRegion().getLowerY() - 1; y <= testVolume.getEnclosingRegion().getUpperY() + 3; y++)
 		{
 			xSampler = ySampler;
 			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
 			{
-				sampler.setPosition(x,y,z);
-
-				int32_t sample = sampler.isCurrentPositionValid();
-				int32_t xSample = xSampler.isCurrentPositionValid();
-				assert(sample == xSample);
-
 				result += xSampler.getVoxel();
 				xSampler.movePositiveX();
 			}
@@ -146,19 +137,19 @@ int32_t complexVolumeTest(void)
 void TestVolume::testLargeVolume()
 {
 	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(818107008));
+	QCOMPARE(result, static_cast<int32_t>(1018940544));
 }
 
 void TestVolume::testRawVolume()
 {
 	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(818107008));
+	QCOMPARE(result, static_cast<int32_t>(1018940544));
 }
 
 void TestVolume::testSimpleVolume()
 {
 	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
-	QCOMPARE(result, static_cast<int32_t>(818107008));
+	QCOMPARE(result, static_cast<int32_t>(1018940544));
 }
 
 QTEST_MAIN(TestVolume)
