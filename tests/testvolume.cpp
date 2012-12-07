@@ -116,11 +116,11 @@ int32_t complexVolumeTest(void)
 	zSampler.setWrapMode(WrapModes::Border, 1);
 	sampler.setWrapMode(WrapModes::Border, 1);
 
-	//zSampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, testVolume.getEnclosingRegion().getLowerZ() - 2);
+	zSampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, testVolume.getEnclosingRegion().getLowerZ() - 2);
 	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
 	{
-		//ySampler = zSampler;
-		ySampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, z);
+		ySampler = zSampler;
+		//ySampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, z);
 		for(int y = testVolume.getEnclosingRegion().getLowerY() - 1; y <= testVolume.getEnclosingRegion().getUpperY() + 3; y++)
 		{
 			xSampler = ySampler;
@@ -137,7 +137,7 @@ int32_t complexVolumeTest(void)
 			}
 			ySampler.movePositiveY();
 		}
-		//zSampler.movePositiveZ();
+		zSampler.movePositiveZ();
 	}
 
 	return result;

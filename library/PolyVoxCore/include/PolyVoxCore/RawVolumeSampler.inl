@@ -102,7 +102,14 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		++mCurrentVoxel;
+		if(this->isCurrentPositionValid())
+		{
+			++mCurrentVoxel;
+		}
+		else
+		{
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		}
 	}
 
 	template <typename VoxelType>
@@ -112,7 +119,14 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		mCurrentVoxel += this->mVolume->getWidth();
+		if(this->isCurrentPositionValid())
+		{
+			mCurrentVoxel += this->mVolume->getWidth();
+		}
+		else
+		{
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		}
 	}
 
 	template <typename VoxelType>
@@ -122,7 +136,14 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
+		if(this->isCurrentPositionValid())
+		{
+			mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
+		}
+		else
+		{
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		}
 	}
 
 	template <typename VoxelType>
@@ -132,7 +153,14 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		--mCurrentVoxel;
+		if(this->isCurrentPositionValid())
+		{
+			--mCurrentVoxel;
+		}
+		else
+		{
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		}
 	}
 
 	template <typename VoxelType>
@@ -142,7 +170,14 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		mCurrentVoxel -= this->mVolume->getWidth();
+		if(this->isCurrentPositionValid())
+		{
+			mCurrentVoxel -= this->mVolume->getWidth();
+		}
+		else
+		{
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		}
 	}
 
 	template <typename VoxelType>
@@ -152,7 +187,14 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
+		if(this->isCurrentPositionValid())
+		{
+			mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
+		}
+		else
+		{
+			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		}
 	}
 
 	template <typename VoxelType>

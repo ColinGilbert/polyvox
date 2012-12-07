@@ -164,7 +164,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if((this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
+		if((this->isCurrentPositionValid()) && ((this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			++mCurrentVoxel;			
@@ -183,7 +183,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		if((this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
+		if((this->isCurrentPositionValid()) && ((this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel += this->mVolume->m_uBlockSideLength;
@@ -202,7 +202,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		if((this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0)
+		if((this->isCurrentPositionValid()) && ((this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel += this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
@@ -221,7 +221,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		if((this->mXPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0)
+		if((this->isCurrentPositionValid()) && ((this->mXPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			--mCurrentVoxel;			
@@ -240,7 +240,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		if((this->mYPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0)
+		if((this->isCurrentPositionValid()) && ((this->mYPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel -= this->mVolume->m_uBlockSideLength;
@@ -259,7 +259,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		if((this->mZPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0)
+		if((this->isCurrentPositionValid()) && ((this->mZPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel -= this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
