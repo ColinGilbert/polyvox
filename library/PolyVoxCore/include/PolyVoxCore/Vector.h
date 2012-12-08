@@ -59,169 +59,175 @@ namespace PolyVox
 	\code
 	Vector2DInt4 test(1,2); //Declares a 2 dimensional Vector of type int4.
 	\endcode
+
+	Extra things to mention when I when I fill this out shortly:
+		Vector must have at least two elements.
+		Use of 'OperationType'
+		Floating point return values are always single precision
+		Component order is WYZW
 	*/
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	class Vector
     {
     public:
-		///Constructor
+		/// Constructor
 		Vector(void);
-		///Constructor.
+		/// Constructor.
         Vector(StorageType tFillValue);
-        ///Constructor.
+        /// Constructor.
         Vector(StorageType x, StorageType y);
-		///Constructor.
+		/// Constructor.
 		Vector(StorageType x, StorageType y, StorageType z);
-		///Constructor.
+		/// Constructor.
 		Vector(StorageType x, StorageType y, StorageType z, StorageType w);
-        ///Copy Constructor.
+        /// Copy Constructor.
         Vector(const Vector<Size,StorageType,OperationType>& vector);
-		///Copy Constructor which performs casting.
+		/// Copy Constructor which performs casting.
 		template <typename CastType> explicit Vector(const Vector<Size,CastType>& vector);
-        ///Destructor.
+        /// Destructor.
         ~Vector(void);
 
-        ///Assignment Operator.
+        /// Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator=(const Vector<Size,StorageType,OperationType>& rhs);
-        ///Equality Operator.
+        /// Equality Operator.
         bool operator==(const Vector<Size,StorageType,OperationType>& rhs) const;
-		///Inequality Operator.
+		/// Inequality Operator.
         bool operator!=(const Vector<Size,StorageType,OperationType>& rhs) const;
-		///Comparison Operator.
-        bool operator<(const Vector<Size,StorageType,OperationType>& rhs) const;
-        ///Addition and Assignment Operator.
+		/// Comparison Operator.
+        POLYVOX_DEPRECATED bool operator<(const Vector<Size,StorageType,OperationType>& rhs) const;
+        /// Addition and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator+=(const Vector<Size,StorageType,OperationType> &rhs);
-        ///Subtraction and Assignment Operator.
+        /// Subtraction and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator-=(const Vector<Size,StorageType,OperationType> &rhs);
-		///Multiplication and Assignment Operator.
+		/// Multiplication and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator*=(const Vector<Size,StorageType,OperationType> &rhs);
-        ///Division and Assignment Operator.
+        /// Division and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator/=(const Vector<Size,StorageType,OperationType> &rhs);
-        ///Multiplication and Assignment Operator.
+        /// Multiplication and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator*=(const StorageType& rhs);
-        ///Division and Assignment Operator.
+        /// Division and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator/=(const StorageType& rhs);
 
-		///Element Access.
+		/// Element Access.
 		StorageType getElement(uint32_t index) const;
-        ///Get the x component of the vector.
+        /// Get the x component of the vector.
         StorageType getX(void) const;        
-        ///Get the y component of the vector.
+        /// Get the y component of the vector.
         StorageType getY(void) const;        
-        ///Get the z component of the vector.
+        /// Get the z component of the vector.
         StorageType getZ(void) const;        
-		///Get the w component of the vector.
+		/// Get the w component of the vector.
 		StorageType getW(void) const;		
 
-		///Element Access.
+		/// Element Access.
 		void setElement(uint32_t index, StorageType tValue);
-		///Element Access.
+		/// Element Access.
         void setElements(StorageType x, StorageType y);
-		///Element Access.
+		/// Element Access.
 		void setElements(StorageType x, StorageType y, StorageType z);
-		///Element Access.
+		/// Element Access.
 		void setElements(StorageType x, StorageType y, StorageType z, StorageType w);
-		///Set the x component of the vector.
+		/// Set the x component of the vector.
 		void setX(StorageType tX);
-		///Set the y component of the vector.
+		/// Set the y component of the vector.
 		void setY(StorageType tY);
-		///Set the z component of the vector.
+		/// Set the z component of the vector.
 		void setZ(StorageType tZ);
-		///Set the w component of the vector.
+		/// Set the w component of the vector.
 		void setW(StorageType tW);
 
-        ///Get the length of the vector.
+        /// Get the length of the vector.
         float length(void) const;
-        ///Get the squared length of the vector.
+        /// Get the squared length of the vector.
         OperationType lengthSquared(void) const;
-        ///Find the angle between this vector and that which is passed as a parameter.
+        /// Find the angle between this vector and that which is passed as a parameter.
         float angleTo(const Vector<Size,StorageType,OperationType>& vector) const;
-        ///Find the cross product between this vector and the vector passed as a parameter.
+        /// Find the cross product between this vector and the vector passed as a parameter.
         Vector<Size,StorageType,OperationType> cross(const Vector<Size,StorageType,OperationType>& vector) const;
-        ///Find the dot product between this vector and the vector passed as a parameter.
+        /// Find the dot product between this vector and the vector passed as a parameter.
         OperationType dot(const Vector<Size,StorageType,OperationType>& rhs) const;
-        ///Normalise the vector.
+        /// Normalise the vector.
         void normalise(void);
 
     private:
-        //Values for the vector
+        // Values for the vector
 		StorageType m_tElements[Size];
     };
 
-    //Non-member overloaded operators. 
-	///Addition operator.
+    // Non-member overloaded operators. 
+	/// Addition operator.
 	template <uint32_t Size,typename StorageType,typename OperationType>
 	    Vector<Size,StorageType,OperationType> operator+(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs);
-	///Subtraction operator.
+	/// Subtraction operator.
 	template <uint32_t Size,typename StorageType,typename OperationType>
 	    Vector<Size,StorageType,OperationType> operator-(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs);
-	///Multiplication operator.
+	/// Multiplication operator.
 	template <uint32_t Size,typename StorageType,typename OperationType>
 	    Vector<Size,StorageType,OperationType> operator*(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs);
-	///Division operator.
+	/// Division operator.
 	template <uint32_t Size,typename StorageType,typename OperationType>
 	    Vector<Size,StorageType,OperationType> operator/(const Vector<Size,StorageType,OperationType>& lhs, const Vector<Size,StorageType,OperationType>& rhs);
-	///Multiplication operator.
+	/// Multiplication operator.
 	template <uint32_t Size,typename StorageType,typename OperationType>
 	    Vector<Size,StorageType,OperationType> operator*(const Vector<Size,StorageType,OperationType>& lhs, const StorageType& rhs);
-	///Division operator.
+	/// Division operator.
 	template <uint32_t Size,typename StorageType,typename OperationType>
 	    Vector<Size,StorageType,OperationType> operator/(const Vector<Size,StorageType,OperationType>& lhs, const StorageType& rhs);
-    ///Stream insertion operator.
+    /// Stream insertion operator.
     template <uint32_t Size, typename StorageType,typename OperationType>
         std::ostream& operator<<(std::ostream& os, const Vector<Size,StorageType,OperationType>& vector);
-
+		
 	//Some handy typedefs
 
-	///A 2D Vector of floats.
+	/// A 2D Vector of floats.
 	typedef Vector<2,float,float> Vector2DFloat;
-	///A 2D Vector of doubles.
+	/// A 2D Vector of doubles.
     typedef Vector<2,double,double> Vector2DDouble;
-	///A 2D Vector of signed 8-bit values.
+	/// A 2D Vector of signed 8-bit values.
 	typedef Vector<2,int8_t,int32_t> Vector2DInt8;
-	///A 2D Vector of unsigned 8-bit values.
+	/// A 2D Vector of unsigned 8-bit values.
 	typedef Vector<2,uint8_t,int32_t> Vector2DUint8;
-	///A 2D Vector of signed 16-bit values.
+	/// A 2D Vector of signed 16-bit values.
 	typedef Vector<2,int16_t,int32_t> Vector2DInt16;
-	///A 2D Vector of unsigned 16-bit values.
+	/// A 2D Vector of unsigned 16-bit values.
 	typedef Vector<2,uint16_t,int32_t> Vector2DUint16;
-	///A 2D Vector of signed 32-bit values.
+	/// A 2D Vector of signed 32-bit values.
 	typedef Vector<2,int32_t,int32_t> Vector2DInt32;
-	///A 2D Vector of unsigned 32-bit values.
+	/// A 2D Vector of unsigned 32-bit values.
 	typedef Vector<2,uint32_t,int32_t> Vector2DUint32;
 
-	///A 3D Vector of floats.
+	/// A 3D Vector of floats.
 	typedef Vector<3,float,float> Vector3DFloat;
-	///A 3D Vector of doubles.
+	/// A 3D Vector of doubles.
     typedef Vector<3,double,double> Vector3DDouble;
-	///A 3D Vector of signed 8-bit values.
+	/// A 3D Vector of signed 8-bit values.
 	typedef Vector<3,int8_t,int32_t> Vector3DInt8;
-	///A 3D Vector of unsigned 8-bit values.
+	/// A 3D Vector of unsigned 8-bit values.
 	typedef Vector<3,uint8_t,int32_t> Vector3DUint8;
-	///A 3D Vector of signed 16-bit values.
+	/// A 3D Vector of signed 16-bit values.
 	typedef Vector<3,int16_t,int32_t> Vector3DInt16;
-	///A 3D Vector of unsigned 16-bit values.
+	/// A 3D Vector of unsigned 16-bit values.
 	typedef Vector<3,uint16_t,int32_t> Vector3DUint16;
-	///A 3D Vector of signed 32-bit values.
+	/// A 3D Vector of signed 32-bit values.
 	typedef Vector<3,int32_t,int32_t> Vector3DInt32;
-	///A 3D Vector of unsigned 32-bit values.
+	/// A 3D Vector of unsigned 32-bit values.
 	typedef Vector<3,uint32_t,int32_t> Vector3DUint32;
 
-	///A 4D Vector of floats.
+	/// A 4D Vector of floats.
 	typedef Vector<4,float,float> Vector4DFloat;
-	///A 4D Vector of doubles.
+	/// A 4D Vector of doubles.
     typedef Vector<4,double,double> Vector4DDouble;
-	///A 4D Vector of signed 8-bit values.
+	/// A 4D Vector of signed 8-bit values.
 	typedef Vector<4,int8_t,int32_t> Vector4DInt8;
-	///A 4D Vector of unsigned 8-bit values.
+	/// A 4D Vector of unsigned 8-bit values.
 	typedef Vector<4,uint8_t,int32_t> Vector4DUint8;
-	///A 4D Vector of signed 16-bit values.
+	/// A 4D Vector of signed 16-bit values.
 	typedef Vector<4,int16_t,int32_t> Vector4DInt16;
-	///A 4D Vector of unsigned 16-bit values.
+	/// A 4D Vector of unsigned 16-bit values.
 	typedef Vector<4,uint16_t,int32_t> Vector4DUint16;
-	///A 4D Vector of signed 32-bit values.
+	/// A 4D Vector of signed 32-bit values.
 	typedef Vector<4,int32_t,int32_t> Vector4DInt32;
-	///A 4D Vector of unsigned 32-bit values.
+	/// A 4D Vector of unsigned 32-bit values.
 	typedef Vector<4,uint32_t,int32_t> Vector4DUint32;
 
 

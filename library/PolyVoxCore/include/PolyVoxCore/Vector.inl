@@ -33,8 +33,8 @@ namespace PolyVox
 	}
 
 	/**
-    Creates a Vector object and initialises it with given values.
-    \param x x component to set.
+    Creates a Vector object and initialises all components with the given value.
+    \param tFillValue The value to write to every component.
     */
     template <uint32_t Size,typename StorageType, typename OperationType>
 	Vector<Size,StorageType,OperationType>::Vector(StorageType tFillValue)
@@ -47,8 +47,8 @@ namespace PolyVox
 
     /**
     Creates a Vector object and initialises it with given values.
-    \param x x component to set.
-    \param y y component to set.
+    \param x The X component to set.
+    \param y The Y component to set.
     */
     template <uint32_t Size,typename StorageType, typename OperationType>
     Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y)
@@ -63,9 +63,9 @@ namespace PolyVox
 
 	/**
 	Creates a Vector3D object and initialises it with given values.
-	\param x x component to set.
-	\param y y component to set.
-	\param z z component to set.
+	\param x The X component to set.
+	\param y The Y component to set.
+	\param z the Z component to set.
 	*/
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z)
@@ -82,10 +82,10 @@ namespace PolyVox
 
 	/**
 	Creates a Vector3D object and initialises it with given values.
-	\param x x component to set.
-	\param y y component to set.
-	\param z z component to set.
-	\param w w component to set.
+	\param x The X component to set.
+	\param y The Y component to set.
+	\param z The Z component to set.
+	\param w The W component to set.
 	*/
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z, StorageType w)
@@ -112,7 +112,7 @@ namespace PolyVox
 
 	/**
 	This copy constructor allows casting between vectors with different data types.
-	It is now possible to use code such as:
+	It makes it possible to use code such as:
 	
 	Vector3DDouble v3dDouble(1.0,2.0,3.0);
 	Vector3DFloat v3dFloat = static_cast<Vector3DFloat>(v3dDouble); //Casting
@@ -197,9 +197,11 @@ namespace PolyVox
 	/**
     Checks whether this vector is less than the parameter. The metric is
 	meaningless but it allows Vectors to me used as key in sdt::map, etc.
+	This function is deprecated. You should specify a seperate comparator to the std:map if you need one.
     \param rhs The Vector to compare to.
     \return true if this is less than the parameter
     \see operator!=
+	\deprecated
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
 	inline bool Vector<Size, StorageType, OperationType>::operator<(const Vector<Size, StorageType, OperationType> &rhs) const
@@ -216,7 +218,7 @@ namespace PolyVox
 
     /**
     Addition operator adds corresponding elements of the two Vectors.
-    \param rhs Vector to add
+    \param rhs The Vector to add
     \return The resulting Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
@@ -231,7 +233,7 @@ namespace PolyVox
 
 	/**
     Subtraction operator subtracts corresponding elements of one Vector from the other.
-    \param rhs Vector to subtract
+    \param rhs The Vector to subtract
     \return The resulting Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
@@ -246,7 +248,7 @@ namespace PolyVox
 
 	/**
     Multiplication operator multiplies corresponding elements of the two Vectors.
-    \param rhs Vector to multiply by
+    \param rhs The Vector to multiply by
     \return The resulting Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
@@ -261,7 +263,7 @@ namespace PolyVox
 
 	/**
     Division operator divides corresponding elements of one Vector by the other.
-    \param rhs Vector to divide by
+    \param rhs The Vector to divide by
     \return The resulting Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
@@ -276,7 +278,7 @@ namespace PolyVox
 
     /**
     Multiplication operator multiplies each element of the Vector by a number.
-    \param rhs the number the Vector is multiplied by.
+    \param rhs The number the Vector is multiplied by.
     \return The resulting Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
@@ -291,7 +293,7 @@ namespace PolyVox
 
     /**
 	Division operator divides each element of the Vector by a number.
-	\param rhs the number the Vector is divided by.
+	\param rhs The number the Vector is divided by.
 	\return The resulting Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
@@ -306,8 +308,8 @@ namespace PolyVox
 
 	/**
     Addition operator adds corresponding elements of the two Vectors.
-	\param lhs Vector to add to.
-    \param rhs Vector to add.
+	\param lhs The Vector to add to.
+    \param rhs The Vector to add.
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename StorageType, typename OperationType>
@@ -320,8 +322,8 @@ namespace PolyVox
 
 	/**
     Subtraction operator subtracts corresponding elements of one Vector from the other.
-	\param lhs Vector to subtract from.
-    \param rhs Vector to subtract.
+	\param lhs The Vector to subtract from.
+    \param rhs The Vector to subtract.
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename StorageType, typename OperationType>
@@ -334,8 +336,8 @@ namespace PolyVox
 
 	/**
     Multiplication operator mulitplies corresponding elements of the two Vectors.
-	\param lhs Vector to multiply.
-    \param rhs Vector to multiply by.
+	\param lhs The Vector to multiply.
+    \param rhs The Vector to multiply by.
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename StorageType, typename OperationType>
@@ -348,8 +350,8 @@ namespace PolyVox
 
 	/**
     Division operator divides corresponding elements of one Vector by the other.
-	\param lhs Vector to divide.
-    \param rhs Vector to divide by.
+	\param lhs The Vector to divide.
+    \param rhs The Vector to divide by.
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename StorageType, typename OperationType>
@@ -362,8 +364,8 @@ namespace PolyVox
 
 	/**
     Multiplication operator multiplies each element of the Vector by a number.
-	\param lhs the Vector to multiply.
-    \param rhs the number the Vector is multiplied by.
+	\param lhs The Vector to multiply.
+    \param rhs The number the Vector is multiplied by.
     \return The resulting Vector.
     */
 	template <uint32_t Size,typename StorageType, typename OperationType>
@@ -376,8 +378,8 @@ namespace PolyVox
 
 	/**
 	Division operator divides each element of the Vector by a number.
-	\param lhs the Vector to divide.
-	\param rhs the number the Vector is divided by.
+	\param lhs The Vector to divide.
+	\param rhs The number the Vector is divided by.
 	\return The resulting Vector.
     */
 	template <uint32_t Size,typename StorageType, typename OperationType>
@@ -479,8 +481,8 @@ namespace PolyVox
 
 	/**
     Sets several elements of a vector at once.
-    \param x x component to set.
-    \param y y component to set.
+    \param x The X component to set.
+    \param y The Y component to set.
     */
     template <uint32_t Size,typename StorageType, typename OperationType>
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y)
@@ -492,9 +494,9 @@ namespace PolyVox
 
 	/**
 	Sets several elements of a vector at once.
-	\param x x component to set.
-	\param y y component to set.
-	\param z z component to set.
+	\param x The X component to set.
+	\param y The Y component to set.
+	\param z The Z component to set.
 	*/
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z)
@@ -509,10 +511,10 @@ namespace PolyVox
 
 	/**
 	Sets several elements of a vector at once.
-	\param x x component to set.
-	\param y y component to set.
-	\param z z component to set.
-	\param w w component to set.
+	\param x The X component to set.
+	\param y The Y component to set.
+	\param z The Z component to set.
+	\param w The W component to set.
 	*/
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z, StorageType w)
@@ -569,8 +571,8 @@ namespace PolyVox
     }
 
 	/**
-	\note This function does not make much sense on integer Vectors.
-    \return Length of the Vector.
+	\note This function always returns a single precision floating point value, even when the StorageType is a double precision floating point value or an integer.
+    \return The length of the Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
 	inline float Vector<Size, StorageType, OperationType>::length(void) const
@@ -579,7 +581,7 @@ namespace PolyVox
     }
 
     /**
-    \return Squared length of the Vector.
+    \return The squared length of the Vector.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
 	inline OperationType Vector<Size, StorageType, OperationType>::lengthSquared(void) const
@@ -596,7 +598,7 @@ namespace PolyVox
     This function is commutative, such that a.angleTo(b) == b.angleTo(a). The angle
     returned is in radians and varies between 0 and 3.14(pi). It is always positive.
 
-	\note This function does not make much sense on integer Vectors.
+	\note This function always returns a single precision floating point value, even when the StorageType is a double precision floating point value or an integer.
 
     \param vector The Vector to find the angle to.
     \return The angle between them in radians.
@@ -647,22 +649,21 @@ namespace PolyVox
     }
 
     /**
-    Divides the i, j, and k components by the length to give a Vector of length 1.0.
+    Divides the i, j, and k components by the length to give a Vector of length 1.0. If the vector is
+	very short (or zero) then a divide by zero may cause elements to take on invalid values. You may
+	want to check for this before normalising.
 
-	\note This function does not make much sense on integer Vectors.
+	\note You should not attempt to normalise a vector whose StorageType is an integer.
     */
     template <uint32_t Size, typename StorageType, typename OperationType>
 	inline void Vector<Size, StorageType, OperationType>::normalise(void)
     {
-        StorageType tLength = static_cast<StorageType>(this->length());
-		//FIXME - throw div by zero exception?
-		if(tLength < 0.0001f)
-		{
-			return;
-		}
+        float fLength = this->length();
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
-			m_tElements[ct] /= tLength;
+			// Standard float rules apply for divide-by-zero
+			m_tElements[ct] /= fLength;
+			assert(m_tElements[ct] == m_tElements[ct]); //Will assert if NAN
 		}
     }
 }//namespace PolyVox
