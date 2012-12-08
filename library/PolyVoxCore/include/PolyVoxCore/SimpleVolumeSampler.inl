@@ -167,11 +167,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && mCurrentVoxel && ((this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			++mCurrentVoxel;			
@@ -186,11 +189,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && mCurrentVoxel && ((this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel += this->mVolume->m_uBlockSideLength;
@@ -205,11 +211,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && mCurrentVoxel && ((this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel += this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
@@ -224,11 +233,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && mCurrentVoxel && ((this->mXPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			--mCurrentVoxel;			
@@ -243,11 +255,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && mCurrentVoxel && ((this->mYPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel -= this->mVolume->m_uBlockSideLength;
@@ -262,11 +277,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< SimpleVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && mCurrentVoxel && ((this->mZPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
 		{
 			//No need to compute new block.
 			mCurrentVoxel -= this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;

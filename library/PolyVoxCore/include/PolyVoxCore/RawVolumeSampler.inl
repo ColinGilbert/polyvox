@@ -105,11 +105,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveX(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid() && mCurrentVoxel )
+		if(this->isCurrentPositionValid() && bIsOldPositionValid )
 		{
 			++mCurrentVoxel;
 		}
@@ -122,11 +125,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveY(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid() && mCurrentVoxel )
+		if(this->isCurrentPositionValid() && bIsOldPositionValid )
 		{
 			mCurrentVoxel += this->mVolume->getWidth();
 		}
@@ -139,11 +145,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::movePositiveZ(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid() && mCurrentVoxel )
+		if(this->isCurrentPositionValid() && bIsOldPositionValid )
 		{
 			mCurrentVoxel += this->mVolume->getWidth() * this->mVolume->getHeight();
 		}
@@ -156,11 +165,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeX(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid() && mCurrentVoxel )
+		if(this->isCurrentPositionValid() && bIsOldPositionValid )
 		{
 			--mCurrentVoxel;
 		}
@@ -173,11 +185,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeY(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid() && mCurrentVoxel )
+		if(this->isCurrentPositionValid() && bIsOldPositionValid )
 		{
 			mCurrentVoxel -= this->mVolume->getWidth();
 		}
@@ -190,11 +205,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::Sampler::moveNegativeZ(void)
 	{
+		// We'll need this in a moment...
+		bool bIsOldPositionValid = this->isCurrentPositionValid();
+
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		if(this->isCurrentPositionValid() && mCurrentVoxel )
+		if(this->isCurrentPositionValid() && bIsOldPositionValid )
 		{
 			mCurrentVoxel -= this->mVolume->getWidth() * this->mVolume->getHeight();
 		}
