@@ -157,19 +157,31 @@ int32_t complexVolumeTest(void)
 
 void TestVolume::testLargeVolume()
 {
-	int32_t result = complexVolumeTest< LargeVolume<int32_t> >();
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = complexVolumeTest< LargeVolume<int32_t> >();
+	}
 	QCOMPARE(result, static_cast<int32_t>(1244008559));
 }
 
 void TestVolume::testRawVolume()
 {
-	int32_t result = complexVolumeTest< RawVolume<int32_t> >();
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = complexVolumeTest< RawVolume<int32_t> >();
+	}
 	QCOMPARE(result, static_cast<int32_t>(1244008559));
 }
 
 void TestVolume::testSimpleVolume()
 {
-	int32_t result = complexVolumeTest< SimpleVolume<int32_t> >();
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = complexVolumeTest< SimpleVolume<int32_t> >();
+	}
 	QCOMPARE(result, static_cast<int32_t>(1244008559));
 }
 
