@@ -30,25 +30,25 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	/// Represents a part of a Volume.
-	////////////////////////////////////////////////////////////////////////////////
-	/// Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
-	/// it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
-	/// be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
-	/// of the volume, there by giving a number of meshes which can be culled and rendered seperately.
-	///
-	/// The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
-	/// bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
-	/// <em>inclusive</em>.
-	///
-	/// As well as the expected set of getters and setters, this class also provide utility functions for increasing and decresing
-	/// the size of the Region, shifting the Region in 3D space, testing whether it contains a given position, enlarging it so that
-	/// it does contain a given position, croppng it to another Region, and various other utility functions.
-	///
-	/// \Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
-	/// about these definitions.
-	///
-	////////////////////////////////////////////////////////////////////////////////
+	/** Represents a part of a Volume.
+	 * 
+	 *  Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
+	 *  it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
+	 *  be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
+	 *  of the volume, there by giving a number of meshes which can be culled and rendered seperately.
+	 * 
+	 *  The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
+	 *  bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
+	 *  <em>inclusive</em>.
+	 * 
+	 *  As well as the expected set of getters and setters, this class also provide utility functions for increasing and decresing
+	 *  the size of the Region, shifting the Region in 3D space, testing whether it contains a given position, enlarging it so that
+	 *  it does contain a given position, croppng it to another Region, and various other utility functions.
+	 * 
+	 *  \Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
+	 *  about these definitions.
+	 * 
+	 */
 #ifdef SWIG
 	class Region
 #else
@@ -199,193 +199,193 @@ namespace PolyVox
 	// 'inline' keyword is used for the definition rather than the declaration.
 	// See also http://www.parashift.com/c++-faq-lite/inline-functions.html
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The 'x' position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The 'x' position of the lower corner.
+	 */
 	inline int32_t Region::getLowerX(void) const
 	{
 		return m_iLowerX;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The 'y' position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The 'y' position of the lower corner.
+	 */
 	inline int32_t Region::getLowerY(void) const
 	{
 		return m_iLowerY;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The 'z' position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The 'z' position of the lower corner.
+	 */
 	inline int32_t Region::getLowerZ(void) const
 	{
 		return m_iLowerZ;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The 'x' position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The 'x' position of the upper corner.
+	 */
 	inline int32_t Region::getUpperX(void) const
 	{
 		return m_iUpperX;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The 'y' position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The 'y' position of the upper corner.
+	 */
 	inline int32_t Region::getUpperY(void) const
 	{
 		return m_iUpperY;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The 'z' position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The 'z' position of the upper corner.
+	 */
 	inline int32_t Region::getUpperZ(void) const
 	{
 		return m_iUpperZ;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The position of the lower corner.
+	 */
 	inline Vector3DInt32 Region::getLowerCorner(void) const
 	{
 		return Vector3DInt32(m_iLowerX, m_iLowerY, m_iLowerZ);
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The position of the upper corner.
+	 */
 	inline Vector3DInt32 Region::getUpperCorner(void) const
 	{
 		return Vector3DInt32(m_iUpperX, m_iUpperY, m_iUpperZ);
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The width of the region measured in voxels.
-	/// \sa getWidthInCells()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The width of the region measured in voxels.
+	 *  \sa getWidthInCells()
+	 */
 	inline int32_t Region::getWidthInVoxels(void) const
 	{
 		return getWidthInCells() + 1;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The height of the region measured in voxels.
-	/// \sa getHeightInCells()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The height of the region measured in voxels.
+	 *  \sa getHeightInCells()
+	 */
 	inline int32_t Region::getHeightInVoxels(void) const
 	{
 		return getHeightInCells() + 1;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The depth of the region measured in voxels.
-	/// \sa getDepthInCells()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The depth of the region measured in voxels.
+	 *  \sa getDepthInCells()
+	 */
 	inline int32_t Region::getDepthInVoxels(void) const
 	{
 		return getDepthInCells() + 1;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The dimensions of the region measured in voxels.
-	/// \sa getDimensionsInCells()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The dimensions of the region measured in voxels.
+	 *  \sa getDimensionsInCells()
+	 */
 	inline Vector3DInt32 Region::getDimensionsInVoxels(void) const
 	{
 		return getDimensionsInCells() + Vector3DInt32(1, 1, 1);
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The width of the region measured in cells.
-	/// \sa getWidthInVoxels()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The width of the region measured in cells.
+	 *  \sa getWidthInVoxels()
+	 */
 	inline int32_t Region::getWidthInCells(void) const
 	{
 		return m_iUpperX - m_iLowerX;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The height of the region measured in cells.
-	/// \sa getHeightInVoxels()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The height of the region measured in cells.
+	 *  \sa getHeightInVoxels()
+	 */
 	inline int32_t Region::getHeightInCells(void) const
 	{
 		return m_iUpperY - m_iLowerY;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The depth of the region measured in cells.
-	/// \sa getDepthInVoxels()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The depth of the region measured in cells.
+	 *  \sa getDepthInVoxels()
+	 */
 	inline int32_t Region::getDepthInCells(void) const
 	{
 		return m_iUpperZ - m_iLowerZ;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The dimensions of the region measured in cells.
-	/// \sa getDimensionsInVoxels()
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \return The dimensions of the region measured in cells.
+	 *  \sa getDimensionsInVoxels()
+	 */
 	inline Vector3DInt32 Region::getDimensionsInCells(void) const
 	{
 		return Vector3DInt32(getWidthInCells(), getHeightInCells(), getDepthInCells());
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param iX The new 'x' position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param iX The new 'x' position of the lower corner.
+	 */
 	inline void Region::setLowerX(int32_t iX)
 	{
 		m_iLowerX = iX;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param iY The new 'y' position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param iY The new 'y' position of the lower corner.
+	 */
 	inline void Region::setLowerY(int32_t iY)
 	{
 		m_iLowerY = iY;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param iZ The new 'z' position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param iZ The new 'z' position of the lower corner.
+	 */
 	inline void Region::setLowerZ(int32_t iZ)
 	{
 		m_iLowerZ = iZ;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param iX The new 'x' position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param iX The new 'x' position of the upper corner.
+	 */
 	inline void Region::setUpperX(int32_t iX)
 	{
 		m_iUpperX = iX;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param iY The new 'y' position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param iY The new 'y' position of the upper corner.
+	 */
 	inline void Region::setUpperY(int32_t iY)
 	{
 		m_iUpperY = iY;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param iZ The new 'z' position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param iZ The new 'z' position of the upper corner.
+	 */
 	inline void Region::setUpperZ(int32_t iZ)
 	{
 		m_iUpperZ = iZ;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dLowerCorner The new position of the lower corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param v3dLowerCorner The new position of the lower corner.
+	 */
 	inline void Region::setLowerCorner(const Vector3DInt32& v3dLowerCorner)
 	{
 		m_iLowerX = v3dLowerCorner.getX();
@@ -393,9 +393,9 @@ namespace PolyVox
 		m_iLowerZ = v3dLowerCorner.getZ();
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dUpperCorner The new position of the upper corner.
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  \param v3dUpperCorner The new position of the upper corner.
+	 */
 	inline void Region::setUpperCorner(const Vector3DInt32& v3dUpperCorner)
 	{
 		m_iUpperX = v3dUpperCorner.getX();
