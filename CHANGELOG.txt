@@ -2,6 +2,18 @@ Changes for PolyVox version 0.3
 ===============================
 This release has focused on... (some introduction here).
 
+Region class
+------------
+The Region class has been tidied up and enhanced with new functionality. It now contains functions for growing and shrinking regions, as well as 'accumulate()' functions which ensure the Region contains a given point. The concept of an invalid region has also been introduced - this is one whose lower corner is greater than it's upper corner.
+
+Vector class
+------------
+The Vector class has been tidied up. Most notably it now makes use of an 'OperationType' which is used for internal calculations and some results. The documentation has also been updated.
+
+Deprecated functionality
+------------------------
+Vector::operator<() has been deprecated. It was only present to allow Vectors to be used as the key to an std::map, but it makes more sense for this to be specified seperatly as a std::map comparison function. This is now done in the OpenGLExample (search for VectorCompare).
+
 Removed functionality
 --------------------
 Functionality deprecated for the previous release has now been removed. This includes:
@@ -12,8 +24,6 @@ Functionality deprecated for the previous release has now been removed. This inc
  - Serialisation. You should implement ay required serialisation yourself.
  - This had a number of problems and was a little too high-level for PolyVox. You should implement change tracking yourself.
 
-
-The Region class has been tidied up and enhanced with new functionality. It now contains functions for growing and shrinking regions, as well as 'accumulate()' functions which ensure the Region contains a given point. The concept of an invalid region has also been introduced - this is one whose lower corner is greater than it's upper corner.
 
 Changes for PolyVox version 0.2
 ===============================
