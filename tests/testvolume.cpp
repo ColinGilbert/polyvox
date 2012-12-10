@@ -27,9 +27,17 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
+#include <QtGlobal>
 #include <QtTest>
 
 using namespace PolyVox;
+
+// This is used to compute a value from a list of integers. We use it to 
+// make sure we get the expected result from a series of volume accesses.
+inline int32_t cantorTupleFunction(int32_t previousResult, int32_t value)
+{
+	return (( previousResult + value  ) * ( previousResult + value + 1 ) + value ) / 2;
+}
 
 template <typename VolumeType>
 int32_t complexVolumeTest(void)
@@ -38,13 +46,14 @@ int32_t complexVolumeTest(void)
 	VolumeType testVolume(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
 
 	//Fill the volume with some data
+	qsrand(42);
 	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
 	{
 		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
 		{
 			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
 			{
-				testVolume.setVoxelAt(x, y, z, x + y + z);
+				testVolume.setVoxelAt(x, y, z, qrand() - (RAND_MAX / 2));
 			}
 		}
 	}
@@ -58,7 +67,7 @@ int32_t complexVolumeTest(void)
 		{
 			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
 			{
-				result += testVolume.getVoxel(x, y, z);
+				result = cantorTupleFunction(result, testVolume.getVoxel(x, y, z));
 			}
 		}
 	}
@@ -71,7 +80,7 @@ int32_t complexVolumeTest(void)
 		{
 			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
 			{
-				result += testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Border, 3);
+				result = cantorTupleFunction(result, testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Border, 3));
 			}
 		}
 	}
@@ -84,7 +93,7 @@ int32_t complexVolumeTest(void)
 			//Extending outside in x
 			for(int x = testVolume.getEnclosingRegion().getLowerX() - 2; x <= testVolume.getEnclosingRegion().getUpperX() + 4; x++)
 			{
-				result += testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Clamp);
+				result = cantorTupleFunction(result, testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Clamp));
 			}
 		}
 	}
@@ -100,7 +109,7 @@ int32_t complexVolumeTest(void)
 			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
 			{
 				sampler.setPosition(x,y,z);
-				result += sampler.getVoxel();
+				result = cantorTupleFunction(result, sampler.getVoxel());
 			}
 		}
 	}
@@ -123,7 +132,7 @@ int32_t complexVolumeTest(void)
 			xSampler = ySampler;
 			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
 			{
-				result += xSampler.getVoxel();
+				result = cantorTupleFunction(result, xSampler.getVoxel());
 				xSampler.movePositiveX();
 			}
 			ySampler.movePositiveY();
@@ -144,7 +153,7 @@ int32_t complexVolumeTest(void)
 			xSampler = ySampler;
 			for(int x = 0; x < testVolume.getEnclosingRegion().getWidthInVoxels() + 5; x++)
 			{
-				result += xSampler.getVoxel();
+				result = cantorTupleFunction(result, xSampler.getVoxel());
 				xSampler.moveNegativeX();
 			}
 			ySampler.moveNegativeY();
@@ -162,7 +171,7 @@ void TestVolume::testLargeVolume()
 	{
 		result = complexVolumeTest< LargeVolume<int32_t> >();
 	}
-	QCOMPARE(result, static_cast<int32_t>(1244008559));
+	QCOMPARE(result, static_cast<int32_t>(-928813120));
 }
 
 void TestVolume::testRawVolume()
@@ -172,7 +181,7 @@ void TestVolume::testRawVolume()
 	{
 		result = complexVolumeTest< RawVolume<int32_t> >();
 	}
-	QCOMPARE(result, static_cast<int32_t>(1244008559));
+	QCOMPARE(result, static_cast<int32_t>(-928813120));
 }
 
 void TestVolume::testSimpleVolume()
@@ -182,7 +191,7 @@ void TestVolume::testSimpleVolume()
 	{
 		result = complexVolumeTest< SimpleVolume<int32_t> >();
 	}
-	QCOMPARE(result, static_cast<int32_t>(1244008559));
+	QCOMPARE(result, static_cast<int32_t>(-928813120));
 }
 
 QTEST_MAIN(TestVolume)
