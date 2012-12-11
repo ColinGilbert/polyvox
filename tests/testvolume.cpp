@@ -62,6 +62,88 @@ VolumeType* createAndFillVolume(void)
 }
 
 template <typename VolumeType>
+int32_t testDirectAccessWithWrapping(const VolumeType* volume)
+{
+	int32_t result = 0;
+
+	for(int z = volume->getEnclosingRegion().getLowerZ() - 2; z <= volume->getEnclosingRegion().getUpperZ() + 4; z++)
+	{
+		for(int y = volume->getEnclosingRegion().getLowerY() - 3; y <= volume->getEnclosingRegion().getUpperY() + 5; y++)
+		{
+			for(int x = volume->getEnclosingRegion().getLowerX() - 1; x <= volume->getEnclosingRegion().getUpperX() + 2; x++)
+			{
+				//Three level loop now processes 27 voxel neighbourhood
+				for(int innerZ = -1; innerZ <=1; innerZ++)
+				{
+					for(int innerY = -1; innerY <=1; innerY++)
+					{
+						for(int innerX = -1; innerX <=1; innerX++)
+						{
+							result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+						}
+					}
+				}	
+				//End of inner loops
+			}
+		}
+	}
+
+	return result;
+}
+
+template <typename VolumeType>
+int32_t testSamplersWithWrapping(VolumeType* volume)
+{
+	int32_t result = 0;
+
+	VolumeType::Sampler sampler(volume);
+	sampler.setWrapMode(WrapModes::Border, 3);
+
+	for(int z = volume->getEnclosingRegion().getLowerZ() - 2; z <= volume->getEnclosingRegion().getUpperZ() + 4; z++)
+	{
+		for(int y = volume->getEnclosingRegion().getLowerY() - 3; y <= volume->getEnclosingRegion().getUpperY() + 5; y++)
+		{
+			for(int x = volume->getEnclosingRegion().getLowerX() - 1; x <= volume->getEnclosingRegion().getUpperX() + 2; x++)
+			{
+				sampler.setPosition(x, y, z);
+
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px0py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px0py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1py1nz());
+
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px0py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px0py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1py0pz());
+
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px0py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px0py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1py1pz());
+			}
+		}
+	}
+
+	return result;
+}
+
+template <typename VolumeType>
 int32_t complexVolumeTest(void)
 {
 	VolumeType* testVolume = createAndFillVolume<VolumeType>();
@@ -174,34 +256,100 @@ int32_t complexVolumeTest(void)
 	return result;
 }
 
-void TestVolume::testLargeVolume()
+TestVolume::TestVolume()
 {
-	int32_t result = 0;
-	QBENCHMARK
+	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
+
+	//Create the volumes
+	m_pRawVolume = new RawVolume<int32_t>(region);
+	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
+	m_pLargeVolume = new LargeVolume<int32_t>(region);
+
+	//Fill the volume with some data
+	qsrand(42);
+	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
 	{
-		result = complexVolumeTest< LargeVolume<int32_t> >();
+		for(int y = region.getLowerY(); y <= region.getUpperY(); y++)
+		{
+			for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
+			{
+				int32_t value = qrand() - (RAND_MAX / 2);
+				m_pRawVolume->setVoxelAt(x, y, z, value);
+				m_pSimpleVolume->setVoxelAt(x, y, z, value);
+				m_pLargeVolume->setVoxelAt(x, y, z, value);
+			}
+		}
 	}
-	QCOMPARE(result, static_cast<int32_t>(-928813120));
 }
 
-void TestVolume::testRawVolume()
+TestVolume::~TestVolume()
 {
-	int32_t result = 0;
-	QBENCHMARK
-	{
-		result = complexVolumeTest< RawVolume<int32_t> >();
-	}
-	QCOMPARE(result, static_cast<int32_t>(-928813120));
+	delete m_pRawVolume;
+	delete m_pSimpleVolume;
+	delete m_pLargeVolume;
 }
 
-void TestVolume::testSimpleVolume()
+void TestVolume::testRawVolumeDirectAccess()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrapping(m_pRawVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-289709888));
+}
+
+void TestVolume::testRawVolumeSamplers()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testSamplersWithWrapping(m_pRawVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-289709888));
+}
+
+void TestVolume::testSimpleVolumeDirectAccess()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = complexVolumeTest< SimpleVolume<int32_t> >();
+		result = testDirectAccessWithWrapping(m_pSimpleVolume);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-928813120));
+	QCOMPARE(result, static_cast<int32_t>(-289709888));
+}
+
+void TestVolume::testSimpleVolumeSamplers()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testSamplersWithWrapping(m_pSimpleVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-289709888));
+}
+
+void TestVolume::testLargeVolumeDirectAccess()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrapping(m_pLargeVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-289709888));
+}
+
+void TestVolume::testLargeVolumeSamplers()
+{
+	int32_t result = 0;
+	
+	QBENCHMARK
+	{
+		result = testSamplersWithWrapping(m_pLargeVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-289709888));
 }
 
 QTEST_MAIN(TestVolume)

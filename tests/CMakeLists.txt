@@ -96,9 +96,14 @@ ADD_TEST(VectorEqualityTest ${LATEST_TEST} testEquality)
 
 # Volume tests
 CREATE_TEST(testvolume.h testvolume.cpp testvolume)
-ADD_TEST(LargeVolumeTest ${LATEST_TEST} testLargeVolume)
-ADD_TEST(RawVolumeTest ${LATEST_TEST} testRawVolume)
-ADD_TEST(SimpleVolumeTest ${LATEST_TEST} testSimpleVolume)
+
+ADD_TEST(RawVolumeDirectAccessTest ${LATEST_TEST} testRawVolumeDirectAccess)
+ADD_TEST(SimpleVolumeDirectAccessTest ${LATEST_TEST} testSimpleVolumeDirectAccess)
+ADD_TEST(LargeVolumeDirectAccessTest ${LATEST_TEST} testLargeVolumeDirectAccess)
+
+ADD_TEST(RawVolumeSamplersTest ${LATEST_TEST} testRawVolumeSamplers)
+ADD_TEST(SimpleVolumeSamplersTest ${LATEST_TEST} testSimpleVolumeSamplers)
+ADD_TEST(LargeVolumeSamplersTest ${LATEST_TEST} testLargeVolumeSamplers)
 
 # Volume subclass tests
 CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)
