@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "testvolume.h"
+#include "testVolume.h"
 
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/RawVolume.h"
@@ -40,73 +40,81 @@ inline int32_t cantorTupleFunction(int32_t previousResult, int32_t value)
 }
 
 template <typename VolumeType>
-int32_t complexVolumeTest(void)
+VolumeType* createAndFillVolume(void)
 {
 	//Create the volume
-	VolumeType testVolume(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
+	VolumeType* volume = new VolumeType(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
 
 	//Fill the volume with some data
 	qsrand(42);
-	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	for(int z = volume->getEnclosingRegion().getLowerZ(); z <= volume->getEnclosingRegion().getUpperZ(); z++)
 	{
-		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
+		for(int y = volume->getEnclosingRegion().getLowerY(); y <= volume->getEnclosingRegion().getUpperY(); y++)
 		{
-			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
+			for(int x = volume->getEnclosingRegion().getLowerX(); x <= volume->getEnclosingRegion().getUpperX(); x++)
 			{
-				testVolume.setVoxelAt(x, y, z, qrand() - (RAND_MAX / 2));
+				volume->setVoxelAt(x, y, z, qrand() - (RAND_MAX / 2));
 			}
 		}
 	}
 
+	return volume;
+}
+
+template <typename VolumeType>
+int32_t complexVolumeTest(void)
+{
+	VolumeType* testVolume = createAndFillVolume<VolumeType>();
+
 	int32_t result = 0;
 
 	//Test the getVoxel function
-	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	for(int z = testVolume->getEnclosingRegion().getLowerZ(); z <= testVolume->getEnclosingRegion().getUpperZ(); z++)
 	{
-		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
+		for(int y = testVolume->getEnclosingRegion().getLowerY(); y <= testVolume->getEnclosingRegion().getUpperY(); y++)
 		{
-			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
+			for(int x = testVolume->getEnclosingRegion().getLowerX(); x <= testVolume->getEnclosingRegion().getUpperX(); x++)
 			{
-				result = cantorTupleFunction(result, testVolume.getVoxel(x, y, z));
+				result = cantorTupleFunction(result, testVolume->getVoxel(x, y, z));
 			}
 		}
 	}
 
 	//Test border wrap mode
-	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	for(int z = testVolume->getEnclosingRegion().getLowerZ(); z <= testVolume->getEnclosingRegion().getUpperZ(); z++)
 	{
 		//Extending outside in y
-		for(int y = testVolume.getEnclosingRegion().getLowerY() - 3; y <= testVolume.getEnclosingRegion().getUpperY() + 5; y++)
+		for(int y = testVolume->getEnclosingRegion().getLowerY() - 3; y <= testVolume->getEnclosingRegion().getUpperY() + 5; y++)
 		{
-			for(int x = testVolume.getEnclosingRegion().getLowerX(); x <= testVolume.getEnclosingRegion().getUpperX(); x++)
+			for(int x = testVolume->getEnclosingRegion().getLowerX(); x <= testVolume->getEnclosingRegion().getUpperX(); x++)
 			{
-				result = cantorTupleFunction(result, testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Border, 3));
+				result = cantorTupleFunction(result, testVolume->getVoxelWithWrapping(x, y, z, WrapModes::Border, 3));
 			}
 		}
 	}
 
 	//Test clamp wrap mode
-	for(int z = testVolume.getEnclosingRegion().getLowerZ(); z <= testVolume.getEnclosingRegion().getUpperZ(); z++)
+	for(int z = testVolume->getEnclosingRegion().getLowerZ(); z <= testVolume->getEnclosingRegion().getUpperZ(); z++)
 	{
-		for(int y = testVolume.getEnclosingRegion().getLowerY(); y <= testVolume.getEnclosingRegion().getUpperY(); y++)
+		for(int y = testVolume->getEnclosingRegion().getLowerY(); y <= testVolume->getEnclosingRegion().getUpperY(); y++)
 		{
 			//Extending outside in x
-			for(int x = testVolume.getEnclosingRegion().getLowerX() - 2; x <= testVolume.getEnclosingRegion().getUpperX() + 4; x++)
+			for(int x = testVolume->getEnclosingRegion().getLowerX() - 2; x <= testVolume->getEnclosingRegion().getUpperX() + 4; x++)
 			{
-				result = cantorTupleFunction(result, testVolume.getVoxelWithWrapping(x, y, z, WrapModes::Clamp));
+				result = cantorTupleFunction(result, testVolume->getVoxelWithWrapping(x, y, z, WrapModes::Clamp));
 			}
 		}
 	}
 
 	//Test the sampler setPosition
-	VolumeType::Sampler sampler(&testVolume);
+	VolumeType::Sampler sampler(testVolume);
 	sampler.setWrapMode(WrapModes::Border, 1);
 
-	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
+	for(int z = testVolume->getEnclosingRegion().getLowerZ() - 2; z <= testVolume->getEnclosingRegion().getUpperZ() + 1; z++)
 	{
-		for(int y = testVolume.getEnclosingRegion().getLowerY() - 1; y <= testVolume.getEnclosingRegion().getUpperY() + 3; y++)
+		for(int y = testVolume->getEnclosingRegion().getLowerY() - 1; y <= testVolume->getEnclosingRegion().getUpperY() + 3; y++)
 		{
-			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
+			for(int x = testVolume->getEnclosingRegion().getLowerX() - 4; x <= testVolume->getEnclosingRegion().getUpperX() + 2; x++)
 			{
 				sampler.setPosition(x,y,z);
 				result = cantorTupleFunction(result, sampler.getVoxel());
@@ -115,22 +123,22 @@ int32_t complexVolumeTest(void)
 	}
 
 	//Test the sampler move functions
-	typename VolumeType::Sampler xSampler(&testVolume);
-	typename VolumeType::Sampler ySampler(&testVolume);
-	typename VolumeType::Sampler zSampler(&testVolume);
+	typename VolumeType::Sampler xSampler(testVolume);
+	typename VolumeType::Sampler ySampler(testVolume);
+	typename VolumeType::Sampler zSampler(testVolume);
 
 	xSampler.setWrapMode(WrapModes::Border, 1);
 	ySampler.setWrapMode(WrapModes::Clamp, 1);
 	zSampler.setWrapMode(WrapModes::Border, -3);
 
-	zSampler.setPosition(testVolume.getEnclosingRegion().getLowerX() - 4, testVolume.getEnclosingRegion().getLowerY() - 1, testVolume.getEnclosingRegion().getLowerZ() - 2);
-	for(int z = testVolume.getEnclosingRegion().getLowerZ() - 2; z <= testVolume.getEnclosingRegion().getUpperZ() + 1; z++)
+	zSampler.setPosition(testVolume->getEnclosingRegion().getLowerX() - 4, testVolume->getEnclosingRegion().getLowerY() - 1, testVolume->getEnclosingRegion().getLowerZ() - 2);
+	for(int z = testVolume->getEnclosingRegion().getLowerZ() - 2; z <= testVolume->getEnclosingRegion().getUpperZ() + 1; z++)
 	{
 		ySampler = zSampler;
-		for(int y = testVolume.getEnclosingRegion().getLowerY() - 1; y <= testVolume.getEnclosingRegion().getUpperY() + 3; y++)
+		for(int y = testVolume->getEnclosingRegion().getLowerY() - 1; y <= testVolume->getEnclosingRegion().getUpperY() + 3; y++)
 		{
 			xSampler = ySampler;
-			for(int x = testVolume.getEnclosingRegion().getLowerX() - 4; x <= testVolume.getEnclosingRegion().getUpperX() + 2; x++)
+			for(int x = testVolume->getEnclosingRegion().getLowerX() - 4; x <= testVolume->getEnclosingRegion().getUpperX() + 2; x++)
 			{
 				result = cantorTupleFunction(result, xSampler.getVoxel());
 				xSampler.movePositiveX();
@@ -144,14 +152,14 @@ int32_t complexVolumeTest(void)
 	ySampler.setWrapMode(WrapModes::Border, 1);
 	zSampler.setWrapMode(WrapModes::Clamp, -1);
 
-	zSampler.setPosition(testVolume.getEnclosingRegion().getUpperX() + 2, testVolume.getEnclosingRegion().getUpperY() + 3, testVolume.getEnclosingRegion().getUpperZ() + 1);
-	for(int z = 0; z < testVolume.getEnclosingRegion().getDepthInVoxels() + 8; z++)
+	zSampler.setPosition(testVolume->getEnclosingRegion().getUpperX() + 2, testVolume->getEnclosingRegion().getUpperY() + 3, testVolume->getEnclosingRegion().getUpperZ() + 1);
+	for(int z = 0; z < testVolume->getEnclosingRegion().getDepthInVoxels() + 8; z++)
 	{
 		ySampler = zSampler;
-		for(int y = 0; y < testVolume.getEnclosingRegion().getHeightInVoxels() + 3; y++)
+		for(int y = 0; y < testVolume->getEnclosingRegion().getHeightInVoxels() + 3; y++)
 		{
 			xSampler = ySampler;
-			for(int x = 0; x < testVolume.getEnclosingRegion().getWidthInVoxels() + 5; x++)
+			for(int x = 0; x < testVolume->getEnclosingRegion().getWidthInVoxels() + 5; x++)
 			{
 				result = cantorTupleFunction(result, xSampler.getVoxel());
 				xSampler.moveNegativeX();
@@ -160,6 +168,8 @@ int32_t complexVolumeTest(void)
 		}
 		zSampler.moveNegativeZ();
 	}
+
+	delete testVolume;
 
 	return result;
 }
