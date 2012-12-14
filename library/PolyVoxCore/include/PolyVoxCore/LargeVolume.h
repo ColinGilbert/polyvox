@@ -310,6 +310,22 @@ namespace PolyVox
 		LargeVolume& operator=(const LargeVolume& rhs);
 
 	private:
+
+		struct BlockPositionCompare
+		{
+			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b)
+			{
+				const uint32_t size = 3;
+				for(uint32_t ct = 0; ct < size; ++ct)
+				{
+					if (a.getElement(ct) < b.getElement(ct))
+						return true;
+					if (b.getElement(ct) < a.getElement(ct))
+						return false;
+				}
+				return false;
+			}
+		};
 		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
 
 		/// gets called when a new region is allocated and needs to be filled
@@ -323,12 +339,12 @@ namespace PolyVox
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
 	
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const;
+		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const;
 		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
-		mutable std::map<Vector3DInt32, LoadedBlock > m_pBlocks;
+		mutable std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare> m_pBlocks;
 
 		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
 		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
