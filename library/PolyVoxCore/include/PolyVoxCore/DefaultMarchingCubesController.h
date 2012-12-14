@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MarchingCubesController_H__
 #define __PolyVox_MarchingCubesController_H__
 
+#include "PolyVoxCore/BaseVolume.h"
+
 #include <limits>
 
 namespace PolyVox
@@ -77,17 +79,21 @@ namespace PolyVox
 		DefaultMarchingCubesController(void)
 		{
 			m_tThreshold = ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
+			m_eWrapMode = WrapModes::Border;
+			m_tBorder = 0;
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// Constructor
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// This version of the constructor allows you to set a custom threshold.
+		/// This version of the constructor allows you to set some custom parameters
 		/// \param tThreshold The threshold to use.
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
+			m_eWrapMode = WrapModes::Border;
+			m_tBorder = 0;
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,8 +130,21 @@ namespace PolyVox
 			return m_tThreshold;
 		}
 
-	private:
+		WrapMode getWrapMode(void)
+		{
+			return m_eWrapMode;
+		}
+
+		void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType(0))
+		{
+			m_eWrapMode = eWrapMode;
+			m_tBorder = tBorder;
+		}
+
+	public:
 		DensityType m_tThreshold;
+		WrapMode m_eWrapMode;
+		VoxelType m_tBorder;
 	};
 }
 
