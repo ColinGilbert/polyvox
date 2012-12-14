@@ -184,6 +184,11 @@ namespace PolyVox
 			return m_eWrapMode;
 		}
 
+		void setThreshold(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
+		}
+
 		void setWrapMode(WrapMode eWrapMode)
 		{
 			m_eWrapMode = eWrapMode;

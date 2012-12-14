@@ -77,10 +77,10 @@ namespace PolyVox
 		/// if the voxel type is 'float' then the representable range is -FLT_MAX to FLT_MAX and the threshold will be set to zero.
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		DefaultMarchingCubesController(void)
-		{
-			m_tThreshold = ((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2;
-			m_eWrapMode = WrapModes::Border;
-			m_tBorder = 0;
+			:m_tThreshold(((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2)
+			,m_eWrapMode(WrapModes::Border)
+			,m_tBorder(VoxelType(0))
+		{			
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,12 +89,12 @@ namespace PolyVox
 		/// This version of the constructor allows you to set some custom parameters
 		/// \param tThreshold The threshold to use.
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		DefaultMarchingCubesController(DensityType tThreshold)
+		/*DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
 			m_eWrapMode = WrapModes::Border;
 			m_tBorder = 0;
-		}
+		}*/
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// Converts the underlying voxel type into a density value.
@@ -133,6 +133,16 @@ namespace PolyVox
 		WrapMode getWrapMode(void)
 		{
 			return m_eWrapMode;
+		}
+
+		VoxelType getBorderValue(void)
+		{
+			return m_tBorder;
+		}
+
+		void setThreshold(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
 		}
 
 		void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType(0))
