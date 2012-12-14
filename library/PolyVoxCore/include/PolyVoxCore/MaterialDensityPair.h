@@ -42,6 +42,10 @@ namespace PolyVox
 	{
 	public:
 		MaterialDensityPair() : m_uMaterial(0), m_uDensity(0) {}
+
+		// FIXME - This is a bit odd... we need to allow the MaterialDensityPair to be initialised with a single integer
+		// because PolyVox often initialises voxels by calling VoxelType(0). Is there a better way we should handle this?
+		MaterialDensityPair(Type tValue) : m_uMaterial(tValue), m_uDensity(tValue) {}
 		MaterialDensityPair(Type uMaterial, Type uDensity) : m_uMaterial(uMaterial), m_uDensity(uDensity) {}
 
 		bool operator==(const MaterialDensityPair& rhs) const
@@ -115,11 +119,13 @@ namespace PolyVox
 		{
 			// Default to a threshold value halfway between the min and max possible values.
 			m_tThreshold = (MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMinDensity() + MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMaxDensity()) / 2;
+			m_eWrapMode = WrapModes::Border;
 		}
 
 		DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
+			m_eWrapMode = WrapModes::Border;
 		}
 
 		DensityType convertToDensity(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> voxel)
@@ -132,13 +138,35 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
+		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> getBorderValue(void)
+		{
+			return m_tBorder;
+		}
+
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
-		}		
+		}
+
+		WrapMode getWrapMode(void)
+		{
+			return m_eWrapMode;
+		}
+
+		void setThreshold(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
+		}
+
+		void setWrapMode(WrapMode eWrapMode)
+		{
+			m_eWrapMode = eWrapMode;
+		}
 
 	private:
 		DensityType m_tThreshold;
+		WrapMode m_eWrapMode;
+		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> m_tBorder;
 	};
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;

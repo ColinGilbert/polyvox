@@ -31,6 +31,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::BaseVolume(const Region& regValid)
 		:m_regValidRegion(regValid)
+		,m_tBorderValue(0)
 	{
 	}
 
@@ -76,15 +77,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getBorderValue(void) const
 	{
-		assert(false);
-		return VoxelType();
+		return m_tBorderValue;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	Region BaseVolume<VoxelType>::getEnclosingRegion(void) const
+	const Region& BaseVolume<VoxelType>::getEnclosingRegion(void) const
 	{
 		return m_regValidRegion;
 	}
@@ -160,6 +160,30 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
 	{
 		assert(false);
@@ -178,12 +202,36 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
+	{
+		assert(false);
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& /*tBorder*/) 
+	void BaseVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
 	{
-		assert(false);
+		m_tBorderValue = tBorder;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

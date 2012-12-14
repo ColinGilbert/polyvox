@@ -35,6 +35,8 @@ namespace PolyVox
 
 	int32_t roundTowardsNegInf(float r);
 	int32_t roundToInteger(float r);
+	template <typename Type>
+	Type clamp(const Type& value, const Type& low, const Type& high);
 
 	inline int32_t roundTowardsNegInf(float r)
 	{
@@ -44,6 +46,12 @@ namespace PolyVox
 	inline int32_t roundToNearestInteger(float r)
 	{
 		return (r > 0.0) ? static_cast<int32_t>(r + 0.5f) : static_cast<int32_t>(r - 0.5f);
+	}
+
+	template <typename Type>
+	inline Type clamp(const Type& value, const Type& low, const Type& high)
+	{
+		return (std::min)(high, (std::max)(low, value));
 	}
 }
 

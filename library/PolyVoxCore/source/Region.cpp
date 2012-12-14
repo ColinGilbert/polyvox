@@ -160,6 +160,25 @@ namespace PolyVox
     }
 
 	/**
+	 *  The boundary value can be used to ensure a position is only considered to be inside
+	 *  the Region if it is that far in in all directions. Also, the test is inclusive such 
+	 *  that positions lying exactly on the edge of the Region are considered to be inside it.
+	 *  \param fX The 'x' position of the point to test.
+	 *  \param fY The 'y' position of the point to test.
+	 *  \param fZ The 'z' position of the point to test.
+	 *  \param boundary The desired boundary value.
+	 */
+	bool Region::containsPoint(float fX, float fY, float fZ, float boundary) const
+	{
+		return (fX <= m_iUpperX - boundary)
+			&& (fY <= m_iUpperY - boundary)
+			&& (fZ <= m_iUpperZ - boundary)
+			&& (fX >= m_iLowerX + boundary)
+			&& (fY >= m_iLowerY + boundary)
+			&& (fZ >= m_iLowerZ + boundary);
+	}
+
+	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
 	 * the Region if it is that far in in all directions. Also, the test is inclusive such 
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
@@ -168,12 +187,26 @@ namespace PolyVox
 	 */
 	bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
-		return (pos.getX() <= m_iUpperX - boundary)
-			&& (pos.getY() <= m_iUpperY - boundary)
-			&& (pos.getZ() <= m_iUpperZ - boundary)
-			&& (pos.getX() >= m_iLowerX + boundary)
-			&& (pos.getY() >= m_iLowerY + boundary)
-			&& (pos.getZ() >= m_iLowerZ + boundary);
+		return containsPoint(pos.getX(), pos.getY(), pos.getZ(), boundary);
+	}
+
+	/**
+	 *  The boundary value can be used to ensure a position is only considered to be inside
+	 *  the Region if it is that far in in all directions. Also, the test is inclusive such 
+	 *  that positions lying exactly on the edge of the Region are considered to be inside it.
+	 *  \param iX The 'x' position of the point to test.
+	 *  \param iY The 'y' position of the point to test.
+	 *  \param iZ The 'z' position of the point to test.
+	 *  \param boundary The desired boundary value.
+	 */
+	bool Region::containsPoint(int32_t iX, int32_t iY, int32_t iZ, uint8_t boundary) const
+	{
+		return (iX <= m_iUpperX - boundary)
+			&& (iY <= m_iUpperY - boundary) 
+			&& (iZ <= m_iUpperZ - boundary)
+			&& (iX >= m_iLowerX + boundary)
+			&& (iY >= m_iLowerY + boundary)
+			&& (iZ >= m_iLowerZ + boundary);
 	}
 
 	/**
@@ -185,12 +218,7 @@ namespace PolyVox
 	 */
 	bool Region::containsPoint(const Vector3DInt32& pos, uint8_t boundary) const
 	{
-		return (pos.getX() <= m_iUpperX - boundary)
-			&& (pos.getY() <= m_iUpperY - boundary) 
-			&& (pos.getZ() <= m_iUpperZ - boundary)
-			&& (pos.getX() >= m_iLowerX + boundary)
-			&& (pos.getY() >= m_iLowerY + boundary)
-			&& (pos.getZ() >= m_iLowerZ + boundary);
+		return containsPoint(pos.getX(), pos.getY(), pos.getZ(), boundary);
 	}
 
 	/**

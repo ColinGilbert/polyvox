@@ -2,6 +2,14 @@ Changes for PolyVox version 0.3
 ===============================
 This release has focused on... (some introduction here).
 
+Volume wrap modes
+-----------------
+This release has seen a overhaul of the way PolyVox handles voxel positions which are outside of the volume. It used to be the case that you could specify a border value which would be returned whenever an out-of-volume access was performed, but this was not flexible enough for all use cases. You can now choose between different wrapping modes (border, clamp, etc) and apply them to both the volume itself or to samplers. If you have multiple samplers pointing at the same volume then you can choose to have different wrap modes for each of them.
+
+Within the Volume class the getVoxelAt() and setBorderValue() functions have been deprecated. You should now call getVoxel() (which does not perform range checking and will crash when out of range) or getVoxelWithWrapping() (which does perform bounds checks and implements the required wrapping). When you call getVoxelWithWrapping() you are able to specify the required wrap mode for that particular call. For a Sampler you can set the wrap mode once with setWrapMode() and it will persist until you set it again.
+
+Various algorithms have also been updated to allow wrap modes to be specified when executing them.
+
 Region class
 ------------
 The Region class has been tidied up and enhanced with new functionality. It now contains functions for growing and shrinking regions, as well as 'accumulate()' functions which ensure the Region contains a given point. The concept of an invalid region has also been introduced - this is one whose lower corner is greater than it's upper corner.
@@ -14,6 +22,8 @@ Deprecated functionality
 ------------------------
 Vector::operator<() has been deprecated. It was only present to allow Vectors to be used as the key to an std::map, but it makes more sense for this to be specified seperatly as a std::map comparison function. This is now done in the OpenGLExample (search for VectorCompare).
 
+getVoxelAt() and setBorderValue() have been deprecated in the Volume class. See the section of this file on 'Volume wrap modes' for details.
+
 Removed functionality
 --------------------
 Functionality deprecated for the previous release has now been removed. This includes:
@@ -21,7 +31,7 @@ Functionality deprecated for the previous release has now been removed. This inc
  - Region::getWidth() and related functions. You should now use Region::getWidthInVoxels() or Region::getWidthInCells.
  - The MeshDecimator. We don't have a direct replacement for this so you should consider an alternative such as downsampling the volume or using an external mesh processing library.
  - The SimpleInterface. This was primarily for the bindings, and we are making other efforts to get those working.
- - Serialisation. You should implement ay required serialisation yourself.
+ - Serialisation. You should implement any required serialisation yourself.
  - This had a number of problems and was a little too high-level for PolyVox. You should implement change tracking yourself.
 
 
