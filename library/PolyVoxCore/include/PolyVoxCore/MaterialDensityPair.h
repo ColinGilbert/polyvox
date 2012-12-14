@@ -138,6 +138,11 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
+		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> getBorderValue(void)
+		{
+			return m_tBorder;
+		}
+
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
@@ -158,7 +163,7 @@ namespace PolyVox
 			m_eWrapMode = eWrapMode;
 		}
 
-	public:
+	private:
 		DensityType m_tThreshold;
 		WrapMode m_eWrapMode;
 		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> m_tBorder;

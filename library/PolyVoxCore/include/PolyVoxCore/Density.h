@@ -174,6 +174,11 @@ namespace PolyVox
 			return 1;
 		}
 
+		Density<Type> getBorderValue(void)
+		{
+			return m_tBorder;
+		}
+
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
@@ -194,7 +199,7 @@ namespace PolyVox
 			m_eWrapMode = eWrapMode;
 		}
 
-	public:
+	private:
 		DensityType m_tThreshold;
 		WrapMode m_eWrapMode;
 		Density<Type> m_tBorder;

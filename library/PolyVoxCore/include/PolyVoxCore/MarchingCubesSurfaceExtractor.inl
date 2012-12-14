@@ -36,7 +36,7 @@ namespace PolyVox
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 
-		m_sampVolume.setWrapMode(m_controller.getWrapMode(), m_controller.m_tBorder);
+		m_sampVolume.setWrapMode(m_controller.getWrapMode(), m_controller.getBorderValue());
 	}
 
 	template<typename VolumeType, typename Controller>

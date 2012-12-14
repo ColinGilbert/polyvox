@@ -65,7 +65,10 @@ public:
 		return WrapModes::Border;
 	}
 
-	float m_tBorder;
+	float getBorderValue(void)
+	{
+		return 0.0f;
+	}
 };
 
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.
@@ -153,7 +156,6 @@ void testCustomController(SurfaceMesh<PositionMaterialNormal>& result)
 	}
 
 	CustomMarchingCubesController controller;
-	controller.m_tBorder = 0.0f; //Temporary HACK!
 	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomMarchingCubesController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
 	extractor.execute();
 }
