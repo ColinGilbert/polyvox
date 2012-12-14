@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "testVolume.h"
+#include "testvolume.h"
 
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/RawVolume.h"
