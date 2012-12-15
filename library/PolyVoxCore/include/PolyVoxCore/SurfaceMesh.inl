@@ -365,7 +365,7 @@ namespace PolyVox
 	void SurfaceMesh<VertexType>::removeUnusedVertices(void)
 	{
 		std::vector<bool> isVertexUsed(m_vecVertices.size());
-		fill(isVertexUsed.begin(), isVertexUsed.end(), false);
+		std::fill(isVertexUsed.begin(), isVertexUsed.end(), false);
 
 		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
 		{
@@ -394,7 +394,7 @@ namespace PolyVox
 	}
 
 	//Currently a free function - think where this needs to go.
-	template <typename VertexType>
+	/*template <typename VertexType>
 	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials)
 	{
 		polyvox_shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
@@ -460,7 +460,7 @@ namespace PolyVox
 		result->m_vecLodRecords.push_back(lodRecord);
 
 		return result;
-	}
+	}*/
 
 	template <typename VertexType>
 	void SurfaceMesh<VertexType>::scaleVertices(float amount)

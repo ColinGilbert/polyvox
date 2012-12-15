@@ -37,7 +37,7 @@ namespace PolyVox
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal<typename Controller::MaterialType> >* result, Controller controller = Controller());
 
 		void execute();
 
@@ -48,7 +48,7 @@ namespace PolyVox
 
 		//Compute the cell bitmask for a given cell.
 		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace);
+		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask);
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
 		void generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
@@ -182,11 +182,21 @@ namespace PolyVox
 		VolumeType* m_volData;
 		typename VolumeType::Sampler m_sampVolume;
 
+		//Holds a position in volume space.
+		int32_t iXVolSpace;
+		int32_t iYVolSpace;
+		int32_t iZVolSpace;
+
+		//Holds a position in region space.
+		uint32_t uXRegSpace;
+		uint32_t uYRegSpace;
+		uint32_t uZRegSpace;
+
 		//Used to return the number of cells in a slice which contain triangles.
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;
+		SurfaceMesh<PositionMaterialNormal<typename Controller::MaterialType> >* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -197,11 +207,11 @@ namespace PolyVox
 		Region m_regSlicePrevious;
 		Region m_regSliceCurrent;
 
-		//Used to convert arbitrary voxel types in densities and materials.
-		Controller m_controller;
-
 		//Our threshold value
 		typename Controller::DensityType m_tThreshold;
+
+		//Used to convert arbitrary voxel types in densities and materials.
+		Controller m_controller;
 	};
 }
 

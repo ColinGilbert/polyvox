@@ -54,7 +54,7 @@ namespace PolyVox
     Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y)
     {
 #ifndef SWIGPYTHON // SWIG instantiates all constructors, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size == 2, "This constructor should only be used for vectors with two elements.");
+		//static_assert(Size == 2, "This constructor should only be used for vectors with two elements.");
 #endif
 
 		m_tElements[0] = x;
@@ -71,7 +71,7 @@ namespace PolyVox
 	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z)
 	{
 #ifndef SWIGPYTHON // SWIG instantiates all constructors, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size == 3, "This constructor should only be used for vectors with three elements.");
+		//static_assert(Size == 3, "This constructor should only be used for vectors with three elements.");
 #endif
 
 		m_tElements[0] = x;
@@ -91,7 +91,7 @@ namespace PolyVox
 	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z, StorageType w)
 	{
 #ifndef SWIGPYTHON // SWIG instantiates all constructors, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size == 4, "This constructor should only be used for vectors with four elements.");
+		//static_assert(Size == 4, "This constructor should only be used for vectors with four elements.");
 #endif
 
 		m_tElements[0] = x;
@@ -142,7 +142,7 @@ namespace PolyVox
 		// vector with one element, and supporting this would cause confusion over the
 		// behaviour of the constructor taking a single value, as this fills all elements
 		// to that value rather than just the first one.
-		static_assert(Size > 1, "Vector must have a length greater than one.");
+		//static_assert(Size > 1, "Vector must have a length greater than one.");
     }
 
     /**
@@ -449,7 +449,7 @@ namespace PolyVox
 	inline StorageType Vector<Size, StorageType, OperationType>::getZ(void) const
     {
 #ifndef SWIGPYTHON // SWIG instantiates all getters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size >= 3, "You can only get the 'z' component from a vector with at least three elements.");
+		//static_assert(Size >= 3, "You can only get the 'z' component from a vector with at least three elements.");
 #endif
 
         return m_tElements[2];
@@ -462,7 +462,7 @@ namespace PolyVox
 	inline StorageType Vector<Size, StorageType, OperationType>::getW(void) const
 	{
 #ifndef SWIGPYTHON // SWIG instantiates all getters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size >= 4, "You can only get the 'w' component from a vector with at least four elements.");
+		//static_assert(Size >= 4, "You can only get the 'w' component from a vector with at least four elements.");
 #endif
 
 		return m_tElements[3];
@@ -502,7 +502,7 @@ namespace PolyVox
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z)
 	{
 #ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size >= 3, "You can only use this version of setElements() on a vector with at least three elements.");
+		//static_assert(Size >= 3, "You can only use this version of setElements() on a vector with at least three elements.");
 #endif
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -520,7 +520,7 @@ namespace PolyVox
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z, StorageType w)
 	{
 #ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size >= 4, "You can only use this version of setElements() on a vector with at least four elements.");
+		//static_assert(Size >= 4, "You can only use this version of setElements() on a vector with at least four elements.");
 #endif
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -553,7 +553,7 @@ namespace PolyVox
 	inline void Vector<Size, StorageType, OperationType>::setZ(StorageType tZ)
     {
 #ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size >= 3, "You can only set the 'w' component from a vector with at least three elements.");
+		//static_assert(Size >= 3, "You can only set the 'w' component from a vector with at least three elements.");
 #endif
         m_tElements[2] = tZ;
     }
@@ -565,7 +565,7 @@ namespace PolyVox
 	inline void Vector<Size, StorageType, OperationType>::setW(StorageType tW)
     {
 #ifndef SWIGPYTHON // SWIG instantiates all setters, unless we can find a way around that. Should we use SWIGIMPORT here, and then %import this file rather then %include it?
-		static_assert(Size >= 4, "You can only set the 'w' component from a vector with at least four elements.");
+		//static_assert(Size >= 4, "You can only set the 'w' component from a vector with at least four elements.");
 #endif
         m_tElements[3] = tW;
     }

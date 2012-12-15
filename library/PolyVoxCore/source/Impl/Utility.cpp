@@ -39,11 +39,11 @@ namespace PolyVox
 		//Release mode validation
 		if(uInput == 0)
 		{
-			throw std::invalid_argument("Cannot compute the log of zero.");
+			//throw std::invalid_argument("Cannot compute the log of zero.");
 		}
 		if(!isPowerOf2(uInput))
 		{
-			throw std::invalid_argument("Input must be a power of two in order to compute the log.");
+			//throw std::invalid_argument("Input must be a power of two in order to compute the log.");
 		}
 
 		uint32_t uResult = 0;

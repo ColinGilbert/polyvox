@@ -81,7 +81,7 @@ namespace PolyVox
 		struct IndexAndMaterial
 		{
 			int32_t iIndex;
-			int32_t uMaterial; //Should actually use the material type here, but this is ok for now.
+			typename VolumeType::VoxelType uMaterial;
 		};
 
 		enum FaceNames
@@ -109,13 +109,12 @@ namespace PolyVox
 		};
 
 	public:
-		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
-
+		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 
 		void execute();		
 
 	private:
-		int32_t addVertex(float fX, float fY, float fZ, uint32_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		int32_t addVertex(float fX, float fY, float fZ, typename VolumeType::VoxelType uMaterial, Array<3, IndexAndMaterial>& existingVertices);
 		bool performQuadMerging(std::list<Quad>& quads);
 		bool mergeQuads(Quad& q1, Quad& q2);
 
@@ -128,7 +127,7 @@ namespace PolyVox
 		Region m_regSizeInVoxels;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh<PositionMaterial>* m_meshCurrent;
+		SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* m_meshCurrent;
 
 		//Used to avoid creating duplicate vertices.
 		Array<3, IndexAndMaterial> m_previousSliceVertices;
