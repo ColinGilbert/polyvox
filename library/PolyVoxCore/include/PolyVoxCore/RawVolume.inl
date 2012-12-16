@@ -73,6 +73,45 @@ namespace PolyVox
 		assert(false); // See function comment above.
 	}
 
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getInterpolatedValue(float fXPos, float fYPos, float fZPos) //Should be const
+	{
+		Sampler sampler(this);
+
+		int32_t iLowerX = roundTowardsNegInf(fXPos);
+		int32_t iLowerY = roundTowardsNegInf(fYPos);
+		int32_t iLowerZ = roundTowardsNegInf(fZPos);
+
+		float fOffsetX = fXPos - iLowerX;
+		float fOffsetY = fYPos - iLowerY;
+		float fOffsetZ = fZPos - iLowerZ;
+
+		/*int32_t iCeilX = iFloorX + 1;
+		int32_t iCeilY = iFloorY + 1;
+		int32_t iCeilZ = iFloorZ + 1;*/
+
+		sampler.setPosition(iLowerX, iLowerY, iLowerZ);
+
+		VoxelType v000 = sampler.peekVoxel0px0py0pz();
+		VoxelType v100 = sampler.peekVoxel1px0py0pz();
+		VoxelType v010 = sampler.peekVoxel0px1py0pz();
+		VoxelType v110 = sampler.peekVoxel1px1py0pz();
+		VoxelType v001 = sampler.peekVoxel0px0py1pz();
+		VoxelType v101 = sampler.peekVoxel1px0py1pz();
+		VoxelType v011 = sampler.peekVoxel0px1py1pz();
+		VoxelType v111 = sampler.peekVoxel1px1py1pz();
+
+		VoxelType result = trilerp(v000, v100, v010, v110, v001, v101, v011, v111, fOffsetX, fOffsetY, fOffsetZ);
+
+		return result;
+	}
+
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getInterpolatedValue(const Vector3DFloat& v3dPos) //Should be const
+	{
+		return getInterpolatedValue(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel

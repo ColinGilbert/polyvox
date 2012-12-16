@@ -117,6 +117,8 @@ namespace PolyVox
 		/// Destructor
 		~RawVolume();
 
+		VoxelType getInterpolatedValue(float fXPos, float fYPos, float fZPos); //Should be const
+		VoxelType getInterpolatedValue(const Vector3DFloat& v3dPos); //Should be const
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
