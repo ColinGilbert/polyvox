@@ -36,6 +36,8 @@ namespace PolyVox
 
 		m_controller = controller;
 		m_tThreshold = m_controller.getThreshold();
+
+		m_sampVolume.setWrapMode(m_controller.getWrapMode(), m_controller.getBorderValue());
 	}
 
 	template<typename VolumeType, typename Controller>
