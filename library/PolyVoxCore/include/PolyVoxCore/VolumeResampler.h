@@ -39,6 +39,7 @@ namespace PolyVox
 	private:
 		void resampleSameSize();
 		void resampleArbitrary();
+		void resampleBetter();
 
 		//Source data
 		SrcVolumeType* m_pVolSrc;

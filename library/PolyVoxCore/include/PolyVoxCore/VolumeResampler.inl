@@ -53,14 +53,16 @@ namespace PolyVox
 		int32_t uDstHeight = m_regDst.getUpperCorner().getY() - m_regDst.getLowerCorner().getY() + 1;
 		int32_t uDstDepth = m_regDst.getUpperCorner().getZ() - m_regDst.getLowerCorner().getZ() + 1;
 
-		if((uSrcWidth == uDstWidth) && (uSrcHeight == uDstHeight) && (uSrcDepth == uDstDepth))
+		/*if((uSrcWidth == uDstWidth) && (uSrcHeight == uDstHeight) && (uSrcDepth == uDstDepth))
 		{
 			resampleSameSize();
 		}
 		else
 		{
 			resampleArbitrary();
-		}
+		}*/
+
+		resampleBetter();
 	}
 
 	template< typename SrcVolumeType, typename DstVolumeType>
@@ -131,6 +133,86 @@ namespace PolyVox
 
 					typename DstVolumeType::VoxelType result = static_cast<typename DstVolumeType::VoxelType>(tInterpolatedValue);
 					m_pVolDst->setVoxelAt(dx,dy,dz,result);
+				}
+			}
+		}
+	}
+
+	template< typename SrcVolumeType, typename DstVolumeType>
+	void VolumeResampler<SrcVolumeType, DstVolumeType>::resampleBetter()
+	{
+		float srcWidth  = m_regSrc.getWidthInCells();
+		float srcHeight = m_regSrc.getHeightInCells();
+		float srcDepth  = m_regSrc.getDepthInCells();
+
+		float dstWidth  = m_regDst.getWidthInCells();
+		float dstHeight = m_regDst.getHeightInCells();
+		float dstDepth  = m_regDst.getDepthInCells();
+		
+		float fScaleX = srcWidth / dstWidth;
+		float fScaleY = srcHeight / dstHeight;
+		float fScaleZ = srcDepth / dstDepth;
+
+		typename SrcVolumeType::Sampler sampler(m_pVolSrc);
+		
+		// Should use SrcVolumeType? Or new template parameter?
+		Region regDownscaledX(0, 0, 0, m_regDst.getWidthInVoxels()-1, m_regSrc.getHeightInVoxels()-1, m_regSrc.getDepthInVoxels()-1);
+		SrcVolumeType volDownscaledX(regDownscaledX);
+
+		for(int32_t tz = regDownscaledX.getLowerZ(); tz <= regDownscaledX.getUpperZ(); tz++)
+		{
+			for(int32_t ty = regDownscaledX.getLowerY(); ty <= regDownscaledX.getUpperY(); ty++)
+			{
+				for(int32_t tx = regDownscaledX.getLowerX(); tx <= regDownscaledX.getUpperX(); tx++)
+				{
+					float sx = (tx * fScaleX) + m_regSrc.getLowerCorner().getX();
+					float sy = (ty          ) + m_regSrc.getLowerCorner().getY();
+					float sz = (tz          ) + m_regSrc.getLowerCorner().getZ();
+
+					typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Clamp);
+
+					volDownscaledX.setVoxelAt(tx, ty, tz, result);
+				}
+			}
+		}
+
+		//Now downscale in y
+		Region regDownscaledXAndY(0, 0, 0, m_regDst.getWidthInVoxels()-1, m_regDst.getHeightInVoxels()-1, m_regSrc.getDepthInVoxels()-1);
+		SrcVolumeType volDownscaledXAndY(regDownscaledXAndY);
+
+		for(int32_t tz = regDownscaledXAndY.getLowerZ(); tz <= regDownscaledXAndY.getUpperZ(); tz++)
+		{
+			for(int32_t ty = regDownscaledXAndY.getLowerY(); ty <= regDownscaledXAndY.getUpperY(); ty++)
+			{
+				for(int32_t tx = regDownscaledXAndY.getLowerX(); tx <= regDownscaledXAndY.getUpperX(); tx++)
+				{
+					float sx = (tx          );
+					float sy = (ty * fScaleY);
+					float sz = (tz          );
+
+					typename SrcVolumeType::VoxelType result = volDownscaledX.getVoxelWithWrapping(sx, sy, sz, WrapModes::Clamp);
+
+					volDownscaledXAndY.setVoxelAt(tx, ty, tz, result);
+				}
+			}
+		}
+
+		//Now copy and downscale to dst.
+		//Region regDst = m_pVolDst->getEnclosingRegion();
+
+		for(int32_t tz = m_regDst.getLowerZ(); tz <= m_regDst.getUpperZ(); tz++)
+		{
+			for(int32_t ty = m_regDst.getLowerY(); ty <= m_regDst.getUpperY(); ty++)
+			{
+				for(int32_t tx = m_regDst.getLowerX(); tx <= m_regDst.getUpperX(); tx++)
+				{
+					float sx = (tx - m_regDst.getLowerX());
+					float sy = (ty - m_regDst.getLowerY());
+					float sz = (tz - m_regDst.getLowerZ()) * fScaleZ;
+
+					typename SrcVolumeType::VoxelType result = volDownscaledXAndY.getVoxelWithWrapping(sx, sy, sz, WrapModes::Clamp);
+
+					m_pVolDst->setVoxelAt(tx, ty, tz, result);
 				}
 			}
 		}
