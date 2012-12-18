@@ -331,23 +331,23 @@ void TestVolume::testSimpleVolumeSamplers()
 
 void TestVolume::testLargeVolumeDirectAccess()
 {
-	/*int32_t result = 0;
+	int32_t result = 0;
 	QBENCHMARK
 	{
 		result = testDirectAccessWithWrapping(m_pLargeVolume);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-601818385)); //FXME - Wrong value?!*/
+	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
 void TestVolume::testLargeVolumeSamplers()
 {
 	int32_t result = 0;
 	
-	/*QBENCHMARK
+	QBENCHMARK
 	{
 		result = testSamplersWithWrapping(m_pLargeVolume);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-601818385)); //FXME - Wrong value?!*/
+	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
 QTEST_MAIN(TestVolume)
