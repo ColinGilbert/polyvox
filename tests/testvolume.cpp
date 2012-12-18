@@ -321,12 +321,12 @@ void TestVolume::testSimpleVolumeDirectAccess()
 
 void TestVolume::testSimpleVolumeSamplers()
 {
-	/*int32_t result = 0;
+	int32_t result = 0;
 	QBENCHMARK
 	{
 		result = testSamplersWithWrapping(m_pSimpleVolume);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-601818385)); //FXME - Wrong value?!*/
+	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
 void TestVolume::testLargeVolumeDirectAccess()
