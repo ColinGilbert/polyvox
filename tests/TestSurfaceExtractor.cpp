@@ -132,7 +132,7 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 
 	DefaultMarchingCubesController<VoxelType> controller;
 	controller.setThreshold(50);
-	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
+	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, 0, controller);
 	extractor.execute();
 }
 
@@ -156,7 +156,7 @@ void testCustomController(SurfaceMesh<PositionMaterialNormal>& result)
 	}
 
 	CustomMarchingCubesController controller;
-	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomMarchingCubesController > extractor(&volData, volData.getEnclosingRegion(), &result, controller);
+	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomMarchingCubesController > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, 0, controller);
 	extractor.execute();
 }
 

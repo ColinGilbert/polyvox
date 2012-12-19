@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename Controller>
-	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller)
+	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -36,7 +36,7 @@ namespace PolyVox
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
 
-		m_sampVolume.setWrapMode(m_controller.getWrapMode(), m_controller.getBorderValue());
+		m_sampVolume.setWrapMode(eWrapMode, tBorderValue);
 	}
 
 	template<typename VolumeType, typename Controller>
