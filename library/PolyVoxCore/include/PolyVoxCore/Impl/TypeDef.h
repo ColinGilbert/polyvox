@@ -44,6 +44,13 @@ freely, subject to the following restrictions:
   #endif
 #endif
 
+#if defined SWIG
+  //Do nothing in this case
+#else
+  #undef POLYVOX_DEPRECATED
+  #define POLYVOX_DEPRECATED //Define it to nothing to avoid warnings
+#endif
+
 // Now we use the generic helper definitions above to define POLYVOX_API and POLYVOX_LOCAL.
 // POLYVOX_API is used for the public API symbols. It either imports or exports (or does nothing for static build)
 // POLYVOX_LOCAL is used for non-api symbols.
