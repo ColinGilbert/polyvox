@@ -59,16 +59,6 @@ public:
 	{
 		return 50.0f;
 	}
-
-	WrapMode getWrapMode(void)
-	{
-		return WrapModes::Border;
-	}
-
-	float getBorderValue(void)
-	{
-		return 0.0f;
-	}
 };
 
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.

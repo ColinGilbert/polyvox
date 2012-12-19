@@ -155,13 +155,11 @@ namespace PolyVox
 		{
 			// Default to a threshold value halfway between the min and max possible values.
 			m_tThreshold = (Density<Type>::getMinDensity() + Density<Type>::getMaxDensity()) / 2;
-			m_eWrapMode = WrapModes::Border;
 		}
 
 		DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
-			m_eWrapMode = WrapModes::Border;
 		}
 
 		DensityType convertToDensity(Density<Type> voxel)
@@ -174,19 +172,9 @@ namespace PolyVox
 			return 1;
 		}
 
-		Density<Type> getBorderValue(void)
-		{
-			return m_tBorder;
-		}
-
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
-		}
-
-		WrapMode getWrapMode(void)
-		{
-			return m_eWrapMode;
 		}
 
 		void setThreshold(DensityType tThreshold)
@@ -194,15 +182,8 @@ namespace PolyVox
 			m_tThreshold = tThreshold;
 		}
 
-		void setWrapMode(WrapMode eWrapMode)
-		{
-			m_eWrapMode = eWrapMode;
-		}
-
 	private:
 		DensityType m_tThreshold;
-		WrapMode m_eWrapMode;
-		Density<Type> m_tBorder;
 	};
 }
 
