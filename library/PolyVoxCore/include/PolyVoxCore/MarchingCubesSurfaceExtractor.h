@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 #include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"
 
@@ -37,7 +38,7 @@ namespace PolyVox
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(0), Controller controller = Controller());
 
 		void execute();
 

@@ -78,8 +78,6 @@ namespace PolyVox
 		 */
 		DefaultMarchingCubesController(void)
 			:m_tThreshold(((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2)
-			,m_eWrapMode(WrapModes::Border)
-			,m_tBorder(VoxelType(0))
 		{			
 		}
 
@@ -105,11 +103,6 @@ namespace PolyVox
 			return 1;
 		}
 
-		VoxelType getBorderValue(void)
-		{
-			return m_tBorder;
-		}
-
 		/**
 		 * Returns the density value which was passed to the constructor.
 		 *
@@ -122,26 +115,13 @@ namespace PolyVox
 			return m_tThreshold;
 		}
 
-		WrapMode getWrapMode(void)
-		{
-			return m_eWrapMode;
-		}
-
 		void setThreshold(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
 		}
 
-		void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType(0))
-		{
-			m_eWrapMode = eWrapMode;
-			m_tBorder = tBorder;
-		}
-
 	private:
 		DensityType m_tThreshold;
-		WrapMode m_eWrapMode;
-		VoxelType m_tBorder;
 	};
 }
 
