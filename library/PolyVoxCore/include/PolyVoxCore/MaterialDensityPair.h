@@ -136,11 +136,6 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
-		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> getBorderValue(void)
-		{
-			return m_tBorder;
-		}
-
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
