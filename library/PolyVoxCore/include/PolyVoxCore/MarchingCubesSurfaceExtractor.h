@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 #include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"
 
@@ -37,7 +38,7 @@ namespace PolyVox
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(0), Controller controller = Controller());
 
 		void execute();
 
@@ -189,7 +190,7 @@ namespace PolyVox
 		SurfaceMesh<PositionMaterialNormal>* m_meshCurrent;
 
 		//Information about the region we are currently processing
-		const Region m_regSizeInVoxels;
+		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
 		/*Region m_regSizeInVoxelsCropped;
 		Region m_regSizeInVoxelsUncropped;
@@ -201,7 +202,7 @@ namespace PolyVox
 		Controller m_controller;
 
 		//Our threshold value
-		const typename Controller::DensityType m_tThreshold;
+		typename Controller::DensityType m_tThreshold;
 	};
 }
 

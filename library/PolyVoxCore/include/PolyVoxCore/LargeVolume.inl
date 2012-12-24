@@ -95,7 +95,6 @@ namespace PolyVox
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
 		flushAll();
-		delete[] m_pUncompressedBorderData;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -112,14 +111,37 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// The border value is returned whenever an atempt is made to read a voxel which
-	/// is outside the extents of the volume.
-	/// \return The value used for voxels outside of the volume
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getBorderValue(void) const
+	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		return *m_pUncompressedBorderData;
+		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+
+		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+
+		return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos) const
+	{
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +169,7 @@ namespace PolyVox
 		}
 		else
 		{
-			return getBorderValue();
+			return this->getBorderValue();
 		}
 	}
 
@@ -159,6 +181,62 @@ namespace PolyVox
 	VoxelType LargeVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		switch(eWrapMode)
+		{
+			case WrapModes::Clamp:
+			{
+				//Perform clamping
+				uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
+				uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
+				uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
+				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
+				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
+				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
+
+				//Get the voxel value
+				return getVoxel(uXPos, uYPos, uZPos);
+				//No need to break as we've returned
+			}
+			case WrapModes::Border:
+			{
+				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+				{
+					return getVoxel(uXPos, uYPos, uZPos);
+				}
+				else
+				{
+					return tBorder;
+				}
+				//No need to break as we've returned
+			}
+			default:
+			{
+				//Should never happen
+				assert(false);
+				return VoxelType(0);
+			}
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos The 3D position of the voxel
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		return getVoxelWithWrapping(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -211,17 +289,6 @@ namespace PolyVox
 			flushAll();
 		}
 		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param tBorder The value to use for voxels outside the volume.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setBorderValue(const VoxelType& tBorder) 
-	{
-		/*Block<VoxelType>* pUncompressedBorderBlock = getUncompressedBlock(&m_pBorderBlock);
-		return pUncompressedBorderBlock->fill(tBorder);*/
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -297,7 +364,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					
 					if(itBlock != m_pBlocks.end())
 					{
@@ -328,7 +395,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushAll()
 	{
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
 		while(m_pBlocks.size() > 0)
@@ -362,7 +429,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					if(itBlock == m_pBlocks.end())
 					{
 						// not loaded, not unloading
@@ -414,7 +481,6 @@ namespace PolyVox
 		m_uTimestamper = 0;
 		m_uMaxNumberOfUncompressedBlocks = 16;
 		m_uBlockSideLength = uBlockSideLength;
-		m_pUncompressedBorderData = 0;
 		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
@@ -422,24 +488,24 @@ namespace PolyVox
 
 		this->m_regValidRegion = regValidRegion;
 
-		m_regValidRegionInBlocks.setLowerCorner(this->m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
-		m_regValidRegionInBlocks.setUpperCorner(this->m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
+		//Compute the block side length
+		m_uBlockSideLength = uBlockSideLength;
+		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
+
+		m_regValidRegionInBlocks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setLowerY(this->m_regValidRegion.getLowerY() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setLowerZ(this->m_regValidRegion.getLowerZ() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setUpperX(this->m_regValidRegion.getUpperX() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
 
 		setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
 
 		//Clear the previous data
 		m_pBlocks.clear();
 
-		//Compute the block side length
-		m_uBlockSideLength = uBlockSideLength;
-		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
-
 		//Clear the previous data
 		m_pBlocks.clear();
-
-		//Create the border block
-		m_pUncompressedBorderData = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-		std::fill(m_pUncompressedBorderData, m_pUncompressedBorderData + m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength, VoxelType());
 
 		//Other properties we might find useful later
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
@@ -448,7 +514,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const
 	{
 		if(m_funcDataOverflowHandler)
 		{
@@ -519,7 +585,7 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}		
 
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
@@ -532,8 +598,8 @@ namespace PolyVox
 				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
 				{
 					// find the least recently used block
-					typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
-					typename std::map<Vector3DInt32, LoadedBlock >::iterator itUnloadBlock = m_pBlocks.begin();
+					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
+					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
 					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 					{
 						if(i->second.timestamp < itUnloadBlock->second.timestamp)
@@ -622,8 +688,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	float LargeVolume<VoxelType>::calculateCompressionRatio(void)
 	{
-		float fRawSize = m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType);
-		float fCompressedSize = calculateSizeInBytes();
+		float fRawSize = static_cast<float>(m_pBlocks.size() * m_uBlockSideLength * m_uBlockSideLength* m_uBlockSideLength * sizeof(VoxelType));
+		float fCompressedSize = static_cast<float>(calculateSizeInBytes());
 		return fCompressedSize/fRawSize;
 	}
 
@@ -636,7 +702,7 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
 		//Memory used by the blocks
-		typename std::map<Vector3DInt32, LoadedBlock >::iterator i;
+		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
@@ -646,12 +712,6 @@ namespace PolyVox
 		//Memory used by the block cache.
 		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(LoadedBlock);
 		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-
-		//Memory used by border data.
-		if(m_pUncompressedBorderData)
-		{
-			uSizeInBytes += m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-		}
 
 		return uSizeInBytes;
 	}

@@ -177,6 +177,11 @@ namespace PolyVox
 			return m_tThreshold;
 		}
 
+		void setThreshold(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
+		}
+
 	private:
 		DensityType m_tThreshold;
 	};

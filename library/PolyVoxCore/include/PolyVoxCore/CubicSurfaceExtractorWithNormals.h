@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/DefaultIsQuadNeeded.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/SurfaceMesh.h"
 
 namespace PolyVox
@@ -35,7 +36,7 @@ namespace PolyVox
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(0), IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 
 		void execute();
 
@@ -51,6 +52,10 @@ namespace PolyVox
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
+
+		//The wrap mode
+		WrapMode m_eWrapMode;
+		typename VolumeType::VoxelType m_tBorderValue;
 	};
 }
 

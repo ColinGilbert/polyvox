@@ -25,28 +25,56 @@ const char* __str__() {
 }
 %enddef
 
+//Centralise this to avoid repeating ourselves
+//This macro will be called in the volume interface files to define the various volume types.
+%define VOLUMETYPES(class)
+%template(class ## int8) PolyVox::class<int8_t>;
+%template(class ## int16) PolyVox::class<int16_t>;
+%template(class ## int32) PolyVox::class<int32_t>;
+%template(class ## uint8) PolyVox::class<uint8_t>;
+%template(class ## uint16) PolyVox::class<uint16_t>;
+%template(class ## uint32) PolyVox::class<uint32_t>;
+%template(class ## float) PolyVox::class<float>;
+%enddef
+
+//Template based on voxel type
+%define EXTRACTOR(class, volumetype)
+%template(class ## volumetype ## int8) PolyVox::class<PolyVox::volumetype<int8_t> >;
+%template(class ## volumetype ## int16) PolyVox::class<PolyVox::volumetype<int16_t> >;
+%template(class ## volumetype ## int32) PolyVox::class<PolyVox::volumetype<int32_t> >;
+%template(class ## volumetype ## uint8) PolyVox::class<PolyVox::volumetype<uint8_t> >;
+%template(class ## volumetype ## uint16) PolyVox::class<PolyVox::volumetype<uint16_t> >;
+%template(class ## volumetype ## uint32) PolyVox::class<PolyVox::volumetype<uint32_t> >;
+%template(class ## volumetype ## float) PolyVox::class<PolyVox::volumetype<float> >;
+%enddef
+
+//Template based on volume type
+%define EXTRACTORS(shortname)
+EXTRACTOR(shortname, SimpleVolume)
+EXTRACTOR(shortname, RawVolume)
+EXTRACTOR(shortname, LargeVolume)
+%enddef
+
 %feature("autodoc", "1");
 
+#ifdef SWIGPYTHON
 //This will rename "operator=" to "assign" since Python doesn't have assignment
 %rename(assign) *::operator=;
+#endif
 
 %include "stdint.i"
 %include "std_vector.i"
 %include "Vector.i"
 %include "DefaultMarchingCubesController.i"
-%include "Density.i"
-%include "Material.i"
-%include "MaterialDensityPair.i"
 %include "Region.i"
+%include "BaseVolume.i"
 %include "SimpleVolume.i"
-//%include "TypeDef.i"
+%include "RawVolume.i"
+%include "LargeVolume.i"
 //%include "SubArray.i"
 //%include "Array.i"
 %include "VertexTypes.i"
 %include "SurfaceMesh.i"
-//%include "SimpleVolumeSampler.i"
 %include "MarchingCubesSurfaceExtractor.i"
 //%include "CubicSurfaceExtractor.i"
-//%include "CubicSurfaceExtractorWithNormals.i"
-//%include "MeshDecimator.i"
-
+%include "Raycast.i"
