@@ -34,13 +34,22 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 	STR()
 };
 
-%template(Vector3DFloat) PolyVox::Vector<3,float,float>;
-%template(Vector3DDouble) PolyVox::Vector<3,double,double>;
-%template(Vector3DInt8) PolyVox::Vector<3,int8_t,int32_t>;
-%template(Vector3DUint8) PolyVox::Vector<3,uint8_t,int32_t>;
-%template(Vector3DInt16) PolyVox::Vector<3,int16_t,int32_t>;
-%template(Vector3DUint16) PolyVox::Vector<3,uint16_t,int32_t>;
-%template(Vector3DInt32) PolyVox::Vector<3,int32_t,int32_t>;
-%template(Vector3DUint32) PolyVox::Vector<3,uint32_t,int32_t>;
+%define VECTOR3(StorageType,OperationType,ReducedStorageType)
+%ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
+%ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType);
+%ignore PolyVox::Vector<3,StorageType,OperationType>::getW() const;
+%ignore PolyVox::Vector<3,StorageType,OperationType>::setW(ReducedStorageType);
+%ignore PolyVox::Vector<3,StorageType,OperationType>::setElements(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
+%template(Vector3D ## StorageType) PolyVox::Vector<3,StorageType,OperationType>;
+%enddef
+
+VECTOR3(float,float,float)
+VECTOR3(double,double,double)
+VECTOR3(int8_t,int32_t,signed char)
+VECTOR3(uint8_t,int32_t,unsigned char)
+VECTOR3(int16_t,int32_t,signed short)
+VECTOR3(uint16_t,int32_t,unsigned short)
+VECTOR3(int32_t,int32_t,signed int)
+VECTOR3(uint32_t,int32_t,unsigned int)
 
 //%rename(assign) Vector3DFloat::operator=;
