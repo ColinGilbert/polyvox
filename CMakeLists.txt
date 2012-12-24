@@ -69,6 +69,8 @@ if(CMAKE_CXX_COMPILER MATCHES "clang")
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 endif()
 
+INCLUDE(cmake/Modules/CheckCXX11Features.cmake)
+
 ADD_SUBDIRECTORY(library)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
