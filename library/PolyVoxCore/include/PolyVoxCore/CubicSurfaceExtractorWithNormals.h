@@ -36,7 +36,13 @@ namespace PolyVox
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
+		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
+		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
+#if defined(_MSC_VER)
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(0), IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+#else
 		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(0), IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+#endif
 
 		void execute();
 
