@@ -36,7 +36,7 @@ if(ENABLE_BINDINGS)
 		include(${SWIG_USE_FILE})
 		
 		include_directories(${PYTHON_INCLUDE_PATH})
-		include_directories(${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore ${PolyVoxCore_BINARY_DIR}/include)
+		include_directories(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
 		link_directories(${PolyVoxCore_BINARY_DIR})
 
 		set(CMAKE_SWIG_FLAGS "")
