@@ -24,11 +24,17 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_ErrorHandling_H__
 #define __PolyVox_ErrorHandling_H__
 
-#include <iostream>
+#include <cstdlib>  //For std::exit
+#include <iostream> //For std::cerr
 
 #define POLYVOX_ASSERTS_ENABLED
 
-#define POLYVOX_HALT() __debugbreak()
+#if defined(_MSC_VER)
+    #define POLYVOX_HALT() __debugbreak()
+#else
+    #define POLYVOX_HALT() std::exit(EXIT_FAILURE)
+#endif
+
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
 
 /*
