@@ -98,13 +98,6 @@ freely, subject to the following restrictions:
 	#define polyvox_constexpr
 #endif
 
-#if defined(HAS_CXX11_STATIC_ASSERT)
-	//In this case we can just use static_assert
-#else
-	#include <boost/static_assert.hpp>
-	#define static_assert(condition, message) BOOST_STATIC_ASSERT(condition)
-#endif
-
 #if defined(HAS_CXX11_CSTDINT_H)
 	#include <cstdint>
 #else
