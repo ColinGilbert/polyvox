@@ -1,3 +1,8 @@
+/*
+ * This file is an input file for the CMake build system. It is processed and
+ * placed in the build directory by CMake.
+*/
+
 #ifndef __PolyVox_CompilerCapabilities_H__
 #define __PolyVox_CompilerCapabilities_H__
 
