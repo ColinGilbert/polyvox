@@ -69,6 +69,12 @@ freely, subject to the following restrictions:
 	
 #endif
 
+/*
+ * Static Assertions
+ * -----------------
+ * These map to C+11 static_assert if available or our own implentation otherwise.
+ */
+
 #if defined(HAS_CXX11_STATIC_ASSERT)
 	//In this case we can just use static_assert
 	#define POLYVOX_STATIC_ASSERT static_assert
