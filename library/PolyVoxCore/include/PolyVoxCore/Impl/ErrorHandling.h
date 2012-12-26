@@ -26,6 +26,13 @@ freely, subject to the following restrictions:
 
 #define POLYVOX_ASSERTS_ENABLED
 
+/*
+ * Assertions
+ * ----------
+ * The code below implements a custom assert function called POLYVOX_ASSERT which has a number of advantages compared to
+ * the standard C/C++ assert(). It is based on http://cnicholson.net/2009/02/stupid-c-tricks-adventures-in-assert/ which
+ * provides code under the MIT license.
+ */
 namespace PolyVox
 {
 	namespace Assert
@@ -41,10 +48,7 @@ namespace PolyVox
 		Handler GetHandler();
 		void SetHandler(Handler newHandler);
 
-		FailBehavior ReportFailure(const char* condition, 
-								   const char* file, 
-								   int line, 
-								   const char* msg, ...);
+		FailBehavior ReportFailure(const char* condition, const char* file, int line, const char* msg, ...);
 	}
 }
 
