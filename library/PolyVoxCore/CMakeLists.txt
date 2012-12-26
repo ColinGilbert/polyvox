@@ -20,8 +20,6 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(PolyVoxCore)
 
 #Set up the C++11 feature header file based on the CheckCXX11Features script
