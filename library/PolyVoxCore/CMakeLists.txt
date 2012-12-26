@@ -22,8 +22,10 @@
 
 PROJECT(PolyVoxCore)
 
-#Set up the C++11 feature header file based on the CheckCXX11Features script
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h)
+if(NOT MSVC)
+	#Set up the C++11 feature header file based on the CheckCXX11Features script
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h)
+endif()
 
 #Projects source files
 SET(CORE_SRC_FILES
