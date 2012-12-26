@@ -34,6 +34,13 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 	STR()
 };
 
+%feature("pythonprepend") PolyVox::Vector::operator< %{
+	import warnings
+	warnings.warn("deprecated", DeprecationWarning)
+%}
+
+//%csattributes PolyVox::Vector::operator< "[System.Obsolete(\"deprecated\")]"
+
 %define VECTOR3(StorageType,OperationType,ReducedStorageType)
 %ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
 %ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType);
