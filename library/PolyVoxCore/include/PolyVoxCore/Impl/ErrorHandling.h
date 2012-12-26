@@ -69,27 +69,27 @@ freely, subject to the following restrictions:
 	
 #endif
 
-namespace PolyVox
-{
 #if defined(HAS_CXX11_STATIC_ASSERT)
 	//In this case we can just use static_assert
-#define POLYVOX_STATIC_ASSERT static_assert
+	#define POLYVOX_STATIC_ASSERT static_assert
 #else
-	// empty default template
-	template <bool b>
-	struct StaticAssert {};
-
-	// template specialized on true
-	template <>
-	struct StaticAssert<true>
+	namespace PolyVox
 	{
-		// If the static assertion is failing then this function won't exist. It will then
-		// appear in the error message which gives a clue to the user about what is wrong.
-		static void ERROR_The_static_assertion_has_failed() {}
-	};
+		// empty default template
+		template <bool b>
+		struct StaticAssert {};
+
+		// template specialized on true
+		template <>
+		struct StaticAssert<true>
+		{
+			// If the static assertion is failing then this function won't exist. It will then
+			// appear in the error message which gives a clue to the user about what is wrong.
+			static void ERROR_The_static_assertion_has_failed() {}
+		};
+	}
 
 	#define POLYVOX_STATIC_ASSERT(condition, message) StaticAssert<(condition)>::ERROR_The_static_assertion_has_failed();
 #endif
-}
 
 #endif //__PolyVox_ErrorHandling_H__
