@@ -414,7 +414,7 @@ namespace PolyVox
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	inline StorageType Vector<Size, StorageType, OperationType>::getElement(uint32_t index) const
 	{
-		assert(index < Size);
+		POLYVOX_ASSERT(index < Size, "Attempted to access invalid vector element.");
 		return m_tElements[index];
 	}
 
@@ -465,7 +465,7 @@ namespace PolyVox
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	inline void Vector<Size, StorageType, OperationType>::setElement(uint32_t index, StorageType tValue)
 	{
-		assert(index < Size);
+		POLYVOX_ASSERT(index < Size, "Attempted to access invalid vector element.");
 		m_tElements[index] = tValue;
 	}
 
@@ -649,7 +649,7 @@ namespace PolyVox
 		{
 			// Standard float rules apply for divide-by-zero
 			m_tElements[ct] /= fLength;
-			assert(m_tElements[ct] == m_tElements[ct]); //Will assert if NAN
+			POLYVOX_ASSERT(m_tElements[ct] == m_tElements[ct], "Obtained NAN during vector normalisation. Perhaps the input vector was too short?");
 		}
     }
 }//namespace PolyVox

@@ -24,11 +24,11 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Vector_H__
 #define __PolyVox_Vector_H__
 
+#include "Impl/ErrorHandling.h"
 #include "Impl/TypeDef.h"
 
 #include "PolyVoxForwardDeclarations.h"
 
-#include <cassert>
 #include <cmath>
 #include <cstring>
 #include <iostream>
