@@ -24,58 +24,43 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_ErrorHandling_H__
 #define __PolyVox_ErrorHandling_H__
 
+#include <iostream>
+
 #define POLYVOX_ASSERTS_ENABLED
-
-/*
- * Assertions
- * ----------
- * The code below implements a custom assert function called POLYVOX_ASSERT which has a number of advantages compared to
- * the standard C/C++ assert(). It is based on http://cnicholson.net/2009/02/stupid-c-tricks-adventures-in-assert/ which
- * provides code under the MIT license.
- */
-namespace PolyVox
-{
-	namespace Assert
-	{
-		enum FailBehavior
-		{
-			Halt,
-			Continue,
-		};
-
-		typedef FailBehavior (*Handler)(const char* condition, const char* msg, const char* file, int line);
-
-		Handler GetHandler();
-		void SetHandler(Handler newHandler);
-
-		FailBehavior ReportFailure(const char* condition, const char* file, int line, const char* msg, ...);
-	}
-}
 
 #define POLYVOX_HALT() __debugbreak()
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
 
+/*
+ * Assertions
+ * ----------
+ * The code below implements a custom assert function called POLYVOX_ASSERT which has a number of advantages compared
+ * to the standard C/C++ assert(). It is inspired by http://cnicholson.net/2009/02/stupid-c-tricks-adventures-in-assert/ 
+ * which provides code under the MIT license.
+ */
+
 #ifdef POLYVOX_ASSERTS_ENABLED
 
-	#define POLYVOX_ASSERT(cond, msg, ...) \
+	#define POLYVOX_ASSERT(condition, message) \
 		do \
 		{ \
-			if (!(cond)) \
+			if (!(condition)) \
 			{ \
-				if (PolyVox::Assert::ReportFailure(#cond, __FILE__, __LINE__, (msg), __VA_ARGS__) == \
-					PolyVox::Assert::Halt) \
-					POLYVOX_HALT(); \
+				std::cerr << std::endl << std::endl; \
+				std::cerr << "    PolyVox Assertion Failed!" << std::endl; \
+				std::cerr << "    -------------------------" << std::endl; \
+				std::cerr << "    Condition: " << #condition << std::endl; \
+				std::cerr << "    Message:   " << (message) << std::endl; \
+				std::cerr << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				POLYVOX_HALT(); \
 			} \
 		} while(0)
 
 #else
 	
-	#define POLYVOX_ASSERT(condition, msg, ...) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(msg); } while(0)
+	#define POLYVOX_ASSERT(condition, message) \
+		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0)
 	
 #endif
-
-#define POLYVOX_STATIC_ASSERT(x) \
-	typedef char polyvoxStaticAssert[(x) ? 1 : -1];
 
 #endif //__PolyVox_ErrorHandling_H__
