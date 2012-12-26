@@ -197,18 +197,28 @@ namespace PolyVox
 			throw std::invalid_argument("Block side length must be a power of two.");
 		}
 
-		m_uBlockSideLength = uBlockSideLength;
-		m_uNoOfVoxelsPerBlock = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength;
+		//m_uBlockSideLength = uBlockSideLength;
+		//m_uNoOfVoxelsPerBlock = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength;
 		m_pUncompressedBorderData = 0;
 
 		this->m_regValidRegion = regValidRegion;
 
-		m_regValidRegionInBlocks.setLowerCorner(this->m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
-		m_regValidRegionInBlocks.setUpperCorner(this->m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
+		//m_regValidRegionInBlocks.setLowerCorner(this->m_regValidRegion.getLowerCorner()  / static_cast<int32_t>(uBlockSideLength));
+		//m_regValidRegionInBlocks.setUpperCorner(this->m_regValidRegion.getUpperCorner()  / static_cast<int32_t>(uBlockSideLength));
 
 		//Compute the block side length
 		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
+		m_uNoOfVoxelsPerBlock = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength;
+
+		//m_regValidRegionInBlocks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uBlockSideLengthPower);
+		//m_regValidRegionInBlocks.setLowerY(this->m_regValidRegion.getLowerY() >> m_uBlockSideLengthPower);
+		//m_regValidRegionInBlocks.setLowerZ(this->m_regValidRegion.getLowerZ() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setLowerCorner(Vector3DInt32(this->m_regValidRegion.getLowerCorner().getX() >> m_uBlockSideLengthPower, this->m_regValidRegion.getLowerCorner().getY() >> m_uBlockSideLengthPower, this->m_regValidRegion.getLowerCorner().getZ() >> m_uBlockSideLengthPower));
+		//m_regValidRegionInBlocks.setUpperX(this->m_regValidRegion.getUpperX() >> m_uBlockSideLengthPower);
+		//m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uBlockSideLengthPower);
+		//m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setUpperCorner(Vector3DInt32(this->m_regValidRegion.getUpperCorner().getX() >> m_uBlockSideLengthPower, this->m_regValidRegion.getUpperCorner().getY() >> m_uBlockSideLengthPower, this->m_regValidRegion.getUpperCorner().getZ() >> m_uBlockSideLengthPower));
 
 		//Compute the size of the volume in blocks (and note +1 at the end)
 		m_uWidthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getX() - m_regValidRegionInBlocks.getLowerCorner().getX() + 1;
