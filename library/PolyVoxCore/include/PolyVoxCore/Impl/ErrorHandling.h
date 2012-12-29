@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 #include <stdexcept>
 
 #define POLYVOX_ASSERTS_ENABLED
-#define POLYVOX_THROW_ENABLED
+//#define POLYVOX_THROW_ENABLED
 
 #if defined(_MSC_VER)
     #define POLYVOX_HALT() __debugbreak()
