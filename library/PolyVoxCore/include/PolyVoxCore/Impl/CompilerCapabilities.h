@@ -15,7 +15,7 @@
 // is a recent version) then assume support for these.
 #if !defined(_MSC_VER) || (_MSC_VER >= 1600)
 	#define HAS_CXX11_CONSTEXPR
-	#define HAS_CXX11_STATIC_ASSERT
+	//#define HAS_CXX11_STATIC_ASSERT //This seems to cause issues on Android.
 	#define HAS_CXX11_CSTDINT_H
 	#define HAS_CXX11_SHARED_PTR
 #endif
