@@ -26,8 +26,10 @@ freely, subject to the following restrictions:
 
 #include <cstdlib>  //For std::exit
 #include <iostream> //For std::cerr
+#include <stdexcept>
 
 #define POLYVOX_ASSERTS_ENABLED
+//#define POLYVOX_THROW_ENABLED
 
 #if defined(_MSC_VER)
     #define POLYVOX_HALT() __debugbreak()
@@ -54,7 +56,7 @@ freely, subject to the following restrictions:
 			{ \
 				std::cerr << std::endl << std::endl; \
 				std::cerr << "    PolyVox Assertion Failed!" << std::endl; \
-				std::cerr << "    -------------------------" << std::endl; \
+				std::cerr << "    =========================" << std::endl; \
 				std::cerr << "    Condition: " << #condition << std::endl; \
 				std::cerr << "    Message:   " << (message) << std::endl; \
 				std::cerr << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
@@ -96,6 +98,27 @@ freely, subject to the following restrictions:
 	}
 
 	#define POLYVOX_STATIC_ASSERT(condition, message) StaticAssert<(condition)>::ERROR_The_static_assertion_has_failed();
+#endif
+
+/*
+ * Exceptions
+ * ----------
+ * ...
+ */
+#ifdef POLYVOX_THROW_ENABLED
+	#define POLYVOX_THROW(type, message) throw type((message))
+#else
+	namespace PolyVox
+	{
+		typedef void (*ThrowHandler)(std::exception& e, const char* file, int line);
+
+		ThrowHandler getThrowHandler();
+		void setThrowHandler(ThrowHandler newHandler);
+	}
+
+	#define POLYVOX_THROW(type, message) \
+		type except = (type)((message)); \
+		getThrowHandler()((except), __FILE__, __LINE__)
 #endif
 
 #endif //__PolyVox_ErrorHandling_H__
