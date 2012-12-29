@@ -26,7 +26,7 @@ PROJECT(PolyVox)
 
 SET(POLYVOX_VERSION_MAJOR "0")
 SET(POLYVOX_VERSION_MINOR "2")
-SET(POLYVOX_VERSION_PATCH "0")
+SET(POLYVOX_VERSION_PATCH "1")
 SET(POLYVOX_VERSION "${POLYVOX_VERSION_MAJOR}.${POLYVOX_VERSION_MINOR}.${POLYVOX_VERSION_PATCH}" CACHE STRING "PolyVox version")
 MARK_AS_ADVANCED(FORCE POLYVOX_VERSION)
 
@@ -69,7 +69,9 @@ if(CMAKE_CXX_COMPILER MATCHES "clang")
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 endif()
 
-INCLUDE(cmake/Modules/CheckCXX11Features.cmake)
+if(NOT MSVC) #This is causing problems in Visual Studio so disable it for now
+	INCLUDE(cmake/Modules/CheckCXX11Features.cmake)
+endif()
 
 ADD_SUBDIRECTORY(library)
 
