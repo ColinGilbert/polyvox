@@ -101,13 +101,12 @@ freely, subject to the following restrictions:
 #if defined(HAS_CXX11_CSTDINT_H)
 	#include <cstdint>
 #else
-	#include <boost/cstdint.hpp>
-	using boost::int8_t;
-	using boost::int16_t;
-	using boost::int32_t;
-	using boost::uint8_t;
-	using boost::uint16_t;
-	using boost::uint32_t;
+	typedef signed char     int8_t;
+	typedef unsigned char   uint8_t;
+	typedef short           int16_t;
+	typedef unsigned short  uint16_t;
+	typedef long            int32_t;
+	typedef unsigned long   uint32_t;
 #endif
 
 #if defined(HAS_CXX11_SHARED_PTR)
