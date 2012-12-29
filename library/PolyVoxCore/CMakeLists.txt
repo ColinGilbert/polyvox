@@ -94,6 +94,7 @@ SET(CORE_INC_FILES
 )
 
 SET(IMPL_SRC_FILES
+	source/Impl/ErrorHandling.cpp
 	source/Impl/MarchingCubesTables.cpp
 	source/Impl/RandomUnitVectors.cpp
 	source/Impl/RandomVectors.cpp
@@ -106,6 +107,7 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
 	include/PolyVoxCore/Impl/Block.h
 	include/PolyVoxCore/Impl/Block.inl
+	include/PolyVoxCore/Impl/ErrorHandling.h
 	include/PolyVoxCore/Impl/MarchingCubesTables.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
 	include/PolyVoxCore/Impl/RandomVectors.h
