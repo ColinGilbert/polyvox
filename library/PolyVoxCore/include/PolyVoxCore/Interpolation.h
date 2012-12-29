@@ -36,7 +36,7 @@ namespace PolyVox
         assert((x >= 0.0f) && (x <= 1.0f));
 
 		//Interpolate along X
-		Type v0_1 = v0 + x * (v1 - v0);
+		Type v0_1 = (v1 - v0) * x + v0;
 
 		return v0_1;
     }
