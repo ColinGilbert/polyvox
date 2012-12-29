@@ -9,12 +9,12 @@
 #ifndef __PolyVox_CompilerCapabilities_H__
 #define __PolyVox_CompilerCapabilities_H__
 
-//#undef HAS_CXX11_CONSTEXPR
+//#define HAS_CXX11_CONSTEXPR
 
-//#undef HAS_CXX11_STATIC_ASSERT
+#define HAS_CXX11_STATIC_ASSERT
 
-//#undef HAS_CXX11_CSTDINT_H
+#define HAS_CXX11_CSTDINT_H
 
-//#undef HAS_CXX11_SHARED_PTR
+#define HAS_CXX11_SHARED_PTR
 
 #endif
