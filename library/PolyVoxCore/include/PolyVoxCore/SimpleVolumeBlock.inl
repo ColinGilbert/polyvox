@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/ErrorHandling.h"
+
 namespace PolyVox
 {
 	template <typename VoxelType>
@@ -109,7 +111,7 @@ namespace PolyVox
 		//Release mode validation
 		if(!isPowerOf2(uSideLength))
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
 
 		//Compute the side length		

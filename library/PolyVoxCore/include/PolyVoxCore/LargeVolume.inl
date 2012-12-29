@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/ErrorHandling.h"
+
 //Included here rather than in the .h because it refers to LargeVolume (avoids forward declaration)
 #include "PolyVoxCore/ConstVolumeProxy.h"
 
@@ -471,11 +473,11 @@ namespace PolyVox
 		//Release mode validation
 		if(uBlockSideLength == 0)
 		{
-			throw std::invalid_argument("Block side length cannot be zero.");
+			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");
 		}
 		if(!isPowerOf2(uBlockSideLength))
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
 
 		m_uTimestamper = 0;
