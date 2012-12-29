@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/ErrorHandling.h"
+
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -253,15 +255,15 @@ namespace PolyVox
 		//Release mode validation
 		if(uBlockSideLength < 8)
 		{
-			throw std::invalid_argument("Block side length should be at least 8");
+			POLYVOX_THROW(std::invalid_argument, "Block side length should be at least 8");
 		}
 		if(uBlockSideLength > 256)
 		{
-			throw std::invalid_argument("Block side length should not be more than 256");
+			POLYVOX_THROW(std::invalid_argument, "Block side length should not be more than 256");
 		}
 		if(!isPowerOf2(uBlockSideLength))
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
 
 		this->m_regValidRegion = regValidRegion;
