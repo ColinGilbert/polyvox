@@ -2,6 +2,10 @@ Changes for PolyVox version 0.3
 ===============================
 This release has focused on... (some introduction here).
 
+Error Handling
+--------------
+PolyVox now has it's own POLYVOX_ASSERT() macro rather than using the standard assert(). This has some advantages such as allowing a message to be printed and providing file/line information, and it is also possible to enable/disable it independantly of whether you are making a debug or release build
+
 Volume wrap modes
 -----------------
 This release has seen a overhaul of the way PolyVox handles voxel positions which are outside of the volume. It used to be the case that you could specify a border value which would be returned whenever an out-of-volume access was performed, but this was not flexible enough for all use cases. You can now choose between different wrapping modes (border, clamp, etc) and apply them to both the volume itself or to samplers. If you have multiple samplers pointing at the same volume then you can choose to have different wrap modes for each of them.

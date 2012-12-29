@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/DefaultIsQuadNeeded.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/SurfaceMesh.h"
 
 namespace PolyVox
@@ -35,7 +36,13 @@ namespace PolyVox
 	class CubicSurfaceExtractorWithNormals
 	{
 	public:
-		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
+		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
+#if defined(_MSC_VER)
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(0), IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+#else
+		CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(0), IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+#endif
 
 		void execute();
 
@@ -51,6 +58,10 @@ namespace PolyVox
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
+
+		//The wrap mode
+		WrapMode m_eWrapMode;
+		typename VolumeType::VoxelType m_tBorderValue;
 	};
 }
 

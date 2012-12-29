@@ -1,0 +1,17 @@
+/*
+ * This file is an input file for the CMake build system. It is processed and
+ * placed in the build directory by CMake.
+*/
+
+#ifndef __PolyVox_CompilerCapabilities_H__
+#define __PolyVox_CompilerCapabilities_H__
+
+#cmakedefine HAS_CXX11_CONSTEXPR
+
+#cmakedefine HAS_CXX11_STATIC_ASSERT
+
+#cmakedefine HAS_CXX11_CSTDINT_H
+
+#cmakedefine HAS_CXX11_SHARED_PTR
+
+#endif

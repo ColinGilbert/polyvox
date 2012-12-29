@@ -119,13 +119,11 @@ namespace PolyVox
 		{
 			// Default to a threshold value halfway between the min and max possible values.
 			m_tThreshold = (MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMinDensity() + MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>::getMaxDensity()) / 2;
-			m_eWrapMode = WrapModes::Border;
 		}
 
 		DefaultMarchingCubesController(DensityType tThreshold)
 		{
 			m_tThreshold = tThreshold;
-			m_eWrapMode = WrapModes::Border;
 		}
 
 		DensityType convertToDensity(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> voxel)
@@ -138,19 +136,9 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
-		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> getBorderValue(void)
-		{
-			return m_tBorder;
-		}
-
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
-		}
-
-		WrapMode getWrapMode(void)
-		{
-			return m_eWrapMode;
 		}
 
 		void setThreshold(DensityType tThreshold)
@@ -158,15 +146,8 @@ namespace PolyVox
 			m_tThreshold = tThreshold;
 		}
 
-		void setWrapMode(WrapMode eWrapMode)
-		{
-			m_eWrapMode = eWrapMode;
-		}
-
 	private:
 		DensityType m_tThreshold;
-		WrapMode m_eWrapMode;
-		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> m_tBorder;
 	};
 
 	typedef MaterialDensityPair<uint8_t, 4, 4> MaterialDensityPair44;

@@ -20,8 +20,6 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(PolyVoxUtil)
 
 #Projects source files
@@ -42,7 +40,7 @@ SOURCE_GROUP("Sources" FILES ${UTIL_SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${UTIL_INC_FILES})
 
 #Tell CMake the paths
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include ${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include)
 #There has to be a better way!
 LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/debug ${PolyVoxCore_BINARY_DIR}/release ${PolyVoxCore_BINARY_DIR})
 

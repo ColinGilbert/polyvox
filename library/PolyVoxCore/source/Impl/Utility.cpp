@@ -21,10 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/ErrorHandling.h"
 #include "PolyVoxCore/Impl/Utility.h"
-
-#include <cassert>
-#include <stdexcept>
 
 namespace PolyVox
 {
@@ -33,17 +31,17 @@ namespace PolyVox
 	uint8_t logBase2(uint32_t uInput)
 	{
 		//Debug mode validation
-		assert(uInput != 0);
-		assert(isPowerOf2(uInput));
+		POLYVOX_ASSERT(uInput != 0, "Cannot compute the log of zero.");
+		POLYVOX_ASSERT(isPowerOf2(uInput), "Input must be a power of two in order to compute the log.");
 
 		//Release mode validation
 		if(uInput == 0)
 		{
-			//throw std::invalid_argument("Cannot compute the log of zero.");
+			POLYVOX_THROW(std::invalid_argument, "Cannot compute the log of zero.");
 		}
 		if(!isPowerOf2(uInput))
 		{
-			//throw std::invalid_argument("Input must be a power of two in order to compute the log.");
+			POLYVOX_THROW(std::invalid_argument, "Input must be a power of two in order to compute the log.");
 		}
 
 		uint32_t uResult = 0;

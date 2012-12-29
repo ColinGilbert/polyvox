@@ -24,11 +24,13 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename IsQuadNeeded>
-	CubicSurfaceExtractorWithNormals<VolumeType, IsQuadNeeded>::CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, IsQuadNeeded isQuadNeeded)
+	CubicSurfaceExtractorWithNormals<VolumeType, IsQuadNeeded>::CubicSurfaceExtractorWithNormals(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, IsQuadNeeded isQuadNeeded)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
+		,m_eWrapMode(eWrapMode)
+		,m_tBorderValue(tBorderValue)
 	{		
 		m_funcIsQuadNeededCallback = isQuadNeeded;
 	}
@@ -51,7 +53,7 @@ namespace PolyVox
 
 					uint32_t material = 0;
 
-					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x+1,y,z), material))
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelWithWrapping(x,y,z,m_eWrapMode,m_tBorderValue), m_volData->getVoxelWithWrapping(x+1,y,z,m_eWrapMode,m_tBorderValue), material))
 					{
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), static_cast<float>(material)));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(1.0f, 0.0f, 0.0f), static_cast<float>(material)));
@@ -61,7 +63,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v0,v2,v1);
 						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
-					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x+1,y,z), m_volData->getVoxelAt(x,y,z), material))
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelWithWrapping(x+1,y,z,m_eWrapMode,m_tBorderValue), m_volData->getVoxelWithWrapping(x,y,z,m_eWrapMode,m_tBorderValue), material))
 					{
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ - 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), static_cast<float>(material)));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX + 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(-1.0f, 0.0f, 0.0f), static_cast<float>(material)));
@@ -72,7 +74,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
 
-					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x,y+1,z), material))
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelWithWrapping(x,y,z,m_eWrapMode,m_tBorderValue), m_volData->getVoxelWithWrapping(x,y+1,z,m_eWrapMode,m_tBorderValue), material))
 					{
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), static_cast<float>(material)));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 1.0f, 0.0f), static_cast<float>(material)));
@@ -82,7 +84,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v0,v1,v2);
 						m_meshCurrent->addTriangleCubic(v1,v3,v2);
 					}
-					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y+1,z), m_volData->getVoxelAt(x,y,z), material))
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelWithWrapping(x,y+1,z,m_eWrapMode,m_tBorderValue), m_volData->getVoxelWithWrapping(x,y,z,m_eWrapMode,m_tBorderValue), material))
 					{
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ - 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), static_cast<float>(material)));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, -1.0f, 0.0f), static_cast<float>(material)));
@@ -93,7 +95,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
 
-					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z), m_volData->getVoxelAt(x,y,z+1), material))
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelWithWrapping(x,y,z,m_eWrapMode,m_tBorderValue), m_volData->getVoxelWithWrapping(x,y,z+1,m_eWrapMode,m_tBorderValue), material))
 					{
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), static_cast<float>(material)));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, 1.0f), static_cast<float>(material)));
@@ -103,7 +105,7 @@ namespace PolyVox
 						m_meshCurrent->addTriangleCubic(v0,v2,v1);
 						m_meshCurrent->addTriangleCubic(v1,v2,v3);
 					}
-					if(m_funcIsQuadNeededCallback(m_volData->getVoxelAt(x,y,z+1), m_volData->getVoxelAt(x,y,z), material))
+					if(m_funcIsQuadNeededCallback(m_volData->getVoxelWithWrapping(x,y,z+1,m_eWrapMode,m_tBorderValue), m_volData->getVoxelWithWrapping(x,y,z,m_eWrapMode,m_tBorderValue), material))
 					{
 						uint32_t v0 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY - 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), static_cast<float>(material)));
 						uint32_t v1 = m_meshCurrent->addVertex(PositionMaterialNormal(Vector3DFloat(regX - 0.5f, regY + 0.5f, regZ + 0.5f), Vector3DFloat(0.0f, 0.0f, -1.0f), static_cast<float>(material)));

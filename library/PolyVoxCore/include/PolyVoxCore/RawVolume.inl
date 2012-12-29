@@ -31,7 +31,7 @@ namespace PolyVox
 	RawVolume<VoxelType>::RawVolume(const Region& regValid)
 		:BaseVolume<VoxelType>(regValid)
 	{
-		setBorderValue(VoxelType());
+		this->setBorderValue(VoxelType());
 
 		//Create a volume of the right size.
 		initialise(regValid);

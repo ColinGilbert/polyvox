@@ -2,6 +2,8 @@
 %{
 #include "Raycast.h"
 
+#ifdef SWIGPYTHON
+
 template<typename VolumeType>
 class PyCallback
 {
@@ -43,11 +45,17 @@ PolyVox::RaycastResult raycastWithEndpointsPython(VolumeType* volData, const Pol
 	return PolyVox::raycastWithEndpoints(volData, v3dStart, v3dEnd, newCallback);
 }
 
+#endif
+
 %}
 
 %include "Raycast.h"
+
+#ifdef SWIGPYTHON
 
 template<typename VolumeType, typename Callback>
 PolyVox::RaycastResult raycastWithEndpointsPython(VolumeType* volData, const PolyVox::Vector3DFloat& v3dStart, const PolyVox::Vector3DFloat& v3dEnd, PyObject *callback);
 
 %template(raycastWithEndpointsSimpleVolumeuint8) raycastWithEndpointsPython<PolyVox::SimpleVolume<uint8_t>, PyCallback<PolyVox::SimpleVolume<uint8_t> > >;
+
+#endif

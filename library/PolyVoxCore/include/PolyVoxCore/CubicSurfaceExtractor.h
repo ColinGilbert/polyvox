@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxForwardDeclarations.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/DefaultIsQuadNeeded.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 
@@ -109,7 +110,13 @@ namespace PolyVox
 		};
 
 	public:
-		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
+		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
+#if defined(_MSC_VER)
+		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(0), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+#else
+		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(0), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+#endif
 
 		void execute();		
 
@@ -144,6 +151,10 @@ namespace PolyVox
 		//This constant defines the maximum number of quads which can share a
 		//vertex in a cubic style mesh. See the initialisation for more details.
 		static const uint32_t MaxVerticesPerPosition;
+
+		//The wrap mode
+		WrapMode m_eWrapMode;
+		typename VolumeType::VoxelType m_tBorderValue;
 	};
 }
 
