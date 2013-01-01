@@ -24,7 +24,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Impl/Utility.h"
 #include "PolyVoxCore/Vector.h"
 
-#include <cassert>
+#include "PolyVoxCore/Impl/ErrorHandling.h"
+
 #include <cstring> //For memcpy
 #include <limits>
 #include <stdexcept> //for std::invalid_argument
@@ -54,11 +55,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Block<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
-		assert(uXPos < m_uSideLength);
-		assert(uYPos < m_uSideLength);
-		assert(uZPos < m_uSideLength);
+		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
 
-		assert(m_tUncompressedData);
+		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		return m_tUncompressedData
 			[
@@ -77,11 +78,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
-		assert(uXPos < m_uSideLength);
-		assert(uYPos < m_uSideLength);
-		assert(uZPos < m_uSideLength);
+		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
 
-		assert(m_tUncompressedData);
+		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		m_tUncompressedData
 		[
@@ -125,7 +126,7 @@ namespace PolyVox
 	void Block<VoxelType>::initialise(uint16_t uSideLength)
 	{
 		//Debug mode validation
-		assert(isPowerOf2(uSideLength));
+		POLYVOX_ASSERT(isPowerOf2(uSideLength), "Block side length must be a power of two.");
 
 		//Release mode validation
 		if(!isPowerOf2(uSideLength))
@@ -151,8 +152,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(void)
 	{
-		assert(m_bIsCompressed == false);
-		assert(m_tUncompressedData != 0);
+		POLYVOX_ASSERT(m_bIsCompressed == false, "Attempted to compress block which is already flagged as compressed.");
+		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
 
 		//If the uncompressed data hasn't actually been
 		//modified then we don't need to redo the compression.
@@ -197,8 +198,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::uncompress(void)
 	{
-		assert(m_bIsCompressed == true);
-		assert(m_tUncompressedData == 0);
+		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
+		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
 		VoxelType* pUncompressedData = m_tUncompressedData;		
