@@ -31,7 +31,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
-#include <cassert>
 #include <cstdlib> //For abort()
 #include <cstring> //For memcpy
 #include <list>

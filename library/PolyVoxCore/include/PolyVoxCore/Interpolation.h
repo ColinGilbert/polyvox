@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Interpolation_H__
 #define __PolyVox_Interpolation_H__
 
-#include <cassert>
-
 namespace PolyVox
 {
 	template <typename Type>
