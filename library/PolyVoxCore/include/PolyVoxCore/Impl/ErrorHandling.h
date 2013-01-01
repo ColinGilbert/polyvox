@@ -24,12 +24,11 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_ErrorHandling_H__
 #define __PolyVox_ErrorHandling_H__
 
+#include "PolyVoxCore/Impl/Config.h"
+
 #include <cstdlib>  //For std::exit
 #include <iostream> //For std::cerr
 #include <stdexcept>
-
-#define POLYVOX_ASSERTS_ENABLED
-//#define POLYVOX_THROW_ENABLED
 
 #if defined(_MSC_VER)
     #define POLYVOX_HALT() __debugbreak()

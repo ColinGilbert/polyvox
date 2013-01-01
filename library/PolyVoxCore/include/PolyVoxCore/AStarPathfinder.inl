@@ -161,7 +161,7 @@ namespace PolyVox
 		if((openNodes.empty()) || (openNodes.getFirst() != endNode))
 		{
 			//In this case we failed to find a valid path.
-			throw std::runtime_error("No path found");
+			POLYVOX_THROW(std::runtime_error, "No path found");
 		}
 		else
 		{

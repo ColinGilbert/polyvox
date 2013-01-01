@@ -107,6 +107,8 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
 	include/PolyVoxCore/Impl/Block.h
 	include/PolyVoxCore/Impl/Block.inl
+    include/PolyVoxCore/Impl/CompilerCapabilities.h
+    include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h
 	include/PolyVoxCore/Impl/MarchingCubesTables.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
