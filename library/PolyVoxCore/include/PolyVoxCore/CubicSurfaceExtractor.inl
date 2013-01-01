@@ -224,7 +224,7 @@ namespace PolyVox
 
 		// If we exit the loop here then apparently all the slots were full but none of them matched. I don't think
 		// this can happen so let's put an assert to make sure. If you hit this assert then please report it to us!
-		assert(false);
+		POLYVOX_ASSERT(false, "All slots full but no matches.");
 		return -1; //Should never happen.
 	}
 

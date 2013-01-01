@@ -87,7 +87,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::LargeVolume(const LargeVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -225,7 +225,7 @@ namespace PolyVox
 			default:
 			{
 				//Should never happen
-				assert(false);
+				POLYVOX_ASSERT(false, "Invlaid case.");
 				return VoxelType(0);
 			}
 		}
@@ -303,7 +303,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool LargeVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -468,7 +468,8 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
-		assert(uBlockSideLength > 0);
+		POLYVOX_ASSERT(uBlockSideLength > 0, "Block side length cannot be zero.");
+		POLYVOX_ASSERT(isPowerOf2(uBlockSideLength), "Block side length must be a power of two.");
 		
 		//Release mode validation
 		if(uBlockSideLength == 0)
@@ -583,7 +584,7 @@ namespace PolyVox
 		//This check should also provide a significant speed boost as usually it is true.
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
 		}		
 
@@ -643,7 +644,7 @@ namespace PolyVox
 
 		if(loadedBlock.block.m_bIsCompressed == false)
 		{ 			
-			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
 		}
 
@@ -680,7 +681,7 @@ namespace PolyVox
 		loadedBlock.block.uncompress();
 
 		m_pLastAccessedBlock = &(loadedBlock.block);
-		assert(m_pLastAccessedBlock->m_tUncompressedData);
+		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 		return m_pLastAccessedBlock;
 	}
 

@@ -375,7 +375,7 @@ namespace PolyVox
 				default:
 				{
 					//Should never happen
-					assert(false);
+					POLYVOX_ASSERT(false, "Invalid case.");
 					return VoxelType(0);
 				}
 			}

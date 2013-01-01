@@ -37,25 +37,25 @@ namespace PolyVox
 	public:
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 		{
-			assert(m_regValid.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+			POLYVOX_ASSERT(m_regValid.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 			return m_pVolume.getVoxelAt(uXPos, uYPos, uZPos);
 		}
 
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const
 		{
-			assert(m_regValid.containsPoint(v3dPos));
+			POLYVOX_ASSERT(m_regValid.containsPoint(v3dPos), "Position is outside valid region");
 			return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 		}
 
 		void setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
 		{
-			assert(m_regValid.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+			POLYVOX_ASSERT(m_regValid.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 			m_pVolume.setVoxelAtConst(uXPos, uYPos, uZPos, tValue);
 		}
 
 		void setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue) const
 		{
-			assert(m_regValid.containsPoint(v3dPos));
+			POLYVOX_ASSERT(m_regValid.containsPoint(v3dPos), "Position is outside valid region");
 			setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 		}
 	private:
