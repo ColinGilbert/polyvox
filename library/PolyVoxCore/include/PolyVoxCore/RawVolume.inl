@@ -47,7 +47,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>::RawVolume(const RawVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>& RawVolume<VoxelType>::operator=(const RawVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
@@ -186,7 +186,7 @@ namespace PolyVox
 			default:
 			{
 				//Should never happen
-				assert(false);
+				POLYVOX_ASSERT(false, "Invalid case.");
 				return VoxelType(0);
 			}
 		}
@@ -255,9 +255,9 @@ namespace PolyVox
 		this->m_regValidRegion = regValidRegion;
 
 		//Ensure dimensions of the specified Region are valid
-		assert(this->getWidth() > 0);
-		assert(this->getHeight() > 0);
-		assert(this->getDepth() > 0);
+		POLYVOX_ASSERT(this->getWidth() > 0, "Volume width must be greater than zero.");
+		POLYVOX_ASSERT(this->getHeight() > 0, "Volume width must be greater than zero.");
+		POLYVOX_ASSERT(this->getDepth() > 0, "Volume width must be greater than zero.");
 
 		//Create the data
 		m_pData = new VoxelType[this->getWidth() * this->getHeight()* this->getDepth()];
