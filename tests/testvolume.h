@@ -37,14 +37,20 @@ public:
 	~TestVolume();
 	
 private slots:
-	void testRawVolumeDirectAccess();
-	void testRawVolumeSamplers();
+	void testRawVolumeDirectAccessAllInternal();
+	void testRawVolumeSamplersAllInternal();
+	void testRawVolumeDirectAccessWithExternal();
+	void testRawVolumeSamplersWithExternal();
 
-	void testSimpleVolumeDirectAccess();
-	void testSimpleVolumeSamplers();
+	void testSimpleVolumeDirectAccessAllInternal();
+	void testSimpleVolumeSamplersAllInternal();
+	void testSimpleVolumeDirectAccessWithExternal();
+	void testSimpleVolumeSamplersWithExternal();
 
-	void testLargeVolumeDirectAccess();
-	void testLargeVolumeSamplers();
+	void testLargeVolumeDirectAccessAllInternal();
+	void testLargeVolumeSamplersAllInternal();
+	void testLargeVolumeDirectAccessWithExternal();
+	void testLargeVolumeSamplersWithExternal();
 
 private:
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
