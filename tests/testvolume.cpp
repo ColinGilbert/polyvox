@@ -70,11 +70,11 @@ int32_t testDirectAccessWithWrapping(const VolumeType* volume, int lowXOffset, i
 	// If we know that we are only iterating over voxels internal to the volume then we can avoid calling the 'wrapping' function. This should be faster.
 	bool bAllVoxelsInternal = (lowXOffset > 0) && (lowYOffset > 0) && (lowZOffset > 0) && (highXOffset < 0) && (highYOffset < 0) && (highZOffset < 0);
 
-	for(int z = volume->getEnclosingRegion().getLowerZ() + lowXOffset; z <= volume->getEnclosingRegion().getUpperZ() + highXOffset; z++)
+	for(int z = volume->getEnclosingRegion().getLowerZ() + lowZOffset; z <= volume->getEnclosingRegion().getUpperZ() + highZOffset; z++)
 	{
 		for(int y = volume->getEnclosingRegion().getLowerY() + lowYOffset; y <= volume->getEnclosingRegion().getUpperY() + highYOffset; y++)
 		{
-			for(int x = volume->getEnclosingRegion().getLowerX() + lowZOffset; x <= volume->getEnclosingRegion().getUpperX() + highZOffset; x++)
+			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
 				//Three level loop now processes 27 voxel neighbourhood
 				for(int innerZ = -1; innerZ <=1; innerZ++)
@@ -112,11 +112,11 @@ int32_t testSamplersWithWrapping(VolumeType* volume, int lowXOffset, int lowYOff
 	typename VolumeType::Sampler sampler(volume);
 	sampler.setWrapMode(WrapModes::Border, 3);
 
-	for(int z = volume->getEnclosingRegion().getLowerZ() + lowXOffset; z <= volume->getEnclosingRegion().getUpperZ() + highXOffset; z++)
+	for(int z = volume->getEnclosingRegion().getLowerZ() + lowZOffset; z <= volume->getEnclosingRegion().getUpperZ() + highZOffset; z++)
 	{
 		for(int y = volume->getEnclosingRegion().getLowerY() + lowYOffset; y <= volume->getEnclosingRegion().getUpperY() + highYOffset; y++)
 		{
-			for(int x = volume->getEnclosingRegion().getLowerX() + lowZOffset; x <= volume->getEnclosingRegion().getUpperX() + highZOffset; x++)
+			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
 				sampler.setPosition(x, y, z);
 
@@ -311,7 +311,7 @@ void TestVolume::testRawVolumeDirectAccessAllInternal()
 
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pRawVolume, 2, 2, 4, -2, -1, -3);
+		result = testDirectAccessWithWrapping(m_pRawVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
@@ -322,7 +322,7 @@ void TestVolume::testRawVolumeSamplersAllInternal()
 
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pRawVolume, 2, 2, 4, -2, -1, -3);
+		result = testSamplersWithWrapping(m_pRawVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
@@ -333,7 +333,7 @@ void TestVolume::testRawVolumeDirectAccessWithExternal()
 
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pRawVolume, -2, -3, -1, 4, 5, 2);
+		result = testDirectAccessWithWrapping(m_pRawVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
@@ -344,7 +344,7 @@ void TestVolume::testRawVolumeSamplersWithExternal()
 
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pRawVolume, -2, -3, -1, 4, 5, 2);
+		result = testSamplersWithWrapping(m_pRawVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
@@ -358,7 +358,7 @@ void TestVolume::testSimpleVolumeDirectAccessAllInternal()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pSimpleVolume, 2, 2, 4, -2, -1, -3);
+		result = testDirectAccessWithWrapping(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
@@ -368,7 +368,7 @@ void TestVolume::testSimpleVolumeSamplersAllInternal()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pSimpleVolume, 2, 2, 4, -2, -1, -3);
+		result = testSamplersWithWrapping(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
@@ -378,7 +378,7 @@ void TestVolume::testSimpleVolumeDirectAccessWithExternal()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pSimpleVolume, -2, -3, -1, 4, 5, 2);
+		result = testDirectAccessWithWrapping(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
@@ -388,7 +388,7 @@ void TestVolume::testSimpleVolumeSamplersWithExternal()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pSimpleVolume, -2, -3, -1, 4, 5, 2);
+		result = testSamplersWithWrapping(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
@@ -402,7 +402,7 @@ void TestVolume::testLargeVolumeDirectAccessAllInternal()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pLargeVolume, 2, 2, 4, -2, -1, -3);
+		result = testDirectAccessWithWrapping(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
@@ -413,7 +413,7 @@ void TestVolume::testLargeVolumeSamplersAllInternal()
 	
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pLargeVolume, 2, 2, 4, -2, -1, -3);
+		result = testSamplersWithWrapping(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
@@ -423,7 +423,7 @@ void TestVolume::testLargeVolumeDirectAccessWithExternal()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pLargeVolume, -2, -3, -1, 4, 5, 2);
+		result = testDirectAccessWithWrapping(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
@@ -434,7 +434,7 @@ void TestVolume::testLargeVolumeSamplersWithExternal()
 	
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pLargeVolume, -2, -3, -1, 4, 5, 2);
+		result = testSamplersWithWrapping(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
