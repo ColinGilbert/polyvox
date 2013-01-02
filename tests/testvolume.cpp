@@ -39,10 +39,14 @@ inline int32_t cantorTupleFunction(int32_t previousResult, int32_t value)
 	return (( previousResult + value  ) * ( previousResult + value + 1 ) + value ) / 2;
 }
 
+/*
+ * Funtions for testing iteration in a forwards direction
+ */
+
 // We allow user provided offset in this function so we can test the case when all samples are inside a volume and also the case when some samples are outside.
 // This is important because samplers are often slower when outside the volume as they have to fall back on directly accessing the volume data.
 template <typename VolumeType>
-int32_t testDirectAccessWithWrapping(const VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
+int32_t testDirectAccessWithWrappingForwards(const VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
 {
 	int32_t result = 0;
 
@@ -84,7 +88,7 @@ int32_t testDirectAccessWithWrapping(const VolumeType* volume, int lowXOffset, i
 }
 
 template <typename VolumeType>
-int32_t testSamplersWithWrapping(VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
+int32_t testSamplersWithWrappingForwards(VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
 {
 	int32_t result = 0;
 
@@ -146,6 +150,117 @@ int32_t testSamplersWithWrapping(VolumeType* volume, int lowXOffset, int lowYOff
 	return result;
 }
 
+/*
+ * Funtions for testing iteration in a backwards direction
+ */
+
+// We allow user provided offset in this function so we can test the case when all samples are inside a volume and also the case when some samples are outside.
+// This is important because samplers are often slower when outside the volume as they have to fall back on directly accessing the volume data.
+template <typename VolumeType>
+int32_t testDirectAccessWithWrappingBackwards(const VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
+{
+	int32_t result = 0;
+
+	// If we know that we are only iterating over voxels internal to the volume then we can avoid calling the 'wrapping' function. This should be faster.
+	bool bAllVoxelsInternal = (lowXOffset > 0) && (lowYOffset > 0) && (lowZOffset > 0) && (highXOffset < 0) && (highYOffset < 0) && (highZOffset < 0);
+
+	for(int z = volume->getEnclosingRegion().getUpperZ() + highZOffset; z >= volume->getEnclosingRegion().getLowerZ() + lowZOffset; z--)
+	{
+		for(int y = volume->getEnclosingRegion().getUpperY() + highYOffset; y >= volume->getEnclosingRegion().getLowerY() + lowYOffset; y--)
+		{
+			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
+			{
+				//Three level loop now processes 27 voxel neighbourhood
+				for(int innerZ = -1; innerZ <=1; innerZ++)
+				{
+					for(int innerY = -1; innerY <=1; innerY++)
+					{
+						for(int innerX = -1; innerX <=1; innerX++)
+						{
+							// Deeply nested 'if', but this is just a unit test and we should still
+							// see some performance improvement by skipping the wrapping versions.
+							if(bAllVoxelsInternal)
+							{
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ));
+							}
+							else
+							{
+								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+							}
+						}
+					}
+				}	
+				//End of inner loops
+			}
+		}
+	}
+
+	return result;
+}
+
+template <typename VolumeType>
+int32_t testSamplersWithWrappingBackwards(VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
+{
+	int32_t result = 0;
+
+	//Test the sampler move functions
+	typename VolumeType::Sampler xSampler(volume);
+	typename VolumeType::Sampler ySampler(volume);
+	typename VolumeType::Sampler zSampler(volume);
+
+	xSampler.setWrapMode(WrapModes::Border, 3);
+	ySampler.setWrapMode(WrapModes::Border, 3);
+	zSampler.setWrapMode(WrapModes::Border, 3);
+
+	zSampler.setPosition(volume->getEnclosingRegion().getUpperX() + highXOffset, volume->getEnclosingRegion().getUpperY() + highYOffset, volume->getEnclosingRegion().getUpperZ() + highZOffset);
+	for(int z = volume->getEnclosingRegion().getUpperZ() + highZOffset; z >= volume->getEnclosingRegion().getLowerZ() + lowZOffset; z--)
+	{
+		ySampler = zSampler;
+		for(int y = volume->getEnclosingRegion().getUpperY() + highYOffset; y >= volume->getEnclosingRegion().getLowerY() + lowYOffset; y--)
+		{
+			xSampler = ySampler;
+			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
+			{
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1nz());
+
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py0pz());
+
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1pz());
+
+				xSampler.moveNegativeX();
+			}
+			ySampler.moveNegativeY();
+		}
+		zSampler.moveNegativeZ();
+	}
+
+	return result;
+}
+
 TestVolume::TestVolume()
 {
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
@@ -186,138 +301,264 @@ TestVolume::~TestVolume()
  * RawVolume Tests
  */
 
-void TestVolume::testRawVolumeDirectAccessAllInternal()
+void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+		result = testDirectAccessWithWrappingForwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testRawVolumeSamplersAllInternal()
+void TestVolume::testRawVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+		result = testSamplersWithWrappingForwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testRawVolumeDirectAccessWithExternal()
+void TestVolume::testRawVolumeDirectAccessWithExternalForwards()
 {
 	int32_t result = 0;
 
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+		result = testDirectAccessWithWrappingForwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testRawVolumeSamplersWithExternal()
+void TestVolume::testRawVolumeSamplersWithExternalForwards()
 {
 	int32_t result = 0;
 
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+		result = testSamplersWithWrappingForwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testRawVolumeDirectAccessAllInternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testRawVolumeSamplersAllInternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testRawVolumeDirectAccessWithExternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+void TestVolume::testRawVolumeSamplersWithExternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
 }
 
 /*
  * SimpleVolume Tests
  */
 
-void TestVolume::testSimpleVolumeDirectAccessAllInternal()
+void TestVolume::testSimpleVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+		result = testDirectAccessWithWrappingForwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testSimpleVolumeSamplersAllInternal()
+void TestVolume::testSimpleVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+		result = testSamplersWithWrappingForwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testSimpleVolumeDirectAccessWithExternal()
+void TestVolume::testSimpleVolumeDirectAccessWithExternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+		result = testDirectAccessWithWrappingForwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testSimpleVolumeSamplersWithExternal()
+void TestVolume::testSimpleVolumeSamplersWithExternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+		result = testSamplersWithWrappingForwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testSimpleVolumeDirectAccessAllInternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testSimpleVolumeSamplersAllInternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testSimpleVolumeDirectAccessWithExternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+void TestVolume::testSimpleVolumeSamplersWithExternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
 }
 
 /*
  * LargeVolume Tests
  */
 
-void TestVolume::testLargeVolumeDirectAccessAllInternal()
+void TestVolume::testLargeVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+		result = testDirectAccessWithWrappingForwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testLargeVolumeSamplersAllInternal()
+void TestVolume::testLargeVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 	
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+		result = testSamplersWithWrappingForwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testLargeVolumeDirectAccessWithExternal()
+void TestVolume::testLargeVolumeDirectAccessWithExternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+		result = testDirectAccessWithWrappingForwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testLargeVolumeSamplersWithExternal()
+void TestVolume::testLargeVolumeSamplersWithExternalForwards()
 {
 	int32_t result = 0;
 	
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+		result = testSamplersWithWrappingForwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testLargeVolumeDirectAccessAllInternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testLargeVolumeSamplersAllInternalBackwards()
+{
+	int32_t result = 0;
+	
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testLargeVolumeDirectAccessWithExternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+void TestVolume::testLargeVolumeSamplersWithExternalBackwards()
+{
+	int32_t result = 0;
+	
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
 }
 
 QTEST_MAIN(TestVolume)
