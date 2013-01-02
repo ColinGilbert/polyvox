@@ -312,7 +312,7 @@ namespace PolyVox
 
 		struct BlockPositionCompare
 		{
-			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b)
+			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b) const
 			{
 				const uint32_t size = 3;
 				for(uint32_t ct = 0; ct < size; ++ct)
