@@ -199,7 +199,7 @@ namespace PolyVox
 	 *  \param iZ The 'z' position of the point to test.
 	 *  \param boundary The desired boundary value.
 	 */
-	bool Region::containsPoint(int32_t iX, int32_t iY, int32_t iZ, uint8_t boundary) const
+	bool Region::containsPoint(int32_t iX, int32_t iY, int32_t iZ, int8_t boundary) const
 	{
 		return (iX <= m_iUpperX - boundary)
 			&& (iY <= m_iUpperY - boundary) 
@@ -216,7 +216,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPoint(const Vector3DInt32& pos, uint8_t boundary) const
+	bool Region::containsPoint(const Vector3DInt32& pos, int8_t boundary) const
 	{
 		return containsPoint(pos.getX(), pos.getY(), pos.getZ(), boundary);
 	}
@@ -241,7 +241,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInX(int32_t pos, uint8_t boundary) const
+	bool Region::containsPointInX(int32_t pos, int8_t boundary) const
 	{
 		return (pos <= m_iUpperX - boundary)
 			&& (pos >= m_iLowerX + boundary);
@@ -267,7 +267,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInY(int32_t pos, uint8_t boundary) const
+	bool Region::containsPointInY(int32_t pos, int8_t boundary) const
 	{
 		return (pos <= m_iUpperY - boundary) 
 			&& (pos >= m_iLowerY + boundary);
@@ -293,7 +293,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInZ(int32_t pos, uint8_t boundary) const
+	bool Region::containsPointInZ(int32_t pos, int8_t boundary) const
 	{
 		return (pos <= m_iUpperZ - boundary)
 			&& (pos >= m_iLowerZ + boundary);
