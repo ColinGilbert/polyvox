@@ -37,6 +37,7 @@ namespace PolyVox
 	int32_t roundToInteger(float r);
 	template <typename Type>
 	Type clamp(const Type& value, const Type& low, const Type& high);
+	uint32_t upperPowerOfTwo(uint32_t v);
 
 	inline int32_t roundTowardsNegInf(float r)
 	{
