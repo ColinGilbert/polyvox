@@ -61,6 +61,14 @@ EXTRACTOR(shortname, LargeVolume)
 //This will rename "operator=" to "assign" since Python doesn't have assignment
 %rename(assign) *::operator=;
 #endif
+#ifdef SWIGCSHARP
+//These operators are not wrappable in C# and their function is provided by other means
+%ignore *::operator=;
+%ignore *::operator+=;
+%ignore *::operator-=;
+%ignore *::operator*=;
+%ignore *::operator/=;
+#endif
 
 %include "stdint.i"
 %include "std_vector.i"
