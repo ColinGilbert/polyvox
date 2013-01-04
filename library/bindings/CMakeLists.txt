@@ -49,8 +49,8 @@ if(ENABLE_BINDINGS)
 		#set_target_properties(${SWIG_MODULE_PolyVoxCore_REAL_NAME} PROPERTIES SUFFIX ".pyd")
 		SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTY FOLDER "Bindings")
 		
-		swig_add_module(PolyVoxCoreCSharp csharp PolyVoxCore.i)
 		set(SWIG_MODULE_PolyVoxCoreCSharp_EXTRA_FLAGS "-dllimport;PolyVoxCoreCSharp") #This _should_ be inside UseSWIG.cmake - http://www.cmake.org/Bug/view.php?id=13814
+		swig_add_module(PolyVoxCoreCSharp csharp PolyVoxCore.i)
 		swig_link_libraries(PolyVoxCoreCSharp PolyVoxCore)
 		SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCoreCSharp_REAL_NAME} PROPERTY FOLDER "Bindings")
 	else()
