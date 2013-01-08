@@ -110,6 +110,8 @@ int32_t testSamplersWithWrappingForwards(VolumeType* volume, int lowXOffset, int
 			xSampler = ySampler;
 			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
+
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
@@ -221,6 +223,8 @@ int32_t testSamplersWithWrappingBackwards(VolumeType* volume, int lowXOffset, in
 			xSampler = ySampler;
 			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
 			{
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
+
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
@@ -272,7 +276,7 @@ TestVolume::TestVolume()
 
 	// LargeVolume currently fails a test if compression is enabled. It
 	// may be related to accessing the data through more than one sampler?
-	m_pLargeVolume->setCompressionEnabled(false);
+	//m_pLargeVolume->setCompressionEnabled(false);
 
 	//Fill the volume with some data
 	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
