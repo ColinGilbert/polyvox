@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/Compression.h"
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
@@ -36,10 +37,12 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength)
-		:m_tUncompressedData(0)
+		:m_pCompressedData(0)
+		,m_uCompressedDataLength(0)
+		,m_tUncompressedData(0)
 		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_bIsCompressed(true)
+		,m_bIsCompressed(false)
 		,m_bIsUncompressedDataModified(true)
 	{
 		if(uSideLength != 0)
@@ -116,6 +119,7 @@ namespace PolyVox
 		} 
 		else
 		{
+			POLYVOX_ASSERT(false, "Not implemented");
 			RunlengthEntry<uint16_t> rle;
 			rle.length = m_uSideLength*m_uSideLength*m_uSideLength;
 			rle.value = tValue;
@@ -140,7 +144,11 @@ namespace PolyVox
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
+		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
 		Block<VoxelType>::fill(VoxelType());
+
+		compress();
 	}
 
 	template <typename VoxelType>
@@ -161,7 +169,16 @@ namespace PolyVox
 		//modified then we don't need to redo the compression.
 		if(m_bIsUncompressedDataModified)
 		{
-			uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+			Data src;
+			src.ptr = reinterpret_cast<uint8_t*>(m_tUncompressedData);
+			src.length = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+
+			Data compressedResult = polyvox_compress(src);
+
+			m_pCompressedData = compressedResult.ptr;
+			m_uCompressedDataLength = compressedResult.length;
+
+			/*uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 			m_vecCompressedData.clear();
 
 			RunlengthEntry<uint16_t> entry;
@@ -188,7 +205,7 @@ namespace PolyVox
 			//Shrink the vectors to their contents (maybe slow?):
 			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
 			//C++0x may have a shrink_to_fit() function?
-			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);
+			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);*/
 		}
 
 		//Flag the uncompressed data as no longer being used.
@@ -202,14 +219,22 @@ namespace PolyVox
 	{
 		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
-		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		/*m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
 		VoxelType* pUncompressedData = m_tUncompressedData;		
 		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
 		{
 			std::fill(pUncompressedData, pUncompressedData + m_vecCompressedData[ct].length, m_vecCompressedData[ct].value);
 			pUncompressedData += m_vecCompressedData[ct].length;
-		}
+		}*/
+
+		Data src;
+		src.ptr = m_pCompressedData;
+		src.length = m_uCompressedDataLength;
+
+		Data uncompressedResult = polyvox_decompress(src);
+
+		m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
 
 		m_bIsCompressed = false;
 		m_bIsUncompressedDataModified = false;
