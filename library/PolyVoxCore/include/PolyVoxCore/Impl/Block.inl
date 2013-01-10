@@ -106,29 +106,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::fill(VoxelType tValue)
-	{
-		if(!m_bIsCompressed)
-		{
-			//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
-			//in 64-bit mode as casting the pointer to an int causes a loss of precision.
-			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
-
-			m_bIsUncompressedDataModified = true;
-		} 
-		else
-		{
-			POLYVOX_ASSERT(false, "Not implemented");
-			RunlengthEntry<uint16_t> rle;
-			rle.length = m_uSideLength*m_uSideLength*m_uSideLength;
-			rle.value = tValue;
-			m_vecCompressedData.clear();
-			m_vecCompressedData.push_back(rle);
-		}
-	}
-
-	template <typename VoxelType>
 	void Block<VoxelType>::initialise(uint16_t uSideLength)
 	{
 		//Debug mode validation
@@ -144,10 +121,15 @@ namespace PolyVox
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
+		//Create the block data
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
-		Block<VoxelType>::fill(VoxelType());
+		//Clear it (should we bother?)
+		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
+		m_bIsUncompressedDataModified = true;
 
+		//For some reason blocks start out compressed. We should probably change this.
 		compress();
 	}
 

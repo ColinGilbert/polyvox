@@ -56,7 +56,6 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void fill(VoxelType tValue);
 		void initialise(uint16_t uSideLength);
 		uint32_t calculateSizeInBytes(void);
 
