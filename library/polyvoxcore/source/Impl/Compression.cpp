@@ -37,27 +37,27 @@ Data polyvox_compress(Data src)
 	return dst;
 }
 
-Data polyvox_decompress(Data src)
+void polyvox_decompress(Data src, Data dst)
 {
-	unsigned char* buffer;
+	/*unsigned char* buffer;
 	mz_ulong uncompressedDataLength = 1000000;
-	buffer = new unsigned char[uncompressedDataLength];
+	buffer = new unsigned char[uncompressedDataLength];*/
 
-	int iUncompressionResult = uncompress(buffer, &uncompressedDataLength, src.ptr, src.length);
+	int iUncompressionResult = uncompress(dst.ptr, &dst.length, src.ptr, src.length);
 
 	if (iUncompressionResult != Z_OK)
     {
-		delete[] buffer;
+		//delete[] buffer;
 		POLYVOX_THROW(std::runtime_error, "Data decompression failed.");
     }
 
-	Data dst;
+	/*Data dst;
 	dst.length = uncompressedDataLength;
 	dst.ptr = new uint8_t[dst.length];
 
 	memcpy(dst.ptr, buffer, uncompressedDataLength);
 
-	delete[] buffer;
+	delete[] buffer;*/
 
-	return dst;
+	//return dst;
 }

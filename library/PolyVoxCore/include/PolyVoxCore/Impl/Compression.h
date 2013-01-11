@@ -33,6 +33,6 @@ struct Data
 };
 
 Data polyvox_compress(Data src);
-Data polyvox_decompress(Data src);
+void polyvox_decompress(Data src, Data dst);
 
 #endif //__PolyVox_Compression_H__

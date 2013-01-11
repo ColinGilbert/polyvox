@@ -210,13 +210,21 @@ namespace PolyVox
 			pUncompressedData += m_vecCompressedData[ct].length;
 		}*/
 
+		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
 		Data src;
 		src.ptr = m_pCompressedData;
 		src.length = m_uCompressedDataLength;
 
-		Data uncompressedResult = polyvox_decompress(src);
+		Data dst;
+		dst.ptr = reinterpret_cast<uint8_t*>(m_tUncompressedData);
+		dst.length = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
-		m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
+		polyvox_decompress(src, dst);
+
+		POLYVOX_ASSERT(dst.length == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
+
+		//m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
 
 		m_bIsCompressed = false;
 		m_bIsUncompressedDataModified = false;
