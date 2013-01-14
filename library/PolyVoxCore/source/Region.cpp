@@ -148,12 +148,12 @@ namespace PolyVox
 			&&  (m_iUpperX == rhs.m_iUpperX) && (m_iUpperY == rhs.m_iUpperY) && (m_iUpperZ == rhs.m_iUpperZ));
     }
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// Two regions are considered different if any of their extents differ.
-	/// \param rhs The Region to compare to.
-    /// \return true if the Regions are different.
-    /// \sa operator==
-	////////////////////////////////////////////////////////////////////////////////
+	/**
+	 *  Two regions are considered different if any of their extents differ.
+	 *  \param rhs The Region to compare to.
+     *  \return true if the Regions are different.
+     *  \sa operator==
+	 */
     bool Region::operator!=(const Region& rhs) const
     {
 		return !(*this == rhs);
@@ -467,5 +467,18 @@ namespace PolyVox
 	void Region::shrink(const Vector3DInt32& v3dAmount)
 	{
 		shrink(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
+	}
+	/**
+	 * This function only returns true if the regions are really intersecting and not simply touching.
+	 */
+	bool intersects(const Region& a, const Region& b)
+	{
+		// No intersection if seperated along an axis.
+		if(a.getUpperX() < b.getLowerX() || a.getLowerX() > b.getUpperX()) return false;
+		if(a.getUpperY() < b.getLowerY() || a.getLowerY() > b.getUpperY()) return false;
+		if(a.getUpperZ() < b.getLowerZ() || a.getLowerZ() > b.getUpperZ()) return false;
+
+		// Overlapping on all axes means Regions are intersecting.
+		return true;
 	}
 }
