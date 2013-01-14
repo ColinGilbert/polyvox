@@ -440,7 +440,13 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerCorner().getZ()));
 
 					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
-					v3dNormal.normalise();
+
+					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+					if(v3dNormal.lengthSquared() > 0.000001f) 
+					{
+						v3dNormal.normalise();
+					}
 
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
@@ -467,7 +473,13 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()));
 
 					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
-					v3dNormal.normalise();
+
+					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+					if(v3dNormal.lengthSquared() > 0.000001f) 
+					{
+						v3dNormal.normalise();
+					}
 
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
@@ -494,7 +506,12 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerCorner().getX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerCorner().getY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerCorner().getZ()) + fInterp);
 
 					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
-					v3dNormal.normalise();
+					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+					if(v3dNormal.lengthSquared() > 0.000001f) 
+					{
+						v3dNormal.normalise();
+					}
 
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
