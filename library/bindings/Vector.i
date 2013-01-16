@@ -13,6 +13,7 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 #endif
 
 %extend PolyVox::Vector {
+#ifdef SWIGPYTHON
 	PolyVox::Vector __add__(const PolyVox::Vector& rhs) {
 		return *$self + rhs;
 	}
@@ -31,6 +32,7 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 	PolyVox::Vector __mul__(const StorageType& rhs) {
 		return *$self * rhs;
 	}
+#endif
 	STR()
 };
 
