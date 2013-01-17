@@ -169,7 +169,7 @@ namespace PolyVox
 					float sy = (ty          ) + m_regSrc.getLowerCorner().getY();
 					float sz = (tz          ) + m_regSrc.getLowerCorner().getZ();
 
-					typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Clamp);
+					typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
 
 					volDownscaledX.setVoxelAt(tx, ty, tz, result);
 				}
@@ -190,7 +190,7 @@ namespace PolyVox
 					float sy = (ty * fScaleY);
 					float sz = (tz          );
 
-					typename SrcVolumeType::VoxelType result = volDownscaledX.getVoxelWithWrapping(sx, sy, sz, WrapModes::Clamp);
+					typename SrcVolumeType::VoxelType result = volDownscaledX.getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
 
 					volDownscaledXAndY.setVoxelAt(tx, ty, tz, result);
 				}
@@ -210,7 +210,7 @@ namespace PolyVox
 					float sy = (ty - m_regDst.getLowerY());
 					float sz = (tz - m_regDst.getLowerZ()) * fScaleZ;
 
-					typename SrcVolumeType::VoxelType result = volDownscaledXAndY.getVoxelWithWrapping(sx, sy, sz, WrapModes::Clamp);
+					typename SrcVolumeType::VoxelType result = volDownscaledXAndY.getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
 
 					m_pVolDst->setVoxelAt(tx, ty, tz, result);
 				}
