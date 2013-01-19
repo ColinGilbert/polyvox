@@ -84,5 +84,6 @@ EXTRACTOR(shortname, LargeVolume)
 %include "VertexTypes.i"
 %include "SurfaceMesh.i"
 %include "MarchingCubesSurfaceExtractor.i"
-//%include "CubicSurfaceExtractor.i"
+%include "CubicSurfaceExtractor.i"
+%include "CubicSurfaceExtractorWithNormals.i"
 %include "Raycast.i"
