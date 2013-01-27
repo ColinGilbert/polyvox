@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Interpolation.h"
 
+#include "PolyVoxCore/Impl/Utility.h"
+
 #include <cmath>
 
 namespace PolyVox
@@ -200,9 +202,9 @@ namespace PolyVox
 					float sy = (ty          ) + m_regSrc.getLowerCorner().getY();
 					float sz = (tz          ) + m_regSrc.getLowerCorner().getZ();
 
-					//typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
+					typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
 
-					typename SrcVolumeType::VoxelType result = interpolatedSample(m_pVolSrc, sx, sy, sz, WrapModes::Border, SrcVolumeType::VoxelType(0));
+					//typename SrcVolumeType::VoxelType result = interpolatedSample(m_pVolSrc, sx, sy, sz, WrapModes::Border, SrcVolumeType::VoxelType(0));
 
 					volDownscaledX.setVoxelAt(tx, ty, tz, result);
 				}
@@ -241,11 +243,32 @@ namespace PolyVox
 				{
 					float sx = (tx - m_regDst.getLowerX());
 					float sy = (ty - m_regDst.getLowerY());
-					float sz = (tz - m_regDst.getLowerZ()) * fScaleZ;
+					float sLowerZ = ((tz - 1) - m_regDst.getLowerZ()) * fScaleZ;
+					float sCentreZ = ((tz   ) - m_regDst.getLowerZ()) * fScaleZ;
+					float sUpperZ = ((tz + 1) - m_regDst.getLowerZ()) * fScaleZ;
 
-					typename SrcVolumeType::VoxelType result = volDownscaledXAndY.getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
+					float sumOfWeights = 0.0f;
+					//typename SrcVolumeType::VoxelType tSum = SrcVolumeType::VoxelType(0);
 
-					m_pVolDst->setVoxelAt(tx, ty, tz, result);
+					//We should be able to use a higher range MultiMaterial rather than needing to use a Vector of floats.
+					//We shouold also probably support an Accumulation type rather than hard coding.
+					Vector<4, float> vecSum(0.0, 0.0, 0.0, 0.0);
+
+					for(float sz = sLowerZ; sz <= sUpperZ; sz += 1.0)
+					{
+						float weight = triangleFilter(sz - sCentreZ);
+						sumOfWeights += weight;
+
+						Vector<4, float> sample = interpolatedSample(&volDownscaledXAndY, sx, sy, sz, WrapModes::Border, SrcVolumeType::VoxelType(0));
+
+						vecSum += (sample * weight);
+					}
+
+					vecSum /= sumOfWeights; //Should divide by 'norm'
+
+					typename SrcVolumeType::VoxelType tResult = vecSum; //Should divide by 'norm'
+
+					m_pVolDst->setVoxelAt(tx, ty, tz, tResult);
 				}
 			}
 		}
