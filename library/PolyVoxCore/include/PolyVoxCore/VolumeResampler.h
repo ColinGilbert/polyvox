@@ -28,6 +28,9 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	template<typename VolumeType>
+	typename VolumeType::VoxelType interpolatedSample(VolumeType* pVolume, float fPosX, float fPosY, float fPosZ, WrapMode eWrapMode, typename VolumeType::VoxelType tBorder);
+
 	template< typename SrcVolumeType, typename DstVolumeType>
 	class VolumeResampler
 	{

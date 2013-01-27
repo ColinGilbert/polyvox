@@ -27,6 +27,37 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	// Takes an interpolated sample of the volume data.
+	template<typename VolumeType>
+	typename VolumeType::VoxelType interpolatedSample(VolumeType* pVolume, float fPosX, float fPosY, float fPosZ, WrapMode eWrapMode, typename VolumeType::VoxelType tBorder)
+	{
+		float fFloorX = floor(fPosX);
+		float fFloorY = floor(fPosY);
+		float fFloorZ = floor(fPosZ);
+
+		float fInterpX = fPosX - fFloorX;
+		float fInterpY = fPosY - fFloorY;
+		float fInterpZ = fPosZ - fFloorZ;
+
+		// Conditional logic required to round negative floats correctly
+		int32_t iX = static_cast<int32_t>(fFloorX > 0.0f ? fFloorX + 0.5f : fFloorX - 0.5f); 
+		int32_t iY = static_cast<int32_t>(fFloorY > 0.0f ? fFloorY + 0.5f : fFloorY - 0.5f); 
+		int32_t iZ = static_cast<int32_t>(fFloorZ > 0.0f ? fFloorZ + 0.5f : fFloorZ - 0.5f);
+
+		const typename VolumeType::VoxelType& voxel000 = pVolume->getVoxelWithWrapping(iX, iY, iZ, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel001 = pVolume->getVoxelWithWrapping(iX, iY, iZ + 1, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel010 = pVolume->getVoxelWithWrapping(iX, iY + 1, iZ, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel011 = pVolume->getVoxelWithWrapping(iX, iY + 1, iZ + 1, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel100 = pVolume->getVoxelWithWrapping(iX + 1, iY, iZ, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel101 = pVolume->getVoxelWithWrapping(iX + 1, iY, iZ + 1, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel110 = pVolume->getVoxelWithWrapping(iX + 1, iY + 1, iZ, eWrapMode, tBorder);
+		const typename VolumeType::VoxelType& voxel111 = pVolume->getVoxelWithWrapping(iX + 1, iY + 1, iZ + 1, eWrapMode, tBorder);
+
+		typename VolumeType::VoxelType tInterpolatedValue = PolyVox::trilerp(voxel000,voxel100,voxel010,voxel110,voxel001,voxel101,voxel011,voxel111,fInterpX,fInterpY,fInterpZ);
+
+		return tInterpolatedValue;
+	}
+
 	/**
 	 * \param pVolSrc
 	 * \param regSrc
@@ -169,7 +200,9 @@ namespace PolyVox
 					float sy = (ty          ) + m_regSrc.getLowerCorner().getY();
 					float sz = (tz          ) + m_regSrc.getLowerCorner().getZ();
 
-					typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
+					//typename SrcVolumeType::VoxelType result = m_pVolSrc->getVoxelWithWrapping(sx, sy, sz, WrapModes::Border);
+
+					typename SrcVolumeType::VoxelType result = interpolatedSample(m_pVolSrc, sx, sy, sz, WrapModes::Border, SrcVolumeType::VoxelType(0));
 
 					volDownscaledX.setVoxelAt(tx, ty, tz, result);
 				}
