@@ -21,10 +21,10 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Impl/Compression.h"
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
+#include "PolyVoxCore/MinizCompressor.h"
 #include "PolyVoxCore/Vector.h"
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
@@ -151,14 +151,29 @@ namespace PolyVox
 		//modified then we don't need to redo the compression.
 		if(m_bIsUncompressedDataModified)
 		{
-			Data src;
+			void* pSrcData = reinterpret_cast<void*>(m_tUncompressedData);
+			void* pDstData = reinterpret_cast<void*>( new uint8_t[1000000] );
+			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+			uint32_t uDstLength = 1000000;
+
+			MinizCompressor compressor;
+			uint32_t uCompressedLength = compressor.compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+			m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
+			memcpy(m_pCompressedData, pDstData, uCompressedLength);
+			m_uCompressedDataLength = uCompressedLength;
+
+			delete pDstData;
+
+
+			/*Data src;
 			src.ptr = reinterpret_cast<uint8_t*>(m_tUncompressedData);
 			src.length = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
 			Data compressedResult = polyvox_compress(src);
 
 			m_pCompressedData = compressedResult.ptr;
-			m_uCompressedDataLength = compressedResult.length;
+			m_uCompressedDataLength = compressedResult.length;*/
 
 			/*uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 			m_vecCompressedData.clear();
@@ -212,7 +227,15 @@ namespace PolyVox
 
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
-		Data src;
+		void* pSrcData = reinterpret_cast<void*>(m_pCompressedData);
+		void* pDstData = reinterpret_cast<void*>(m_tUncompressedData);
+		uint32_t uSrcLength = m_uCompressedDataLength;
+		uint32_t uDstLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+
+		MinizCompressor compressor;
+		uint32_t uUncompressedLength = compressor.decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+		/*Data src;
 		src.ptr = m_pCompressedData;
 		src.length = m_uCompressedDataLength;
 
@@ -220,9 +243,9 @@ namespace PolyVox
 		dst.ptr = reinterpret_cast<uint8_t*>(m_tUncompressedData);
 		dst.length = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
-		polyvox_decompress(src, dst);
+		polyvox_decompress(src, dst);*/
 
-		POLYVOX_ASSERT(dst.length == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
+		POLYVOX_ASSERT(uUncompressedLength == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
 
 		//m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
 
