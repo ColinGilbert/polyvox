@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Impl/Utility.h"
 
 #include "PolyVoxCore/MinizCompressor.h"
+#include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/Vector.h"
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
@@ -156,7 +157,8 @@ namespace PolyVox
 			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 			uint32_t uDstLength = 1000000;
 
-			MinizCompressor compressor;
+			//MinizCompressor compressor;
+			RLECompressor<VoxelType, uint16_t> compressor;
 			uint32_t uCompressedLength = compressor.compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 			m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
@@ -164,45 +166,6 @@ namespace PolyVox
 			m_uCompressedDataLength = uCompressedLength;
 
 			delete pDstData;
-
-
-			/*Data src;
-			src.ptr = reinterpret_cast<uint8_t*>(m_tUncompressedData);
-			src.length = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
-
-			Data compressedResult = polyvox_compress(src);
-
-			m_pCompressedData = compressedResult.ptr;
-			m_uCompressedDataLength = compressedResult.length;*/
-
-			/*uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			m_vecCompressedData.clear();
-
-			RunlengthEntry<uint16_t> entry;
-			entry.length = 1;
-			entry.value = m_tUncompressedData[0];
-
-			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
-			{		
-				VoxelType value = m_tUncompressedData[ct];
-				if((value == entry.value) && (entry.length < entry.maxRunlength()))
-				{
-					entry.length++;
-				}
-				else
-				{
-					m_vecCompressedData.push_back(entry);
-					entry.value = value;
-					entry.length = 1;
-				}
-			}
-
-			m_vecCompressedData.push_back(entry);
-
-			//Shrink the vectors to their contents (maybe slow?):
-			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
-			//C++0x may have a shrink_to_fit() function?
-			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);*/
 		}
 
 		//Flag the uncompressed data as no longer being used.
@@ -216,14 +179,6 @@ namespace PolyVox
 	{
 		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
-		/*m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-
-		VoxelType* pUncompressedData = m_tUncompressedData;		
-		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
-		{
-			std::fill(pUncompressedData, pUncompressedData + m_vecCompressedData[ct].length, m_vecCompressedData[ct].value);
-			pUncompressedData += m_vecCompressedData[ct].length;
-		}*/
 
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
@@ -232,18 +187,9 @@ namespace PolyVox
 		uint32_t uSrcLength = m_uCompressedDataLength;
 		uint32_t uDstLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
-		MinizCompressor compressor;
+		//MinizCompressor compressor;
+		RLECompressor<VoxelType, uint16_t> compressor;
 		uint32_t uUncompressedLength = compressor.decompress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-		/*Data src;
-		src.ptr = m_pCompressedData;
-		src.length = m_uCompressedDataLength;
-
-		Data dst;
-		dst.ptr = reinterpret_cast<uint8_t*>(m_tUncompressedData);
-		dst.length = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
-
-		polyvox_decompress(src, dst);*/
 
 		POLYVOX_ASSERT(uUncompressedLength == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
 

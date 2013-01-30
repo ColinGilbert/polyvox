@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cassert>
+#include <limits>
 
 template<typename ValueType, typename LengthType>
 RLECompressor<ValueType, LengthType>::RLECompressor()
@@ -35,7 +36,7 @@ uint32_t RLECompressor<ValueType, LengthType>::compress(void* pSrcData, uint32_t
 
 	while(pSrcDataAsInt < pSrcDataEnd)
 	{
-		if((*pSrcDataAsInt == pDstDataAsRun->value) && (pDstDataAsRun->length < std::numeric_limits<LengthType>::max()))
+		if((*pSrcDataAsInt == pDstDataAsRun->value) && (pDstDataAsRun->length < (std::numeric_limits<LengthType>::max)()))
 		{
 			pDstDataAsRun->length++;
 		}

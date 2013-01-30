@@ -1,7 +1,7 @@
 #ifndef __PolyVox_RLECompressor_H__
 #define __PolyVox_RLECompressor_H__
 
-#include <cstdint>
+#include "PolyVoxCore/Impl/TypeDef.h"
 
 template<typename ValueType, typename LengthType>
 class RLECompressor
