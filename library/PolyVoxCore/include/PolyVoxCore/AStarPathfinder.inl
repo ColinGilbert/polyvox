@@ -336,7 +336,7 @@ namespace PolyVox
 	}
 
 	// Robert Jenkins' 32 bit integer hash function
-	// http://www.concentric.net/~ttwang/tech/inthash.htm
+	// http://www.burtleburtle.net/bob/hash/integer.html
 	template<typename VolumeType>
 	uint32_t AStarPathfinder<VolumeType>::hash( uint32_t a)
 	{
