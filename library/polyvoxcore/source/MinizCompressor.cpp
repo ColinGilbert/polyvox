@@ -9,10 +9,15 @@
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 //#define MINIZ_NO_MALLOC
 
+#include "PolyVoxCore/Impl/ErrorHandling.h"
 // For some unknown reason the miniz library is supplied only as a 
 // single .c file without a header. Apparently the only way to use 
 // it is then to #include it directly which is what the examples do.
 #include "PolyVoxCore/Impl/miniz.c"
+
+#include <sstream>
+
+using namespace std;
 
 namespace PolyVox
 {
@@ -30,7 +35,12 @@ namespace PolyVox
 
 		// Do the compression
 		int result = mz_compress((unsigned char*)pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-		assert(result == MZ_OK);
+		if(result != MZ_OK)
+		{
+			stringstream ss;
+			ss << "mz_compress() failed with return code '" << result << "'";
+			POLYVOX_THROW(std::runtime_error, ss.str());
+		}
 
 		// Return the number of bytes written to the output.
 		return ulDstLength;
@@ -41,7 +51,12 @@ namespace PolyVox
 		mz_ulong ulDstLength = uDstLength;
 
 		int result = mz_uncompress((unsigned char*) pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-		assert(result == MZ_OK);
+		if(result != MZ_OK)
+		{
+			stringstream ss;
+			ss << "mz_uncompress() failed with return code '" << result << "'";
+			POLYVOX_THROW(std::runtime_error, ss.str());
+		}
 
 		return ulDstLength;
 	}

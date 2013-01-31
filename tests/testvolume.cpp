@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #include "testvolume.h"
 
 #include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/MinizCompressor.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -270,7 +271,8 @@ TestVolume::TestVolume()
 {
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
 
-	m_pCompressor = new RLECompressor<int32_t, uint16_t>;
+	//m_pCompressor = new RLECompressor<int32_t, uint16_t>;
+	m_pCompressor = new MinizCompressor;
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);

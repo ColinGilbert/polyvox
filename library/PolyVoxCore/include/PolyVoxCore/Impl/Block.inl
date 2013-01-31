@@ -24,8 +24,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
-#include "PolyVoxCore/MinizCompressor.h"
-#include "PolyVoxCore/RLECompressor.h"
+#include "PolyVoxCore/Compressor.h"
 #include "PolyVoxCore/Vector.h"
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"

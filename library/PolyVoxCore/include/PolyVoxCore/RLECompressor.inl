@@ -17,7 +17,10 @@ namespace PolyVox
 	template<typename ValueType, typename LengthType>
 	uint32_t RLECompressor<ValueType, LengthType>::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
-		assert(uSrcLength % sizeof(ValueType) == 0);
+		if(uSrcLength % sizeof(ValueType) != 0)
+		{
+			POLYVOX_THROW(std::length_error, "Source length must be a integer multiple of the ValueType size");
+		}
 
 		uSrcLength /= sizeof(ValueType);
 		uDstLength /= sizeof(Run);
@@ -60,7 +63,10 @@ namespace PolyVox
 	template<typename ValueType, typename LengthType>
 	uint32_t RLECompressor<ValueType, LengthType>::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
-		assert(uSrcLength % sizeof(Run) == 0);
+		if(uSrcLength % sizeof(Run) != 0)
+		{
+			POLYVOX_THROW(std::length_error, "Source length must be a integer multiple of the Run size");
+		}
 
 		uSrcLength /= sizeof(Run);
 		uDstLength /= sizeof(ValueType);

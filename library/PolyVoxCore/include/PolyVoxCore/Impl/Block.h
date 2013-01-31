@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
-#include "PolyVoxCore/Compressor.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
