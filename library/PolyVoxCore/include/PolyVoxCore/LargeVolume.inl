@@ -618,6 +618,10 @@ namespace PolyVox
 			
 			// create the new block
 			LoadedBlock newBlock(m_uBlockSideLength);
+
+			//Blocks start out compressed - should we change this?
+			newBlock.block.compress(m_pCompressor);
+
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			//We have created the new block. If paging is enabled it should be used to

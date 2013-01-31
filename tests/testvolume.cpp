@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/RawVolume.h"
+#include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
 #include <QtGlobal>
@@ -269,10 +270,12 @@ TestVolume::TestVolume()
 {
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
 
+	m_pCompressor = new RLECompressor<int32_t, uint16_t>;
+
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region);
+	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor);
 
 	// LargeVolume currently fails a test if compression is enabled. It
 	// may be related to accessing the data through more than one sampler?
@@ -299,6 +302,8 @@ TestVolume::~TestVolume()
 	delete m_pRawVolume;
 	delete m_pSimpleVolume;
 	delete m_pLargeVolume;
+
+	delete m_pCompressor;
 }
 
 /*

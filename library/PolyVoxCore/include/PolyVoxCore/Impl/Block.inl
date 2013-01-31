@@ -129,9 +129,6 @@ namespace PolyVox
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
 		m_bIsUncompressedDataModified = true;
-
-		//For some reason blocks start out compressed. We should probably change this.
-		compress(0);
 	}
 
 	template <typename VoxelType>
@@ -159,8 +156,8 @@ namespace PolyVox
 			uint32_t uDstLength = 1000000;
 
 			//MinizCompressor compressor;
-			RLECompressor<VoxelType, uint16_t> compressor;
-			uint32_t uCompressedLength = compressor.compress(pSrcData, uSrcLength, pDstData, uDstLength);
+			//RLECompressor<VoxelType, uint16_t> compressor;
+			uint32_t uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 			m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
 			memcpy(m_pCompressedData, pDstData, uCompressedLength);
@@ -178,7 +175,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::uncompress(Compressor* pCompressor)
 	{
-		//POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
+		POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
 		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
 
@@ -190,8 +187,8 @@ namespace PolyVox
 		uint32_t uDstLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
 		//MinizCompressor compressor;
-		RLECompressor<VoxelType, uint16_t> compressor;
-		uint32_t uUncompressedLength = compressor.decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+		//RLECompressor<VoxelType, uint16_t> compressor;
+		uint32_t uUncompressedLength = pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 		POLYVOX_ASSERT(uUncompressedLength == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
 
