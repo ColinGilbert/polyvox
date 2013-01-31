@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #define __PolyVox_Block_H__
 
 #include "PolyVoxCore/Impl/TypeDef.h"
+
+#include "PolyVoxCore/Compressor.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
@@ -60,10 +62,9 @@ namespace PolyVox
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		void compress(void);
-		void uncompress(void);
+		void compress(Compressor* pCompressor);
+		void uncompress(Compressor* pCompressor);
 
-		std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
 		void* m_pCompressedData;
 		uint32_t m_uCompressedDataLength;
 		VoxelType* m_tUncompressedData;

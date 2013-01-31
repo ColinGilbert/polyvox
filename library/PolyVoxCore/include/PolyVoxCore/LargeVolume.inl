@@ -62,12 +62,14 @@ namespace PolyVox
 	LargeVolume<VoxelType>::LargeVolume
 	(
 		const Region& regValid,
+		Compressor* pCompressor,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 		bool bPagingEnabled,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
+	,m_pCompressor(pCompressor)
 	{
 		m_funcDataRequiredHandler = dataRequiredHandler;
 		m_funcDataOverflowHandler = dataOverflowHandler;
@@ -456,7 +458,7 @@ namespace PolyVox
 	{
 		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 		{
-			m_vecUncompressedBlockCache[ct]->block.compress();
+			m_vecUncompressedBlockCache[ct]->block.compress(m_pCompressor);
 		}
 		m_vecUncompressedBlockCache.clear();
 	}
@@ -537,7 +539,7 @@ namespace PolyVox
 				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
 				{
 					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-					itBlock->second.block.compress();
+					itBlock->second.block.compress(m_pCompressor);
 					// put last object in cache here
 					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
 					// decrease cache size by one since last element is now in here twice
@@ -667,7 +669,7 @@ namespace PolyVox
 			}
 			
 			//Compress the least recently used block.
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress();
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress(m_pCompressor);
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
@@ -678,7 +680,7 @@ namespace PolyVox
 			m_vecUncompressedBlockCache.push_back(&loadedBlock);
 		}
 		
-		loadedBlock.block.uncompress();
+		loadedBlock.block.uncompress(m_pCompressor);
 
 		m_pLastAccessedBlock = &(loadedBlock.block);
 		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");

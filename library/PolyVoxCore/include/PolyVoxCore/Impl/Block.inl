@@ -131,20 +131,21 @@ namespace PolyVox
 		m_bIsUncompressedDataModified = true;
 
 		//For some reason blocks start out compressed. We should probably change this.
-		compress();
+		compress(0);
 	}
 
 	template <typename VoxelType>
 	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
 	{
+		//FIXME - This function is incomplete.
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
-		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);
 		return  uSizeInBytes;
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::compress(void)
+	void Block<VoxelType>::compress(Compressor* pCompressor)
 	{
+		//POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
 		POLYVOX_ASSERT(m_bIsCompressed == false, "Attempted to compress block which is already flagged as compressed.");
 		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
 
@@ -175,8 +176,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::uncompress(void)
+	void Block<VoxelType>::uncompress(Compressor* pCompressor)
 	{
+		//POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
 		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
 

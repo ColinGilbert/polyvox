@@ -26,6 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "Impl/Block.h"
+#include "PolyVoxCore/Compressor.h"
 #include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
@@ -256,6 +257,7 @@ namespace PolyVox
 		LargeVolume
 		(
 			const Region& regValid,
+			Compressor* pCompressor = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
 			bool bPagingEnabled = false,
@@ -362,6 +364,9 @@ namespace PolyVox
 		//The size of the blocks
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
+
+		//The compressor used by the Blocks to compress their data if required.
+		Compressor* m_pCompressor;
 
 		bool m_bCompressionEnabled;
 		bool m_bPagingEnabled;

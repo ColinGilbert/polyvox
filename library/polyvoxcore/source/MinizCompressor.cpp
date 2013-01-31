@@ -14,32 +14,35 @@
 // it is then to #include it directly which is what the examples do.
 #include "PolyVoxCore/Impl/miniz.c"
 
-MinizCompressor::MinizCompressor()
+namespace PolyVox
 {
-}
+	MinizCompressor::MinizCompressor()
+	{
+	}
 
-MinizCompressor::~MinizCompressor()
-{
-}
+	MinizCompressor::~MinizCompressor()
+	{
+	}
 
-uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
-{
-	mz_ulong ulDstLength = uDstLength;
+	uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	{
+		mz_ulong ulDstLength = uDstLength;
 
-	// Do the compression
-	int result = mz_compress((unsigned char*)pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-	assert(result == MZ_OK);
+		// Do the compression
+		int result = mz_compress((unsigned char*)pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
+		assert(result == MZ_OK);
 
-	// Return the number of bytes written to the output.
-	return ulDstLength;
-}
+		// Return the number of bytes written to the output.
+		return ulDstLength;
+	}
 
-uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
-{
-	mz_ulong ulDstLength = uDstLength;
+	uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	{
+		mz_ulong ulDstLength = uDstLength;
 
-	int result = mz_uncompress((unsigned char*) pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-	assert(result == MZ_OK);
+		int result = mz_uncompress((unsigned char*) pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
+		assert(result == MZ_OK);
 
-	return ulDstLength;
+		return ulDstLength;
+	}
 }
