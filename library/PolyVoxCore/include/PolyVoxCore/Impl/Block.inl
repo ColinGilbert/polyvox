@@ -141,7 +141,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(Compressor* pCompressor)
 	{
-		//POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
+		POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
 		POLYVOX_ASSERT(m_bIsCompressed == false, "Attempted to compress block which is already flagged as compressed.");
 		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
 
@@ -149,53 +149,58 @@ namespace PolyVox
 		//modified then we don't need to redo the compression.
 		if(m_bIsUncompressedDataModified)
 		{
+			// Delete the old compressed data as we'll create a new one
+			delete[] m_pCompressedData;
+			m_pCompressedData = 0;
+
 			void* pSrcData = reinterpret_cast<void*>(m_tUncompressedData);
 			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
-			void* pDstData = 0;
+			uint8_t tempBuffer[10000];
+			void* pDstData = reinterpret_cast<void*>( tempBuffer );				
+			uint32_t uDstLength = 10000;
+
 			uint32_t uCompressedLength = 0;
 
 			try
 			{
-				uint8_t buffer[1000000];
-
-				pDstData = reinterpret_cast<void*>( buffer );				
-				uint32_t uDstLength = 1000000;
-
 				uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+				// Create new compressed data and copy across
+				m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
+				memcpy(m_pCompressedData, pDstData, uCompressedLength);
+				m_uCompressedDataLength = uCompressedLength;
 			}
-			catch(std::exception& e)
+			catch(std::exception&)
 			{
 				// It is possible for the compression to fail. A common cause for this would be if the destination
 				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
+				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
 				uint32_t uMaxCompressedSize = pCompressor->getMaxCompressedSize(uSrcLength);
 				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
 
 				pDstData = reinterpret_cast<void*>( buffer );				
-				uint32_t uDstLength = uMaxCompressedSize;
+				uDstLength = uMaxCompressedSize;
 
 				try
 				{		
 					uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+					// Create new compressed data and copy across
+					m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
+					memcpy(m_pCompressedData, pDstData, uCompressedLength);
+					m_uCompressedDataLength = uCompressedLength;
 				}
-				catch(std::exception& e)
+				catch(std::exception&)
 				{
 					// At this point it didn't work even with a bigger buffer.
 					// Not much more we can do so just rethrow the exception.
-					delete buffer;
+					delete[] buffer;
 					POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
 				}
 
-				delete buffer;
-			}
-
-			// Delete the old compressed data and assign a new one
-			delete m_pCompressedData;
-			m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
-
-			//Copy the data across
-			memcpy(m_pCompressedData, pDstData, uCompressedLength);
-			m_uCompressedDataLength = uCompressedLength;
+				delete[] buffer;
+			}			
 		}
 
 		//Flag the uncompressed data as no longer being used.
