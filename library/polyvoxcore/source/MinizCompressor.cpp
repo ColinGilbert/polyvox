@@ -29,6 +29,11 @@ namespace PolyVox
 	{
 	}
 
+	uint32_t MinizCompressor::getMaxCompressedSize(uint32_t uUncompressedInputSize)
+	{
+		return static_cast<uint32_t>(mz_compressBound(static_cast<mz_ulong>(uUncompressedInputSize)));
+	}
+
 	uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		mz_ulong ulDstLength = uDstLength;

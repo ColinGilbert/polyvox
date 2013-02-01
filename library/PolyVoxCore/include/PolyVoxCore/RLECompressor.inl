@@ -15,6 +15,13 @@ namespace PolyVox
 	}
 
 	template<typename ValueType, typename LengthType>
+	uint32_t RLECompressor<ValueType, LengthType>::getMaxCompressedSize(uint32_t uUncompressedInputSize)
+	{
+		// In the worst case we will have a seperate Run (of length one) for each element of the input data.
+		return uUncompressedInputSize * sizeof(Run);
+	}
+
+	template<typename ValueType, typename LengthType>
 	uint32_t RLECompressor<ValueType, LengthType>::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		if(uSrcLength % sizeof(ValueType) != 0)

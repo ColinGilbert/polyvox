@@ -619,7 +619,9 @@ namespace PolyVox
 			// create the new block
 			LoadedBlock newBlock(m_uBlockSideLength);
 
-			//Blocks start out compressed - should we change this?
+			// Blocks start out compressed - should we change this?
+			// Or maybe we should just 'seed' them with compressed data,
+			// rather than creating an empty block and then compressing?
 			newBlock.block.compress(m_pCompressor);
 
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;

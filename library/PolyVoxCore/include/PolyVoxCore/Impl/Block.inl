@@ -150,19 +150,52 @@ namespace PolyVox
 		if(m_bIsUncompressedDataModified)
 		{
 			void* pSrcData = reinterpret_cast<void*>(m_tUncompressedData);
-			void* pDstData = reinterpret_cast<void*>( new uint8_t[1000000] );
 			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
-			uint32_t uDstLength = 1000000;
 
-			//MinizCompressor compressor;
-			//RLECompressor<VoxelType, uint16_t> compressor;
-			uint32_t uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+			void* pDstData = 0;
+			uint32_t uCompressedLength = 0;
 
+			try
+			{
+				uint8_t buffer[1000000];
+
+				pDstData = reinterpret_cast<void*>( buffer );				
+				uint32_t uDstLength = 1000000;
+
+				uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+			}
+			catch(std::exception& e)
+			{
+				// It is possible for the compression to fail. A common cause for this would be if the destination
+				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
+				uint32_t uMaxCompressedSize = pCompressor->getMaxCompressedSize(uSrcLength);
+				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
+
+				pDstData = reinterpret_cast<void*>( buffer );				
+				uint32_t uDstLength = uMaxCompressedSize;
+
+				try
+				{		
+					uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+				}
+				catch(std::exception& e)
+				{
+					// At this point it didn't work even with a bigger buffer.
+					// Not much more we can do so just rethrow the exception.
+					delete buffer;
+					POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
+				}
+
+				delete buffer;
+			}
+
+			// Delete the old compressed data and assign a new one
+			delete m_pCompressedData;
 			m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
+
+			//Copy the data across
 			memcpy(m_pCompressedData, pDstData, uCompressedLength);
 			m_uCompressedDataLength = uCompressedLength;
-
-			delete pDstData;
 		}
 
 		//Flag the uncompressed data as no longer being used.

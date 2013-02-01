@@ -34,7 +34,14 @@ namespace PolyVox
 		Compressor() {};
 		virtual ~Compressor() {};
 
+		// Computes a worst-case scenario for how big the output can be for a given input size. If
+		// necessary you can use this as a destination buffer size, though it may be somewhat wasteful.
+		virtual uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize) = 0;
+
+		// Compresses the data.
 		virtual uint32_t compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
+
+		// Decompresses the data.
 		virtual uint32_t decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
 	};
 }

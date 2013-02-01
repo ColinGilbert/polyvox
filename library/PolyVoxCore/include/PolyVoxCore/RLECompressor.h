@@ -17,6 +17,7 @@ namespace PolyVox
 		RLECompressor();
 		~RLECompressor();
 
+		uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize);
 		uint32_t compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
 		uint32_t decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
 	};
