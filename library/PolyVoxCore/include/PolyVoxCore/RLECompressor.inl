@@ -22,39 +22,54 @@ namespace PolyVox
 			POLYVOX_THROW(std::length_error, "Source length must be a integer multiple of the ValueType size");
 		}
 
+		// Lengths provided are in bytes, so convert them to be in terms of our types.
 		uSrcLength /= sizeof(ValueType);
 		uDstLength /= sizeof(Run);
 
-		ValueType* pSrcDataAsInt = reinterpret_cast<ValueType*>(pSrcData);
+		// Get data pointers in the appropriate type
+		ValueType* pSrcDataAsType = reinterpret_cast<ValueType*>(pSrcData);
 		Run* pDstDataAsRun = reinterpret_cast<Run*>(pDstData);
 
-		ValueType* pSrcDataEnd = pSrcDataAsInt + uSrcLength;
+		// Pointers to just past the end of the data
+		ValueType* pSrcDataEnd = pSrcDataAsType + uSrcLength;
 		Run* pDstDataEnd = pDstDataAsRun + uDstLength;
 
+		//Counter for the output length
 		uint32_t uDstLengthInBytes = 0;
 
-
-		pDstDataAsRun->value = *pSrcDataAsInt;
-		pSrcDataAsInt++;
+		// Read the first element of the source and set up the first run based on it.
+		pDstDataAsRun->value = *pSrcDataAsType;
+		pSrcDataAsType++;
 		pDstDataAsRun->length = 1;
 		uDstLengthInBytes += sizeof(Run);
 
-		while(pSrcDataAsInt < pSrcDataEnd)
+		//Now process all remaining elements of the source.
+		while(pSrcDataAsType < pSrcDataEnd)
 		{
-			if((*pSrcDataAsInt == pDstDataAsRun->value) && (pDstDataAsRun->length < (std::numeric_limits<LengthType>::max)()))
+			// If the value is the same as the current run (and we have not
+			// reached the maximum run length) then extend the current run.
+			if((*pSrcDataAsType == pDstDataAsRun->value) && (pDstDataAsRun->length < (std::numeric_limits<LengthType>::max)()))
 			{
 				pDstDataAsRun->length++;
 			}
+			// Otherwise we need to start a new Run.
 			else
 			{
 				pDstDataAsRun++;
-				assert(pDstDataAsRun < pDstDataEnd);
-				pDstDataAsRun->value = *pSrcDataAsInt;
+
+				// Check if we have enough space in the destination buffer.
+				if(pDstDataAsRun >= pDstDataEnd)
+				{
+					POLYVOX_THROW(std::runtime_error, "Insufficient space in destination buffer.");
+				}
+
+				// Create the new run.
+				pDstDataAsRun->value = *pSrcDataAsType;
 				pDstDataAsRun->length = 1;
 				uDstLengthInBytes += sizeof(Run);
 			}
 			
-			pSrcDataAsInt++;
+			pSrcDataAsType++;
 		}
 
 		return uDstLengthInBytes;
@@ -68,24 +83,34 @@ namespace PolyVox
 			POLYVOX_THROW(std::length_error, "Source length must be a integer multiple of the Run size");
 		}
 
+		// Lengths provided are in bytes, so convert them to be in terms of our types.
 		uSrcLength /= sizeof(Run);
 		uDstLength /= sizeof(ValueType);
 
+		// Get data pointers in the appropriate type
 		Run* pSrcDataAsRun = reinterpret_cast<Run*>(pSrcData);
-		ValueType* pDstDataAsInt = reinterpret_cast<ValueType*>(pDstData);
+		ValueType* pDstDataAsType = reinterpret_cast<ValueType*>(pDstData);
 
+		// Pointers to just past the end of the data
 		Run* pSrcDataEnd = pSrcDataAsRun + uSrcLength;
-		ValueType* pDstDataEnd = pDstDataAsInt + uDstLength;
+		ValueType* pDstDataEnd = pDstDataAsType + uDstLength;
 
+		//Counter for the output length
 		uint32_t uDstLengthInBytes = 0;
 
 		while(pSrcDataAsRun < pSrcDataEnd)
 		{
-			std::fill(pDstDataAsInt, pDstDataAsInt + pSrcDataAsRun->length, pSrcDataAsRun->value);
-			pDstDataAsInt += pSrcDataAsRun->length;
+			// Check if we have enough space in the destination buffer.
+			if(pDstDataAsType + pSrcDataAsRun->length > pDstDataEnd)
+			{
+				POLYVOX_THROW(std::runtime_error, "Insufficient space in destination buffer.");
+			}
 
-			uDstLengthInBytes += pSrcDataAsRun->length * sizeof(ValueType);
-			
+			// Write the run into the destination
+			std::fill(pDstDataAsType, pDstDataAsType + pSrcDataAsRun->length, pSrcDataAsRun->value);
+			pDstDataAsType += pSrcDataAsRun->length;
+
+			uDstLengthInBytes += pSrcDataAsRun->length * sizeof(ValueType);			
 			pSrcDataAsRun++;
 		}
 
