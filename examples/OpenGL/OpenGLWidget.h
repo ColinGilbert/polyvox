@@ -41,7 +41,7 @@ const int32_t g_uVolumeSideLength = 128;
 
 struct Vector3DUint8Compare
 {
-    bool operator() (const PolyVox::Vector3DUint8& a, const PolyVox::Vector3DUint8& b)
+    bool operator() (const PolyVox::Vector3DUint8& a, const PolyVox::Vector3DUint8& b) const
     {
 		const uint32_t size = 3;
         for(uint32_t ct = 0; ct < size; ++ct)

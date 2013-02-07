@@ -26,13 +26,12 @@ namespace PolyVox
 	// We try to avoid duplicate vertices by checking whether a vertex has already been added at a given position.
 	// However, it is possible that vertices have the same position but different materials. In this case, the
 	// vertices are not true duplicates and both must be added to the mesh. As far as I can tell, it is possible to have
-	// at most six vertices with the same position but different materials. This worst-case scenario happens when we
-	// have a 2x2x2 group of voxels (all with different materials) and then we delete two voxels from opposing corners.
-	// The vertex position at the center of this group is then going to be used by six quads all with different materials.
-	// One futher note - we can actually have eight quads sharing a vertex position (imagine two 1x1x10 rows of voxels
-	// sharing a common edge) but in this case all eight quads will not have different materials.
+	// at most eight vertices with the same position but different materials. For example, this worst-case scenario
+	// happens when we have a 2x2x2 group of voxels, all with different materials and some/all partially transparent.
+	// The vertex position at the center of this group is then going to be used by all eight voxels all with different
+	// materials.
 	template<typename VolumeType, typename IsQuadNeeded>
-	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 6;
+	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
 	template<typename VolumeType, typename IsQuadNeeded>
 	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
@@ -228,7 +227,7 @@ namespace PolyVox
 
 		// If we exit the loop here then apparently all the slots were full but none of them matched. I don't think
 		// this can happen so let's put an assert to make sure. If you hit this assert then please report it to us!
-		assert(false);
+		POLYVOX_ASSERT(false, "All slots full but no matches.");
 		return -1; //Should never happen.
 	}
 

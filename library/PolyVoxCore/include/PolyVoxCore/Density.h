@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 
 #include "Impl/TypeDef.h"
 
-#include <cassert>
 #include <limits>
 
 #undef min

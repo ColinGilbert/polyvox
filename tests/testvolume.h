@@ -37,16 +37,35 @@ public:
 	~TestVolume();
 	
 private slots:
-	void testRawVolumeDirectAccess();
-	void testRawVolumeSamplers();
+	void testRawVolumeDirectAccessAllInternalForwards();
+	void testRawVolumeSamplersAllInternalForwards();
+	void testRawVolumeDirectAccessWithExternalForwards();
+	void testRawVolumeSamplersWithExternalForwards();
+	void testRawVolumeDirectAccessAllInternalBackwards();
+	void testRawVolumeSamplersAllInternalBackwards();
+	void testRawVolumeDirectAccessWithExternalBackwards();
+	void testRawVolumeSamplersWithExternalBackwards();
 
-	void testSimpleVolumeDirectAccess();
-	void testSimpleVolumeSamplers();
+	void testSimpleVolumeDirectAccessAllInternalForwards();
+	void testSimpleVolumeSamplersAllInternalForwards();
+	void testSimpleVolumeDirectAccessWithExternalForwards();
+	void testSimpleVolumeSamplersWithExternalForwards();
+	void testSimpleVolumeDirectAccessAllInternalBackwards();
+	void testSimpleVolumeSamplersAllInternalBackwards();
+	void testSimpleVolumeDirectAccessWithExternalBackwards();
+	void testSimpleVolumeSamplersWithExternalBackwards();
 
-	void testLargeVolumeDirectAccess();
-	void testLargeVolumeSamplers();
+	void testLargeVolumeDirectAccessAllInternalForwards();
+	void testLargeVolumeSamplersAllInternalForwards();
+	void testLargeVolumeDirectAccessWithExternalForwards();
+	void testLargeVolumeSamplersWithExternalForwards();
+	void testLargeVolumeDirectAccessAllInternalBackwards();
+	void testLargeVolumeSamplersAllInternalBackwards();
+	void testLargeVolumeDirectAccessWithExternalBackwards();
+	void testLargeVolumeSamplersWithExternalBackwards();
 
 private:
+	PolyVox::Compressor* m_pCompressor;
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
 	PolyVox::SimpleVolume<int32_t>* m_pSimpleVolume;
 	PolyVox::LargeVolume<int32_t>* m_pLargeVolume;

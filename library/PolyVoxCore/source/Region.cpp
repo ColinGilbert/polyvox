@@ -23,7 +23,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Region.h"
 
-#include <cassert>
 #include <limits>
 
 namespace PolyVox
@@ -79,7 +78,7 @@ namespace PolyVox
 	 */
 	void Region::accumulate(const Region& reg)
 	{
-		assert(reg.isValid()); //The result of accumulating an invalid region is not defined.
+		POLYVOX_ASSERT(reg.isValid(), "You cannot accumulate an invalid region."); //The result of accumulating an invalid region is not defined.
 
 		m_iLowerX = ((std::min)(m_iLowerX, reg.getLowerX()));
 		m_iLowerY = ((std::min)(m_iLowerY, reg.getLowerY()));

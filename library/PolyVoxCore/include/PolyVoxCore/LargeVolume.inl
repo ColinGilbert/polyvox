@@ -53,6 +53,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other LargeVolume constructor).
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
+	/// \param pCompressor An implementation of the Compressor interface which is used to compress blocks in memory.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
 	/// \param bPagingEnabled Controls whether or not paging is enabled for this LargeVolume.
@@ -62,12 +63,14 @@ namespace PolyVox
 	LargeVolume<VoxelType>::LargeVolume
 	(
 		const Region& regValid,
+		Compressor* pCompressor,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 		bool bPagingEnabled,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
+	,m_pCompressor(pCompressor)
 	{
 		m_funcDataRequiredHandler = dataRequiredHandler;
 		m_funcDataOverflowHandler = dataOverflowHandler;
@@ -80,14 +83,14 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
 	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
-	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	/// make a copy of a volume and in this case you should look at the VolumeResampler.
 	///
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::LargeVolume(const LargeVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +112,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -121,7 +124,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -225,7 +228,7 @@ namespace PolyVox
 			default:
 			{
 				//Should never happen
-				assert(false);
+				POLYVOX_ASSERT(false, "Invlaid case.");
 				return VoxelType(0);
 			}
 		}
@@ -239,30 +242,6 @@ namespace PolyVox
 	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
 		return getVoxelWithWrapping(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Enabling compression allows significantly more data to be stored in memory.
-	/// \param bCompressionEnabled Specifies whether compression is enabled.
-	////////////////////////////////////////////////////////////////////////////////	
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
-	{
-		//Early out - nothing to do
-		if(m_bCompressionEnabled == bCompressionEnabled)
-		{
-			return;
-		}
-		
-		m_bCompressionEnabled = bCompressionEnabled;
-
-		if(m_bCompressionEnabled)
-		{
-			//If compression has been enabled then we need to start honouring the max number of
-			//uncompressed blocks. Because compression has been disabled for a while we might have
-			//gone above that limit. Easiest solution is just to clear the cache and start again.
-			clearBlockCache();
-		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +282,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool LargeVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -456,7 +435,7 @@ namespace PolyVox
 	{
 		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 		{
-			m_vecUncompressedBlockCache[ct]->block.compress();
+			m_vecUncompressedBlockCache[ct]->block.compress(m_pCompressor);
 		}
 		m_vecUncompressedBlockCache.clear();
 	}
@@ -468,7 +447,9 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
-		assert(uBlockSideLength > 0);
+		POLYVOX_ASSERT(uBlockSideLength > 0, "Block side length cannot be zero.");
+		POLYVOX_ASSERT(isPowerOf2(uBlockSideLength), "Block side length must be a power of two.");
+		POLYVOX_ASSERT(m_pCompressor, "You must provide a compressor for the LargeVolume to use.");
 		
 		//Release mode validation
 		if(uBlockSideLength == 0)
@@ -479,6 +460,10 @@ namespace PolyVox
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
+		if(!m_pCompressor)
+		{
+			POLYVOX_THROW(std::invalid_argument, "You must provide a compressor for the LargeVolume to use.");
+		}
 
 		m_uTimestamper = 0;
 		m_uMaxNumberOfUncompressedBlocks = 16;
@@ -486,7 +471,6 @@ namespace PolyVox
 		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
-		m_bCompressionEnabled = true;
 
 		this->m_regValidRegion = regValidRegion;
 
@@ -529,14 +513,15 @@ namespace PolyVox
 
 			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
 		}
-		if(m_bCompressionEnabled) {
+		if(m_pCompressor)
+		{
 			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 			{
 				// find the block in the uncompressed cache
 				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
 				{
 					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-					itBlock->second.block.compress();
+					itBlock->second.block.compress(m_pCompressor);
 					// put last object in cache here
 					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
 					// decrease cache size by one since last element is now in here twice
@@ -583,7 +568,7 @@ namespace PolyVox
 		//This check should also provide a significant speed boost as usually it is true.
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
 		}		
 
@@ -615,6 +600,12 @@ namespace PolyVox
 			
 			// create the new block
 			LoadedBlock newBlock(m_uBlockSideLength);
+
+			// Blocks start out compressed - should we change this?
+			// Or maybe we should just 'seed' them with compressed data,
+			// rather than creating an empty block and then compressing?
+			newBlock.block.compress(m_pCompressor);
+
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			//We have created the new block. If paging is enabled it should be used to
@@ -643,12 +634,12 @@ namespace PolyVox
 
 		if(loadedBlock.block.m_bIsCompressed == false)
 		{ 			
-			assert(m_pLastAccessedBlock->m_tUncompressedData);
+			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
 		}
 
 		//If we are allowed to compress then check whether we need to
-		if((m_bCompressionEnabled) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
+		if((m_pCompressor) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();
@@ -666,7 +657,7 @@ namespace PolyVox
 			}
 			
 			//Compress the least recently used block.
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress();
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress(m_pCompressor);
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
@@ -677,10 +668,10 @@ namespace PolyVox
 			m_vecUncompressedBlockCache.push_back(&loadedBlock);
 		}
 		
-		loadedBlock.block.uncompress();
+		loadedBlock.block.uncompress(m_pCompressor);
 
 		m_pLastAccessedBlock = &(loadedBlock.block);
-		assert(m_pLastAccessedBlock->m_tUncompressedData);
+		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 		return m_pLastAccessedBlock;
 	}
 

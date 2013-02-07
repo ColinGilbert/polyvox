@@ -570,62 +570,50 @@ namespace PolyVox
 				if (edgeTable[iCubeIndex] & 1)
 				{
 					indlist[0] = m_pPreviousVertexIndicesX[uXRegSpace][uYRegSpace];
-					//assert(indlist[0] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2)
 				{
 					indlist[1] = m_pPreviousVertexIndicesY[uXRegSpace+1][uYRegSpace];
-					//assert(indlist[1] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 4)
 				{
 					indlist[2] = m_pPreviousVertexIndicesX[uXRegSpace][uYRegSpace+1];
-					//assert(indlist[2] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 8)
 				{
 					indlist[3] = m_pPreviousVertexIndicesY[uXRegSpace][uYRegSpace];
-					//assert(indlist[3] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 16)
 				{
 					indlist[4] = m_pCurrentVertexIndicesX[uXRegSpace][uYRegSpace];
-					//assert(indlist[4] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 32)
 				{
 					indlist[5] = m_pCurrentVertexIndicesY[uXRegSpace+1][uYRegSpace];
-					//assert(indlist[5] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 64)
 				{
 					indlist[6] = m_pCurrentVertexIndicesX[uXRegSpace][uYRegSpace+1];
-					//assert(indlist[6] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 128)
 				{
 					indlist[7] = m_pCurrentVertexIndicesY[uXRegSpace][uYRegSpace];
-					//assert(indlist[7] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 256)
 				{
 					indlist[8] = m_pPreviousVertexIndicesZ[uXRegSpace][uYRegSpace];
-					//assert(indlist[8] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 512)
 				{
 					indlist[9] = m_pPreviousVertexIndicesZ[uXRegSpace+1][uYRegSpace];
-					//assert(indlist[9] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 1024)
 				{
 					indlist[10] = m_pPreviousVertexIndicesZ[uXRegSpace+1][uYRegSpace+1];
-					//assert(indlist[10] != -1);
 				}
 				if (edgeTable[iCubeIndex] & 2048)
 				{
 					indlist[11] = m_pPreviousVertexIndicesZ[uXRegSpace][uYRegSpace+1];
-					//assert(indlist[11] != -1);
 				}
 
 				for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)

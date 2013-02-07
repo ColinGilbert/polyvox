@@ -2,6 +2,14 @@ Changes for PolyVox version 0.3
 ===============================
 This release has focused on... (some introduction here).
 
+LargeVolume
+-----------
+It is now possible to provide custom compressors for the data which is stored in a LargeVolume. Two compressor implementation are provided with PolyVox - RLECompressor which is suitable for cubic-style terrain, and MinizCompressor which uses the 'miniz' zlib implementation for smooth terrain or general purpose use. Users can provide their own implementation of the compressor interface if they wish.
+
+Note that the setCompressionEnabled() functionality has been removed and a compressor must always be provided when constructing the volume. The ability to disable compression was of questionable benefit and was complicating the logic in the code. In practice it is still possible to mostly disable compression by setting the maximum number of uncompressed blocks to a high value by calling setMaxNumberOfUncompressedBlocks().
+
+These changes regarding compression and paging have also affected the LargeVolume constructors(s). Please see the API docs to see how they look now.
+
 Error Handling
 --------------
 PolyVox now has it's own POLYVOX_ASSERT() macro rather than using the standard assert(). This has some advantages such as allowing a message to be printed and providing file/line information, and it is also possible to enable/disable it independantly of whether you are making a debug or release build

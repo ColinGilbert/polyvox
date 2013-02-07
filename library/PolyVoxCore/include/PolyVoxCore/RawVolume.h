@@ -29,7 +29,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
-#include <cassert>
 #include <cstdlib> //For abort()
 #include <limits>
 #include <memory>

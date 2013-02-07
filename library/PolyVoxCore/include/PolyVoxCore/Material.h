@@ -28,8 +28,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
 
-#include <cassert>
-
 namespace PolyVox
 {
 	///This class represents a voxel storing only a material.

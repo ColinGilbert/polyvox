@@ -26,12 +26,12 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "Impl/Block.h"
+#include "PolyVoxCore/Compressor.h"
 #include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
-#include <cassert>
 #include <cstdlib> //For abort()
 #include <cstring> //For memcpy
 #include <list>
@@ -257,6 +257,7 @@ namespace PolyVox
 		LargeVolume
 		(
 			const Region& regValid,
+			Compressor* pCompressor = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
 			bool bPagingEnabled = false,
@@ -278,8 +279,6 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
 
-		//Sets whether or not blocks are compressed in memory
-		void setCompressionEnabled(bool bCompressionEnabled);
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
@@ -313,7 +312,7 @@ namespace PolyVox
 
 		struct BlockPositionCompare
 		{
-			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b)
+			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b) const
 			{
 				const uint32_t size = 3;
 				for(uint32_t ct = 0; ct < size; ++ct)
@@ -364,7 +363,9 @@ namespace PolyVox
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
 
-		bool m_bCompressionEnabled;
+		//The compressor used by the Blocks to compress their data if required.
+		Compressor* m_pCompressor;
+
 		bool m_bPagingEnabled;
 	};
 }

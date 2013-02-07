@@ -298,14 +298,14 @@ namespace PolyVox
 			hVal = SixConnectedCost(a, b);
 			break;
 		default:
-			assert(false); //Invalid case.
+			POLYVOX_ASSERT(false, "Invalid case");
 		}
 
 		//Sanity checks in debug mode. These can come out eventually, but I
 		//want to make sure that the heuristics I've come up with make sense.
-		assert((a-b).length() <= TwentySixConnectedCost(a,b));
-		assert(TwentySixConnectedCost(a,b) <= EighteenConnectedCost(a,b));
-		assert(EighteenConnectedCost(a,b) <= SixConnectedCost(a,b));
+		POLYVOX_ASSERT((a-b).length() <= TwentySixConnectedCost(a,b), "A* heuristic error.");
+		POLYVOX_ASSERT(TwentySixConnectedCost(a,b) <= EighteenConnectedCost(a,b), "A* heuristic error.");
+		POLYVOX_ASSERT(EighteenConnectedCost(a,b) <= SixConnectedCost(a,b), "A* heuristic error.");
 
 		//Apply the bias to the computed h value;
 		hVal *= m_params.hBias;
@@ -336,7 +336,7 @@ namespace PolyVox
 	}
 
 	// Robert Jenkins' 32 bit integer hash function
-	// http://www.concentric.net/~ttwang/tech/inthash.htm
+	// http://www.burtleburtle.net/bob/hash/integer.html
 	template<typename VolumeType>
 	uint32_t AStarPathfinder<VolumeType>::hash( uint32_t a)
 	{

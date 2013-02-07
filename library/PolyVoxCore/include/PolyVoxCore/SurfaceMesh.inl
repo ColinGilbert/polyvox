@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include <cassert>
-
 namespace PolyVox
 {
 	template <typename VertexType>
@@ -103,9 +101,9 @@ namespace PolyVox
 	void SurfaceMesh<VertexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
 		//Make sure the specified indices correspond to valid vertices.
-		assert(index0 < m_vecVertices.size());
-		assert(index1 < m_vecVertices.size());
-		assert(index2 < m_vecVertices.size());
+		POLYVOX_ASSERT(index0 < m_vecVertices.size(), "Index points at an invalid vertex.");
+		POLYVOX_ASSERT(index1 < m_vecVertices.size(), "Index points at an invalid vertex.");
+		POLYVOX_ASSERT(index2 < m_vecVertices.size(), "Index points at an invalid vertex.");
 
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
@@ -116,9 +114,9 @@ namespace PolyVox
 	void SurfaceMesh<VertexType>::addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
 		//Make sure the specified indices correspond to valid vertices.
-		assert(index0 < m_vecVertices.size());
-		assert(index1 < m_vecVertices.size());
-		assert(index2 < m_vecVertices.size());
+		POLYVOX_ASSERT(index0 < m_vecVertices.size(), "Index points at an invalid vertex.");
+		POLYVOX_ASSERT(index1 < m_vecVertices.size(), "Index points at an invalid vertex.");
+		POLYVOX_ASSERT(index2 < m_vecVertices.size(), "Index points at an invalid vertex.");
 
 		m_vecTriangleIndices.push_back(index0);
 		m_vecTriangleIndices.push_back(index1);
@@ -408,7 +406,7 @@ namespace PolyVox
 			return result;
 		}
 
-		assert(inputMesh.m_vecLodRecords.size() == 1);
+		POLYVOX_ASSERT(inputMesh.m_vecLodRecords.size() == 1, "Number of LOD records must equal one.");
 		if(inputMesh.m_vecLodRecords.size() != 1)
 		{
 			//If we have done progressive LOD then it's too late to split into subsets.

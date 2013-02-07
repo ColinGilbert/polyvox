@@ -39,9 +39,9 @@ namespace PolyVox
 		uint16_t uIndexIncreament;
 
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
-		assert(volInput->getWidth() % arrayResult->getDimension(0) == 0);
-		assert(volInput->getHeight() % arrayResult->getDimension(1) == 0);
-		assert(volInput->getDepth() % arrayResult->getDimension(2) == 0);
+		POLYVOX_ASSERT(volInput->getWidth() % arrayResult->getDimension(0) == 0, "Volume width must be an exact multiple of array width.");
+		POLYVOX_ASSERT(volInput->getHeight() % arrayResult->getDimension(1) == 0, "Volume height must be an exact multiple of array height.");
+		POLYVOX_ASSERT(volInput->getDepth() % arrayResult->getDimension(2) == 0, "Volume depth must be an exact multiple of array depth.");
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
 		//sure they are different for different regions which helps reduce tiling patterns in the results.
@@ -116,7 +116,7 @@ namespace PolyVox
 					else
 					{
 						fVisibility = static_cast<float>(uVisibleDirections) / static_cast<float>(uNoOfSamplesPerOutputElement);
-						assert((fVisibility >= 0.0f) && (fVisibility <= 1.0f));
+						POLYVOX_ASSERT((fVisibility >= 0.0f) && (fVisibility <= 1.0f), "Visibility value out of range.");
 					}
 
 					(*arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = static_cast<uint8_t>(255.0f * fVisibility);

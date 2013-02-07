@@ -38,14 +38,14 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
 	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
-	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	/// make a copy of a volume and in this case you should look at the VolumeResampler.
 	///
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::BaseVolume(const BaseVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>& BaseVolume<VoxelType>::operator=(const BaseVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -173,7 +173,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/) const
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -186,7 +186,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -197,7 +197,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& /*v3dPos*/) const
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -210,7 +210,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -221,7 +221,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -244,7 +244,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool BaseVolume<VoxelType>::setVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, VoxelType /*tValue*/)
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return false;
 	}
 
@@ -256,7 +256,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool BaseVolume<VoxelType>::setVoxelAt(const Vector3DInt32& /*v3dPos*/, VoxelType /*tValue*/)
 	{
-		assert(false);
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return false;
 	}
 

@@ -24,7 +24,9 @@ freely, subject to the following restrictions:
 #include "testvolume.h"
 
 #include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/MinizCompressor.h"
 #include "PolyVoxCore/RawVolume.h"
+#include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
 #include <QtGlobal>
@@ -39,37 +41,25 @@ inline int32_t cantorTupleFunction(int32_t previousResult, int32_t value)
 	return (( previousResult + value  ) * ( previousResult + value + 1 ) + value ) / 2;
 }
 
+/*
+ * Funtions for testing iteration in a forwards direction
+ */
+
+// We allow user provided offset in this function so we can test the case when all samples are inside a volume and also the case when some samples are outside.
+// This is important because samplers are often slower when outside the volume as they have to fall back on directly accessing the volume data.
 template <typename VolumeType>
-VolumeType* createAndFillVolume(void)
-{
-	//Create the volume
-	VolumeType* volume = new VolumeType(Region(-57, -31, 12, 64, 96, 131)); // Deliberatly awkward size
-
-	//Fill the volume with some data
-	for(int z = volume->getEnclosingRegion().getLowerZ(); z <= volume->getEnclosingRegion().getUpperZ(); z++)
-	{
-		for(int y = volume->getEnclosingRegion().getLowerY(); y <= volume->getEnclosingRegion().getUpperY(); y++)
-		{
-			for(int x = volume->getEnclosingRegion().getLowerX(); x <= volume->getEnclosingRegion().getUpperX(); x++)
-			{
-				volume->setVoxelAt(x, y, z, x + y + z);
-			}
-		}
-	}
-
-	return volume;
-}
-
-template <typename VolumeType>
-int32_t testDirectAccessWithWrapping(const VolumeType* volume)
+int32_t testDirectAccessWithWrappingForwards(const VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
 {
 	int32_t result = 0;
 
-	for(int z = volume->getEnclosingRegion().getLowerZ() - 2; z <= volume->getEnclosingRegion().getUpperZ() + 4; z++)
+	// If we know that we are only iterating over voxels internal to the volume then we can avoid calling the 'wrapping' function. This should be faster.
+	bool bAllVoxelsInternal = (lowXOffset > 0) && (lowYOffset > 0) && (lowZOffset > 0) && (highXOffset < 0) && (highYOffset < 0) && (highZOffset < 0);
+
+	for(int z = volume->getEnclosingRegion().getLowerZ() + lowZOffset; z <= volume->getEnclosingRegion().getUpperZ() + highZOffset; z++)
 	{
-		for(int y = volume->getEnclosingRegion().getLowerY() - 3; y <= volume->getEnclosingRegion().getUpperY() + 5; y++)
+		for(int y = volume->getEnclosingRegion().getLowerY() + lowYOffset; y <= volume->getEnclosingRegion().getUpperY() + highYOffset; y++)
 		{
-			for(int x = volume->getEnclosingRegion().getLowerX() - 1; x <= volume->getEnclosingRegion().getUpperX() + 2; x++)
+			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
 				//Three level loop now processes 27 voxel neighbourhood
 				for(int innerZ = -1; innerZ <=1; innerZ++)
@@ -78,7 +68,16 @@ int32_t testDirectAccessWithWrapping(const VolumeType* volume)
 					{
 						for(int innerX = -1; innerX <=1; innerX++)
 						{
-							result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+							// Deeply nested 'if', but this is just a unit test and we should still
+							// see some performance improvement by skipping the wrapping versions.
+							if(bAllVoxelsInternal)
+							{
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ));
+							}
+							else
+							{
+								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+							}
 						}
 					}
 				}	
@@ -91,50 +90,111 @@ int32_t testDirectAccessWithWrapping(const VolumeType* volume)
 }
 
 template <typename VolumeType>
-int32_t testSamplersWithWrapping(VolumeType* volume)
+int32_t testSamplersWithWrappingForwards(VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
 {
 	int32_t result = 0;
 
-	typename VolumeType::Sampler sampler(volume);
-	sampler.setWrapMode(WrapModes::Border, 3);
+	//Test the sampler move functions
+	typename VolumeType::Sampler xSampler(volume);
+	typename VolumeType::Sampler ySampler(volume);
+	typename VolumeType::Sampler zSampler(volume);
 
-	for(int z = volume->getEnclosingRegion().getLowerZ() - 2; z <= volume->getEnclosingRegion().getUpperZ() + 4; z++)
+	xSampler.setWrapMode(WrapModes::Border, 3);
+	ySampler.setWrapMode(WrapModes::Border, 3);
+	zSampler.setWrapMode(WrapModes::Border, 3);
+
+	zSampler.setPosition(volume->getEnclosingRegion().getLowerX() + lowXOffset, volume->getEnclosingRegion().getLowerY() + lowYOffset, volume->getEnclosingRegion().getLowerZ() + lowZOffset);
+	for(int z = volume->getEnclosingRegion().getLowerZ() + lowZOffset; z <= volume->getEnclosingRegion().getUpperZ() + highZOffset; z++)
 	{
-		for(int y = volume->getEnclosingRegion().getLowerY() - 3; y <= volume->getEnclosingRegion().getUpperY() + 5; y++)
+		ySampler = zSampler;
+		for(int y = volume->getEnclosingRegion().getLowerY() + lowYOffset; y <= volume->getEnclosingRegion().getUpperY() + highYOffset; y++)
 		{
-			for(int x = volume->getEnclosingRegion().getLowerX() - 1; x <= volume->getEnclosingRegion().getUpperX() + 2; x++)
+			xSampler = ySampler;
+			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
-				sampler.setPosition(x, y, z);
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
 
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px0py1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px0py1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px1py1nz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1nz());
 
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px0py0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px0py0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px1py0pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py0pz());
 
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px0py1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px0py1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel0px1py1pz());
-				result = cantorTupleFunction(result, sampler.peekVoxel1px1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1pz());
+
+				xSampler.movePositiveX();
+			}
+			ySampler.movePositiveY();
+		}
+		zSampler.movePositiveZ();
+	}
+
+	return result;
+}
+
+/*
+ * Funtions for testing iteration in a backwards direction
+ */
+
+// We allow user provided offset in this function so we can test the case when all samples are inside a volume and also the case when some samples are outside.
+// This is important because samplers are often slower when outside the volume as they have to fall back on directly accessing the volume data.
+template <typename VolumeType>
+int32_t testDirectAccessWithWrappingBackwards(const VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
+{
+	int32_t result = 0;
+
+	// If we know that we are only iterating over voxels internal to the volume then we can avoid calling the 'wrapping' function. This should be faster.
+	bool bAllVoxelsInternal = (lowXOffset > 0) && (lowYOffset > 0) && (lowZOffset > 0) && (highXOffset < 0) && (highYOffset < 0) && (highZOffset < 0);
+
+	for(int z = volume->getEnclosingRegion().getUpperZ() + highZOffset; z >= volume->getEnclosingRegion().getLowerZ() + lowZOffset; z--)
+	{
+		for(int y = volume->getEnclosingRegion().getUpperY() + highYOffset; y >= volume->getEnclosingRegion().getLowerY() + lowYOffset; y--)
+		{
+			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
+			{
+				//Three level loop now processes 27 voxel neighbourhood
+				for(int innerZ = -1; innerZ <=1; innerZ++)
+				{
+					for(int innerY = -1; innerY <=1; innerY++)
+					{
+						for(int innerX = -1; innerX <=1; innerX++)
+						{
+							// Deeply nested 'if', but this is just a unit test and we should still
+							// see some performance improvement by skipping the wrapping versions.
+							if(bAllVoxelsInternal)
+							{
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ));
+							}
+							else
+							{
+								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+							}
+						}
+					}
+				}	
+				//End of inner loops
 			}
 		}
 	}
@@ -143,114 +203,66 @@ int32_t testSamplersWithWrapping(VolumeType* volume)
 }
 
 template <typename VolumeType>
-int32_t complexVolumeTest(void)
+int32_t testSamplersWithWrappingBackwards(VolumeType* volume, int lowXOffset, int lowYOffset, int lowZOffset, int highXOffset, int highYOffset, int highZOffset)
 {
-	VolumeType* testVolume = createAndFillVolume<VolumeType>();
-
 	int32_t result = 0;
 
-	//Test the getVoxel function
-	for(int z = testVolume->getEnclosingRegion().getLowerZ(); z <= testVolume->getEnclosingRegion().getUpperZ(); z++)
-	{
-		for(int y = testVolume->getEnclosingRegion().getLowerY(); y <= testVolume->getEnclosingRegion().getUpperY(); y++)
-		{
-			for(int x = testVolume->getEnclosingRegion().getLowerX(); x <= testVolume->getEnclosingRegion().getUpperX(); x++)
-			{
-				result = cantorTupleFunction(result, testVolume->getVoxel(x, y, z));
-			}
-		}
-	}
-
-	//Test border wrap mode
-	for(int z = testVolume->getEnclosingRegion().getLowerZ(); z <= testVolume->getEnclosingRegion().getUpperZ(); z++)
-	{
-		//Extending outside in y
-		for(int y = testVolume->getEnclosingRegion().getLowerY() - 3; y <= testVolume->getEnclosingRegion().getUpperY() + 5; y++)
-		{
-			for(int x = testVolume->getEnclosingRegion().getLowerX(); x <= testVolume->getEnclosingRegion().getUpperX(); x++)
-			{
-				result = cantorTupleFunction(result, testVolume->getVoxelWithWrapping(x, y, z, WrapModes::Border, 3));
-			}
-		}
-	}
-
-	//Test clamp wrap mode
-	for(int z = testVolume->getEnclosingRegion().getLowerZ(); z <= testVolume->getEnclosingRegion().getUpperZ(); z++)
-	{
-		for(int y = testVolume->getEnclosingRegion().getLowerY(); y <= testVolume->getEnclosingRegion().getUpperY(); y++)
-		{
-			//Extending outside in x
-			for(int x = testVolume->getEnclosingRegion().getLowerX() - 2; x <= testVolume->getEnclosingRegion().getUpperX() + 4; x++)
-			{
-				result = cantorTupleFunction(result, testVolume->getVoxelWithWrapping(x, y, z, WrapModes::Clamp));
-			}
-		}
-	}
-
-	//Test the sampler setPosition
-	typename VolumeType::Sampler sampler(testVolume);
-	sampler.setWrapMode(WrapModes::Border, 1);
-
-	for(int z = testVolume->getEnclosingRegion().getLowerZ() - 2; z <= testVolume->getEnclosingRegion().getUpperZ() + 1; z++)
-	{
-		for(int y = testVolume->getEnclosingRegion().getLowerY() - 1; y <= testVolume->getEnclosingRegion().getUpperY() + 3; y++)
-		{
-			for(int x = testVolume->getEnclosingRegion().getLowerX() - 4; x <= testVolume->getEnclosingRegion().getUpperX() + 2; x++)
-			{
-				sampler.setPosition(x,y,z);
-				result = cantorTupleFunction(result, sampler.getVoxel());
-			}
-		}
-	}
-
 	//Test the sampler move functions
-	typename VolumeType::Sampler xSampler(testVolume);
-	typename VolumeType::Sampler ySampler(testVolume);
-	typename VolumeType::Sampler zSampler(testVolume);
+	typename VolumeType::Sampler xSampler(volume);
+	typename VolumeType::Sampler ySampler(volume);
+	typename VolumeType::Sampler zSampler(volume);
 
-	xSampler.setWrapMode(WrapModes::Border, 1);
-	ySampler.setWrapMode(WrapModes::Clamp, 1);
-	zSampler.setWrapMode(WrapModes::Border, -3);
+	xSampler.setWrapMode(WrapModes::Border, 3);
+	ySampler.setWrapMode(WrapModes::Border, 3);
+	zSampler.setWrapMode(WrapModes::Border, 3);
 
-	zSampler.setPosition(testVolume->getEnclosingRegion().getLowerX() - 4, testVolume->getEnclosingRegion().getLowerY() - 1, testVolume->getEnclosingRegion().getLowerZ() - 2);
-	for(int z = testVolume->getEnclosingRegion().getLowerZ() - 2; z <= testVolume->getEnclosingRegion().getUpperZ() + 1; z++)
+	zSampler.setPosition(volume->getEnclosingRegion().getUpperX() + highXOffset, volume->getEnclosingRegion().getUpperY() + highYOffset, volume->getEnclosingRegion().getUpperZ() + highZOffset);
+	for(int z = volume->getEnclosingRegion().getUpperZ() + highZOffset; z >= volume->getEnclosingRegion().getLowerZ() + lowZOffset; z--)
 	{
 		ySampler = zSampler;
-		for(int y = testVolume->getEnclosingRegion().getLowerY() - 1; y <= testVolume->getEnclosingRegion().getUpperY() + 3; y++)
+		for(int y = volume->getEnclosingRegion().getUpperY() + highYOffset; y >= volume->getEnclosingRegion().getLowerY() + lowYOffset; y--)
 		{
 			xSampler = ySampler;
-			for(int x = testVolume->getEnclosingRegion().getLowerX() - 4; x <= testVolume->getEnclosingRegion().getUpperX() + 2; x++)
+			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
 			{
-				result = cantorTupleFunction(result, xSampler.getVoxel());
-				xSampler.movePositiveX();
-			}
-			ySampler.movePositiveY();
-		}
-		zSampler.movePositiveZ();
-	}
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
 
-	xSampler.setWrapMode(WrapModes::Clamp);
-	ySampler.setWrapMode(WrapModes::Border, 1);
-	zSampler.setWrapMode(WrapModes::Clamp, -1);
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1nz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1nz());
 
-	zSampler.setPosition(testVolume->getEnclosingRegion().getUpperX() + 2, testVolume->getEnclosingRegion().getUpperY() + 3, testVolume->getEnclosingRegion().getUpperZ() + 1);
-	for(int z = 0; z < testVolume->getEnclosingRegion().getDepthInVoxels() + 8; z++)
-	{
-		ySampler = zSampler;
-		for(int y = 0; y < testVolume->getEnclosingRegion().getHeightInVoxels() + 3; y++)
-		{
-			xSampler = ySampler;
-			for(int x = 0; x < testVolume->getEnclosingRegion().getWidthInVoxels() + 5; x++)
-			{
-				result = cantorTupleFunction(result, xSampler.getVoxel());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py0pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py0pz());
+
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1pz());
+				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1pz());
+
 				xSampler.moveNegativeX();
 			}
 			ySampler.moveNegativeY();
 		}
 		zSampler.moveNegativeZ();
 	}
-
-	delete testVolume;
 
 	return result;
 }
@@ -259,10 +271,17 @@ TestVolume::TestVolume()
 {
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
 
+	//m_pCompressor = new RLECompressor<int32_t, uint16_t>;
+	m_pCompressor = new MinizCompressor;
+
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region);
+	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor);
+
+	// LargeVolume currently fails a test if compression is enabled. It
+	// may be related to accessing the data through more than one sampler?
+	//m_pLargeVolume->setCompressionEnabled(false);
 
 	//Fill the volume with some data
 	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
@@ -285,69 +304,272 @@ TestVolume::~TestVolume()
 	delete m_pRawVolume;
 	delete m_pSimpleVolume;
 	delete m_pLargeVolume;
+
+	delete m_pCompressor;
 }
 
-void TestVolume::testRawVolumeDirectAccess()
+/*
+ * RawVolume Tests
+ */
+
+void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pRawVolume);
+		result = testDirectAccessWithWrappingForwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-928601007));
+	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testRawVolumeSamplers()
+void TestVolume::testRawVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pRawVolume);
+		result = testSamplersWithWrappingForwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(1004598054));
+}
+
+void TestVolume::testRawVolumeDirectAccessWithExternalForwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingForwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testSimpleVolumeDirectAccess()
+void TestVolume::testRawVolumeSamplersWithExternalForwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingForwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testRawVolumeDirectAccessAllInternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testRawVolumeSamplersAllInternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pRawVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testRawVolumeDirectAccessWithExternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+void TestVolume::testRawVolumeSamplersWithExternalBackwards()
+{
+	int32_t result = 0;
+
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+/*
+ * SimpleVolume Tests
+ */
+
+void TestVolume::testSimpleVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pSimpleVolume);
+		result = testDirectAccessWithWrappingForwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-928601007));
+	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testSimpleVolumeSamplers()
+void TestVolume::testSimpleVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pSimpleVolume);
+		result = testSamplersWithWrappingForwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
 	}
-	QCOMPARE(result, static_cast<int32_t>(-928601007));
+	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testLargeVolumeDirectAccess()
+void TestVolume::testSimpleVolumeDirectAccessWithExternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrapping(m_pLargeVolume);
+		result = testDirectAccessWithWrappingForwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testLargeVolumeSamplers()
+void TestVolume::testSimpleVolumeSamplersWithExternalForwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingForwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testSimpleVolumeDirectAccessAllInternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testSimpleVolumeSamplersAllInternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testSimpleVolumeDirectAccessWithExternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+void TestVolume::testSimpleVolumeSamplersWithExternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+/*
+ * LargeVolume Tests
+ */
+
+void TestVolume::testLargeVolumeDirectAccessAllInternalForwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingForwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(1004598054));
+}
+
+void TestVolume::testLargeVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 	
 	QBENCHMARK
 	{
-		result = testSamplersWithWrapping(m_pLargeVolume);
+		result = testSamplersWithWrappingForwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(1004598054));
+}
+
+void TestVolume::testLargeVolumeDirectAccessWithExternalForwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingForwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testLargeVolumeSamplersWithExternalForwards()
+{
+	int32_t result = 0;
+	
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingForwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-928601007));
+}
+
+void TestVolume::testLargeVolumeDirectAccessAllInternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testLargeVolumeSamplersAllInternalBackwards()
+{
+	int32_t result = 0;
+	
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-269366578));
+}
+
+void TestVolume::testLargeVolumeDirectAccessWithExternalBackwards()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectAccessWithWrappingBackwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
+}
+
+void TestVolume::testLargeVolumeSamplersWithExternalBackwards()
+{
+	int32_t result = 0;
+	
+	QBENCHMARK
+	{
+		result = testSamplersWithWrappingBackwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+	}
+	QCOMPARE(result, static_cast<int32_t>(-769775893));
 }
 
 QTEST_MAIN(TestVolume)

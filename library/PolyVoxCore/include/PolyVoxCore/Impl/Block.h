@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 #define __PolyVox_Block_H__
 
 #include "PolyVoxCore/Impl/TypeDef.h"
+
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
@@ -56,15 +58,15 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void fill(VoxelType tValue);
 		void initialise(uint16_t uSideLength);
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		void compress(void);
-		void uncompress(void);
+		void compress(Compressor* pCompressor);
+		void uncompress(Compressor* pCompressor);
 
-		std::vector< RunlengthEntry<uint16_t> > m_vecCompressedData;
+		void* m_pCompressedData;
+		uint32_t m_uCompressedDataLength;
 		VoxelType* m_tUncompressedData;
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	

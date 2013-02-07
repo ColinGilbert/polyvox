@@ -48,7 +48,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>::SimpleVolume(const SimpleVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	SimpleVolume<VoxelType>& SimpleVolume<VoxelType>::operator=(const SimpleVolume<VoxelType>& /*rhs*/)
 	{
-		assert(false); // See function comment above.
+		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -186,7 +186,7 @@ namespace PolyVox
 			default:
 			{
 				//Should never happen
-				assert(false);
+				POLYVOX_ASSERT(false, "Invalid case.");
 				return VoxelType(0);
 			}
 		}
@@ -212,7 +212,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool SimpleVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		assert(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)));
+		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
 		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
@@ -248,9 +248,9 @@ namespace PolyVox
 	void SimpleVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
 	{
 		//Debug mode validation
-		assert(uBlockSideLength >= 8);
-		assert(uBlockSideLength <= 256);
-		assert(isPowerOf2(uBlockSideLength));
+		POLYVOX_ASSERT(uBlockSideLength >= 8, "Block side length should be at least 8");
+		POLYVOX_ASSERT(uBlockSideLength <= 256, "Block side length should not be more than 256");
+		POLYVOX_ASSERT(isPowerOf2(uBlockSideLength), "Block side length must be a power of two.");
 		
 		//Release mode validation
 		if(uBlockSideLength < 8)
@@ -308,9 +308,9 @@ namespace PolyVox
 		uBlockY -= m_regValidRegionInBlocks.getLowerCorner().getY();
 		uBlockZ -= m_regValidRegionInBlocks.getLowerCorner().getZ();
 
-		assert(uBlockX >= 0);
-		assert(uBlockY >= 0);
-		assert(uBlockZ >= 0);
+		POLYVOX_ASSERT(uBlockX >= 0, "Block coordinate must not be negative.");
+		POLYVOX_ASSERT(uBlockY >= 0, "Block coordinate must not be negative.");
+		POLYVOX_ASSERT(uBlockZ >= 0, "Block coordinate must not be negative.");
 
 		//Compute the block index
 		uint32_t uBlockIndex =
