@@ -12,7 +12,15 @@ PROPERTY(PolyVox::Vector, y, getY, setY)
 PROPERTY(PolyVox::Vector, z, getZ, setZ)
 #endif
 
+%rename(Plus) operator +;
+%rename(Minus) operator -;
+%rename(Multiply) operator *;
+%rename(Divide) operator /;
+%rename(Equal) operator ==;
+%rename(NotEqual) operator !=;
+
 %extend PolyVox::Vector {
+#ifdef SWIGPYTHON
 	PolyVox::Vector __add__(const PolyVox::Vector& rhs) {
 		return *$self + rhs;
 	}
@@ -31,6 +39,7 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 	PolyVox::Vector __mul__(const StorageType& rhs) {
 		return *$self * rhs;
 	}
+#endif
 	STR()
 };
 
@@ -42,12 +51,62 @@ PROPERTY(PolyVox::Vector, z, getZ, setZ)
 //%csattributes PolyVox::Vector::operator< "[System.Obsolete(\"deprecated\")]"
 
 %define VECTOR3(StorageType,OperationType,ReducedStorageType)
-%ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
-%ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType);
-%ignore PolyVox::Vector<3,StorageType,OperationType>::getW() const;
-%ignore PolyVox::Vector<3,StorageType,OperationType>::setW(ReducedStorageType);
-%ignore PolyVox::Vector<3,StorageType,OperationType>::setElements(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
-%template(Vector3D ## StorageType) PolyVox::Vector<3,StorageType,OperationType>;
+	#if SWIGCSHARP
+	%extend PolyVox::Vector<3,StorageType,OperationType> {
+		PolyVox::Vector<3,StorageType,OperationType> operator+(const PolyVox::Vector<3,StorageType,OperationType>& rhs) {return *$self + rhs;}
+		PolyVox::Vector<3,StorageType,OperationType> operator-(const PolyVox::Vector<3,StorageType,OperationType>& rhs) {return *$self - rhs;}
+		PolyVox::Vector<3,StorageType,OperationType> operator*(const PolyVox::Vector<3,StorageType,OperationType>& rhs) {return *$self * rhs;}
+		PolyVox::Vector<3,StorageType,OperationType> operator/(const PolyVox::Vector<3,StorageType,OperationType>& rhs) {return *$self / rhs;}
+		PolyVox::Vector<3,StorageType,OperationType> operator*(const StorageType& rhs) {return *$self * rhs;}
+		PolyVox::Vector<3,StorageType,OperationType> operator/(const StorageType& rhs) {return *$self / rhs;}
+	};
+	%typemap(cscode) PolyVox::Vector<3,StorageType,OperationType> %{
+		public static Vector3D##StorageType operator+(Vector3D##StorageType lhs, Vector3D##StorageType rhs) {
+			Vector3D##StorageType newVec = new Vector3D##StorageType();
+			newVec = lhs.Plus(rhs);
+			return newVec;
+		}
+		public static Vector3D##StorageType operator-(Vector3D##StorageType lhs, Vector3D##StorageType rhs) {
+			Vector3D##StorageType newVec = new Vector3D##StorageType();
+			newVec = lhs.Minus(rhs);
+			return newVec;
+		}
+		public static Vector3D##StorageType operator*(Vector3D##StorageType lhs, Vector3D##StorageType rhs) {
+			Vector3D##StorageType newVec = new Vector3D##StorageType();
+			newVec = lhs.Multiply(rhs);
+			return newVec;
+		}
+		public static Vector3D##StorageType operator/(Vector3D##StorageType lhs, Vector3D##StorageType rhs) {
+			Vector3D##StorageType newVec = new Vector3D##StorageType();
+			newVec = lhs.Divide(rhs);
+			return newVec;
+		}
+		public static Vector3D##StorageType operator*(Vector3D##StorageType lhs, $typemap(cstype, StorageType) rhs) {
+			Vector3D##StorageType newVec = new Vector3D##StorageType();
+			newVec = lhs.Multiply(rhs);
+			return newVec;
+		}
+		public static Vector3D##StorageType operator/(Vector3D##StorageType lhs, $typemap(cstype, StorageType) rhs) {
+			Vector3D##StorageType newVec = new Vector3D##StorageType();
+			newVec = lhs.Divide(rhs);
+			return newVec;
+		}
+		public bool Equals(Vector3D##StorageType rhs) {
+			if ((object)rhs == null)
+			{
+				return false;
+			}
+			return Equal(rhs);
+		}
+	%}
+	%ignore PolyVox::Vector<3,StorageType,OperationType>::operator<; //This is deprecated
+	#endif
+	%ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
+	%ignore PolyVox::Vector<3,StorageType,OperationType>::Vector(ReducedStorageType,ReducedStorageType);
+	%ignore PolyVox::Vector<3,StorageType,OperationType>::getW() const;
+	%ignore PolyVox::Vector<3,StorageType,OperationType>::setW(ReducedStorageType);
+	%ignore PolyVox::Vector<3,StorageType,OperationType>::setElements(ReducedStorageType,ReducedStorageType,ReducedStorageType,ReducedStorageType);
+	%template(Vector3D ## StorageType) PolyVox::Vector<3,StorageType,OperationType>;
 %enddef
 
 VECTOR3(float,float,float)
