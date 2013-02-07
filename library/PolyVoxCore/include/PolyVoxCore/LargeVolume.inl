@@ -53,6 +53,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other LargeVolume constructor).
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
+	/// \param pCompressor An implementation of the Compressor interface which is used to compress blocks in memory.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
 	/// \param bPagingEnabled Controls whether or not paging is enabled for this LargeVolume.
@@ -82,7 +83,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This function should never be called. Copying volumes by value would be expensive, and we want to prevent users from doing
 	/// it by accident (such as when passing them as paramenters to functions). That said, there are times when you really do want to
-	/// make a copy of a volume and in this case you should look at the Volumeresampler.
+	/// make a copy of a volume and in this case you should look at the VolumeResampler.
 	///
 	/// \sa VolumeResampler
 	////////////////////////////////////////////////////////////////////////////////
@@ -241,30 +242,6 @@ namespace PolyVox
 	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
 		return getVoxelWithWrapping(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Enabling compression allows significantly more data to be stored in memory.
-	/// \param bCompressionEnabled Specifies whether compression is enabled.
-	////////////////////////////////////////////////////////////////////////////////	
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setCompressionEnabled(bool bCompressionEnabled)
-	{
-		//Early out - nothing to do
-		if(m_bCompressionEnabled == bCompressionEnabled)
-		{
-			return;
-		}
-		
-		m_bCompressionEnabled = bCompressionEnabled;
-
-		if(m_bCompressionEnabled)
-		{
-			//If compression has been enabled then we need to start honouring the max number of
-			//uncompressed blocks. Because compression has been disabled for a while we might have
-			//gone above that limit. Easiest solution is just to clear the cache and start again.
-			clearBlockCache();
-		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -472,6 +449,7 @@ namespace PolyVox
 		//Debug mode validation
 		POLYVOX_ASSERT(uBlockSideLength > 0, "Block side length cannot be zero.");
 		POLYVOX_ASSERT(isPowerOf2(uBlockSideLength), "Block side length must be a power of two.");
+		POLYVOX_ASSERT(m_pCompressor, "You must provide a compressor for the LargeVolume to use.");
 		
 		//Release mode validation
 		if(uBlockSideLength == 0)
@@ -482,6 +460,10 @@ namespace PolyVox
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
+		if(!m_pCompressor)
+		{
+			POLYVOX_THROW(std::invalid_argument, "You must provide a compressor for the LargeVolume to use.");
+		}
 
 		m_uTimestamper = 0;
 		m_uMaxNumberOfUncompressedBlocks = 16;
@@ -489,7 +471,6 @@ namespace PolyVox
 		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
-		m_bCompressionEnabled = true;
 
 		this->m_regValidRegion = regValidRegion;
 
@@ -532,7 +513,8 @@ namespace PolyVox
 
 			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
 		}
-		if(m_bCompressionEnabled) {
+		if(m_pCompressor)
+		{
 			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 			{
 				// find the block in the uncompressed cache
@@ -657,7 +639,7 @@ namespace PolyVox
 		}
 
 		//If we are allowed to compress then check whether we need to
-		if((m_bCompressionEnabled) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
+		if((m_pCompressor) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();

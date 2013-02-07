@@ -279,8 +279,6 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
 
-		//Sets whether or not blocks are compressed in memory
-		void setCompressionEnabled(bool bCompressionEnabled);
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
@@ -368,7 +366,6 @@ namespace PolyVox
 		//The compressor used by the Blocks to compress their data if required.
 		Compressor* m_pCompressor;
 
-		bool m_bCompressionEnabled;
 		bool m_bPagingEnabled;
 	};
 }
