@@ -21,12 +21,12 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#define CAN_GO_NEG_X(val) ((val > this->mVolume->getEnclosingRegion().getLowerCorner().getX()) && (val % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_POS_X(val) ((val < this->mVolume->getEnclosingRegion().getUpperCorner().getX()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_NEG_Y(val) ((val > this->mVolume->getEnclosingRegion().getLowerCorner().getY()) && (val % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_POS_Y(val) ((val < this->mVolume->getEnclosingRegion().getUpperCorner().getY()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_NEG_Z(val) ((val > this->mVolume->getEnclosingRegion().getLowerCorner().getZ()) && (val % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_POS_Z(val) ((val < this->mVolume->getEnclosingRegion().getUpperCorner().getZ()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_NEG_X(val) ((val > this->mVolume->getEnclosingRegion().getLowerX()) && (val % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_POS_X(val) ((val < this->mVolume->getEnclosingRegion().getUpperX()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_NEG_Y(val) ((val > this->mVolume->getEnclosingRegion().getLowerY()) && (val % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_POS_Y(val) ((val < this->mVolume->getEnclosingRegion().getUpperY()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_NEG_Z(val) ((val > this->mVolume->getEnclosingRegion().getLowerZ()) && (val % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_POS_Z(val) ((val < this->mVolume->getEnclosingRegion().getUpperZ()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
 
 namespace PolyVox
 {

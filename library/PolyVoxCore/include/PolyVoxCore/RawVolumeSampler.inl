@@ -21,12 +21,12 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#define CAN_GO_NEG_X(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getX())
-#define CAN_GO_POS_X(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getX())
-#define CAN_GO_NEG_Y(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getY())
-#define CAN_GO_POS_Y(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getY())
-#define CAN_GO_NEG_Z(val) (val > this->mVolume->getEnclosingRegion().getLowerCorner().getZ())
-#define CAN_GO_POS_Z(val) (val < this->mVolume->getEnclosingRegion().getUpperCorner().getZ())
+#define CAN_GO_NEG_X(val) (val > this->mVolume->getEnclosingRegion().getLowerX())
+#define CAN_GO_POS_X(val) (val < this->mVolume->getEnclosingRegion().getUpperX())
+#define CAN_GO_NEG_Y(val) (val > this->mVolume->getEnclosingRegion().getLowerY())
+#define CAN_GO_POS_Y(val) (val < this->mVolume->getEnclosingRegion().getUpperY())
+#define CAN_GO_NEG_Z(val) (val > this->mVolume->getEnclosingRegion().getLowerZ())
+#define CAN_GO_POS_Z(val) (val < this->mVolume->getEnclosingRegion().getUpperZ())
 
 namespace PolyVox
 {
