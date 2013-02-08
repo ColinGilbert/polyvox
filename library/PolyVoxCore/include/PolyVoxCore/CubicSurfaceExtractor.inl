@@ -50,8 +50,8 @@ namespace PolyVox
 	{
 		m_meshCurrent->clear();
 
-		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2;
-		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2;
+		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
+		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2;
 
 		uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxVerticesPerPosition};
 		m_previousSliceVertices.resize(arraySize);
@@ -59,31 +59,31 @@ namespace PolyVox
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 
-		m_vecQuads[NegativeX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
-		m_vecQuads[PositiveX].resize(m_regSizeInVoxels.getUpperCorner().getX() - m_regSizeInVoxels.getLowerCorner().getX() + 2);
+		m_vecQuads[NegativeX].resize(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2);
+		m_vecQuads[PositiveX].resize(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2);
 
-		m_vecQuads[NegativeY].resize(m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2);
-		m_vecQuads[PositiveY].resize(m_regSizeInVoxels.getUpperCorner().getY() - m_regSizeInVoxels.getLowerCorner().getY() + 2);
+		m_vecQuads[NegativeY].resize(m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2);
+		m_vecQuads[PositiveY].resize(m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2);
 
-		m_vecQuads[NegativeZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
-		m_vecQuads[PositiveZ].resize(m_regSizeInVoxels.getUpperCorner().getZ() - m_regSizeInVoxels.getLowerCorner().getZ() + 2);
+		m_vecQuads[NegativeZ].resize(m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 2);
+		m_vecQuads[PositiveZ].resize(m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 2);
 
 		typename VolumeType::Sampler volumeSampler(m_volData);	
 		volumeSampler.setWrapMode(m_eWrapMode, m_tBorderValue);
 		
-		for(int32_t z = m_regSizeInVoxels.getLowerCorner().getZ(); z <= m_regSizeInVoxels.getUpperCorner().getZ(); z++)
+		for(int32_t z = m_regSizeInVoxels.getLowerZ(); z <= m_regSizeInVoxels.getUpperZ(); z++)
 		{
-			uint32_t regZ = z - m_regSizeInVoxels.getLowerCorner().getZ();
+			uint32_t regZ = z - m_regSizeInVoxels.getLowerZ();
 
-			for(int32_t y = m_regSizeInVoxels.getLowerCorner().getY(); y <= m_regSizeInVoxels.getUpperCorner().getY(); y++)
+			for(int32_t y = m_regSizeInVoxels.getLowerY(); y <= m_regSizeInVoxels.getUpperY(); y++)
 			{
-				uint32_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
+				uint32_t regY = y - m_regSizeInVoxels.getLowerY();
 
-				volumeSampler.setPosition(m_regSizeInVoxels.getLowerCorner().getX(),y,z);
+				volumeSampler.setPosition(m_regSizeInVoxels.getLowerX(),y,z);
 
-				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX(); x++)
+				for(int32_t x = m_regSizeInVoxels.getLowerX(); x <= m_regSizeInVoxels.getUpperX(); x++)
 				{
-					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();						
+					uint32_t regX = x - m_regSizeInVoxels.getLowerX();						
 
 					uint32_t material; //Filled in by callback
 					typename VolumeType::VoxelType currentVoxel = volumeSampler.getVoxel();
