@@ -65,7 +65,7 @@ namespace PolyVox
 		void compress(Compressor* pCompressor);
 		void uncompress(Compressor* pCompressor);
 
-		void* m_pCompressedData;
+		uint8_t* m_pCompressedData;
 		uint32_t m_uCompressedDataLength;
 		VoxelType* m_tUncompressedData;
 		uint16_t m_uSideLength;

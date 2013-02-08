@@ -167,7 +167,7 @@ namespace PolyVox
 				uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 				// Create new compressed data and copy across
-				m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
+				m_pCompressedData = new uint8_t[uCompressedLength];
 				memcpy(m_pCompressedData, pDstData, uCompressedLength);
 				m_uCompressedDataLength = uCompressedLength;
 			}
@@ -187,7 +187,7 @@ namespace PolyVox
 					uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 					// Create new compressed data and copy across
-					m_pCompressedData = reinterpret_cast<void*>( new uint8_t[uCompressedLength] );
+					m_pCompressedData = new uint8_t[uCompressedLength];
 					memcpy(m_pCompressedData, pDstData, uCompressedLength);
 					m_uCompressedDataLength = uCompressedLength;
 				}

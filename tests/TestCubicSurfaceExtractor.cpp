@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Material.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/SimpleVolume.h"
-#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/CubicSurfaceExtractor.h"
 
 #include <QtTest>
 
@@ -70,13 +70,14 @@ void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
-void testForType(SurfaceMesh<PositionMaterialNormal>& result)
+uint32_t testForType(void)
 {
-	const int32_t uVolumeSideLength = 32;
+	const int32_t uVolumeSideLength = 256;
 
 	//Create empty volume
-	SimpleVolume<VoxelType> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+	SimpleVolume<VoxelType> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)), 128);
 
+	//Fill the volume with data
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
 		for (int32_t y = 0; y < uVolumeSideLength; y++)
@@ -94,20 +95,43 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 		}
 	}
 
-	CubicSurfaceExtractorWithNormals< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result);
-	extractor.execute();
+	uint32_t uTotalVertices = 0;
+	uint32_t uTotalIndices = 0;
+
+	//Run the surface extractor a number of times over differnt regions of the volume.
+	const int32_t uRegionSideLength = 64;
+	for (int32_t z = 0; z < uVolumeSideLength; z += uRegionSideLength)
+	{
+		for (int32_t y = 0; y < uVolumeSideLength; y += uRegionSideLength)
+		{
+			for (int32_t x = 0; x < uVolumeSideLength; x += uRegionSideLength)
+			{
+				SurfaceMesh<PositionMaterial> result;
+				Region regionToExtract(x, y, z, x + uRegionSideLength - 1, y + uRegionSideLength - 1, z + uRegionSideLength - 1);
+				CubicSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, regionToExtract, &result);
+				extractor.execute();
+
+				uTotalVertices += result.getNoOfVertices();
+				uTotalIndices += result.getNoOfIndices();
+			}
+		}
+	}
+
+	// Just some value which is representative of the work we've done. It doesn't
+	// matter what it is, just that it should be the same every time we run the test.
+	return uTotalVertices + uTotalIndices;
 }
 
 void TestCubicSurfaceExtractor::testExecute()
 {
-	const static uint32_t uExpectedVertices = 6624;
+	/*const static uint32_t uExpectedVertices = 6624;
 	const static uint32_t uExpectedIndices = 9936;
 	const static uint32_t uMaterialToCheck = 3000;
 	const static float fExpectedMaterial = 42.0f;
 	const static uint32_t uIndexToCheck = 2000;
 	const static uint32_t uExpectedIndex = 1334;
 
-	SurfaceMesh<PositionMaterialNormal> mesh;
+	SurfaceMesh<PositionMaterialNormal> mesh;*/
 
 	/*testForType<int8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
@@ -154,13 +178,13 @@ void TestCubicSurfaceExtractor::testExecute()
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);*/
 
+	const static uint32_t uExpectedSumOfVerticesAndIndices = 704668;
+	//const static uint32_t uExpectedSumOfVerticesAndIndices = 2792332;
+	uint32_t result = 0;
 	QBENCHMARK {
-		testForType<MaterialDensityPair88>(mesh);
+		result = testForType<MaterialDensityPair88>();
 	}
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);
-	QCOMPARE(mesh.getIndices()[uIndexToCheck], uExpectedIndex);
+	QCOMPARE(result, uExpectedSumOfVerticesAndIndices);
 }
 
 QTEST_MAIN(TestCubicSurfaceExtractor)

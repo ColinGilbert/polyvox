@@ -201,15 +201,15 @@ void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::
 {
 	Perlin perlin(2,2,1,234);
 
-	for(int x = reg.getLowerCorner().getX(); x <= reg.getUpperCorner().getX(); x++)
+	for(int x = reg.getLowerX(); x <= reg.getUpperX(); x++)
 	{
-		for(int y = reg.getLowerCorner().getY(); y <= reg.getUpperCorner().getY(); y++)
+		for(int y = reg.getLowerY(); y <= reg.getUpperY(); y++)
 		{
 			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
 			perlinVal += 1.0f;
 			perlinVal *= 0.5f;
 			perlinVal *= 255;
-			for(int z = reg.getLowerCorner().getZ(); z <= reg.getUpperCorner().getZ(); z++)
+			for(int z = reg.getLowerZ(); z <= reg.getUpperZ(); z++)
 			{
 				MaterialDensityPair44 voxel;
 				if(z < perlinVal)

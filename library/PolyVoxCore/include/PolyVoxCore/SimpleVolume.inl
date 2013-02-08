@@ -281,9 +281,9 @@ namespace PolyVox
 		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
 
 		//Compute the size of the volume in blocks (and note +1 at the end)
-		m_uWidthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getX() - m_regValidRegionInBlocks.getLowerCorner().getX() + 1;
-		m_uHeightInBlocks = m_regValidRegionInBlocks.getUpperCorner().getY() - m_regValidRegionInBlocks.getLowerCorner().getY() + 1;
-		m_uDepthInBlocks = m_regValidRegionInBlocks.getUpperCorner().getZ() - m_regValidRegionInBlocks.getLowerCorner().getZ() + 1;
+		m_uWidthInBlocks = m_regValidRegionInBlocks.getUpperX() - m_regValidRegionInBlocks.getLowerX() + 1;
+		m_uHeightInBlocks = m_regValidRegionInBlocks.getUpperY() - m_regValidRegionInBlocks.getLowerY() + 1;
+		m_uDepthInBlocks = m_regValidRegionInBlocks.getUpperZ() - m_regValidRegionInBlocks.getLowerZ() + 1;
 		m_uNoOfBlocksInVolume = m_uWidthInBlocks * m_uHeightInBlocks * m_uDepthInBlocks;
 
 		//Allocate the data
@@ -304,9 +304,9 @@ namespace PolyVox
 	{
 		//The lower left corner of the volume could be
 		//anywhere, but array indices need to start at zero.
-		uBlockX -= m_regValidRegionInBlocks.getLowerCorner().getX();
-		uBlockY -= m_regValidRegionInBlocks.getLowerCorner().getY();
-		uBlockZ -= m_regValidRegionInBlocks.getLowerCorner().getZ();
+		uBlockX -= m_regValidRegionInBlocks.getLowerX();
+		uBlockY -= m_regValidRegionInBlocks.getLowerY();
+		uBlockZ -= m_regValidRegionInBlocks.getLowerZ();
 
 		POLYVOX_ASSERT(uBlockX >= 0, "Block coordinate must not be negative.");
 		POLYVOX_ASSERT(uBlockY >= 0, "Block coordinate must not be negative.");
