@@ -45,8 +45,8 @@ namespace PolyVox
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
 		//sure they are different for different regions which helps reduce tiling patterns in the results.
-		uRandomUnitVectorIndex += region.getLowerCorner().getX() + region.getLowerCorner().getY() + region.getLowerCorner().getZ();
-		uRandomVectorIndex += region.getLowerCorner().getX() + region.getLowerCorner().getY() + region.getLowerCorner().getZ();
+		uRandomUnitVectorIndex += region.getLowerX() + region.getLowerY() + region.getLowerZ();
+		uRandomVectorIndex += region.getLowerX() + region.getLowerY() + region.getLowerZ();
 
 		//This value helps us jump around in the array a bit more, so the
 		//nth 'random' value isn't always followed by the n+1th 'random' value.
@@ -69,11 +69,11 @@ namespace PolyVox
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
 
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
-		for(uint16_t z = region.getLowerCorner().getZ(); z <= region.getUpperCorner().getZ(); z += iRatioZ)
+		for(uint16_t z = region.getLowerZ(); z <= region.getUpperZ(); z += iRatioZ)
 		{
-			for(uint16_t y = region.getLowerCorner().getY(); y <= region.getUpperCorner().getY(); y += iRatioY)
+			for(uint16_t y = region.getLowerY(); y <= region.getUpperY(); y += iRatioY)
 			{
-				for(uint16_t x = region.getLowerCorner().getX(); x <= region.getUpperCorner().getX(); x += iRatioX)
+				for(uint16_t x = region.getLowerX(); x <= region.getUpperX(); x += iRatioX)
 				{
 					//Compute a start position corresponding to 
 					//the centre of the cell in the output array.

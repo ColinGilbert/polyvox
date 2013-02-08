@@ -53,21 +53,21 @@ namespace PolyVox
 	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
 	void LowPassFilter<SrcVolumeType, DstVolumeType, AccumulationType>::execute()
 	{
-		int32_t iSrcMinX = m_regSrc.getLowerCorner().getX();
-		int32_t iSrcMinY = m_regSrc.getLowerCorner().getY();
-		int32_t iSrcMinZ = m_regSrc.getLowerCorner().getZ();
+		int32_t iSrcMinX = m_regSrc.getLowerX();
+		int32_t iSrcMinY = m_regSrc.getLowerY();
+		int32_t iSrcMinZ = m_regSrc.getLowerZ();
 
-		int32_t iSrcMaxX = m_regSrc.getUpperCorner().getX();
-		int32_t iSrcMaxY = m_regSrc.getUpperCorner().getY();
-		int32_t iSrcMaxZ = m_regSrc.getUpperCorner().getZ();
+		int32_t iSrcMaxX = m_regSrc.getUpperX();
+		int32_t iSrcMaxY = m_regSrc.getUpperY();
+		int32_t iSrcMaxZ = m_regSrc.getUpperZ();
 
-		int32_t iDstMinX = m_regDst.getLowerCorner().getX();
-		int32_t iDstMinY = m_regDst.getLowerCorner().getY();
-		int32_t iDstMinZ = m_regDst.getLowerCorner().getZ();
+		int32_t iDstMinX = m_regDst.getLowerX();
+		int32_t iDstMinY = m_regDst.getLowerY();
+		int32_t iDstMinZ = m_regDst.getLowerZ();
 
-		//int32_t iDstMaxX = m_regDst.getUpperCorner().getX();
-		//int32_t iDstMaxY = m_regDst.getUpperCorner().getY();
-		//int32_t iDstMaxZ = m_regDst.getUpperCorner().getZ();
+		//int32_t iDstMaxX = m_regDst.getUpperX();
+		//int32_t iDstMaxY = m_regDst.getUpperY();
+		//int32_t iDstMaxZ = m_regDst.getUpperZ();
 
 		typename SrcVolumeType::Sampler srcSampler(m_pVolSrc);
 

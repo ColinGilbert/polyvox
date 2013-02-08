@@ -45,13 +45,13 @@ namespace PolyVox
 	template< typename SrcVolumeType, typename DstVolumeType>
 	void VolumeResampler<SrcVolumeType, DstVolumeType>::execute()
 	{
-		int32_t uSrcWidth = m_regSrc.getUpperCorner().getX() - m_regSrc.getLowerCorner().getX() + 1;
-		int32_t uSrcHeight = m_regSrc.getUpperCorner().getY() - m_regSrc.getLowerCorner().getY() + 1;
-		int32_t uSrcDepth = m_regSrc.getUpperCorner().getZ() - m_regSrc.getLowerCorner().getZ() + 1;
+		int32_t uSrcWidth = m_regSrc.getUpperX() - m_regSrc.getLowerX() + 1;
+		int32_t uSrcHeight = m_regSrc.getUpperY() - m_regSrc.getLowerY() + 1;
+		int32_t uSrcDepth = m_regSrc.getUpperZ() - m_regSrc.getLowerZ() + 1;
 
-		int32_t uDstWidth = m_regDst.getUpperCorner().getX() - m_regDst.getLowerCorner().getX() + 1;
-		int32_t uDstHeight = m_regDst.getUpperCorner().getY() - m_regDst.getLowerCorner().getY() + 1;
-		int32_t uDstDepth = m_regDst.getUpperCorner().getZ() - m_regDst.getLowerCorner().getZ() + 1;
+		int32_t uDstWidth = m_regDst.getUpperX() - m_regDst.getLowerX() + 1;
+		int32_t uDstHeight = m_regDst.getUpperY() - m_regDst.getLowerY() + 1;
+		int32_t uDstDepth = m_regDst.getUpperZ() - m_regDst.getLowerZ() + 1;
 
 		if((uSrcWidth == uDstWidth) && (uSrcHeight == uDstHeight) && (uSrcDepth == uDstDepth))
 		{
@@ -66,11 +66,11 @@ namespace PolyVox
 	template< typename SrcVolumeType, typename DstVolumeType>
 	void VolumeResampler<SrcVolumeType, DstVolumeType>::resampleSameSize()
 	{
-		for(int32_t sz = m_regSrc.getLowerCorner().getZ(), dz = m_regDst.getLowerCorner().getZ(); dz <= m_regDst.getUpperCorner().getZ(); sz++, dz++)
+		for(int32_t sz = m_regSrc.getLowerZ(), dz = m_regDst.getLowerZ(); dz <= m_regDst.getUpperZ(); sz++, dz++)
 		{
-			for(int32_t sy = m_regSrc.getLowerCorner().getY(), dy = m_regDst.getLowerCorner().getY(); dy <= m_regDst.getUpperCorner().getY(); sy++, dy++)
+			for(int32_t sy = m_regSrc.getLowerY(), dy = m_regDst.getLowerY(); dy <= m_regDst.getUpperY(); sy++, dy++)
 			{
-				for(int32_t sx = m_regSrc.getLowerCorner().getX(), dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); sx++,dx++)
+				for(int32_t sx = m_regSrc.getLowerX(), dx = m_regDst.getLowerX(); dx <= m_regDst.getUpperX(); sx++,dx++)
 				{
 					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
 					const typename DstVolumeType::VoxelType& tDstVoxel = static_cast<typename DstVolumeType::VoxelType>(tSrcVoxel);
@@ -97,19 +97,19 @@ namespace PolyVox
 
 		typename SrcVolumeType::Sampler sampler(m_pVolSrc);
 
-		for(int32_t dz = m_regDst.getLowerCorner().getZ(); dz <= m_regDst.getUpperCorner().getZ(); dz++)
+		for(int32_t dz = m_regDst.getLowerZ(); dz <= m_regDst.getUpperZ(); dz++)
 		{
-			for(int32_t dy = m_regDst.getLowerCorner().getY(); dy <= m_regDst.getUpperCorner().getY(); dy++)
+			for(int32_t dy = m_regDst.getLowerY(); dy <= m_regDst.getUpperY(); dy++)
 			{
-				for(int32_t dx = m_regDst.getLowerCorner().getX(); dx <= m_regDst.getUpperCorner().getX(); dx++)
+				for(int32_t dx = m_regDst.getLowerX(); dx <= m_regDst.getUpperX(); dx++)
 				{
-					float sx = (dx - m_regDst.getLowerCorner().getX()) * fScaleX;
-					float sy = (dy - m_regDst.getLowerCorner().getY()) * fScaleY;
-					float sz = (dz - m_regDst.getLowerCorner().getZ()) * fScaleZ;
+					float sx = (dx - m_regDst.getLowerX()) * fScaleX;
+					float sy = (dy - m_regDst.getLowerY()) * fScaleY;
+					float sz = (dz - m_regDst.getLowerZ()) * fScaleZ;
 
-					sx += m_regSrc.getLowerCorner().getX();
-					sy += m_regSrc.getLowerCorner().getY();
-					sz += m_regSrc.getLowerCorner().getZ();
+					sx += m_regSrc.getLowerX();
+					sy += m_regSrc.getLowerY();
+					sz += m_regSrc.getLowerZ();
 
 					sampler.setPosition(sx,sy,sz);
 					const typename SrcVolumeType::VoxelType& voxel000 = sampler.peekVoxel0px0py0pz();
