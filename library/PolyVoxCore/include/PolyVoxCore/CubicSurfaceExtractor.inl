@@ -79,11 +79,11 @@ namespace PolyVox
 			{
 				uint32_t regY = y - m_regSizeInVoxels.getLowerCorner().getY();
 
+				volumeSampler.setPosition(m_regSizeInVoxels.getLowerCorner().getX(),y,z);
+
 				for(int32_t x = m_regSizeInVoxels.getLowerCorner().getX(); x <= m_regSizeInVoxels.getUpperCorner().getX(); x++)
 				{
-					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();				
-
-					volumeSampler.setPosition(x,y,z);
+					uint32_t regX = x - m_regSizeInVoxels.getLowerCorner().getX();						
 
 					uint32_t material; //Filled in by callback
 					typename VolumeType::VoxelType currentVoxel = volumeSampler.getVoxel();
@@ -153,6 +153,8 @@ namespace PolyVox
 
 						m_vecQuads[PositiveZ][regZ].push_back(Quad(v0, v3, v2, v1));
 					}
+
+					volumeSampler.movePositiveX();
 				}
 			}
 
