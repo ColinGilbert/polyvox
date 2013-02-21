@@ -122,7 +122,7 @@ namespace PolyVox
 		void execute();		
 
 	private:
-		int32_t addVertex(float fX, float fY, float fZ, uint32_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, uint32_t uMaterial, Array<3, IndexAndMaterial>& existingVertices);
 		bool performQuadMerging(std::list<Quad>& quads);
 		bool mergeQuads(Quad& q1, Quad& q2);
 
