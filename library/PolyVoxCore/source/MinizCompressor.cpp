@@ -5,9 +5,9 @@
 #define MINIZ_NO_STDIO
 #define MINIZ_NO_ARCHIVE_APIS
 #define MINIZ_NO_TIME
-//#define MINIZ_NO_ZLIB_APIS
+#define MINIZ_NO_ZLIB_APIS
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
-//#define MINIZ_NO_MALLOC
+#define MINIZ_NO_MALLOC
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 // For some unknown reason the miniz library is supplied only as a 
@@ -21,19 +21,32 @@ using namespace std;
 
 namespace PolyVox
 {
-	MinizCompressor::MinizCompressor()
+	// Compression levels: 0-9 are the standard zlib-style levels, 10 is best possible compression (not zlib compatible, and may be very slow) 
+	MinizCompressor::MinizCompressor(int iCompressionLevel)
+		:m_iCompressionLevel(iCompressionLevel)
+		,g_deflator(0)
 	{
+		tdefl_compressor* pDeflator = new tdefl_compressor;
+		g_deflator = reinterpret_cast<void*>(pDeflator);
 	}
 
 	MinizCompressor::~MinizCompressor()
 	{
+		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(g_deflator);
+		delete pDeflator;
 	}
 
 	uint32_t MinizCompressor::getMaxCompressedSize(uint32_t uUncompressedInputSize)
 	{
-		return static_cast<uint32_t>(mz_compressBound(static_cast<mz_ulong>(uUncompressedInputSize)));
+		// The contents of this function are copied from miniz's 'mz_deflateBound()'
+		// (which we can't use because it is part of the zlib-style higher level API).
+		unsigned long source_len = uUncompressedInputSize;
+
+		// This is really over conservative. (And lame, but it's actually pretty tricky to compute a true upper bound given the way tdefl's blocking works.)
+		return MZ_MAX(128 + (source_len * 110) / 100, 128 + source_len + ((source_len / (31 * 1024)) + 1) * 5);
 	}
 
+	// The commented out function is left here for reference and debugging purposes.
 	/*uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		mz_ulong ulDstLength = uDstLength;
@@ -51,24 +64,23 @@ namespace PolyVox
 		return ulDstLength;
 	}*/
 
+	// The behaviour of this function should be the same as the commented out version above (except that it requires the destination to be a power of two),
+	// but it's implemented using the lower level API which does not conflict with zlib or perform any memory allocations.
 	uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
-		int level = 9;
-
-		// tdefl_compressor contains all the state needed by the low-level compressor so it's a pretty big struct (~300k).
-		// This example makes it a global vs. putting it on the stack, of course in real-world usage you'll probably malloc() or new it.
-		tdefl_compressor g_deflator;
+		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(g_deflator);
 
 		// The number of dictionary probes to use at each compression level (0-10). 0=implies fastest/minimal possible probing.
 		static const mz_uint s_tdefl_num_probes[11] = { 0, 1, 6, 32,  16, 32, 128, 256,  512, 768, 1500 };
 
 		// create tdefl() compatible flags (we have to compose the low-level flags ourselves, or use tdefl_create_comp_flags_from_zip_params() but that means MINIZ_NO_ZLIB_APIS can't be defined).
-		mz_uint comp_flags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[MZ_MIN(10, level)] | ((level <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
-		if (!level)
+		mz_uint comp_flags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[MZ_MIN(10, m_iCompressionLevel)] | ((m_iCompressionLevel <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
+		if (!m_iCompressionLevel)
+		{
 			comp_flags |= TDEFL_FORCE_ALL_RAW_BLOCKS;
+		}
 
-		tdefl_status status = tdefl_init(&g_deflator, NULL, NULL, comp_flags);
-		assert(status == TDEFL_STATUS_OKAY);
+		tdefl_status status = tdefl_init(pDeflator, NULL, NULL, comp_flags);
 		if (status != TDEFL_STATUS_OKAY)
 		{
 			stringstream ss;
@@ -78,9 +90,8 @@ namespace PolyVox
 
 		size_t ulDstLength = uDstLength;
 		// Compress as much of the input as possible (or all of it) to the output buffer.
-		status = tdefl_compress(&g_deflator, pSrcData, &uSrcLength, pDstData, &ulDstLength, TDEFL_FINISH);
+		status = tdefl_compress(pDeflator, pSrcData, &uSrcLength, pDstData, &ulDstLength, TDEFL_FINISH);
 
-		assert(status == TDEFL_STATUS_DONE);
 		if (status != TDEFL_STATUS_DONE)
 		{
 			stringstream ss;
@@ -91,6 +102,7 @@ namespace PolyVox
 		return ulDstLength;
 	}
 
+	// The commented out function is left here for reference and debugging purposes.
 	/*uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		mz_ulong ulDstLength = uDstLength;
@@ -106,6 +118,8 @@ namespace PolyVox
 		return ulDstLength;
 	}*/
 
+	// The behaviour of this function should be the same as the commented out version above (except that it requires the destination to be a power of two),
+	// but it's implemented using the lower level API which does not conflict with zlib or perform any memory allocations.
 	uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		size_t ulDstLength = uDstLength;
