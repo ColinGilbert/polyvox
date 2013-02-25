@@ -37,7 +37,7 @@ public:
 	~TestVolume();
 	
 private slots:
-	/*void testRawVolumeDirectAccessAllInternalForwards();
+	void testRawVolumeDirectAccessAllInternalForwards();
 	void testRawVolumeSamplersAllInternalForwards();
 	void testRawVolumeDirectAccessWithExternalForwards();
 	void testRawVolumeSamplersWithExternalForwards();
@@ -53,7 +53,7 @@ private slots:
 	void testSimpleVolumeDirectAccessAllInternalBackwards();
 	void testSimpleVolumeSamplersAllInternalBackwards();
 	void testSimpleVolumeDirectAccessWithExternalBackwards();
-	void testSimpleVolumeSamplersWithExternalBackwards();*/
+	void testSimpleVolumeSamplersWithExternalBackwards();
 
 	void testLargeVolumeDirectAccessAllInternalForwards();
 	void testLargeVolumeSamplersAllInternalForwards();
