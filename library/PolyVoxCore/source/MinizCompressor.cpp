@@ -23,16 +23,25 @@ namespace PolyVox
 {
 	// Compression levels: 0-9 are the standard zlib-style levels, 10 is best possible compression (not zlib compatible, and may be very slow) 
 	MinizCompressor::MinizCompressor(int iCompressionLevel)
-		:m_iCompressionLevel(iCompressionLevel)
-		,g_deflator(0)
+		:m_pDeflator(0)
 	{
 		tdefl_compressor* pDeflator = new tdefl_compressor;
-		g_deflator = reinterpret_cast<void*>(pDeflator);
+		m_pDeflator = reinterpret_cast<void*>(pDeflator);
+
+		// The number of dictionary probes to use at each compression level (0-10). 0=implies fastest/minimal possible probing.
+		static const mz_uint s_tdefl_num_probes[11] = { 0, 1, 6, 32,  16, 32, 128, 256,  512, 768, 1500 };
+
+		// create tdefl() compatible flags (we have to compose the low-level flags ourselves, or use tdefl_create_comp_flags_from_zip_params() but that means MINIZ_NO_ZLIB_APIS can't be defined).
+		m_uCompressionFlags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[MZ_MIN(10, iCompressionLevel)] | ((iCompressionLevel <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
+		if (!iCompressionLevel)
+		{
+			m_uCompressionFlags |= TDEFL_FORCE_ALL_RAW_BLOCKS;
+		}
 	}
 
 	MinizCompressor::~MinizCompressor()
 	{
-		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(g_deflator);
+		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(m_pDeflator);
 		delete pDeflator;
 	}
 
@@ -68,19 +77,10 @@ namespace PolyVox
 	// but it's implemented using the lower level API which does not conflict with zlib or perform any memory allocations.
 	uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
-		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(g_deflator);
+		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(m_pDeflator);
 
-		// The number of dictionary probes to use at each compression level (0-10). 0=implies fastest/minimal possible probing.
-		static const mz_uint s_tdefl_num_probes[11] = { 0, 1, 6, 32,  16, 32, 128, 256,  512, 768, 1500 };
-
-		// create tdefl() compatible flags (we have to compose the low-level flags ourselves, or use tdefl_create_comp_flags_from_zip_params() but that means MINIZ_NO_ZLIB_APIS can't be defined).
-		mz_uint comp_flags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[MZ_MIN(10, m_iCompressionLevel)] | ((m_iCompressionLevel <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
-		if (!m_iCompressionLevel)
-		{
-			comp_flags |= TDEFL_FORCE_ALL_RAW_BLOCKS;
-		}
-
-		tdefl_status status = tdefl_init(pDeflator, NULL, NULL, comp_flags);
+		// It seems we have to reinitialise the deflator for each fresh dataset (it's probably intended for streaming, which we're not doing here)
+		tdefl_status status = tdefl_init(pDeflator, NULL, NULL, m_uCompressionFlags);
 		if (status != TDEFL_STATUS_OKAY)
 		{
 			stringstream ss;
