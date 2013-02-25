@@ -72,9 +72,11 @@ namespace PolyVox
 			POLYVOX_THROW(std::runtime_error, ss.str());
 		}
 
+		size_t ulSrcLength = uSrcLength;
 		size_t ulDstLength = uDstLength;
+
 		// Compress as much of the input as possible (or all of it) to the output buffer.
-		status = tdefl_compress(pDeflator, pSrcData, &uSrcLength, pDstData, &ulDstLength, TDEFL_FINISH);
+		status = tdefl_compress(pDeflator, pSrcData, &ulSrcLength, pDstData, &ulDstLength, TDEFL_FINISH);
 
 		if (status != TDEFL_STATUS_DONE)
 		{
@@ -100,6 +102,7 @@ namespace PolyVox
 			POLYVOX_THROW(std::invalid_argument, "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
 		}
 
+		size_t ulSrcLength = uSrcLength;
 		size_t ulDstLength = uDstLength;
 
 		tinfl_decompressor inflator;
@@ -107,7 +110,7 @@ namespace PolyVox
 
 		// Do the decompression. In some scenarios 'tinfl_decompress' would be called multiple times with the same dest buffer but
 		// different locations within it. In our scenario it's only called once so the start and the location are the same (both pDstData).
-		tinfl_status status = tinfl_decompress(&inflator, (const mz_uint8 *)pSrcData, &uSrcLength, (mz_uint8 *)pDstData, (mz_uint8 *)pDstData, &ulDstLength, TINFL_FLAG_PARSE_ZLIB_HEADER);
+		tinfl_status status = tinfl_decompress(&inflator, (const mz_uint8 *)pSrcData, &ulSrcLength, (mz_uint8 *)pDstData, (mz_uint8 *)pDstData, &ulDstLength, TINFL_FLAG_PARSE_ZLIB_HEADER);
 
 		if (status != TINFL_STATUS_DONE)
 		{
