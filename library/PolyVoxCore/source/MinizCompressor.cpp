@@ -1,5 +1,7 @@
 #include "PolyVoxCore/MinizCompressor.h"
 
+#include "PolyVoxCore/Impl/Utility.h"
+
 // Diable things we don't need, and in particular the zlib compatible names which
 // would cause conflicts if a user application is using both PolyVox and zlib.
 #define MINIZ_NO_STDIO
@@ -88,12 +90,17 @@ namespace PolyVox
 	// but it's implemented using the lower level API which does not conflict with zlib or perform any memory allocations.
 	uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
+		// I don't know exactly why this limitation exists but it's an implementation detail of miniz. It shouldn't matter for our purposes 
+		// as our detination is a Block and those are always a power of two. If you need to use this class for other purposes then you'll
+		// probably have to scale up your dst buffer to the nearest appropriate size. Alternatively you can use the mz_uncompress function,
+		// but that means enabling parts of the miniz API which are #defined out at the top of this file.
+		POLYVOX_ASSERT(isPowerOf2(uDstLength), "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
+		if(isPowerOf2(uDstLength) == false)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
+		}
+
 		size_t ulDstLength = uDstLength;
-
-		//int result = mz_uncompress((unsigned char*) pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-		//assert(result == MZ_OK);
-
-		//Check dest length is power of two! If it's a problem we could fall back on mz_uncompress at the expense of performance and bringing in more of the library.
 
 		tinfl_decompressor inflator;
 		tinfl_init(&inflator);
