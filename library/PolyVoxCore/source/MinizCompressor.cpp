@@ -55,24 +55,6 @@ namespace PolyVox
 		return MZ_MAX(128 + (source_len * 110) / 100, 128 + source_len + ((source_len / (31 * 1024)) + 1) * 5);
 	}
 
-	// The commented out function is left here for reference and debugging purposes.
-	/*uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
-	{
-		mz_ulong ulDstLength = uDstLength;
-
-		// Do the compression
-		int result = mz_compress((unsigned char*)pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-		if(result != MZ_OK)
-		{
-			stringstream ss;
-			ss << "mz_compress() failed with return code '" << result << "'";
-			POLYVOX_THROW(std::runtime_error, ss.str());
-		}
-
-		// Return the number of bytes written to the output.
-		return ulDstLength;
-	}*/
-
 	// The behaviour of this function should be the same as the commented out version above (except that it requires the destination to be a power of two),
 	// but it's implemented using the lower level API which does not conflict with zlib or perform any memory allocations.
 	uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
@@ -101,22 +83,6 @@ namespace PolyVox
 
 		return ulDstLength;
 	}
-
-	// The commented out function is left here for reference and debugging purposes.
-	/*uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
-	{
-		mz_ulong ulDstLength = uDstLength;
-
-		int result = mz_uncompress((unsigned char*) pDstData, &ulDstLength, (const unsigned char*) pSrcData, uSrcLength);
-		if(result != MZ_OK)
-		{
-			stringstream ss;
-			ss << "mz_uncompress() failed with return code '" << result << "'";
-			POLYVOX_THROW(std::runtime_error, ss.str());
-		}
-
-		return ulDstLength;
-	}*/
 
 	// The behaviour of this function should be the same as the commented out version above (except that it requires the destination to be a power of two),
 	// but it's implemented using the lower level API which does not conflict with zlib or perform any memory allocations.
