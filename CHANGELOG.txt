@@ -2,6 +2,8 @@ Changes for PolyVox version 0.3
 ===============================
 This release has focused on... (some introduction here).
 
+This line was added just for testing.
+
 LargeVolume
 -----------
 It is now possible to provide custom compressors for the data which is stored in a LargeVolume. Two compressor implementation are provided with PolyVox - RLECompressor which is suitable for cubic-style terrain, and MinizCompressor which uses the 'miniz' zlib implementation for smooth terrain or general purpose use. Users can provide their own implementation of the compressor interface if they wish.
