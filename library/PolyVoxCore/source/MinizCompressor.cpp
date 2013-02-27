@@ -16,10 +16,9 @@
 // single .c file without a header. Apparently the only way to use 
 // it is then to #include it directly which is what the examples do.
 // We also disable some warnings as I don't want to fix external code.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wno-enum-compare"
+#pragma GCC diagnostic ignored "-Wenum-compare"
 #include "PolyVoxCore/Impl/miniz.c"
-#pragma GCC diagnostic pop
+
 
 #include <sstream>
 
