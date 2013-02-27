@@ -36,17 +36,23 @@ if(ENABLE_BINDINGS)
 		include(${SWIG_USE_FILE})
 		
 		include_directories(${PYTHON_INCLUDE_PATH})
-		include_directories(${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
+		include_directories(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
 		link_directories(${PolyVoxCore_BINARY_DIR})
 
 		set(CMAKE_SWIG_FLAGS "")
 		set_source_files_properties(PolyVoxCore.i PROPERTIES CPLUSPLUS ON)
 		
 		#set_source_files_properties(PolyVoxCore.i PROPERTIES SWIG_FLAGS "-builtin")
-		swig_add_module(PolyVoxCore python PolyVoxCore.i)
-		swig_link_libraries(PolyVoxCore ${PYTHON_LIBRARIES} PolyVoxCore)
+		swig_add_module(PolyVoxCorePython python PolyVoxCore.i)
+		swig_link_libraries(PolyVoxCorePython ${PYTHON_LIBRARIES} PolyVoxCore)
+		set_target_properties(${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTIES OUTPUT_NAME _PolyVoxCore)
 		#set_target_properties(${SWIG_MODULE_PolyVoxCore_REAL_NAME} PROPERTIES SUFFIX ".pyd")
-		SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCore_REAL_NAME} PROPERTY FOLDER "Bindings")
+		SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTY FOLDER "Bindings")
+		
+		set(SWIG_MODULE_PolyVoxCoreCSharp_EXTRA_FLAGS "-dllimport;PolyVoxCoreCSharp") #This _should_ be inside UseSWIG.cmake - http://www.cmake.org/Bug/view.php?id=13814
+		swig_add_module(PolyVoxCoreCSharp csharp PolyVoxCore.i)
+		swig_link_libraries(PolyVoxCoreCSharp PolyVoxCore)
+		SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCoreCSharp_REAL_NAME} PROPERTY FOLDER "Bindings")
 	else()
 		set(BUILD_BINDINGS OFF CACHE BOOL "Will the bindings be built" FORCE)
 	endif()

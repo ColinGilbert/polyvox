@@ -24,6 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TypeDef_H__
 #define __PolyVox_TypeDef_H__
 
+#include "PolyVoxCore/Impl/CompilerCapabilities.h"
+
 //Definitions needed to make library functions accessable
 // See http://gcc.gnu.org/wiki/Visibility for more info.
 #if defined _WIN32 || defined __CYGWIN__
@@ -42,6 +44,13 @@ freely, subject to the following restrictions:
     #define POLYVOX_HELPER_EXPORT
     #define POLYVOX_HELPER_LOCAL
   #endif
+#endif
+
+#if defined SWIG
+  //Do nothing in this case
+#else
+  #undef POLYVOX_DEPRECATED
+  #define POLYVOX_DEPRECATED //Define it to nothing to avoid warnings
 #endif
 
 // Now we use the generic helper definitions above to define POLYVOX_API and POLYVOX_LOCAL.
@@ -65,9 +74,6 @@ freely, subject to the following restrictions:
 	//To support old (pre-vc2010) Microsoft compilers we use boost to replace the
 	//std::shared_ptr and potentially other C++0x features. To use this capability you
 	//will need to make sure you have boost installed on your system.
-	#include <boost/smart_ptr.hpp>
-	#define polyvox_shared_ptr boost::shared_ptr
-
 	#include <boost/function.hpp>
 	#define polyvox_function boost::function
 
@@ -75,31 +81,40 @@ freely, subject to the following restrictions:
 	#define polyvox_bind boost::bind
 	#define polyvox_placeholder_1 _1
 	#define polyvox_placeholder_2 _2
-	
-	#include <boost/static_assert.hpp>
-	#define static_assert BOOST_STATIC_ASSERT
-
-
-	//As long as we're requiring boost, we'll use it to compensate
-	//for the missing cstdint header too.
-	#include <boost/cstdint.hpp>
-	using boost::int8_t;
-	using boost::int16_t;
-	using boost::int32_t;
-	using boost::uint8_t;
-	using boost::uint16_t;
-	using boost::uint32_t;
 #else
 	//We have a decent compiler - use real C++0x features
-	#include <cstdint>
 	#include <functional>
-	#include <memory>
-	#define polyvox_shared_ptr std::shared_ptr
 	#define polyvox_function std::function
 	#define polyvox_bind std::bind
 	#define polyvox_placeholder_1 std::placeholders::_1
 	#define polyvox_placeholder_2 std::placeholders::_2
-	//#define static_assert static_assert //we can use this
+#endif
+
+#if defined(HAS_CXX11_CONSTEXPR)
+	#define polyvox_constexpr_const constexpr //constexpr which falls back to const
+	#define polyvox_constexpr constexpr //constexpr which falls back to nothing
+#else
+	#define polyvox_constexpr_const const
+	#define polyvox_constexpr
+#endif
+
+#if defined(HAS_CXX11_CSTDINT_H)
+	#include <cstdint>
+#else
+	typedef signed char     int8_t;
+	typedef unsigned char   uint8_t;
+	typedef short           int16_t;
+	typedef unsigned short  uint16_t;
+	typedef long            int32_t;
+	typedef unsigned long   uint32_t;
+#endif
+
+#if defined(HAS_CXX11_SHARED_PTR)
+	#include <memory>
+	#define polyvox_shared_ptr std::shared_ptr
+#else
+	#include <boost/smart_ptr.hpp>
+	#define polyvox_shared_ptr boost::shared_ptr
 #endif
 
 #endif

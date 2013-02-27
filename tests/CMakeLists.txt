@@ -39,7 +39,7 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	SET_PROPERTY(TARGET ${executablename} PROPERTY FOLDER "Tests")
 ENDMACRO(CREATE_TEST)
 
-INCLUDE_DIRECTORIES(${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/include ${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
 REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 
 # Test Template. Copy and paste this template for consistant naming.
@@ -51,6 +51,7 @@ REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 # Python tests
 IF(BUILD_BINDINGS)
 	ADD_TEST(PythonSurfaceExtractorTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestSurfaceExtractor.py)
+	ADD_TEST(PythonRaycastTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestRaycast.py)
 ENDIF()
 
 # AmbientOcclusionGenerator tests
@@ -72,10 +73,6 @@ ADD_TEST(CubicSurfaceExtractorExecuteTest ${LATEST_TEST} testExecute)
 CREATE_TEST(TestLowPassFilter.h TestLowPassFilter.cpp TestLowPassFilter)
 ADD_TEST(LowPassFilterExecuteTest ${LATEST_TEST} testExecute)
 
-# LargeVolume tests
-CREATE_TEST(testvolume.h testvolume.cpp testvolume)
-ADD_TEST(VolumeSizeTest ${LATEST_TEST} testSize)
-
 # Material tests
 CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
 ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
@@ -96,6 +93,36 @@ CREATE_TEST(testvector.h testvector.cpp testvector)
 ADD_TEST(VectorLengthTest ${LATEST_TEST} testLength)
 ADD_TEST(VectorDotProductTest ${LATEST_TEST} testDotProduct)
 ADD_TEST(VectorEqualityTest ${LATEST_TEST} testEquality)
+
+# Volume tests
+CREATE_TEST(testvolume.h testvolume.cpp testvolume)
+
+ADD_TEST(RawVolumeDirectAccessAllInternalForwards ${LATEST_TEST} testRawVolumeDirectAccessAllInternalForwards)
+ADD_TEST(RawVolumeSamplersAllInternalForwards ${LATEST_TEST} testRawVolumeSamplersAllInternalForwards)
+ADD_TEST(RawVolumeDirectAccessWithExternalForwards ${LATEST_TEST} testRawVolumeDirectAccessWithExternalForwards)
+ADD_TEST(RawVolumeSamplersWithExternalForwards ${LATEST_TEST} testRawVolumeSamplersWithExternalForwards)
+ADD_TEST(RawVolumeDirectAccessAllInternalBackwards ${LATEST_TEST} testRawVolumeDirectAccessAllInternalBackwards)
+ADD_TEST(RawVolumeSamplersAllInternalBackwards ${LATEST_TEST} testRawVolumeSamplersAllInternalBackwards)
+ADD_TEST(RawVolumeDirectAccessWithExternalBackwards ${LATEST_TEST} testRawVolumeDirectAccessWithExternalBackwards)
+ADD_TEST(RawVolumeSamplersWithExternalBackwards ${LATEST_TEST} testRawVolumeSamplersWithExternalBackwards)
+
+ADD_TEST(SimpleVolumeDirectAccessAllInternalForwards ${LATEST_TEST} testSimpleVolumeDirectAccessAllInternalForwards)
+ADD_TEST(SimpleVolumeSamplersAllInternalForwards ${LATEST_TEST} testSimpleVolumeSamplersAllInternalForwards)
+ADD_TEST(SimpleVolumeDirectAccessWithExternalForwards ${LATEST_TEST} testSimpleVolumeDirectAccessWithExternalForwards)
+ADD_TEST(SimpleVolumeSamplersWithExternalForwards ${LATEST_TEST} testSimpleVolumeSamplersWithExternalForwards)
+ADD_TEST(SimpleVolumeDirectAccessAllInternalBackwards ${LATEST_TEST} testSimpleVolumeDirectAccessAllInternalBackwards)
+ADD_TEST(SimpleVolumeSamplersAllInternalBackwards ${LATEST_TEST} testSimpleVolumeSamplersAllInternalBackwards)
+ADD_TEST(SimpleVolumeDirectAccessWithExternalBackwards ${LATEST_TEST} testSimpleVolumeDirectAccessWithExternalBackwards)
+ADD_TEST(SimpleVolumeSamplersWithExternalBackwards ${LATEST_TEST} testSimpleVolumeSamplersWithExternalBackwards)
+
+ADD_TEST(LargeVolumeDirectAccessAllInternalForwards ${LATEST_TEST} testLargeVolumeDirectAccessAllInternalForwards)
+ADD_TEST(LargeVolumeSamplersAllInternalForwards ${LATEST_TEST} testLargeVolumeSamplersAllInternalForwards)
+ADD_TEST(LargeVolumeDirectAccessWithExternalForwards ${LATEST_TEST} testLargeVolumeDirectAccessWithExternalForwards)
+ADD_TEST(LargeVolumeSamplersWithExternalForwards ${LATEST_TEST} testLargeVolumeSamplersWithExternalForwards)
+ADD_TEST(LargeVolumeDirectAccessAllInternalBackwards ${LATEST_TEST} testLargeVolumeDirectAccessAllInternalBackwards)
+ADD_TEST(LargeVolumeSamplersAllInternalBackwards ${LATEST_TEST} testLargeVolumeSamplersAllInternalBackwards)
+ADD_TEST(LargeVolumeDirectAccessWithExternalBackwards ${LATEST_TEST} testLargeVolumeDirectAccessWithExternalBackwards)
+ADD_TEST(LargeVolumeSamplersWithExternalBackwards ${LATEST_TEST} testLargeVolumeSamplersWithExternalBackwards)
 
 # Volume subclass tests
 CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)

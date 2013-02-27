@@ -34,21 +34,19 @@ namespace PolyVox
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
-		typename VolumeType::Sampler m_sampVolume(volInput);
-
 		uint16_t uRandomUnitVectorIndex = 0;
 		uint16_t uRandomVectorIndex = 0;
 		uint16_t uIndexIncreament;
 
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
-		assert(volInput->getWidth() % arrayResult->getDimension(0) == 0);
-		assert(volInput->getHeight() % arrayResult->getDimension(1) == 0);
-		assert(volInput->getDepth() % arrayResult->getDimension(2) == 0);
+		POLYVOX_ASSERT(volInput->getWidth() % arrayResult->getDimension(0) == 0, "Volume width must be an exact multiple of array width.");
+		POLYVOX_ASSERT(volInput->getHeight() % arrayResult->getDimension(1) == 0, "Volume height must be an exact multiple of array height.");
+		POLYVOX_ASSERT(volInput->getDepth() % arrayResult->getDimension(2) == 0, "Volume depth must be an exact multiple of array depth.");
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
 		//sure they are different for different regions which helps reduce tiling patterns in the results.
-		uRandomUnitVectorIndex += region.getLowerCorner().getX() + region.getLowerCorner().getY() + region.getLowerCorner().getZ();
-		uRandomVectorIndex += region.getLowerCorner().getX() + region.getLowerCorner().getY() + region.getLowerCorner().getZ();
+		uRandomUnitVectorIndex += region.getLowerX() + region.getLowerY() + region.getLowerZ();
+		uRandomVectorIndex += region.getLowerX() + region.getLowerY() + region.getLowerZ();
 
 		//This value helps us jump around in the array a bit more, so the
 		//nth 'random' value isn't always followed by the n+1th 'random' value.
@@ -71,11 +69,11 @@ namespace PolyVox
 		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
 
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
-		for(uint16_t z = region.getLowerCorner().getZ(); z <= region.getUpperCorner().getZ(); z += iRatioZ)
+		for(uint16_t z = region.getLowerZ(); z <= region.getUpperZ(); z += iRatioZ)
 		{
-			for(uint16_t y = region.getLowerCorner().getY(); y <= region.getUpperCorner().getY(); y += iRatioY)
+			for(uint16_t y = region.getLowerY(); y <= region.getUpperY(); y += iRatioY)
 			{
-				for(uint16_t x = region.getLowerCorner().getX(); x <= region.getUpperCorner().getX(); x += iRatioX)
+				for(uint16_t x = region.getLowerX(); x <= region.getUpperX(); x += iRatioX)
 				{
 					//Compute a start position corresponding to 
 					//the centre of the cell in the output array.
@@ -100,6 +98,8 @@ namespace PolyVox
 						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
 						RaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 
+						// Note - The performance of this could actually be improved it we exited as soon
+						// as the ray left the volume. The raycast test has an example of how to do this.
 						if(result == RaycastResults::Completed)
 						{
 							++uVisibleDirections;
@@ -116,7 +116,7 @@ namespace PolyVox
 					else
 					{
 						fVisibility = static_cast<float>(uVisibleDirections) / static_cast<float>(uNoOfSamplesPerOutputElement);
-						assert((fVisibility >= 0.0f) && (fVisibility <= 1.0f));
+						POLYVOX_ASSERT((fVisibility >= 0.0f) && (fVisibility <= 1.0f), "Visibility value out of range.");
 					}
 
 					(*arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = static_cast<uint8_t>(255.0f * fVisibility);

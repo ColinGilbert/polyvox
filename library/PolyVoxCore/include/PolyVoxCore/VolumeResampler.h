@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VolumeResampler_H__
 #define __PolyVox_VolumeResampler_H__
 
-#include <cmath>
+#include "PolyVoxCore/Region.h"
 
 namespace PolyVox
 {
@@ -32,7 +32,7 @@ namespace PolyVox
 	class VolumeResampler
 	{
 	public:
-		VolumeResampler(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst);
+		VolumeResampler(SrcVolumeType* pVolSrc, const Region& regSrc, DstVolumeType* pVolDst, const Region& regDst);
 
 		void execute();
 

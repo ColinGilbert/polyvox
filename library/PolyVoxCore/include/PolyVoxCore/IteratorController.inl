@@ -34,24 +34,24 @@ namespace PolyVox
 	{
 		Vector3DInt32 v3dInitialPosition(m_Iter->getPosition().getX(), m_Iter->getPosition().getY(), m_Iter->getPosition().getZ());
 
-		if(v3dInitialPosition.getX() < m_regValid.getUpperCorner().getX())
+		if(v3dInitialPosition.getX() < m_regValid.getUpperX())
 		{
 			m_Iter->movePositiveX();
 			return true;
 		}
 
-		v3dInitialPosition.setX(m_regValid.getLowerCorner().getX());
+		v3dInitialPosition.setX(m_regValid.getLowerX());
 
-		if(v3dInitialPosition.getY() < m_regValid.getUpperCorner().getY())
+		if(v3dInitialPosition.getY() < m_regValid.getUpperY())
 		{
 			v3dInitialPosition.setY(v3dInitialPosition.getY() + 1);
 			m_Iter->setPosition(v3dInitialPosition);
 			return true;
 		}
 
-		v3dInitialPosition.setY(m_regValid.getLowerCorner().getY());
+		v3dInitialPosition.setY(m_regValid.getLowerY());
 
-		if(v3dInitialPosition.getZ() < m_regValid.getUpperCorner().getZ())
+		if(v3dInitialPosition.getZ() < m_regValid.getUpperZ())
 		{
 			v3dInitialPosition.setZ(v3dInitialPosition.getZ() + 1);
 			m_Iter->setPosition(v3dInitialPosition);

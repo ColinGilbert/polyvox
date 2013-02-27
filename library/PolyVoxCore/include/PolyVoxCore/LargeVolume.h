@@ -26,12 +26,12 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "Impl/Block.h"
+#include "PolyVoxCore/Compressor.h"
 #include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
-#include <cassert>
 #include <cstdlib> //For abort()
 #include <cstring> //For memcpy
 #include <list>
@@ -166,6 +166,7 @@ namespace PolyVox
 		//in the future
 		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
 		//class Sampler : public VolumeOfVoxelType::template Sampler< LargeVolume<VoxelType> >
+		#ifndef SWIG
 #if defined(_MSC_VER)
 		class Sampler : public BaseVolume<VoxelType>::Sampler< LargeVolume<VoxelType> > //This line works on VS2010
 #else
@@ -176,9 +177,8 @@ namespace PolyVox
 			Sampler(LargeVolume<VoxelType>* volume);
 			~Sampler();
 
-			Sampler& operator=(const Sampler& rhs);
-
-			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
+			/// \deprecated
+			POLYVOX_DEPRECATED VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			inline VoxelType getVoxel(void) const;			
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
@@ -243,6 +243,7 @@ namespace PolyVox
 			Block<VoxelType> block;
 			uint32_t timestamp;
 		};
+		#endif
 
 	public:		
 		/// Constructor for creating a very large paging volume.
@@ -256,6 +257,7 @@ namespace PolyVox
 		LargeVolume
 		(
 			const Region& regValid,
+			Compressor* pCompressor = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
 			bool bPagingEnabled = false,
@@ -264,21 +266,23 @@ namespace PolyVox
 		/// Destructor
 		~LargeVolume();
 
-		/// Gets the value used for voxels which are outside the volume
-		VoxelType getBorderValue(void) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
 
-		//Sets whether or not blocks are compressed in memory
-		void setCompressionEnabled(bool bCompressionEnabled);
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
 		void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
-		/// Sets the value used for voxels which are outside the volume
-		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
@@ -305,6 +309,22 @@ namespace PolyVox
 		LargeVolume& operator=(const LargeVolume& rhs);
 
 	private:
+
+		struct BlockPositionCompare
+		{
+			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b) const
+			{
+				const uint32_t size = 3;
+				for(uint32_t ct = 0; ct < size; ++ct)
+				{
+					if (a.getElement(ct) < b.getElement(ct))
+						return true;
+					if (b.getElement(ct) < a.getElement(ct))
+						return false;
+				}
+				return false;
+			}
+		};
 		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
 
 		/// gets called when a new region is allocated and needs to be filled
@@ -318,12 +338,12 @@ namespace PolyVox
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
 	
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock >::iterator itBlock) const;
+		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const;
 		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		//The block data
-		mutable std::map<Vector3DInt32, LoadedBlock > m_pBlocks;
+		mutable std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare> m_pBlocks;
 
 		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
 		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
@@ -336,12 +356,6 @@ namespace PolyVox
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
 		uint32_t m_uMaxNumberOfBlocksInMemory;
 
-		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
-		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
-		//good chance we'll often hit it anyway. It's a chunk of homogenous data (rather than a single value) so that
-		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
-		VoxelType* m_pUncompressedBorderData;
-
 		//The size of the volume
 		Region m_regValidRegionInBlocks;
 
@@ -349,7 +363,9 @@ namespace PolyVox
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
 
-		bool m_bCompressionEnabled;
+		//The compressor used by the Blocks to compress their data if required.
+		Compressor* m_pCompressor;
+
 		bool m_bPagingEnabled;
 	};
 }

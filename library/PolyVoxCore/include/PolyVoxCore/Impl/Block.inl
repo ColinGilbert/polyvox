@@ -21,10 +21,14 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/ErrorHandling.h"
 #include "PolyVoxCore/Impl/Utility.h"
+
+#include "PolyVoxCore/Compressor.h"
 #include "PolyVoxCore/Vector.h"
 
-#include <cassert>
+#include "PolyVoxCore/Impl/ErrorHandling.h"
+
 #include <cstring> //For memcpy
 #include <limits>
 #include <stdexcept> //for std::invalid_argument
@@ -33,10 +37,12 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength)
-		:m_tUncompressedData(0)
+		:m_pCompressedData(0)
+		,m_uCompressedDataLength(0)
+		,m_tUncompressedData(0)
 		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_bIsCompressed(true)
+		,m_bIsCompressed(false)
 		,m_bIsUncompressedDataModified(true)
 	{
 		if(uSideLength != 0)
@@ -54,11 +60,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Block<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
-		assert(uXPos < m_uSideLength);
-		assert(uYPos < m_uSideLength);
-		assert(uZPos < m_uSideLength);
+		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
 
-		assert(m_tUncompressedData);
+		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		return m_tUncompressedData
 			[
@@ -77,11 +83,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
-		assert(uXPos < m_uSideLength);
-		assert(uYPos < m_uSideLength);
-		assert(uZPos < m_uSideLength);
+		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
 
-		assert(m_tUncompressedData);
+		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		m_tUncompressedData
 		[
@@ -100,92 +106,101 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::fill(VoxelType tValue)
-	{
-		if(!m_bIsCompressed)
-		{
-			//The memset *may* be faster than the std::fill(), but it doesn't compile nicely
-			//in 64-bit mode as casting the pointer to an int causes a loss of precision.
-			const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, tValue);
-
-			m_bIsUncompressedDataModified = true;
-		} 
-		else
-		{
-			RunlengthEntry<uint16_t> rle;
-			rle.length = m_uSideLength*m_uSideLength*m_uSideLength;
-			rle.value = tValue;
-			m_vecCompressedData.clear();
-			m_vecCompressedData.push_back(rle);
-		}
-	}
-
-	template <typename VoxelType>
 	void Block<VoxelType>::initialise(uint16_t uSideLength)
 	{
 		//Debug mode validation
-		assert(isPowerOf2(uSideLength));
+		POLYVOX_ASSERT(isPowerOf2(uSideLength), "Block side length must be a power of two.");
 
 		//Release mode validation
 		if(!isPowerOf2(uSideLength))
 		{
-			throw std::invalid_argument("Block side length must be a power of two.");
+			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
 
 		//Compute the side length		
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
-		Block<VoxelType>::fill(VoxelType());
+		//Create the block data
+		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
+		//Clear it (should we bother?)
+		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
+		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>
 	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
 	{
+		//FIXME - This function is incomplete.
 		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
-		uSizeInBytes += m_vecCompressedData.capacity() * sizeof(RunlengthEntry<uint16_t>);
 		return  uSizeInBytes;
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::compress(void)
+	void Block<VoxelType>::compress(Compressor* pCompressor)
 	{
-		assert(m_bIsCompressed == false);
-		assert(m_tUncompressedData != 0);
+		POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
+		POLYVOX_ASSERT(m_bIsCompressed == false, "Attempted to compress block which is already flagged as compressed.");
+		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
 
 		//If the uncompressed data hasn't actually been
 		//modified then we don't need to redo the compression.
 		if(m_bIsUncompressedDataModified)
 		{
-			uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-			m_vecCompressedData.clear();
+			// Delete the old compressed data as we'll create a new one
+			delete[] m_pCompressedData;
+			m_pCompressedData = 0;
 
-			RunlengthEntry<uint16_t> entry;
-			entry.length = 1;
-			entry.value = m_tUncompressedData[0];
+			void* pSrcData = reinterpret_cast<void*>(m_tUncompressedData);
+			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 
-			for(uint32_t ct = 1; ct < uNoOfVoxels; ++ct)
-			{		
-				VoxelType value = m_tUncompressedData[ct];
-				if((value == entry.value) && (entry.length < entry.maxRunlength()))
-				{
-					entry.length++;
-				}
-				else
-				{
-					m_vecCompressedData.push_back(entry);
-					entry.value = value;
-					entry.length = 1;
-				}
+			uint8_t tempBuffer[10000];
+			void* pDstData = reinterpret_cast<void*>( tempBuffer );				
+			uint32_t uDstLength = 10000;
+
+			uint32_t uCompressedLength = 0;
+
+			try
+			{
+				uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+				// Create new compressed data and copy across
+				m_pCompressedData = new uint8_t[uCompressedLength];
+				memcpy(m_pCompressedData, pDstData, uCompressedLength);
+				m_uCompressedDataLength = uCompressedLength;
 			}
+			catch(std::exception&)
+			{
+				// It is possible for the compression to fail. A common cause for this would be if the destination
+				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
+				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
+				uint32_t uMaxCompressedSize = pCompressor->getMaxCompressedSize(uSrcLength);
+				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
 
-			m_vecCompressedData.push_back(entry);
+				pDstData = reinterpret_cast<void*>( buffer );				
+				uDstLength = uMaxCompressedSize;
 
-			//Shrink the vectors to their contents (maybe slow?):
-			//http://stackoverflow.com/questions/1111078/reduce-the-capacity-of-an-stl-vector
-			//C++0x may have a shrink_to_fit() function?
-			std::vector< RunlengthEntry<uint16_t> >(m_vecCompressedData).swap(m_vecCompressedData);
+				try
+				{		
+					uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+					// Create new compressed data and copy across
+					m_pCompressedData = new uint8_t[uCompressedLength];
+					memcpy(m_pCompressedData, pDstData, uCompressedLength);
+					m_uCompressedDataLength = uCompressedLength;
+				}
+				catch(std::exception&)
+				{
+					// At this point it didn't work even with a bigger buffer.
+					// Not much more we can do so just rethrow the exception.
+					delete[] buffer;
+					POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
+				}
+
+				delete[] buffer;
+			}			
 		}
 
 		//Flag the uncompressed data as no longer being used.
@@ -195,18 +210,26 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::uncompress(void)
+	void Block<VoxelType>::uncompress(Compressor* pCompressor)
 	{
-		assert(m_bIsCompressed == true);
-		assert(m_tUncompressedData == 0);
+		POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
+		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
+		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
+
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
-		VoxelType* pUncompressedData = m_tUncompressedData;		
-		for(uint32_t ct = 0; ct < m_vecCompressedData.size(); ++ct)
-		{
-			std::fill(pUncompressedData, pUncompressedData + m_vecCompressedData[ct].length, m_vecCompressedData[ct].value);
-			pUncompressedData += m_vecCompressedData[ct].length;
-		}
+		void* pSrcData = reinterpret_cast<void*>(m_pCompressedData);
+		void* pDstData = reinterpret_cast<void*>(m_tUncompressedData);
+		uint32_t uSrcLength = m_uCompressedDataLength;
+		uint32_t uDstLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+
+		//MinizCompressor compressor;
+		//RLECompressor<VoxelType, uint16_t> compressor;
+		uint32_t uUncompressedLength = pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+		POLYVOX_ASSERT(uUncompressedLength == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
+
+		//m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
 
 		m_bIsCompressed = false;
 		m_bIsUncompressedDataModified = false;

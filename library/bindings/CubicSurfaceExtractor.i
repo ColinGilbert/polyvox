@@ -1,13 +1,9 @@
 %module CubicSurfaceExtractor
 %{
-#include "SimpleVolume.h"
-#include "Array.h"
 #include "CubicSurfaceExtractor.h"
 %}
 
-%include "SimpleVolume.h"
-%include "Array.h"
 %include "CubicSurfaceExtractor.h"
 
-%template(CubicSurfaceExtractorMaterial8) PolyVox::CubicSurfaceExtractor<PolyVox::Material8>;
-%template(CubicSurfaceExtractorDensity8) PolyVox::CubicSurfaceExtractor<PolyVox::Density8>;
+%template(CubicSurfaceExtractorSimpleVolumeuint8) PolyVox::CubicSurfaceExtractor<PolyVox::SimpleVolume<uint8_t>, PolyVox::DefaultIsQuadNeeded<uint8_t> >;
+//EXTRACTORS(CubicSurfaceExtractor)

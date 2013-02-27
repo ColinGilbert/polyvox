@@ -69,14 +69,20 @@ if(CMAKE_CXX_COMPILER MATCHES "clang")
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 endif()
 
+if(NOT MSVC) #This is causing problems in Visual Studio so disable it for now
+	INCLUDE(cmake/Modules/CheckCXX11Features.cmake)
+endif()
+
 ADD_SUBDIRECTORY(library)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 IF(ENABLE_EXAMPLES AND QT_QTOPENGL_FOUND)
+	ADD_SUBDIRECTORY(examples/common)
 	ADD_SUBDIRECTORY(examples/Basic)
 	ADD_SUBDIRECTORY(examples/Paging)
 	ADD_SUBDIRECTORY(examples/OpenGL)
 	ADD_SUBDIRECTORY(examples/SmoothLOD)
+	ADD_SUBDIRECTORY(examples/Python)
 	SET(BUILD_EXAMPLES ON)
 ELSE()
 	SET(BUILD_EXAMPLES OFF)

@@ -29,7 +29,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
-#include <cassert>
 #include <cstdlib> //For abort()
 #include <limits>
 #include <memory>
@@ -104,14 +103,9 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		private:
+
 			//Other current position information
 			VoxelType* mCurrentVoxel;
-
-			//Whether the current position is inside the volume
-			//FIXME - Replace these with flags
-			bool m_bIsCurrentPositionValidInX;
-			bool m_bIsCurrentPositionValidInY;
-			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 
@@ -122,15 +116,19 @@ namespace PolyVox
 		/// Destructor
 		~RawVolume();
 
-		/// Gets the value used for voxels which are outside the volume
-		VoxelType getBorderValue(void) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
 
-		/// Sets the value used for voxels which are outside the volume
-		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
@@ -151,9 +149,6 @@ namespace PolyVox
 
 		//The block data
 		VoxelType* m_pData;
-
-		//The border value
-		VoxelType m_tBorderValue;
 	};
 }
 

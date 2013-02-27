@@ -28,7 +28,6 @@ freely, subject to the following restrictions:
 
 #include "Impl/TypeDef.h"
 
-#include <cassert>
 #include <limits>
 
 #undef min
@@ -175,6 +174,11 @@ namespace PolyVox
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
+		}
+
+		void setThreshold(DensityType tThreshold)
+		{
+			m_tThreshold = tThreshold;
 		}
 
 	private:

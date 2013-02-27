@@ -28,6 +28,7 @@ freely, subject to the following restrictions:
 #include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"
 
@@ -37,7 +38,13 @@ namespace PolyVox
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, Controller controller = Controller());
+		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
+		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
+#if defined(_MSC_VER)
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(0), Controller controller = Controller());
+#else
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(0), Controller controller = Controller());
+#endif
 
 		void execute();
 
@@ -197,11 +204,11 @@ namespace PolyVox
 		Region m_regSlicePrevious;
 		Region m_regSliceCurrent;
 
-		//Our threshold value
-		typename Controller::DensityType m_tThreshold;
-
 		//Used to convert arbitrary voxel types in densities and materials.
 		Controller m_controller;
+
+		//Our threshold value
+		typename Controller::DensityType m_tThreshold;
 	};
 }
 

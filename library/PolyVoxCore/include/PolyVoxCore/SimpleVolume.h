@@ -31,7 +31,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
-#include <cassert>
 #include <cstdlib> //For abort()
 #include <cstring> //For memcpy
 #include <limits>
@@ -87,9 +86,8 @@ namespace PolyVox
 			Sampler(SimpleVolume<VoxelType>* volume);
 			~Sampler();
 
-			Sampler& operator=(const Sampler& rhs);
-
-			VoxelType getSubSampledVoxel(uint8_t uLevel) const;
+			/// \deprecated
+			POLYVOX_DEPRECATED VoxelType getSubSampledVoxel(uint8_t uLevel) const;
 			/// Get the value of the current voxel
 			inline VoxelType getVoxel(void) const;
 			
@@ -157,15 +155,19 @@ namespace PolyVox
 		/// Destructor
 		~SimpleVolume();
 
-		/// Gets the value used for voxels which are outside the volume
-		VoxelType getBorderValue(void) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
+		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
+		/// Gets a voxel at the position given by a 3D vector
+		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
 
-		/// Sets the value used for voxels which are outside the volume
-		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
@@ -188,12 +190,6 @@ namespace PolyVox
 
 		//The block data
 		Block* m_pBlocks;
-
-		//We don't store an actual Block for the border, just the uncompressed data. This is partly because the border
-		//block does not have a position (so can't be passed to getUncompressedBlock()) and partly because there's a
-		//good chance we'll often hit it anyway. It's a chunk of homogenous data (rather than a single value) so that
-		//the VolumeIterator can do it's usual pointer arithmetic without needing to know it's gone outside the volume.
-		VoxelType* m_pUncompressedBorderData;
 
 		//The size of the volume in vlocks
 		Region m_regValidRegionInBlocks;

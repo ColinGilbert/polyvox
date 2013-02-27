@@ -20,18 +20,20 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(PolyVoxCore)
+
+if(NOT MSVC)
+	#Set up the C++11 feature header file based on the CheckCXX11Features script
+	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h)
+endif()
 
 #Projects source files
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
+	source/MinizCompressor.cpp
 	source/Log.cpp
-	source/MeshDecimator.cpp
 	source/Region.cpp
-	source/SimpleInterface.cpp
 	source/VertexTypes.cpp
 )
 
@@ -47,6 +49,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.h
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
+	include/PolyVoxCore/Compressor.h
 	include/PolyVoxCore/ConstVolumeProxy.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
@@ -70,8 +73,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
-	include/PolyVoxCore/MeshDecimator.h
-	include/PolyVoxCore/MeshDecimator.inl
+	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/RawVolume.h
 	include/PolyVoxCore/RawVolume.inl
@@ -79,7 +81,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
-	include/PolyVoxCore/SimpleInterface.h
+	include/PolyVoxCore/RLECompressor.h
+	include/PolyVoxCore/RLECompressor.inl
 	include/PolyVoxCore/SimpleVolume.h
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
@@ -96,6 +99,7 @@ SET(CORE_INC_FILES
 )
 
 SET(IMPL_SRC_FILES
+	source/Impl/ErrorHandling.cpp
 	source/Impl/MarchingCubesTables.cpp
 	source/Impl/RandomUnitVectors.cpp
 	source/Impl/RandomVectors.cpp
@@ -108,6 +112,9 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
 	include/PolyVoxCore/Impl/Block.h
 	include/PolyVoxCore/Impl/Block.inl
+    include/PolyVoxCore/Impl/CompilerCapabilities.h
+    include/PolyVoxCore/Impl/Config.h
+	include/PolyVoxCore/Impl/ErrorHandling.h
 	include/PolyVoxCore/Impl/MarchingCubesTables.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
 	include/PolyVoxCore/Impl/RandomVectors.h
@@ -128,7 +135,7 @@ SOURCE_GROUP("Sources\\Impl" FILES ${IMPL_SRC_FILES})
 SOURCE_GROUP("Headers\\Impl" FILES ${IMPL_INC_FILES})
 
 #Tell CMake the paths
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #Core
 #Build

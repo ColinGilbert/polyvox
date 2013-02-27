@@ -73,7 +73,7 @@ namespace PolyVox
 	template <uint32_t noOfDims, typename ElementType>
 	SubArray<noOfDims-1, ElementType> Array<noOfDims, ElementType>::operator[](uint32_t uIndex)
 	{
-		assert(uIndex<m_pDimensions[0]);
+		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
 		return
 			SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 			m_pDimensions+1, m_pOffsets+1);
@@ -91,7 +91,7 @@ namespace PolyVox
 	template <uint32_t noOfDims, typename ElementType>
 	const SubArray<noOfDims-1, ElementType> Array<noOfDims, ElementType>::operator[](uint32_t uIndex) const
 	{
-		assert(uIndex<m_pDimensions[0]);
+		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
 		return
 			SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 			m_pDimensions+1, m_pOffsets+1);
@@ -139,7 +139,7 @@ namespace PolyVox
 		m_uNoOfElements = 1;
 		for (uint32_t i = 0; i<noOfDims; i++)
 		{
-			assert(pDimensions[i] != 0);
+			POLYVOX_ASSERT(pDimensions[i] != 0, "Invalid dimension");
 
 			m_uNoOfElements *= pDimensions[i];
 			m_pDimensions[i] = pDimensions[i];
@@ -186,7 +186,7 @@ namespace PolyVox
 	template <uint32_t noOfDims, typename ElementType>
 	uint32_t Array<noOfDims, ElementType>::getDimension(uint32_t uDimension)
 	{
-		assert(uDimension < noOfDims);
+		POLYVOX_ASSERT(uDimension < noOfDims, "Dimension out of range");
 		return m_pDimensions[uDimension];
 	}
 
@@ -198,14 +198,14 @@ namespace PolyVox
 		,m_uNoOfElements(0)
 	{
 		//Not implemented
-		assert(false);
+		POLYVOX_ASSERT(false, "Not implemented.");
 	}
 
 	template <uint32_t noOfDims, typename ElementType>
 	Array<noOfDims, ElementType>& Array<noOfDims, ElementType>::operator=(const Array<noOfDims, ElementType>& rhs)
 	{
 		//Not implemented
-		assert(false);
+		POLYVOX_ASSERT(false, "Not implemented.");
 
 		return *this;
 	}
@@ -251,14 +251,14 @@ namespace PolyVox
 	template <typename ElementType>
 	ElementType& Array<1, ElementType>::operator[] (uint32_t uIndex)
 	{
-		assert(uIndex<m_pDimensions[0]);
+		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
 		return m_pElements[uIndex];
 	}
 
 	template <typename ElementType>
 	const ElementType& Array<1, ElementType>::operator[] (uint32_t uIndex) const
 	{
-		assert(uIndex<m_pDimensions[0]);
+		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
 		return m_pElements[uIndex];
 	}
 
@@ -307,14 +307,14 @@ namespace PolyVox
 		,m_pDimensions(0)
 	{
 		//Not implemented
-		assert(false);
+		POLYVOX_ASSERT(false, "Not implemented.");
 	}
 
 	template <typename ElementType>
 	Array<1, ElementType>& Array<1, ElementType>::operator=(const Array<1, ElementType>& rhs)
 	{
 		//Not implemented
-		assert(false);
+		POLYVOX_ASSERT(false, "Not implemented.");
 
 		return *this;
 	}

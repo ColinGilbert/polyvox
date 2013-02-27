@@ -39,6 +39,22 @@ freely, subject to the following restrictions:
 
 const int32_t g_uVolumeSideLength = 128;
 
+struct Vector3DUint8Compare
+{
+    bool operator() (const PolyVox::Vector3DUint8& a, const PolyVox::Vector3DUint8& b) const
+    {
+		const uint32_t size = 3;
+        for(uint32_t ct = 0; ct < size; ++ct)
+		{
+			if (a.getElement(ct) < b.getElement(ct))
+				return true;
+			if (b.getElement(ct) < a.getElement(ct))
+				return false;
+		}
+		return false;
+    }
+};
+
 class OpenGLWidget : public QGLWidget
  {
 
@@ -71,8 +87,8 @@ class OpenGLWidget : public QGLWidget
 	PolyVox::LargeVolume<PolyVox::MaterialDensityPair44>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
-	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh> m_mapOpenGLSurfaceMeshes;
-	std::map<PolyVox::Vector3DUint8, polyvox_shared_ptr<PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal> > > m_mapSurfaceMeshes;
+	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh, Vector3DUint8Compare> m_mapOpenGLSurfaceMeshes;
+	std::map<PolyVox::Vector3DUint8, polyvox_shared_ptr<PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal> >, Vector3DUint8Compare> m_mapSurfaceMeshes;
 
 	unsigned int m_uRegionSideLength;
 	unsigned int m_uVolumeWidthInRegions;

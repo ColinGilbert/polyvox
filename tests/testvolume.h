@@ -24,14 +24,51 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TestVolume_H__
 #define __PolyVox_TestVolume_H__
 
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+
 #include <QObject>
 
 class TestVolume: public QObject
 {
 	Q_OBJECT
+
+public:
+	TestVolume();
+	~TestVolume();
 	
-	private slots:
-		void testSize();
+private slots:
+	void testRawVolumeDirectAccessAllInternalForwards();
+	void testRawVolumeSamplersAllInternalForwards();
+	void testRawVolumeDirectAccessWithExternalForwards();
+	void testRawVolumeSamplersWithExternalForwards();
+	void testRawVolumeDirectAccessAllInternalBackwards();
+	void testRawVolumeSamplersAllInternalBackwards();
+	void testRawVolumeDirectAccessWithExternalBackwards();
+	void testRawVolumeSamplersWithExternalBackwards();
+
+	void testSimpleVolumeDirectAccessAllInternalForwards();
+	void testSimpleVolumeSamplersAllInternalForwards();
+	void testSimpleVolumeDirectAccessWithExternalForwards();
+	void testSimpleVolumeSamplersWithExternalForwards();
+	void testSimpleVolumeDirectAccessAllInternalBackwards();
+	void testSimpleVolumeSamplersAllInternalBackwards();
+	void testSimpleVolumeDirectAccessWithExternalBackwards();
+	void testSimpleVolumeSamplersWithExternalBackwards();
+
+	void testLargeVolumeDirectAccessAllInternalForwards();
+	void testLargeVolumeSamplersAllInternalForwards();
+	void testLargeVolumeDirectAccessWithExternalForwards();
+	void testLargeVolumeSamplersWithExternalForwards();
+	void testLargeVolumeDirectAccessAllInternalBackwards();
+	void testLargeVolumeSamplersAllInternalBackwards();
+	void testLargeVolumeDirectAccessWithExternalBackwards();
+	void testLargeVolumeSamplersWithExternalBackwards();
+
+private:
+	PolyVox::Compressor* m_pCompressor;
+	PolyVox::RawVolume<int32_t>* m_pRawVolume;
+	PolyVox::SimpleVolume<int32_t>* m_pSimpleVolume;
+	PolyVox::LargeVolume<int32_t>* m_pLargeVolume;
 };
 
 #endif
