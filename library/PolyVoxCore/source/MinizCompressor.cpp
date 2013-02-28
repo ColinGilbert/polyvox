@@ -12,11 +12,12 @@
 #define MINIZ_NO_MALLOC
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
+
 // For some unknown reason the miniz library is supplied only as a 
 // single .c file without a header. Apparently the only way to use 
 // it is then to #include it directly which is what the examples do.
 // We also disable some warnings as I don't want to fix external code.
-#pragma GCC diagnostic ignored "-Wenum-compare"
+#pragma GCC diagnostic ignored "-Wall"
 #include "PolyVoxCore/Impl/miniz.c"
 
 
