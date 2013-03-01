@@ -13,9 +13,13 @@
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
-// For some unknown reason the miniz library is supplied only as a 
-// single .c file without a header. Apparently the only way to use 
-// it is then to #include it directly which is what the examples do.
+// The miniz library is supplied only as a single .c file without a header. The examples just include the .c file
+// directly which is also what we do here. Actually is is possible to define 'MINIZ_HEADER_FILE_ONLY' to treat
+// the .c file as a header, but this seems messy in terms of our project and CMake as we keep the headers and source
+// files in seperate folders. We could create our own header for miniz (based on the stuff between the MINIZ_HEADER_FILE_ONLY
+// directives) but the other problem is that we are using #pragma GCC system_header to supress warnings which would
+// then be in the .c part of the code. If we ever update GCC on the CDash machine so that it properly supports '#pragma
+// GCC diagnosic ignored' (or so that it doesn't warn in the first place) then we can reconsider spliting miniz.c in two.
 #include "PolyVoxCore/Impl/miniz.c"
 
 
