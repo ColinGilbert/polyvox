@@ -28,20 +28,35 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/**
+	 * Provides an interface for performing compression of data.
+	 *
+	 * This class provides an interface which can be implemented by derived classes which perform data compression.
+	 * The main purpose of this is to allow the user to change the compression algorithm which is used by a LargeVolume,
+	 * based on the kind of voxel data it is storing. Users may also wish to use Compressor subclasses in more general
+	 * compression-related scenarios but this is not well tested.
+	 */
 	class Compressor
 	{
 	public:
+		/// Constructor
 		Compressor() {};
+		/// Destructor
 		virtual ~Compressor() {};
 
-		// Computes a worst-case scenario for how big the output can be for a given input size. If
-		// necessary you can use this as a destination buffer size, though it may be somewhat wasteful.
+		/// Computes a worst-case scenario for how big the output can be for a given input size.
+		///
+		/// If necessary you can use this as a destination buffer size, though it may be somewhat
+		/// wasteful. It is not guarenteed that compression actually shrinks the data, so the 
+		/// worst-case value returned by this function may be bigger than the input size.
+		/// \param The size of the uncompressed input data
+		/// \return The largest possible size of the compressed output data.
 		virtual uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize) = 0;
 
-		// Compresses the data.
+		/// Compresses the data.
 		virtual uint32_t compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
 
-		// Decompresses the data.
+		/// Decompresses the data.
 		virtual uint32_t decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
 	};
 }
