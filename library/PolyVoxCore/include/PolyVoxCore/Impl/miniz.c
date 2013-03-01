@@ -1,3 +1,14 @@
+/*
+ * CHANGES FOR POLYVOX
+ * -------------------
+ * This file gave compiler warnings on certain versions of GCC (at least version 4.3.5 used by out build machine)
+ * and I did not want to risk tampering with the code to fix them.Therefore the only difference between this file
+ * and the official 'miniz.c' is the pragma below which disables warnings for this file in GCC.
+ */
+#ifdef __GNUC__
+#pragma GCC system_header
+#endif
+
 /* miniz.c v1.14 - public domain deflate/inflate, zlib-subset, ZIP reading/writing/appending, PNG writing
    See "unlicense" statement at the end of this file.
    Rich Geldreich <richgel99@gmail.com>, last updated May 20, 2012
