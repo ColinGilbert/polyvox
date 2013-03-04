@@ -31,7 +31,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::BaseVolume(const Region& regValid)
 		:m_regValidRegion(regValid)
-		,m_tBorderValue(0)
+		,m_tBorderValue()
 	{
 	}
 

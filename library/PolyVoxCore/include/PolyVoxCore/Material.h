@@ -36,9 +36,6 @@ namespace PolyVox
 	///
 	/// \sa Density, MaterialDensityPair
 	////////////////////////////////////////////////////////////////////////////////
-
-	// int32_t template parameter is a dummy, required as the compiler expects to be able to declare an
-	// instance of VoxelType::DensityType without knowing that VoxelType doesn't actually have a density.
 	template <typename Type>
 	class Material
 	{

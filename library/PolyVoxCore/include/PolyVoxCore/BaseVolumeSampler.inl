@@ -33,7 +33,7 @@ namespace PolyVox
 		,mYPosInVolume(0)
 		,mZPosInVolume(0)
 		,m_eWrapMode(WrapModes::Border)
-		,m_tBorder(0)
+		,m_tBorder()
 		,m_bIsCurrentPositionValidInX(false)
 		,m_bIsCurrentPositionValidInY(false)
 		,m_bIsCurrentPositionValidInZ(false)
@@ -376,7 +376,7 @@ namespace PolyVox
 				{
 					//Should never happen
 					POLYVOX_ASSERT(false, "Invalid case.");
-					return VoxelType(0);
+					return VoxelType();
 				}
 			}
 		}

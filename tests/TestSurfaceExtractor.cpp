@@ -122,7 +122,7 @@ void testForType(SurfaceMesh<PositionMaterialNormal>& result)
 
 	DefaultMarchingCubesController<VoxelType> controller;
 	controller.setThreshold(50);
-	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, 0, controller);
+	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, VoxelType(), controller);
 	extractor.execute();
 }
 

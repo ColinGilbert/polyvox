@@ -69,7 +69,7 @@ namespace PolyVox
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
 			inline bool setVoxel(VoxelType tValue);
-			void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType(0));
+			void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType());
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -156,9 +156,9 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
+		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType(0)) const;
+		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
 
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
