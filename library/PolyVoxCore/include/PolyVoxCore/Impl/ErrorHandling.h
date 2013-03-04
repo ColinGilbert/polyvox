@@ -36,6 +36,14 @@ freely, subject to the following restrictions:
     #define POLYVOX_HALT() std::exit(EXIT_FAILURE)
 #endif
 
+// We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138)
+// but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution
+// (http://stackoverflow.com/a/1946485) is to disable these warnings.
+#if defined(_MSC_VER)
+	__pragma(warning(push))
+	__pragma(warning(disable:4127))
+#endif
+
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
 
 /*
@@ -118,6 +126,11 @@ freely, subject to the following restrictions:
 	#define POLYVOX_THROW(type, message) \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
+#endif
+
+// See the corresponding 'push' above.
+#if defined(_MSC_VER)
+	__pragma(warning(pop))
 #endif
 
 #endif //__PolyVox_ErrorHandling_H__
