@@ -187,7 +187,7 @@ namespace PolyVox
 			{
 				//Should never happen
 				POLYVOX_ASSERT(false, "Invalid case.");
-				return VoxelType(0);
+				return VoxelType();
 			}
 		}
 	}

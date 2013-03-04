@@ -260,7 +260,7 @@ namespace PolyVox
 						sumOfWeights += weight;
 
 						//This is wrong! There's no need to do interpolation. Just multiply the sameple by the correct kernel value.
-						Vector<4, float> sample = interpolatedSample(&volDownscaledXAndY, sx, sy, sz, WrapModes::Border, SrcVolumeType::VoxelType(0));
+						Vector<4, float> sample = interpolatedSample(&volDownscaledXAndY, sx, sy, sz, WrapModes::Border, SrcVolumeType::VoxelType());
 
 						vecSum += (sample * weight);
 					}
