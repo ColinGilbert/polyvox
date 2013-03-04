@@ -29,9 +29,11 @@ using namespace std;
 
 namespace PolyVox
 {
-	/// You can specify a compression level when constructing this compressor. This controls the tradeoff between speed and compression
-	/// rate. Levels 0-9 are the standard zlib-style levels, 10 is best possible compression (not zlib compatible, and may be very slow).
-	/// \param iCompressionLevel The desired compression level.
+	/**
+	 * You can specify a compression level when constructing this compressor. This controls the tradeoff between speed and compression
+	 * rate. Levels 0-9 are the standard zlib-style levels, 10 is best possible compression (not zlib compatible, and may be very slow).
+	 * \param iCompressionLevel The desired compression level.
+	 */
 	MinizCompressor::MinizCompressor(int iCompressionLevel)
 		:m_pDeflator(0)
 	{
