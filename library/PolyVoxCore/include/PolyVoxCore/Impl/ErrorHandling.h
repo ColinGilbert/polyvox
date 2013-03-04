@@ -36,12 +36,17 @@ freely, subject to the following restrictions:
     #define POLYVOX_HALT() std::exit(EXIT_FAILURE)
 #endif
 
-// We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138)
-// but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution
-// (http://stackoverflow.com/a/1946485) is to disable these warnings.
+// Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
+// platform specific. But macros can contain other macros, so we create macros to control the warnings and use
+// those instead. This set of warning supression macros can be extended to GCC/Clang when required.
 #if defined(_MSC_VER)
-	__pragma(warning(push))
-	__pragma(warning(disable:4127))
+	#define POLYVOX_MSC_WARNING_PUSH __pragma(warning(push))
+	#define POLYVOX_DISABLE_MSC_WARNING(x) __pragma(warning(disable:x))
+	#define POLYVOX_MSC_WARNING_POP __pragma(warning(pop))
+#else
+	#define POLYVOX_MSC_WARNING_PUSH
+	#define POLYVOX_DISABLE_MSC_WARNING(x)
+	#define POLYVOX_MSC_WARNING_POP
 #endif
 
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
@@ -57,6 +62,11 @@ freely, subject to the following restrictions:
 #ifdef POLYVOX_ASSERTS_ENABLED
 
 	#define POLYVOX_ASSERT(condition, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
 			if (!(condition)) \
@@ -69,12 +79,19 @@ freely, subject to the following restrictions:
 				std::cerr << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
 				POLYVOX_HALT(); \
 			} \
-		} while(0)
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
 
 #else
 	
 	#define POLYVOX_ASSERT(condition, message) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0)
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
+		POLYVOX_MSC_WARNING_POP
 	
 #endif
 
@@ -126,11 +143,6 @@ freely, subject to the following restrictions:
 	#define POLYVOX_THROW(type, message) \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
-#endif
-
-// See the corresponding 'push' above.
-#if defined(_MSC_VER)
-	__pragma(warning(pop))
 #endif
 
 #endif //__PolyVox_ErrorHandling_H__
