@@ -31,9 +31,12 @@ freely, subject to the following restrictions:
 #include <stdexcept>
 
 #if defined(_MSC_VER)
+	// In Visual Studio we can use this function to go into the debugger.
     #define POLYVOX_HALT() __debugbreak()
 #else
-    #define POLYVOX_HALT() std::exit(EXIT_FAILURE)
+	// On other platforms we just halt by forcing a crash.
+	// Hopefully this puts us in the debugger if one is running
+    #define POLYVOX_HALT() *((unsigned int*)0) = 0xDEAD
 #endif
 
 // Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
