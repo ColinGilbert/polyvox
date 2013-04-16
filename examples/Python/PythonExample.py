@@ -39,17 +39,15 @@ sphereRadius = 30
 for z in range(vol.getDepth()):
 	for y in range(vol.getHeight()):
 		for x in range(vol.getWidth()):
-			#Store our current position as a vector...
-			v3dCurrentPos = pv.Vector3Dint32_t(x,y,z)
-			#And compute how far the current position is from the center of the volume
-			fDistToCenter = (v3dCurrentPos - v3dVolCenter).length()
-			
-			uVoxelValue = 0
+			#Compute how far the current position is from the center of the volume
+			fDistToCenter = (pv.Vector3Dint32_t(x,y,z) - v3dVolCenter).length()
 			
 			#If the current voxel is less than 'radius' units from the center then we make it solid.
 			if(fDistToCenter <= sphereRadius):
 				#Our new voxel value
 				uVoxelValue = 255
+			else:
+				uVoxelValue = 0
 			
 			#Write the voxel value into the volume
 			vol.setVoxelAt(x, y, z, uVoxelValue);
