@@ -50,8 +50,16 @@ REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 
 # Python tests
 IF(BUILD_BINDINGS)
-	ADD_TEST(PythonSurfaceExtractorTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestSurfaceExtractor.py)
-	ADD_TEST(PythonRaycastTest python ${CMAKE_CURRENT_SOURCE_DIR}/TestRaycast.py)
+	FIND_PACKAGE(PythonInterp 3)
+	IF(CMAKE_VERSION VERSION_LESS "2.8.6")
+		set_package_info(PythonInterp "Python Interpereter" http://www.python.org "Running the Python tests")
+	ELSE()
+		set_package_properties(PythonInterp PROPERTIES URL http://www.python.org DESCRIPTION "Python Interpereter" TYPE OPTIONAL PURPOSE "Running the Python tests")
+	ENDIF()
+	IF(PYTHONINTERP_FOUND)
+		ADD_TEST(PythonSurfaceExtractorTest ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TestSurfaceExtractor.py)
+		ADD_TEST(PythonRaycastTest ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TestRaycast.py)
+	ENDIF()
 ENDIF()
 
 # AmbientOcclusionGenerator tests
