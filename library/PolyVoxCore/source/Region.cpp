@@ -470,6 +470,7 @@ namespace PolyVox
 	/**
 	 * This function only returns true if the regions are really intersecting and not simply touching.
 	 */
+
 	bool intersects(const Region& a, const Region& b)
 	{
 		// No intersection if seperated along an axis.
@@ -480,4 +481,17 @@ namespace PolyVox
 		// Overlapping on all axes means Regions are intersecting.
 		return true;
 	}
+
+	/**
+     * Enables the Region to be used intuitively with output streams such as cout.
+     * \param os The output stream to write to.
+     * \param region The Region to write to the stream.
+     * \return A reference to the output stream to allow chaining.
+     */
+	std::ostream& operator<<(std::ostream& os, const Region& region)
+    {
+		os << "(" << region.getLowerX() << "," << region.getLowerY() << "," << region.getLowerZ() <<
+			") to (" << region.getUpperX() << "," << region.getUpperY() << "," << region.getUpperZ() << ")";
+        return os;
+    }	
 }
