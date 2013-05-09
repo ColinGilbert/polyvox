@@ -42,7 +42,7 @@ namespace PolyVox
 		public:
 			RaycastPickingFunctor(const typename VolumeType::VoxelType& emptyVoxelExample)
 				:m_emptyVoxelExample(emptyVoxelExample)
-				,m_result{false}
+				,m_result()
 			{
 			}
 		

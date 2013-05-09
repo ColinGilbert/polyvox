@@ -33,6 +33,7 @@ namespace PolyVox
 	 */
 	struct PickResult
 	{
+		PickResult() : didHit(false) {}
 		bool didHit; ///< Did the picking operation hit anything
 		Vector3DInt32 hitVoxel; ///< The location of the solid voxel it hit
 		Vector3DInt32 previousVoxel; ///< The location of the voxel before the one it hit
