@@ -89,6 +89,10 @@ ADD_TEST(MaterialTestCompile ${LATEST_TEST} testCompile)
 CREATE_TEST(TestRaycast.h TestRaycast.cpp TestRaycast)
 ADD_TEST(RaycastExecuteTest ${LATEST_TEST} testExecute)
 
+# Picking tests
+CREATE_TEST(TestPicking.h TestPicking.cpp TestPicking)
+ADD_TEST(PickingExecuteTest ${LATEST_TEST} testExecute)
+
 # Region tests
 CREATE_TEST(TestRegion.h TestRegion.cpp TestRegion)
 ADD_TEST(RegionEqualityTest ${LATEST_TEST} testEquality)

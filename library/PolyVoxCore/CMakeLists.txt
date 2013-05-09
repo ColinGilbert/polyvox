@@ -75,6 +75,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
+	include/PolyVoxCore/Picking.h
+	include/PolyVoxCore/Picking.inl
 	include/PolyVoxCore/RawVolume.h
 	include/PolyVoxCore/RawVolume.inl
 	include/PolyVoxCore/RawVolumeSampler.inl
