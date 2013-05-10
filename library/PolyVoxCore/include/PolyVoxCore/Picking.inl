@@ -77,7 +77,7 @@ namespace PolyVox
 	{
 		RaycastPickingFunctor<VolumeType> functor(emptyVoxelExample);
 		
-		RaycastResult raycastResult = raycastWithDirection(volData, v3dStart, v3dDirectionAndLength, functor);
+		raycastWithDirection(volData, v3dStart, v3dDirectionAndLength, functor);
 		
 		return functor.m_result;
 	}
