@@ -60,10 +60,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType Block<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
+		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-
 		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		return m_tUncompressedData
@@ -83,10 +83,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
+		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-
 		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		m_tUncompressedData
@@ -108,9 +108,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::initialise(uint16_t uSideLength)
 	{
-		//Debug mode validation
-		POLYVOX_ASSERT(isPowerOf2(uSideLength), "Block side length must be a power of two.");
-
 		//Release mode validation
 		if(!isPowerOf2(uSideLength))
 		{
@@ -141,8 +138,16 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress(Compressor* pCompressor)
 	{
-		POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
-		POLYVOX_ASSERT(m_bIsCompressed == false, "Attempted to compress block which is already flagged as compressed.");
+		if(m_bIsCompressed)
+		{ 
+			POLYVOX_THROW(invalid_operation, "Attempted to compress block which is already flagged as compressed.");
+		}
+
+		if(!pCompressor)
+		{
+			POLYVOX_THROW(std::invalid_argument, "A valid compressor must be provided");
+		}
+
 		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
 
 		//If the uncompressed data hasn't actually been
@@ -212,8 +217,16 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::uncompress(Compressor* pCompressor)
 	{
-		POLYVOX_ASSERT(pCompressor, "Compressor is not valid");
-		POLYVOX_ASSERT(m_bIsCompressed == true, "Attempted to uncompress block which is not flagged as compressed.");
+		if(!m_bIsCompressed)
+		{
+			POLYVOX_THROW(invalid_operation, "Attempted to uncompress block which is not flagged as compressed.");
+		}
+
+		if(!pCompressor)
+		{
+			POLYVOX_THROW(std::invalid_argument, "A valid compressor must be provided");
+		}
+
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
 
 		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];

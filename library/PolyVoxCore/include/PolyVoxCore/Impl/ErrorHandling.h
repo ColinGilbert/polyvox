@@ -26,9 +26,10 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/Config.h"
 
-#include <cstdlib>  //For std::exit
-#include <iostream> //For std::cerr
+#include <cstdlib>  // For std::exit
+#include <iostream> // For std::cerr
 #include <stdexcept>
+#include <string.h> // Exception constuctors take strings.
 
 #if defined(_MSC_VER)
 	// In Visual Studio we can use this function to go into the debugger.
@@ -147,5 +148,33 @@ freely, subject to the following restrictions:
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif
+
+namespace PolyVox
+{
+	/// A general purpose exception to indicate that an operation cannot be peformed.
+	class invalid_operation : public std::logic_error
+	{
+	public:
+	explicit invalid_operation(const std::string& message)
+		: logic_error(message.c_str()) {}
+
+	explicit invalid_operation(const char *message)
+		: logic_error(message) {}
+	};
+
+	/// Thrown to indicate that a function is deliberatly not implmented. For example, perhaps you called a function
+	/// in a base class whereas you are supposed to use a derived class which implements the function, or perhaps the
+	/// function is not defined for a particular template parameter. It may be that the function is required to
+	/// compile sucessfully but it should not be called.
+	class not_implemented : public std::logic_error
+	{
+	public:
+	explicit not_implemented(const std::string& message)
+		: logic_error(message.c_str()) {}
+
+	explicit not_implemented(const char *message)
+		: logic_error(message) {}
+	};
+}
 
 #endif //__PolyVox_ErrorHandling_H__

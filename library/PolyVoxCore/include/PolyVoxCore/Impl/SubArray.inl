@@ -28,7 +28,11 @@ namespace PolyVox
 	template <uint32_t noOfDims, typename ElementType>
 	SubArray<noOfDims-1, ElementType> SubArray<noOfDims, ElementType>::operator[](uint32_t uIndex)
 	{
-		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
+		if(uIndex >= m_pDimensions[0])
+		{
+			POLYVOX_THROW(std::out_of_range, "Array index out of range");
+		}
+
 		return
 			SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 			m_pDimensions+1, m_pOffsets+1);
@@ -37,7 +41,11 @@ namespace PolyVox
 	template <uint32_t noOfDims, typename ElementType>
 	const SubArray<noOfDims-1, ElementType> SubArray<noOfDims, ElementType>::operator[](uint32_t uIndex) const
 	{
-		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
+		if(uIndex >= m_pDimensions[0])
+		{
+			POLYVOX_THROW(std::out_of_range, "Array index out of range");
+		}
+
 		return
 			SubArray<noOfDims-1, ElementType>(&m_pElements[uIndex*m_pOffsets[0]],
 			m_pDimensions+1, m_pOffsets+1);
@@ -56,14 +64,22 @@ namespace PolyVox
 	template <typename ElementType>
 	ElementType& SubArray<1, ElementType>::operator[] (uint32_t uIndex)
 	{
-		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
+		if(uIndex >= m_pDimensions[0])
+		{
+			POLYVOX_THROW(std::out_of_range, "Array index out of range");
+		}
+
 		return m_pElements[uIndex];
 	}
 
 	template <typename ElementType>
 	const ElementType& SubArray<1, ElementType>::operator[] (uint32_t uIndex) const
 	{
-		POLYVOX_ASSERT(uIndex < m_pDimensions[0], "Index out of range");
+		if(uIndex >= m_pDimensions[0])
+		{
+			POLYVOX_THROW(std::out_of_range, "Array index out of range");
+		}
+
 		return m_pElements[uIndex];
 	}
 

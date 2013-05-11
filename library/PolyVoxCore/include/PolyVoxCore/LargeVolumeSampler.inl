@@ -143,7 +143,7 @@ namespace PolyVox
 		}*/
 
 		//Need to think what effect this has on any existing iterators.
-		POLYVOX_ASSERT(false, "This function cnnot be used on LargeVolume samplers.");
+		POLYVOX_THROW(not_implemented, "This function cannot be used on LargeVolume samplers.");
 		return false;
 	}
 

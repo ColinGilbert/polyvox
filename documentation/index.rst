@@ -14,6 +14,7 @@ User Guide:
 	ModifyingTerrain
 	LevelOfDetail
 	Threading
+	ErrorHandling
 
 Examples:
 

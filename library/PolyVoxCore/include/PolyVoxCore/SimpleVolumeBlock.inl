@@ -52,10 +52,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType SimpleVolume<VoxelType>::Block::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
+		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Position is outside of the block.");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Position is outside of the block.");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Position is outside of the block.");
-
 		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data available");
 
 		return m_tUncompressedData
@@ -75,10 +75,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Block::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
+		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Position is outside of the block.");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Position is outside of the block.");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Position is outside of the block.");
-
 		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data available");
 
 		m_tUncompressedData
@@ -105,9 +105,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void SimpleVolume<VoxelType>::Block::initialise(uint16_t uSideLength)
 	{
-		//Debug mode validation
-		POLYVOX_ASSERT(isPowerOf2(uSideLength), "Block side length must be a power of two.");
-
 		//Release mode validation
 		if(!isPowerOf2(uSideLength))
 		{

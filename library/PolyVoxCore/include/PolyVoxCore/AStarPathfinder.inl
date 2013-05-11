@@ -298,7 +298,7 @@ namespace PolyVox
 			hVal = SixConnectedCost(a, b);
 			break;
 		default:
-			POLYVOX_ASSERT(false, "Invalid case");
+			POLYVOX_THROW(std::invalid_argument, "Connectivity parameter has an unrecognised value.");
 		}
 
 		//Sanity checks in debug mode. These can come out eventually, but I
