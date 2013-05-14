@@ -41,7 +41,7 @@ namespace PolyVox
 	
 	/// Pick the first solid voxel along a vector
 	template<typename VolumeType>
-	PickResult pickVoxel(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, const typename VolumeType::VoxelType& emptyVoxelExample = typename VolumeType::VoxelType());
+	PickResult pickVoxel(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, const typename VolumeType::VoxelType& emptyVoxelExample);
 }
 
 #include "PolyVoxCore/Picking.inl"
