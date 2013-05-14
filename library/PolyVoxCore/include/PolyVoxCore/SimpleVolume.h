@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #include "Impl/Utility.h"
 
 #include "PolyVoxCore/BaseVolume.h"
-#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 

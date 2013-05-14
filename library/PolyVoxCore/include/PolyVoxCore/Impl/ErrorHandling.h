@@ -56,6 +56,37 @@ freely, subject to the following restrictions:
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
 
 /*
+ * Logging
+ * --------
+ * PolyVox provides basic logging facilities which can be redirected by your application.
+ */
+
+namespace PolyVox
+{
+	class LogLevels
+	{
+	public:
+		enum LogLevel
+		{
+			Debug,
+			Info,
+			Warning,
+			Error,
+			Fatal
+		};
+	};
+	typedef LogLevels::LogLevel LogLevel;
+
+	typedef void (*LogHandler)(const std::string& message, LogLevel logLevel);
+
+	LogHandler getLogHandler();
+	void setLogHandler(LogHandler newHandler);
+
+	//The actual logging function
+	void log(const std::string& message, LogLevel logLevel);
+}
+
+/*
  * Assertions
  * ----------
  * The code below implements a custom assert function called POLYVOX_ASSERT which has a number of advantages compared
@@ -134,7 +165,9 @@ freely, subject to the following restrictions:
  * ...
  */
 #ifdef POLYVOX_THROW_ENABLED
-	#define POLYVOX_THROW(type, message) throw type((message))
+	#define POLYVOX_THROW(type, message) \
+		log(message, LogLevels::Error); \
+		throw type((message))
 #else
 	namespace PolyVox
 	{
@@ -145,6 +178,7 @@ freely, subject to the following restrictions:
 	}
 
 	#define POLYVOX_THROW(type, message) \
+		log(message, LogLevels::Error); \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif

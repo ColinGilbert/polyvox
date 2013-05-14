@@ -21,7 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/LowPassFilter.h"
@@ -47,32 +46,8 @@ using namespace std;
 using namespace PolyVox;
 using namespace std;
 
-void exampleLog(string message, int severity)
-{
-	//Identify how severe the mesage is
-	switch(severity)
-	{
-	case LS_DEBUG:
-		cout << "DEBUG: ";
-		break;
-	case LS_INFO:
-		cout << "INFO: ";
-		break;
-	case LS_WARN:
-		cout << "WARN: ";
-		break;
-	case LS_ERROR:
-		cout << "ERROR: ";
-		break;
-	}
-
-	//Print the message
-	cout << message << endl;
-}
-
 int main(int argc, char *argv[])
 {
-	logHandler = &exampleLog;
 	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)));
 
 	//Make our volume contain a sphere in the center.
