@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include <cstdlib>  // For std::exit
 #include <iostream> // For std::cerr
 #include <stdexcept>
+#include <sstream>
 #include <string.h> // Exception constuctors take strings.
 
 #if defined(_MSC_VER)
@@ -82,8 +83,15 @@ namespace PolyVox
 	LogHandler getLogHandler();
 	void setLogHandler(LogHandler newHandler);
 
-	//The actual logging function
+	// The actual logging function
 	void log(const std::string& message, LogLevel logLevel);
+
+	// Some handy wrappers
+	void logDebug  (const std::string& message);
+	void logInfo   (const std::string& message);
+	void logWarning(const std::string& message);
+	void logError  (const std::string& message);
+	void logFatal  (const std::string& message);
 }
 
 /*
@@ -106,12 +114,14 @@ namespace PolyVox
 		{ \
 			if (!(condition)) \
 			{ \
-				std::cerr << std::endl << std::endl; \
-				std::cerr << "    PolyVox Assertion Failed!" << std::endl; \
-				std::cerr << "    =========================" << std::endl; \
-				std::cerr << "    Condition: " << #condition << std::endl; \
-				std::cerr << "    Message:   " << (message) << std::endl; \
-				std::cerr << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				std::stringstream ss; \
+				ss << std::endl << std::endl; \
+				ss << "    PolyVox Assertion Failed!" << std::endl; \
+				ss << "    =========================" << std::endl; \
+				ss << "    Condition: " << #condition << std::endl; \
+				ss << "    Message:   " << (message) << std::endl; \
+				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				logFatal(ss.str()); \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \
