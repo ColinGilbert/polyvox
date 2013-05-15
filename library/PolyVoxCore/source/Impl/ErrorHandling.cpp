@@ -31,7 +31,8 @@ namespace PolyVox
 		{
 		case LogLevels::Debug:
 			{
-				std::cout << "Debug:   " << message.c_str() << std::endl;
+				// Debug messages are not output by this default log handler.
+				// Provide a custom handler if you want to process them.
 				break;
 			}
 		case LogLevels::Info:
