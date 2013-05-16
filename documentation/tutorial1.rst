@@ -12,7 +12,7 @@ Creating a volume
 =================
 To get started, we need to include the following headers:
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 	#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
@@ -21,7 +21,7 @@ To get started, we need to include the following headers:
 
 The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`SimpleVolume` class which stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 
@@ -29,13 +29,13 @@ As can be seen, the SimpleVolume class is templated upon the voxel type. This me
 
 Next, we set some of the voxels in the volume to be 'solid' in order to create a large sphere in the centre of the volume. We do this with the following function call:
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	createSphereInVolume(volData, 30);
 
 Note that this function is part of the BasicExample (rather than being part of the PolyVox library) and is implemented as follows:
 	
-.. code-block:: c++
+.. sourcecode:: c++
 	
 	void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 	{
@@ -80,7 +80,7 @@ Extracting the surface
 ======================
 Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process can be performed by the :polyvox:`CubicSurfaceExtractorWithNormals` class. An instance of the :polyvox:`CubicSurfaceExtractorWithNormals` is created as follows:
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	SurfaceMesh<PositionMaterialNormal> mesh;
 	CubicSurfaceExtractorWithNormals< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
@@ -89,7 +89,7 @@ The :polyvox:`CubicSurfaceExtractorWithNormals` takes a pointer to the volume da
 
 The actual extraction happens in the :polyvox:`CubicSurfaceExtractorWithNormals::execute` function. This means you can set up a :polyvox:`CubicSurfaceExtractorWithNormals` with the required parameters and then actually execute it later. For this example we just call it straight away.
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	surfaceExtractor.execute();
 	
@@ -103,7 +103,7 @@ Rendering the surface with OpenGL is handled by the OpenGLWidget class. Again, t
 
 The OpenGLWidget::setSurfaceMeshToRender() function is implemented as follows:
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
 	{
@@ -135,7 +135,7 @@ The begin and end indices are used in the OpenGLWidget::paintGL() to control wha
 
 With the OpenGL index and vertex buffers set up, we can now look at the code which is called each frame to render them:
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	void OpenGLWidget::paintGL()
 	{

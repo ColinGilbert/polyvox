@@ -33,7 +33,7 @@ Triplanar Texturing
 -------------------
 The most common approach to texture mapping smooth voxel terrain is to use *triplanar texturing*. The basic idea is to project a texture along all three main axes and blend between the three texture samples according to the surface normal. As an example, suppose that we wish to write a fragment shader to apply a single texture to our terrain, and assume that we have access to both the world space position of the fragment and also its normalised surface normal. Also, note that your textures should be set to wrap because the world space position will quickly go outside the bounds of 0.0-1.0. The world space position will need to have been passed through from earlier in the pipeline while the normal can be computed using one of the approaches in the lighting (link) document. The shader code would then look something like this [footnote: code is untested as is simplified compared to real world code. hopefully it compiles, but if not it should still give you an idea of how it works]:
 
-.. code-block:: glsl
+.. sourcecode:: glsl
 
 	// Take the three texture samples
 	vec4 sampleX = texture2d(inputTexture, worldSpacePos.yz); // Project along x axis
@@ -47,7 +47,7 @@ Note that this approach will lead to the texture repeating once every world unit
 
 This idea of triplanar texturing can be applied to the cubic meshes as well, and in some ways it can be considered to be even simpler. With cubic meshes the normal always points exactly along one of the main axes, and so it is not necessary to sample the texture three times nor to blend the results. Instead you can use conditional branching in the fragment shader to determine which pair of values out of {x,y,z} should be used as the texture coordinates. Something like:
 
-.. code-block:: glsl
+.. sourcecode:: glsl
 
 	vec4 sample = vec4(0, 0, 0, 0); // We'll fill this in below
 	// Assume the normal is normalised.
@@ -71,7 +71,7 @@ Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor understand t
 
 The following code snippet assumes that you have passed the material identifier to your shaders and that you can access it in the fragment shader. It then chooses which colour to draw the polygon based on this identifier:
 
-.. code-block:: glsl
+.. sourcecode:: glsl
 
 	vec4 fragmentColour = vec4(1, 1, 1, 1); // Default value 
 	if(materialId < 0.5) //Avoid '==' when working with floats.
