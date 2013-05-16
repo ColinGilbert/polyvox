@@ -47,7 +47,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>::RawVolume(const RawVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
+		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented for performance reasons.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	RawVolume<VoxelType>& RawVolume<VoxelType>::operator=(const RawVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
+		POLYVOX_THROW(not_implemented, "Volume assignment operator not implemented for performance reasons.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -82,6 +82,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
+		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
@@ -186,7 +187,7 @@ namespace PolyVox
 			default:
 			{
 				//Should never happen
-				POLYVOX_ASSERT(false, "Invalid case.");
+				POLYVOX_THROW(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
 				return VoxelType();
 			}
 		}
@@ -254,10 +255,18 @@ namespace PolyVox
 	{
 		this->m_regValidRegion = regValidRegion;
 
-		//Ensure dimensions of the specified Region are valid
-		POLYVOX_ASSERT(this->getWidth() > 0, "Volume width must be greater than zero.");
-		POLYVOX_ASSERT(this->getHeight() > 0, "Volume width must be greater than zero.");
-		POLYVOX_ASSERT(this->getDepth() > 0, "Volume width must be greater than zero.");
+		if(this->getWidth() <= 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Volume width must be greater than zero.");
+		}
+		if(this->getHeight() <= 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Volume height must be greater than zero.");
+		}
+		if(this->getDepth() <= 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Volume depth must be greater than zero.");
+		}
 
 		//Create the data
 		m_pData = new VoxelType[this->getWidth() * this->getHeight()* this->getDepth()];

@@ -32,7 +32,6 @@ SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
 	source/MinizCompressor.cpp
-	source/Log.cpp
 	source/Region.cpp
 	source/VertexTypes.cpp
 )
@@ -66,7 +65,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/LargeVolume.h
 	include/PolyVoxCore/LargeVolume.inl
 	include/PolyVoxCore/LargeVolumeSampler.inl
-	include/PolyVoxCore/Log.h
 	include/PolyVoxCore/LowPassFilter.h
 	include/PolyVoxCore/LowPassFilter.inl
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.h
@@ -75,6 +73,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
+	include/PolyVoxCore/Picking.h
+	include/PolyVoxCore/Picking.inl
 	include/PolyVoxCore/RawVolume.h
 	include/PolyVoxCore/RawVolume.inl
 	include/PolyVoxCore/RawVolumeSampler.inl

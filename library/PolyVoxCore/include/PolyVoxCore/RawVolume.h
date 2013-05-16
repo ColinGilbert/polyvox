@@ -25,7 +25,6 @@ freely, subject to the following restrictions:
 #define __PolyVox_RawVolume_H__
 
 #include "PolyVoxCore/BaseVolume.h"
-#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 

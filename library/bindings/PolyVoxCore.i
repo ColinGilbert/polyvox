@@ -90,3 +90,4 @@ EXTRACTOR(shortname, LargeVolume)
 %include "CubicSurfaceExtractor.i"
 %include "CubicSurfaceExtractorWithNormals.i"
 %include "Raycast.i"
+%include "Picking.i"

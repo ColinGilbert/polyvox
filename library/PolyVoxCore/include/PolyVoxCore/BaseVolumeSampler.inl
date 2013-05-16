@@ -375,7 +375,7 @@ namespace PolyVox
 				default:
 				{
 					//Should never happen
-					POLYVOX_ASSERT(false, "Invalid case.");
+					POLYVOX_THROW(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
 					return VoxelType();
 				}
 			}

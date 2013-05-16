@@ -414,7 +414,11 @@ namespace PolyVox
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	inline StorageType Vector<Size, StorageType, OperationType>::getElement(uint32_t index) const
 	{
-		POLYVOX_ASSERT(index < Size, "Attempted to access invalid vector element.");
+		if(index >= Size)
+		{
+			POLYVOX_THROW(std::out_of_range, "Attempted to access invalid vector element.");
+		}
+
 		return m_tElements[index];
 	}
 
@@ -465,7 +469,11 @@ namespace PolyVox
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	inline void Vector<Size, StorageType, OperationType>::setElement(uint32_t index, StorageType tValue)
 	{
-		POLYVOX_ASSERT(index < Size, "Attempted to access invalid vector element.");
+		if(index >= Size)
+		{
+			POLYVOX_THROW(std::out_of_range, "Attempted to access invalid vector element.");
+		}
+
 		m_tElements[index] = tValue;
 	}
 
@@ -645,10 +653,17 @@ namespace PolyVox
 	inline void Vector<Size, StorageType, OperationType>::normalise(void)
     {
         float fLength = this->length();
+		if(fLength <= 0.0)
+		{
+			POLYVOX_THROW(invalid_operation, "Cannot normalise a vector with a length of zero");
+		}
+
 		for(uint32_t ct = 0; ct < Size; ++ct)
 		{
 			// Standard float rules apply for divide-by-zero
 			m_tElements[ct] /= fLength;
+
+			//This shouldn't happen as we had the length check earlier. So it's probably a bug if it does happen.
 			POLYVOX_ASSERT(m_tElements[ct] == m_tElements[ct], "Obtained NAN during vector normalisation. Perhaps the input vector was too short?");
 		}
     }

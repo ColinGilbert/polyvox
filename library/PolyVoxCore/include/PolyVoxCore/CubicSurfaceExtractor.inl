@@ -220,9 +220,9 @@ namespace PolyVox
 			}
 		}
 
-		// If we exit the loop here then apparently all the slots were full but none of them matched. I don't think
-		// this can happen so let's put an assert to make sure. If you hit this assert then please report it to us!
-		POLYVOX_ASSERT(false, "All slots full but no matches.");
+		// If we exit the loop here then apparently all the slots were full but none of them matched.
+		// This shouldn't ever happen, so if it does it is probably a bug in PolyVox. Please report it to us!
+		POLYVOX_THROW(std::runtime_error, "All slots full but no matches during cubic surface extraction. This is probably a bug in PolyVox");
 		return -1; //Should never happen.
 	}
 

@@ -34,14 +34,23 @@ namespace PolyVox
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
+		//Make sure that the size of the volume is an exact multiple of the size of the array.
+		if(volInput->getWidth() % arrayResult->getDimension(0) != 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Volume width must be an exact multiple of array width.");
+		}
+		if(volInput->getHeight() % arrayResult->getDimension(1) != 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Volume width must be an exact multiple of array height.");
+		}
+		if(volInput->getDepth() % arrayResult->getDimension(2) != 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Volume width must be an exact multiple of array depth.");
+		}
+
 		uint16_t uRandomUnitVectorIndex = 0;
 		uint16_t uRandomVectorIndex = 0;
 		uint16_t uIndexIncreament;
-
-		//Make sure that the size of the volume is an exact multiple of the size of the array.
-		POLYVOX_ASSERT(volInput->getWidth() % arrayResult->getDimension(0) == 0, "Volume width must be an exact multiple of array width.");
-		POLYVOX_ASSERT(volInput->getHeight() % arrayResult->getDimension(1) == 0, "Volume height must be an exact multiple of array height.");
-		POLYVOX_ASSERT(volInput->getDepth() % arrayResult->getDimension(2) == 0, "Volume depth must be an exact multiple of array depth.");
 
 		//Our initial indices. It doesn't matter exactly what we set here, but the code below makes 
 		//sure they are different for different regions which helps reduce tiling patterns in the results.

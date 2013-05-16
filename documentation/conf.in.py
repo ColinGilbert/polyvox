@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'PolyVox'
-copyright = u'2010, David Williams, Matt Williams'
+copyright = u'2013, David Williams, Matt Williams'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

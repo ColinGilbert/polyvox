@@ -90,7 +90,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::LargeVolume(const LargeVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_ASSERT(false, "Copy constructor not implemented."); // See function comment above.
+		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented for performance reasons.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>& LargeVolume<VoxelType>::operator=(const LargeVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_ASSERT(false, "Assignment operator not implemented."); // See function comment above.
+		POLYVOX_THROW(not_implemented, "Volume assignment operator not implemented for performance reasons.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +124,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
+		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
@@ -228,7 +229,7 @@ namespace PolyVox
 			default:
 			{
 				//Should never happen
-				POLYVOX_ASSERT(false, "Invlaid case.");
+				POLYVOX_THROW(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
 				return VoxelType();
 			}
 		}
@@ -282,6 +283,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool LargeVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
+		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
 		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
@@ -445,13 +447,8 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
-	{
-		//Debug mode validation
-		POLYVOX_ASSERT(uBlockSideLength > 0, "Block side length cannot be zero.");
-		POLYVOX_ASSERT(isPowerOf2(uBlockSideLength), "Block side length must be a power of two.");
-		POLYVOX_ASSERT(m_pCompressor, "You must provide a compressor for the LargeVolume to use.");
-		
-		//Release mode validation
+	{		
+		//Validate parameters
 		if(uBlockSideLength == 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");

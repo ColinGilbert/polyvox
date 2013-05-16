@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h"
 #include "Impl/Block.h"
 #include "PolyVoxCore/Compressor.h"
-#include "PolyVoxCore/Log.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 

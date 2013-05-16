@@ -14,7 +14,7 @@ User Guide:
 	ModifyingTerrain
 	LevelOfDetail
 	Threading
-	
+	ErrorHandling
 
 Examples:
 
@@ -22,6 +22,7 @@ Examples:
 	:maxdepth: 1
 	
 	tutorial1
+	python-bindings
 	
 Other Information:
 

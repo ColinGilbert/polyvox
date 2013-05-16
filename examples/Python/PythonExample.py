@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 ################################################################################
 # Copyright (c) 2013 Matt Williams
@@ -33,23 +33,21 @@ r = pv.Region(pv.Vector3Dint32_t(0,0,0), pv.Vector3Dint32_t(63,63,63))
 vol = pv.SimpleVolumeuint8(r)
 
 #Now fill the volume with our data (a sphere)
-v3dVolCenter = pv.Vector3Dint32_t(vol.getWidth() / 2, vol.getHeight() / 2, vol.getDepth() / 2)
+v3dVolCenter = pv.Vector3Dint32_t(vol.getWidth() // 2, vol.getHeight() // 2, vol.getDepth() // 2)
 sphereRadius = 30
 #This three-level for loop iterates over every voxel in the volume
 for z in range(vol.getDepth()):
 	for y in range(vol.getHeight()):
 		for x in range(vol.getWidth()):
-			#Store our current position as a vector...
-			v3dCurrentPos = pv.Vector3Dint32_t(x,y,z)
-			#And compute how far the current position is from the center of the volume
-			fDistToCenter = (v3dCurrentPos - v3dVolCenter).length()
-			
-			uVoxelValue = 0
+			#Compute how far the current position is from the center of the volume
+			fDistToCenter = (pv.Vector3Dint32_t(x,y,z) - v3dVolCenter).length()
 			
 			#If the current voxel is less than 'radius' units from the center then we make it solid.
 			if(fDistToCenter <= sphereRadius):
 				#Our new voxel value
 				uVoxelValue = 255
+			else:
+				uVoxelValue = 0
 			
 			#Write the voxel value into the volume
 			vol.setVoxelAt(x, y, z, uVoxelValue);
@@ -97,20 +95,20 @@ def run():
 	screen = pygame.display.set_mode(SCREEN_SIZE, pygame.HWSURFACE|pygame.OPENGL|pygame.DOUBLEBUF)
 	
 	#The first thing we do is print some OpenGL details and check that we have a good enough version
-	print "OpenGL Implementation Details:"
+	print("OpenGL Implementation Details:")
 	if glGetString(GL_VENDOR):
-		print "\tGL_VENDOR:", glGetString(GL_VENDOR)
+		print("\tGL_VENDOR: {}".format(glGetString(GL_VENDOR).decode()))
 	if glGetString(GL_RENDERER):
-		print "\tGL_RENDERER:", glGetString(GL_RENDERER)
+		print("\tGL_RENDERER: {}".format(glGetString(GL_RENDERER).decode()))
 	if glGetString(GL_VERSION):
-		print "\tGL_VERSION:", glGetString(GL_VERSION)
+		print("\tGL_VERSION: {}".format(glGetString(GL_VERSION).decode()))
 	if glGetString(GL_SHADING_LANGUAGE_VERSION):
-		print "\tGL_SHADING_LANGUAGE_VERSION:", glGetString(GL_SHADING_LANGUAGE_VERSION)
+		print("\tGL_SHADING_LANGUAGE_VERSION: {}".format(glGetString(GL_SHADING_LANGUAGE_VERSION).decode()))
 	
-	major_version = int(glGetString(GL_VERSION).split()[0].split('.')[0])
-	minor_version = int(glGetString(GL_VERSION).split()[0].split('.')[1])
+	major_version = int(glGetString(GL_VERSION).decode().split()[0].split('.')[0])
+	minor_version = int(glGetString(GL_VERSION).decode().split()[0].split('.')[1])
 	if major_version < 3 or (major_version < 3 and minor_version < 0):
-		print "OpenGL version must be at least 3.0 (found {0})".format(glGetString(GL_VERSION).split()[0])
+		print("OpenGL version must be at least 3.0 (found {0})".format(glGetString(GL_VERSION).decode().split()[0]))
 	
 	#Now onto the OpenGL initialisation
 	
@@ -123,7 +121,7 @@ def run():
 	
 	#We create out shaders which do little more than set a flat colour for each face
 	
-	VERTEX_SHADER = shaders.compileShader("""
+	VERTEX_SHADER = shaders.compileShader(b"""
 	#version 130
 	
 	in vec4 position;
@@ -145,7 +143,8 @@ def run():
 	}
 	""", GL_VERTEX_SHADER)
 	
-	FRAGMENT_SHADER = shaders.compileShader("""
+	
+	FRAGMENT_SHADER = shaders.compileShader(b"""
 	#version 130
 	
 	flat in float theColor;
@@ -160,8 +159,8 @@ def run():
 	shader = shaders.compileProgram(VERTEX_SHADER, FRAGMENT_SHADER)
 	
 	#And then grab our attribute locations from it
-	glBindAttribLocation(shader, 0, "position")
-	glBindAttribLocation(shader, 1, "normal")
+	glBindAttribLocation(shader, 0, b"position")
+	glBindAttribLocation(shader, 1, b"normal")
 	
 	#Create the Vertex Array Object to hold our volume mesh
 	vertexArrayObject = GLuint(0)
@@ -184,9 +183,9 @@ def run():
 		glDisableVertexAttribArray(0)
 	
 	#Now grab out transformation martix locations
-	modelToWorldMatrixUnif = glGetUniformLocation(shader, "modelToWorldMatrix")
-	worldToCameraMatrixUnif = glGetUniformLocation(shader, "worldToCameraMatrix")
-	cameraToClipMatrixUnif = glGetUniformLocation(shader, "cameraToClipMatrix")
+	modelToWorldMatrixUnif = glGetUniformLocation(shader, b"modelToWorldMatrix")
+	worldToCameraMatrixUnif = glGetUniformLocation(shader, b"worldToCameraMatrix")
+	cameraToClipMatrixUnif = glGetUniformLocation(shader, b"cameraToClipMatrix")
 	
 	modelToWorldMatrix = np.array([[1.0,0.0,0.0,-32.0],[0.0,1.0,0.0,-32.0],[0.0,0.0,1.0,-32.0],[0.0,0.0,0.0,1.0]], dtype='f')
 	worldToCameraMatrix = np.array([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,-50.0],[0.0,0.0,0.0,1.0]], dtype='f')

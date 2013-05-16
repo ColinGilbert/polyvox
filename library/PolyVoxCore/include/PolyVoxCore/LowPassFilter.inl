@@ -39,14 +39,15 @@ namespace PolyVox
 		,m_uKernelSize(uKernelSize)
 	{
 		//Kernel size must be at least three
-		POLYVOX_ASSERT(m_uKernelSize >= 3, "Kernel size must be at least three");
-		m_uKernelSize = std::max(m_uKernelSize, static_cast<uint32_t>(3)); //For release builds
+		if(m_uKernelSize < 3)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Kernel size must be at least three");
+		}
 
 		//Kernel size must be odd
-		POLYVOX_ASSERT(m_uKernelSize % 2 == 1, "Kernel size must be odd");
-		if(m_uKernelSize % 2 == 0) //For release builds
+		if(m_uKernelSize % 2 == 0)
 		{
-			m_uKernelSize++;
+			POLYVOX_THROW(std::invalid_argument, "Kernel size must be odd");
 		}
 	}
 

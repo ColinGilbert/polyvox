@@ -26,14 +26,19 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/Config.h"
 
-#include <cstdlib>  //For std::exit
-#include <iostream> //For std::cerr
+#include <cstdlib>  // For std::exit
+#include <iostream> // For std::cerr
 #include <stdexcept>
+#include <sstream>
+#include <string.h> // Exception constuctors take strings.
 
 #if defined(_MSC_VER)
+	// In Visual Studio we can use this function to go into the debugger.
     #define POLYVOX_HALT() __debugbreak()
 #else
-    #define POLYVOX_HALT() std::exit(EXIT_FAILURE)
+	// On other platforms we just halt by forcing a crash.
+	// Hopefully this puts us in the debugger if one is running
+    #define POLYVOX_HALT() *((unsigned int*)0) = 0xDEAD
 #endif
 
 // Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
@@ -50,6 +55,44 @@ freely, subject to the following restrictions:
 #endif
 
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
+
+/*
+ * Logging
+ * --------
+ * PolyVox provides basic logging facilities which can be redirected by your application.
+ */
+
+namespace PolyVox
+{
+	class LogLevels
+	{
+	public:
+		enum LogLevel
+		{
+			Debug,
+			Info,
+			Warning,
+			Error,
+			Fatal
+		};
+	};
+	typedef LogLevels::LogLevel LogLevel;
+
+	typedef void (*LogHandler)(const std::string& message, LogLevel logLevel);
+
+	LogHandler getLogHandler();
+	void setLogHandler(LogHandler newHandler);
+
+	// The actual logging function
+	void log(const std::string& message, LogLevel logLevel);
+
+	// Some handy wrappers
+	void logDebug  (const std::string& message);
+	void logInfo   (const std::string& message);
+	void logWarning(const std::string& message);
+	void logError  (const std::string& message);
+	void logFatal  (const std::string& message);
+}
 
 /*
  * Assertions
@@ -71,12 +114,14 @@ freely, subject to the following restrictions:
 		{ \
 			if (!(condition)) \
 			{ \
-				std::cerr << std::endl << std::endl; \
-				std::cerr << "    PolyVox Assertion Failed!" << std::endl; \
-				std::cerr << "    =========================" << std::endl; \
-				std::cerr << "    Condition: " << #condition << std::endl; \
-				std::cerr << "    Message:   " << (message) << std::endl; \
-				std::cerr << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				std::stringstream ss; \
+				ss << std::endl << std::endl; \
+				ss << "    PolyVox Assertion Failed!" << std::endl; \
+				ss << "    =========================" << std::endl; \
+				ss << "    Condition: " << #condition << std::endl; \
+				ss << "    Message:   " << (message) << std::endl; \
+				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				logFatal(ss.str()); \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \
@@ -130,7 +175,9 @@ freely, subject to the following restrictions:
  * ...
  */
 #ifdef POLYVOX_THROW_ENABLED
-	#define POLYVOX_THROW(type, message) throw type((message))
+	#define POLYVOX_THROW(type, message) \
+		log(message, LogLevels::Error); \
+		throw type((message))
 #else
 	namespace PolyVox
 	{
@@ -141,8 +188,37 @@ freely, subject to the following restrictions:
 	}
 
 	#define POLYVOX_THROW(type, message) \
+		log(message, LogLevels::Error); \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif
+
+namespace PolyVox
+{
+	/// A general purpose exception to indicate that an operation cannot be peformed.
+	class invalid_operation : public std::logic_error
+	{
+	public:
+	explicit invalid_operation(const std::string& message)
+		: logic_error(message.c_str()) {}
+
+	explicit invalid_operation(const char *message)
+		: logic_error(message) {}
+	};
+
+	/// Thrown to indicate that a function is deliberatly not implmented. For example, perhaps you called a function
+	/// in a base class whereas you are supposed to use a derived class which implements the function, or perhaps the
+	/// function is not defined for a particular template parameter. It may be that the function is required to
+	/// compile sucessfully but it should not be called.
+	class not_implemented : public std::logic_error
+	{
+	public:
+	explicit not_implemented(const std::string& message)
+		: logic_error(message.c_str()) {}
+
+	explicit not_implemented(const char *message)
+		: logic_error(message) {}
+	};
+}
 
 #endif //__PolyVox_ErrorHandling_H__

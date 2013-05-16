@@ -30,10 +30,6 @@ namespace PolyVox
 	//If this is not the case then the output is undefined.
 	uint8_t logBase2(uint32_t uInput)
 	{
-		//Debug mode validation
-		POLYVOX_ASSERT(uInput != 0, "Cannot compute the log of zero.");
-		POLYVOX_ASSERT(isPowerOf2(uInput), "Input must be a power of two in order to compute the log.");
-
 		//Release mode validation
 		if(uInput == 0)
 		{
