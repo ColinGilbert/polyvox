@@ -9,27 +9,27 @@ PolyVox has a simple logging mechanism which allows it to write messages with an
 
 The following functions are called at various points in the PolyVox codebase:
 
-.. code-block:: c++
+.. code-block :: c++
 
-	void logDebug  (const std::string& message);
-	void logInfo   (const std::string& message);
-	void logWarning(const std::string& message);
-	void logError  (const std::string& message);
-	void logFatal  (const std::string& message);
+ void logDebug  (const std::string& message);
+ void logInfo   (const std::string& message);
+ void logWarning(const std::string& message);
+ void logError  (const std::string& message);
+ void logFatal  (const std::string& message);
 
 Fatal messages are only issued in non-recoverable scenarios when the application is about to crash, and may provide the last peice of information you have about what went wrong. Error messages are issued when something has happened which prevents sucessful completion of a task, for example if you provide invalid parameters to a function (Error messages are also issued whenever an exception is thrown). Warning messages mean the system was able to continue but the results may not be what you expected. Info and Debug messages are both used for general information about what PolyVox is doing. The differentiating factor is that Debug is used if the output is very frequent so that it can be easily suppressed.
 
 PolyVox defines a LogHandler function pointer which looks like this:
 
-.. code-block:: c++
+.. code-block :: c++
 
-	typedef void (*LogHandler)(const std::string& message, LogLevel logLevel);
+ typedef void (*LogHandler)(const std::string& message, LogLevel logLevel);
 
 There is a function called 'defaultLogHandler()' which matches this signature and writes the messages to cout/cerr (note that it suppresses Debug messages). To redirect log messages you can write your own fuction which matches this signature and the apply it with setLogHandler:
 
-.. code-block:: c++
+.. code-block :: c++
 
-	setLogHandler(&myLogHandler);
+ setLogHandler(&myLogHandler);
 
 Note that you can disable logging completely by passing a value of '0' to setLogHandler().
 
