@@ -121,7 +121,7 @@ namespace PolyVox
 				ss << "    Condition: " << #condition << std::endl; \
 				ss << "    Message:   " << (message) << std::endl; \
 				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
-				logFatal(ss.str()); \
+				PolyVox::logFatal(ss.str()); \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \
@@ -176,7 +176,7 @@ namespace PolyVox
  */
 #ifdef POLYVOX_THROW_ENABLED
 	#define POLYVOX_THROW(type, message) \
-		log(message, LogLevels::Error); \
+		PolyVox::logError(message); \
 		throw type((message))
 #else
 	namespace PolyVox
@@ -188,7 +188,7 @@ namespace PolyVox
 	}
 
 	#define POLYVOX_THROW(type, message) \
-		log(message, LogLevels::Error); \
+		PolyVox::logError(message); \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif
