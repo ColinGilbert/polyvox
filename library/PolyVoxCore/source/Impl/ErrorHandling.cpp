@@ -133,7 +133,7 @@ namespace PolyVox
 		ss << "    Line:    " << line << std::endl; \
 		ss << "    File:    " << file << std::endl; \
 		ss << "    Message: " << e.what() << std::endl << std::endl; \
-		logFatal(ss.str()); \
+		PolyVox::logFatal(ss.str()); \
 
 		POLYVOX_HALT(); \
 	}
