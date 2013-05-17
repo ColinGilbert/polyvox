@@ -218,6 +218,50 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
+	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, BoundsCheck eBoundsCheck)
+	{
+		// If bounds checking is enabled then we validate the
+		// bounds, and throw an exception if they are violated.
+		if(eBoundsCheck == BoundsChecks::Full)
+		{
+			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+			{
+				POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+			}
+		}
+
+		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
+		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
+		int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
+		int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
+
+		m_pData
+		[
+			iLocalXPos + 
+			iLocalYPos * this->getWidth() + 
+			iLocalZPos * this->getWidth() * this->getHeight()
+		] = tValue;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos the 3D position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \return whether the requested position is inside the volume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, BoundsCheck eBoundsCheck)
+	{
+		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eBoundsCheck);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos the \c x position of the voxel
+	/// \param uYPos the \c y position of the voxel
+	/// \param uZPos the \c z position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \return whether the requested position is inside the volume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	bool RawVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))

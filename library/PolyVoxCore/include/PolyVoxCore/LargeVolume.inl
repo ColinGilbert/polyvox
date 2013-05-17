@@ -288,6 +288,50 @@ namespace PolyVox
 	/// \return whether the requested position is inside the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
+	void LargeVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, BoundsCheck eBoundsCheck)
+	{
+		// If bounds checking is enabled then we validate the
+		// bounds, and throw an exception if they are violated.
+		if(eBoundsCheck == BoundsChecks::Full)
+		{
+			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+			{
+				POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+			}
+		}
+
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+
+		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+
+		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos the 3D position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \return whether the requested position is inside the volume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, BoundsCheck eBoundsCheck)
+	{
+		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eBoundsCheck);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos the \c x position of the voxel
+	/// \param uYPos the \c y position of the voxel
+	/// \param uZPos the \c z position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \return whether the requested position is inside the volume
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	bool LargeVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
 		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
