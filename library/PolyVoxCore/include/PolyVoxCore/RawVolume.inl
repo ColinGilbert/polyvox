@@ -80,10 +80,17 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, bool bPerformBoundsChecks) const
 	{
-		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
-		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
+		// If bounds checking is enabled then we validate the
+		// bounds, and throw an exception if they are violated.
+		if(bPerformBoundsChecks)
+		{
+			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+			{
+				POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+			}
+		}
 
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
@@ -103,9 +110,9 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos) const
+	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, bool bPerformBoundsChecks) const
 	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), bPerformBoundsChecks);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
