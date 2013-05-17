@@ -77,6 +77,9 @@ namespace PolyVox
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel
 	/// \param uZPos The \c z position of the voxel
+	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
+	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
+	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -108,6 +111,9 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dPos The 3D position of the voxel
 	/// \return The voxel value
+	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
+	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
+	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck) const
@@ -215,7 +221,9 @@ namespace PolyVox
 	/// \param uYPos the \c y position of the voxel
 	/// \param uZPos the \c z position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
+	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
+	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
+	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, BoundsCheck eBoundsCheck)
@@ -246,7 +254,9 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dPos the 3D position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
+	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
+	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
+	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, BoundsCheck eBoundsCheck)
