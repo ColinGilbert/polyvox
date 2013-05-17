@@ -36,6 +36,16 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// More details to come...
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	namespace BoundsChecks
+	{
+		enum BoundsCheck
+		{
+			None = 0,
+			Full = 1
+		};
+	}
+	typedef BoundsChecks::BoundsCheck BoundsCheck;
+	
 	namespace WrapModes
 	{
 		enum WrapMode
@@ -147,9 +157,9 @@ namespace PolyVox
 		/// Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, bool bPerformBoundsChecks = true) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck = BoundsChecks::Full) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, bool bPerformBoundsChecks = true) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck = BoundsChecks::Full) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector

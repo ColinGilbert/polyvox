@@ -160,7 +160,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, bool /*bPerformBoundsChecks*/) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, BoundsCheck /*eBoundsCheck*/) const
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
 		return VoxelType();
@@ -171,7 +171,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, bool /*bPerformBoundsChecks*/) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, BoundsCheck /*eBoundsCheck*/) const
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
 		return VoxelType();

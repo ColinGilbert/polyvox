@@ -80,11 +80,11 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType SimpleVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, bool bPerformBoundsChecks) const
+	VoxelType SimpleVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck) const
 	{
 		// If bounds checking is enabled then we validate the
 		// bounds, and throw an exception if they are violated.
-		if(bPerformBoundsChecks)
+		if(eBoundsCheck == BoundsChecks::Full)
 		{
 			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 			{
@@ -110,9 +110,9 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType SimpleVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, bool bPerformBoundsChecks) const
+	VoxelType SimpleVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck) const
 	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), bPerformBoundsChecks);
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eBoundsCheck);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

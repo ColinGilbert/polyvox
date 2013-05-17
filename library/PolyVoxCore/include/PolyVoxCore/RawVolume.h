@@ -116,9 +116,9 @@ namespace PolyVox
 		~RawVolume();
 
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, bool bPerformBoundsChecks = true) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck = BoundsChecks::Full) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, bool bPerformBoundsChecks = true) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck = BoundsChecks::Full) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
