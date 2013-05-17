@@ -208,7 +208,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
 		return VoxelType();
@@ -219,7 +219,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
 		return VoxelType();

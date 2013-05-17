@@ -274,9 +274,9 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder = VoxelType()) const;
 
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);

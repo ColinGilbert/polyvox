@@ -203,7 +203,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
 		switch(eWrapMode)
 		{
@@ -247,9 +247,9 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
+	VoxelType LargeVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
-		return getVoxelWithWrapping(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
