@@ -23,7 +23,7 @@ The description here is rather oversimplified, but the idea behind these operati
 
 Further information about the derivative operations can be found in the OpenGL/Direct3D API documentation, but the implementation in code is quite simple. Firstly you need to make sure that you have access to the fragments world space position in your shader, which means you need to pass it through from the vertex shader. Then you can use the following code in your fragment shader:
 
-.. code-block:: glsl
+.. sourcecode:: glsl
 
 	vec3 worldNormal = cross(dFdy(inWorldPosition.xyz), dFdx(inWorldPosition.xyz));
 	worldNormal = normalize(worldNormal);

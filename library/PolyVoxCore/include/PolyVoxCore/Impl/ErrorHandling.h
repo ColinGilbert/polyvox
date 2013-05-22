@@ -62,36 +62,19 @@ freely, subject to the following restrictions:
  * PolyVox provides basic logging facilities which can be redirected by your application.
  */
 
+#define LOG_DECLARATION(name) \
+	std::ostream& log(name)(void); \
+	void set(name)Stream(std::ostream& nameStream);
+
 namespace PolyVox
 {
-	class LogLevels
-	{
-	public:
-		enum LogLevel
-		{
-			Debug,
-			Info,
-			Warning,
-			Error,
-			Fatal
-		};
-	};
-	typedef LogLevels::LogLevel LogLevel;
+	std::ostream& logError(void);
+	std::ostream& logFatal(void);
 
-	typedef void (*LogHandler)(const std::string& message, LogLevel logLevel);
-
-	LogHandler getLogHandler();
-	void setLogHandler(LogHandler newHandler);
-
-	// The actual logging function
-	void log(const std::string& message, LogLevel logLevel);
-
-	// Some handy wrappers
-	void logDebug  (const std::string& message);
-	void logInfo   (const std::string& message);
-	void logWarning(const std::string& message);
-	void logError  (const std::string& message);
-	void logFatal  (const std::string& message);
+	// These take pointers rather than references to emphasise that the 
+	// user needs to keep the target alive as long as PolyVox is writing data.
+	void setErrorStream(std::ostream* errorStream);
+	void setFatalStream(std::ostream* fatalStream);
 }
 
 /*
@@ -114,14 +97,12 @@ namespace PolyVox
 		{ \
 			if (!(condition)) \
 			{ \
-				std::stringstream ss; \
-				ss << std::endl << std::endl; \
-				ss << "    PolyVox Assertion Failed!" << std::endl; \
-				ss << "    =========================" << std::endl; \
-				ss << "    Condition: " << #condition << std::endl; \
-				ss << "    Message:   " << (message) << std::endl; \
-				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
-				PolyVox::logFatal(ss.str()); \
+				PolyVox::logFatal() << std::endl << std::endl; \
+				PolyVox::logFatal() << "    PolyVox Assertion Failed!" << std::endl; \
+				PolyVox::logFatal() << "    =========================" << std::endl; \
+				PolyVox::logFatal() << "    Condition: " << #condition << std::endl; \
+				PolyVox::logFatal() << "    Message:   " << (message) << std::endl; \
+				PolyVox::logFatal() << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \
@@ -176,7 +157,7 @@ namespace PolyVox
  */
 #ifdef POLYVOX_THROW_ENABLED
 	#define POLYVOX_THROW(type, message) \
-		PolyVox::logError(message); \
+		PolyVox::logError() << (message); \
 		throw type((message))
 #else
 	namespace PolyVox
@@ -188,7 +169,7 @@ namespace PolyVox
 	}
 
 	#define POLYVOX_THROW(type, message) \
-		PolyVox::logError(message); \
+		PolyVox::logError() << (message); \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif

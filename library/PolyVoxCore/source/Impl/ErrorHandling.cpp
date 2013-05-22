@@ -25,115 +25,63 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	void defaultLogHandler(const std::string& message, LogLevel logLevel)
+	// Error stream for logging
+	std::ostream*& getErrorStreamInstance()
 	{
-		switch(logLevel)
-		{
-		case LogLevels::Debug:
-			{
-				// Debug messages are not output by this default log handler.
-				// Provide a custom handler if you want to process them.
-				break;
-			}
-		case LogLevels::Info:
-			{
-				std::cout << "Info:    " << message.c_str() << std::endl;
-				break;
-			}
-		case LogLevels::Warning:
-			{
-				std::cerr << "Warning: " << message.c_str() << std::endl;
-				break;
-			}
-		case LogLevels::Error:
-			{
-				std::cerr << "Error:   " << message.c_str() << std::endl;
-				break;
-			}
-		case LogLevels::Fatal:
-			{
-				std::cerr << "Fatal:   " << message.c_str() << std::endl;
-				break;
-			}
-		}
+		static std::ostream* s_pErrorStream = &(std::cerr);
+		return s_pErrorStream;
 	}
 
-	LogHandler& getLogHandlerInstance()
+	void setErrorStream(std::ostream* errorStream)
 	{
-		static LogHandler s_fLogHandler = &defaultLogHandler;
-		return s_fLogHandler;
+		getErrorStreamInstance() = errorStream;
 	}
 
-	LogHandler getLogHandler()
+	std::ostream& logError(void)
 	{
-		return getLogHandlerInstance();
+		return *(getErrorStreamInstance());
 	}
 
-	void setLogHandler(LogHandler fNewHandler)
+	// Fatal stream for logging
+	std::ostream*& getFatalStreamInstance()
 	{
-		getLogHandlerInstance() = fNewHandler;
+		static std::ostream* s_pFatalStream = &(std::cerr);
+		return s_pFatalStream;
 	}
 
-	void log(const std::string& message, LogLevel logLevel)
+	void setFatalStream(std::ostream* fatalStream)
 	{
-		LogHandler logHandler = getLogHandler();
-		if(logHandler)
-		{
-			logHandler(message, logLevel);
-		}
+		getFatalStreamInstance() = fatalStream;
 	}
 
-	// Some handy wrappers
-	void logDebug(const std::string& message)
-	{ 
-		log(message, LogLevels::Debug  );
-	}
-
-	void logInfo(const std::string& message)
+	std::ostream& logFatal(void)
 	{
-		log(message, LogLevels::Info);
-	}
-
-	void logWarning(const std::string& message)
-	{
-		log(message, LogLevels::Warning);
-	}
-
-	void logError(const std::string& message)
-	{
-		log(message, LogLevels::Error);
-	}
-
-	void logFatal(const std::string& message)
-	{
-		log(message, LogLevels::Fatal);
+		return *(getFatalStreamInstance());
 	}
 
 #ifndef POLYVOX_THROW_ENABLED
 	void defaultThrowHandler(std::exception& e, const char* file, int line)
 	{
-		std::stringstream ss; \
-		ss << std::endl << std::endl; \
-		ss << "    PolyVox exception thrown!" << std::endl; \
-		ss << "    =========================" << std::endl; \
-		ss << "    PolyVox has tried to throw an exception but it was built without support" << std::endl; \
-		ss << "    for exceptions. In this scenario PolyVox will call a 'throw handler'" << std::endl; \
-		ss << "    and this message is being printed by the default throw handler." << std::endl << std::endl; \
+		logFatal() << std::endl << std::endl; \
+		logFatal() << "    PolyVox exception thrown!" << std::endl; \
+		logFatal() << "    =========================" << std::endl; \
+		logFatal() << "    PolyVox has tried to throw an exception but it was built without support" << std::endl; \
+		logFatal() << "    for exceptions. In this scenario PolyVox will call a 'throw handler'" << std::endl; \
+		logFatal() << "    and this message is being printed by the default throw handler." << std::endl << std::endl; \
 
-		ss << "    If you don't want to enable exceptions then you should try to determine why" << std::endl; \
-		ss << "    this exception was thrown and make sure it doesn't happen again. If it was" << std::endl; \
-		ss << "    due to something like an invalid argument to a function then you should be" << std::endl; \
-		ss << "    able to fix it quite easily by validating parameters as appropriate. More" << std::endl; \
-		ss << "    complex exception scenarios (out of memory, etc) might be harder to fix and" << std::endl; \
-		ss << "    you should replace this default handler with something which is more" << std::endl; \
-		ss << "    meaningful to your users." << std::endl << std::endl; \
+		logFatal() << "    If you don't want to enable exceptions then you should try to determine why" << std::endl; \
+		logFatal() << "    this exception was thrown and make sure it doesn't happen again. If it was" << std::endl; \
+		logFatal() << "    due to something like an invalid argument to a function then you should be" << std::endl; \
+		logFatal() << "    able to fix it quite easily by validating parameters as appropriate. More" << std::endl; \
+		logFatal() << "    complex exception scenarios (out of memory, etc) might be harder to fix and" << std::endl; \
+		logFatal() << "    you should replace this default handler with something which is more" << std::endl; \
+		logFatal() << "    meaningful to your users." << std::endl << std::endl; \
 
-		ss << "    Exception details" << std::endl; \
-		ss << "    -----------------" << std::endl; \
-		ss << "    Line:    " << line << std::endl; \
-		ss << "    File:    " << file << std::endl; \
-		ss << "    Message: " << e.what() << std::endl << std::endl; \
-		PolyVox::logFatal(ss.str()); \
+		logFatal() << "    Exception details" << std::endl; \
+		logFatal() << "    -----------------" << std::endl; \
+		logFatal() << "    Line:    " << line << std::endl; \
+		logFatal() << "    File:    " << file << std::endl; \
+		logFatal() << "    Message: " << e.what() << std::endl << std::endl; \
 
 		POLYVOX_HALT(); \
 	}

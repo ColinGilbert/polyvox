@@ -22,13 +22,13 @@ Since C++ templates are essentially a code-generation system built into the C++ 
 The way we work around this is by, as part of the bindings generation process, pre-compiling a number of different versions of each templated class.
 For example, in C++ a 3D vector containing 32-bit integers would be declared as
 
-.. code-block:: c++
+.. sourcecode:: c++
 
 	PolyVox::Vector3D<int32_t> my_vec(0,1,4);
 
 but in Python it would be accessed as
 
-.. code-block:: python
+.. sourcecode:: python
 
 	my_vec = PolyVoxCore.Vector3Dint32_t(0,1,4)
 
