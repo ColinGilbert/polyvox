@@ -97,12 +97,12 @@ namespace PolyVox
 		{ \
 			if (!(condition)) \
 			{ \
-				logFatal() << std::endl << std::endl; \
-				logFatal() << "    PolyVox Assertion Failed!" << std::endl; \
-				logFatal() << "    =========================" << std::endl; \
-				logFatal() << "    Condition: " << #condition << std::endl; \
-				logFatal() << "    Message:   " << (message) << std::endl; \
-				logFatal() << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				PolyVox::logFatal() << std::endl << std::endl; \
+				PolyVox::logFatal() << "    PolyVox Assertion Failed!" << std::endl; \
+				PolyVox::logFatal() << "    =========================" << std::endl; \
+				PolyVox::logFatal() << "    Condition: " << #condition << std::endl; \
+				PolyVox::logFatal() << "    Message:   " << (message) << std::endl; \
+				PolyVox::logFatal() << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \
@@ -157,7 +157,7 @@ namespace PolyVox
  */
 #ifdef POLYVOX_THROW_ENABLED
 	#define POLYVOX_THROW(type, message) \
-		logError() << (message); \
+		PolyVox::logError() << (message); \
 		throw type((message))
 #else
 	namespace PolyVox
@@ -169,7 +169,7 @@ namespace PolyVox
 	}
 
 	#define POLYVOX_THROW(type, message) \
-		logError() << (message); \
+		PolyVox::logError() << (message); \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif
