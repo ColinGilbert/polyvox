@@ -188,7 +188,6 @@ namespace PolyVox
 			{
 				//Should never happen
 				POLYVOX_THROW(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
-				return VoxelType();
 			}
 		}
 	}
