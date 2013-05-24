@@ -68,6 +68,9 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/// Get a stream which will consume all input without outputting anything.
+	std::ostream* getNullStream(void);
+
 	std::ostream& logTrace(void);
 	std::ostream& logDebug(void);
 	std::ostream& logInfo(void);

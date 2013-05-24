@@ -25,10 +25,21 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	/** 
+	 * \return A pointer to the null stream.
+	 */
+	std::ostream* getNullStream(void)
+	{
+		// Passing zero to the stream constructor guarentees it will discard all input. See
+		// here http://stackoverflow.com/a/8244052 and here http://stackoverflow.com/a/6240980
+		static std::ostream s_NullStream = std::ostream(0);
+		return &s_NullStream;
+	}
+
 	// Trace stream for logging
 	std::ostream*& getTraceStreamInstance()
 	{
-		static std::ostream* s_pTraceStream = &(std::cerr);
+		static std::ostream* s_pTraceStream = getNullStream();
 		return s_pTraceStream;
 	}
 
@@ -45,7 +56,7 @@ namespace PolyVox
 	// Debug stream for logging
 	std::ostream*& getDebugStreamInstance()
 	{
-		static std::ostream* s_pDebugStream = &(std::cerr);
+		static std::ostream* s_pDebugStream = getNullStream();
 		return s_pDebugStream;
 	}
 
@@ -62,7 +73,7 @@ namespace PolyVox
 	// Info stream for logging
 	std::ostream*& getInfoStreamInstance()
 	{
-		static std::ostream* s_pInfoStream = &(std::cerr);
+		static std::ostream* s_pInfoStream = &(std::cout);
 		return s_pInfoStream;
 	}
 
