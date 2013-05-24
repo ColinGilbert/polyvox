@@ -25,6 +25,74 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	// Trace stream for logging
+	std::ostream*& getTraceStreamInstance()
+	{
+		static std::ostream* s_pTraceStream = &(std::cerr);
+		return s_pTraceStream;
+	}
+
+	void setTraceStream(std::ostream* pStream)
+	{
+		getTraceStreamInstance() = pStream;
+	}
+
+	std::ostream& logTrace(void)
+	{
+		return *(getTraceStreamInstance());
+	}
+	
+	// Debug stream for logging
+	std::ostream*& getDebugStreamInstance()
+	{
+		static std::ostream* s_pDebugStream = &(std::cerr);
+		return s_pDebugStream;
+	}
+
+	void setDebugStream(std::ostream* pStream)
+	{
+		getDebugStreamInstance() = pStream;
+	}
+
+	std::ostream& logDebug(void)
+	{
+		return *(getDebugStreamInstance());
+	}
+	
+	// Info stream for logging
+	std::ostream*& getInfoStreamInstance()
+	{
+		static std::ostream* s_pInfoStream = &(std::cerr);
+		return s_pInfoStream;
+	}
+
+	void setInfoStream(std::ostream* pStream)
+	{
+		getInfoStreamInstance() = pStream;
+	}
+
+	std::ostream& logInfo(void)
+	{
+		return *(getInfoStreamInstance());
+	}
+	
+	// Warning stream for logging
+	std::ostream*& getWarningStreamInstance()
+	{
+		static std::ostream* s_pWarningStream = &(std::cerr);
+		return s_pWarningStream;
+	}
+
+	void setWarningStream(std::ostream* pStream)
+	{
+		getWarningStreamInstance() = pStream;
+	}
+
+	std::ostream& logWarning(void)
+	{
+		return *(getWarningStreamInstance());
+	}
+	
 	// Error stream for logging
 	std::ostream*& getErrorStreamInstance()
 	{
@@ -32,9 +100,9 @@ namespace PolyVox
 		return s_pErrorStream;
 	}
 
-	void setErrorStream(std::ostream* errorStream)
+	void setErrorStream(std::ostream* pStream)
 	{
-		getErrorStreamInstance() = errorStream;
+		getErrorStreamInstance() = pStream;
 	}
 
 	std::ostream& logError(void)
@@ -49,9 +117,9 @@ namespace PolyVox
 		return s_pFatalStream;
 	}
 
-	void setFatalStream(std::ostream* fatalStream)
+	void setFatalStream(std::ostream* pStream)
 	{
-		getFatalStreamInstance() = fatalStream;
+		getFatalStreamInstance() = pStream;
 	}
 
 	std::ostream& logFatal(void)
