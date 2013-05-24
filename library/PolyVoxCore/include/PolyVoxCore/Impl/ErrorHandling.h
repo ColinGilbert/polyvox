@@ -68,13 +68,21 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	std::ostream& logTrace(void);
+	std::ostream& logDebug(void);
+	std::ostream& logInfo(void);
+	std::ostream& logWarning(void);
 	std::ostream& logError(void);
 	std::ostream& logFatal(void);
 
 	// These take pointers rather than references to emphasise that the 
 	// user needs to keep the target alive as long as PolyVox is writing data.
-	void setErrorStream(std::ostream* errorStream);
-	void setFatalStream(std::ostream* fatalStream);
+	void setTraceStream(std::ostream* pStream);
+	void setDebugStream(std::ostream* pStream);
+	void setInfoStream(std::ostream* pStream);
+	void setWarningStream(std::ostream* pStream);
+	void setErrorStream(std::ostream* pStream);
+	void setFatalStream(std::ostream* pStream);
 }
 
 /*
