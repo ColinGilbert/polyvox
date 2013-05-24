@@ -68,15 +68,18 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	namespace Impl
+	{
+		std::ostream*& getTraceStreamInstance();
+		std::ostream*& getDebugStreamInstance();
+		std::ostream*& getInfoStreamInstance();
+		std::ostream*& getWarningStreamInstance();
+		std::ostream*& getErrorStreamInstance();
+		std::ostream*& getFatalStreamInstance();
+	}
+
 	/// Get a stream which will consume all input without outputting anything.
 	std::ostream* getNullStream(void);
-
-	std::ostream& logTrace(void);
-	std::ostream& logDebug(void);
-	std::ostream& logInfo(void);
-	std::ostream& logWarning(void);
-	std::ostream& logError(void);
-	std::ostream& logFatal(void);
 
 	// These take pointers rather than references to emphasise that the 
 	// user needs to keep the target alive as long as PolyVox is writing data.
@@ -86,6 +89,90 @@ namespace PolyVox
 	void setWarningStream(std::ostream* pStream);
 	void setErrorStream(std::ostream* pStream);
 	void setFatalStream(std::ostream* pStream);
+
+	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
+	struct logTrace
+	{
+		logTrace(){}
+		~logTrace(){*(Impl::getTraceStreamInstance()) << std::endl;}
+
+		template<class T>
+		logTrace &operator<<(const T &x)
+		{
+			*(Impl::getTraceStreamInstance()) << x;
+			return *this;
+		}
+	};
+
+	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
+	struct logDebug
+	{
+		logDebug(){}
+		~logDebug(){*(Impl::getDebugStreamInstance()) << std::endl;}
+
+		template<class T>
+		logDebug &operator<<(const T &x)
+		{
+			*(Impl::getDebugStreamInstance()) << x;
+			return *this;
+		}
+	};
+
+	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
+	struct logInfo
+	{
+		logInfo(){}
+		~logInfo(){*(Impl::getInfoStreamInstance()) << std::endl;}
+
+		template<class T>
+		logInfo &operator<<(const T &x)
+		{
+			*(Impl::getInfoStreamInstance()) << x;
+			return *this;
+		}
+	};
+
+	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
+	struct logWarning
+	{
+		logWarning(){}
+		~logWarning(){*(Impl::getWarningStreamInstance()) << std::endl;}
+
+		template<class T>
+		logWarning &operator<<(const T &x)
+		{
+			*(Impl::getWarningStreamInstance()) << x;
+			return *this;
+		}
+	};
+
+	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
+	struct logError
+	{
+		logError(){}
+		~logError(){*(Impl::getErrorStreamInstance()) << std::endl;}
+
+		template<class T>
+		logError &operator<<(const T &x)
+		{
+			*(Impl::getErrorStreamInstance()) << x;
+			return *this;
+		}
+	};
+
+	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
+	struct logFatal
+	{
+		logFatal(){}
+		~logFatal(){*(Impl::getFatalStreamInstance()) << std::endl;}
+
+		template<class T>
+		logFatal &operator<<(const T &x)
+		{
+			*(Impl::getFatalStreamInstance()) << x;
+			return *this;
+		}
+	};
 }
 
 /*
@@ -108,12 +195,13 @@ namespace PolyVox
 		{ \
 			if (!(condition)) \
 			{ \
-				PolyVox::logFatal() << std::endl << std::endl; \
-				PolyVox::logFatal() << "    PolyVox Assertion Failed!" << std::endl; \
-				PolyVox::logFatal() << "    =========================" << std::endl; \
-				PolyVox::logFatal() << "    Condition: " << #condition << std::endl; \
-				PolyVox::logFatal() << "    Message:   " << (message) << std::endl; \
-				PolyVox::logFatal() << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__ << std::endl << std::endl; \
+				PolyVox::logFatal() << "\n"; \
+				PolyVox::logFatal() << "    PolyVox Assertion Failed!"; \
+				PolyVox::logFatal() << "    ========================="; \
+				PolyVox::logFatal() << "    Condition: " << #condition; \
+				PolyVox::logFatal() << "    Message:   " << (message); \
+				PolyVox::logFatal() << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__; \
+				PolyVox::logFatal() << "\n"; \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \

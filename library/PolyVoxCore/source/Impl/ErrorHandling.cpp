@@ -36,89 +36,69 @@ namespace PolyVox
 		return &s_NullStream;
 	}
 
-	// Trace stream for logging
-	std::ostream*& getTraceStreamInstance()
+	// These create the global stream instances, created on demand.
+	namespace Impl
 	{
-		static std::ostream* s_pTraceStream = getNullStream();
-		return s_pTraceStream;
+		std::ostream*& getTraceStreamInstance()
+		{
+			static std::ostream* s_pTraceStream = getNullStream();
+			return s_pTraceStream;
+		}
+
+		std::ostream*& getDebugStreamInstance()
+		{
+			static std::ostream* s_pDebugStream = getNullStream();
+			return s_pDebugStream;
+		}
+
+		std::ostream*& getInfoStreamInstance()
+		{
+			static std::ostream* s_pInfoStream = &(std::cout);
+			return s_pInfoStream;
+		}
+
+		std::ostream*& getWarningStreamInstance()
+		{
+			static std::ostream* s_pWarningStream = &(std::cerr);
+			return s_pWarningStream;
+		}
+
+		std::ostream*& getErrorStreamInstance()
+		{
+			static std::ostream* s_pErrorStream = &(std::cerr);
+			return s_pErrorStream;
+		}
+
+		std::ostream*& getFatalStreamInstance()
+		{
+			static std::ostream* s_pFatalStream = &(std::cerr);
+			return s_pFatalStream;
+		}
 	}
 
 	void setTraceStream(std::ostream* pStream)
 	{
-		getTraceStreamInstance() = pStream;
-	}
-
-	std::ostream& logTrace(void)
-	{
-		return *(getTraceStreamInstance());
-	}
-	
-	// Debug stream for logging
-	std::ostream*& getDebugStreamInstance()
-	{
-		static std::ostream* s_pDebugStream = getNullStream();
-		return s_pDebugStream;
+		Impl::getTraceStreamInstance() = pStream;
 	}
 
 	void setDebugStream(std::ostream* pStream)
 	{
-		getDebugStreamInstance() = pStream;
-	}
-
-	std::ostream& logDebug(void)
-	{
-		return *(getDebugStreamInstance());
-	}
-	
-	// Info stream for logging
-	std::ostream*& getInfoStreamInstance()
-	{
-		static std::ostream* s_pInfoStream = &(std::cout);
-		return s_pInfoStream;
+		Impl::getDebugStreamInstance() = pStream;
 	}
 
 	void setInfoStream(std::ostream* pStream)
 	{
-		getInfoStreamInstance() = pStream;
-	}
-
-	std::ostream& logInfo(void)
-	{
-		return *(getInfoStreamInstance());
-	}
-	
-	// Warning stream for logging
-	std::ostream*& getWarningStreamInstance()
-	{
-		static std::ostream* s_pWarningStream = &(std::cerr);
-		return s_pWarningStream;
+		Impl::getInfoStreamInstance() = pStream;
 	}
 
 	void setWarningStream(std::ostream* pStream)
 	{
-		getWarningStreamInstance() = pStream;
-	}
-
-	std::ostream& logWarning(void)
-	{
-		return *(getWarningStreamInstance());
-	}
-	
-	// Error stream for logging
-	std::ostream*& getErrorStreamInstance()
-	{
-		static std::ostream* s_pErrorStream = &(std::cerr);
-		return s_pErrorStream;
+		Impl::getWarningStreamInstance() = pStream;
 	}
 
 	void setErrorStream(std::ostream* pStream)
 	{
-		getErrorStreamInstance() = pStream;
-	}
-
-	std::ostream& logError(void)
-	{
-		return *(getErrorStreamInstance());
+		Impl::getErrorStreamInstance() = pStream;
 	}
 
 	// Fatal stream for logging
@@ -133,35 +113,30 @@ namespace PolyVox
 		getFatalStreamInstance() = pStream;
 	}
 
-	std::ostream& logFatal(void)
-	{
-		return *(getFatalStreamInstance());
-	}
-
 #ifndef POLYVOX_THROW_ENABLED
 	void defaultThrowHandler(std::exception& e, const char* file, int line)
 	{
-		logFatal() << std::endl << std::endl; \
-		logFatal() << "    PolyVox exception thrown!" << std::endl; \
-		logFatal() << "    =========================" << std::endl; \
-		logFatal() << "    PolyVox has tried to throw an exception but it was built without support" << std::endl; \
-		logFatal() << "    for exceptions. In this scenario PolyVox will call a 'throw handler'" << std::endl; \
-		logFatal() << "    and this message is being printed by the default throw handler." << std::endl << std::endl; \
-
-		logFatal() << "    If you don't want to enable exceptions then you should try to determine why" << std::endl; \
-		logFatal() << "    this exception was thrown and make sure it doesn't happen again. If it was" << std::endl; \
-		logFatal() << "    due to something like an invalid argument to a function then you should be" << std::endl; \
-		logFatal() << "    able to fix it quite easily by validating parameters as appropriate. More" << std::endl; \
-		logFatal() << "    complex exception scenarios (out of memory, etc) might be harder to fix and" << std::endl; \
-		logFatal() << "    you should replace this default handler with something which is more" << std::endl; \
-		logFatal() << "    meaningful to your users." << std::endl << std::endl; \
-
-		logFatal() << "    Exception details" << std::endl; \
-		logFatal() << "    -----------------" << std::endl; \
-		logFatal() << "    Line:    " << line << std::endl; \
-		logFatal() << "    File:    " << file << std::endl; \
-		logFatal() << "    Message: " << e.what() << std::endl << std::endl; \
-
+		logFatal() << "\n"; \
+		logFatal() << "    PolyVox exception thrown!"; \
+		logFatal() << "    ========================="; \
+		logFatal() << "    PolyVox has tried to throw an exception but it was built without support"; \
+		logFatal() << "    for exceptions. In this scenario PolyVox will call a 'throw handler'"; \
+		logFatal() << "    and this message is being printed by the default throw handler."; \
+		logFatal() << "\n"; \
+		logFatal() << "    If you don't want to enable exceptions then you should try to determine why"; \
+		logFatal() << "    this exception was thrown and make sure it doesn't happen again. If it was"; \
+		logFatal() << "    due to something like an invalid argument to a function then you should be"; \
+		logFatal() << "    able to fix it quite easily by validating parameters as appropriate. More"; \
+		logFatal() << "    complex exception scenarios (out of memory, etc) might be harder to fix and"; \
+		logFatal() << "    you should replace this default handler with something which is more"; \
+		logFatal() << "    meaningful to your users."; \
+		logFatal() << "\n"; \
+		logFatal() << "    Exception details"; \
+		logFatal() << "    -----------------"; \
+		logFatal() << "    Line:    " << line; \
+		logFatal() << "    File:    " << file; \
+		logFatal() << "    Message: " << e.what(); \
+		logFatal() << "\n"; \
 		POLYVOX_HALT(); \
 	}
 
