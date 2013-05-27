@@ -7,31 +7,43 @@ Logging
 =======
 PolyVox has a simple logging mechanism which allows it to write messages with an associated severity (from Debug up to Fatal). It is possible to redirect the output of these logging functions so you can integrate them with your applications logging framework or suppress them completely.
 
-The following functions are called at various points in the PolyVox codebase:
+The following functions are used as follows within PolyVox (note that newlines are appended automatically):
 
 .. sourcecode :: c++
 
- void logDebug  (const std::string& message);
- void logInfo   (const std::string& message);
- void logWarning(const std::string& message);
- void logError  (const std::string& message);
- void logFatal  (const std::string& message);
+ logTrace()   << "Trace Message";
+ logDebug()   << "Debug Message";
+ logInfo()    << "Info Message";
+ logWarning() << "Warning Message";
+ logError()   << "Error Message";
+ logFatal()   << "Fatal Message";
 
-Fatal messages are only issued in non-recoverable scenarios when the application is about to crash, and may provide the last peice of information you have about what went wrong. Error messages are issued when something has happened which prevents sucessful completion of a task, for example if you provide invalid parameters to a function (Error messages are also issued whenever an exception is thrown). Warning messages mean the system was able to continue but the results may not be what you expected. Info and Debug messages are both used for general information about what PolyVox is doing. The differentiating factor is that Debug is used if the output is very frequent so that it can be easily suppressed.
+Fatal messages are only issued in non-recoverable scenarios when the application is about to crash, and may provide the last peice of information you have about what went wrong. Error messages are issued when something has happened which prevents sucessful completion of a task, for example if you provide invalid parameters to a function (error messages are also issued whenever an exception is thrown). Warning messages mean the system was able to continue but the results may not be what you expected. Info messages are used for general information about what PolyVox is doing. Debug and trace messages produce very verbose output and a lot of detail about what PolyVox is doing internally. In general, debug messages are used for tasks the user has directly initiated (e.g. they might provide time information for surface extraction) while trace messages are used for things which happen spontaneously (such as data being paged out of memory). Trace messages are most likely to clutter up your logs and so are most easily suppressed.
 
-PolyVox defines a LogHandler function pointer which looks like this:
-
-.. sourcecode :: c++
-
- typedef void (*LogHandler)(const std::string& message, LogLevel logLevel);
-
-There is a function called 'defaultLogHandler()' which matches this signature and writes the messages to cout/cerr (note that it suppresses Debug messages). To redirect log messages you can write your own fuction which matches this signature and the apply it with setLogHandler:
+To redirect log messages you can provide an implementation of std::ostream and apply it with one of the functions below:
 
 .. sourcecode :: c++
 
- setLogHandler(&myLogHandler);
+ setTraceStream(&myOutputStream);
+ setDebugStream(&myOutputStream);
+ setInfoStream(&myOutputStream);
+ setWarningStream(&myOutputStream);
+ setErrorStream(&myOutputStream);
+ setFatalStream(&myOutputStream);
 
-Note that you can disable logging completely by passing a value of '0' to setLogHandler().
+PolyVox provides a function called 'getNullStream()' which returns a stream which consumes all input without writing it anywhere. You can use this to supress particular log streams. For example, you can suppress the Trace stream with:
+
+.. sourcecode :: c++
+
+ setTraceStream(getNullStream());
+ 
+Or you could direct it to std::cout with:
+
+.. sourcecode :: c++
+
+ setTraceStream(&(std::cout)));
+ 
+Note that by default the fatal, error and warning streams go to std::cerr, the info stream goes to std:cout, and the debug and trace streams are suppressed.
 
 Exceptions
 ==========
