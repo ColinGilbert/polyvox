@@ -374,8 +374,8 @@ namespace PolyVox
 				}
 				default:
 				{
-					//Should never happen
-					POLYVOX_THROW(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
+					//Should never happen. We don't log because this hurts performance (preventing inlining?).
+					POLYVOX_THROW_DONT_LOG(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
 				}
 			}
 		}
