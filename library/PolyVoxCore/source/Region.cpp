@@ -302,6 +302,23 @@ namespace PolyVox
 	}
 
 	/**
+	 *  The boundary value can be used to ensure a region is only considered to be inside
+	 *  another Region if it is that far in in all directions. Also, the test is inclusive such 
+	 *  that a region is considered to be inside of itself.
+	 *  \param reg The region to test.
+	 *  \param boundary The desired boundary value.
+	 */
+	bool Region::containsRegion(const Region& reg, uint8_t boundary) const
+	{
+		return (reg.m_iUpperX <= m_iUpperX - boundary)
+			&& (reg.m_iUpperY <= m_iUpperY - boundary) 
+			&& (reg.m_iUpperZ <= m_iUpperZ - boundary)
+			&& (reg.m_iLowerX >= m_iLowerX + boundary)
+			&& (reg.m_iLowerY >= m_iLowerY + boundary)
+			&& (reg.m_iLowerZ >= m_iLowerZ + boundary);
+	}
+
+	/**
 	 * After calling this functions, the extents of this Region are given by the intersection
 	 * of this Region and the one it was cropped to.
 	 * \param other The Region to crop to.
