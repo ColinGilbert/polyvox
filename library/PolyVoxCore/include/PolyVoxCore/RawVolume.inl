@@ -182,14 +182,14 @@ namespace PolyVox
 				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
 
 				//Get the voxel value
-				return getVoxel(uXPos, uYPos, uZPos);
+				return getVoxel(uXPos, uYPos, uZPos, BoundsChecks::None); // No bounds checks as we've just validated the position.
 				//No need to break as we've returned
 			}
 			case WrapModes::Border:
 			{
 				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 				{
-					return getVoxel(uXPos, uYPos, uZPos);
+					return getVoxel(uXPos, uYPos, uZPos, BoundsChecks::None); // No bounds checks as we've just validated the position.
 				}
 				else
 				{
