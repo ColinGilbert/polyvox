@@ -241,8 +241,9 @@ namespace PolyVox
 			}
 			default:
 			{
-				//Should never happen. We don't log because this hurts performance (preventing inlining?).
-				POLYVOX_THROW_DONT_LOG(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
+				//Should never happen. However, this assert appears to hurt performance (logging prevents inlining?).
+				POLYVOX_ASSERT(false, "Wrap mode parameter has an unrecognised value.");
+				return VoxelType();
 			}
 		}
 	}

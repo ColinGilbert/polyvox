@@ -45,6 +45,8 @@ namespace PolyVox
 		};
 	}
 	typedef BoundsChecks::BoundsCheck BoundsCheck;
+
+	template <BoundsCheck B> struct BoundsCheckType{};
 	
 	namespace WrapModes
 	{

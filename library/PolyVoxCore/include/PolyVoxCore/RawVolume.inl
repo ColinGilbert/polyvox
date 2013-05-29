@@ -83,29 +83,37 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
+	template <BoundsCheck eBoundsCheck>
+	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	{
+		// Simply call through to the real implementation
+		return getVoxelImpl(uXPos, uYPos, uZPos, BoundsCheckType<eBoundsCheck>());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
+	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
+	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck) const
 	{
 		// If bounds checking is enabled then we validate the
 		// bounds, and throw an exception if they are violated.
 		if(eBoundsCheck == BoundsChecks::Full)
 		{
-			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
-			{
-				POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
-			}
+			// Call through to the real implementation
+			return getVoxelImpl(uXPos, uYPos, uZPos, BoundsCheckType<BoundsChecks::Full>());
 		}
-
-		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
-		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
-		int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
-		int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
-
-		return m_pData
-		[
-			iLocalXPos + 
-			iLocalYPos * this->getWidth() + 
-			iLocalZPos * this->getWidth() * this->getHeight()
-		];
+		else
+		{
+			// Call through to the real implementation
+			return getVoxelImpl(uXPos, uYPos, uZPos, BoundsCheckType<BoundsChecks::None>());
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -182,14 +190,14 @@ namespace PolyVox
 				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
 
 				//Get the voxel value
-				return getVoxel(uXPos, uYPos, uZPos, BoundsChecks::None); // No bounds checks as we've just validated the position.
+				return getVoxel<BoundsChecks::None>(uXPos, uYPos, uZPos); // No bounds checks as we've just validated the position.
 				//No need to break as we've returned
 			}
 			case WrapModes::Border:
 			{
 				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 				{
-					return getVoxel(uXPos, uYPos, uZPos, BoundsChecks::None); // No bounds checks as we've just validated the position.
+					return getVoxel<BoundsChecks::None>(uXPos, uYPos, uZPos); // No bounds checks as we've just validated the position.
 				}
 				else
 				{
@@ -199,8 +207,9 @@ namespace PolyVox
 			}
 			default:
 			{
-				//Should never happen. We don't log because this hurts performance (preventing inlining?).
-				POLYVOX_THROW_DONT_LOG(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
+				//Should never happen. However, this assert appears to hurt performance (logging prevents inlining?).
+				POLYVOX_ASSERT(false, "Wrap mode parameter has an unrecognised value.");
+				return VoxelType();
 			}
 		}
 	}
@@ -346,5 +355,38 @@ namespace PolyVox
 		return this->getWidth() * this->getHeight() * this->getDepth() * sizeof(VoxelType);
 	}
 
+	template <typename VoxelType>
+	template <BoundsCheck eBoundsCheck>
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheckType<eBoundsCheck>) const
+	{
+		POLYVOX_THROW(not_implemented, "This function is not implemented and should never be called!");
+	}
+
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheckType<BoundsChecks::Full>) const
+	{
+		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+		{
+			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+		}
+
+		return getVoxelImpl(uXPos, uYPos, uZPos, BoundsCheckType<BoundsChecks::None>());
+	}
+
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheckType<BoundsChecks::None>) const
+	{
+		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
+		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
+		int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
+		int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
+
+		return m_pData
+		[
+			iLocalXPos + 
+			iLocalYPos * this->getWidth() + 
+			iLocalZPos * this->getWidth() * this->getHeight()
+		];
+	}
 }
 
