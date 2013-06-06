@@ -155,11 +155,11 @@ namespace PolyVox
 		void initialise(const Region& regValidRegion);
 
 		template <WrapMode eWrapMode>
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<eWrapMode>) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::None>) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::Clamp>) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::Border>) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::DontCheck>) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::None>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::DontCheck>, VoxelType tBorder) const;
 
 		//The block data
 		VoxelType* m_pData;
