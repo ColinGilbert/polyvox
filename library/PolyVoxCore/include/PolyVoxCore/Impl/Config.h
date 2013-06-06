@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Config_H__
 #define __PolyVox_Config_H__
 
-#define POLYVOX_ASSERTS_ENABLED
+//#define POLYVOX_ASSERTS_ENABLED
 #define POLYVOX_THROW_ENABLED
 
 #endif

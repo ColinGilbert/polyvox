@@ -117,12 +117,12 @@ namespace PolyVox
 
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		template <BoundsCheck eBoundsCheck>
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const;
 
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck = BoundsChecks::Full) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck = BoundsChecks::Full, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck = BoundsChecks::Full) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck = BoundsChecks::Full, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
@@ -155,9 +155,11 @@ namespace PolyVox
 		void initialise(const Region& regValidRegion);
 
 		template <BoundsCheck eBoundsCheck>
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheckType<eBoundsCheck>) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheckType<BoundsChecks::Full>) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheckType<BoundsChecks::None>) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<eBoundsCheck>) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::Full>) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::None>) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::ClampPos>) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::BorderPos>) const;
 
 		//The block data
 		VoxelType* m_pData;

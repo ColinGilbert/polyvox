@@ -192,8 +192,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y-1,z));
-					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y,z));
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y-1,z, BoundsChecks::BorderPos));
+					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y,z, BoundsChecks::BorderPos));
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
 				}
@@ -206,8 +206,8 @@ namespace PolyVox
 			{
 				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y,z-1));
-					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxelAt(x,y,z));
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y,z-1, BoundsChecks::BorderPos));
+					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y,z, BoundsChecks::BorderPos));
 
 					satVolume.setVoxelAt(x,y,z,previousSum + currentSum);
 				}
@@ -234,14 +234,14 @@ namespace PolyVox
 					int32_t satUpperY = iSrcY + border;
 					int32_t satUpperZ = iSrcZ + border;
 
-					AccumulationType a = satVolume.getVoxelAt(satLowerX,satLowerY,satLowerZ);
-					AccumulationType b = satVolume.getVoxelAt(satUpperX,satLowerY,satLowerZ);
-					AccumulationType c = satVolume.getVoxelAt(satLowerX,satUpperY,satLowerZ);
-					AccumulationType d = satVolume.getVoxelAt(satUpperX,satUpperY,satLowerZ);
-					AccumulationType e = satVolume.getVoxelAt(satLowerX,satLowerY,satUpperZ);
-					AccumulationType f = satVolume.getVoxelAt(satUpperX,satLowerY,satUpperZ);
-					AccumulationType g = satVolume.getVoxelAt(satLowerX,satUpperY,satUpperZ);
-					AccumulationType h = satVolume.getVoxelAt(satUpperX,satUpperY,satUpperZ);
+					AccumulationType a = satVolume.getVoxel(satLowerX,satLowerY,satLowerZ, BoundsChecks::BorderPos);
+					AccumulationType b = satVolume.getVoxel(satUpperX,satLowerY,satLowerZ, BoundsChecks::BorderPos);
+					AccumulationType c = satVolume.getVoxel(satLowerX,satUpperY,satLowerZ, BoundsChecks::BorderPos);
+					AccumulationType d = satVolume.getVoxel(satUpperX,satUpperY,satLowerZ, BoundsChecks::BorderPos);
+					AccumulationType e = satVolume.getVoxel(satLowerX,satLowerY,satUpperZ, BoundsChecks::BorderPos);
+					AccumulationType f = satVolume.getVoxel(satUpperX,satLowerY,satUpperZ, BoundsChecks::BorderPos);
+					AccumulationType g = satVolume.getVoxel(satLowerX,satUpperY,satUpperZ, BoundsChecks::BorderPos);
+					AccumulationType h = satVolume.getVoxel(satUpperX,satUpperY,satUpperZ, BoundsChecks::BorderPos);
 
 					AccumulationType sum = h+c-d-g-f-a+b+e;
 					uint32_t sideLength = border * 2 + 1;
