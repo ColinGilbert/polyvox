@@ -56,11 +56,17 @@ namespace PolyVox
 	{
 		enum WrapMode
 		{
-			Clamp = 0,
-			Border = 1
+			None = 0,
+			Clamp = 1,
+			Border = 2,
+			DontCheck = 3
 		};
 	}
 	typedef WrapModes::WrapMode WrapMode;
+
+	// Required for a trick to implement specialization of template member
+	// functions in template classes. See http://stackoverflow.com/a/4951057
+	template <WrapMode W> struct WrapModeType{};
 
 	template <typename _VoxelType>
 	class BaseVolume

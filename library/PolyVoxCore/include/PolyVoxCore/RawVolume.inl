@@ -83,11 +83,11 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	template <BoundsCheck eBoundsCheck>
+	template <WrapMode eWrapMode>
 	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder) const
 	{
 		// Simply call through to the real implementation
-		return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<eBoundsCheck>());
+		return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<eWrapMode>());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -100,29 +100,29 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, BoundsCheck eBoundsCheck, VoxelType tBorder) const
+	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
 		// If bounds checking is enabled then we validate the
 		// bounds, and throw an exception if they are violated.
-		if(eBoundsCheck == BoundsChecks::Full)
+		if(eWrapMode == WrapModes::None)
 		{
 			// Call through to the real implementation
-			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::Full>());
+			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::None>());
 		}
-		else if(eBoundsCheck == BoundsChecks::None)
+		else if(eWrapMode == WrapModes::Clamp)
 		{
 			// Call through to the real implementation
-			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::None>());
+			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::Clamp>());
 		}
-		else if(eBoundsCheck == BoundsChecks::ClampPos)
+		else if(eWrapMode == WrapModes::Border)
 		{
 			// Call through to the real implementation
-			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::ClampPos>());
+			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::Border>());
 		}
 		else
 		{
 			// Call through to the real implementation
-			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::BorderPos>());
+			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::DontCheck>());
 		}
 	}
 
@@ -134,9 +134,9 @@ namespace PolyVox
 	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, BoundsCheck eBoundsCheck, VoxelType tBorder) const
+	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eBoundsCheck, tBorder);
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ namespace PolyVox
 	/// \param uZPos The \c z position of the voxel
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
+	/*template <typename VoxelType>
 	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
 		switch(eWrapMode)
@@ -232,7 +232,7 @@ namespace PolyVox
 	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
 	{
 		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
-	}
+	}*/
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param uXPos the \c x position of the voxel
@@ -366,25 +366,52 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	template <BoundsCheck eBoundsCheck>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<eBoundsCheck>) const
+	template <WrapMode eWrapMode>
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<eWrapMode>) const
 	{
 		POLYVOX_THROW(not_implemented, "This function is not implemented and should never be called!");
 	}
 
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::Full>) const
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::None>) const
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 		{
 			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
 		}
 
-		return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::None>());
+		return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::DontCheck>());
 	}
 
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::None>) const
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::Clamp>) const
+	{
+		//Perform clamping
+		uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
+		uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
+		uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
+		uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
+		uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
+		uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
+
+		return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::DontCheck>());
+	}
+
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::Border>) const
+	{
+		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+		{
+			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, WrapModeType<WrapModes::DontCheck>()); // No bounds checks as we've just validated the position.
+		}
+		else
+		{
+			return tBorder; //FIXME - Should return border value.
+		}
+	}
+
+	template <typename VoxelType>
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, WrapModeType<WrapModes::DontCheck>) const
 	{
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
@@ -397,33 +424,6 @@ namespace PolyVox
 			iLocalYPos * this->getWidth() + 
 			iLocalZPos * this->getWidth() * this->getHeight()
 		];
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::ClampPos>) const
-	{
-		//Perform clamping
-		uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
-		uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
-		uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
-		uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
-		uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
-		uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
-
-		return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::None>());
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder, BoundsCheckType<BoundsChecks::BorderPos>) const
-	{
-		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
-		{
-			return getVoxelImpl(uXPos, uYPos, uZPos, tBorder, BoundsCheckType<BoundsChecks::None>()); // No bounds checks as we've just validated the position.
-		}
-		else
-		{
-			return tBorder; //FIXME - Should return border value.
-		}
 	}
 }
 
