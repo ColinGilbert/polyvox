@@ -287,9 +287,9 @@ namespace PolyVox
 		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
 		void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, BoundsCheck eBoundsCheck = BoundsChecks::Full);
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::None);
 		/// Sets the voxel at the position given by a 3D vector
-		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, BoundsCheck eBoundsCheck = BoundsChecks::Full);
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::None);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
