@@ -197,16 +197,19 @@ namespace PolyVox
 	/// \param uYPos the \c y position of the voxel
 	/// \param uZPos the \c z position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
-	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
-	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, BoundsCheck eBoundsCheck)
+	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode)
 	{
-		// If bounds checking is enabled then we validate the
-		// bounds, and throw an exception if they are violated.
-		if(eBoundsCheck == BoundsChecks::Full)
+		if((eWrapMode != None) && (eWrapMode != DontCheck))
+		{
+			POLYVOX_THROW(std::invalid_argument, "Invalid wrap mode in call to setVoxel(). It must be 'None' or 'DontCheck'.");
+		}
+
+		// This validation is skipped if the wrap mode is 'DontCheck'
+		if(eWrapMode == WrapModes::None)
 		{
 			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 			{
@@ -230,12 +233,11 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dPos the 3D position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \param eBoundsCheck Controls whether bounds checking is performed on voxel access. It's safest to
-	/// set this to BoundsChecks::Full (the default), but if you are certain that the voxel you are accessing
-	/// is inside the volume's enclosing region then you can skip this check to gain some performance.
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, BoundsCheck eBoundsCheck)
+	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode)
 	{
 		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eBoundsCheck);
 	}
