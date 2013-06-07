@@ -339,7 +339,7 @@ namespace PolyVox
 			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
 		}
 
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No bounds checks as we've just validated the position.
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No wrapping as we've just validated the position.
 	}
 
 	template <typename VoxelType>
@@ -353,7 +353,7 @@ namespace PolyVox
 		uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
 		uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
 
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No bounds checks as we've just validated the position.
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No wrapping as we've just validated the position.
 	}
 
 	template <typename VoxelType>
@@ -361,7 +361,7 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 		{
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No bounds checks as we've just validated the position.
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No wrapping as we've just validated the position.
 		}
 		else
 		{
