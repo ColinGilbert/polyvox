@@ -216,7 +216,7 @@ namespace PolyVox
 
 			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+			return pUncompressedBlock->getVoxel(xOffset,yOffset,zOffset);
 		}
 		else
 		{
@@ -804,7 +804,7 @@ namespace PolyVox
 
 		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-		return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+		return pUncompressedBlock->getVoxel(xOffset,yOffset,zOffset);
 	}
 }
 

@@ -58,7 +58,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType Block<VoxelType>::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
 		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
@@ -75,9 +75,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxelAt(const Vector3DUint16& v3dPos) const
+	VoxelType Block<VoxelType>::getVoxel(const Vector3DUint16& v3dPos) const
 	{
-		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
 	template <typename VoxelType>

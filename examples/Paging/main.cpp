@@ -184,7 +184,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DF
 					uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
 
 					//Get the old voxel
-					MaterialDensityPair44 voxel = volData.getVoxelAt(x,y,z);
+					MaterialDensityPair44 voxel = volData.getVoxel(x,y,z);
 
 					//Modify the density
 					voxel.setDensity(uDensity);
