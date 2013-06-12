@@ -372,7 +372,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::DontCheck>, VoxelType tBorder) const
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::DontCheck>, VoxelType /*tBorder*/) const
 	{
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
