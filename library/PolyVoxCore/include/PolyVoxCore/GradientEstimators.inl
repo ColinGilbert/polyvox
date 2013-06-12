@@ -52,14 +52,14 @@ namespace PolyVox
 		const int32_t z = volIter.getPosition().getZ();
 
 		//FIXME - bitwise way of doing this?
-		typename VolumeType::VoxelType voxel1nx = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
-		typename VolumeType::VoxelType voxel1px = volIter.getVoxelAt(x-2, y  ,z  ) > 0 ? 1: 0;
+		typename VolumeType::VoxelType voxel1nx = volIter.getVoxel(x-2, y  ,z  ) > 0 ? 1: 0;
+		typename VolumeType::VoxelType voxel1px = volIter.getVoxel(x-2, y  ,z  ) > 0 ? 1: 0;
 
-		typename VolumeType::VoxelType voxel1ny = volIter.getVoxelAt(x  , y-2,z  ) > 0 ? 1: 0;
-		typename VolumeType::VoxelType voxel1py = volIter.getVoxelAt(x  , y-2,z  ) > 0 ? 1: 0;
+		typename VolumeType::VoxelType voxel1ny = volIter.getVoxel(x  , y-2,z  ) > 0 ? 1: 0;
+		typename VolumeType::VoxelType voxel1py = volIter.getVoxel(x  , y-2,z  ) > 0 ? 1: 0;
 
-		typename VolumeType::VoxelType voxel1nz = volIter.getVoxelAt(x  , y  ,z-2) > 0 ? 1: 0;
-		typename VolumeType::VoxelType voxel1pz = volIter.getVoxelAt(x  , y  ,z-2) > 0 ? 1: 0;
+		typename VolumeType::VoxelType voxel1nz = volIter.getVoxel(x  , y  ,z-2) > 0 ? 1: 0;
+		typename VolumeType::VoxelType voxel1pz = volIter.getVoxel(x  , y  ,z-2) > 0 ? 1: 0;
 
 		return Vector3DFloat
 		(
