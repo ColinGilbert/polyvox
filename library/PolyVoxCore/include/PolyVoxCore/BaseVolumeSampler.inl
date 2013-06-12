@@ -57,7 +57,7 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getVoxel(void) const
 	{
-		return mVolume->getVoxelAt(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		return mVolume->getVoxel<WrapModes::None>(mXPosInVolume, mYPosInVolume, mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -347,38 +347,20 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if(mVolume->getEnclosingRegion().containsPoint(uXPos, uYPos, uZPos))
+		switch(m_eWrapMode)
 		{
-			return mVolume->getVoxelAt(uXPos, uYPos, uZPos);
-		}
-		else
-		{
-			switch(m_eWrapMode)
-			{
-				case WrapModes::Clamp:
-				{
-					const Vector3DInt32& lowerCorner = mVolume->m_regValidRegion.getLowerCorner();
-					const Vector3DInt32& upperCorner = mVolume->m_regValidRegion.getUpperCorner();
-
-					int32_t iClampedX = clamp(uXPos, lowerCorner.getX(), upperCorner.getX());
-					int32_t iClampedY = clamp(uYPos, lowerCorner.getY(), upperCorner.getY());
-					int32_t iClampedZ = clamp(uZPos, lowerCorner.getZ(), upperCorner.getZ());
-
-					return mVolume->getVoxelAt(iClampedX, iClampedY, iClampedZ);
-					//No need to break as we've returned
-				}
-				case WrapModes::Border:
-				{
-					return m_tBorder;
-					//No need to break as we've returned
-				}
-				default:
-				{
-					//Should never happen. However, this assert appears to hurt performance (logging prevents inlining?).
-					POLYVOX_ASSERT(false, "Wrap mode parameter has an unrecognised value.");
-					return VoxelType();
-				}
-			}
+		case WrapModes::None:
+			return mVolume->getVoxel<WrapModes::None>(uXPos, uYPos, uZPos, m_tBorder);
+		case WrapModes::Clamp:
+			return mVolume->getVoxel<WrapModes::Clamp>(uXPos, uYPos, uZPos, m_tBorder);
+		case WrapModes::Border:
+			return mVolume->getVoxel<WrapModes::Border>(uXPos, uYPos, uZPos, m_tBorder);
+		case WrapModes::DontCheck:
+			return mVolume->getVoxel<WrapModes::DontCheck>(uXPos, uYPos, uZPos, m_tBorder);
+		default:
+			// Should never happen
+			POLYVOX_ASSERT(false, "Invalid wrap mode");
+			return VoxelType();
 		}
 	}
 }

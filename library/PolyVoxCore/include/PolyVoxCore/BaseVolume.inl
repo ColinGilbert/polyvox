@@ -154,26 +154,70 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function requires the wrap mode to be specified as a
+	/// template parameter, which can provide better performance.
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel
 	/// \param uZPos The \c z position of the voxel
+	/// \tparam eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, BoundsCheck /*eBoundsCheck*/) const
+	template <WrapMode eWrapMode>
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder) const
 	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
+	/// This version of the function requires the wrap mode to be specified as a
+	/// template parameter, which can provide better performance.
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \tparam eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, BoundsCheck /*eBoundsCheck*/) const
+	template <WrapMode eWrapMode>
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder) const
 	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function is provided so that the wrap mode does not need
+	/// to be specified as a template parameter, as it may be confusing to some users.
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
+		return VoxelType();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function is provided so that the wrap mode does not need
+	/// to be specified as a template parameter, as it may be confusing to some users.
+	/// \param v3dPos The 3D position of the voxel
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
 	}
 
@@ -202,30 +246,6 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& /*v3dPos*/) const
-	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return VoxelType();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
-	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return VoxelType();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
 		return VoxelType();
