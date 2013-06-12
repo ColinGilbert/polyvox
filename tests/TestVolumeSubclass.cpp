@@ -109,6 +109,12 @@ public:
 			{
 				return mVolumeData[uXPos][uYPos][uZPos];
 			}
+		default:
+			{
+				// Should never happen
+				POLYVOX_ASSERT(false, "Invalid wrap mode");
+				return VoxelType();
+			}
 		}
 	}
 
@@ -145,23 +151,6 @@ public:
 	{
 		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
-
-	/// Gets the value used for voxels which are outside the volume
-	VoxelType getBorderValue(void) const { return 0; }
-	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-	VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
-	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
-		{
-			return mVolumeData[uXPos][uYPos][uZPos];
-		}
-		else
-		{
-			return getBorderValue();
-		}
-	}
-	/// Gets a voxel at the position given by a 3D vector
-	VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const { return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ()); }
 
 	/// Sets the value used for voxels which are outside the volume
 	void setBorderValue(const VoxelType& tBorder) { }

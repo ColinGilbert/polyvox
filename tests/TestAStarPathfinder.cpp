@@ -40,7 +40,7 @@ bool testVoxelValidator(const VolumeType* volData, const Vector3DInt32& v3dPos)
 		return false;
 	}
 
-	typename VolumeType::VoxelType voxel = volData->getVoxelAt(v3dPos);
+	typename VolumeType::VoxelType voxel = volData->getVoxel<WrapModes::None>(v3dPos);
 	if(voxel != 0)
 	{
 		return false;
