@@ -273,7 +273,6 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::setVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, VoxelType /*tValue*/, BoundsCheck /*eBoundsCheck*/)
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return false;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -287,7 +286,6 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::setVoxel(const Vector3DInt32& /*v3dPos*/, VoxelType /*tValue*/, BoundsCheck /*eBoundsCheck*/)
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return false;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
