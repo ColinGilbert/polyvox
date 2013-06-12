@@ -72,7 +72,7 @@ namespace PolyVox
 			{
 				for(int32_t sx = m_regSrc.getLowerX(), dx = m_regDst.getLowerX(); dx <= m_regDst.getUpperX(); sx++,dx++)
 				{
-					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxelAt(sx,sy,sz);
+					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxel<WrapModes::DontCheck>(sx,sy,sz);
 					const typename DstVolumeType::VoxelType& tDstVoxel = static_cast<typename DstVolumeType::VoxelType>(tSrcVoxel);
 					m_pVolDst->setVoxelAt(dx,dy,dz,tDstVoxel);
 				}
