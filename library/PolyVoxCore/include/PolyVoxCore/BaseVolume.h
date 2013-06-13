@@ -36,21 +36,6 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// More details to come...
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	namespace BoundsChecks
-	{
-		enum BoundsCheck
-		{
-			None = 0,
-			Full = 1,
-			ClampPos = 2,
-			BorderPos = 3
-		};
-	}
-	typedef BoundsChecks::BoundsCheck BoundsCheck;
-
-	// Required for a trick to implement specialization of template member
-	// functions in template classes. See http://stackoverflow.com/a/4951057
-	template <BoundsCheck B> struct BoundsCheckType{};
 	
 	namespace WrapModes
 	{
@@ -189,9 +174,9 @@ namespace PolyVox
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, BoundsCheck eBoundsCheck = BoundsChecks::Full);
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::None);
 		/// Sets the voxel at the position given by a 3D vector
-		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, BoundsCheck eBoundsCheck = BoundsChecks::Full);
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::None);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
