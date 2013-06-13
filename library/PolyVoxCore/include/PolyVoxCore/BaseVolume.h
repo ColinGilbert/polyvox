@@ -36,15 +36,22 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// More details to come...
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	namespace WrapModes
 	{
 		enum WrapMode
 		{
-			Clamp = 0,
-			Border = 1
+			Validate = 0,
+			Clamp = 1,
+			Border = 2,
+			AssumeValid = 3
 		};
 	}
 	typedef WrapModes::WrapMode WrapMode;
+
+	// Required for a trick to implement specialization of template member
+	// functions in template classes. See http://stackoverflow.com/a/4951057
+	template <WrapMode W> struct WrapModeType{};
 
 	template <typename _VoxelType>
 	class BaseVolume
@@ -109,7 +116,7 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		protected:
-			VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+			VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 
 			DerivedVolumeType* mVolume;
 
@@ -146,21 +153,30 @@ namespace PolyVox
 		int32_t getShortestSideLength(void) const;
 		/// Gets the length of the diagonal in voxels
 		float getDiagonalLength(void) const;
+		
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		template <WrapMode eWrapMode>
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
+		template <WrapMode eWrapMode>
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const;
+
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
+		
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
+		POLYVOX_DEPRECATED VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
+		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
 		/// Sets the value used for voxels which are outside the volume
 		void setBorderValue(const VoxelType& tBorder);
+		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
+		/// Sets the voxel at the position given by a 3D vector
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector

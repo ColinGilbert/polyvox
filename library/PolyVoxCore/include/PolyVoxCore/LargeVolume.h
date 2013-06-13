@@ -266,22 +266,30 @@ namespace PolyVox
 		~LargeVolume();
 
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		template <WrapMode eWrapMode>
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
+		template <WrapMode eWrapMode>
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const;
+
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
+
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
+		POLYVOX_DEPRECATED VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Border, VoxelType tBorder = VoxelType()) const;
+		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
 		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
 		void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
+		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
+		/// Sets the voxel at the position given by a 3D vector
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
@@ -325,6 +333,14 @@ namespace PolyVox
 			}
 		};
 		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
+
+		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
+		template <WrapMode eWrapMode>
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Validate>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
+		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function

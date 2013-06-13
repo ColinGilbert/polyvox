@@ -68,22 +68,77 @@ public:
 	/// Destructor
 	~VolumeSubclass() {};
 
-	/// Gets the value used for voxels which are outside the volume
-	VoxelType getBorderValue(void) const { return 0; }
 	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-	VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	template <WrapMode eWrapMode>
+	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const
 	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		// FIXME: This templatised version is implemented in terms of the not template version. This is strange
+		// from a peformance point of view but it's just because we were encountering some compile issues on GCC.
+		return getVoxel(uXPos, uYPos, uZPos, eWrapMode, tBorder);
+	}
+
+	/// Gets a voxel at the position given by a 3D vector
+	template <WrapMode eWrapMode>
+	VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const
+	{
+		// Simply call through to the real implementation
+		return getVoxel<eWrapMode>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tBorder);
+	}
+
+	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const
+	{
+		switch(eWrapMode)
 		{
-			return mVolumeData[uXPos][uYPos][uZPos];
-		}
-		else
-		{
-			return getBorderValue();
+		case WrapModes::Validate:
+			{
+				if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+				{
+					POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+				}
+
+				return mVolumeData[uXPos][uYPos][uZPos];
+			}
+		case WrapModes::Clamp:
+			{
+				//Perform clamping
+				uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
+				uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
+				uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
+				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
+				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
+				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
+				return mVolumeData[uXPos][uYPos][uZPos];
+			}
+		case WrapModes::Border:
+			{
+				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+				{
+					return mVolumeData[uXPos][uYPos][uZPos];
+				}
+				else
+				{
+					return tBorder;
+				}
+			}
+		case WrapModes::AssumeValid:
+			{
+				return mVolumeData[uXPos][uYPos][uZPos];
+			}
+		default:
+			{
+				// Should never happen
+				POLYVOX_ASSERT(false, "Invalid wrap mode");
+				return VoxelType();
+			}
 		}
 	}
+
 	/// Gets a voxel at the position given by a 3D vector
-	VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const { return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ()); }
+	VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const
+	{
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
+	}
 
 	/// Sets the value used for voxels which are outside the volume
 	void setBorderValue(const VoxelType& tBorder) { }

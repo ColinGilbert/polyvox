@@ -52,8 +52,8 @@ namespace PolyVox
 		Block(uint16_t uSideLength = 0);
 
 		uint16_t getSideLength(void) const;
-		VoxelType getVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
-		VoxelType getVoxelAt(const Vector3DUint16& v3dPos) const;
+		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);

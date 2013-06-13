@@ -258,6 +258,12 @@ namespace PolyVox
 	#define POLYVOX_THROW(type, message) \
 		PolyVox::logError() << (message); \
 		throw type((message))
+
+	// Some fast functions (getVoxel(), etc) use exceptions for error handling but don't want the overhead of logging.
+	// This overhead is present even if no exception is thrown, probably because the presence of the logging code prevents
+	// some inlining. Therefore we provide this macro which doesn't log for such specialised circumstances.
+	#define POLYVOX_THROW_DONT_LOG(type, message) \
+		throw type((message))
 #else
 	namespace PolyVox
 	{
@@ -269,6 +275,13 @@ namespace PolyVox
 
 	#define POLYVOX_THROW(type, message) \
 		PolyVox::logError() << (message); \
+		type except = (type)((message)); \
+		getThrowHandler()((except), __FILE__, __LINE__)
+
+	// Some fast functions (getVoxel(), etc) use exceptions for error handling but don't want the overhead of logging.
+	// This overhead is present even if no exception is thrown, probably because the presence of the logging code prevents
+	// some inlining. Therefore we provide this macro which doesn't log for such specialised circumstances.
+	#define POLYVOX_THROW_DONT_LOG(type, message) \
 		type except = (type)((message)); \
 		getThrowHandler()((except), __FILE__, __LINE__)
 #endif

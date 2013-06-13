@@ -76,7 +76,7 @@ int32_t testDirectAccessWithWrappingForwards(const VolumeType* volume, int lowXO
 							}
 							else
 							{
-								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
 							}
 						}
 					}
@@ -189,7 +189,7 @@ int32_t testDirectAccessWithWrappingBackwards(const VolumeType* volume, int lowX
 							}
 							else
 							{
-								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
 							}
 						}
 					}

@@ -39,14 +39,14 @@ namespace PolyVox
 		{
 			// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 			POLYVOX_ASSERT(m_regValid.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
-			return m_pVolume.getVoxelAt(uXPos, uYPos, uZPos);
+			return m_pVolume.getVoxel<WrapModes::AssumeValid>(uXPos, uYPos, uZPos);
 		}
 
 		VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const
 		{
 			// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 			POLYVOX_ASSERT(m_regValid.containsPoint(v3dPos), "Position is outside valid region");
-			return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+			return getVoxelAt<WrapModes::AssumeValid>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 		}
 
 		void setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
