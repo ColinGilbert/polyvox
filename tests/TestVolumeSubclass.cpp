@@ -86,11 +86,11 @@ public:
 	}
 
 	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::None, VoxelType tBorder = VoxelType()) const
+	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const
 	{
 		switch(eWrapMode)
 		{
-		case WrapModes::None:
+		case WrapModes::Validate:
 			{
 				if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 				{
@@ -121,7 +121,7 @@ public:
 					return tBorder;
 				}
 			}
-		case WrapModes::DontCheck:
+		case WrapModes::AssumeValid:
 			{
 				return mVolumeData[uXPos][uYPos][uZPos];
 			}
@@ -135,7 +135,7 @@ public:
 	}
 
 	/// Gets a voxel at the position given by a 3D vector
-	VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::None, VoxelType tBorder = VoxelType()) const
+	VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const
 	{
 		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}

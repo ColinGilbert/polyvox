@@ -57,7 +57,7 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getVoxel(void) const
 	{
-		return mVolume->getVoxel(mXPosInVolume, mYPosInVolume, mZPosInVolume, WrapModes::None); // FIXME - Use templatised version instead but watch for Linux compile errors.
+		return mVolume->getVoxel(mXPosInVolume, mYPosInVolume, mZPosInVolume, WrapModes::Validate); // FIXME - Use templatised version instead but watch for Linux compile errors.
 	}
 
 	template <typename VoxelType>
@@ -349,14 +349,14 @@ namespace PolyVox
 	{
 		switch(m_eWrapMode)
 		{
-		case WrapModes::None:
-			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::None, m_tBorder);
+		case WrapModes::Validate:
+			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::Validate, m_tBorder);
 		case WrapModes::Clamp:
 			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::Clamp, m_tBorder);
 		case WrapModes::Border:
 			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::Border, m_tBorder);
-		case WrapModes::DontCheck:
-			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::DontCheck, m_tBorder);
+		case WrapModes::AssumeValid:
+			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::AssumeValid, m_tBorder);
 		default:
 			// Should never happen
 			POLYVOX_ASSERT(false, "Invalid wrap mode");

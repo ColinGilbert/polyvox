@@ -124,14 +124,14 @@ namespace PolyVox
 	{
 		switch(eWrapMode)
 		{
-		case WrapModes::None:
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::None>(), tBorder);
+		case WrapModes::Validate:
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Validate>(), tBorder);
 		case WrapModes::Clamp:
 			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Clamp>(), tBorder);
 		case WrapModes::Border:
 			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Border>(), tBorder);
-		case WrapModes::DontCheck:
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder);
+		case WrapModes::AssumeValid:
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder);
 		default:
 			// Should never happen
 			POLYVOX_ASSERT(false, "Invalid wrap mode");
@@ -203,13 +203,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode)
 	{
-		if((eWrapMode != WrapModes::None) && (eWrapMode != WrapModes::DontCheck))
+		if((eWrapMode != WrapModes::Validate) && (eWrapMode != WrapModes::AssumeValid))
 		{
 			POLYVOX_THROW(std::invalid_argument, "Invalid wrap mode in call to setVoxel(). It must be 'None' or 'DontCheck'.");
 		}
 
 		// This validation is skipped if the wrap mode is 'DontCheck'
-		if(eWrapMode == WrapModes::None)
+		if(eWrapMode == WrapModes::Validate)
 		{
 			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 			{
@@ -334,14 +334,14 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::None>, VoxelType tBorder) const
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Validate>, VoxelType tBorder) const
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 		{
 			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
 		}
 
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No wrapping as we've just validated the position.
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
 	}
 
 	template <typename VoxelType>
@@ -355,7 +355,7 @@ namespace PolyVox
 		uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
 		uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
 
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No wrapping as we've just validated the position.
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
 	}
 
 	template <typename VoxelType>
@@ -363,7 +363,7 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 		{
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::DontCheck>(), tBorder); // No wrapping as we've just validated the position.
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
 		}
 		else
 		{
@@ -372,7 +372,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::DontCheck>, VoxelType /*tBorder*/) const
+	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType /*tBorder*/) const
 	{
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
 		int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
