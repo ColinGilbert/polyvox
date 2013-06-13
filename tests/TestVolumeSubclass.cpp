@@ -72,6 +72,22 @@ public:
 	template <WrapMode eWrapMode>
 	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const
 	{
+		// FIXME: This templatised version is implemented in terms of the not template version. This is strange
+		// from a peformance point of view but it's just because we were encountering some compile issues on GCC.
+		return getVoxel(uXPos, uYPos, uZPos, eWrapMode, tBorder);
+	}
+
+	/// Gets a voxel at the position given by a 3D vector
+	template <WrapMode eWrapMode>
+	VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const
+	{
+		// Simply call through to the real implementation
+		return getVoxel<eWrapMode>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tBorder);
+	}
+
+	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
+	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::None, VoxelType tBorder = VoxelType()) const
+	{
 		switch(eWrapMode)
 		{
 		case WrapModes::None:
@@ -115,34 +131,6 @@ public:
 				POLYVOX_ASSERT(false, "Invalid wrap mode");
 				return VoxelType();
 			}
-		}
-	}
-
-	/// Gets a voxel at the position given by a 3D vector
-	template <WrapMode eWrapMode>
-	VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const
-	{
-		// Simply call through to the real implementation
-		return getVoxel<eWrapMode>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tBorder);
-	}
-
-	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::None, VoxelType tBorder = VoxelType()) const
-	{
-		switch(eWrapMode)
-		{
-		case WrapModes::None:
-			return getVoxel(uXPos, uYPos, uZPos, WrapModes::None, tBorder);
-		case WrapModes::Clamp:
-			return getVoxel(uXPos, uYPos, uZPos, WrapModes::Clamp, tBorder);
-		case WrapModes::Border:
-			return getVoxel(uXPos, uYPos, uZPos, WrapModes::Border, tBorder);
-		case WrapModes::DontCheck:
-			return getVoxel(uXPos, uYPos, uZPos, WrapModes::DontCheck, tBorder);
-		default:
-			// Should never happen
-			POLYVOX_ASSERT(false, "Invalid wrap mode");
-			return VoxelType();
 		}
 	}
 
