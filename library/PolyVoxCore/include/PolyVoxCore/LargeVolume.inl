@@ -38,16 +38,13 @@ namespace PolyVox
 	LargeVolume<VoxelType>::LargeVolume
 	(
 		Compressor* pCompressor,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+		Pager<VoxelType>* pPager,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(Region::MaxRegion)
 	,m_pCompressor(pCompressor)
 	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = true;
+		m_pPager = pPager;
 		//Create a volume of the right size.
 		initialise(Region::MaxRegion,uBlockSideLength);
 	}
@@ -66,17 +63,13 @@ namespace PolyVox
 	(
 		const Region& regValid,
 		Compressor* pCompressor,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
-		bool bPagingEnabled,
+		Pager<VoxelType>* pPager,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
 	,m_pCompressor(pCompressor)
 	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = bPagingEnabled;
+		m_pPager = pPager;
 
 		//Create a volume of the right size.
 		initialise(regValid,uBlockSideLength);
@@ -540,7 +533,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const
 	{
-		if(m_funcDataOverflowHandler)
+		//if(m_funcDataOverflowHandler)
 		{
 			Vector3DInt32 v3dPos = itBlock->first;
 			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
@@ -549,7 +542,7 @@ namespace PolyVox
 			Region reg(v3dLower, v3dUpper);
 			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
 
-			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
+			m_pPager->dataOverflowHandler(ConstVolumeProxy, reg);
 		}
 		if(m_pCompressor)
 		{
@@ -617,7 +610,7 @@ namespace PolyVox
 			//The block is not in the map, so we will have to create a new block and add it.
 			//Before we do so, we might want to dump some existing data to make space. We 
 			//Only do this if paging is enabled.
-			if(m_bPagingEnabled)
+			if(m_pPager)
 			{
 				// check wether another block needs to be unloaded before this one can be loaded
 				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
@@ -648,9 +641,9 @@ namespace PolyVox
 
 			//We have created the new block. If paging is enabled it should be used to
 			//fill in the required data. Otherwise it is just left in the default state.
-			if(m_bPagingEnabled)
+			if(m_pPager)
 			{
-				if(m_funcDataRequiredHandler)
+				//if(m_funcDataRequiredHandler)
 				{
 					// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
 					// so this if(itBlock == m_pBlocks.end()) never is entered		
@@ -659,7 +652,7 @@ namespace PolyVox
 					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 					Region reg(v3dLower, v3dUpper);
 					ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-					m_funcDataRequiredHandler(ConstVolumeProxy, reg);
+					m_pPager->dataRequiredHandler(ConstVolumeProxy, reg);
 				}
 			}
 		}		

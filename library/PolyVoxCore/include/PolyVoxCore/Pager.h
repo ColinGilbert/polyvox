@@ -42,8 +42,15 @@ namespace PolyVox
 		/// Destructor
 		virtual ~Pager() {};
 
-		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region);
-		virtual void dataOverflowHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region);
+		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
+		{
+			POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
+		}
+
+		virtual void dataOverflowHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
+		{
+			POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
+		}
 	};
 }
 

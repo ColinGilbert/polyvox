@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h"
 #include "Impl/Block.h"
 #include "PolyVoxCore/Compressor.h"
+#include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
@@ -249,18 +250,15 @@ namespace PolyVox
 		LargeVolume
 		(
 			Compressor* pCompressor,
-			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
+			Pager<VoxelType>* pPager,
 			uint16_t uBlockSideLength = 32
 		);
 		/// Constructor for creating a fixed size volume.
 		LargeVolume
 		(
 			const Region& regValid,
-			Compressor* pCompressor = 0,
-			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler = 0,
-			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler = 0,
-			bool bPagingEnabled = false,
+			Compressor* pCompressor,
+			Pager<VoxelType>* pPager,
 			uint16_t uBlockSideLength = 32
 		);
 		/// Destructor
@@ -346,12 +344,12 @@ namespace PolyVox
 		/// gets called when a new region is allocated and needs to be filled
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataRequiredHandler;
+		//polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataRequiredHandler;
 		/// gets called when a Region needs to be stored by the user, because LargeVolume will erase it right after
 		/// this function returns
 		/// NOTE: accessing ANY voxels outside this region during the process of this function
 		/// is absolutely unsafe
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
+		//polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
 	
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const;
@@ -381,8 +379,7 @@ namespace PolyVox
 
 		//The compressor used by the Blocks to compress their data if required.
 		Compressor* m_pCompressor;
-
-		bool m_bPagingEnabled;
+		Pager<VoxelType>* m_pPager;
 	};
 }
 
