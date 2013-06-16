@@ -36,6 +36,7 @@ namespace PolyVox
 	/**
 	 * Provides an interface for performing paging of data.
 	 */
+	template <typename VoxelType>
 	class FilePager : public Pager
 	{
 	public:
@@ -58,6 +59,7 @@ namespace PolyVox
 
 	protected:
 		std::string m_strFolderName;
+	};
 }
 
 #endif //__PolyVox_FilePager_H__

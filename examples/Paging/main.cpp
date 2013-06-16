@@ -27,6 +27,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
+#include "PolyVoxCore/Pager.h"
+#include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/LargeVolume.h"
 
@@ -197,6 +199,68 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DF
 	}
 }
 
+/**
+ * Generates data using Perlin noise.
+ */
+class PerlinNoisePager : public PolyVox::Pager<MaterialDensityPair44>
+{
+public:
+	/// Constructor
+	PerlinNoisePager()
+		:Pager()
+	{
+	}
+
+	/// Destructor
+	virtual ~PerlinNoisePager() {};
+
+	virtual void dataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volumeProxy, const Region& region)
+	{
+		Perlin perlin(2,2,1,234);
+
+	for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
+	{
+		for(int y = region.getLowerY(); y <= region.getUpperY(); y++)
+		{
+			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
+			perlinVal += 1.0f;
+			perlinVal *= 0.5f;
+			perlinVal *= 255;
+			for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
+			{
+				MaterialDensityPair44 voxel;
+				if(z < perlinVal)
+				{
+					const int xpos = 50;
+					const int zpos = 100;
+					if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
+						// tunnel
+						voxel.setMaterial(0);
+						voxel.setDensity(MaterialDensityPair44::getMinDensity());
+					} else {
+						// solid
+						voxel.setMaterial(245);
+						voxel.setDensity(MaterialDensityPair44::getMaxDensity());
+					}
+				}
+				else
+				{
+					voxel.setMaterial(0);
+					voxel.setDensity(MaterialDensityPair44::getMinDensity());
+				}
+
+				volumeProxy.setVoxelAt(x, y, z, voxel);
+			}
+		}
+	}
+	}
+
+	virtual void dataOverflowHandler(const ConstVolumeProxy<MaterialDensityPair44>& /*volumeProxy*/, const Region& region)
+	{
+		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
+	}
+};
+
 void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
 {
 	Perlin perlin(2,2,1,234);
@@ -250,10 +314,12 @@ int main(int argc, char *argv[])
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
+	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>(); 
+
 	//If these lines don't compile, please try commenting them out and using the two lines after
 	//(you will need Boost for this). If you have to do this then please let us know in the forums as
 	//we rely on community feedback to keep the Boost version running.
-	LargeVolume<MaterialDensityPair44> volData(&load, &unload, 256);
+	LargeVolume<MaterialDensityPair44> volData(compressor, &load, &unload, 64);
 	//LargeVolume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
 	//	polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2), 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
@@ -269,7 +335,7 @@ int main(int argc, char *argv[])
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	//volData.setBlockCacheSize(64);
-	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,255,255));
+	PolyVox::Region reg(Vector3DInt32(-63,0,0), Vector3DInt32(63,63,255));
 	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 	volData.prefetch(reg);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;

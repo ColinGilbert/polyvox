@@ -33,6 +33,7 @@ namespace PolyVox
 	/**
 	 * Provides an interface for performing paging of data.
 	 */
+	template <typename VoxelType>
 	class Pager
 	{
 	public:
@@ -43,6 +44,7 @@ namespace PolyVox
 
 		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region);
 		virtual void dataOverflowHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region);
+	};
 }
 
 #endif //__PolyVox_Pager_H__

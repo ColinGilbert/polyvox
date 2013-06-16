@@ -248,6 +248,7 @@ namespace PolyVox
 		/// Constructor for creating a very large paging volume.
 		LargeVolume
 		(
+			Compressor* pCompressor,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 			polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 			uint16_t uBlockSideLength = 32

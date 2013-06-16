@@ -37,11 +37,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::LargeVolume
 	(
+		Compressor* pCompressor,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
 		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(Region::MaxRegion)
+	,m_pCompressor(pCompressor)
 	{
 		m_funcDataRequiredHandler = dataRequiredHandler;
 		m_funcDataOverflowHandler = dataOverflowHandler;
