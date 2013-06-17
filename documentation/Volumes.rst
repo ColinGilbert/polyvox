@@ -33,14 +33,14 @@ Alternatively you can modify the behaviour which occurs when a position is outsi
  
 Please see the documentation for WrapMode for more information on the avaiable options here. Note in particular that WrapModes::AssumeValid can be used to skip any bounds checking and so you should use this *if you are certain* that you are accessing a valid position, as it may be noticably faster in some cases.
  
- .. sourcecode :: c++
+.. sourcecode :: c++
 
  // This will result in undefined behaviour if the position is outside the volume
  uint8_t uVoxelValue = volume->getVoxel(x, y, z, WrapModes::AssumeValid);
  
 Fast access to voxel data is very important in PolyVox, but the above functions have a drawback in that they need to contain logic to evaluate the provided WrapMode and decide how to proceed. This introduces branching into the execution flow and results in larger functions which may prevent inlining. For even more speed you can use version of the above functions which are templatised on the WrapMode rather than taking it as a parameter. This means the condition can be evaluated at compile time rather than run time: For example:
  
- .. sourcecode :: c++
+.. sourcecode :: c++
 
  // This will return the voxel, or '42' if the position is outside the volume
  uint8_t uVoxelValue = volume->getVoxel<WrapModes::Border>(x, y, z, 42);
@@ -51,7 +51,7 @@ The setVoxel() function is used for writting to voxels instread of reading from 
  
 The second difference is that certain wrap modes such as WrapModes::Border or WrapModes::Clamp do not make much sense when writting to voxel data, and so these are no permitted and will result in an exception being thrown. You should only use WrapModes::Validate (the default) and WrapModes::AssumeValid. For example:
  
- .. sourcecode :: c++
+.. sourcecode :: c++
 
  RawVolume<uint8_t>* volume = ... // Get a volume from somewhere.
  volume->setVoxel(x, y, z, 57); // Write the voxel at the given position.
