@@ -31,25 +31,25 @@ Alternatively you can modify the behaviour which occurs when a position is outsi
  // This will return the voxel, or '42' if the position is outside the volume
  uint8_t uVoxelValue = volume->getVoxel(x, y, z, WrapModes::Border, 42);
  
- Please see the documentation for WrapMode for more information on the avaiable options here. Note in particular that WrapModes::AssumeValid can be used to skip any bounds checking and so you should use this *if you are certain* that you are accessing a valid position, as it may be noticably faster in some cases.
+Please see the documentation for WrapMode for more information on the avaiable options here. Note in particular that WrapModes::AssumeValid can be used to skip any bounds checking and so you should use this *if you are certain* that you are accessing a valid position, as it may be noticably faster in some cases.
  
  .. sourcecode :: c++
 
  // This will result in undefined behaviour if the position is outside the volume
  uint8_t uVoxelValue = volume->getVoxel(x, y, z, WrapModes::AssumeValid);
  
- Fast access to voxel data is very important in PolyVox, but the above functions have a drawback in that they need to contain logic to evaluate the provided WrapMode and decide how to proceed. This introduces branching into the execution flow and results in larger functions which may prevent inlining. For even more speed you can use version of the above functions which are templatised on the WrapMode rather than taking it as a parameter. This means the condition can be evaluated at compile time rather than run time: For example:
+Fast access to voxel data is very important in PolyVox, but the above functions have a drawback in that they need to contain logic to evaluate the provided WrapMode and decide how to proceed. This introduces branching into the execution flow and results in larger functions which may prevent inlining. For even more speed you can use version of the above functions which are templatised on the WrapMode rather than taking it as a parameter. This means the condition can be evaluated at compile time rather than run time: For example:
  
  .. sourcecode :: c++
 
  // This will return the voxel, or '42' if the position is outside the volume
  uint8_t uVoxelValue = volume->getVoxel<WrapModes::Border>(x, y, z, 42);
  
- Writing voxels
- --------------
- The setVoxel() function is used for writting to voxels instread of reading from them, and besides this it has two main behavoural differences when compared to getVoxel(). The first difference is that it is not templatised because the speed of setVoxel() is typically less important than getVoxel() (as writing to voxels is much less common than reading from them). However, we could add these temlatised version in the future if they are needed.
+Writing voxels
+--------------
+The setVoxel() function is used for writting to voxels instread of reading from them, and besides this it has two main behavoural differences when compared to getVoxel(). The first difference is that it is not templatised because the speed of setVoxel() is typically less important than getVoxel() (as writing to voxels is much less common than reading from them). However, we could add these temlatised version in the future if they are needed.
  
- The second difference is that certain wrap modes such as WrapModes::Border or WrapModes::Clamp do not make much sense when writting to voxel data, and so these are no permitted and will result in an exception being thrown. You should only use WrapModes::Validate (the default) and WrapModes::AssumeValid. For example:
+The second difference is that certain wrap modes such as WrapModes::Border or WrapModes::Clamp do not make much sense when writting to voxel data, and so these are no permitted and will result in an exception being thrown. You should only use WrapModes::Validate (the default) and WrapModes::AssumeValid. For example:
  
  .. sourcecode :: c++
 
@@ -57,6 +57,6 @@ Alternatively you can modify the behaviour which occurs when a position is outsi
  volume->setVoxel(x, y, z, 57); // Write the voxel at the given position.
  volume->setVoxel(x, y, z, 57, WrapMopdes::AssumeValid); // No bounds checks
  
- Notes on error handling and performance
- ---------------------------------------
- Overall, you should set the wrap mode to WrapModes::AssumeValid for maximum performance (and use templatised versions where available), but note that even this fast version does still contain a POLYVOX_ASSERT() to try and catch mistakes. It appears that this assert prevents inlining (probably due to the logging it performs), but it is anticipated that you will disable such asserts in the final build of your software.
+Notes on error handling and performance
+---------------------------------------
+Overall, you should set the wrap mode to WrapModes::AssumeValid for maximum performance (and use templatised versions where available), but note that even this fast version does still contain a POLYVOX_ASSERT() to try and catch mistakes. It appears that this assert prevents inlining (probably due to the logging it performs), but it is anticipated that you will disable such asserts in the final build of your software.
