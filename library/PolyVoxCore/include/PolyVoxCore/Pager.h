@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Pager_H__
 #define __PolyVox_Pager_H__
 
+#include "PolyVoxCore/Impl/Block.h"
 #include "PolyVoxCore/Impl/TypeDef.h"
 
 #include "PolyVoxCore/ConstVolumeProxy.h"
@@ -41,6 +42,9 @@ namespace PolyVox
 		Pager() {};
 		/// Destructor
 		virtual ~Pager() {};
+
+		virtual void pageIn(const Region& region, Block<VoxelType>* pBlockData) = 0;
+		virtual void pageOut(const Region& region, Block<VoxelType>* pBlockData) = 0;
 
 		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
 		{

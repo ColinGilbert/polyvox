@@ -70,6 +70,13 @@ namespace PolyVox
 			{
 				logTrace() << "Paging in data for " << region;
 
+				fseek(pFile, 0L, SEEK_END);
+				pBlockData->m_uCompressedDataLength = ftell(pFile);
+				fseek(pFile, 0L, SEEK_SET);
+
+				delete[] pBlockData->m_pCompressedData;
+				pBlockData->m_pCompressedData = new uint8_t[pBlockData->m_uCompressedDataLength];
+
 				fread(pBlockData->m_pCompressedData, sizeof(uint8_t), pBlockData->m_uCompressedDataLength, pFile);
 
 				if(ferror(pFile))
