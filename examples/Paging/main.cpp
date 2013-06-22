@@ -214,6 +214,18 @@ public:
 	/// Destructor
 	virtual ~PerlinNoisePager() {};
 
+	virtual void pageIn(const Region& region, Block<MaterialDensityPair44>* pBlockData)
+	{
+		POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
+
+		
+	}
+
+	virtual void pageOut(const Region& region, Block<MaterialDensityPair44>* pBlockData)
+	{
+		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
+	}
+
 	virtual void dataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volumeProxy, const Region& region)
 	{
 		Perlin perlin(2,2,1,234);
