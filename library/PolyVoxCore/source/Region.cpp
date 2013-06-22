@@ -487,4 +487,17 @@ namespace PolyVox
 	{
 		shrink(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
+
+	/**
+     * Enables the Region to be used intuitively with output streams such as cout.
+     * \param os The output stream to write to.
+     * \param region The Region to write to the stream.
+     * \return A reference to the output stream to allow chaining.
+     */
+	std::ostream& operator<<(std::ostream& os, const Region& region)
+    {
+		os << "(" << region.getLowerX() << "," << region.getLowerY() << "," << region.getLowerZ() <<
+			") to (" << region.getUpperX() << "," << region.getUpperY() << "," << region.getUpperZ() << ")";
+        return os;
+    }	
 }

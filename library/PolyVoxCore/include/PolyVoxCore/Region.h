@@ -202,6 +202,10 @@ namespace PolyVox
 		int32_t m_iUpperZ;
 	};
 
+	// Non-member overloaded operators. 
+	/// Stream insertion operator.
+    std::ostream& operator<<(std::ostream& os, const Region& region);
+
 	// Functions to be inlined to to be in the header rather than the .cpp.
 	// 'inline' keyword is used for the definition rather than the declaration.
 	// See also http://www.parashift.com/c++-faq-lite/inline-functions.html
