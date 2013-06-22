@@ -41,7 +41,7 @@ Or you could direct it to std::cout with:
 
 .. sourcecode :: c++
 
- setTraceStream(&(std::cout)));
+ setTraceStream(&(std::cout));
  
 Note that by default the fatal, error and warning streams go to std::cerr, the info stream goes to std:cout, and the debug and trace streams are suppressed.
 
