@@ -29,6 +29,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Pager.h"
 
 #include <fstream>
+#include <stdexcept>
 #include <string>
 
 namespace PolyVox
@@ -37,17 +38,84 @@ namespace PolyVox
 	 * Provides an interface for performing paging of data.
 	 */
 	template <typename VoxelType>
-	class FilePager : public Pager
+	class FilePager : public Pager<typename VoxelType>
 	{
 	public:
 		/// Constructor
 		FilePager(const std::string& strFolderName)
 			:Pager()
+			,m_strFolderName(strFolderName)
 		{
 		}
 
 		/// Destructor
 		virtual ~FilePager() {};
+
+		virtual void pageIn(const Region& region, Block<VoxelType>* pBlockData)
+		{
+			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
+			POLYVOX_ASSERT(pBlockData->m_bIsCompressed, "Attempting to page in uncompressed block");
+
+			std::stringstream ss;
+			ss << region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
+				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ();
+
+			std::string filename = m_strFolderName + ss.str();
+
+			// FIXME - This should be replaced by C++ style IO, but currently this causes problems with
+			// the gameplay-cubiquity integration. See: https://github.com/blackberry/GamePlay/issues/919
+
+			FILE* pFile = fopen(filename.c_str(), "rb");
+			if(pFile)
+			{
+				logTrace() << "Paging in data for " << region;
+
+				fread(pBlockData->m_pCompressedData, sizeof(uint8_t), pBlockData->m_uCompressedDataLength, pFile);
+
+				if(ferror(pFile))
+				{
+					POLYVOX_THROW(std::runtime_error, "Error reading in block data, even though a file exists.");
+				}
+
+				fclose(pFile);
+			}
+			else
+			{
+				logTrace() << "No data found for " << region << " during paging in.";
+			}
+		}
+
+		virtual void pageOut(const Region& region, Block<VoxelType>* pBlockData)
+		{
+			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
+			POLYVOX_ASSERT(pBlockData->m_bIsCompressed, "Attempting to page out uncompressed block");
+
+			logTrace() << "Paging out data for " << region;
+
+			std::stringstream ss;
+			ss << region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
+				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ();
+
+			std::string filename = m_strFolderName + ss.str();
+
+			// FIXME - This should be replaced by C++ style IO, but currently this causes problems with
+			// the gameplay-cubiquity integration. See: https://github.com/blackberry/GamePlay/issues/919
+
+			FILE* pFile = fopen(filename.c_str(), "wb");
+			if(!pFile)
+			{
+				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out block data.");
+			}
+
+			fwrite(pBlockData->m_pCompressedData, sizeof(uint8_t), pBlockData->m_uCompressedDataLength, pFile);
+
+			if(ferror(pFile))
+			{
+				POLYVOX_THROW(std::runtime_error, "Error writing out block data.");
+			}
+
+			fclose(pFile);
+		}
 
 		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
 		{
