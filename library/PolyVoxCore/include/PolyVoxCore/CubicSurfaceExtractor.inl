@@ -188,7 +188,7 @@ namespace PolyVox
 		}
 
 		m_meshCurrent->m_Region = m_regSizeInVoxels;
-		//m_meshCurrent->removeUnusedVertices();
+		m_meshCurrent->removeUnusedVertices();
 
 		m_meshCurrent->m_vecLodRecords.clear();
 		LodRecord lodRecord;
