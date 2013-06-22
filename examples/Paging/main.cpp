@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
 	//If these lines don't compile, please try commenting them out and using the two lines after
 	//(you will need Boost for this). If you have to do this then please let us know in the forums as
 	//we rely on community feedback to keep the Boost version running.
-	LargeVolume<MaterialDensityPair44> volData(compressor, pager, 64);
+	LargeVolume<MaterialDensityPair44> volData(compressor, pager, 256);
 	//LargeVolume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
 	//	polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2), 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
@@ -336,7 +336,7 @@ int main(int argc, char *argv[])
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	//volData.setBlockCacheSize(64);
-	PolyVox::Region reg(Vector3DInt32(-63,0,0), Vector3DInt32(63,63,255));
+	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,255,255));
 	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 	volData.prefetch(reg);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
