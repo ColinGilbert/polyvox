@@ -52,7 +52,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	const uint8_t* Block<VoxelType>::getCompressedData(void) const
+	const uint8_t* const Block<VoxelType>::getCompressedData(void) const
 	{
 		POLYVOX_ASSERT(m_bIsCompressed, "You cannot call getCompressedData() when the block is not compressed");
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
@@ -97,6 +97,12 @@ namespace PolyVox
 	VoxelType Block<VoxelType>::getVoxel(const Vector3DUint16& v3dPos) const
 	{
 		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	template <typename VoxelType>
+	bool Block<VoxelType>::isCompressed(void)
+	{
+		return m_bIsCompressed;
 	}
 
 	template <typename VoxelType>

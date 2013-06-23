@@ -26,14 +26,17 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxCore/SimpleVolume.h"
+//#include "PolyVoxCore/SimpleVolume.h"
+#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/RLECompressor.h"
+#include "PolyVoxCore/FilePager.h"
 
 #include <QApplication>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
+void createSphereInVolume(LargeVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -68,21 +71,32 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 
 int main(int argc, char *argv[])
 {
+	setTraceStream(&(std::cout));
+	setDebugStream(&(std::cout));
+	setInfoStream(&(std::cout));
+
 	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	RLECompressor<uint8_t, uint16_t>* pCompressor = new RLECompressor<uint8_t, uint16_t>();
+	FilePager<uint8_t>* pFilePager = new FilePager<uint8_t>("D:/temp/voldata/");
+
+	LargeVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)), pCompressor, pFilePager, 32);
+	//volData.setMaxNumberOfUncompressedBlocks(6);
+	//volData.setMaxNumberOfBlocksInMemory(7);
+
+
 	createSphereInVolume(volData, 30);
 
 	//A mesh object to hold the result of surface extraction
 	SurfaceMesh<PositionMaterialNormal> mesh;
 
 	//Create a surface extractor. Comment out one of the following two lines to decide which type gets created.
-	CubicSurfaceExtractorWithNormals< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	//MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	CubicSurfaceExtractorWithNormals< LargeVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	//MarchingCubesSurfaceExtractor< LargeVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 
 	//Execute the surface extractor.
 	surfaceExtractor.execute();

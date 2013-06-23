@@ -54,7 +54,7 @@ namespace PolyVox
 		virtual void pageIn(const Region& region, Block<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
-			POLYVOX_ASSERT(pBlockData->m_bIsCompressed, "Attempting to page in uncompressed block");
+			POLYVOX_ASSERT(pBlockData->isCompressed(), "Attempting to page in uncompressed block");
 
 			std::stringstream ss;
 			ss << region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
@@ -71,13 +71,13 @@ namespace PolyVox
 				logTrace() << "Paging in data for " << region;
 
 				fseek(pFile, 0L, SEEK_END);
-				pBlockData->m_uCompressedDataLength = ftell(pFile);
+				size_t fileSizeInBytes = ftell(pFile);
 				fseek(pFile, 0L, SEEK_SET);
-
-				delete[] pBlockData->m_pCompressedData;
-				pBlockData->m_pCompressedData = new uint8_t[pBlockData->m_uCompressedDataLength];
-
-				fread(pBlockData->m_pCompressedData, sizeof(uint8_t), pBlockData->m_uCompressedDataLength, pFile);
+				
+				uint8_t* buffer = new uint8_t[fileSizeInBytes];
+				fread(buffer, sizeof(uint8_t), fileSizeInBytes, pFile);
+				pBlockData->setCompressedData(buffer, fileSizeInBytes);
+				delete[] buffer;
 
 				if(ferror(pFile))
 				{
@@ -95,7 +95,7 @@ namespace PolyVox
 		virtual void pageOut(const Region& region, Block<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
-			POLYVOX_ASSERT(pBlockData->m_bIsCompressed, "Attempting to page out uncompressed block");
+			POLYVOX_ASSERT(pBlockData->isCompressed(), "Attempting to page out uncompressed block");
 
 			logTrace() << "Paging out data for " << region;
 
@@ -114,7 +114,7 @@ namespace PolyVox
 				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out block data.");
 			}
 
-			fwrite(pBlockData->m_pCompressedData, sizeof(uint8_t), pBlockData->m_uCompressedDataLength, pFile);
+			fwrite(pBlockData->getCompressedData(), sizeof(uint8_t), pBlockData->getCompressedDataLength(), pFile);
 
 			if(ferror(pFile))
 			{
