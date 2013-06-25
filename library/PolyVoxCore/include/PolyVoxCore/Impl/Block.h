@@ -52,13 +52,12 @@ namespace PolyVox
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void initialise(uint16_t uSideLength);
+		void createUncompressedData(void);
+		void destroyUncompressedData(void);
+
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		void compress();
-		void uncompress();
-
 		Compressor* m_pCompressor;
 		uint8_t* m_pCompressedData;
 		uint32_t m_uCompressedDataLength;

@@ -161,15 +161,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
-	{
-		//FIXME - This function is incomplete.
-		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
-		return  uSizeInBytes;
-	}
-
-	template <typename VoxelType>
-	void Block<VoxelType>::compress()
+	void Block<VoxelType>::destroyUncompressedData()
 	{
 		if(!hasUncompressedData())
 		{ 
@@ -244,7 +236,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::uncompress()
+	void Block<VoxelType>::createUncompressedData()
 	{
 		if(hasUncompressedData())
 		{
@@ -269,5 +261,13 @@ namespace PolyVox
 		//m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
 
 		m_bIsUncompressedDataModified = false;
+	}
+
+	template <typename VoxelType>
+	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
+	{
+		//FIXME - This function is incomplete.
+		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
+		return  uSizeInBytes;
 	}
 }
