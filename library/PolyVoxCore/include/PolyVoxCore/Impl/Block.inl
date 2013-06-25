@@ -45,10 +45,25 @@ namespace PolyVox
 		,m_bIsCompressed(false)
 		,m_bIsUncompressedDataModified(true)
 	{
-		if(uSideLength != 0)
+		if(uSideLength == 0)
 		{
-			initialise(uSideLength);
+			POLYVOX_THROW(std::invalid_argument, "Block side cannot be zero.");
 		}
+
+		if(!isPowerOf2(uSideLength))
+		{
+			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
+		}
+
+		//Compute the side length		
+		m_uSideLength = uSideLength;
+		m_uSideLengthPower = logBase2(uSideLength);
+
+		//Create the block data
+		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		m_tUncompressedData = new VoxelType[uNoOfVoxels];		
+		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
+		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>
@@ -143,28 +158,6 @@ namespace PolyVox
 	void Block<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
-	}
-
-	template <typename VoxelType>
-	void Block<VoxelType>::initialise(uint16_t uSideLength)
-	{
-		//Release mode validation
-		if(!isPowerOf2(uSideLength))
-		{
-			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
-		}
-
-		//Compute the side length		
-		m_uSideLength = uSideLength;
-		m_uSideLengthPower = logBase2(uSideLength);
-
-		//Create the block data
-		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-
-		//Clear it (should we bother?)
-		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
-		m_bIsUncompressedDataModified = true;
 	}
 
 	template <typename VoxelType>

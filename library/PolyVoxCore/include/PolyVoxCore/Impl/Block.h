@@ -37,17 +37,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	class Block
 	{
-		template <typename LengthType>
-		struct RunlengthEntry
-		{
-			LengthType length;
-			VoxelType value;
-
-			//We can parametise the length on anything up to uint32_t.
-			//This lets us experiment with the optimal size in the future.
-			static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
-		};
-
 	public:
 		Block(uint16_t uSideLength = 0);
 
