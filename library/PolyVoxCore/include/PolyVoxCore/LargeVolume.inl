@@ -540,9 +540,11 @@ namespace PolyVox
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 
 			Region reg(v3dLower, v3dUpper);
-			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+			/*ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
 
-			m_pPager->dataOverflowHandler(ConstVolumeProxy, reg);
+			m_pPager->dataOverflowHandler(ConstVolumeProxy, reg);*/
+
+			m_pPager->pageOut(reg, &(itBlock->second));
 		}
 		
 		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
@@ -631,7 +633,9 @@ namespace PolyVox
 			// create the new block
 			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
 
-			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
+			auto retVal = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock));
+			itBlock = retVal.first;
+			POLYVOX_ASSERT(retVal.second == true, "Element was not supposed to exist!");
 
 			//We have created the new block. If paging is enabled it should be used to
 			//fill in the required data. Otherwise it is just left in the default state.
@@ -645,8 +649,10 @@ namespace PolyVox
 					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
 					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 					Region reg(v3dLower, v3dUpper);
-					ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-					m_pPager->dataRequiredHandler(ConstVolumeProxy, reg);
+					/*ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
+					m_pPager->dataRequiredHandler(ConstVolumeProxy, reg);*/
+
+					m_pPager->pageIn(reg, &(itBlock->second));
 				}
 			}
 		}		

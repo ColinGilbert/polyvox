@@ -64,11 +64,14 @@ namespace PolyVox
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
-		//Create the block data
+		//Temporarily create the block data. This is just so we can compress it an discard it.
+		// FIXME - this is a temporary solution.
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		m_tUncompressedData = new VoxelType[uNoOfVoxels];		
 		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
 		m_bIsUncompressedDataModified = true;
+
+		destroyUncompressedData();
 	}
 
 	template <typename VoxelType>

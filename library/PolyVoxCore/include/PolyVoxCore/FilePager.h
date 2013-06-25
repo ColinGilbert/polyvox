@@ -54,6 +54,7 @@ namespace PolyVox
 		virtual void pageIn(const Region& region, Block<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
+			POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
 
 			std::stringstream ss;
 			ss << region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
@@ -94,6 +95,7 @@ namespace PolyVox
 		virtual void pageOut(const Region& region, Block<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
+			POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
 
 			logTrace() << "Paging out data for " << region;
 
