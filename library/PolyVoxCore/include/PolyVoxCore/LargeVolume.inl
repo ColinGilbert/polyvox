@@ -381,7 +381,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					
 					if(itBlock != m_pBlocks.end())
 					{
@@ -412,7 +412,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushAll()
 	{
-		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
 		while(m_pBlocks.size() > 0)
@@ -446,7 +446,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					if(itBlock == m_pBlocks.end())
 					{
 						// not loaded, not unloading
@@ -471,7 +471,7 @@ namespace PolyVox
 	{
 		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 		{
-			m_vecBlocksWithUncompressedData[ct]->block.destroyUncompressedData();
+			m_vecBlocksWithUncompressedData[ct]->destroyUncompressedData();
 		}
 		m_vecBlocksWithUncompressedData.clear();
 	}
@@ -531,7 +531,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const
 	{
 		if(m_pPager)
 		{
@@ -551,7 +551,7 @@ namespace PolyVox
 			if(m_vecBlocksWithUncompressedData[ct] == &(itBlock->second))
 			{
 				// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-				itBlock->second.block.destroyUncompressedData();
+				itBlock->second.destroyUncompressedData();
 				// put last object in cache here
 				m_vecBlocksWithUncompressedData[ct] = m_vecBlocksWithUncompressedData.back();
 				// decrease cache size by one since last element is now in here twice
@@ -602,7 +602,7 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}		
 
-		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
@@ -615,8 +615,8 @@ namespace PolyVox
 				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
 				{
 					// find the least recently used block
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
 					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 					{
 						if(i->second.timestamp < itUnloadBlock->second.timestamp)
@@ -629,12 +629,7 @@ namespace PolyVox
 			}
 			
 			// create the new block
-			LoadedBlock newBlock(m_uBlockSideLength,  m_pCompressor);
-
-			// Blocks start out compressed - should we change this?
-			// Or maybe we should just 'seed' them with compressed data,
-			// rather than creating an empty block and then compressing?
-			//newBlock.block.destroyUncompressedData();
+			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
 
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
@@ -657,12 +652,12 @@ namespace PolyVox
 		}		
 
 		//Get the block and mark that we accessed it
-		LoadedBlock& loadedBlock = itBlock->second;
-		loadedBlock.timestamp = ++m_uTimestamper;
+		Block<VoxelType>& block = itBlock->second;
+		block.timestamp = ++m_uTimestamper;
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
-		m_pLastAccessedBlock = &(loadedBlock.block);
+		m_pLastAccessedBlock = &block;
 
-		if(loadedBlock.block.hasUncompressedData())
+		if(block.hasUncompressedData())
 		{ 			
 			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
@@ -687,20 +682,20 @@ namespace PolyVox
 			}
 			
 			//Compress the least recently used block.
-			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex]->block.destroyUncompressedData();
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex]->destroyUncompressedData();
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
-			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = &loadedBlock;
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = &block;
 		}
 		else
 		{
-			m_vecBlocksWithUncompressedData.push_back(&loadedBlock);
+			m_vecBlocksWithUncompressedData.push_back(&block);
 		}
 		
-		loadedBlock.block.createUncompressedData();
+		block.createUncompressedData();
 
-		m_pLastAccessedBlock = &(loadedBlock.block);
+		m_pLastAccessedBlock = &(block);
 		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 		return m_pLastAccessedBlock;
 	}
@@ -725,15 +720,15 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
 		//Memory used by the blocks
-		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
-			uSizeInBytes += i->second.block.calculateSizeInBytes();
+			uSizeInBytes += i->second.calculateSizeInBytes();
 		}
 
 		//Memory used by the block cache.
-		uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(LoadedBlock);
+		uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(Block<VoxelType>);
 		uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;

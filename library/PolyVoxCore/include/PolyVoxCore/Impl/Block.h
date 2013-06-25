@@ -65,6 +65,8 @@ namespace PolyVox
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
 		bool m_bIsUncompressedDataModified;
+
+		uint32_t timestamp;
 	};
 }
 
