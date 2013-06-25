@@ -234,8 +234,8 @@ namespace PolyVox
 		struct LoadedBlock
 		{
 		public:
-			LoadedBlock(uint16_t uSideLength = 0)
-				:block(uSideLength)
+			LoadedBlock(uint16_t uSideLength, Compressor* pCompressor)
+				:block(uSideLength, pCompressor)
 				,timestamp(0)
 			{
 			}

@@ -38,7 +38,7 @@ namespace PolyVox
 	class Block
 	{
 	public:
-		Block(uint16_t uSideLength = 0);
+		Block(uint16_t uSideLength, Compressor* pCompressor);
 
 		const uint8_t* const getCompressedData(void) const;
 		const uint32_t getCompressedDataLength(void) const;
@@ -56,9 +56,10 @@ namespace PolyVox
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		void compress(Compressor* pCompressor);
-		void uncompress(Compressor* pCompressor);
+		void compress();
+		void uncompress();
 
+		Compressor* m_pCompressor;
 		uint8_t* m_pCompressedData;
 		uint32_t m_uCompressedDataLength;
 		VoxelType* m_tUncompressedData;

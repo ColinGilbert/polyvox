@@ -36,8 +36,9 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Block<VoxelType>::Block(uint16_t uSideLength)
-		:m_pCompressedData(0)
+	Block<VoxelType>::Block(uint16_t uSideLength, Compressor* pCompressor)
+		:m_pCompressor(pCompressor)
+		,m_pCompressedData(0)
 		,m_uCompressedDataLength(0)
 		,m_tUncompressedData(0)
 		,m_uSideLength(0)
@@ -47,12 +48,17 @@ namespace PolyVox
 	{
 		if(uSideLength == 0)
 		{
-			POLYVOX_THROW(std::invalid_argument, "Block side cannot be zero.");
+			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");
 		}
 
 		if(!isPowerOf2(uSideLength))
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
+		}
+
+		if(pCompressor == 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Block must be provided with a valid compressor.");
 		}
 
 		//Compute the side length		
@@ -169,16 +175,11 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::compress(Compressor* pCompressor)
+	void Block<VoxelType>::compress()
 	{
 		if(m_bIsCompressed)
 		{ 
 			POLYVOX_THROW(invalid_operation, "Attempted to compress block which is already flagged as compressed.");
-		}
-
-		if(!pCompressor)
-		{
-			POLYVOX_THROW(std::invalid_argument, "A valid compressor must be provided");
 		}
 
 		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
@@ -202,7 +203,7 @@ namespace PolyVox
 
 			try
 			{
-				uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+				uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 				// Create new compressed data and copy across
 				m_pCompressedData = new uint8_t[uCompressedLength];
@@ -214,7 +215,9 @@ namespace PolyVox
 				// It is possible for the compression to fail. A common cause for this would be if the destination
 				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
 				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
-				uint32_t uMaxCompressedSize = pCompressor->getMaxCompressedSize(uSrcLength);
+				logWarning() << "The compressor failed to compress the block, proabaly due to the buffer being too small.";
+				logWarning() << "The compression will be tried again with a larger buffer";
+				uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
 				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
 
 				pDstData = reinterpret_cast<void*>( buffer );				
@@ -222,7 +225,7 @@ namespace PolyVox
 
 				try
 				{		
-					uCompressedLength = pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+					uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 					// Create new compressed data and copy across
 					m_pCompressedData = new uint8_t[uCompressedLength];
@@ -248,16 +251,11 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::uncompress(Compressor* pCompressor)
+	void Block<VoxelType>::uncompress()
 	{
 		if(!m_bIsCompressed)
 		{
 			POLYVOX_THROW(invalid_operation, "Attempted to uncompress block which is not flagged as compressed.");
-		}
-
-		if(!pCompressor)
-		{
-			POLYVOX_THROW(std::invalid_argument, "A valid compressor must be provided");
 		}
 
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
@@ -271,7 +269,7 @@ namespace PolyVox
 
 		//MinizCompressor compressor;
 		//RLECompressor<VoxelType, uint16_t> compressor;
-		uint32_t uUncompressedLength = pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+		uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 		POLYVOX_ASSERT(uUncompressedLength == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
 

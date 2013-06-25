@@ -471,7 +471,7 @@ namespace PolyVox
 	{
 		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
 		{
-			m_vecUncompressedBlockCache[ct]->block.compress(m_pCompressor);
+			m_vecUncompressedBlockCache[ct]->block.compress();
 		}
 		m_vecUncompressedBlockCache.clear();
 	}
@@ -552,7 +552,7 @@ namespace PolyVox
 				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
 				{
 					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-					itBlock->second.block.compress(m_pCompressor);
+					itBlock->second.block.compress();
 					// put last object in cache here
 					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
 					// decrease cache size by one since last element is now in here twice
@@ -630,12 +630,12 @@ namespace PolyVox
 			}
 			
 			// create the new block
-			LoadedBlock newBlock(m_uBlockSideLength);
+			LoadedBlock newBlock(m_uBlockSideLength,  m_pCompressor);
 
 			// Blocks start out compressed - should we change this?
 			// Or maybe we should just 'seed' them with compressed data,
 			// rather than creating an empty block and then compressing?
-			newBlock.block.compress(m_pCompressor);
+			newBlock.block.compress();
 
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
@@ -688,7 +688,7 @@ namespace PolyVox
 			}
 			
 			//Compress the least recently used block.
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress(m_pCompressor);
+			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress();
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
@@ -699,7 +699,7 @@ namespace PolyVox
 			m_vecUncompressedBlockCache.push_back(&loadedBlock);
 		}
 		
-		loadedBlock.block.uncompress(m_pCompressor);
+		loadedBlock.block.uncompress();
 
 		m_pLastAccessedBlock = &(loadedBlock.block);
 		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
