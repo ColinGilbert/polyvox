@@ -363,7 +363,7 @@ namespace PolyVox
 		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
 		//of blocks. However, this could mean the same block data is uncompressed and modified in more than one
 		//location in memory... could be messy with threading.
-		mutable std::vector< LoadedBlock* > m_vecUncompressedBlockCache;
+		mutable std::vector< LoadedBlock* > m_vecBlocksWithUncompressedData;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable Block<VoxelType>* m_pLastAccessedBlock;

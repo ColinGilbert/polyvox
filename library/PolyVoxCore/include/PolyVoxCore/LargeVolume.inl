@@ -469,11 +469,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::clearBlockCache(void)
 	{
-		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 		{
-			m_vecUncompressedBlockCache[ct]->block.destroyUncompressedData();
+			m_vecBlocksWithUncompressedData[ct]->block.destroyUncompressedData();
 		}
-		m_vecUncompressedBlockCache.clear();
+		m_vecBlocksWithUncompressedData.clear();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -544,23 +544,22 @@ namespace PolyVox
 
 			m_pPager->dataOverflowHandler(ConstVolumeProxy, reg);
 		}
-		if(m_pCompressor)
+		
+		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 		{
-			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+			// find the block in the uncompressed cache
+			if(m_vecBlocksWithUncompressedData[ct] == &(itBlock->second))
 			{
-				// find the block in the uncompressed cache
-				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
-				{
-					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-					itBlock->second.block.destroyUncompressedData();
-					// put last object in cache here
-					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
-					// decrease cache size by one since last element is now in here twice
-					m_vecUncompressedBlockCache.resize(m_vecUncompressedBlockCache.size()-1);
-					break;
-				}
+				// TODO: compression is unneccessary? or will not compressing this cause a memleak?
+				itBlock->second.block.destroyUncompressedData();
+				// put last object in cache here
+				m_vecBlocksWithUncompressedData[ct] = m_vecBlocksWithUncompressedData.back();
+				// decrease cache size by one since last element is now in here twice
+				m_vecBlocksWithUncompressedData.resize(m_vecBlocksWithUncompressedData.size()-1);
+				break;
 			}
 		}
+
 		m_pBlocks.erase(itBlock);
 	}
 
@@ -635,7 +634,7 @@ namespace PolyVox
 			// Blocks start out compressed - should we change this?
 			// Or maybe we should just 'seed' them with compressed data,
 			// rather than creating an empty block and then compressing?
-			newBlock.block.destroyUncompressedData();
+			//newBlock.block.destroyUncompressedData();
 
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
@@ -670,7 +669,7 @@ namespace PolyVox
 		}
 
 		//If we are allowed to compress then check whether we need to
-		if((m_pCompressor) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
+		if(m_vecBlocksWithUncompressedData.size() == m_uMaxNumberOfUncompressedBlocks)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();
@@ -678,25 +677,25 @@ namespace PolyVox
 			//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
 			//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
 			//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
-			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+			for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 			{
-				if(m_vecUncompressedBlockCache[ct]->timestamp < uLeastRecentTimestamp)
+				if(m_vecBlocksWithUncompressedData[ct]->timestamp < uLeastRecentTimestamp)
 				{
-					uLeastRecentTimestamp = m_vecUncompressedBlockCache[ct]->timestamp;
+					uLeastRecentTimestamp = m_vecBlocksWithUncompressedData[ct]->timestamp;
 					leastRecentlyUsedBlockIndex = ct;
 				}
 			}
 			
 			//Compress the least recently used block.
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.destroyUncompressedData();
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex]->block.destroyUncompressedData();
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex] = &loadedBlock;
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = &loadedBlock;
 		}
 		else
 		{
-			m_vecUncompressedBlockCache.push_back(&loadedBlock);
+			m_vecBlocksWithUncompressedData.push_back(&loadedBlock);
 		}
 		
 		loadedBlock.block.createUncompressedData();
@@ -734,8 +733,8 @@ namespace PolyVox
 		}
 
 		//Memory used by the block cache.
-		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(LoadedBlock);
-		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(LoadedBlock);
+		uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;
 	}
