@@ -663,7 +663,7 @@ namespace PolyVox
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
 		m_pLastAccessedBlock = &(loadedBlock.block);
 
-		if(loadedBlock.block.m_bIsCompressed == false)
+		if(loadedBlock.block.hasUncompressedData())
 		{ 			
 			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;

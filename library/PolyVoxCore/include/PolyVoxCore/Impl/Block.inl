@@ -43,7 +43,6 @@ namespace PolyVox
 		,m_tUncompressedData(0)
 		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_bIsCompressed(false)
 		,m_bIsUncompressedDataModified(true)
 	{
 		if(uSideLength == 0)
@@ -75,18 +74,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	const uint8_t* const Block<VoxelType>::getCompressedData(void) const
 	{
-		POLYVOX_ASSERT(m_bIsCompressed, "You cannot call getCompressedData() when the block is not compressed");
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
-
 		return m_pCompressedData;
 	}
 	
 	template <typename VoxelType>
 	const uint32_t Block<VoxelType>::getCompressedDataLength(void) const
 	{
-		POLYVOX_ASSERT(m_bIsCompressed, "You cannot call getCompressedData() when the block is not compressed");
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
-
 		return m_uCompressedDataLength;
 	}
 
@@ -103,7 +98,7 @@ namespace PolyVox
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(!m_bIsCompressed, "You cannot call getVoxel() when a block is compressed");
+		POLYVOX_ASSERT(hasUncompressedData(), "The block must have uncompressed data to call getVoxel()");
 		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		return m_tUncompressedData
@@ -121,15 +116,14 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	bool Block<VoxelType>::isCompressed(void)
+	bool Block<VoxelType>::hasUncompressedData(void) const
 	{
-		return m_bIsCompressed;
+		return m_tUncompressedData != 0;
 	}
 
 	template <typename VoxelType>
 	void Block<VoxelType>::setCompressedData(const uint8_t* const data, uint32_t dataLength)
 	{
-		POLYVOX_ASSERT(m_bIsCompressed, "You cannot call setCompressedData() when the block is not compressed");
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		POLYVOX_ASSERT(m_pCompressedData != data, "Attempting to copy data onto itself");
 
@@ -147,7 +141,7 @@ namespace PolyVox
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(!m_bIsCompressed, "You cannot call setVoxelAt() when a block is compressed");
+		POLYVOX_ASSERT(hasUncompressedData(), "The block must have uncompressed data to call setVoxelAt()");
 		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		m_tUncompressedData
@@ -177,9 +171,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::compress()
 	{
-		if(m_bIsCompressed)
+		if(!hasUncompressedData())
 		{ 
-			POLYVOX_THROW(invalid_operation, "Attempted to compress block which is already flagged as compressed.");
+			POLYVOX_THROW(invalid_operation, "No uncompressed data to compress.");
 		}
 
 		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
@@ -247,15 +241,14 @@ namespace PolyVox
 		//Flag the uncompressed data as no longer being used.
 		delete[] m_tUncompressedData;
 		m_tUncompressedData = 0;
-		m_bIsCompressed = true;
 	}
 
 	template <typename VoxelType>
 	void Block<VoxelType>::uncompress()
 	{
-		if(!m_bIsCompressed)
+		if(hasUncompressedData())
 		{
-			POLYVOX_THROW(invalid_operation, "Attempted to uncompress block which is not flagged as compressed.");
+			POLYVOX_THROW(invalid_operation, "Uncompressed data already exists.");
 		}
 
 		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
@@ -275,7 +268,6 @@ namespace PolyVox
 
 		//m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
 
-		m_bIsCompressed = false;
 		m_bIsUncompressedDataModified = false;
 	}
 }

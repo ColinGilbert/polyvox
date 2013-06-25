@@ -46,7 +46,7 @@ namespace PolyVox
 		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
-		bool isCompressed(void);
+		bool hasUncompressedData(void) const;
 
 		void setCompressedData(const uint8_t* const data, uint32_t dataLength);
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
@@ -65,7 +65,6 @@ namespace PolyVox
 		VoxelType* m_tUncompressedData;
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
-		bool m_bIsCompressed;
 		bool m_bIsUncompressedDataModified;
 	};
 }
