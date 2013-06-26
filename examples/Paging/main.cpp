@@ -216,9 +216,47 @@ public:
 
 	virtual void pageIn(const Region& region, Block<MaterialDensityPair44>* pBlockData)
 	{
-		POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
+		pBlockData->createUncompressedData();
 
-		
+		Perlin perlin(2,2,1,234);
+
+		for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
+		{
+			for(int y = region.getLowerY(); y <= region.getUpperY(); y++)
+			{
+				float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
+				perlinVal += 1.0f;
+				perlinVal *= 0.5f;
+				perlinVal *= 255;
+				for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
+				{
+					MaterialDensityPair44 voxel;
+					if(z < perlinVal)
+					{
+						const int xpos = 50;
+						const int zpos = 100;
+						if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
+							// tunnel
+							voxel.setMaterial(0);
+							voxel.setDensity(MaterialDensityPair44::getMinDensity());
+						} else {
+							// solid
+							voxel.setMaterial(245);
+							voxel.setDensity(MaterialDensityPair44::getMaxDensity());
+						}
+					}
+					else
+					{
+						voxel.setMaterial(0);
+						voxel.setDensity(MaterialDensityPair44::getMinDensity());
+					}
+
+					pBlockData->setVoxelAt(x - region.getLowerX(), y - region.getLowerY(), z - region.getLowerZ(), voxel);
+				}
+			}
+		}
+
+		pBlockData->destroyUncompressedData();
 	}
 
 	virtual void pageOut(const Region& region, Block<MaterialDensityPair44>* pBlockData)
@@ -228,43 +266,7 @@ public:
 
 	virtual void dataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volumeProxy, const Region& region)
 	{
-		Perlin perlin(2,2,1,234);
-
-	for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
-	{
-		for(int y = region.getLowerY(); y <= region.getUpperY(); y++)
-		{
-			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
-			perlinVal += 1.0f;
-			perlinVal *= 0.5f;
-			perlinVal *= 255;
-			for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
-			{
-				MaterialDensityPair44 voxel;
-				if(z < perlinVal)
-				{
-					const int xpos = 50;
-					const int zpos = 100;
-					if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
-						// tunnel
-						voxel.setMaterial(0);
-						voxel.setDensity(MaterialDensityPair44::getMinDensity());
-					} else {
-						// solid
-						voxel.setMaterial(245);
-						voxel.setDensity(MaterialDensityPair44::getMaxDensity());
-					}
-				}
-				else
-				{
-					voxel.setMaterial(0);
-					voxel.setDensity(MaterialDensityPair44::getMinDensity());
-				}
-
-				volumeProxy.setVoxelAt(x, y, z, voxel);
-			}
-		}
-	}
+		POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
 	}
 
 	virtual void dataOverflowHandler(const ConstVolumeProxy<MaterialDensityPair44>& /*volumeProxy*/, const Region& region)
