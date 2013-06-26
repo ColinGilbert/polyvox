@@ -586,7 +586,7 @@ namespace PolyVox
 		//This check should also provide a significant speed boost as usually it is true.
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
+			POLYVOX_ASSERT(m_pLastAccessedBlock->hasUncompressedData(), "Last accessed block has no uncompressed data.");
 			return m_pLastAccessedBlock;
 		}		
 
@@ -649,7 +649,6 @@ namespace PolyVox
 
 		if(block.hasUncompressedData())
 		{ 			
-			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
 		}
 
