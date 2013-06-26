@@ -255,15 +255,36 @@ namespace PolyVox
  * ...
  */
 #ifdef POLYVOX_THROW_ENABLED
-	#define POLYVOX_THROW(type, message) \
-		PolyVox::logError() << (message); \
-		throw type((message))
 
-	// Some fast functions (getVoxel(), etc) use exceptions for error handling but don't want the overhead of logging.
-	// This overhead is present even if no exception is thrown, probably because the presence of the logging code prevents
-	// some inlining. Therefore we provide this macro which doesn't log for such specialised circumstances.
-	#define POLYVOX_THROW_DONT_LOG(type, message) \
-		throw type((message))
+	#define POLYVOX_THROW_IF(condition, type, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			if ((condition)) \
+			{ \
+				PolyVox::logError() << (message); \
+				throw type((message)); \
+			} \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
+	#define POLYVOX_THROW(type, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			PolyVox::logError() << (message); \
+			throw type((message)); \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
 #else
 	namespace PolyVox
 	{
@@ -273,17 +294,37 @@ namespace PolyVox
 		void setThrowHandler(ThrowHandler newHandler);
 	}
 
-	#define POLYVOX_THROW(type, message) \
-		PolyVox::logError() << (message); \
-		type except = (type)((message)); \
-		getThrowHandler()((except), __FILE__, __LINE__)
+	#define POLYVOX_THROW_IF(condition, type, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			if ((condition)) \
+			{ \
+				PolyVox::logError() << (message); \
+				type except = (type)((message)); \
+				getThrowHandler()((except), __FILE__, __LINE__); \
+			} \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
 
-	// Some fast functions (getVoxel(), etc) use exceptions for error handling but don't want the overhead of logging.
-	// This overhead is present even if no exception is thrown, probably because the presence of the logging code prevents
-	// some inlining. Therefore we provide this macro which doesn't log for such specialised circumstances.
-	#define POLYVOX_THROW_DONT_LOG(type, message) \
-		type except = (type)((message)); \
-		getThrowHandler()((except), __FILE__, __LINE__)
+	#define POLYVOX_THROW(type, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			PolyVox::logError() << (message); \
+			type except = (type)((message)); \
+			getThrowHandler()((except), __FILE__, __LINE__); \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
 #endif
 
 namespace PolyVox
