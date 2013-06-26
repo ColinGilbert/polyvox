@@ -27,8 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Impl/Block.h"
 #include "PolyVoxCore/Impl/TypeDef.h"
 
-#include "PolyVoxCore/ConstVolumeProxy.h"
-
 namespace PolyVox
 {
 	/**
@@ -45,16 +43,6 @@ namespace PolyVox
 
 		virtual void pageIn(const Region& region, Block<VoxelType>* pBlockData) = 0;
 		virtual void pageOut(const Region& region, Block<VoxelType>* pBlockData) = 0;
-
-		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
-		{
-			POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
-		}
-
-		virtual void dataOverflowHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
-		{
-			POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
-		}
 	};
 }
 

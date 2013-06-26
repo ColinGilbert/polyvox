@@ -263,63 +263,7 @@ public:
 	{
 		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
 	}
-
-	virtual void dataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volumeProxy, const Region& region)
-	{
-		POLYVOX_ASSERT(false, "NOT IMPLEMENTED");
-	}
-
-	virtual void dataOverflowHandler(const ConstVolumeProxy<MaterialDensityPair44>& /*volumeProxy*/, const Region& region)
-	{
-		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
-	}
 };
-
-void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
-{
-	Perlin perlin(2,2,1,234);
-
-	for(int x = reg.getLowerX(); x <= reg.getUpperX(); x++)
-	{
-		for(int y = reg.getLowerY(); y <= reg.getUpperY(); y++)
-		{
-			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
-			perlinVal += 1.0f;
-			perlinVal *= 0.5f;
-			perlinVal *= 255;
-			for(int z = reg.getLowerZ(); z <= reg.getUpperZ(); z++)
-			{
-				MaterialDensityPair44 voxel;
-				if(z < perlinVal)
-				{
-					const int xpos = 50;
-					const int zpos = 100;
-					if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
-						// tunnel
-						voxel.setMaterial(0);
-						voxel.setDensity(MaterialDensityPair44::getMinDensity());
-					} else {
-						// solid
-						voxel.setMaterial(245);
-						voxel.setDensity(MaterialDensityPair44::getMaxDensity());
-					}
-				}
-				else
-				{
-					voxel.setMaterial(0);
-					voxel.setDensity(MaterialDensityPair44::getMinDensity());
-				}
-
-				volume.setVoxelAt(x, y, z, voxel);
-			}
-		}
-	}
-}
-
-void unload(const ConstVolumeProxy<MaterialDensityPair44>& /*vol*/, const PolyVox::Region& reg)
-{
-	std::cout << "warning unloading region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
-}
 
 int main(int argc, char *argv[])
 {
@@ -330,18 +274,9 @@ int main(int argc, char *argv[])
 
 	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>();
 	PerlinNoisePager* pager = new PerlinNoisePager();
-
-	//If these lines don't compile, please try commenting them out and using the two lines after
-	//(you will need Boost for this). If you have to do this then please let us know in the forums as
-	//we rely on community feedback to keep the Boost version running.
 	LargeVolume<MaterialDensityPair44> volData(Region::MaxRegion, compressor, pager, 256);
-	//LargeVolume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
-	//	polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2), 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
-
-	//volData.dataRequiredHandler = &load;
-	//volData.dataOverflowHandler = &unload;
 
 	//volData.setMaxNumberOfUncompressedBlocks(4096);
 	//createSphereInVolume(volData, 30);

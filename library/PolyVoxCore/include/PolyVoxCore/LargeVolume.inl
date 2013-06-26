@@ -25,9 +25,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/MinizCompressor.h"
 
-//Included here rather than in the .h because it refers to LargeVolume (avoids forward declaration)
-#include "PolyVoxCore/ConstVolumeProxy.h"
-
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -558,9 +555,6 @@ namespace PolyVox
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 
 			Region reg(v3dLower, v3dUpper);
-			/*ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-
-			m_pPager->dataOverflowHandler(ConstVolumeProxy, reg);*/
 
 			m_pPager->pageOut(reg, &(itBlock->second));
 		}
@@ -580,30 +574,6 @@ namespace PolyVox
 
 		m_pBlocks.erase(itBlock);
 	}
-
-	template <typename VoxelType>
-	bool LargeVolume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
-	{
-		//We don't have any range checks in this function because it
-		//is a private function only called by the ConstVolumeProxy. The
-		//ConstVolumeProxy takes care of ensuring the range is appropriate.
-
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-
-		//Return true to indicate that we modified a voxel.
-		return true;
-	}
-
 
 	template <typename VoxelType>
 	Block<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
@@ -665,8 +635,6 @@ namespace PolyVox
 					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
 					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 					Region reg(v3dLower, v3dUpper);
-					/*ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-					m_pPager->dataRequiredHandler(ConstVolumeProxy, reg);*/
 
 					m_pPager->pageIn(reg, &(itBlock->second));
 				}

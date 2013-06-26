@@ -124,14 +124,6 @@ namespace PolyVox
 			fclose(pFile);
 		}
 
-		virtual void dataRequiredHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
-		{
-		}
-
-		virtual void dataOverflowHandler(const ConstVolumeProxy<VoxelType>& volumeProxy, const Region& region)
-		{
-		}
-
 	protected:
 		std::string m_strFolderName;
 	};

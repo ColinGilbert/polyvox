@@ -42,8 +42,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VoxelType> class ConstVolumeProxy;
-
 	/// The LargeVolume class provides a memory efficient method of storing voxel data while also allowing fast access and modification.
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// A LargeVolume is essentially a 3D array in which each element (or <i>voxel</i>) is identified by a three dimensional (x,y,z) coordinate.
@@ -228,9 +226,6 @@ namespace PolyVox
 			VoxelType* mCurrentVoxel;
 		};
 
-		// Make the ConstVolumeProxy a friend
-		friend class ConstVolumeProxy<VoxelType>;
-
 		#endif
 
 	public:
@@ -327,21 +322,9 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
-
-		/// gets called when a new region is allocated and needs to be filled
-		/// NOTE: accessing ANY voxels outside this region during the process of this function
-		/// is absolutely unsafe
-		//polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataRequiredHandler;
-		/// gets called when a Region needs to be stored by the user, because LargeVolume will erase it right after
-		/// this function returns
-		/// NOTE: accessing ANY voxels outside this region during the process of this function
-		/// is absolutely unsafe
-		//polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> m_funcDataOverflowHandler;
 	
 		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const;
-		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
-		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
 		// The block data
 		mutable std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare> m_pBlocks;

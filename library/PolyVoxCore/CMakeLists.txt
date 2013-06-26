@@ -49,7 +49,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
 	include/PolyVoxCore/Compressor.h
-	include/PolyVoxCore/ConstVolumeProxy.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
