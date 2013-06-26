@@ -233,20 +233,19 @@ namespace PolyVox
 
 		#endif
 
-	public:		
-		/// Constructor for creating a very large paging volume.
+	public:
+		/// Constructor for creating a fixed size volume.
 		LargeVolume
 		(
-			Compressor* pCompressor,
-			Pager<VoxelType>* pPager,
-			uint16_t uBlockSideLength = 32
+			const Region& regValid,
+			uint16_t uBlockSideLength = 32			
 		);
 		/// Constructor for creating a fixed size volume.
 		LargeVolume
 		(
 			const Region& regValid,
-			Compressor* pCompressor,
-			Pager<VoxelType>* pPager,
+			Compressor* pCompressor,	
+			Pager<VoxelType>* pPager ,	
 			uint16_t uBlockSideLength = 32
 		);
 		/// Destructor
@@ -319,7 +318,7 @@ namespace PolyVox
 				return false;
 			}
 		};
-		void initialise(const Region& regValidRegion, uint16_t uBlockSideLength);
+		void initialise();
 
 		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
 		template <WrapMode eWrapMode>
@@ -344,13 +343,13 @@ namespace PolyVox
 		/// this function can be called by m_funcDataRequiredHandler without causing any weird effects
 		bool setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const;
 
-		//The block data
+		// The block data
 		mutable std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare> m_pBlocks;
 
-		//The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
-		//than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
-		//of blocks. However, this could mean the same block data is uncompressed and modified in more than one
-		//location in memory... could be messy with threading.
+		// The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
+		// than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
+		// of blocks. However, this could mean the same block data is uncompressed and modified in more than one
+		// location in memory... could be messy with threading.
 		mutable std::vector< Block<VoxelType>* > m_vecBlocksWithUncompressedData;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
@@ -358,16 +357,20 @@ namespace PolyVox
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
 		uint32_t m_uMaxNumberOfBlocksInMemory;
 
-		//The size of the volume
+		// The size of the volume
 		Region m_regValidRegionInBlocks;
 
-		//The size of the blocks
+		// The size of the blocks
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
 
-		//The compressor used by the Blocks to compress their data if required.
+		// The compressor used by the Blocks to compress their data if required.
 		Compressor* m_pCompressor;
 		Pager<VoxelType>* m_pPager;
+
+		// Whether we created the compressor or whether it was provided
+		// by the user. This controls whether we delete it on destruction.
+		bool m_bIsOurCompressor;
 	};
 }
 

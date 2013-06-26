@@ -82,11 +82,11 @@ int main(int argc, char *argv[])
 
 	//Create an empty volume and then place a sphere in it
 	RLECompressor<uint8_t, uint16_t>* pCompressor = new RLECompressor<uint8_t, uint16_t>();
-	FilePager<uint8_t>* pFilePager = new FilePager<uint8_t>("D:/temp/voldata/");
+	FilePager<uint8_t>* pFilePager = new FilePager<uint8_t>("C:/temp/voldata/");
 
 	LargeVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)), pCompressor, pFilePager, 32);
-	volData.setMaxNumberOfUncompressedBlocks(6);
-	volData.setMaxNumberOfBlocksInMemory(7);
+	volData.setMaxNumberOfUncompressedBlocks(2);
+	volData.setMaxNumberOfBlocksInMemory(4);
 
 
 	createSphereInVolume(volData, 30);

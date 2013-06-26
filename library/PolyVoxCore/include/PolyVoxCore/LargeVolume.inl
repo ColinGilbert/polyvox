@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
+#include "PolyVoxCore/MinizCompressor.h"
+
 //Included here rather than in the .h because it refers to LargeVolume (avoids forward declaration)
 #include "PolyVoxCore/ConstVolumeProxy.h"
 
@@ -37,16 +39,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::LargeVolume
 	(
-		Compressor* pCompressor,
-		Pager<VoxelType>* pPager,
-		uint16_t uBlockSideLength
+		const Region& regValid,
+		uint16_t uBlockSideLength	
 	)
-	:BaseVolume<VoxelType>(Region::MaxRegion)
-	,m_pCompressor(pCompressor)
+	:BaseVolume<VoxelType>(regValid)
 	{
-		m_pPager = pPager;
-		//Create a volume of the right size.
-		initialise(Region::MaxRegion,uBlockSideLength);
+		m_uBlockSideLength = uBlockSideLength;
+
+		m_pCompressor = new MinizCompressor();
+		m_bIsOurCompressor = true;
+
+		m_pPager = 0;
+
+		initialise();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -67,12 +72,16 @@ namespace PolyVox
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
-	,m_pCompressor(pCompressor)
 	{
+
+		m_uBlockSideLength = uBlockSideLength;
+
+		m_pCompressor = pCompressor;
+		m_bIsOurCompressor = false;
+
 		m_pPager = pPager;
 
-		//Create a volume of the right size.
-		initialise(regValid,uBlockSideLength);
+		initialise();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -95,6 +104,12 @@ namespace PolyVox
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
 		flushAll();
+
+		// Only delete the compressor if it was created by us (in the constructor), not by the user.
+		if(m_bIsOurCompressor)
+		{
+			delete m_pCompressor;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -480,33 +495,31 @@ namespace PolyVox
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
+	void LargeVolume<VoxelType>::initialise()
 	{		
 		//Validate parameters
-		if(uBlockSideLength == 0)
+		if(m_uBlockSideLength == 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");
 		}
-		if(!isPowerOf2(uBlockSideLength))
+
+		if(!isPowerOf2(m_uBlockSideLength))
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
+
 		if(!m_pCompressor)
 		{
-			POLYVOX_THROW(std::invalid_argument, "You must provide a compressor for the LargeVolume to use.");
+			POLYVOX_THROW(std::invalid_argument, "You must provide a valid compressor for the LargeVolume to use.");
 		}
 
 		m_uTimestamper = 0;
 		m_uMaxNumberOfUncompressedBlocks = 16;
-		m_uBlockSideLength = uBlockSideLength;
 		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
 
-		this->m_regValidRegion = regValidRegion;
-
 		//Compute the block side length
-		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
 		m_regValidRegionInBlocks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uBlockSideLengthPower);
