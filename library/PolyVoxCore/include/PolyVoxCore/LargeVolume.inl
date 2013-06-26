@@ -546,6 +546,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const
 	{
+		if(itBlock->second.hasUncompressedData())
+		{
+			itBlock->second.destroyUncompressedData();
+		}
+
 		if(m_pPager)
 		{
 			Vector3DInt32 v3dPos = itBlock->first;
@@ -565,8 +570,6 @@ namespace PolyVox
 			// find the block in the uncompressed cache
 			if(m_vecBlocksWithUncompressedData[ct] == &(itBlock->second))
 			{
-				// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-				itBlock->second.destroyUncompressedData();
 				// put last object in cache here
 				m_vecBlocksWithUncompressedData[ct] = m_vecBlocksWithUncompressedData.back();
 				// decrease cache size by one since last element is now in here twice
