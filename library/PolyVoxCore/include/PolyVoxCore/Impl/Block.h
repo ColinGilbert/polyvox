@@ -37,41 +37,36 @@ namespace PolyVox
 	template <typename VoxelType>
 	class Block
 	{
-		template <typename LengthType>
-		struct RunlengthEntry
-		{
-			LengthType length;
-			VoxelType value;
-
-			//We can parametise the length on anything up to uint32_t.
-			//This lets us experiment with the optimal size in the future.
-			static uint32_t maxRunlength(void) {return (std::numeric_limits<LengthType>::max)();}
-		};
-
 	public:
-		Block(uint16_t uSideLength = 0);
+		Block(uint16_t uSideLength, Compressor* pCompressor);
 
+		const uint8_t* const getCompressedData(void) const;
+		const uint32_t getCompressedDataLength(void) const;
 		uint16_t getSideLength(void) const;
 		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
+		bool hasUncompressedData(void) const;
+
+		void setCompressedData(const uint8_t* const data, uint32_t dataLength);
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void initialise(uint16_t uSideLength);
+		void createUncompressedData(void);
+		void destroyUncompressedData(void);
+
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		void compress(Compressor* pCompressor);
-		void uncompress(Compressor* pCompressor);
-
+		Compressor* m_pCompressor;
 		uint8_t* m_pCompressedData;
 		uint32_t m_uCompressedDataLength;
 		VoxelType* m_tUncompressedData;
 		uint16_t m_uSideLength;
 		uint8_t m_uSideLengthPower;	
-		bool m_bIsCompressed;
 		bool m_bIsUncompressedDataModified;
+
+		uint32_t timestamp;
 	};
 }
 

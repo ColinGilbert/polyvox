@@ -27,6 +27,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
+#include "PolyVoxCore/Pager.h"
+#include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/LargeVolume.h"
 
@@ -34,129 +36,6 @@ freely, subject to the following restrictions:
 
 //Use the PolyVox namespace
 using namespace PolyVox;
-
-void createPerlinVolumeSlow(LargeVolume<MaterialDensityPair44>& volData)
-{
-	Perlin perlin(2,8,1,234);
-
-	for(int z = 1; z < 256-1; z++)
-	{
-		std::cout << z << std::endl;
-		for(int y = 1; y < 256-1; y++)
-		{
-			for(int x = 1; x < 256-1; x++)
-			{							
-				float perlinVal = perlin.Get3D(x /static_cast<float>(256-1), (y) / static_cast<float>(256-1), z / static_cast<float>(256-1));
-
-				perlinVal += 1.0f;
-				perlinVal *= 0.5f;
-				perlinVal *= MaterialDensityPair44::getMaxDensity();
-
-				MaterialDensityPair44 voxel;
-
-				voxel.setMaterial(245);
-				voxel.setDensity(perlinVal);
-
-				/*if(perlinVal < 0.0f)
-				{
-					voxel.setMaterial(245);
-					voxel.setDensity(MaterialDensityPair44::getMaxDensity());
-				}
-				else
-				{
-					voxel.setMaterial(0);
-					voxel.setDensity(MaterialDensityPair44::getMinDensity());
-				}*/
-
-				volData.setVoxelAt(x, y, z, voxel);
-			}
-		}
-	}
-}
-
-/*void createPerlinVolumeFast(LargeVolume<MaterialDensityPair44>& volData)
-{
-	Perlin perlin(2,8,1,234);
-
-	for(int blockZ = 0; blockZ < volData.m_uDepthInBlocks; blockZ++)
-	{		
-		std::cout << blockZ << std::endl;
-		for(int blockY = 0; blockY < volData.m_uHeightInBlocks; blockY++)
-		{
-			for(int blockX = 0; blockX < volData.m_uWidthInBlocks; blockX++)
-			{
-				for(int offsetz = 0; offsetz < volData.m_uBlockSideLength; offsetz++)
-				{
-					for(int offsety = 0; offsety < volData.m_uBlockSideLength; offsety++)
-					{
-						for(int offsetx = 0; offsetx < volData.m_uBlockSideLength; offsetx++) 
-						{							
-							int x = blockX * volData.m_uBlockSideLength + offsetx;
-							int y = blockY * volData.m_uBlockSideLength + offsety;
-							int z = blockZ * volData.m_uBlockSideLength + offsetz;
-
-							if((x == 0) || (x == volData.getWidth()-1)) continue;
-							if((y == 0) || (y == volData.getHeight()-1)) continue;
-							if((z == 0) || (z == volData.getDepth()-1)) continue;
-
-							float perlinVal = perlin.Get3D(x /static_cast<float>(volData.getWidth()-1), (y) / static_cast<float>(volData.getHeight()-1), z / static_cast<float>(volData.getDepth()-1));
-
-							MaterialDensityPair44 voxel;
-							if(perlinVal < 0.0f)
-							{
-								voxel.setMaterial(245);
-								voxel.setDensity(MaterialDensityPair44::getMaxDensity());
-							}
-							else
-							{
-								voxel.setMaterial(0);
-								voxel.setDensity(MaterialDensityPair44::getMinDensity());
-							}
-
-							volData.setVoxelAt(x, y, z, voxel);
-						}
-					}
-				}
-			}
-		}			
-	}
-}*/
-
-void createPerlinTerrain(LargeVolume<MaterialDensityPair44>& volData)
-{
-	Perlin perlin(2,2,1,234);
-
-	for(int x = 1; x < 255-1; x++)
-	{
-		if(x%(255/100) == 0) {
-			std::cout << "." << std::flush;
-		}
-		for(int y = 1; y < 255-1; y++)
-		{
-			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
-			perlinVal += 1.0f;
-			perlinVal *= 0.5f;
-			perlinVal *= 255;
-			for(int z = 1; z < 255-1; z++)
-			{							
-				MaterialDensityPair44 voxel;
-				if(z < perlinVal)
-				{
-					voxel.setMaterial(245);
-					voxel.setDensity(MaterialDensityPair44::getMaxDensity());
-				}
-				else
-				{
-					voxel.setMaterial(0);
-					voxel.setDensity(MaterialDensityPair44::getMinDensity());
-				}
-
-				volData.setVoxelAt(x, y, z, voxel);
-			}
-		}
-	}
-	std::cout << std::endl;
-}
 
 void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
 {
@@ -197,51 +76,72 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DF
 	}
 }
 
-void load(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
+/**
+ * Generates data using Perlin noise.
+ */
+class PerlinNoisePager : public PolyVox::Pager<MaterialDensityPair44>
 {
-	Perlin perlin(2,2,1,234);
-
-	for(int x = reg.getLowerX(); x <= reg.getUpperX(); x++)
+public:
+	/// Constructor
+	PerlinNoisePager()
+		:Pager()
 	{
-		for(int y = reg.getLowerY(); y <= reg.getUpperY(); y++)
+	}
+
+	/// Destructor
+	virtual ~PerlinNoisePager() {};
+
+	virtual void pageIn(const Region& region, Block<MaterialDensityPair44>* pBlockData)
+	{
+		pBlockData->createUncompressedData();
+
+		Perlin perlin(2,2,1,234);
+
+		for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
 		{
-			float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
-			perlinVal += 1.0f;
-			perlinVal *= 0.5f;
-			perlinVal *= 255;
-			for(int z = reg.getLowerZ(); z <= reg.getUpperZ(); z++)
+			for(int y = region.getLowerY(); y <= region.getUpperY(); y++)
 			{
-				MaterialDensityPair44 voxel;
-				if(z < perlinVal)
+				float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
+				perlinVal += 1.0f;
+				perlinVal *= 0.5f;
+				perlinVal *= 255;
+				for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
 				{
-					const int xpos = 50;
-					const int zpos = 100;
-					if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
-						// tunnel
+					MaterialDensityPair44 voxel;
+					if(z < perlinVal)
+					{
+						const int xpos = 50;
+						const int zpos = 100;
+						if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
+							// tunnel
+							voxel.setMaterial(0);
+							voxel.setDensity(MaterialDensityPair44::getMinDensity());
+						} else {
+							// solid
+							voxel.setMaterial(245);
+							voxel.setDensity(MaterialDensityPair44::getMaxDensity());
+						}
+					}
+					else
+					{
 						voxel.setMaterial(0);
 						voxel.setDensity(MaterialDensityPair44::getMinDensity());
-					} else {
-						// solid
-						voxel.setMaterial(245);
-						voxel.setDensity(MaterialDensityPair44::getMaxDensity());
 					}
-				}
-				else
-				{
-					voxel.setMaterial(0);
-					voxel.setDensity(MaterialDensityPair44::getMinDensity());
-				}
 
-				volume.setVoxelAt(x, y, z, voxel);
+					// Voxel position within a block always start from zero. So if a block represents region (4, 8, 12) to (11, 19, 15)
+					// then the valid block voxels are from (0, 0, 0) to (7, 11, 3). Hence we subtract the lower corner position of the
+					// region from the volume space position in order to get the block space position.
+					pBlockData->setVoxelAt(x - region.getLowerX(), y - region.getLowerY(), z - region.getLowerZ(), voxel);
+				}
 			}
 		}
 	}
-}
 
-void unload(const ConstVolumeProxy<MaterialDensityPair44>& /*vol*/, const PolyVox::Region& reg)
-{
-	std::cout << "warning unloading region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
-}
+	virtual void pageOut(const Region& region, Block<MaterialDensityPair44>* pBlockData)
+	{
+		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
+	}
+};
 
 int main(int argc, char *argv[])
 {
@@ -250,17 +150,11 @@ int main(int argc, char *argv[])
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
-	//If these lines don't compile, please try commenting them out and using the two lines after
-	//(you will need Boost for this). If you have to do this then please let us know in the forums as
-	//we rely on community feedback to keep the Boost version running.
-	LargeVolume<MaterialDensityPair44> volData(&load, &unload, 256);
-	//LargeVolume<MaterialDensityPair44> volData(polyvox_bind(&load, polyvox_placeholder_1, polyvox_placeholder_2),
-	//	polyvox_bind(&unload, polyvox_placeholder_1, polyvox_placeholder_2), 256);
+	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>();
+	PerlinNoisePager* pager = new PerlinNoisePager();
+	LargeVolume<MaterialDensityPair44> volData(Region::MaxRegion, compressor, pager, 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
-
-	//volData.dataRequiredHandler = &load;
-	//volData.dataOverflowHandler = &unload;
 
 	//volData.setMaxNumberOfUncompressedBlocks(4096);
 	//createSphereInVolume(volData, 30);
