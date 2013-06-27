@@ -157,6 +157,9 @@ namespace PolyVox
 		/// Tests whether the given position is contained in the 'z' range of this Region.
 		bool containsPointInZ(int32_t pos, int8_t boundary = 0) const;
 
+		/// Tests whether the given Region is contained in this Region.
+		bool containsRegion(const Region& reg, uint8_t boundary = 0) const;
+
 		/// Enlarges the Region so that it contains the specified position.
 		void accumulate(int32_t iX, int32_t iY, int32_t iZ);
 		/// Enlarges the Region so that it contains the specified position.

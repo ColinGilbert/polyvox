@@ -55,14 +55,7 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 				if(fDistToCenter <= fRadius)
 				{
 					//Our new density value
-					//uint8_t uDensity = Density8::getmaxDensity()();
 					uint8_t uDensity = std::numeric_limits<uint8_t>::max();
-
-					//Get the old voxel
-					//uint8_t voxel = volData.getVoxelAt(x,y,z);
-
-					//Modify the density
-					//voxel.setDensity(uDensity);
 
 					//Wrte the voxel value into the volume	
 					volData.setVoxelAt(x, y, z, uDensity);

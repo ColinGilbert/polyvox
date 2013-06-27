@@ -255,9 +255,36 @@ namespace PolyVox
  * ...
  */
 #ifdef POLYVOX_THROW_ENABLED
+
+	#define POLYVOX_THROW_IF(condition, type, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			if ((condition)) \
+			{ \
+				PolyVox::logError() << (message); \
+				throw type((message)); \
+			} \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
 	#define POLYVOX_THROW(type, message) \
-		PolyVox::logError() << (message); \
-		throw type((message))
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			PolyVox::logError() << (message); \
+			throw type((message)); \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
 #else
 	namespace PolyVox
 	{
@@ -267,10 +294,37 @@ namespace PolyVox
 		void setThrowHandler(ThrowHandler newHandler);
 	}
 
+	#define POLYVOX_THROW_IF(condition, type, message) \
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			if ((condition)) \
+			{ \
+				PolyVox::logError() << (message); \
+				type except = (type)((message)); \
+				getThrowHandler()((except), __FILE__, __LINE__); \
+			} \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
 	#define POLYVOX_THROW(type, message) \
-		PolyVox::logError() << (message); \
-		type except = (type)((message)); \
-		getThrowHandler()((except), __FILE__, __LINE__)
+		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
+		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
+		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
+		POLYVOX_MSC_WARNING_PUSH \
+		POLYVOX_DISABLE_MSC_WARNING(4127) \
+		do \
+		{ \
+			PolyVox::logError() << (message); \
+			type except = (type)((message)); \
+			getThrowHandler()((except), __FILE__, __LINE__); \
+		} while(0) \
+		POLYVOX_MSC_WARNING_POP
+
 #endif
 
 namespace PolyVox

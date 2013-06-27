@@ -49,7 +49,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
 	include/PolyVoxCore/Compressor.h
-	include/PolyVoxCore/ConstVolumeProxy.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
@@ -57,6 +56,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/DefaultIsQuadNeeded.h
 	include/PolyVoxCore/DefaultMarchingCubesController.h
 	include/PolyVoxCore/Density.h
+	include/PolyVoxCore/FilePager.h
 	include/PolyVoxCore/GradientEstimators.h
 	include/PolyVoxCore/GradientEstimators.inl
 	include/PolyVoxCore/Interpolation.h
@@ -72,6 +72,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MinizCompressor.h
+	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Picking.h
 	include/PolyVoxCore/Picking.inl

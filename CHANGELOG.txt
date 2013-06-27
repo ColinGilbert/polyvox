@@ -4,23 +4,35 @@ This release has focused on... (some introduction here).
 
 This line was added just for testing.
 
+Voxel access
+------------
+The getVoxelAt() and setVoxelAt() functions have been deprecated and replaced by getVoxel() and setVoxel(). These new functions provide more control over how edge cases are handled and can potentially be faster as well. Please see the 'Volumes' section of the user manual for more information about how voxel access should be performed. 
+
 LargeVolume
 -----------
+Behaviour and interface of the LargeVolume has changed significantly and code which uses it will certainly need to be updated. Plese see the LargeVolume API docs for full details of how it now works.
+
 It is now possible to provide custom compressors for the data which is stored in a LargeVolume. Two compressor implementation are provided with PolyVox - RLECompressor which is suitable for cubic-style terrain, and MinizCompressor which uses the 'miniz' zlib implementation for smooth terrain or general purpose use. Users can provide their own implementation of the compressor interface if they wish.
 
-Note that the setCompressionEnabled() functionality has been removed and a compressor must always be provided when constructing the volume. The ability to disable compression was of questionable benefit and was complicating the logic in the code. In practice it is still possible to mostly disable compression by setting the maximum number of uncompressed blocks to a high value by calling setMaxNumberOfUncompressedBlocks().
+Note that the setCompressionEnabled() functionality has been removed and a compressor must always be provided when constructing the volume. The ability to disable compression was of questionable benefit and was complicating the logic in the code.
+
+The LargeVolume also supports custom paging code which can be supplied by providing a subclass of Pager and implementing the relevant methods. This replaces the dataRequiredHandler() and dataOverflowHandler() functions. 
 
 These changes regarding compression and paging have also affected the LargeVolume constructors(s). Please see the API docs to see how they look now.
 
 Error Handling
 --------------
-PolyVox now has it's own POLYVOX_ASSERT() macro rather than using the standard assert(). This has some advantages such as allowing a message to be printed and providing file/line information, and it is also possible to enable/disable it independantly of whether you are making a debug or release build
+PolyVox now has it's own POLYVOX_ASSERT() macro rather than using the standard assert(). This has some advantages such as allowing a message to be printed and providing file/line information, and it is also possible to enable/disable it independantly of whether you are making a debug or release build.
+
+A simple logging system has also been added, and the output can be redirected by user code.
+
+Please see the 'Error Handling' section of the user manual for more information about these changes.
 
 Volume wrap modes
 -----------------
 This release has seen a overhaul of the way PolyVox handles voxel positions which are outside of the volume. It used to be the case that you could specify a border value which would be returned whenever an out-of-volume access was performed, but this was not flexible enough for all use cases. You can now choose between different wrapping modes (border, clamp, etc) and apply them to both the volume itself or to samplers. If you have multiple samplers pointing at the same volume then you can choose to have different wrap modes for each of them.
 
-Within the Volume class the getVoxelAt() and setBorderValue() functions have been deprecated. You should now call getVoxel() (which does not perform range checking and will crash when out of range) or getVoxelWithWrapping() (which does perform bounds checks and implements the required wrapping). When you call getVoxelWithWrapping() you are able to specify the required wrap mode for that particular call. For a Sampler you can set the wrap mode once with setWrapMode() and it will persist until you set it again.
+Within the Volume class the getVoxelAt() and setBorderValue() functions have been deprecated. Please see the 'Volumes' section of the user manual for more information about how voxel access should now be performed.
 
 Various algorithms have also been updated to allow wrap modes to be specified when executing them.
 

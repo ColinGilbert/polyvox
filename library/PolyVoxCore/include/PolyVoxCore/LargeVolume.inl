@@ -23,8 +23,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
-//Included here rather than in the .h because it refers to LargeVolume (avoids forward declaration)
-#include "PolyVoxCore/ConstVolumeProxy.h"
+#include "PolyVoxCore/MinizCompressor.h"
 
 namespace PolyVox
 {
@@ -37,17 +36,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::LargeVolume
 	(
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
-		uint16_t uBlockSideLength
+		const Region& regValid,
+		uint16_t uBlockSideLength	
 	)
-	:BaseVolume<VoxelType>(Region::MaxRegion)
+	:BaseVolume<VoxelType>(regValid)
 	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = true;
-		//Create a volume of the right size.
-		initialise(Region::MaxRegion,uBlockSideLength);
+		m_uBlockSideLength = uBlockSideLength;
+
+		m_pCompressor = new MinizCompressor();
+		m_bIsOurCompressor = true;
+
+		m_pPager = 0;
+
+		initialise();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -64,20 +65,20 @@ namespace PolyVox
 	(
 		const Region& regValid,
 		Compressor* pCompressor,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataRequiredHandler,
-		polyvox_function<void(const ConstVolumeProxy<VoxelType>&, const Region&)> dataOverflowHandler,
-		bool bPagingEnabled,
+		Pager<VoxelType>* pPager,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
-	,m_pCompressor(pCompressor)
 	{
-		m_funcDataRequiredHandler = dataRequiredHandler;
-		m_funcDataOverflowHandler = dataOverflowHandler;
-		m_bPagingEnabled = bPagingEnabled;
 
-		//Create a volume of the right size.
-		initialise(regValid,uBlockSideLength);
+		m_uBlockSideLength = uBlockSideLength;
+
+		m_pCompressor = pCompressor;
+		m_bIsOurCompressor = false;
+
+		m_pPager = pPager;
+
+		initialise();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -100,6 +101,12 @@ namespace PolyVox
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
 		flushAll();
+
+		// Only delete the compressor if it was created by us (in the constructor), not by the user.
+		if(m_bIsOurCompressor)
+		{
+			delete m_pCompressor;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -116,38 +123,83 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function requires the wrap mode to be specified as a
+	/// template parameter, which can provide better performance.
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel
 	/// \param uZPos The \c z position of the voxel
+	/// \tparam eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	template <WrapMode eWrapMode>
+	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder) const
 	{
-		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
-		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
-
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
-
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+		// Simply call through to the real implementation
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<eWrapMode>(), tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
+	/// This version of the function requires the wrap mode to be specified as a
+	/// template parameter, which can provide better performance.
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \tparam eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos) const
+	template <WrapMode eWrapMode>
+	VoxelType LargeVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder) const
 	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+		// Simply call through to the real implementation
+		return getVoxel<eWrapMode>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tBorder);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function is provided so that the wrap mode does not need
+	/// to be specified as a template parameter, as it may be confusing to some users.
+	/// \param uXPos The \c x position of the voxel
+	/// \param uYPos The \c y position of the voxel
+	/// \param uZPos The \c z position of the voxel
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		switch(eWrapMode)
+		{
+		case WrapModes::Validate:
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Validate>(), tBorder);
+		case WrapModes::Clamp:
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Clamp>(), tBorder);
+		case WrapModes::Border:
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Border>(), tBorder);
+		case WrapModes::AssumeValid:
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder);
+		default:
+			// Should never happen
+			POLYVOX_ASSERT(false, "Invalid wrap mode");
+			return VoxelType();
+		}
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function is provided so that the wrap mode does not need
+	/// to be specified as a template parameter, as it may be confusing to some users.
+	/// \param v3dPos The 3D position of the voxel
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
+	/// \return The voxel value
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
+	{
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +223,7 @@ namespace PolyVox
 
 			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-			return pUncompressedBlock->getVoxelAt(xOffset,yOffset,zOffset);
+			return pUncompressedBlock->getVoxel(xOffset,yOffset,zOffset);
 		}
 		else
 		{
@@ -187,61 +239,6 @@ namespace PolyVox
 	VoxelType LargeVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
-	{
-		switch(eWrapMode)
-		{
-			case WrapModes::Clamp:
-			{
-				//Perform clamping
-				uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
-				uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
-				uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
-				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
-				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
-				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
-
-				//Get the voxel value
-				return getVoxel(uXPos, uYPos, uZPos);
-				//No need to break as we've returned
-			}
-			case WrapModes::Border:
-			{
-				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
-				{
-					return getVoxel(uXPos, uYPos, uZPos);
-				}
-				else
-				{
-					return tBorder;
-				}
-				//No need to break as we've returned
-			}
-			default:
-			{
-				//Should never happen
-				POLYVOX_THROW(std::invalid_argument, "Wrap mode parameter has an unrecognised value.");
-			}
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType LargeVolume<VoxelType>::getVoxelWithWrapping(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
-	{
-		return getVoxelWithWrapping(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -270,6 +267,56 @@ namespace PolyVox
 			flushAll();
 		}
 		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param uXPos the \c x position of the voxel
+	/// \param uYPos the \c y position of the voxel
+	/// \param uZPos the \c z position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode)
+	{
+		if((eWrapMode != WrapModes::Validate) && (eWrapMode != WrapModes::AssumeValid))
+		{
+			POLYVOX_THROW(std::invalid_argument, "Invalid wrap mode in call to setVoxel(). It must be 'None' or 'DontCheck'.");
+		}
+
+		// This validation is skipped if the wrap mode is 'DontCheck'
+		if(eWrapMode == WrapModes::Validate)
+		{
+			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+			{
+				POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+			}
+		}
+
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+
+		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+
+		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param v3dPos the 3D position of the voxel
+	/// \param tValue the value to which the voxel will be set
+	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
+	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode)
+	{
+		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eWrapMode);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -346,7 +393,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					
 					if(itBlock != m_pBlocks.end())
 					{
@@ -377,7 +424,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushAll()
 	{
-		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
 		while(m_pBlocks.size() > 0)
@@ -411,7 +458,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					if(itBlock == m_pBlocks.end())
 					{
 						// not loaded, not unloading
@@ -434,44 +481,42 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::clearBlockCache(void)
 	{
-		for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 		{
-			m_vecUncompressedBlockCache[ct]->block.compress(m_pCompressor);
+			m_vecBlocksWithUncompressedData[ct]->destroyUncompressedData();
 		}
-		m_vecUncompressedBlockCache.clear();
+		m_vecBlocksWithUncompressedData.clear();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// This function should probably be made internal...
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::initialise(const Region& regValidRegion, uint16_t uBlockSideLength)
+	void LargeVolume<VoxelType>::initialise()
 	{		
 		//Validate parameters
-		if(uBlockSideLength == 0)
+		if(m_uBlockSideLength == 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");
 		}
-		if(!isPowerOf2(uBlockSideLength))
+
+		if(!isPowerOf2(m_uBlockSideLength))
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
+
 		if(!m_pCompressor)
 		{
-			POLYVOX_THROW(std::invalid_argument, "You must provide a compressor for the LargeVolume to use.");
+			POLYVOX_THROW(std::invalid_argument, "You must provide a valid compressor for the LargeVolume to use.");
 		}
 
 		m_uTimestamper = 0;
 		m_uMaxNumberOfUncompressedBlocks = 16;
-		m_uBlockSideLength = uBlockSideLength;
 		m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
 
-		this->m_regValidRegion = regValidRegion;
-
 		//Compute the block side length
-		m_uBlockSideLength = uBlockSideLength;
 		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
 
 		m_regValidRegionInBlocks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uBlockSideLengthPower);
@@ -496,62 +541,39 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const
 	{
-		if(m_funcDataOverflowHandler)
+		if(itBlock->second.hasUncompressedData())
+		{
+			itBlock->second.destroyUncompressedData();
+		}
+
+		if(m_pPager)
 		{
 			Vector3DInt32 v3dPos = itBlock->first;
 			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 
 			Region reg(v3dLower, v3dUpper);
-			ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
 
-			m_funcDataOverflowHandler(ConstVolumeProxy, reg);
+			m_pPager->pageOut(reg, &(itBlock->second));
 		}
-		if(m_pCompressor)
+		
+		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 		{
-			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+			// find the block in the uncompressed cache
+			if(m_vecBlocksWithUncompressedData[ct] == &(itBlock->second))
 			{
-				// find the block in the uncompressed cache
-				if(m_vecUncompressedBlockCache[ct] == &(itBlock->second))
-				{
-					// TODO: compression is unneccessary? or will not compressing this cause a memleak?
-					itBlock->second.block.compress(m_pCompressor);
-					// put last object in cache here
-					m_vecUncompressedBlockCache[ct] = m_vecUncompressedBlockCache.back();
-					// decrease cache size by one since last element is now in here twice
-					m_vecUncompressedBlockCache.resize(m_vecUncompressedBlockCache.size()-1);
-					break;
-				}
+				// put last object in cache here
+				m_vecBlocksWithUncompressedData[ct] = m_vecBlocksWithUncompressedData.back();
+				// decrease cache size by one since last element is now in here twice
+				m_vecBlocksWithUncompressedData.resize(m_vecBlocksWithUncompressedData.size()-1);
+				break;
 			}
 		}
+
 		m_pBlocks.erase(itBlock);
 	}
-
-	template <typename VoxelType>
-	bool LargeVolume<VoxelType>::setVoxelAtConst(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue) const
-	{
-		//We don't have any range checks in this function because it
-		//is a private function only called by the ConstVolumeProxy. The
-		//ConstVolumeProxy takes care of ensuring the range is appropriate.
-
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
-
-		const uint16_t xOffset = uXPos - (blockX << m_uBlockSideLengthPower);
-		const uint16_t yOffset = uYPos - (blockY << m_uBlockSideLengthPower);
-		const uint16_t zOffset = uZPos - (blockZ << m_uBlockSideLengthPower);
-
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
-
-		//Return true to indicate that we modified a voxel.
-		return true;
-	}
-
 
 	template <typename VoxelType>
 	Block<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
@@ -564,25 +586,25 @@ namespace PolyVox
 		//This check should also provide a significant speed boost as usually it is true.
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
+			POLYVOX_ASSERT(m_pLastAccessedBlock->hasUncompressedData(), "Last accessed block has no uncompressed data.");
 			return m_pLastAccessedBlock;
 		}		
 
-		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
 			//The block is not in the map, so we will have to create a new block and add it.
 			//Before we do so, we might want to dump some existing data to make space. We 
 			//Only do this if paging is enabled.
-			if(m_bPagingEnabled)
+			if(m_pPager)
 			{
 				// check wether another block needs to be unloaded before this one can be loaded
 				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
 				{
 					// find the least recently used block
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
-					typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
 					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 					{
 						if(i->second.timestamp < itUnloadBlock->second.timestamp)
@@ -595,20 +617,17 @@ namespace PolyVox
 			}
 			
 			// create the new block
-			LoadedBlock newBlock(m_uBlockSideLength);
+			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
 
-			// Blocks start out compressed - should we change this?
-			// Or maybe we should just 'seed' them with compressed data,
-			// rather than creating an empty block and then compressing?
-			newBlock.block.compress(m_pCompressor);
-
-			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
+			auto retVal = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock));
+			itBlock = retVal.first;
+			POLYVOX_ASSERT(retVal.second == true, "Element was not supposed to exist!");
 
 			//We have created the new block. If paging is enabled it should be used to
 			//fill in the required data. Otherwise it is just left in the default state.
-			if(m_bPagingEnabled)
+			if(m_pPager)
 			{
-				if(m_funcDataRequiredHandler)
+				//if(m_funcDataRequiredHandler)
 				{
 					// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
 					// so this if(itBlock == m_pBlocks.end()) never is entered		
@@ -616,26 +635,25 @@ namespace PolyVox
 					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
 					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 					Region reg(v3dLower, v3dUpper);
-					ConstVolumeProxy<VoxelType> ConstVolumeProxy(*this, reg);
-					m_funcDataRequiredHandler(ConstVolumeProxy, reg);
+
+					m_pPager->pageIn(reg, &(itBlock->second));
 				}
 			}
 		}		
 
 		//Get the block and mark that we accessed it
-		LoadedBlock& loadedBlock = itBlock->second;
-		loadedBlock.timestamp = ++m_uTimestamper;
+		Block<VoxelType>& block = itBlock->second;
+		block.timestamp = ++m_uTimestamper;
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
-		m_pLastAccessedBlock = &(loadedBlock.block);
+		m_pLastAccessedBlock = &block;
 
-		if(loadedBlock.block.m_bIsCompressed == false)
+		if(block.hasUncompressedData())
 		{ 			
-			POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 			return m_pLastAccessedBlock;
 		}
 
 		//If we are allowed to compress then check whether we need to
-		if((m_pCompressor) && (m_vecUncompressedBlockCache.size() == m_uMaxNumberOfUncompressedBlocks))
+		if(m_vecBlocksWithUncompressedData.size() == m_uMaxNumberOfUncompressedBlocks)
 		{
 			int32_t leastRecentlyUsedBlockIndex = -1;
 			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();
@@ -643,30 +661,30 @@ namespace PolyVox
 			//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
 			//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
 			//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
-			for(uint32_t ct = 0; ct < m_vecUncompressedBlockCache.size(); ct++)
+			for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 			{
-				if(m_vecUncompressedBlockCache[ct]->timestamp < uLeastRecentTimestamp)
+				if(m_vecBlocksWithUncompressedData[ct]->timestamp < uLeastRecentTimestamp)
 				{
-					uLeastRecentTimestamp = m_vecUncompressedBlockCache[ct]->timestamp;
+					uLeastRecentTimestamp = m_vecBlocksWithUncompressedData[ct]->timestamp;
 					leastRecentlyUsedBlockIndex = ct;
 				}
 			}
 			
 			//Compress the least recently used block.
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex]->block.compress(m_pCompressor);
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex]->destroyUncompressedData();
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
-			m_vecUncompressedBlockCache[leastRecentlyUsedBlockIndex] = &loadedBlock;
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = &block;
 		}
 		else
 		{
-			m_vecUncompressedBlockCache.push_back(&loadedBlock);
+			m_vecBlocksWithUncompressedData.push_back(&block);
 		}
 		
-		loadedBlock.block.uncompress(m_pCompressor);
+		block.createUncompressedData();
 
-		m_pLastAccessedBlock = &(loadedBlock.block);
+		m_pLastAccessedBlock = &(block);
 		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 		return m_pLastAccessedBlock;
 	}
@@ -691,19 +709,80 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
 		//Memory used by the blocks
-		typename std::map<Vector3DInt32, LoadedBlock, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
-			uSizeInBytes += i->second.block.calculateSizeInBytes();
+			uSizeInBytes += i->second.calculateSizeInBytes();
 		}
 
 		//Memory used by the block cache.
-		uSizeInBytes += m_vecUncompressedBlockCache.capacity() * sizeof(LoadedBlock);
-		uSizeInBytes += m_vecUncompressedBlockCache.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(Block<VoxelType>);
+		uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;
 	}
 
+	template <typename VoxelType>
+	template <WrapMode eWrapMode>
+	VoxelType LargeVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const
+	{
+		// This function should never be called because one of the specialisations should always match.
+		POLYVOX_ASSERT(false, "This function is not implemented and should never be called!");
+	}
+
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Validate>, VoxelType tBorder) const
+	{
+		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
+		{
+			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
+		}
+
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
+	}
+
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const
+	{
+		//Perform clamping
+		uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
+		uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
+		uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
+		uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
+		uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
+		uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
+
+		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
+	}
+
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const
+	{
+		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+		{
+			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
+		}
+		else
+		{
+			return tBorder;
+		}
+	}
+
+	template <typename VoxelType>
+	VoxelType LargeVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType /*tBorder*/) const
+	{
+		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
+		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+
+		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+
+		return pUncompressedBlock->getVoxel(xOffset,yOffset,zOffset);
+	}
 }
 

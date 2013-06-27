@@ -76,7 +76,7 @@ int32_t testDirectAccessWithWrappingForwards(const VolumeType* volume, int lowXO
 							}
 							else
 							{
-								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
 							}
 						}
 					}
@@ -189,7 +189,7 @@ int32_t testDirectAccessWithWrappingBackwards(const VolumeType* volume, int lowX
 							}
 							else
 							{
-								result = cantorTupleFunction(result, volume->getVoxelWithWrapping(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
+								result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ, WrapModes::Border, 3));
 							}
 						}
 					}
@@ -277,7 +277,7 @@ TestVolume::TestVolume()
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor);
+	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor, 0, 32);
 
 	// LargeVolume currently fails a test if compression is enabled. It
 	// may be related to accessing the data through more than one sampler?

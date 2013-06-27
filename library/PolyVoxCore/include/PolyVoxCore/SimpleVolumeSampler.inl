@@ -94,7 +94,7 @@ namespace PolyVox
 		}
 		else
 		{
-			return getVoxelAt(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+			return getVoxelImpl(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 	
@@ -305,7 +305,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -315,7 +315,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -325,7 +325,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -335,7 +335,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -345,7 +345,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -355,7 +355,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -365,7 +365,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -375,7 +375,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -385,7 +385,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -397,7 +397,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -407,7 +407,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -417,7 +417,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -427,7 +427,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -437,7 +437,7 @@ namespace PolyVox
 		{
 			return *mCurrentVoxel;
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -447,7 +447,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -457,7 +457,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -467,7 +467,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -477,7 +477,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -489,7 +489,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -499,7 +499,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -509,7 +509,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -519,7 +519,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -529,7 +529,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -539,7 +539,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -549,7 +549,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -559,7 +559,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
 
 	template <typename VoxelType>
@@ -569,7 +569,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
 		}
-		return this->mVolume->getVoxelWithWrapping(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
+		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
 }
 

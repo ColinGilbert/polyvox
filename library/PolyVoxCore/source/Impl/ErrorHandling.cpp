@@ -32,7 +32,7 @@ namespace PolyVox
 	{
 		// Passing zero to the stream constructor guarentees it will discard all input. See
 		// here http://stackoverflow.com/a/8244052 and here http://stackoverflow.com/a/6240980
-		static std::ostream s_NullStream = std::ostream(0);
+		static std::ostream s_NullStream(0);
 		return &s_NullStream;
 	}
 
