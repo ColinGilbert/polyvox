@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Impl/TypeDef.h"
 
 #include "PolyVoxCore/Pager.h"
+#include "PolyVoxCore/Region.h"
 
 #include <fstream>
 #include <stdexcept>
