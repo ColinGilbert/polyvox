@@ -66,6 +66,8 @@ private slots:
 
 private:
 	PolyVox::Compressor* m_pCompressor;
+	PolyVox::FilePager<int32_t>* m_pFilePager;
+
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
 	PolyVox::SimpleVolume<int32_t>* m_pSimpleVolume;
 	PolyVox::LargeVolume<int32_t>* m_pLargeVolume;

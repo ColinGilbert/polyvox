@@ -619,9 +619,7 @@ namespace PolyVox
 			// create the new block
 			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
 
-			auto retVal = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock));
-			itBlock = retVal.first;
-			POLYVOX_ASSERT(retVal.second == true, "Element was not supposed to exist!");
+			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			//We have created the new block. If paging is enabled it should be used to
 			//fill in the required data. Otherwise it is just left in the default state.
