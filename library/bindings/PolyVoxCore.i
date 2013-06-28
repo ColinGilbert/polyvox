@@ -76,6 +76,8 @@ EXTRACTOR(shortname, LargeVolume)
 %include "DefaultMarchingCubesController.i"
 %include "Region.i"
 %include "Compressor.i"
+%include "Pager.i"
+%include "FilePager.i"
 %include "MinizCompressor.i"
 %include "RLECompressor.i"
 %include "BaseVolume.i"

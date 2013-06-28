@@ -84,14 +84,14 @@ class PerlinNoisePager : public PolyVox::Pager<MaterialDensityPair44>
 public:
 	/// Constructor
 	PerlinNoisePager()
-		:Pager()
+		:Pager<MaterialDensityPair44>()
 	{
 	}
 
 	/// Destructor
 	virtual ~PerlinNoisePager() {};
 
-	virtual void pageIn(const Region& region, Block<MaterialDensityPair44>* pBlockData)
+	virtual void pageIn(const PolyVox::Region& region, Block<MaterialDensityPair44>* pBlockData)
 	{
 		pBlockData->createUncompressedData();
 
@@ -137,7 +137,7 @@ public:
 		}
 	}
 
-	virtual void pageOut(const Region& region, Block<MaterialDensityPair44>* pBlockData)
+	virtual void pageOut(const PolyVox::Region& region, Block<MaterialDensityPair44>* pBlockData)
 	{
 		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
 	}
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 
 	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>();
 	PerlinNoisePager* pager = new PerlinNoisePager();
-	LargeVolume<MaterialDensityPair44> volData(Region::MaxRegion, compressor, pager, 256);
+	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, compressor, pager, 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
 

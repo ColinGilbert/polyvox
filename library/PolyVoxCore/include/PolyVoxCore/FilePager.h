@@ -38,12 +38,12 @@ namespace PolyVox
 	 * Provides an interface for performing paging of data.
 	 */
 	template <typename VoxelType>
-	class FilePager : public Pager<typename VoxelType>
+	class FilePager : public Pager<VoxelType>
 	{
 	public:
 		/// Constructor
 		FilePager(const std::string& strFolderName)
-			:Pager()
+			:Pager<VoxelType>()
 			,m_strFolderName(strFolderName)
 		{
 		}
