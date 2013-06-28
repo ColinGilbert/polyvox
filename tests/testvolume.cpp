@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 
 #include "testvolume.h"
 
+#include "PolyVoxCore/FilePager.h"
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/MinizCompressor.h"
 #include "PolyVoxCore/RawVolume.h"
@@ -273,15 +274,15 @@ TestVolume::TestVolume()
 
 	//m_pCompressor = new RLECompressor<int32_t, uint16_t>;
 	m_pCompressor = new MinizCompressor;
+	m_pFilePager = new FilePager<int32_t>("./");
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor, 0, 32);
+	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor, m_pFilePager, 32);
 
-	// LargeVolume currently fails a test if compression is enabled. It
-	// may be related to accessing the data through more than one sampler?
-	//m_pLargeVolume->setCompressionEnabled(false);
+	m_pLargeVolume->setMaxNumberOfBlocksInMemory(32);
+	m_pLargeVolume->setMaxNumberOfUncompressedBlocks(16);
 
 	//Fill the volume with some data
 	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
@@ -305,6 +306,7 @@ TestVolume::~TestVolume()
 	delete m_pSimpleVolume;
 	delete m_pLargeVolume;
 
+	delete m_pFilePager;
 	delete m_pCompressor;
 }
 
