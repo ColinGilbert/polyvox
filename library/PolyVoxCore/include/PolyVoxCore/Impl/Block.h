@@ -40,8 +40,8 @@ namespace PolyVox
 	public:
 		Block(uint16_t uSideLength, Compressor* pCompressor);
 
-		const uint8_t* const getCompressedData(void) const;
-		const uint32_t getCompressedDataLength(void) const;
+		const uint8_t* getCompressedData(void) const;
+		uint32_t getCompressedDataLength(void) const;
 		uint16_t getSideLength(void) const;
 		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;

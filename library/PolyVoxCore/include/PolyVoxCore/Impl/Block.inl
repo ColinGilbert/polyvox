@@ -75,14 +75,14 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	const uint8_t* const Block<VoxelType>::getCompressedData(void) const
+	const uint8_t* Block<VoxelType>::getCompressedData(void) const
 	{
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		return m_pCompressedData;
 	}
 	
 	template <typename VoxelType>
-	const uint32_t Block<VoxelType>::getCompressedDataLength(void) const
+	uint32_t Block<VoxelType>::getCompressedDataLength(void) const
 	{
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		return m_uCompressedDataLength;
