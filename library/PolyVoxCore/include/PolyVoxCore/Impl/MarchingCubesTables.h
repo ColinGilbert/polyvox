@@ -28,8 +28,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	extern const POLYVOX_API int edgeTable[256];
-	extern const POLYVOX_API int triTable[256][16];
+	extern const POLYVOX_API uint16_t edgeTable[256];
+	extern const POLYVOX_API int8_t triTable[256][16];
 }
 
 #endif

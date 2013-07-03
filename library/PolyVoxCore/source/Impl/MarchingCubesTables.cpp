@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	const int edgeTable[256]=
+	const uint16_t edgeTable[256]=
 	{
 		0x000, 0x109, 0x203, 0x30a, 0x80c, 0x905, 0xa0f, 0xb06,
 		0x406, 0x50f, 0x605, 0x70c, 0xc0a, 0xd03, 0xe09, 0xf00,
@@ -66,7 +66,7 @@ namespace PolyVox
 		0xb06, 0xa0f, 0x905, 0x80c, 0x30a, 0x203, 0x109, 0x000
 	};
 
-	const int triTable[256][16] =
+	const int8_t triTable[256][16] =
 	{
 		{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, },
 		{ 0,  8,  3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, },
