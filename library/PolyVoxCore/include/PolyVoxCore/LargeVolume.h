@@ -263,10 +263,10 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
+		void setTargetMemoryLimitInBytes(uint32_t uTargetMemoryLimitInBytes);
+
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
-		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
-		void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by a 3D vector
@@ -315,6 +315,8 @@ namespace PolyVox
 		};
 		void initialise();
 
+		uint32_t calculateBlockMemoryUsage(void) const;
+
 		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
 		template <WrapMode eWrapMode>
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const;
@@ -338,7 +340,8 @@ namespace PolyVox
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable Block<VoxelType>* m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
-		uint32_t m_uMaxNumberOfBlocksInMemory;
+
+		uint32_t m_uCompressedBlockMemoryLimitInBytes;
 
 		// The size of the volume
 		Region m_regValidRegionInBlocks;

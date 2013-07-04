@@ -25,6 +25,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/MinizCompressor.h"
 
+#include <algorithm>
+
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
@@ -241,6 +243,25 @@ namespace PolyVox
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::setTargetMemoryLimitInBytes(uint32_t uTargetMemoryLimitInBytes)
+	{
+		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+
+		uint32_t uIdealNoOfUncompressedBlocks = m_regValidRegionInBlocks.getWidthInVoxels() + m_regValidRegionInBlocks.getHeightInVoxels() * m_regValidRegionInBlocks.getDepthInVoxels();
+
+		// Let's say that we should never use more than half the available memory for the uncompressed block cache.
+		uint32_t uMaxMemoryForUncompressedBlocks = uTargetMemoryLimitInBytes / 2;
+
+		uint32_t uMaxFittableNoOfUncompressedBlocks = uMaxMemoryForUncompressedBlocks / uUncompressedBlockSizeInBytes;
+
+		setMaxNumberOfUncompressedBlocks((std::min)(uIdealNoOfUncompressedBlocks, uMaxFittableNoOfUncompressedBlocks));
+
+		uint32_t uUncompressedBlockCacheSizeInBytes = m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes;
+
+		m_uCompressedBlockMemoryLimitInBytes = uTargetMemoryLimitInBytes - uUncompressedBlockCacheSizeInBytes;
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	/// Increasing the size of the block cache will increase memory but may improve performance.
 	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
@@ -253,20 +274,6 @@ namespace PolyVox
 		clearBlockCache();
 
 		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Increasing the number of blocks in memory causes fewer calls to dataRequiredHandler()/dataOverflowHandler()
-	/// \param uMaxNumberOfBlocksInMemory The number of blocks
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory)
-	{
-		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
-		{
-			flushAll();
-		}
-		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -361,7 +368,7 @@ namespace PolyVox
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Note that if MaxNumberOfBlocksInMemory is not large enough to support the region this function will only load part of the region. In this case it is undefined which parts will actually be loaded. If all the voxels in the given region are already loaded, this function will not do anything. Other voxels might be unloaded to make space for the new voxels.
+	/// Note that if *NOTE - update docs - MaxNumberOfBlocksInMemory no longer exists* MaxNumberOfBlocksInMemory is not large enough to support the region this function will only load part of the region. In this case it is undefined which parts will actually be loaded. If all the voxels in the given region are already loaded, this function will not do anything. Other voxels might be unloaded to make space for the new voxels.
 	/// \param regPrefetch The Region of voxels to prefetch into memory.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -381,11 +388,14 @@ namespace PolyVox
 
 		Vector3DInt32 v3dSize = v3dEnd - v3dStart + Vector3DInt32(1,1,1);
 		uint32_t numblocks = static_cast<uint32_t>(v3dSize.getX() * v3dSize.getY() * v3dSize.getZ());
-		if(numblocks > m_uMaxNumberOfBlocksInMemory)
+
+		// FIXME - reinstate some logic to handle when the prefetched region is too large.
+
+		/*if(numblocks > m_uMaxNumberOfBlocksInMemory)
 		{
 			// cannot support the amount of blocks... so only load the maximum possible
 			numblocks = m_uMaxNumberOfBlocksInMemory;
-		}
+		}*/
 		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
 		{
 			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
@@ -511,8 +521,8 @@ namespace PolyVox
 		}
 
 		m_uTimestamper = 0;
-		m_uMaxNumberOfUncompressedBlocks = 16;
-		m_uMaxNumberOfBlocksInMemory = 1024;
+		//m_uMaxNumberOfUncompressedBlocks = 16;
+		//m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
 
@@ -526,7 +536,7 @@ namespace PolyVox
 		m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uBlockSideLengthPower);
 		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
 
-		setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
+		//setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
 
 		//Clear the previous data
 		m_pBlocks.clear();
@@ -600,7 +610,7 @@ namespace PolyVox
 			if(m_pPager)
 			{
 				// check wether another block needs to be unloaded before this one can be loaded
-				if(m_pBlocks.size() == m_uMaxNumberOfBlocksInMemory)
+				while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
 				{
 					// find the least recently used block
 					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
@@ -719,6 +729,21 @@ namespace PolyVox
 		uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;
+	}
+
+	template <typename VoxelType>
+	uint32_t LargeVolume<VoxelType>::calculateBlockMemoryUsage(void) const
+	{
+		uint32_t uMemoryUsage = 0;
+
+		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+		{
+			//Inaccurate - account for rest of loaded block.
+			uMemoryUsage += i->second.calculateSizeInBytes();
+		}
+
+		return uMemoryUsage;
 	}
 
 	template <typename VoxelType>

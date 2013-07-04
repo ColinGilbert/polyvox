@@ -269,8 +269,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
 	{
-		//FIXME - This function is incomplete.
-		uint32_t uSizeInBytes = sizeof(Block<VoxelType>);
+		// Returns the size of this class plus the size of the compressed data. It
+		// doesn't include the uncompressed data cache as that is owned by the volume.
+		uint32_t uSizeInBytes = sizeof(Block<VoxelType>) + m_uCompressedDataLength;
 		return  uSizeInBytes;
 	}
 }
