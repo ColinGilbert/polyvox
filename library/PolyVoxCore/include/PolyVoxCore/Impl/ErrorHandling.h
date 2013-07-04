@@ -31,6 +31,7 @@ freely, subject to the following restrictions:
 #include <stdexcept>
 #include <sstream>
 #include <string.h> // Exception constuctors take strings.
+#include <csignal>
 
 #if defined(_MSC_VER)
 	// In Visual Studio we can use this function to go into the debugger.
@@ -38,7 +39,11 @@ freely, subject to the following restrictions:
 #else
 	// On other platforms we just halt by forcing a crash.
 	// Hopefully this puts us in the debugger if one is running
-    #define POLYVOX_HALT() *((unsigned int*)0) = 0xDEAD
+	#if defined(__linux__) || defined(__APPLE__)
+		#define POLYVOX_HALT() raise(SIGTRAP)
+	#else
+		#define POLYVOX_HALT() *((unsigned int*)0) = 0xDEAD
+	#endif
 #endif
 
 // Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
