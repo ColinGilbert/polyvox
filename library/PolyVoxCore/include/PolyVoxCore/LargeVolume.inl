@@ -246,11 +246,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::setTargetMemoryLimitInBytes(uint32_t uTargetMemoryLimitInBytes)
 	{
+		// The size of a single uncompressed block of data.
 		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
+		// The idea number of uncompressed blocks is chosen by gut feeling as much as anything. Part of the
+		// rationale is that it should let us iterate along any edge without data being pushed out of the cache.
 		uint32_t uIdealNoOfUncompressedBlocks = m_regValidRegionInBlocks.getWidthInVoxels() + m_regValidRegionInBlocks.getHeightInVoxels() * m_regValidRegionInBlocks.getDepthInVoxels();
 
-		// Let's say that we should never use more than half the available memory for the uncompressed block cache.
+		// Let's (arbitrarily?) say that we should never use more than half the available memory for the uncompressed block cache.
 		uint32_t uMaxMemoryForUncompressedBlocks = uTargetMemoryLimitInBytes / 2;
 
 		uint32_t uMaxFittableNoOfUncompressedBlocks = uMaxMemoryForUncompressedBlocks / uUncompressedBlockSizeInBytes;
@@ -607,9 +610,9 @@ namespace PolyVox
 			//The block is not in the map, so we will have to create a new block and add it.
 			//Before we do so, we might want to dump some existing data to make space. We 
 			//Only do this if paging is enabled.
-			if(m_pPager)
+			/*if(m_pPager)
 			{
-				// check wether another block needs to be unloaded before this one can be loaded
+				// check whether another block needs to be unloaded before this one can be loaded
 				while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
 				{
 					// find the least recently used block
@@ -624,7 +627,9 @@ namespace PolyVox
 					}
 					eraseBlock(itUnloadBlock);
 				}
-			}
+			}*/
+
+			flushOldestExcessiveBlocks();
 			
 			// create the new block
 			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
@@ -744,6 +749,39 @@ namespace PolyVox
 		}
 
 		return uMemoryUsage;
+	}
+
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::flushOldestExcessiveBlocks(void) const
+	{
+		const uint32_t uMemoryUsedForCompressedBlocks = calculateBlockMemoryUsage();
+		uint32_t uMemoryToReclaim = uMemoryUsedForCompressedBlocks - m_uCompressedBlockMemoryLimitInBytes;
+
+		//while(uMemoryToReclaim > 0)
+		while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
+		{
+			// find the least recently used block
+			typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+			typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
+			for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+			{
+				if(i->second.timestamp < itUnloadBlock->second.timestamp)
+				{
+					itUnloadBlock = i;
+				}
+			}
+
+			//POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
+
+			uMemoryToReclaim -= itUnloadBlock->second.calculateSizeInBytes();
+
+			eraseBlock(itUnloadBlock);
+		}
+	}
+
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::flushExcessiveCacheEntries(void) const
+	{
 	}
 
 	template <typename VoxelType>

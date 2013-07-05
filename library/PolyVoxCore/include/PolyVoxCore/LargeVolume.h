@@ -312,10 +312,14 @@ namespace PolyVox
 				}
 				return false;
 			}
-		};
-		void initialise();
+		};		
 
 		uint32_t calculateBlockMemoryUsage(void) const;
+
+		void flushOldestExcessiveBlocks(void) const;
+		void flushExcessiveCacheEntries(void) const;
+
+		void initialise();
 
 		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
 		template <WrapMode eWrapMode>
