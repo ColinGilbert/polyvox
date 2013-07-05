@@ -608,50 +608,17 @@ namespace PolyVox
 		if(itBlock == m_pBlocks.end())
 		{
 			//The block is not in the map, so we will have to create a new block and add it.
-			//Before we do so, we might want to dump some existing data to make space. We 
-			//Only do this if paging is enabled.
-			/*if(m_pPager)
-			{
-				// check whether another block needs to be unloaded before this one can be loaded
-				while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
-				{
-					// find the least recently used block
-					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
-					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
-					for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
-					{
-						if(i->second.timestamp < itUnloadBlock->second.timestamp)
-						{
-							itUnloadBlock = i;
-						}
-					}
-					eraseBlock(itUnloadBlock);
-				}
-			}*/
-
-			flushOldestExcessiveBlocks();
-			
-			// create the new block
 			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
-
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
-			//We have created the new block. If paging is enabled it should be used to
-			//fill in the required data. Otherwise it is just left in the default state.
-			if(m_pPager)
-			{
-				//if(m_funcDataRequiredHandler)
-				{
-					// "load" will actually call setVoxel, which will in turn call this function again but the block will be found
-					// so this if(itBlock == m_pBlocks.end()) never is entered		
-					//FIXME - can we pass the block around so that we don't have to find  it again when we recursively call this function?
-					Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
-					Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
-					Region reg(v3dLower, v3dUpper);
+			// Now use the pager to fill the block with it's initial data.
+			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
+			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
+			Region reg(v3dLower, v3dUpper);
+			m_pPager->pageIn(reg, &(itBlock->second));
 
-					m_pPager->pageIn(reg, &(itBlock->second));
-				}
-			}
+			// Paging in this new block may mean we are now using too much memory. If necessary, flush some old blocks.
+			flushOldestExcessiveBlocks();
 		}		
 
 		//Get the block and mark that we accessed it
@@ -771,7 +738,7 @@ namespace PolyVox
 				}
 			}
 
-			//POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
+			POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
 
 			uMemoryToReclaim -= itUnloadBlock->second.calculateSizeInBytes();
 
