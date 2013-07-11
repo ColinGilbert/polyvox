@@ -223,7 +223,7 @@ namespace PolyVox
 			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-			VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
+			VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 			return pUncompressedBlock
 			[
@@ -317,7 +317,7 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
+		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 		pUncompressedBlock
 		[
@@ -360,7 +360,7 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
+		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 		pUncompressedBlock
 		[
@@ -629,14 +629,13 @@ namespace PolyVox
 		//Get the block and mark that we accessed it
 		Block<VoxelType>& block = itBlock->second;
 		block.timestamp = ++m_uTimestamper;
-		m_v3dLastAccessedBlockPos = v3dBlockPos;
-		m_pLastAccessedBlock = &block;
+		//m_v3dLastAccessedBlockPos = v3dBlockPos;
 
-		return m_pLastAccessedBlock;
+		return &block;
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	VoxelType* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
@@ -646,7 +645,6 @@ namespace PolyVox
 		//This check should also provide a significant speed boost as usually it is true.
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
-			POLYVOX_ASSERT(m_pLastAccessedBlock->hasUncompressedData(), "Last accessed block has no uncompressed data.");
 			return m_pLastAccessedBlock;
 		}			
 
@@ -674,9 +672,12 @@ namespace PolyVox
 			itUncompressedBlock = m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock)).first;
 		}
 
+		m_pLastAccessedBlock = block->m_tUncompressedData;
+		m_v3dLastAccessedBlockPos = v3dBlockPos;
+
 		if(block->hasUncompressedData())
 		{ 			
-			return block;
+			return block->m_tUncompressedData;
 		}
 
 		//If we are allowed to compress then check whether we need to
@@ -711,8 +712,8 @@ namespace PolyVox
 		
 		block->createUncompressedData();
 
-		m_pLastAccessedBlock = block;
-		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
+		m_pLastAccessedBlock = block->m_tUncompressedData;
+		POLYVOX_ASSERT(m_pLastAccessedBlock, "Block has no uncompressed data");
 		return m_pLastAccessedBlock;
 	}
 
@@ -855,7 +856,7 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
+		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 		return pUncompressedBlock
 		[
