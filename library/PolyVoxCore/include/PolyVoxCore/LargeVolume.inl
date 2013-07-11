@@ -646,7 +646,7 @@ namespace PolyVox
 		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
 			return m_pLastAccessedBlock;
-		}			
+		}
 
 		//Get the block and mark that we accessed it
 		Block<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
@@ -672,8 +672,10 @@ namespace PolyVox
 			itUncompressedBlock = m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock)).first;
 		}
 
-		m_pLastAccessedBlock = block->m_tUncompressedData;
+		m_pLastAccessedBlock = (*itUncompressedBlock).second;
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
+
+		return m_pLastAccessedBlock;
 
 		if(block->hasUncompressedData())
 		{ 			
