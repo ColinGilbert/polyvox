@@ -334,6 +334,7 @@ namespace PolyVox
 		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const;
 
 		// The block data
+		mutable std::map<Vector3DInt32, VoxelType*, BlockPositionCompare> m_pUncompressedBlockCache;
 		mutable std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare> m_pBlocks;
 
 		// The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather

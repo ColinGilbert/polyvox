@@ -638,6 +638,27 @@ namespace PolyVox
 		//Get the block and mark that we accessed it
 		Block<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
 
+
+		typename std::map<Vector3DInt32, VoxelType*, BlockPositionCompare>::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
+		// check whether the block is already loaded
+		if(itUncompressedBlock == m_pUncompressedBlockCache.end())
+		{
+			VoxelType* pUncompressedBlock = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+
+			void* pSrcData = reinterpret_cast<void*>(block->m_pCompressedData);
+			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock);
+			uint32_t uSrcLength = block->m_uCompressedDataLength;
+			uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+
+			//MinizCompressor compressor;
+			//RLECompressor<VoxelType, uint16_t> compressor;
+			uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+			POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");
+
+			itUncompressedBlock = m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock)).first;
+		}
+
 		if(block->hasUncompressedData())
 		{ 			
 			return block;
