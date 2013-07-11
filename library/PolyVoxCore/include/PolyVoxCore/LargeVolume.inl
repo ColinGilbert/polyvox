@@ -102,7 +102,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
-		flushAll();
+		//flushAll();
 
 		// Only delete the compressor if it was created by us (in the constructor), not by the user.
 		if(m_bIsOurCompressor)
@@ -509,11 +509,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::clearBlockCache(void)
 	{
-		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
-		{
-			m_vecBlocksWithUncompressedData[ct]->destroyUncompressedData();
-		}
-		m_vecBlocksWithUncompressedData.clear();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -571,7 +566,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const
 	{
-		if(itBlock->second.hasUncompressedData())
+		POLYVOX_ASSERT(false, "This function has not been implemented properly");
+
+		/*if(itBlock->second.hasUncompressedData())
 		{
 			itBlock->second.destroyUncompressedData();
 		}
@@ -585,9 +582,11 @@ namespace PolyVox
 			Region reg(v3dLower, v3dUpper);
 
 			m_pPager->pageOut(reg, &(itBlock->second));
-		}
+		}*/
+
 		
-		for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
+		// FIXME - the code below used to make sure the uncompressed version of the data was removed. Reinstate something similar.
+		/*for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
 		{
 			// find the block in the uncompressed cache
 			if(m_vecBlocksWithUncompressedData[ct] == &(itBlock->second))
@@ -598,7 +597,7 @@ namespace PolyVox
 				m_vecBlocksWithUncompressedData.resize(m_vecBlocksWithUncompressedData.size()-1);
 				break;
 			}
-		}
+		}*/
 
 		m_pBlocks.erase(itBlock);
 	}
@@ -676,47 +675,6 @@ namespace PolyVox
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
 
 		return m_pLastAccessedBlock;
-
-		if(block->hasUncompressedData())
-		{ 			
-			return block->m_tUncompressedData;
-		}
-
-		//If we are allowed to compress then check whether we need to
-		if(m_vecBlocksWithUncompressedData.size() == m_uMaxNumberOfUncompressedBlocks)
-		{
-			int32_t leastRecentlyUsedBlockIndex = -1;
-			uint32_t uLeastRecentTimestamp = (std::numeric_limits<uint32_t>::max)();
-
-			//Currently we find the oldest block by iterating over the whole array. Of course we could store the blocks sorted by
-			//timestamp (set, priority_queue, etc) but then we'll need to move them around as the timestamp changes. Can come back 
-			//to this if it proves to be a bottleneck (compraed to the cost of actually doing the compression/decompression).
-			for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
-			{
-				if(m_vecBlocksWithUncompressedData[ct]->timestamp < uLeastRecentTimestamp)
-				{
-					uLeastRecentTimestamp = m_vecBlocksWithUncompressedData[ct]->timestamp;
-					leastRecentlyUsedBlockIndex = ct;
-				}
-			}
-			
-			//Compress the least recently used block.
-			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex]->destroyUncompressedData();
-
-			//We don't actually remove any elements from this vector, we
-			//simply change the pointer to point at the new uncompressed bloack.			
-			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = block;
-		}
-		else
-		{
-			m_vecBlocksWithUncompressedData.push_back(block);
-		}
-		
-		block->createUncompressedData();
-
-		m_pLastAccessedBlock = block->m_tUncompressedData;
-		POLYVOX_ASSERT(m_pLastAccessedBlock, "Block has no uncompressed data");
-		return m_pLastAccessedBlock;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -747,8 +705,8 @@ namespace PolyVox
 		}
 
 		//Memory used by the block cache.
-		uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(Block<VoxelType>);
-		uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		//uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(Block<VoxelType>);
+		//uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;
 	}

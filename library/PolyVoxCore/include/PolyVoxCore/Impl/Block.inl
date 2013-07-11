@@ -66,12 +66,12 @@ namespace PolyVox
 
 		//Temporarily create the block data. This is just so we can compress it an discard it.
 		// FIXME - this is a temporary solution.
-		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
+		/*const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		m_tUncompressedData = new VoxelType[uNoOfVoxels];		
 		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
 		m_bIsUncompressedDataModified = true;
 
-		destroyUncompressedData();
+		destroyUncompressedData();*/
 	}
 
 	template <typename VoxelType>
@@ -127,7 +127,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void Block<VoxelType>::setCompressedData(const uint8_t* const data, uint32_t dataLength)
 	{
-		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
+		//POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		POLYVOX_ASSERT(m_pCompressedData != data, "Attempting to copy data onto itself");
 
 		delete[] m_pCompressedData;
@@ -161,109 +161,6 @@ namespace PolyVox
 	void Block<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
 	{
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
-	}
-
-	template <typename VoxelType>
-	void Block<VoxelType>::destroyUncompressedData()
-	{
-		if(!hasUncompressedData())
-		{ 
-			POLYVOX_THROW(invalid_operation, "No uncompressed data to compress.");
-		}
-
-		POLYVOX_ASSERT(m_tUncompressedData != 0, "No uncompressed data is present.");
-
-		//If the uncompressed data hasn't actually been
-		//modified then we don't need to redo the compression.
-		if(m_bIsUncompressedDataModified)
-		{
-			// Delete the old compressed data as we'll create a new one
-			delete[] m_pCompressedData;
-			m_pCompressedData = 0;
-
-			void* pSrcData = reinterpret_cast<void*>(m_tUncompressedData);
-			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
-
-			uint8_t tempBuffer[10000];
-			void* pDstData = reinterpret_cast<void*>( tempBuffer );				
-			uint32_t uDstLength = 10000;
-
-			uint32_t uCompressedLength = 0;
-
-			try
-			{
-				uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-				// Create new compressed data and copy across
-				m_pCompressedData = new uint8_t[uCompressedLength];
-				memcpy(m_pCompressedData, pDstData, uCompressedLength);
-				m_uCompressedDataLength = uCompressedLength;
-			}
-			catch(std::exception&)
-			{
-				// It is possible for the compression to fail. A common cause for this would be if the destination
-				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
-				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
-				logWarning() << "The compressor failed to compress the block, proabaly due to the buffer being too small.";
-				logWarning() << "The compression will be tried again with a larger buffer";
-				uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
-				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
-
-				pDstData = reinterpret_cast<void*>( buffer );				
-				uDstLength = uMaxCompressedSize;
-
-				try
-				{		
-					uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-					// Create new compressed data and copy across
-					m_pCompressedData = new uint8_t[uCompressedLength];
-					memcpy(m_pCompressedData, pDstData, uCompressedLength);
-					m_uCompressedDataLength = uCompressedLength;
-				}
-				catch(std::exception&)
-				{
-					// At this point it didn't work even with a bigger buffer.
-					// Not much more we can do so just rethrow the exception.
-					delete[] buffer;
-					POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
-				}
-
-				delete[] buffer;
-			}			
-		}
-
-		//Flag the uncompressed data as no longer being used.
-		delete[] m_tUncompressedData;
-		m_tUncompressedData = 0;
-	}
-
-	template <typename VoxelType>
-	void Block<VoxelType>::createUncompressedData()
-	{
-		if(hasUncompressedData())
-		{
-			POLYVOX_THROW(invalid_operation, "Uncompressed data already exists.");
-		}
-
-		POLYVOX_ASSERT(m_tUncompressedData == 0, "Uncompressed data already exists.");
-
-		m_tUncompressedData = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
-
-		void* pSrcData = reinterpret_cast<void*>(m_pCompressedData);
-		void* pDstData = reinterpret_cast<void*>(m_tUncompressedData);
-		uint32_t uSrcLength = m_uCompressedDataLength;
-		uint32_t uDstLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
-
-		//MinizCompressor compressor;
-		//RLECompressor<VoxelType, uint16_t> compressor;
-		uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-		POLYVOX_ASSERT(uUncompressedLength == m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType), "Destination length has changed.");
-
-		//m_tUncompressedData = reinterpret_cast<VoxelType*>(uncompressedResult.ptr);
-
-		m_bIsUncompressedDataModified = false;
 	}
 
 	template <typename VoxelType>

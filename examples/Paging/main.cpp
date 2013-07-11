@@ -93,7 +93,7 @@ public:
 
 	virtual void pageIn(const PolyVox::Region& region, Block<MaterialDensityPair44>* pBlockData)
 	{
-		pBlockData->createUncompressedData();
+		/*pBlockData->createUncompressedData();
 
 		Perlin perlin(2,2,1,234);
 
@@ -134,7 +134,7 @@ public:
 					pBlockData->setVoxelAt(x - region.getLowerX(), y - region.getLowerY(), z - region.getLowerZ(), voxel);
 				}
 			}
-		}
+		}*/
 	}
 
 	virtual void pageOut(const PolyVox::Region& region, Block<MaterialDensityPair44>* /*pBlockData*/)

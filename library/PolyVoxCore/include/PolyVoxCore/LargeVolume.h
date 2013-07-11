@@ -337,11 +337,6 @@ namespace PolyVox
 		mutable std::map<Vector3DInt32, VoxelType*, BlockPositionCompare> m_pUncompressedBlockCache;
 		mutable std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare> m_pBlocks;
 
-		// The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
-		// than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
-		// of blocks. However, this could mean the same block data is uncompressed and modified in more than one
-		// location in memory... could be messy with threading.
-		mutable std::vector< Block<VoxelType>* > m_vecBlocksWithUncompressedData;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable VoxelType* m_pLastAccessedBlock;
