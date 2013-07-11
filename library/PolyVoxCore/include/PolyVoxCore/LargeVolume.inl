@@ -223,9 +223,14 @@ namespace PolyVox
 			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-			Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+			VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
 
-			return pUncompressedBlock->getVoxel(xOffset,yOffset,zOffset);
+			return pUncompressedBlock
+			[
+				xOffset + 
+				yOffset * m_uBlockSideLength + 
+				zOffset * m_uBlockSideLength * m_uBlockSideLength
+			];
 		}
 		else
 		{
@@ -312,9 +317,14 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
 
-		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+		pUncompressedBlock
+		[
+			xOffset + 
+			yOffset * m_uBlockSideLength + 
+			zOffset * m_uBlockSideLength * m_uBlockSideLength
+		] = tValue;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -350,9 +360,14 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
 
-		pUncompressedBlock->setVoxelAt(xOffset,yOffset,zOffset, tValue);
+		pUncompressedBlock
+		[
+			xOffset + 
+			yOffset * m_uBlockSideLength + 
+			zOffset * m_uBlockSideLength * m_uBlockSideLength
+		] = tValue;
 
 		//Return true to indicate that we modified a voxel.
 		return true;
@@ -840,9 +855,14 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		Block<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ)->m_tUncompressedData;
 
-		return pUncompressedBlock->getVoxel(xOffset,yOffset,zOffset);
+		return pUncompressedBlock
+		[
+			xOffset + 
+			yOffset * m_uBlockSideLength + 
+			zOffset * m_uBlockSideLength * m_uBlockSideLength
+		];
 	}
 }
 
