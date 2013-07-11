@@ -746,7 +746,7 @@ namespace PolyVox
 				}
 			}
 
-			POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
+			//POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
 
 			uMemoryToReclaim -= itUnloadBlock->second.calculateSizeInBytes();
 

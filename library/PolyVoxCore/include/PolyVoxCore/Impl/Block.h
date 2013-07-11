@@ -42,27 +42,14 @@ namespace PolyVox
 
 		const uint8_t* getCompressedData(void) const;
 		uint32_t getCompressedDataLength(void) const;
-		uint16_t getSideLength(void) const;
-		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
-		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
-
-		bool hasUncompressedData(void) const;
 
 		void setCompressedData(const uint8_t* const data, uint32_t dataLength);
-		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
-		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		Compressor* m_pCompressor;
 		uint8_t* m_pCompressedData;
 		uint32_t m_uCompressedDataLength;
-		VoxelType* m_tUncompressedData;
-		uint16_t m_uSideLength;
-		uint8_t m_uSideLengthPower;	
-		bool m_bIsUncompressedDataModified;
-
 		uint32_t timestamp;
 	};
 }

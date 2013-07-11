@@ -37,13 +37,8 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	Block<VoxelType>::Block(uint16_t uSideLength, Compressor* pCompressor)
-		:m_pCompressor(pCompressor)
-		,m_pCompressedData(0)
+		:m_pCompressedData(0)
 		,m_uCompressedDataLength(0)
-		,m_tUncompressedData(0)
-		,m_uSideLength(0)
-		,m_uSideLengthPower(0)
-		,m_bIsUncompressedDataModified(true)
 	{
 		if(uSideLength == 0)
 		{
@@ -60,18 +55,6 @@ namespace PolyVox
 			POLYVOX_THROW(std::invalid_argument, "Block must be provided with a valid compressor.");
 		}
 
-		//Compute the side length		
-		m_uSideLength = uSideLength;
-		m_uSideLengthPower = logBase2(uSideLength);
-
-		//Temporarily create the block data. This is just so we can compress it an discard it.
-		// FIXME - this is a temporary solution.
-		/*const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		m_tUncompressedData = new VoxelType[uNoOfVoxels];		
-		std::fill(m_tUncompressedData, m_tUncompressedData + uNoOfVoxels, VoxelType());
-		m_bIsUncompressedDataModified = true;
-
-		destroyUncompressedData();*/
 	}
 
 	template <typename VoxelType>
@@ -89,42 +72,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint16_t Block<VoxelType>::getSideLength(void) const
-	{
-		return m_uSideLength;
-	}
-
-	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
-	{
-		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
-		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(hasUncompressedData(), "The block must have uncompressed data to call getVoxel()");
-		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
-
-		return m_tUncompressedData
-			[
-				uXPos + 
-				uYPos * m_uSideLength + 
-				uZPos * m_uSideLength * m_uSideLength
-			];
-	}
-
-	template <typename VoxelType>
-	VoxelType Block<VoxelType>::getVoxel(const Vector3DUint16& v3dPos) const
-	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
-	}
-
-	template <typename VoxelType>
-	bool Block<VoxelType>::hasUncompressedData(void) const
-	{
-		return m_tUncompressedData != 0;
-	}
-
-	template <typename VoxelType>
 	void Block<VoxelType>::setCompressedData(const uint8_t* const data, uint32_t dataLength)
 	{
 		//POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
@@ -135,32 +82,6 @@ namespace PolyVox
 		m_uCompressedDataLength = dataLength;
 		m_pCompressedData = new uint8_t[dataLength];
 		memcpy(m_pCompressedData, data, dataLength);
-	}
-
-	template <typename VoxelType>
-	void Block<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
-	{
-		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
-		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(hasUncompressedData(), "The block must have uncompressed data to call setVoxelAt()");
-		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
-
-		m_tUncompressedData
-		[
-			uXPos + 
-			uYPos * m_uSideLength + 
-			uZPos * m_uSideLength * m_uSideLength
-		] = tValue;
-
-		m_bIsUncompressedDataModified = true;
-	}
-
-	template <typename VoxelType>
-	void Block<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
-	{
-		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
 	template <typename VoxelType>
