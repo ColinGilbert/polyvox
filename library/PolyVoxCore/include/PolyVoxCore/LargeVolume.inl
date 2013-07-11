@@ -589,19 +589,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	Block<VoxelType>* LargeVolume<VoxelType>::getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
-
-		//Check if we have the same block as last time, if so there's no need to even update
-		//the time stamp. If we updated it everytime then that would be every time we touched
-		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
-		//This check should also provide a significant speed boost as usually it is true.
-		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
-		{
-			POLYVOX_ASSERT(m_pLastAccessedBlock->hasUncompressedData(), "Last accessed block has no uncompressed data.");
-			return m_pLastAccessedBlock;
-		}		
 
 		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
@@ -627,9 +617,30 @@ namespace PolyVox
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
 		m_pLastAccessedBlock = &block;
 
-		if(block.hasUncompressedData())
-		{ 			
+		return m_pLastAccessedBlock;
+	}
+
+	template <typename VoxelType>
+	Block<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	{
+		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
+
+		//Check if we have the same block as last time, if so there's no need to even update
+		//the time stamp. If we updated it everytime then that would be every time we touched
+		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
+		//This check should also provide a significant speed boost as usually it is true.
+		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
+		{
+			POLYVOX_ASSERT(m_pLastAccessedBlock->hasUncompressedData(), "Last accessed block has no uncompressed data.");
 			return m_pLastAccessedBlock;
+		}			
+
+		//Get the block and mark that we accessed it
+		Block<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
+
+		if(block->hasUncompressedData())
+		{ 			
+			return block;
 		}
 
 		//If we are allowed to compress then check whether we need to
@@ -655,16 +666,16 @@ namespace PolyVox
 
 			//We don't actually remove any elements from this vector, we
 			//simply change the pointer to point at the new uncompressed bloack.			
-			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = &block;
+			m_vecBlocksWithUncompressedData[leastRecentlyUsedBlockIndex] = block;
 		}
 		else
 		{
-			m_vecBlocksWithUncompressedData.push_back(&block);
+			m_vecBlocksWithUncompressedData.push_back(block);
 		}
 		
-		block.createUncompressedData();
+		block->createUncompressedData();
 
-		m_pLastAccessedBlock = &(block);
+		m_pLastAccessedBlock = block;
 		POLYVOX_ASSERT(m_pLastAccessedBlock->m_tUncompressedData, "Block has no uncompressed data");
 		return m_pLastAccessedBlock;
 	}
