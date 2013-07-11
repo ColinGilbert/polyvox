@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Block<VoxelType>::Block(uint16_t uSideLength, Compressor* pCompressor)
+	CompressedBlock<VoxelType>::CompressedBlock(uint16_t uSideLength, Compressor* pCompressor)
 		:m_pCompressedData(0)
 		,m_uCompressedDataLength(0)
 	{
@@ -58,21 +58,21 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	const uint8_t* Block<VoxelType>::getCompressedData(void) const
+	const uint8_t* CompressedBlock<VoxelType>::getCompressedData(void) const
 	{
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		return m_pCompressedData;
 	}
 	
 	template <typename VoxelType>
-	uint32_t Block<VoxelType>::getCompressedDataLength(void) const
+	uint32_t CompressedBlock<VoxelType>::getCompressedDataLength(void) const
 	{
 		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		return m_uCompressedDataLength;
 	}
 
 	template <typename VoxelType>
-	void Block<VoxelType>::setCompressedData(const uint8_t* const data, uint32_t dataLength)
+	void CompressedBlock<VoxelType>::setCompressedData(const uint8_t* const data, uint32_t dataLength)
 	{
 		//POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
 		POLYVOX_ASSERT(m_pCompressedData != data, "Attempting to copy data onto itself");
@@ -85,11 +85,11 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t Block<VoxelType>::calculateSizeInBytes(void)
+	uint32_t CompressedBlock<VoxelType>::calculateSizeInBytes(void)
 	{
 		// Returns the size of this class plus the size of the compressed data. It
 		// doesn't include the uncompressed data cache as that is owned by the volume.
-		uint32_t uSizeInBytes = sizeof(Block<VoxelType>) + m_uCompressedDataLength;
+		uint32_t uSizeInBytes = sizeof(CompressedBlock<VoxelType>) + m_uCompressedDataLength;
 		return  uSizeInBytes;
 	}
 }

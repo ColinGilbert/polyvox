@@ -35,10 +35,10 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class Block
+	class CompressedBlock
 	{
 	public:
-		Block(uint16_t uSideLength, Compressor* pCompressor);
+		CompressedBlock(uint16_t uSideLength, Compressor* pCompressor);
 
 		const uint8_t* getCompressedData(void) const;
 		uint32_t getCompressedDataLength(void) const;

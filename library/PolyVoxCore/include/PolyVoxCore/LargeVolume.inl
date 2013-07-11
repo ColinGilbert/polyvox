@@ -421,7 +421,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					
 					if(itBlock != m_pBlocks.end())
 					{
@@ -452,7 +452,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushAll()
 	{
-		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator i;
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
 		while(m_pBlocks.size() > 0)
@@ -486,7 +486,7 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
+					typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(pos);
 					if(itBlock == m_pBlocks.end())
 					{
 						// not loaded, not unloading
@@ -564,7 +564,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itBlock) const
 	{
 		POLYVOX_ASSERT(false, "This function has not been implemented properly");
 
@@ -603,16 +603,16 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Block<VoxelType>* LargeVolume<VoxelType>::getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	CompressedBlock<VoxelType>* LargeVolume<VoxelType>::getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
-		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
 			//The block is not in the map, so we will have to create a new block and add it.
-			Block<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
+			CompressedBlock<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			// Now use the pager to fill the block with it's initial data.
@@ -626,7 +626,7 @@ namespace PolyVox
 		}		
 
 		//Get the block and mark that we accessed it
-		Block<VoxelType>& block = itBlock->second;
+		CompressedBlock<VoxelType>& block = itBlock->second;
 		block.timestamp = ++m_uTimestamper;
 		//m_v3dLastAccessedBlockPos = v3dBlockPos;
 
@@ -648,7 +648,7 @@ namespace PolyVox
 		}
 
 		//Get the block and mark that we accessed it
-		Block<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
+		CompressedBlock<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
 
 
 		typename std::map<Vector3DInt32, VoxelType*, BlockPositionCompare>::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
@@ -697,7 +697,7 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
 		//Memory used by the blocks
-		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
@@ -716,7 +716,7 @@ namespace PolyVox
 	{
 		uint32_t uMemoryUsage = 0;
 
-		typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
+		typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator i;
 		for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
@@ -736,8 +736,8 @@ namespace PolyVox
 		while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
 		{
 			// find the least recently used block
-			typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator i;
-			typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
+			typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator i;
+			typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
 			for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 			{
 				if(i->second.timestamp < itUnloadBlock->second.timestamp)
