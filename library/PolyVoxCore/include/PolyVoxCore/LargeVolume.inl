@@ -223,14 +223,9 @@ namespace PolyVox
 			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-			VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+			const UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-			return pUncompressedBlock
-			[
-				xOffset + 
-				yOffset * m_uBlockSideLength + 
-				zOffset * m_uBlockSideLength * m_uBlockSideLength
-			];
+			return pUncompressedBlock->getVoxel(xOffset, yOffset, zOffset);
 		}
 		else
 		{
@@ -317,14 +312,8 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		pUncompressedBlock
-		[
-			xOffset + 
-			yOffset * m_uBlockSideLength + 
-			zOffset * m_uBlockSideLength * m_uBlockSideLength
-		] = tValue;
+		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -360,14 +349,9 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
-		pUncompressedBlock
-		[
-			xOffset + 
-			yOffset * m_uBlockSideLength + 
-			zOffset * m_uBlockSideLength * m_uBlockSideLength
-		] = tValue;
+		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 
 		//Return true to indicate that we modified a voxel.
 		return true;
@@ -634,7 +618,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	UncompressedBlock<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
@@ -651,14 +635,14 @@ namespace PolyVox
 		CompressedBlock<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
 
 
-		typename std::map<Vector3DInt32, VoxelType*, BlockPositionCompare>::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
+		typename std::map<Vector3DInt32, UncompressedBlock<VoxelType>*, BlockPositionCompare>::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itUncompressedBlock == m_pUncompressedBlockCache.end())
 		{
-			VoxelType* pUncompressedBlock = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+			UncompressedBlock<VoxelType>* pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
 
 			void* pSrcData = reinterpret_cast<void*>(block->m_pCompressedData);
-			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock);
+			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tUncompressedData);
 			uint32_t uSrcLength = block->m_uCompressedDataLength;
 			uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
@@ -816,14 +800,8 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		VoxelType* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-
-		return pUncompressedBlock
-		[
-			xOffset + 
-			yOffset * m_uBlockSideLength + 
-			zOffset * m_uBlockSideLength * m_uBlockSideLength
-		];
+		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		return pUncompressedBlock->getVoxel(xOffset, yOffset, zOffset);
 	}
 }
 

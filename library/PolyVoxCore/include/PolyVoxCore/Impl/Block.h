@@ -52,6 +52,26 @@ namespace PolyVox
 		uint32_t m_uCompressedDataLength;
 		uint32_t timestamp;
 	};
+
+	template <typename VoxelType>
+    class UncompressedBlock
+    {
+	public:
+		UncompressedBlock(uint16_t uSideLength);
+		~UncompressedBlock();
+
+		uint16_t getSideLength(void) const;
+		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
+
+		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+
+        VoxelType* m_tUncompressedData;
+        uint16_t m_uSideLength;
+        uint8_t m_uSideLengthPower;     
+        bool m_bIsUncompressedDataModified;
+	};
 }
 
 #include "PolyVoxCore/Impl/Block.inl"

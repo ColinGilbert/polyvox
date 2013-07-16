@@ -330,16 +330,16 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
 		CompressedBlock<VoxelType>* getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		VoxelType* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		UncompressedBlock<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		void eraseBlock(typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itBlock) const;
 
 		// The block data
-		mutable std::map<Vector3DInt32, VoxelType*, BlockPositionCompare> m_pUncompressedBlockCache;
+		mutable std::map<Vector3DInt32, UncompressedBlock<VoxelType>*, BlockPositionCompare> m_pUncompressedBlockCache;
 		mutable std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare> m_pBlocks;
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable VoxelType* m_pLastAccessedBlock;
+		mutable UncompressedBlock<VoxelType>* m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
 
 		uint32_t m_uCompressedBlockMemoryLimitInBytes;
