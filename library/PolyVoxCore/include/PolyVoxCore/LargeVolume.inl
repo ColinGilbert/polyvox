@@ -596,7 +596,7 @@ namespace PolyVox
 		if(itBlock == m_pBlocks.end())
 		{
 			//The block is not in the map, so we will have to create a new block and add it.
-			CompressedBlock<VoxelType> newBlock(m_uBlockSideLength,  m_pCompressor);
+			CompressedBlock<VoxelType> newBlock;
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			// Now use the pager to fill the block with it's initial data.
@@ -611,7 +611,7 @@ namespace PolyVox
 
 		//Get the block and mark that we accessed it
 		CompressedBlock<VoxelType>& block = itBlock->second;
-		block.timestamp = ++m_uTimestamper;
+		block.m_uBlockLastAccessed = ++m_uTimestamper;
 		//m_v3dLastAccessedBlockPos = v3dBlockPos;
 
 		return &block;
@@ -641,9 +641,9 @@ namespace PolyVox
 		{
 			UncompressedBlock<VoxelType>* pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
 
-			void* pSrcData = reinterpret_cast<void*>(block->m_pCompressedData);
+			void* pSrcData = reinterpret_cast<void*>(block->m_pData);
 			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tUncompressedData);
-			uint32_t uSrcLength = block->m_uCompressedDataLength;
+			uint32_t uSrcLength = block->m_uDataSizeInBytes;
 			uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 			//MinizCompressor compressor;
@@ -724,7 +724,7 @@ namespace PolyVox
 			typename std::map<Vector3DInt32, CompressedBlock<VoxelType>, BlockPositionCompare>::iterator itUnloadBlock = m_pBlocks.begin();
 			for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
 			{
-				if(i->second.timestamp < itUnloadBlock->second.timestamp)
+				if(i->second.m_uBlockLastAccessed < itUnloadBlock->second.m_uBlockLastAccessed)
 				{
 					itUnloadBlock = i;
 				}

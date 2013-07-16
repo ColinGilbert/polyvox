@@ -38,52 +38,39 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 
 	template <typename VoxelType>
-	CompressedBlock<VoxelType>::CompressedBlock(uint16_t uSideLength, Compressor* pCompressor)
-		:m_pCompressedData(0)
-		,m_uCompressedDataLength(0)
+	CompressedBlock<VoxelType>::CompressedBlock()
+		:m_pData(0)
+		,m_uDataSizeInBytes(0)
 	{
-		if(uSideLength == 0)
-		{
-			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");
-		}
-
-		if(!isPowerOf2(uSideLength))
-		{
-			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
-		}
-
-		if(pCompressor == 0)
-		{
-			POLYVOX_THROW(std::invalid_argument, "Block must be provided with a valid compressor.");
-		}
-
 	}
 
 	template <typename VoxelType>
-	const uint8_t* CompressedBlock<VoxelType>::getCompressedData(void) const
+	const uint8_t* CompressedBlock<VoxelType>::getData(void) const
 	{
-		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
-		return m_pCompressedData;
+		return m_pData;
 	}
 
 	template <typename VoxelType>
-	uint32_t CompressedBlock<VoxelType>::getCompressedDataLength(void) const
+	uint32_t CompressedBlock<VoxelType>::getDataSizeInBytes(void) const
 	{
-		POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
-		return m_uCompressedDataLength;
+		return m_uDataSizeInBytes;
 	}
 
 	template <typename VoxelType>
-	void CompressedBlock<VoxelType>::setCompressedData(const uint8_t* const data, uint32_t dataLength)
+	void CompressedBlock<VoxelType>::setData(const uint8_t* const pData, uint32_t uDataSizeInBytes)
 	{
-		//POLYVOX_ASSERT(m_pCompressedData, "Compressed data is NULL");
-		POLYVOX_ASSERT(m_pCompressedData != data, "Attempting to copy data onto itself");
+		POLYVOX_THROW_IF(pData == 0, std::invalid_argument, "Pointer to data cannot be null");
+		POLYVOX_THROW_IF(m_pData == pData, std::invalid_argument, "Attempting to copy data onto itself");
 
-		delete[] m_pCompressedData;
+		// Delete any existing data
+		delete[] m_pData;
 
-		m_uCompressedDataLength = dataLength;
-		m_pCompressedData = new uint8_t[dataLength];
-		memcpy(m_pCompressedData, data, dataLength);
+		// Allocate new data
+		m_uDataSizeInBytes = uDataSizeInBytes;
+		m_pData = new uint8_t[uDataSizeInBytes];
+
+		// Copy the data across
+		memcpy(m_pData, pData, uDataSizeInBytes);
 	}
 
 	template <typename VoxelType>
@@ -91,7 +78,7 @@ namespace PolyVox
 	{
 		// Returns the size of this class plus the size of the compressed data. It
 		// doesn't include the uncompressed data cache as that is owned by the volume.
-		uint32_t uSizeInBytes = sizeof(CompressedBlock<VoxelType>) + m_uCompressedDataLength;
+		uint32_t uSizeInBytes = sizeof(CompressedBlock<VoxelType>) + m_uDataSizeInBytes;
 		return  uSizeInBytes;
 	}
 
@@ -102,7 +89,6 @@ namespace PolyVox
 		:m_tUncompressedData(0)
 		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
-		,m_bIsUncompressedDataModified(true)
 	{
 		// Compute the side length               
 		m_uSideLength = uSideLength;
@@ -165,7 +151,7 @@ namespace PolyVox
 				uZPos * m_uSideLength * m_uSideLength
 			] = tValue;
 
-		m_bIsUncompressedDataModified = true;
+		m_bDataModified = true;
 	}
 
 	template <typename VoxelType>

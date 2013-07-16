@@ -77,7 +77,7 @@ namespace PolyVox
 				
 				uint8_t* buffer = new uint8_t[fileSizeInBytes];
 				fread(buffer, sizeof(uint8_t), fileSizeInBytes, pFile);
-				pBlockData->setCompressedData(buffer, fileSizeInBytes);
+				pBlockData->setData(buffer, fileSizeInBytes);
 				delete[] buffer;
 
 				if(ferror(pFile))
@@ -115,7 +115,7 @@ namespace PolyVox
 				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out block data.");
 			}
 
-			fwrite(pBlockData->getCompressedData(), sizeof(uint8_t), pBlockData->getCompressedDataLength(), pFile);
+			fwrite(pBlockData->getData(), sizeof(uint8_t), pBlockData->getDataSizeInBytes(), pFile);
 
 			if(ferror(pFile))
 			{

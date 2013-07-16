@@ -35,26 +35,42 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class CompressedBlock
+	class Block
+	{
+		friend LargeVolume<VoxelType>;
+
+	public:
+		Block()
+			:m_uBlockLastAccessed(0)
+			,m_bDataModified(false)
+		{
+		}
+
+	protected:
+		uint32_t m_uBlockLastAccessed;
+		bool m_bDataModified;
+	};
+
+	template <typename VoxelType>
+	class CompressedBlock : public Block<VoxelType>
 	{
 	public:
-		CompressedBlock(uint16_t uSideLength, Compressor* pCompressor);
+		CompressedBlock();
 
-		const uint8_t* getCompressedData(void) const;
-		uint32_t getCompressedDataLength(void) const;
+		const uint8_t* getData(void) const;
+		uint32_t getDataSizeInBytes(void) const;
 
-		void setCompressedData(const uint8_t* const data, uint32_t dataLength);
+		void setData(const uint8_t* const pData, uint32_t uDataSizeInBytes);
 
 		uint32_t calculateSizeInBytes(void);
 
 	public:
-		uint8_t* m_pCompressedData;
-		uint32_t m_uCompressedDataLength;
-		uint32_t timestamp;
+		uint8_t* m_pData;
+		uint32_t m_uDataSizeInBytes;
 	};
 
 	template <typename VoxelType>
-    class UncompressedBlock
+    class UncompressedBlock : public Block<VoxelType>
     {
 	public:
 		UncompressedBlock(uint16_t uSideLength);
@@ -70,7 +86,6 @@ namespace PolyVox
         VoxelType* m_tUncompressedData;
         uint16_t m_uSideLength;
         uint8_t m_uSideLengthPower;     
-        bool m_bIsUncompressedDataModified;
 	};
 }
 
