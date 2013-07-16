@@ -56,6 +56,7 @@ namespace PolyVox
 	{
 	public:
 		CompressedBlock();
+		~CompressedBlock();
 
 		const uint8_t* getData(void) const;
 		uint32_t getDataSizeInBytes(void) const;
@@ -64,7 +65,7 @@ namespace PolyVox
 
 		uint32_t calculateSizeInBytes(void);
 
-	public:
+	private:
 		uint8_t* m_pData;
 		uint32_t m_uDataSizeInBytes;
 	};

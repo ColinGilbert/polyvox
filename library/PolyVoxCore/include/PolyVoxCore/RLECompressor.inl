@@ -22,7 +22,7 @@ namespace PolyVox
 	}
 
 	template<typename ValueType, typename LengthType>
-	uint32_t RLECompressor<ValueType, LengthType>::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t RLECompressor<ValueType, LengthType>::compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		if(uSrcLength % sizeof(ValueType) != 0)
 		{
@@ -34,11 +34,11 @@ namespace PolyVox
 		uDstLength /= sizeof(Run);
 
 		// Get data pointers in the appropriate type
-		ValueType* pSrcDataAsType = reinterpret_cast<ValueType*>(pSrcData);
+		const ValueType* pSrcDataAsType = reinterpret_cast<const ValueType*>(pSrcData);
 		Run* pDstDataAsRun = reinterpret_cast<Run*>(pDstData);
 
 		// Pointers to just past the end of the data
-		ValueType* pSrcDataEnd = pSrcDataAsType + uSrcLength;
+		const ValueType* pSrcDataEnd = pSrcDataAsType + uSrcLength;
 		Run* pDstDataEnd = pDstDataAsRun + uDstLength;
 
 		//Counter for the output length
@@ -83,7 +83,7 @@ namespace PolyVox
 	}
 
 	template<typename ValueType, typename LengthType>
-	uint32_t RLECompressor<ValueType, LengthType>::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t RLECompressor<ValueType, LengthType>::decompress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		if(uSrcLength % sizeof(Run) != 0)
 		{
@@ -95,11 +95,11 @@ namespace PolyVox
 		uDstLength /= sizeof(ValueType);
 
 		// Get data pointers in the appropriate type
-		Run* pSrcDataAsRun = reinterpret_cast<Run*>(pSrcData);
+		const Run* pSrcDataAsRun = reinterpret_cast<const Run*>(pSrcData);
 		ValueType* pDstDataAsType = reinterpret_cast<ValueType*>(pDstData);
 
 		// Pointers to just past the end of the data
-		Run* pSrcDataEnd = pSrcDataAsRun + uSrcLength;
+		const Run* pSrcDataEnd = pSrcDataAsRun + uSrcLength;
 		ValueType* pDstDataEnd = pDstDataAsType + uDstLength;
 
 		//Counter for the output length

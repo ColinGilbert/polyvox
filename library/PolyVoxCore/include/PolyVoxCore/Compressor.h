@@ -76,7 +76,7 @@ namespace PolyVox
 		 * \param uDstLength The length of the destination buffer (compression will fail if this isn't big enough).
 		 * \return The size of the resulting compressed data.
 		 */
-		virtual uint32_t compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
+		virtual uint32_t compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
 
 		/**
 		 * Decompresses the data.
@@ -93,7 +93,7 @@ namespace PolyVox
 		 * \param uDstLength The length of the destination buffer (decompression will fail if this isn't big enough).
 		 * \return The size of the resulting uncompressed data.
 		 */
-		virtual uint32_t decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
+		virtual uint32_t decompress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength) = 0;
 	};
 }
 

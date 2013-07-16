@@ -45,6 +45,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	CompressedBlock<VoxelType>::~CompressedBlock()
+	{
+		delete[] m_pData;
+		m_pData = 0;
+	}
+
+	template <typename VoxelType>
 	const uint8_t* CompressedBlock<VoxelType>::getData(void) const
 	{
 		return m_pData;
@@ -71,6 +78,9 @@ namespace PolyVox
 
 		// Copy the data across
 		memcpy(m_pData, pData, uDataSizeInBytes);
+
+		// Flag as modified
+		m_bDataModified = true;
 	}
 
 	template <typename VoxelType>
