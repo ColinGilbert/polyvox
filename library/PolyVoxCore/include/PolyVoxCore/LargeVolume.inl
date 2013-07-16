@@ -642,7 +642,7 @@ namespace PolyVox
 			UncompressedBlock<VoxelType>* pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
 
 			const void* pSrcData = reinterpret_cast<const void*>(block->getData());
-			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tUncompressedData);
+			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
 			uint32_t uSrcLength = block->getDataSizeInBytes();
 			uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 

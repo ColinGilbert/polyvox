@@ -86,8 +86,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t CompressedBlock<VoxelType>::calculateSizeInBytes(void)
 	{
-		// Returns the size of this class plus the size of the compressed data. It
-		// doesn't include the uncompressed data cache as that is owned by the volume.
+		// Returns the size of this class plus the size of the compressed data.
 		uint32_t uSizeInBytes = sizeof(CompressedBlock<VoxelType>) + m_uDataSizeInBytes;
 		return  uSizeInBytes;
 	}
@@ -96,7 +95,7 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	UncompressedBlock<VoxelType>::UncompressedBlock(uint16_t uSideLength)
-		:m_tUncompressedData(0)
+		:m_tData(0)
 		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
 	{
@@ -106,32 +105,27 @@ namespace PolyVox
 
 		// Allocate the data
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		m_tUncompressedData = new VoxelType[uNoOfVoxels];               
+		m_tData = new VoxelType[uNoOfVoxels];               
 	}
 
 	template <typename VoxelType>
 	UncompressedBlock<VoxelType>::~UncompressedBlock()
 	{
-		delete m_tUncompressedData;
-		m_tUncompressedData = 0;
-	}
-
-	template <typename VoxelType>
-	uint16_t UncompressedBlock<VoxelType>::getSideLength(void) const
-	{
-		return m_uSideLength;
+		delete m_tData;
+		m_tData = 0;
 	}
 
 	template <typename VoxelType>
 	VoxelType UncompressedBlock<VoxelType>::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
-		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
+		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
+		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
+		POLYVOX_ASSERT(m_tData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
-		return m_tUncompressedData
+		return m_tData
 			[
 				uXPos + 
 				uYPos * m_uSideLength + 
@@ -148,13 +142,14 @@ namespace PolyVox
 	template <typename VoxelType>
 	void UncompressedBlock<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
-		// This is internal code not directly called by the user. For efficiency we assert rather than throwing.
+		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
+		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(m_tUncompressedData, "No uncompressed data - block must be decompressed before accessing voxels.");
+		POLYVOX_ASSERT(m_tData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
-		m_tUncompressedData
+		m_tData
 			[
 				uXPos + 
 				uYPos * m_uSideLength + 
@@ -169,4 +164,12 @@ namespace PolyVox
     {
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
     }
+
+	template <typename VoxelType>
+	uint32_t UncompressedBlock<VoxelType>::calculateSizeInBytes(void)
+	{
+		// Returns the size of this class plus the size of the uncompressed data.
+		uint32_t uSizeInBytes = sizeof(UncompressedBlock<VoxelType>) + (m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		return  uSizeInBytes;
+	}
 }

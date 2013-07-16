@@ -47,13 +47,19 @@ namespace PolyVox
 		}
 
 	protected:
+		// This is updated by the LargeVolume and used to discard the least recently used blocks.
 		uint32_t m_uBlockLastAccessed;
+
+		// This is so we can tell whether a uncompressed block has to be recompressed and whether
+		// a compressed block has to be paged back to disk, or whether they can just be discarded.
 		bool m_bDataModified;
 	};
 
 	template <typename VoxelType>
 	class CompressedBlock : public Block<VoxelType>
 	{
+		friend LargeVolume<VoxelType>;
+
 	public:
 		CompressedBlock();
 		~CompressedBlock();
@@ -63,9 +69,11 @@ namespace PolyVox
 
 		void setData(const uint8_t* const pData, uint32_t uDataSizeInBytes);
 
+	private:
+		// Made this private to avoid any confusion with getDataSizeInBytes().
+		// Users shouldn't really need this for CompressedBlock anyway.
 		uint32_t calculateSizeInBytes(void);
 
-	private:
 		uint8_t* m_pData;
 		uint32_t m_uDataSizeInBytes;
 	};
@@ -73,18 +81,24 @@ namespace PolyVox
 	template <typename VoxelType>
     class UncompressedBlock : public Block<VoxelType>
     {
+		friend LargeVolume<VoxelType>;
+
 	public:
 		UncompressedBlock(uint16_t uSideLength);
 		~UncompressedBlock();
 
-		uint16_t getSideLength(void) const;
 		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-        VoxelType* m_tUncompressedData;
+	private:
+		// Made this private for consistancy with CompressedBlock.
+		// Users shouldn't really need this for UncompressedBlock anyway.
+		uint32_t calculateSizeInBytes(void);
+
+        VoxelType* m_tData;
         uint16_t m_uSideLength;
         uint8_t m_uSideLengthPower;     
 	};

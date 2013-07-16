@@ -121,7 +121,7 @@ namespace PolyVox
 
 			UncompressedBlock<VoxelType>* pUncompressedCurrentBlock = this->mVolume->getUncompressedBlock(uXBlock, uYBlock, uZBlock);
 
-			mCurrentVoxel = pUncompressedCurrentBlock->m_tUncompressedData + uVoxelIndexInBlock;
+			mCurrentVoxel = pUncompressedCurrentBlock->m_tData + uVoxelIndexInBlock;
 		}
 		else
 		{
