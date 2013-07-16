@@ -165,7 +165,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	template <WrapMode eWrapMode>
-	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
@@ -183,7 +183,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	template <WrapMode eWrapMode>
-	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
@@ -200,7 +200,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
@@ -215,7 +215,7 @@ namespace PolyVox
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
+	VoxelType BaseVolume<VoxelType>::getVoxel(const Vector3DInt32& /*v3dPos*/, WrapMode /*eWrapMode*/, VoxelType /*tBorder*/) const
 	{
 		POLYVOX_ASSERT(false, "You should never call the base class version of this function.");
 		return VoxelType();
