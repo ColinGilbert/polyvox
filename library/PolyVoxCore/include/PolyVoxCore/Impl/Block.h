@@ -53,6 +53,13 @@ namespace PolyVox
 		// This is so we can tell whether a uncompressed block has to be recompressed and whether
 		// a compressed block has to be paged back to disk, or whether they can just be discarded.
 		bool m_bDataModified;
+
+	private:
+		/// Private copy constructor to prevent accisdental copying
+		Block(const Block& /*rhs*/) {};
+
+		/// Private assignment operator to prevent accisdental copying
+		Block& operator=(const Block& /*rhs*/) {};
 	};
 
 	template <typename VoxelType>
@@ -70,6 +77,12 @@ namespace PolyVox
 		void setData(const uint8_t* const pData, uint32_t uDataSizeInBytes);
 
 	private:
+		/// Private copy constructor to prevent accisdental copying
+		CompressedBlock(const CompressedBlock& /*rhs*/) {};
+
+		/// Private assignment operator to prevent accisdental copying
+		CompressedBlock& operator=(const CompressedBlock& /*rhs*/) {};
+
 		// Made this private to avoid any confusion with getDataSizeInBytes().
 		// Users shouldn't really need this for CompressedBlock anyway.
 		uint32_t calculateSizeInBytes(void);
@@ -94,6 +107,12 @@ namespace PolyVox
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 	private:
+		/// Private copy constructor to prevent accisdental copying
+		UncompressedBlock(const UncompressedBlock& /*rhs*/) {};
+
+		/// Private assignment operator to prevent accisdental copying
+		UncompressedBlock& operator=(const UncompressedBlock& /*rhs*/) {};
+
 		// Made this private for consistancy with CompressedBlock.
 		// Users shouldn't really need this for UncompressedBlock anyway.
 		uint32_t calculateSizeInBytes(void);
