@@ -334,7 +334,9 @@ namespace PolyVox
 	
 		CompressedBlock<VoxelType>* getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		UncompressedBlock<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		void eraseBlock(typename CompressedBlockMap::iterator itBlock) const;
+
+		void eraseBlock(typename CompressedBlockMap::iterator itCompressedBlock) const;
+		void eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const;
 
 		// The block data
 		mutable CompressedBlockMap m_pBlocks;

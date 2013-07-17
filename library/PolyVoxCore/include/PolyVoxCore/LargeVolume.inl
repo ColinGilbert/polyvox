@@ -548,42 +548,31 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename CompressedBlockMap::iterator itBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename CompressedBlockMap::iterator itCompressedBlock) const
 	{
-		POLYVOX_ASSERT(false, "This function has not been implemented properly");
-
-		/*if(itBlock->second.hasUncompressedData())
+		// Before deleting the block we may need to page out it's data. We
+		// only do this if the data has been modified since it was paged in.
+		CompressedBlock<VoxelType>* pCompressedBlock = itCompressedBlock->second;
+		if(pCompressedBlock->m_bDataModified)
 		{
-			itBlock->second.destroyUncompressedData();
-		}
+			// The position of the block within the volume.
+			Vector3DInt32 v3dBlockPos = itCompressedBlock->first;
 
-		if(m_pPager)
-		{
-			Vector3DInt32 v3dPos = itBlock->first;
-			Vector3DInt32 v3dLower(v3dPos.getX() << m_uBlockSideLengthPower, v3dPos.getY() << m_uBlockSideLengthPower, v3dPos.getZ() << m_uBlockSideLengthPower);
+			// From the coordinates of the block we deduce the coordinates of the contained voxels.
+			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 
-			Region reg(v3dLower, v3dUpper);
+			// Page the data out
+			m_pPager->pageOut(Region(v3dLower, v3dUpper), pCompressedBlock);
+		}
 
-			m_pPager->pageOut(reg, &(itBlock->second));
-		}*/
+		// We can now remove the block data from memory.
+		m_pBlocks.erase(itCompressedBlock);
+	}
 
-		
-		// FIXME - the code below used to make sure the uncompressed version of the data was removed. Reinstate something similar.
-		/*for(uint32_t ct = 0; ct < m_vecBlocksWithUncompressedData.size(); ct++)
-		{
-			// find the block in the uncompressed cache
-			if(m_vecBlocksWithUncompressedData[ct] == &(itBlock->second))
-			{
-				// put last object in cache here
-				m_vecBlocksWithUncompressedData[ct] = m_vecBlocksWithUncompressedData.back();
-				// decrease cache size by one since last element is now in here twice
-				m_vecBlocksWithUncompressedData.resize(m_vecBlocksWithUncompressedData.size()-1);
-				break;
-			}
-		}*/
-
-		m_pBlocks.erase(itBlock);
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const
+	{
 	}
 
 	template <typename VoxelType>
