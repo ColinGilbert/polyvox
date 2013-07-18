@@ -550,9 +550,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename CompressedBlockMap::iterator itCompressedBlock) const
 	{
-		// Before deleting the block we may need to page out it's data. We
-		// only do this if the data has been modified since it was paged in.
 		CompressedBlock<VoxelType>* pCompressedBlock = itCompressedBlock->second;
+
+		// Before deleting the block we may need to page out its data. We
+		// only do this if the data has been modified since it was paged in.
 		if(pCompressedBlock->m_bDataModified)
 		{
 			// The position of the block within the volume.
@@ -573,6 +574,77 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const
 	{
+		UncompressedBlock<VoxelType>* pUncompressedBlock = itUncompressedBlock->second;
+
+		// This should not often happen as blocks are normally deleted based on being least recently used.
+		// However, I can imagine that flushing a large number of blocks could cause this to occur. Just
+		// to be safe we handle it by invalidating the last accessed block pointer.
+		if(pUncompressedBlock == m_pLastAccessedBlock)
+		{
+			logWarning() << "The last accessed block is being erased from the uncompressed cache.";
+			m_pLastAccessedBlock = 0;
+		}
+
+		// Before deleting the block we may need to recompress its data. We
+		// only do this if the data has been modified since it was decompressed.
+		if(pUncompressedBlock->m_bDataModified)
+		{
+			// Get the compressed block which we will copy the data back in to.
+			Vector3DInt32 v3dBlockPos = itCompressedBlock->first;
+			CompressedBlock<VoxelType>* pCompressedBlock = getCompressedBlock(v3dBlockPos);
+
+			void* pSrcData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
+			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+
+			uint8_t tempBuffer[10000];
+			void* pDstData = reinterpret_cast<void*>( tempBuffer );				
+			uint32_t uDstLength = 10000;
+
+			uint32_t uCompressedLength = 0;
+
+			try
+			{
+				// Perform the compression
+				uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+				// Copy the resulting compressed data into the compressed block
+				pCompressedBlock->setData(pDstData, uDstLength);
+			}
+			catch(std::exception&)
+			{
+				// It is possible for the compression to fail. A common cause for this would be if the destination
+				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
+				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
+				logWarning() << "The compressor failed to compress the block, proabaly due to the buffer being too small.";
+				logWarning() << "The compression will be tried again with a larger buffer";
+				uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
+				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
+
+				pDstData = reinterpret_cast<void*>( buffer );				
+				uDstLength = uMaxCompressedSize;
+
+				try
+				{		
+					// Perform the compression
+					uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+					// Copy the resulting compressed data into the compressed block
+					pCompressedBlock->setData(pDstData, uDstLength);
+				}
+				catch(std::exception&)
+				{
+					// At this point it didn't work even with a bigger buffer.
+					// Not much more we can do so just rethrow the exception.
+					delete[] buffer;
+					POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
+				}
+
+				delete[] buffer;
+			}
+		}
+
+		// We can now remove the block data from memory.
+		m_pUncompressedBlockCache.erase(itUncompressedBlock);
 	}
 
 	template <typename VoxelType>
