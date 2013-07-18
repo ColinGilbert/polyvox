@@ -567,6 +567,8 @@ namespace PolyVox
 			m_pPager->pageOut(Region(v3dLower, v3dUpper), pCompressedBlock);
 		}
 
+		delete itCompressedBlock->second;
+
 		// We can now remove the block data from memory.
 		m_pBlocks.erase(itCompressedBlock);
 	}
@@ -615,7 +617,7 @@ namespace PolyVox
 				// It is possible for the compression to fail. A common cause for this would be if the destination
 				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
 				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
-				logWarning() << "The compressor failed to compress the block, proabaly due to the buffer being too small.";
+				logWarning() << "The compressor failed to compress the block, probabaly due to the buffer being too small.";
 				logWarning() << "The compression will be tried again with a larger buffer";
 				uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
 				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
@@ -658,6 +660,7 @@ namespace PolyVox
 		{
 			//The block is not in the map, so we will have to create a new block and add it.
 			CompressedBlock<VoxelType>* newBlock = new CompressedBlock<VoxelType>;
+			newBlock->m_uBlockLastAccessed = ++m_uTimestamper;
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
 
 			// Now use the pager to fill the block with it's initial data.
@@ -692,15 +695,15 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}
 
-		//Get the block and mark that we accessed it
+		//Gets the block and marks that we accessed it
 		CompressedBlock<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
-
 
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itUncompressedBlock == m_pUncompressedBlockCache.end())
 		{
 			UncompressedBlock<VoxelType>* pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
+			pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
 
 			const void* pSrcData = reinterpret_cast<const void*>(block->getData());
 			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
@@ -775,7 +778,7 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::flushOldestExcessiveBlocks(void) const
 	{
 		const uint32_t uMemoryUsedForCompressedBlocks = calculateBlockMemoryUsage();
-		uint32_t uMemoryToReclaim = uMemoryUsedForCompressedBlocks - m_uCompressedBlockMemoryLimitInBytes;
+		//uint32_t uMemoryToReclaim = uMemoryUsedForCompressedBlocks - m_uCompressedBlockMemoryLimitInBytes;
 
 		//while(uMemoryToReclaim > 0)
 		while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
@@ -793,7 +796,7 @@ namespace PolyVox
 
 			//POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
 
-			uMemoryToReclaim -= itUnloadBlock->second->calculateSizeInBytes();
+			//uMemoryToReclaim -= itUnloadBlock->second->calculateSizeInBytes();
 
 			eraseBlock(itUnloadBlock);
 		}
