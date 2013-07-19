@@ -347,7 +347,7 @@ namespace PolyVox
 		mutable UncompressedBlock<VoxelType>* m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
 
-		uint32_t m_uCompressedBlockMemoryLimitInBytes;
+		uint32_t m_uTargetMemoryLimitInBytes;
 
 		// The size of the volume
 		Region m_regValidRegionInBlocks;

@@ -246,23 +246,57 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::setTargetMemoryLimitInBytes(uint32_t uTargetMemoryLimitInBytes)
 	{
+		// Set the limit, and then work out how big the uncompressed cache should be.
+		m_uTargetMemoryLimitInBytes = uTargetMemoryLimitInBytes;
+
 		// The size of a single uncompressed block of data.
 		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
-		// The idea number of uncompressed blocks is chosen by gut feeling as much as anything. Part of the
-		// rationale is that it should let us iterate along any edge without data being pushed out of the cache.
-		uint32_t uIdealNoOfUncompressedBlocks = m_regValidRegionInBlocks.getWidthInVoxels() + m_regValidRegionInBlocks.getHeightInVoxels() * m_regValidRegionInBlocks.getDepthInVoxels();
+		// When deciding how to split the memory between compressed and uncompressed blocks it is useful to know the dimensions of the
+		// volume in blocks. After sorting, the array below will hold the smallest dimension in [0] and the largest dimension in [2].
+		const uint32_t uNoOfDimensions = 3;
+		uint32_t uSortedDimensionsInBlocks[uNoOfDimensions];
+		uSortedDimensionsInBlocks[0] = (getEnclosingRegion().getWidthInVoxels() >> m_uBlockSideLengthPower) + 1;
+		uSortedDimensionsInBlocks[1] = (getEnclosingRegion().getHeightInVoxels() >> m_uBlockSideLengthPower) + 1;
+		uSortedDimensionsInBlocks[2] = (getEnclosingRegion().getDepthInVoxels() >> m_uBlockSideLengthPower) + 1;
+		std::sort(uSortedDimensionsInBlocks, uSortedDimensionsInBlocks + uNoOfDimensions);
 
-		// Let's (arbitrarily?) say that we should never use more than half the available memory for the uncompressed block cache.
-		uint32_t uMaxMemoryForUncompressedBlocks = uTargetMemoryLimitInBytes / 2;
+		const uint32_t uLongestEdgeInBlocks = uSortedDimensionsInBlocks[2];
+		const uint32_t uLargestFaceSizeInBlocks = uSortedDimensionsInBlocks[1] * uSortedDimensionsInBlocks[2];
 
-		uint32_t uMaxFittableNoOfUncompressedBlocks = uMaxMemoryForUncompressedBlocks / uUncompressedBlockSizeInBytes;
+		// In the ideal situation we will be able to keep an entire face of blocks decompressed in the cache, and still have significant memory
+		// left for storing a large number of compressed block. Failing this, we would at least like to be able to keep enough blocks decompressed
+		// to iterate over the longest edge. Otherwise we will find that excessive compression and decompresion occurs. In both cases we multiply
+		// by an extra factor make sure there is space for storing some compressed data as well.
+		const uint32_t uFactor = 2; // Just to make sure we leave some space for compressed data as well
+		const uint32_t uIdealMemoryTarget = uLargestFaceSizeInBlocks * uUncompressedBlockSizeInBytes * uFactor;
+		const uint32_t uAcceptableMemoryTarget = uLongestEdgeInBlocks * uUncompressedBlockSizeInBytes * uFactor;
 
-		setMaxNumberOfUncompressedBlocks((std::min)(uIdealNoOfUncompressedBlocks, uMaxFittableNoOfUncompressedBlocks));
+		if(uTargetMemoryLimitInBytes >= uIdealMemoryTarget)
+		{
+			logDebug() << "The target memory limit (" << uTargetMemoryLimitInBytes << "bytes) is plenty for a volume of this size)";
 
-		uint32_t uUncompressedBlockCacheSizeInBytes = m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes;
+			// The added value below is just some extra 'grace' space.
+			setMaxNumberOfUncompressedBlocks(uLargestFaceSizeInBlocks + uSortedDimensionsInBlocks[1]);
+		}
+		else if(uTargetMemoryLimitInBytes >= uAcceptableMemoryTarget)
+		{
+			logDebug() << "The target memory limit (" << uTargetMemoryLimitInBytes << "bytes) should be acceptable for a volume of this size)";
 
-		m_uCompressedBlockMemoryLimitInBytes = uTargetMemoryLimitInBytes - uUncompressedBlockCacheSizeInBytes;
+			// Let's (arbitrarily) use 1/4 of the available memory for the cache, while making sure that it is as long as the longest side.
+			uint32_t uMaxFittableUncompressedBlocks = uTargetMemoryLimitInBytes / uUncompressedBlockSizeInBytes;
+			setMaxNumberOfUncompressedBlocks((std::max)(uMaxFittableUncompressedBlocks / 4, uLongestEdgeInBlocks));
+		}
+		else
+		{
+			logWarning() << "The target memory limit (" << uTargetMemoryLimitInBytes << "bytes) is too low for a volume of this size)";
+			logWarning() << "Excessive block thrashing may occur and the target memory limit may not be honored";
+
+			// We still have to do something. Let's still use 1/4 of the memory for the cache, but also set a minimum size.
+			const uint32_t uMinNoOfUncompressedBlocks = 8; // Chosen because it just feels about right.
+			uint32_t uMaxFittableUncompressedBlocks = uTargetMemoryLimitInBytes / uUncompressedBlockSizeInBytes;
+			setMaxNumberOfUncompressedBlocks((std::max)(uMaxFittableUncompressedBlocks / 4, uMinNoOfUncompressedBlocks));
+		}	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -277,6 +311,10 @@ namespace PolyVox
 		clearBlockCache();
 
 		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
+
+		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		logDebug() << "The maximum number of uncompresed blocks has been set to " << m_uMaxNumberOfUncompressedBlocks
+			<< ", which is " << m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes << " bytes"; 
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -781,7 +819,7 @@ namespace PolyVox
 		//uint32_t uMemoryToReclaim = uMemoryUsedForCompressedBlocks - m_uCompressedBlockMemoryLimitInBytes;
 
 		//while(uMemoryToReclaim > 0)
-		while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
+		/*while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
 		{
 			// find the least recently used block
 			typename CompressedBlockMap::iterator i;
@@ -799,7 +837,7 @@ namespace PolyVox
 			//uMemoryToReclaim -= itUnloadBlock->second->calculateSizeInBytes();
 
 			eraseBlock(itUnloadBlock);
-		}
+		}*/
 	}
 
 	template <typename VoxelType>
