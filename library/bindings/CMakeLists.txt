@@ -1,4 +1,4 @@
-# Copyright (c) 2009-2012 Matt Williams
+# Copyright (c) 2009-2013 Matt Williams
 # 
 # This software is provided 'as-is', without any express or implied
 # warranty. In no event will the authors be held liable for any damages
@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-option(ENABLE_BINDINGS "Build Python bindings" ON)
+option(ENABLE_BINDINGS "Build bindings" ON)
 if(ENABLE_BINDINGS)
 	find_package(SWIG)
 	mark_as_advanced(SWIG_DIR SWIG_VERSION)
@@ -31,24 +31,26 @@ if(ENABLE_BINDINGS)
 		set_package_properties(SWIG PROPERTIES DESCRIPTION "Bindings generator" URL http://www.swig.org)
 		set_package_properties(PythonLibs PROPERTIES DESCRIPTION "Programming language" URL http://www.python.org)
 	endif()
-	if(SWIG_FOUND AND PYTHONLIBS_FOUND)
-		set(BUILD_BINDINGS ON CACHE BOOL "Will the bindings be built" FORCE )
+	if(SWIG_FOUND)
+		set(BUILD_BINDINGS ON CACHE BOOL "Will the bindings be built" FORCE)
 		include(${SWIG_USE_FILE})
 		
-		include_directories(${PYTHON_INCLUDE_PATH})
-		include_directories(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
-		link_directories(${PolyVoxCore_BINARY_DIR})
-
 		set(CMAKE_SWIG_FLAGS "")
 		set_source_files_properties(PolyVoxCore.i PROPERTIES CPLUSPLUS ON)
 		
-		#set_source_files_properties(PolyVoxCore.i PROPERTIES SWIG_FLAGS "-builtin")
-		set(SWIG_MODULE_PolyVoxCorePython_EXTRA_FLAGS "-py3")
-		swig_add_module(PolyVoxCorePython python PolyVoxCore.i)
-		swig_link_libraries(PolyVoxCorePython ${PYTHON_LIBRARIES} PolyVoxCore)
-		set_target_properties(${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTIES OUTPUT_NAME _PolyVoxCore)
-		#set_target_properties(${SWIG_MODULE_PolyVoxCore_REAL_NAME} PROPERTIES SUFFIX ".pyd")
-		SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTY FOLDER "Bindings")
+		if(PYTHONLIBS_FOUND)
+			include_directories(${PYTHON_INCLUDE_PATH})
+			include_directories(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
+			link_directories(${PolyVoxCore_BINARY_DIR})
+			
+			#set_source_files_properties(PolyVoxCore.i PROPERTIES SWIG_FLAGS "-builtin")
+			set(SWIG_MODULE_PolyVoxCorePython_EXTRA_FLAGS "-py3")
+			swig_add_module(PolyVoxCorePython python PolyVoxCore.i)
+			swig_link_libraries(PolyVoxCorePython ${PYTHON_LIBRARIES} PolyVoxCore)
+			set_target_properties(${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTIES OUTPUT_NAME _PolyVoxCore)
+			#set_target_properties(${SWIG_MODULE_PolyVoxCore_REAL_NAME} PROPERTIES SUFFIX ".pyd")
+			SET_PROPERTY(TARGET ${SWIG_MODULE_PolyVoxCorePython_REAL_NAME} PROPERTY FOLDER "Bindings")
+		endif()
 		
 		set(SWIG_MODULE_PolyVoxCoreCSharp_EXTRA_FLAGS "-dllimport;PolyVoxCoreCSharp") #This _should_ be inside UseSWIG.cmake - http://www.cmake.org/Bug/view.php?id=13814
 		swig_add_module(PolyVoxCoreCSharp csharp PolyVoxCore.i)
