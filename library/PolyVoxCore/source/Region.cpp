@@ -494,12 +494,10 @@ namespace PolyVox
      * \param region The Region to write to the stream.
      * \return A reference to the output stream to allow chaining.
      */
-#if !defined SWIG
 	std::ostream& operator<<(std::ostream& os, const Region& region)
     {
 		os << "(" << region.getLowerX() << "," << region.getLowerY() << "," << region.getLowerZ() <<
 			") to (" << region.getUpperX() << "," << region.getUpperY() << "," << region.getUpperZ() << ")";
         return os;
     }
-#endif
 }

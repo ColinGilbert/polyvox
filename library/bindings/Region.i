@@ -4,6 +4,10 @@
 #include "Region.h"
 %}
 
+%extend PolyVox::Region {
+	STR()
+};
+
 %ignore depth;
 %ignore height;
 %ignore width;

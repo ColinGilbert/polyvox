@@ -68,6 +68,7 @@ EXTRACTOR(shortname, LargeVolume)
 %ignore *::operator-=;
 %ignore *::operator*=;
 %ignore *::operator/=;
+%ignore *::operator<<; //This is covered by STR()
 #endif
 
 %include "stdint.i"
