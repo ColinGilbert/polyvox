@@ -589,14 +589,14 @@ namespace PolyVox
 		if(pUncompressedBlock->m_bDataModified)
 		{
 			// Get the compressed block which we will copy the data back in to.
-			Vector3DInt32 v3dBlockPos = itCompressedBlock->first;
-			CompressedBlock<VoxelType>* pCompressedBlock = getCompressedBlock(v3dBlockPos);
+			Vector3DInt32 v3dBlockPos = itUncompressedBlock->first;
+			CompressedBlock<VoxelType>* pCompressedBlock = getCompressedBlock(v3dBlockPos.getX(), v3dBlockPos.getY(), v3dBlockPos.getZ());
 
 			void* pSrcData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
-			uint32_t uSrcLength = m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+			uint32_t uSrcLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 			uint8_t tempBuffer[10000];
-			void* pDstData = reinterpret_cast<void*>( tempBuffer );				
+			uint8_t* pDstData = reinterpret_cast<uint8_t*>( tempBuffer );				
 			uint32_t uDstLength = 10000;
 
 			uint32_t uCompressedLength = 0;
@@ -619,7 +619,7 @@ namespace PolyVox
 				uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
 				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
 
-				pDstData = reinterpret_cast<void*>( buffer );				
+				pDstData = reinterpret_cast<uint8_t*>( buffer );				
 				uDstLength = uMaxCompressedSize;
 
 				try
@@ -714,6 +714,9 @@ namespace PolyVox
 			POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");
 
 			itUncompressedBlock = m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock)).first;
+
+			// Our block cache may now have grown too large. Fluch some entries is necessary.
+			flushExcessiveCacheEntries();
 		}
 
 		m_pLastAccessedBlock = (*itUncompressedBlock).second;
@@ -774,8 +777,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushOldestExcessiveBlocks(void) const
 	{
-		const uint32_t uMemoryUsedForCompressedBlocks = calculateBlockMemoryUsage();
-
 		while(m_pBlocks.size() > m_uMaxNumberOfBlocksInMemory) 
 		{
 			// Find the least recently used block. This is somewhat inefficient as it searches through
@@ -798,6 +799,23 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushExcessiveCacheEntries(void) const
 	{
+		while(m_pUncompressedBlockCache.size() > m_uMaxNumberOfUncompressedBlocks) 
+		{
+			// Find the least recently used block. The uncompressed block cache should be
+			// much smaller than the total number of blocks, so hopefully this isn't too slow.
+			typename UncompressedBlockMap::iterator i;
+			typename UncompressedBlockMap::iterator itUnloadBlock = m_pUncompressedBlockCache.begin();
+			for(i = m_pUncompressedBlockCache.begin(); i != m_pUncompressedBlockCache.end(); i++)
+			{
+				if(i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
+				{
+					itUnloadBlock = i;
+				}
+			}
+
+			// Erase the least recently used block
+			eraseBlock(itUnloadBlock);
+		}
 	}
 
 	template <typename VoxelType>
