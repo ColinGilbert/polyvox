@@ -775,12 +775,11 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::flushOldestExcessiveBlocks(void) const
 	{
 		const uint32_t uMemoryUsedForCompressedBlocks = calculateBlockMemoryUsage();
-		//uint32_t uMemoryToReclaim = uMemoryUsedForCompressedBlocks - m_uCompressedBlockMemoryLimitInBytes;
 
-		//while(uMemoryToReclaim > 0)
-		/*while(calculateBlockMemoryUsage() > m_uCompressedBlockMemoryLimitInBytes) //FIXME - This calculation of size is slow and should be outside the loop.
+		while(m_pBlocks.size() > m_uMaxNumberOfBlocksInMemory) 
 		{
-			// find the least recently used block
+			// Find the least recently used block. This is somewhat inefficient as it searches through
+			// the map, so if it proves to be a bottleneck we may want some kind of sorted structure.
 			typename CompressedBlockMap::iterator i;
 			typename CompressedBlockMap::iterator itUnloadBlock = m_pBlocks.begin();
 			for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
@@ -791,12 +790,9 @@ namespace PolyVox
 				}
 			}
 
-			//POLYVOX_ASSERT(itUnloadBlock->second.hasUncompressedData() == false, "This function should never flush blocks with uncompressed data.");
-
-			//uMemoryToReclaim -= itUnloadBlock->second->calculateSizeInBytes();
-
+			// Erase the least recently used block
 			eraseBlock(itUnloadBlock);
-		}*/
+		}
 	}
 
 	template <typename VoxelType>
