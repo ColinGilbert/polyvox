@@ -243,62 +243,6 @@ namespace PolyVox
 		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setTargetMemoryLimitInBytes(uint32_t uTargetMemoryLimitInBytes)
-	{
-		// Set the limit, and then work out how big the uncompressed cache should be.
-		m_uTargetMemoryLimitInBytes = uTargetMemoryLimitInBytes;
-
-		// The size of a single uncompressed block of data.
-		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-
-		// When deciding how to split the memory between compressed and uncompressed blocks it is useful to know the dimensions of the
-		// volume in blocks. After sorting, the array below will hold the smallest dimension in [0] and the largest dimension in [2].
-		const uint32_t uNoOfDimensions = 3;
-		uint32_t uSortedDimensionsInBlocks[uNoOfDimensions];
-		uSortedDimensionsInBlocks[0] = (getEnclosingRegion().getWidthInVoxels() >> m_uBlockSideLengthPower) + 1;
-		uSortedDimensionsInBlocks[1] = (getEnclosingRegion().getHeightInVoxels() >> m_uBlockSideLengthPower) + 1;
-		uSortedDimensionsInBlocks[2] = (getEnclosingRegion().getDepthInVoxels() >> m_uBlockSideLengthPower) + 1;
-		std::sort(uSortedDimensionsInBlocks, uSortedDimensionsInBlocks + uNoOfDimensions);
-
-		const uint32_t uLongestEdgeInBlocks = uSortedDimensionsInBlocks[2];
-		const uint32_t uLargestFaceSizeInBlocks = uSortedDimensionsInBlocks[1] * uSortedDimensionsInBlocks[2];
-
-		// In the ideal situation we will be able to keep an entire face of blocks decompressed in the cache, and still have significant memory
-		// left for storing a large number of compressed block. Failing this, we would at least like to be able to keep enough blocks decompressed
-		// to iterate over the longest edge. Otherwise we will find that excessive compression and decompresion occurs. In both cases we multiply
-		// by an extra factor make sure there is space for storing some compressed data as well.
-		const uint32_t uFactor = 2; // Just to make sure we leave some space for compressed data as well
-		const uint32_t uIdealMemoryTarget = uLargestFaceSizeInBlocks * uUncompressedBlockSizeInBytes * uFactor;
-		const uint32_t uAcceptableMemoryTarget = uLongestEdgeInBlocks * uUncompressedBlockSizeInBytes * uFactor;
-
-		if(uTargetMemoryLimitInBytes >= uIdealMemoryTarget)
-		{
-			logDebug() << "The target memory limit (" << uTargetMemoryLimitInBytes << "bytes) is plenty for a volume of this size)";
-
-			// The added value below is just some extra 'grace' space.
-			setMaxNumberOfUncompressedBlocks(uLargestFaceSizeInBlocks + uSortedDimensionsInBlocks[1]);
-		}
-		else if(uTargetMemoryLimitInBytes >= uAcceptableMemoryTarget)
-		{
-			logDebug() << "The target memory limit (" << uTargetMemoryLimitInBytes << "bytes) should be acceptable for a volume of this size)";
-
-			// Let's (arbitrarily) use 1/4 of the available memory for the cache, while making sure that it is as long as the longest side.
-			uint32_t uMaxFittableUncompressedBlocks = uTargetMemoryLimitInBytes / uUncompressedBlockSizeInBytes;
-			setMaxNumberOfUncompressedBlocks((std::max)(uMaxFittableUncompressedBlocks / 4, uLongestEdgeInBlocks));
-		}
-		else
-		{
-			logWarning() << "The target memory limit (" << uTargetMemoryLimitInBytes << "bytes) is too low for a volume of this size)";
-			logWarning() << "Excessive block thrashing may occur and the target memory limit may not be honored";
-
-			// We still have to do something. Let's still use 1/4 of the memory for the cache, but also set a minimum size.
-			const uint32_t uMinNoOfUncompressedBlocks = 8; // Chosen because it just feels about right.
-			uint32_t uMaxFittableUncompressedBlocks = uTargetMemoryLimitInBytes / uUncompressedBlockSizeInBytes;
-			setMaxNumberOfUncompressedBlocks((std::max)(uMaxFittableUncompressedBlocks / 4, uMinNoOfUncompressedBlocks));
-		}	
-	}
-
 	////////////////////////////////////////////////////////////////////////////////
 	/// Increasing the size of the block cache will increase memory but may improve performance.
 	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
@@ -315,6 +259,21 @@ namespace PolyVox
 		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 		logDebug() << "The maximum number of uncompresed blocks has been set to " << m_uMaxNumberOfUncompressedBlocks
 			<< ", which is " << m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes << " bytes"; 
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// Increasing the number of blocks in memory causes less paging to occur
+	/// \param uMaxNumberOfBlocksInMemory The number of blocks
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory)
+	{
+		if(m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
+		{
+			flushAll();
+		}
+
+		m_uMaxNumberOfBlocksInMemory  = uMaxNumberOfBlocksInMemory;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

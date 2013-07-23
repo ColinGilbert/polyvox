@@ -153,9 +153,8 @@ int main(int argc, char *argv[])
 	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>();
 	PerlinNoisePager* pager = new PerlinNoisePager();
 	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, compressor, pager, 256);
-	//volData.setMaxNumberOfBlocksInMemory(4096);
-	//volData.setMaxNumberOfUncompressedBlocks(64);
-	volData.setTargetMemoryLimitInBytes(128 * 1024 * 1024);
+	volData.setMaxNumberOfBlocksInMemory(4096);
+	volData.setMaxNumberOfUncompressedBlocks(64);
 
 	//volData.setMaxNumberOfUncompressedBlocks(4096);
 	//createSphereInVolume(volData, 30);
