@@ -109,6 +109,8 @@ namespace PolyVox
 		{
 			delete m_pCompressor;
 		}
+
+		delete m_pCompressedEmptyBlock;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -542,6 +544,21 @@ namespace PolyVox
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
 		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
 		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
+
+		// This is used for initialising empty blocks.
+		// FIXME - Should probably build an UncompressedBlock and then call some 'fill()' method. Ideally we should set voxels to an 'empty' (default?) value rather than zeros.
+		VoxelType* pZeros = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
+		uint32_t uSrcLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		memset(pZeros, 0, uSrcLength);
+		uint32_t uDstLength = 100000;
+		uint8_t* pCompressedZeros = new uint8_t[uDstLength]; //Should be plenty as zeros compress down very small.
+		uint32_t uCompressedSize = m_pCompressor->compress(reinterpret_cast<void*>(pZeros), uSrcLength, reinterpret_cast<void*>(pCompressedZeros), uDstLength);
+
+		m_pCompressedEmptyBlock = new CompressedBlock<VoxelType>;
+		m_pCompressedEmptyBlock->setData(pCompressedZeros, uCompressedSize);
+
+		delete[] pZeros;
+		delete[] pCompressedZeros;
 	}
 
 	template <typename VoxelType>
@@ -664,7 +681,14 @@ namespace PolyVox
 			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 			Region reg(v3dLower, v3dUpper);
-			m_pPager->pageIn(reg, itBlock->second);
+			m_pPager->pageIn(reg, newBlock);
+
+			// The pager may not actually have given us any data (perhaps there wasn't any) so in that case we need to create some ourselves.
+			if(newBlock->m_bDataModified == false)
+			{
+				// Internally this performs a memcpy() of the data.
+				newBlock->setData(m_pCompressedEmptyBlock->getData(), m_pCompressedEmptyBlock->getDataSizeInBytes());
+			}
 
 			// Paging in this new block may mean we are now using too much memory. If necessary, flush some old blocks.
 			flushOldestExcessiveBlocks();

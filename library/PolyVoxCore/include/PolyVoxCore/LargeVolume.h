@@ -359,6 +359,9 @@ namespace PolyVox
 		Compressor* m_pCompressor;
 		Pager<VoxelType>* m_pPager;
 
+		// Compressed data for an empty block (sometimes needed for initialisation).
+		CompressedBlock<VoxelType>* m_pCompressedEmptyBlock;
+
 		// Whether we created the compressor or whether it was provided
 		// by the user. This controls whether we delete it on destruction.
 		bool m_bIsOurCompressor;
