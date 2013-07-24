@@ -659,6 +659,8 @@ namespace PolyVox
 			}
 		}
 
+		delete itUncompressedBlock->second;
+
 		// We can now remove the block data from memory.
 		m_pUncompressedBlockCache.erase(itUncompressedBlock);
 	}

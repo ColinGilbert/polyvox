@@ -111,7 +111,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	UncompressedBlock<VoxelType>::~UncompressedBlock()
 	{
-		delete m_tData;
+		delete[] m_tData;
 		m_tData = 0;
 	}
 
