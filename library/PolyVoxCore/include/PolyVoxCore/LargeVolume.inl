@@ -713,13 +713,39 @@ namespace PolyVox
 		//the time stamp. If we updated it everytime then that would be every time we touched
 		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
 		//This check should also provide a significant speed boost as usually it is true.
-		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
+		/*if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
 			return m_pLastAccessedBlock;
+		}*/
+
+		UncompressedBlock<VoxelType>* pUncompressedBlock = 0;
+
+		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
+		// check whether the block is already loaded
+		if(itUncompressedBlock != m_pUncompressedBlockCache.end())
+		{
+			pUncompressedBlock = itUncompressedBlock->second;
+			
+		}
+		//else if(check compressed list...)
+		//{
+		//}
+		else
+		{
+			// At this point we just create a new block.
+			pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
+
+			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+
+			// Our block cache may now have grown too large. Flush some entries is necessary.
+			// FIXME - Watch out for flushing the block we just created!
+			//flushExcessiveCacheEntries();
 		}
 
+		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+
 		//Gets the block and marks that we accessed it
-		CompressedBlock<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
+		/*CompressedBlock<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
 
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
 		// check whether the block is already loaded
@@ -743,9 +769,9 @@ namespace PolyVox
 
 			// Our block cache may now have grown too large. Fluch some entries is necessary.
 			flushExcessiveCacheEntries();
-		}
+		}*/
 
-		m_pLastAccessedBlock = (*itUncompressedBlock).second;
+		m_pLastAccessedBlock = pUncompressedBlock;
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
 
 		return m_pLastAccessedBlock;
