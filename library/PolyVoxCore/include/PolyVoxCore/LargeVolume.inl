@@ -625,6 +625,9 @@ namespace PolyVox
 
 				// Copy the resulting compressed data into the compressed block
 				pCompressedBlock->setData(pDstData, uDstLength);
+
+				// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
+				pUncompressedBlock->m_bDataModified = false;
 			}
 			catch(std::exception&)
 			{
@@ -646,6 +649,9 @@ namespace PolyVox
 
 					// Copy the resulting compressed data into the compressed block
 					pCompressedBlock->setData(pDstData, uDstLength);
+
+					// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
+					pUncompressedBlock->m_bDataModified = false;
 				}
 				catch(std::exception&)
 				{
@@ -670,7 +676,28 @@ namespace PolyVox
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
+		CompressedBlock<VoxelType>* pBlock = 0;
+
 		typename CompressedBlockMap::iterator itBlock = m_pBlocks.find(v3dBlockPos);
+		if(itBlock != m_pBlocks.end())
+		{
+			pBlock = itBlock->second;
+		}
+		/*else if(check on disk)
+		{
+		}*/
+		else
+		{
+			pBlock = new CompressedBlock<VoxelType>;
+			pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, pBlock)).first;
+		}
+
+		pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+
+		return pBlock;
+
+		/*typename CompressedBlockMap::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itBlock == m_pBlocks.end())
 		{
@@ -701,7 +728,7 @@ namespace PolyVox
 		block->m_uBlockLastAccessed = ++m_uTimestamper;
 		//m_v3dLastAccessedBlockPos = v3dBlockPos;
 
-		return block;
+		return block;*/
 	}
 
 	template <typename VoxelType>
@@ -718,63 +745,59 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}*/
 
-		UncompressedBlock<VoxelType>* pUncompressedBlock = 0;
-
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itUncompressedBlock != m_pUncompressedBlockCache.end())
 		{
-			pUncompressedBlock = itUncompressedBlock->second;
-			
+			UncompressedBlock<VoxelType>* pUncompressedBlock = itUncompressedBlock->second;
+
+			pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+			m_pLastAccessedBlock = pUncompressedBlock;
+			m_v3dLastAccessedBlockPos = v3dBlockPos;
+
+			return pUncompressedBlock;			
 		}
-		//else if(check compressed list...)
-		//{
-		//}
 		else
 		{
 			// At this point we just create a new block.
-			pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
-
-			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
-
-			// Our block cache may now have grown too large. Flush some entries is necessary.
-			// FIXME - Watch out for flushing the block we just created!
-			//flushExcessiveCacheEntries();
-		}
-
-		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
-
-		//Gets the block and marks that we accessed it
-		/*CompressedBlock<VoxelType>* block = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
-
-		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
-		// check whether the block is already loaded
-		if(itUncompressedBlock == m_pUncompressedBlockCache.end())
-		{
 			UncompressedBlock<VoxelType>* pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
+			
+			// It's important to set the timestamp before we flush later.
 			pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
 
-			const void* pSrcData = reinterpret_cast<const void*>(block->getData());
-			void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
-			uint32_t uSrcLength = block->getDataSizeInBytes();
-			uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+			// We set these before flushing because the flush can cause block to be erased, and there
+			// is a test to make sure the block which is being erase is not the last accessed block.
+			m_pLastAccessedBlock = pUncompressedBlock;
+			m_v3dLastAccessedBlockPos = v3dBlockPos;
 
-			//MinizCompressor compressor;
-			//RLECompressor<VoxelType, uint16_t> compressor;
-			uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+			// An uncompressed bock is always backed by a compressed one, and this is created by getCompressedBlock() if it doesn't 
+			// already exist. If it does already exist and has data then we bring this across into the ucompressed version.
+			if(getCompressedBlock(uBlockX, uBlockY, uBlockZ)->getData() != 0)
+			{
+				// FIXME - multiple getCompressedBlock() calls (including the one above)
+				CompressedBlock<VoxelType>* pBlock = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
 
-			POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");
+				const void* pSrcData = reinterpret_cast<const void*>(pBlock->getData());
+				void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
+				uint32_t uSrcLength = pBlock->getDataSizeInBytes();
+				uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
-			itUncompressedBlock = m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock)).first;
+				//MinizCompressor compressor;
+				//RLECompressor<VoxelType, uint16_t> compressor;
+				uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
 
-			// Our block cache may now have grown too large. Fluch some entries is necessary.
+				POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");
+			}
+			
+			// Addd our new block to the map.
+			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));			
+
+			// Our block cache may now have grown too large. Flush some entries if necessary.
+			// FIXME - Watch out for flushing the block we just created!
 			flushExcessiveCacheEntries();
-		}*/
 
-		m_pLastAccessedBlock = pUncompressedBlock;
-		m_v3dLastAccessedBlockPos = v3dBlockPos;
-
-		return m_pLastAccessedBlock;
+			return pUncompressedBlock;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

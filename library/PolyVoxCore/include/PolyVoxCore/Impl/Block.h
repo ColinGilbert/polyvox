@@ -42,7 +42,7 @@ namespace PolyVox
 	public:
 		Block()
 			:m_uBlockLastAccessed(0)
-			,m_bDataModified(false)
+			,m_bDataModified(true)
 		{
 		}
 
