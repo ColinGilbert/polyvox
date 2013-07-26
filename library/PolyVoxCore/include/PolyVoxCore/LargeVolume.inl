@@ -102,7 +102,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	LargeVolume<VoxelType>::~LargeVolume()
 	{
-		//flushAll();
+		flushAll();
 
 		// Only delete the compressor if it was created by us (in the constructor), not by the user.
 		if(m_bIsOurCompressor)
@@ -579,6 +579,9 @@ namespace PolyVox
 
 			// Page the data out
 			m_pPager->pageOut(Region(v3dLower, v3dUpper), pCompressedBlock);
+
+			// The compressed data is no longer modified with respect to the data on disk
+			pCompressedBlock->m_bDataModified = false;
 		}
 
 		delete itCompressedBlock->second;
@@ -682,20 +685,35 @@ namespace PolyVox
 		if(itBlock != m_pBlocks.end())
 		{
 			pBlock = itBlock->second;
+			pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+			return pBlock;
 		}
-		/*else if(check on disk)
-		{
-		}*/
 		else
 		{
+			// The block wasn't found so we create a new one
 			pBlock = new CompressedBlock<VoxelType>;
+
+			// It's important to set the timestamp before we flush later.
 			pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+
+			// Pass the block to the Pager to give it a chance to initialise it with any data
+			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
+			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
+			Region reg(v3dLower, v3dUpper);
+			m_pPager->pageIn(reg, pBlock);
+
+			// Add the block to the map
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, pBlock)).first;
+
+			// Paging in this new block may mean we are now using too much memory. If necessary, flush some old blocks.
+			flushOldestExcessiveBlocks();
+
+			return pBlock;
 		}
 
-		pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+		
 
-		return pBlock;
+		
 
 		/*typename CompressedBlockMap::iterator itBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
@@ -740,10 +758,10 @@ namespace PolyVox
 		//the time stamp. If we updated it everytime then that would be every time we touched
 		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
 		//This check should also provide a significant speed boost as usually it is true.
-		/*if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
+		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
 		{
 			return m_pLastAccessedBlock;
-		}*/
+		}
 
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
 		// check whether the block is already loaded
@@ -789,7 +807,7 @@ namespace PolyVox
 				POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");
 			}
 			
-			// Addd our new block to the map.
+			// Add our new block to the map.
 			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));			
 
 			// Our block cache may now have grown too large. Flush some entries if necessary.
