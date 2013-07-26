@@ -71,6 +71,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
+	include/PolyVoxCore/MinizBlockCompressor.h
+	include/PolyVoxCore/MinizBlockCompressor.inl
 	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h

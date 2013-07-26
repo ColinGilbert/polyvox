@@ -559,6 +559,8 @@ namespace PolyVox
 
 		delete[] pZeros;
 		delete[] pCompressedZeros;
+
+		m_pBlockCompressor = new MinizBlockCompressor<VoxelType>;
 	}
 
 	template <typename VoxelType>
@@ -795,7 +797,7 @@ namespace PolyVox
 				// FIXME - multiple getCompressedBlock() calls (including the one above)
 				CompressedBlock<VoxelType>* pBlock = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
 
-				const void* pSrcData = reinterpret_cast<const void*>(pBlock->getData());
+				/*const void* pSrcData = reinterpret_cast<const void*>(pBlock->getData());
 				void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
 				uint32_t uSrcLength = pBlock->getDataSizeInBytes();
 				uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
@@ -804,7 +806,9 @@ namespace PolyVox
 				//RLECompressor<VoxelType, uint16_t> compressor;
 				uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
 
-				POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");
+				POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");*/
+
+				m_pBlockCompressor->decompress(pBlock, pUncompressedBlock);
 			}
 			
 			// Add our new block to the map.

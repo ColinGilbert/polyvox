@@ -116,6 +116,18 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
+	VoxelType* UncompressedBlock<VoxelType>::getData(void) const
+	{
+		return m_tData;
+	}
+
+	template <typename VoxelType>
+	uint32_t UncompressedBlock<VoxelType>::getDataSizeInBytes(void) const
+	{
+		return m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
+	}
+
+	template <typename VoxelType>
 	VoxelType UncompressedBlock<VoxelType>::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 

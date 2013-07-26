@@ -100,6 +100,9 @@ namespace PolyVox
 		UncompressedBlock(uint16_t uSideLength);
 		~UncompressedBlock();
 
+		VoxelType* getData(void) const;
+		uint32_t getDataSizeInBytes(void) const;
+
 		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 

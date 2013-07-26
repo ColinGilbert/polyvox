@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h"
 #include "Impl/Block.h"
 #include "PolyVoxCore/Compressor.h"
+#include "PolyVoxCore/MinizBlockCompressor.h" //Shouldn't include the implementation here.
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
@@ -357,6 +358,7 @@ namespace PolyVox
 
 		// The compressor used by the Blocks to compress their data if required.
 		Compressor* m_pCompressor;
+		MinizBlockCompressor<VoxelType>* m_pBlockCompressor;
 		Pager<VoxelType>* m_pPager;
 
 		// Compressed data for an empty block (sometimes needed for initialisation).
