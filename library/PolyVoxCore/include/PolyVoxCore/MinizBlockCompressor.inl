@@ -38,6 +38,54 @@ namespace PolyVox
 	template <typename VoxelType>
 	void MinizBlockCompressor<VoxelType>::compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
 	{
+		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());
+		uint32_t uSrcLength = pSrcBlock->getDataSizeInBytes();
+
+		uint8_t tempBuffer[10000];
+		uint8_t* pDstData = reinterpret_cast<uint8_t*>( tempBuffer );				
+		uint32_t uDstLength = 10000;
+
+		uint32_t uCompressedLength = 0;
+
+		try
+		{
+			// Perform the compression
+			uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+			// Copy the resulting compressed data into the compressed block
+			pDstBlock->setData(pDstData, uDstLength);			
+		}
+		catch(std::exception&)
+		{
+			// It is possible for the compression to fail. A common cause for this would be if the destination
+			// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
+			// Note that ideally we will choose our earlier buffer size so that this almost never happens.
+			logWarning() << "The compressor failed to compress the block, probabaly due to the buffer being too small.";
+			logWarning() << "The compression will be tried again with a larger buffer";
+			uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
+			uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
+
+			pDstData = reinterpret_cast<uint8_t*>( buffer );				
+			uDstLength = uMaxCompressedSize;
+
+			try
+			{		
+				// Perform the compression
+				uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
+
+				// Copy the resulting compressed data into the compressed block
+				pDstBlock->setData(pDstData, uDstLength);
+			}
+			catch(std::exception&)
+			{
+				// At this point it didn't work even with a bigger buffer.
+				// Not much more we can do so just rethrow the exception.
+				delete[] buffer;
+				POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
+			}
+
+			delete[] buffer;
+		}
 	}
 
 	template <typename VoxelType>

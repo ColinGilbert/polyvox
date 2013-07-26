@@ -614,7 +614,12 @@ namespace PolyVox
 			Vector3DInt32 v3dBlockPos = itUncompressedBlock->first;
 			CompressedBlock<VoxelType>* pCompressedBlock = getCompressedBlock(v3dBlockPos.getX(), v3dBlockPos.getY(), v3dBlockPos.getZ());
 
-			void* pSrcData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
+			m_pBlockCompressor->compress(pUncompressedBlock, pCompressedBlock);
+
+			// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
+			pUncompressedBlock->m_bDataModified = false;
+
+			/*void* pSrcData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
 			uint32_t uSrcLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 			uint8_t tempBuffer[10000];
@@ -667,7 +672,7 @@ namespace PolyVox
 				}
 
 				delete[] buffer;
-			}
+			}*/
 		}
 
 		delete itUncompressedBlock->second;
@@ -712,43 +717,6 @@ namespace PolyVox
 
 			return pBlock;
 		}
-
-		
-
-		
-
-		/*typename CompressedBlockMap::iterator itBlock = m_pBlocks.find(v3dBlockPos);
-		// check whether the block is already loaded
-		if(itBlock == m_pBlocks.end())
-		{
-			//The block is not in the map, so we will have to create a new block and add it.
-			CompressedBlock<VoxelType>* newBlock = new CompressedBlock<VoxelType>;
-			newBlock->m_uBlockLastAccessed = ++m_uTimestamper;
-			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, newBlock)).first;
-
-			// Now use the pager to fill the block with it's initial data.
-			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
-			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
-			Region reg(v3dLower, v3dUpper);
-			m_pPager->pageIn(reg, newBlock);
-
-			// The pager may not actually have given us any data (perhaps there wasn't any) so in that case we need to create some ourselves.
-			if(newBlock->m_bDataModified == false)
-			{
-				// Internally this performs a memcpy() of the data.
-				newBlock->setData(m_pCompressedEmptyBlock->getData(), m_pCompressedEmptyBlock->getDataSizeInBytes());
-			}
-
-			// Paging in this new block may mean we are now using too much memory. If necessary, flush some old blocks.
-			flushOldestExcessiveBlocks();
-		}		
-
-		//Get the block and mark that we accessed it
-		CompressedBlock<VoxelType>* block = itBlock->second;
-		block->m_uBlockLastAccessed = ++m_uTimestamper;
-		//m_v3dLastAccessedBlockPos = v3dBlockPos;
-
-		return block;*/
 	}
 
 	template <typename VoxelType>
@@ -796,17 +764,6 @@ namespace PolyVox
 			{
 				// FIXME - multiple getCompressedBlock() calls (including the one above)
 				CompressedBlock<VoxelType>* pBlock = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
-
-				/*const void* pSrcData = reinterpret_cast<const void*>(pBlock->getData());
-				void* pDstData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
-				uint32_t uSrcLength = pBlock->getDataSizeInBytes();
-				uint32_t uDstLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-
-				//MinizCompressor compressor;
-				//RLECompressor<VoxelType, uint16_t> compressor;
-				uint32_t uUncompressedLength = m_pCompressor->decompress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-				POLYVOX_ASSERT(uUncompressedLength == m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType), "Destination length has changed.");*/
 
 				m_pBlockCompressor->decompress(pBlock, pUncompressedBlock);
 			}
