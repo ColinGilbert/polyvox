@@ -433,6 +433,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveX();
 					const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
+					POLYVOX_ASSERT(v000 != v100, "Attempting to insert vertex between two voxels with the same value");
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
@@ -466,6 +467,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveY();
 					const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
+					POLYVOX_ASSERT(v000 != v010, "Attempting to insert vertex between two voxels with the same value");
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
@@ -499,6 +501,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveZ();
 					const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
+					POLYVOX_ASSERT(v000 != v001, "Attempting to insert vertex between two voxels with the same value");
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
