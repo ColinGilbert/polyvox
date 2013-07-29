@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/FilePager.h"
 #include "PolyVoxCore/LargeVolume.h"
-#include "PolyVoxCore/MinizCompressor.h"
+#include "PolyVoxCore/MinizBlockCompressor.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -273,13 +273,13 @@ TestVolume::TestVolume()
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
 
 	//m_pCompressor = new RLECompressor<int32_t, uint16_t>;
-	m_pCompressor = new MinizCompressor;
+	m_pBlockCompressor = new MinizBlockCompressor<int32_t>;
 	m_pFilePager = new FilePager<int32_t>("./");
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pCompressor, m_pFilePager, 32);
+	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pBlockCompressor, m_pFilePager, 32);
 
 	m_pLargeVolume->setMaxNumberOfBlocksInMemory(32);
 	m_pLargeVolume->setMaxNumberOfUncompressedBlocks(16);
@@ -307,7 +307,7 @@ TestVolume::~TestVolume()
 	delete m_pLargeVolume;
 
 	delete m_pFilePager;
-	delete m_pCompressor;
+	delete m_pBlockCompressor;
 }
 
 /*

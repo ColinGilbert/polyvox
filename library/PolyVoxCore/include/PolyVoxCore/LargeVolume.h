@@ -25,9 +25,8 @@ freely, subject to the following restrictions:
 #define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxCore/BaseVolume.h"
-#include "Impl/Block.h"
-#include "PolyVoxCore/Compressor.h"
-#include "PolyVoxCore/MinizBlockCompressor.h" //Shouldn't include the implementation here.
+#include "PolyVoxCore/Impl/Block.h"
+#include "PolyVoxCore/BlockCompressor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
@@ -240,7 +239,7 @@ namespace PolyVox
 		LargeVolume
 		(
 			const Region& regValid,
-			Compressor* pCompressor,	
+			BlockCompressor<VoxelType>* pBlockCompressor,	
 			Pager<VoxelType>* pPager ,	
 			uint16_t uBlockSideLength = 32
 		);
@@ -357,12 +356,11 @@ namespace PolyVox
 		uint8_t m_uBlockSideLengthPower;
 
 		// The compressor used by the Blocks to compress their data if required.
-		Compressor* m_pCompressor;
-		MinizBlockCompressor<VoxelType>* m_pBlockCompressor;
+		BlockCompressor<VoxelType>* m_pBlockCompressor;
 		Pager<VoxelType>* m_pPager;
 
 		// Compressed data for an empty block (sometimes needed for initialisation).
-		CompressedBlock<VoxelType>* m_pCompressedEmptyBlock;
+		//CompressedBlock<VoxelType>* m_pCompressedEmptyBlock;
 
 		// Whether we created the compressor or whether it was provided
 		// by the user. This controls whether we delete it on destruction.

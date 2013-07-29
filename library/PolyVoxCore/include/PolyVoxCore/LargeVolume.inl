@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
-#include "PolyVoxCore/MinizCompressor.h"
+#include "PolyVoxCore/MinizBlockCompressor.h" // For creating a default compressor when none is provided.
 
 #include <algorithm>
 
@@ -45,7 +45,7 @@ namespace PolyVox
 	{
 		m_uBlockSideLength = uBlockSideLength;
 
-		m_pCompressor = new MinizCompressor();
+		m_pBlockCompressor = new MinizBlockCompressor();
 		m_bIsOurCompressor = true;
 
 		m_pPager = 0;
@@ -56,7 +56,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other LargeVolume constructor).
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
-	/// \param pCompressor An implementation of the Compressor interface which is used to compress blocks in memory.
+	/// \param pBlockCompressor An implementation of the Compressor interface which is used to compress blocks in memory.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
 	/// \param bPagingEnabled Controls whether or not paging is enabled for this LargeVolume.
@@ -66,16 +66,15 @@ namespace PolyVox
 	LargeVolume<VoxelType>::LargeVolume
 	(
 		const Region& regValid,
-		Compressor* pCompressor,
+		BlockCompressor<VoxelType>* pBlockCompressor,
 		Pager<VoxelType>* pPager,
 		uint16_t uBlockSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
 	{
-
 		m_uBlockSideLength = uBlockSideLength;
 
-		m_pCompressor = pCompressor;
+		m_pBlockCompressor = pBlockCompressor;
 		m_bIsOurCompressor = false;
 
 		m_pPager = pPager;
@@ -107,10 +106,10 @@ namespace PolyVox
 		// Only delete the compressor if it was created by us (in the constructor), not by the user.
 		if(m_bIsOurCompressor)
 		{
-			delete m_pCompressor;
+			delete m_pBlockCompressor;
 		}
 
-		delete m_pCompressedEmptyBlock;
+		//delete m_pCompressedEmptyBlock;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -511,7 +510,7 @@ namespace PolyVox
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
 
-		if(!m_pCompressor)
+		if(!m_pBlockCompressor)
 		{
 			POLYVOX_THROW(std::invalid_argument, "You must provide a valid compressor for the LargeVolume to use.");
 		}
@@ -544,23 +543,6 @@ namespace PolyVox
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
 		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
 		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
-
-		// This is used for initialising empty blocks.
-		// FIXME - Should probably build an UncompressedBlock and then call some 'fill()' method. Ideally we should set voxels to an 'empty' (default?) value rather than zeros.
-		VoxelType* pZeros = new VoxelType[m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength];
-		uint32_t uSrcLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-		memset(pZeros, 0, uSrcLength);
-		uint32_t uDstLength = 100000;
-		uint8_t* pCompressedZeros = new uint8_t[uDstLength]; //Should be plenty as zeros compress down very small.
-		uint32_t uCompressedSize = m_pCompressor->compress(reinterpret_cast<void*>(pZeros), uSrcLength, reinterpret_cast<void*>(pCompressedZeros), uDstLength);
-
-		m_pCompressedEmptyBlock = new CompressedBlock<VoxelType>;
-		m_pCompressedEmptyBlock->setData(pCompressedZeros, uCompressedSize);
-
-		delete[] pZeros;
-		delete[] pCompressedZeros;
-
-		m_pBlockCompressor = new MinizBlockCompressor<VoxelType>;
 	}
 
 	template <typename VoxelType>
@@ -618,61 +600,6 @@ namespace PolyVox
 
 			// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
 			pUncompressedBlock->m_bDataModified = false;
-
-			/*void* pSrcData = reinterpret_cast<void*>(pUncompressedBlock->m_tData);
-			uint32_t uSrcLength = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-
-			uint8_t tempBuffer[10000];
-			uint8_t* pDstData = reinterpret_cast<uint8_t*>( tempBuffer );				
-			uint32_t uDstLength = 10000;
-
-			uint32_t uCompressedLength = 0;
-
-			try
-			{
-				// Perform the compression
-				uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-				// Copy the resulting compressed data into the compressed block
-				pCompressedBlock->setData(pDstData, uDstLength);
-
-				// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
-				pUncompressedBlock->m_bDataModified = false;
-			}
-			catch(std::exception&)
-			{
-				// It is possible for the compression to fail. A common cause for this would be if the destination
-				// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
-				// Note that ideally we will choose our earlier buffer size so that this almost never happens.
-				logWarning() << "The compressor failed to compress the block, probabaly due to the buffer being too small.";
-				logWarning() << "The compression will be tried again with a larger buffer";
-				uint32_t uMaxCompressedSize = m_pCompressor->getMaxCompressedSize(uSrcLength);
-				uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
-
-				pDstData = reinterpret_cast<uint8_t*>( buffer );				
-				uDstLength = uMaxCompressedSize;
-
-				try
-				{		
-					// Perform the compression
-					uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
-
-					// Copy the resulting compressed data into the compressed block
-					pCompressedBlock->setData(pDstData, uDstLength);
-
-					// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
-					pUncompressedBlock->m_bDataModified = false;
-				}
-				catch(std::exception&)
-				{
-					// At this point it didn't work even with a bigger buffer.
-					// Not much more we can do so just rethrow the exception.
-					delete[] buffer;
-					POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
-				}
-
-				delete[] buffer;
-			}*/
 		}
 
 		delete itUncompressedBlock->second;

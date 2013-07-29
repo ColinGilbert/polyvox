@@ -21,32 +21,26 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MinizBlockCompressor_H__
-#define __PolyVox_MinizBlockCompressor_H__
+#ifndef __PolyVox_BlockCompressor_H__
+#define __PolyVox_BlockCompressor_H__
 
-#include "PolyVoxCore/BlockCompressor.h"
-
-#include "PolyVoxCore/MinizCompressor.h"
+#include "PolyVoxCore/Impl/Block.h"
 
 namespace PolyVox
 {
 	/**
-	 * Provides an interface for performing paging of data.
+	 * Provides an interface for performing compression of blocks.
 	 */
 	template <typename VoxelType>
-	class MinizBlockCompressor : public BlockCompressor<VoxelType>
+	class BlockCompressor
 	{
 	public:
-		MinizBlockCompressor();
-		~MinizBlockCompressor();
+		BlockCompressor() {};
+		virtual ~BlockCompressor() {};
 
-		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
-		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
-
-		MinizCompressor* m_pCompressor;
+		virtual void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock) = 0;
+		virtual void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock) = 0;
 	};
 }
 
-#include "PolyVoxCore/MinizBlockCompressor.inl"
-
-#endif //__PolyVox_MinizBlockCompressor_H__
+#endif //__PolyVox_BlockCompressor_H__
