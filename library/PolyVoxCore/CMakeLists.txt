@@ -85,6 +85,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
+	include/PolyVoxCore/RLEBlockCompressor.h
+	include/PolyVoxCore/RLEBlockCompressor.inl
 	include/PolyVoxCore/RLECompressor.h
 	include/PolyVoxCore/RLECompressor.inl
 	include/PolyVoxCore/SimpleVolume.h
