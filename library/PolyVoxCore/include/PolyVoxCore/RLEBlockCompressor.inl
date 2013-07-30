@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 
 #include <vector>
 
-#include "RLECompressor.h"
-
 namespace PolyVox
 {
 	template <typename VoxelType>

@@ -21,11 +21,12 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/FilePager.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/LowPassFilter.h"
 #include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/RLECompressor.h"
+#include "PolyVoxCore/RLEBlockCompressor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
@@ -49,8 +50,9 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>();
-	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)), compressor, 0);
+	RLEBlockCompressor<MaterialDensityPair44>* compressor = new RLEBlockCompressor<MaterialDensityPair44>();
+	FilePager<MaterialDensityPair44>* pager = new FilePager<MaterialDensityPair44>("./");
+	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)), compressor, pager);
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;

@@ -28,7 +28,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/Pager.h"
-#include "PolyVoxCore/RLECompressor.h"
+#include "PolyVoxCore/RLEBlockCompressor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/LargeVolume.h"
 
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
-	RLECompressor<MaterialDensityPair44, uint16_t>* compressor = new RLECompressor<MaterialDensityPair44, uint16_t>();
+	RLEBlockCompressor<MaterialDensityPair44>* compressor = new RLEBlockCompressor<MaterialDensityPair44>();
 	PerlinNoisePager* pager = new PerlinNoisePager();
 	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, compressor, pager, 256);
 	volData.setMaxNumberOfBlocksInMemory(4096);

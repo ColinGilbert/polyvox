@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/MinizBlockCompressor.h"
 #include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/RLECompressor.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
 #include <QtGlobal>
