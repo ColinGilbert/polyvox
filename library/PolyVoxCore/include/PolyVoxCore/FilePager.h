@@ -58,7 +58,18 @@ namespace PolyVox
 		}
 
 		/// Destructor
-		virtual ~FilePager() {};
+		virtual ~FilePager()
+		{
+			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
+			{
+				if(!std::remove(iter->c_str()))
+				{
+					logWarning() << "Failed to delete '" << *iter << "' when destroying FilePager";
+				}
+			}
+
+			m_vecCreatedFiles.clear();
+		}
 
 		virtual void pageIn(const Region& region, CompressedBlock<VoxelType>* pBlockData)
 		{
@@ -125,6 +136,9 @@ namespace PolyVox
 				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out block data.");
 			}
 
+			//The file has been created, so add it to the list to delete on shutdown.
+			m_vecCreatedFiles.push_back(filename);
+
 			fwrite(pBlockData->getData(), sizeof(uint8_t), pBlockData->getDataSizeInBytes(), pFile);
 
 			if(ferror(pFile))
@@ -138,6 +152,8 @@ namespace PolyVox
 	protected:
 		std::string m_strFolderName;
 		std::string m_strRandomPrefix;
+
+		std::vector<std::string> m_vecCreatedFiles;
 	};
 }
 
