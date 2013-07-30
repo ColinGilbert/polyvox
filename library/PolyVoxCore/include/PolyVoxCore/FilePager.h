@@ -29,6 +29,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
 #include <stdexcept>
 #include <string>
@@ -47,6 +49,12 @@ namespace PolyVox
 			:Pager<VoxelType>()
 			,m_strFolderName(strFolderName)
 		{
+			srand(time(0));
+			int iRandomValue = rand();
+
+			std::stringstream ss;
+			ss << std::hex << iRandomValue;
+			m_strRandomPrefix = ss.str();
 		}
 
 		/// Destructor
@@ -57,11 +65,12 @@ namespace PolyVox
 			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
 			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
 
-			std::stringstream ss;
-			ss << region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
+			std::stringstream ssFilename;
+			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
+				<< region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
 				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ();
 
-			std::string filename = m_strFolderName + ss.str();
+			std::string filename = ssFilename.str();
 
 			// FIXME - This should be replaced by C++ style IO, but currently this causes problems with
 			// the gameplay-cubiquity integration. See: https://github.com/blackberry/GamePlay/issues/919
@@ -100,11 +109,12 @@ namespace PolyVox
 
 			logTrace() << "Paging out data for " << region;
 
-			std::stringstream ss;
-			ss << region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
+			std::stringstream ssFilename;
+			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
+				<< region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
 				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ();
 
-			std::string filename = m_strFolderName + ss.str();
+			std::string filename = ssFilename.str();
 
 			// FIXME - This should be replaced by C++ style IO, but currently this causes problems with
 			// the gameplay-cubiquity integration. See: https://github.com/blackberry/GamePlay/issues/919
@@ -127,6 +137,7 @@ namespace PolyVox
 
 	protected:
 		std::string m_strFolderName;
+		std::string m_strRandomPrefix;
 	};
 }
 
