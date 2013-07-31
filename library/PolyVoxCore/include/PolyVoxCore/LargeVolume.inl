@@ -45,7 +45,7 @@ namespace PolyVox
 	{
 		m_uBlockSideLength = uBlockSideLength;
 
-		m_pBlockCompressor = new MinizBlockCompressor();
+		m_pBlockCompressor = new MinizBlockCompressor<VoxelType>();
 		m_bIsOurCompressor = true;
 
 		m_pPager = 0;

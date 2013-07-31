@@ -37,7 +37,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	class Block
 	{
-		friend LargeVolume<VoxelType>;
+		friend class LargeVolume<VoxelType>;
 
 	public:
 		Block()
@@ -65,7 +65,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	class CompressedBlock : public Block<VoxelType>
 	{
-		friend LargeVolume<VoxelType>;
+		friend class LargeVolume<VoxelType>;
 
 	public:
 		CompressedBlock();
@@ -94,7 +94,7 @@ namespace PolyVox
 	template <typename VoxelType>
     class UncompressedBlock : public Block<VoxelType>
     {
-		friend LargeVolume<VoxelType>;
+		friend class LargeVolume<VoxelType>;
 
 	public:
 		UncompressedBlock(uint16_t uSideLength);

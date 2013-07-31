@@ -79,8 +79,8 @@ namespace PolyVox
 		{
 			// If the value is the same as the current run (and we have not
 			// reached the maximum run length) then extend the current run.
-			std::vector< Run<VoxelType> >::iterator currentRun = (vecDstDataAsRuns.end() - 1);
-			if((*pSrcDataAsType == currentRun->value) && (currentRun->length < (std::numeric_limits<Run<VoxelType>::LengthType>::max)()))
+			typename std::vector< Run< VoxelType> >::iterator currentRun = (vecDstDataAsRuns.end() - 1);
+			if((*pSrcDataAsType == currentRun->value) && (currentRun->length < (std::numeric_limits<typename Run<VoxelType>::LengthType>::max)()))
 			{
 				currentRun->length++;
 			}

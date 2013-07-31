@@ -80,7 +80,7 @@ namespace PolyVox
 		memcpy(m_pData, pData, uDataSizeInBytes);
 
 		// Flag as modified
-		m_bDataModified = true;
+		this->m_bDataModified = true;
 	}
 
 	template <typename VoxelType>
@@ -168,7 +168,7 @@ namespace PolyVox
 				uZPos * m_uSideLength * m_uSideLength
 			] = tValue;
 
-		m_bDataModified = true;
+		this->m_bDataModified = true;
 	}
 
 	template <typename VoxelType>
