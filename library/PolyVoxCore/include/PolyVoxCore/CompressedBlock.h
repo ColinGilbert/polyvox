@@ -21,28 +21,43 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_BlockCompressor_H__
-#define __PolyVox_BlockCompressor_H__
+#ifndef __PolyVox_CompressedBlock_H__
+#define __PolyVox_CompressedBlock_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/CompressedBlock.h"
-#include "PolyVoxCore/UncompressedBlock.h"
+#include "PolyVoxCore/Block.h"
 
 namespace PolyVox
 {
-	/**
-	 * Provides an interface for performing compression of blocks.
-	 */
 	template <typename VoxelType>
-	class BlockCompressor
+	class CompressedBlock : public Block<VoxelType>
 	{
-	public:
-		BlockCompressor() {};
-		virtual ~BlockCompressor() {};
+		friend class LargeVolume<VoxelType>;
 
-		virtual void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock) = 0;
-		virtual void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock) = 0;
+	public:
+		CompressedBlock();
+		~CompressedBlock();
+
+		const uint8_t* getData(void) const;
+		uint32_t getDataSizeInBytes(void) const;
+
+		void setData(const uint8_t* const pData, uint32_t uDataSizeInBytes);
+
+	private:
+		/// Private copy constructor to prevent accisdental copying
+		CompressedBlock(const CompressedBlock& /*rhs*/) {};
+
+		/// Private assignment operator to prevent accisdental copying
+		CompressedBlock& operator=(const CompressedBlock& /*rhs*/) {};
+
+		// Made this private to avoid any confusion with getDataSizeInBytes().
+		// Users shouldn't really need this for CompressedBlock anyway.
+		uint32_t calculateSizeInBytes(void);
+
+		uint8_t* m_pData;
+		uint32_t m_uDataSizeInBytes;
 	};
 }
 
-#endif //__PolyVox_BlockCompressor_H__
+#include "PolyVoxCore/CompressedBlock.inl"
+
+#endif

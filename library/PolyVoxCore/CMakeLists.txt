@@ -49,8 +49,9 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
 	include/PolyVoxCore/Block.h
-	include/PolyVoxCore/Block.inl
 	include/PolyVoxCore/BlockCompressor.h
+	include/PolyVoxCore/CompressedBlock.h
+	include/PolyVoxCore/CompressedBlock.inl
 	include/PolyVoxCore/Compressor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
@@ -95,6 +96,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/SimpleVolumeSampler.inl
 	include/PolyVoxCore/SurfaceMesh.h
 	include/PolyVoxCore/SurfaceMesh.inl
+	include/PolyVoxCore/UncompressedBlock.h
+	include/PolyVoxCore/UncompressedBlock.inl
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/VertexTypes.h

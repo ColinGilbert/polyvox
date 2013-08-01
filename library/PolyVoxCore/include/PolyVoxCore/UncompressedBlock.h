@@ -21,46 +21,48 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Block_H__
-#define __PolyVox_Block_H__
+#ifndef __PolyVox_UncompressedBlock_H__
+#define __PolyVox_UncompressedBlock_H__
 
-#include "PolyVoxCore/Impl/TypeDef.h"
-
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <limits>
-#include <vector>
+#include "PolyVoxCore/Block.h"
 
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class Block
-	{
+    class UncompressedBlock : public Block<VoxelType>
+    {
 		friend class LargeVolume<VoxelType>;
 
 	public:
-		Block()
-			:m_uBlockLastAccessed(0)
-			,m_bDataModified(true)
-		{
-		}
+		UncompressedBlock(uint16_t uSideLength);
+		~UncompressedBlock();
 
-	protected:
-		// This is updated by the LargeVolume and used to discard the least recently used blocks.
-		uint32_t m_uBlockLastAccessed;
+		VoxelType* getData(void) const;
+		uint32_t getDataSizeInBytes(void) const;
 
-		// This is so we can tell whether a uncompressed block has to be recompressed and whether
-		// a compressed block has to be paged back to disk, or whether they can just be discarded.
-		bool m_bDataModified;
+		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
+
+		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 	private:
 		/// Private copy constructor to prevent accisdental copying
-		Block(const Block& /*rhs*/) {};
+		UncompressedBlock(const UncompressedBlock& /*rhs*/) {};
 
 		/// Private assignment operator to prevent accisdental copying
-		Block& operator=(const Block& /*rhs*/) {};
+		UncompressedBlock& operator=(const UncompressedBlock& /*rhs*/) {};
+
+		// Made this private for consistancy with CompressedBlock.
+		// Users shouldn't really need this for UncompressedBlock anyway.
+		uint32_t calculateSizeInBytes(void);
+
+        VoxelType* m_tData;
+        uint16_t m_uSideLength;
+        uint8_t m_uSideLengthPower;     
 	};
 }
+
+#include "PolyVoxCore/UncompressedBlock.inl"
 
 #endif
