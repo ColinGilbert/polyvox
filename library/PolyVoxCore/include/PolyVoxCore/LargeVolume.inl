@@ -311,7 +311,7 @@ namespace PolyVox
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
 		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset);
+		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
