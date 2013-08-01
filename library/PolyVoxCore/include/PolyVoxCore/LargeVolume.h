@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxCore/BaseVolume.h"
-#include "PolyVoxCore/Impl/Block.h"
+#include "PolyVoxCore/Block.h"
 #include "PolyVoxCore/BlockCompressor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"

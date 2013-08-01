@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Pager_H__
 #define __PolyVox_Pager_H__
 
-#include "PolyVoxCore/Impl/Block.h"
+#include "PolyVoxCore/Block.h"
 #include "PolyVoxCore/Impl/TypeDef.h"
 
 namespace PolyVox

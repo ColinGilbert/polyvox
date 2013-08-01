@@ -48,6 +48,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.h
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
+	include/PolyVoxCore/Block.h
+	include/PolyVoxCore/Block.inl
 	include/PolyVoxCore/BlockCompressor.h
 	include/PolyVoxCore/Compressor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
@@ -114,8 +116,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/ArraySizesImpl.h
 	include/PolyVoxCore/Impl/ArraySizesImpl.inl
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
-	include/PolyVoxCore/Impl/Block.h
-	include/PolyVoxCore/Impl/Block.inl
     include/PolyVoxCore/Impl/CompilerCapabilities.h
     include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h

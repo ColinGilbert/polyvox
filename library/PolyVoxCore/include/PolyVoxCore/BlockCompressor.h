@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_BlockCompressor_H__
 
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/Impl/Block.h"
+#include "PolyVoxCore/Block.h"
 
 namespace PolyVox
 {

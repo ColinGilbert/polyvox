@@ -126,6 +126,6 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVoxCore/Impl/Block.inl"
+#include "PolyVoxCore/Block.inl"
 
 #endif
