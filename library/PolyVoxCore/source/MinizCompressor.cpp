@@ -70,7 +70,7 @@ namespace PolyVox
 		return MZ_MAX(128 + (source_len * 110) / 100, 128 + source_len + ((source_len / (31 * 1024)) + 1) * 5);
 	}
 
-	uint32_t MinizCompressor::compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t MinizCompressor::compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		//Get the deflator
 		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(m_pDeflator);
@@ -103,7 +103,7 @@ namespace PolyVox
 		return ulDstLength;
 	}
 
-	uint32_t MinizCompressor::decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t MinizCompressor::decompress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		// I don't know exactly why this limitation exists but it's an implementation detail of miniz. It shouldn't matter for our purposes 
 		// as our detination is a Block and those are always a power of two. If you need to use this class for other purposes then you'll

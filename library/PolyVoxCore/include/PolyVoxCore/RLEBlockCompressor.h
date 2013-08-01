@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-2013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,29 +21,41 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Pager_H__
-#define __PolyVox_Pager_H__
+#ifndef __PolyVox_RLEBlockCompressor_H__
+#define __PolyVox_RLEBlockCompressor_H__
 
-#include "PolyVoxCore/CompressedBlock.h"
-#include "PolyVoxCore/Impl/TypeDef.h"
+#include "PolyVoxCore/BlockCompressor.h"
+
+#include "PolyVoxCore/MinizCompressor.h"
 
 namespace PolyVox
 {
+	template <typename VoxelType>
+	class Run
+	{
+	public:
+		typedef uint16_t LengthType;
+		VoxelType value;
+		LengthType length;
+	};
+
 	/**
 	 * Provides an interface for performing paging of data.
 	 */
 	template <typename VoxelType>
-	class Pager
+	class RLEBlockCompressor : public BlockCompressor<VoxelType>
 	{
-	public:
-		/// Constructor
-		Pager() {};
-		/// Destructor
-		virtual ~Pager() {};
+		
 
-		virtual void pageIn(const Region& region, CompressedBlock<VoxelType>* pBlockData) = 0;
-		virtual void pageOut(const Region& region, CompressedBlock<VoxelType>* pBlockData) = 0;
+	public:
+		RLEBlockCompressor();
+		~RLEBlockCompressor();
+
+		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
+		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
 	};
 }
 
-#endif //__PolyVox_Pager_H__
+#include "PolyVoxCore/RLEBlockCompressor.inl"
+
+#endif //__PolyVox_RLEBlockCompressor_H__

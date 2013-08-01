@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 #define __PolyVox_LargeVolume_H__
 
 #include "PolyVoxCore/BaseVolume.h"
-#include "Impl/Block.h"
-#include "PolyVoxCore/Compressor.h"
+#include "PolyVoxCore/Block.h"
+#include "PolyVoxCore/BlockCompressor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
@@ -239,7 +239,7 @@ namespace PolyVox
 		LargeVolume
 		(
 			const Region& regValid,
-			Compressor* pCompressor,	
+			BlockCompressor<VoxelType>* pBlockCompressor,	
 			Pager<VoxelType>* pPager ,	
 			uint16_t uBlockSideLength = 32
 		);
@@ -263,10 +263,10 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
-		void setTargetMemoryLimitInBytes(uint32_t uTargetMemoryLimitInBytes);
-
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
+		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
+        void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by a 3D vector
@@ -312,7 +312,10 @@ namespace PolyVox
 				}
 				return false;
 			}
-		};		
+		};	
+
+		typedef std::map<Vector3DInt32, CompressedBlock<VoxelType>*, BlockPositionCompare> CompressedBlockMap;
+		typedef std::map<Vector3DInt32, UncompressedBlock<VoxelType>*, BlockPositionCompare> UncompressedBlockMap;
 
 		uint32_t calculateBlockMemoryUsage(void) const;
 
@@ -329,23 +332,21 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
-		Block<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
-		void eraseBlock(typename std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare>::iterator itBlock) const;
+		CompressedBlock<VoxelType>* getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		UncompressedBlock<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+
+		void eraseBlock(typename CompressedBlockMap::iterator itCompressedBlock) const;
+		void eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const;
 
 		// The block data
-		mutable std::map<Vector3DInt32, Block<VoxelType>, BlockPositionCompare> m_pBlocks;
+		mutable CompressedBlockMap m_pBlocks;
+		mutable UncompressedBlockMap m_pUncompressedBlockCache;
 
-		// The cache of uncompressed blocks. The uncompressed block data and the timestamps are stored here rather
-		// than in the Block class. This is so that in the future each VolumeIterator might to maintain its own cache
-		// of blocks. However, this could mean the same block data is uncompressed and modified in more than one
-		// location in memory... could be messy with threading.
-		mutable std::vector< Block<VoxelType>* > m_vecBlocksWithUncompressedData;
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable Block<VoxelType>* m_pLastAccessedBlock;
+		mutable UncompressedBlock<VoxelType>* m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
-
-		uint32_t m_uCompressedBlockMemoryLimitInBytes;
+		uint32_t m_uMaxNumberOfBlocksInMemory;
 
 		// The size of the volume
 		Region m_regValidRegionInBlocks;
@@ -355,8 +356,11 @@ namespace PolyVox
 		uint8_t m_uBlockSideLengthPower;
 
 		// The compressor used by the Blocks to compress their data if required.
-		Compressor* m_pCompressor;
+		BlockCompressor<VoxelType>* m_pBlockCompressor;
 		Pager<VoxelType>* m_pPager;
+
+		// Compressed data for an empty block (sometimes needed for initialisation).
+		//CompressedBlock<VoxelType>* m_pCompressedEmptyBlock;
 
 		// Whether we created the compressor or whether it was provided
 		// by the user. This controls whether we delete it on destruction.

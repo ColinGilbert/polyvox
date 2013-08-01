@@ -25,8 +25,8 @@ namespace PolyVox
 		
 		// API documentation is in base class and gets inherited by Doxygen.
 		uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize);
-		uint32_t compress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
-		uint32_t decompress(void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
+		uint32_t compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
+		uint32_t decompress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
 	
 	private:
 		unsigned int m_uCompressionFlags;
