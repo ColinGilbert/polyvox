@@ -49,7 +49,7 @@ namespace PolyVox
 			:Pager<VoxelType>()
 			,m_strFolderName(strFolderName)
 		{
-			srand(time(0));
+			srand(static_cast<unsigned int>(time(0)));
 			int iRandomValue = rand();
 
 			std::stringstream ss;
