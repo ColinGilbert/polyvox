@@ -49,7 +49,7 @@ namespace PolyVox
 			m_fPCFreq = 1.0f;
 		}
 
-		m_fPCFreq = double(li.QuadPart)/1000.0;
+		m_fPCFreq = double(li.QuadPart);
 
 		QueryPerformanceCounter(&li);
 		m_iStartTime = li.QuadPart;
@@ -57,14 +57,15 @@ namespace PolyVox
 
 	float Timer::elapsedTimeInSeconds(void)
 	{
-		return static_cast<float>(elapsedTimeInMilliSeconds()) / 1000.0f;
+		LARGE_INTEGER li;
+		QueryPerformanceCounter(&li);
+		double fDifference = static_cast<double>(li.QuadPart-m_iStartTime);
+		return static_cast<float>(fDifference / m_fPCFreq);
 	}
 
 	uint32_t Timer::elapsedTimeInMilliSeconds(void)
 	{
-		LARGE_INTEGER li;
-		QueryPerformanceCounter(&li);
-		return static_cast<uint32_t>(double(li.QuadPart-m_iStartTime)/m_fPCFreq);
+		return static_cast<uint32_t>(elapsedTimeInSeconds() * 1000.0f);
 	}
 #else //_MSC_VER
 	Timer::Timer(bool bAutoStart)
