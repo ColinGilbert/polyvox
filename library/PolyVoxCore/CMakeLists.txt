@@ -112,6 +112,7 @@ SET(IMPL_SRC_FILES
 	source/Impl/MarchingCubesTables.cpp
 	source/Impl/RandomUnitVectors.cpp
 	source/Impl/RandomVectors.cpp
+	source/Impl/Timer.cpp
 	source/Impl/Utility.cpp
 )
 
@@ -127,6 +128,7 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/RandomVectors.h
 	include/PolyVoxCore/Impl/SubArray.h
 	include/PolyVoxCore/Impl/SubArray.inl
+	include/PolyVoxCore/Impl/Timer.h
 	include/PolyVoxCore/Impl/TypeDef.h
 	include/PolyVoxCore/Impl/Utility.h
 )

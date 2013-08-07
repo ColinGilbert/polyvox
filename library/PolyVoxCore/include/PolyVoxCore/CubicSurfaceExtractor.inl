@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/Timer.h"
+
 namespace PolyVox
 {
 	// We try to avoid duplicate vertices by checking whether a vertex has already been added at a given position.
@@ -48,6 +50,7 @@ namespace PolyVox
 	template<typename VolumeType, typename IsQuadNeeded>
 	void CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::execute()
 	{
+		Timer timer;
 		m_meshCurrent->clear();
 
 		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
@@ -195,6 +198,10 @@ namespace PolyVox
 		lodRecord.beginIndex = 0;
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
+
+		logTrace() << "Cubic surface extraction took " << timer.elapsedTimeInMilliSeconds()
+			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
+			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")";
 	}
 
 	template<typename VolumeType, typename IsQuadNeeded>

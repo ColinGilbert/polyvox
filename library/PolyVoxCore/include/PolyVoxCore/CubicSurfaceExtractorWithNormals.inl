@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/Timer.h"
+
 namespace PolyVox
 {
 	template<typename VolumeType, typename IsQuadNeeded>
@@ -38,6 +40,7 @@ namespace PolyVox
 	template<typename VolumeType, typename IsQuadNeeded>
 	void CubicSurfaceExtractorWithNormals<VolumeType, IsQuadNeeded>::execute()
 	{		
+		Timer timer;
 		m_meshCurrent->clear();
 
 		for(int32_t z = m_regSizeInVoxels.getLowerZ(); z < m_regSizeInVoxels.getUpperZ(); z++)
@@ -126,5 +129,9 @@ namespace PolyVox
 		lodRecord.beginIndex = 0;
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
+
+		logTrace() << "Cubic surface extraction took " << timer.elapsedTimeInMilliSeconds()
+			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
+			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")";
 	}
 }

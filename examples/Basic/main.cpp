@@ -68,6 +68,9 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 
 int main(int argc, char *argv[])
 {
+	// Show logs
+	setTraceStream(&(std::cout));
+
 	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
 	OpenGLWidget openGLWidget(0);
