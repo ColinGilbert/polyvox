@@ -82,7 +82,7 @@ namespace PolyVox
 
 	float Timer::elapsedTimeInSeconds(void)
 	{
-		return 0.0f
+		return 0.0f;
 	}
 
 	uint32_t Timer::elapsedTimeInMilliSeconds(void)
