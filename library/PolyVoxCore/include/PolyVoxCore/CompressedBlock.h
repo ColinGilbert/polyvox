@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-2013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,15 +21,43 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MarchingCubeTables_H__
-#define __PolyVox_MarchingCubeTables_H__
+#ifndef __PolyVox_CompressedBlock_H__
+#define __PolyVox_CompressedBlock_H__
 
-#include "PolyVoxCore/Impl/TypeDef.h"
+#include "PolyVoxCore/Block.h"
 
 namespace PolyVox
 {
-	extern const POLYVOX_API uint16_t edgeTable[256];
-	extern const POLYVOX_API int8_t triTable[256][16];
+	template <typename VoxelType>
+	class CompressedBlock : public Block<VoxelType>
+	{
+		friend class LargeVolume<VoxelType>;
+
+	public:
+		CompressedBlock();
+		~CompressedBlock();
+
+		const uint8_t* getData(void) const;
+		uint32_t getDataSizeInBytes(void) const;
+
+		void setData(const uint8_t* const pData, uint32_t uDataSizeInBytes);
+
+	private:
+		/// Private copy constructor to prevent accisdental copying
+		CompressedBlock(const CompressedBlock& /*rhs*/) {};
+
+		/// Private assignment operator to prevent accisdental copying
+		CompressedBlock& operator=(const CompressedBlock& /*rhs*/) {};
+
+		// Made this private to avoid any confusion with getDataSizeInBytes().
+		// Users shouldn't really need this for CompressedBlock anyway.
+		uint32_t calculateSizeInBytes(void);
+
+		uint8_t* m_pData;
+		uint32_t m_uDataSizeInBytes;
+	};
 }
+
+#include "PolyVoxCore/CompressedBlock.inl"
 
 #endif

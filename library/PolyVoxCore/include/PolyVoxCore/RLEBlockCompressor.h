@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-2013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,15 +21,41 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MarchingCubeTables_H__
-#define __PolyVox_MarchingCubeTables_H__
+#ifndef __PolyVox_RLEBlockCompressor_H__
+#define __PolyVox_RLEBlockCompressor_H__
 
-#include "PolyVoxCore/Impl/TypeDef.h"
+#include "PolyVoxCore/BlockCompressor.h"
+
+#include "PolyVoxCore/MinizCompressor.h"
 
 namespace PolyVox
 {
-	extern const POLYVOX_API uint16_t edgeTable[256];
-	extern const POLYVOX_API int8_t triTable[256][16];
+	template <typename VoxelType>
+	class Run
+	{
+	public:
+		typedef uint16_t LengthType;
+		VoxelType value;
+		LengthType length;
+	};
+
+	/**
+	 * Provides an interface for performing paging of data.
+	 */
+	template <typename VoxelType>
+	class RLEBlockCompressor : public BlockCompressor<VoxelType>
+	{
+		
+
+	public:
+		RLEBlockCompressor();
+		~RLEBlockCompressor();
+
+		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
+		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
+	};
 }
 
-#endif
+#include "PolyVoxCore/RLEBlockCompressor.inl"
+
+#endif //__PolyVox_RLEBlockCompressor_H__

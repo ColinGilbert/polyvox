@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-2013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,55 +21,48 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Block_H__
-#define __PolyVox_Block_H__
+#ifndef __PolyVox_UncompressedBlock_H__
+#define __PolyVox_UncompressedBlock_H__
 
-#include "PolyVoxCore/Impl/TypeDef.h"
-
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
-#include "PolyVoxCore/Vector.h"
-
-#include <limits>
-#include <vector>
+#include "PolyVoxCore/Block.h"
 
 namespace PolyVox
 {
 	template <typename VoxelType>
-	class Block
-	{
-	public:
-		Block(uint16_t uSideLength, Compressor* pCompressor);
+    class UncompressedBlock : public Block<VoxelType>
+    {
+		friend class LargeVolume<VoxelType>;
 
-		const uint8_t* const getCompressedData(void) const;
-		const uint32_t getCompressedDataLength(void) const;
-		uint16_t getSideLength(void) const;
+	public:
+		UncompressedBlock(uint16_t uSideLength);
+		~UncompressedBlock();
+
+		VoxelType* getData(void) const;
+		uint32_t getDataSizeInBytes(void) const;
+
 		VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 		VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
-		bool hasUncompressedData(void) const;
-
-		void setCompressedData(const uint8_t* const data, uint32_t dataLength);
 		void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 		void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		void createUncompressedData(void);
-		void destroyUncompressedData(void);
+	private:
+		/// Private copy constructor to prevent accisdental copying
+		UncompressedBlock(const UncompressedBlock& /*rhs*/) {};
 
+		/// Private assignment operator to prevent accisdental copying
+		UncompressedBlock& operator=(const UncompressedBlock& /*rhs*/) {};
+
+		// Made this private for consistancy with CompressedBlock.
+		// Users shouldn't really need this for UncompressedBlock anyway.
 		uint32_t calculateSizeInBytes(void);
 
-	public:
-		Compressor* m_pCompressor;
-		uint8_t* m_pCompressedData;
-		uint32_t m_uCompressedDataLength;
-		VoxelType* m_tUncompressedData;
-		uint16_t m_uSideLength;
-		uint8_t m_uSideLengthPower;	
-		bool m_bIsUncompressedDataModified;
-
-		uint32_t timestamp;
+        VoxelType* m_tData;
+        uint16_t m_uSideLength;
+        uint8_t m_uSideLengthPower;     
 	};
 }
 
-#include "PolyVoxCore/Impl/Block.inl"
+#include "PolyVoxCore/UncompressedBlock.inl"
 
 #endif

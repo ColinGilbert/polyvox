@@ -48,6 +48,10 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.h
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
+	include/PolyVoxCore/Block.h
+	include/PolyVoxCore/BlockCompressor.h
+	include/PolyVoxCore/CompressedBlock.h
+	include/PolyVoxCore/CompressedBlock.inl
 	include/PolyVoxCore/Compressor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
@@ -71,6 +75,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
+	include/PolyVoxCore/MinizBlockCompressor.h
+	include/PolyVoxCore/MinizBlockCompressor.inl
 	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
@@ -82,14 +88,16 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
-	include/PolyVoxCore/RLECompressor.h
-	include/PolyVoxCore/RLECompressor.inl
+	include/PolyVoxCore/RLEBlockCompressor.h
+	include/PolyVoxCore/RLEBlockCompressor.inl
 	include/PolyVoxCore/SimpleVolume.h
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
 	include/PolyVoxCore/SimpleVolumeSampler.inl
 	include/PolyVoxCore/SurfaceMesh.h
 	include/PolyVoxCore/SurfaceMesh.inl
+	include/PolyVoxCore/UncompressedBlock.h
+	include/PolyVoxCore/UncompressedBlock.inl
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/VertexTypes.h
@@ -104,6 +112,7 @@ SET(IMPL_SRC_FILES
 	source/Impl/MarchingCubesTables.cpp
 	source/Impl/RandomUnitVectors.cpp
 	source/Impl/RandomVectors.cpp
+	source/Impl/Timer.cpp
 	source/Impl/Utility.cpp
 )
 
@@ -111,8 +120,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/ArraySizesImpl.h
 	include/PolyVoxCore/Impl/ArraySizesImpl.inl
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
-	include/PolyVoxCore/Impl/Block.h
-	include/PolyVoxCore/Impl/Block.inl
     include/PolyVoxCore/Impl/CompilerCapabilities.h
     include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h
@@ -121,6 +128,7 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/RandomVectors.h
 	include/PolyVoxCore/Impl/SubArray.h
 	include/PolyVoxCore/Impl/SubArray.inl
+	include/PolyVoxCore/Impl/Timer.h
 	include/PolyVoxCore/Impl/TypeDef.h
 	include/PolyVoxCore/Impl/Utility.h
 )

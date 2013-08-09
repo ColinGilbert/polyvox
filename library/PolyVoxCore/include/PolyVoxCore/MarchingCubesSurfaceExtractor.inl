@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/Timer.h"
+
 namespace PolyVox
 {
 	template<typename VolumeType, typename Controller>
@@ -42,6 +44,7 @@ namespace PolyVox
 	template<typename VolumeType, typename Controller>
 	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::execute()
 	{		
+		Timer timer;
 		m_meshCurrent->clear();
 
 		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 1;
@@ -126,6 +129,10 @@ namespace PolyVox
 		lodRecord.beginIndex = 0;
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
+
+		logTrace() << "Marching cubes surface extraction took " << timer.elapsedTimeInMilliSeconds()
+			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
+			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")";
 	}
 
 	template<typename VolumeType, typename Controller>

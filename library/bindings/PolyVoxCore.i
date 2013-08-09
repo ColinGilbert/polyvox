@@ -68,6 +68,7 @@ EXTRACTOR(shortname, LargeVolume)
 %ignore *::operator-=;
 %ignore *::operator*=;
 %ignore *::operator/=;
+%ignore *::operator<<; //This is covered by STR()
 #endif
 
 %include "stdint.i"
@@ -75,11 +76,15 @@ EXTRACTOR(shortname, LargeVolume)
 %include "Vector.i"
 %include "DefaultMarchingCubesController.i"
 %include "Region.i"
+%include "Block.i"
+%include "CompressedBlock.i"
+%include "UncompressedBlock.i"
 %include "Compressor.i"
+%include "BlockCompressor.i"
 %include "Pager.i"
 %include "FilePager.i"
-%include "MinizCompressor.i"
-%include "RLECompressor.i"
+%include "MinizBlockCompressor.i"
+%include "RLEBlockCompressor.i"
 %include "BaseVolume.i"
 %include "SimpleVolume.i"
 %include "RawVolume.i"

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-20013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,15 +21,44 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MarchingCubeTables_H__
-#define __PolyVox_MarchingCubeTables_H__
+#ifndef __PolyVox_Timer_H__
+#define __PolyVox_Timer_H__
 
-#include "PolyVoxCore/Impl/TypeDef.h"
+#include <cstdint>
+
+#ifdef _MSC_VER // Don't worry about the exact version, as long as this is defied.
+#include <Windows.h>
+#endif //_MSC_VER
 
 namespace PolyVox
 {
-	extern const POLYVOX_API uint16_t edgeTable[256];
-	extern const POLYVOX_API int8_t triTable[256][16];
+#if defined(_MSC_VER)
+	class Timer
+	{
+	public:
+		Timer(bool bAutoStart = true);
+
+		void start(void);
+
+		float elapsedTimeInSeconds(void);
+		uint32_t elapsedTimeInMilliSeconds(void);
+
+	private:
+		double m_fPCFreq;
+		__int64 m_iStartTime;
+	};
+#else //_MSC_VER
+	class Timer
+	{
+	public:
+		Timer(bool bAutoStart = true);
+
+		void start(void);
+
+		float elapsedTimeInSeconds(void);
+		uint32_t elapsedTimeInMilliSeconds(void);
+	};
+#endif //_MSC_VER
 }
 
-#endif
+#endif //__PolyVox_Timer_H__

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-2013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,15 +21,46 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MarchingCubeTables_H__
-#define __PolyVox_MarchingCubeTables_H__
+#ifndef __PolyVox_Block_H__
+#define __PolyVox_Block_H__
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
+
+#include <limits>
+#include <vector>
+
 namespace PolyVox
 {
-	extern const POLYVOX_API uint16_t edgeTable[256];
-	extern const POLYVOX_API int8_t triTable[256][16];
+	template <typename VoxelType>
+	class Block
+	{
+		friend class LargeVolume<VoxelType>;
+
+	public:
+		Block()
+			:m_uBlockLastAccessed(0)
+			,m_bDataModified(true)
+		{
+		}
+
+	protected:
+		// This is updated by the LargeVolume and used to discard the least recently used blocks.
+		uint32_t m_uBlockLastAccessed;
+
+		// This is so we can tell whether a uncompressed block has to be recompressed and whether
+		// a compressed block has to be paged back to disk, or whether they can just be discarded.
+		bool m_bDataModified;
+
+	private:
+		/// Private copy constructor to prevent accisdental copying
+		Block(const Block& /*rhs*/) {};
+
+		/// Private assignment operator to prevent accisdental copying
+		Block& operator=(const Block& /*rhs*/) {};
+	};
 }
 
 #endif

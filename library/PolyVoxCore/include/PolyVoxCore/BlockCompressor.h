@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2009 David Williams
+Copyright (c) 2005-2013 David Williams and Matthew Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,15 +21,28 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_MarchingCubeTables_H__
-#define __PolyVox_MarchingCubeTables_H__
+#ifndef __PolyVox_BlockCompressor_H__
+#define __PolyVox_BlockCompressor_H__
 
-#include "PolyVoxCore/Impl/TypeDef.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/CompressedBlock.h"
+#include "PolyVoxCore/UncompressedBlock.h"
 
 namespace PolyVox
 {
-	extern const POLYVOX_API uint16_t edgeTable[256];
-	extern const POLYVOX_API int8_t triTable[256][16];
+	/**
+	 * Provides an interface for performing compression of blocks.
+	 */
+	template <typename VoxelType>
+	class BlockCompressor
+	{
+	public:
+		BlockCompressor() {};
+		virtual ~BlockCompressor() {};
+
+		virtual void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock) = 0;
+		virtual void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock) = 0;
+	};
 }
 
-#endif
+#endif //__PolyVox_BlockCompressor_H__

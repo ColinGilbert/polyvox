@@ -65,7 +65,7 @@ private slots:
 	void testLargeVolumeSamplersWithExternalBackwards();
 
 private:
-	PolyVox::Compressor* m_pCompressor;
+	PolyVox::BlockCompressor<int32_t>* m_pBlockCompressor;
 	PolyVox::FilePager<int32_t>* m_pFilePager;
 
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;

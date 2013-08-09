@@ -514,5 +514,5 @@ namespace PolyVox
 		os << "(" << region.getLowerX() << "," << region.getLowerY() << "," << region.getLowerZ() <<
 			") to (" << region.getUpperX() << "," << region.getUpperY() << "," << region.getUpperZ() << ")";
         return os;
-    }	
+    }
 }
