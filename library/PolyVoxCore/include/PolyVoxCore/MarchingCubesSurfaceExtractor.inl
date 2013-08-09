@@ -440,6 +440,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveX();
 					const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
+					POLYVOX_ASSERT(v000 != v100, "Attempting to insert vertex between two voxels with the same value");
 					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
@@ -447,7 +448,13 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerZ()));
 
 					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
-					v3dNormal.normalise();
+
+					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+					if(v3dNormal.lengthSquared() > 0.000001f) 
+					{
+						v3dNormal.normalise();
+					}
 
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
@@ -466,6 +473,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveY();
 					const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
+					POLYVOX_ASSERT(v000 != v010, "Attempting to insert vertex between two voxels with the same value");
 					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
@@ -473,7 +481,13 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()));
 
 					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
-					v3dNormal.normalise();
+
+					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+					if(v3dNormal.lengthSquared() > 0.000001f) 
+					{
+						v3dNormal.normalise();
+					}
 
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
@@ -492,6 +506,7 @@ namespace PolyVox
 				{
 					m_sampVolume.movePositiveZ();
 					const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
+					POLYVOX_ASSERT(v000 != v001, "Attempting to insert vertex between two voxels with the same value");
 					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
@@ -499,7 +514,12 @@ namespace PolyVox
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()) + fInterp);
 
 					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
-					v3dNormal.normalise();
+					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+					if(v3dNormal.lengthSquared() > 0.000001f) 
+					{
+						v3dNormal.normalise();
+					}
 
 					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
 					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
