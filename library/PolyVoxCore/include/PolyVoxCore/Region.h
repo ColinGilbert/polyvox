@@ -141,21 +141,21 @@ namespace PolyVox
 		/// Tests whether the given point is contained in this Region.
 		bool containsPoint(const Vector3DFloat& pos, float boundary = 0.0f) const;
 		/// Tests whether the given point is contained in this Region.
-		bool containsPoint(int32_t iX, int32_t iY, int32_t iZ, int8_t boundary = 0) const;
+		bool containsPoint(int32_t iX, int32_t iY, int32_t iZ, uint8_t boundary = 0) const;
 		/// Tests whether the given point is contained in this Region.
-		bool containsPoint(const Vector3DInt32& pos, int8_t boundary = 0) const;
+		bool containsPoint(const Vector3DInt32& pos, uint8_t boundary = 0) const;
 		/// Tests whether the given position is contained in the 'x' range of this Region.
 		bool containsPointInX(float pos, float boundary = 0.0f) const;
 		/// Tests whether the given position is contained in the 'x' range of this Region.
-		bool containsPointInX(int32_t pos, int8_t boundary = 0) const;
+		bool containsPointInX(int32_t pos, uint8_t boundary = 0) const;
 		/// Tests whether the given position is contained in the 'y' range of this Region.
 		bool containsPointInY(float pos, float boundary = 0.0f) const;
 		/// Tests whether the given position is contained in the 'y' range of this Region.
-		bool containsPointInY(int32_t pos, int8_t boundary = 0) const;
+		bool containsPointInY(int32_t pos, uint8_t boundary = 0) const;
 		/// Tests whether the given position is contained in the 'z' range of this Region.
 		bool containsPointInZ(float pos, float boundary = 0.0f) const;
 		/// Tests whether the given position is contained in the 'z' range of this Region.
-		bool containsPointInZ(int32_t pos, int8_t boundary = 0) const;
+		bool containsPointInZ(int32_t pos, uint8_t boundary = 0) const;
 
 		/// Tests whether the given Region is contained in this Region.
 		bool containsRegion(const Region& reg, uint8_t boundary = 0) const;

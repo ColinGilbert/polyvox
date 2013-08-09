@@ -32,11 +32,11 @@ namespace PolyVox
 	class DefaultIsQuadNeeded
 	{
 	public:
-		bool operator()(VoxelType back, VoxelType front, float& materialToUse)
+		bool operator()(VoxelType back, VoxelType front, uint32_t& materialToUse)
 		{
 			if((back > 0) && (front == 0))
 			{
-				materialToUse = static_cast<float>(back);
+				materialToUse = static_cast<uint32_t>(back);
 				return true;
 			}
 			else

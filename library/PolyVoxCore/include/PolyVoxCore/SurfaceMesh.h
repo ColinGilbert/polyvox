@@ -95,8 +95,8 @@ namespace PolyVox
 		std::vector<LodRecord> m_vecLodRecords;
 	};	
 
-	/*template <typename VertexType>
-	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);*/
+	template <typename VertexType>
+	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
 }
 
 #include "PolyVoxCore/SurfaceMesh.inl"

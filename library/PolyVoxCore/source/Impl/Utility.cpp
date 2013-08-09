@@ -69,9 +69,4 @@ namespace PolyVox
 		v++;
 		return v;
 	}
-
-	float triangleFilter(float fInput)
-	{
-		return (std::max)(1.0f - (std::abs)(fInput), 0.0f);
-	}
 }

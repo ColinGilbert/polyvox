@@ -118,6 +118,7 @@ namespace PolyVox
 		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 #endif
 
+
 		void execute();		
 
 	private:

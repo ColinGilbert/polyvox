@@ -52,8 +52,6 @@ namespace PolyVox
 	{
 		return (std::min)(high, (std::max)(low, value));
 	}
-
-	float triangleFilter(float fInput);
 }
 
 #endif
