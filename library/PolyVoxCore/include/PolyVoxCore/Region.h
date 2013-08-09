@@ -74,6 +74,12 @@ namespace PolyVox
 		/// Inequality Operator.
         bool operator!=(const Region& rhs) const;
 
+		/// Gets the 'x' position of the centre.
+		int32_t getCentreX(void) const;
+		/// Gets the 'y' position of the centre.
+		int32_t getCentreY(void) const;
+		/// Gets the 'z' position of the centrer.
+		int32_t getCentreZ(void) const;
 		/// Gets the 'x' position of the lower corner.
 		int32_t getLowerX(void) const;
 		/// Gets the 'y' position of the lower corner.
@@ -87,6 +93,8 @@ namespace PolyVox
 		/// Gets the 'z' position of the upper corner.
 		int32_t getUpperZ(void) const;
 
+		/// Gets the centre of the region
+		Vector3DInt32 getCentre(void) const;
 		/// Gets the position of the lower corner.
 		Vector3DInt32 getLowerCorner(void) const;
 		/// Gets the position of the upper corner.
@@ -202,6 +210,9 @@ namespace PolyVox
 		int32_t m_iUpperZ;
 	};
 
+	// Non-member functions
+	bool intersects(const Region& a, const Region& b);
+
 	// Non-member overloaded operators. 
 	/// Stream insertion operator.
 	std::ostream& operator<<(std::ostream& os, const Region& region);
@@ -209,6 +220,30 @@ namespace PolyVox
 	// Functions to be inlined to to be in the header rather than the .cpp.
 	// 'inline' keyword is used for the definition rather than the declaration.
 	// See also http://www.parashift.com/c++-faq-lite/inline-functions.html
+
+	/**
+	 *  \return The 'x' position of the centre.
+	 */
+	inline int32_t Region::getCentreX(void) const
+	{
+		return (m_iLowerX + m_iUpperX) / 2;
+	}
+
+	/**
+	 *  \return The 'y' position of the centre.
+	 */
+	inline int32_t Region::getCentreY(void) const
+	{
+		return (m_iLowerY + m_iUpperY) / 2;
+	}
+
+	/**
+	 *  \return The 'z' position of the centre.
+	 */
+	inline int32_t Region::getCentreZ(void) const
+	{
+		return (m_iLowerZ + m_iUpperZ) / 2;
+	}
 
 	/**
 	 *  \return The 'x' position of the lower corner.
@@ -256,6 +291,14 @@ namespace PolyVox
 	inline int32_t Region::getUpperZ(void) const
 	{
 		return m_iUpperZ;
+	}
+
+	/**
+	 *  \return The position of the lower corner.
+	 */
+	inline Vector3DInt32 Region::getCentre(void) const
+	{
+		return Vector3DInt32(getCentreX(), getCentreY(), getCentreZ());
 	}
 
 	/**
