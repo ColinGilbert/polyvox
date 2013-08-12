@@ -435,8 +435,14 @@ namespace PolyVox
 	void LargeVolume<VoxelType>::flushAll()
 	{
 		typename CompressedBlockMap::iterator i;
+
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
+		while(m_pUncompressedBlockCache.size() > 0)
+		{
+			eraseBlock(m_pUncompressedBlockCache.begin());
+		}
+
 		while(m_pBlocks.size() > 0)
 		{
 			eraseBlock(m_pBlocks.begin());
