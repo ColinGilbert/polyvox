@@ -53,7 +53,7 @@ namespace PolyVox
 			uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 			// Copy the resulting compressed data into the compressed block
-			pDstBlock->setData(pDstData, uDstLength);			
+			pDstBlock->setData(pDstData, uCompressedLength);			
 		}
 		catch(std::exception&)
 		{
@@ -74,7 +74,7 @@ namespace PolyVox
 				uCompressedLength = m_pCompressor->compress(pSrcData, uSrcLength, pDstData, uDstLength);
 
 				// Copy the resulting compressed data into the compressed block
-				pDstBlock->setData(pDstData, uDstLength);
+				pDstBlock->setData(pDstData, uCompressedLength);
 			}
 			catch(std::exception&)
 			{
