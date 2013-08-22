@@ -28,37 +28,31 @@ freely, subject to the following restrictions:
 
 #ifdef _MSC_VER // Don't worry about the exact version, as long as this is defied.
 #include <Windows.h>
+#else
+#include <chrono>
 #endif //_MSC_VER
 
 namespace PolyVox
 {
-#if defined(_MSC_VER)
 	class Timer
 	{
 	public:
 		Timer(bool bAutoStart = true);
-
+		
 		void start(void);
-
+		
 		float elapsedTimeInSeconds(void);
 		uint32_t elapsedTimeInMilliSeconds(void);
-
+		
 	private:
+#if defined(_MSC_VER)
 		double m_fPCFreq;
 		__int64 m_iStartTime;
-	};
 #else //_MSC_VER
-	class Timer
-	{
-	public:
-		Timer(bool bAutoStart = true);
-
-		void start(void);
-
-		float elapsedTimeInSeconds(void);
-		uint32_t elapsedTimeInMilliSeconds(void);
-	};
+		typedef std::chrono::system_clock clock;
+		std::chrono::time_point<clock> m_start;
 #endif //_MSC_VER
+	};
 }
 
 #endif //__PolyVox_Timer_H__
