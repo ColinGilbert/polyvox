@@ -35,8 +35,7 @@ namespace PolyVox
 		:m_pDeflator(0)
 	{
 		// Create and store the deflator.
-		tdefl_compressor* pDeflator = new tdefl_compressor;
-		m_pDeflator = /*reinterpret_cast<void*>*/(pDeflator);
+		m_pDeflator = new tdefl_compressor;
 
 		// The number of dictionary probes to use at each compression level (0-10). 0=implies fastest/minimal possible probing.
 		// The discontinuity is unsettling but may be explained by the 'iCompressionLevel <= 3' check later?
@@ -54,19 +53,27 @@ namespace PolyVox
 	MinizBlockCompressor<VoxelType>::~MinizBlockCompressor()
 	{
 		// Delete the deflator
-		tdefl_compressor* pDeflator = /*reinterpret_cast<tdefl_compressor*>*/(m_pDeflator);
-		delete pDeflator;
+		delete m_pDeflator;
 	}
 
 	template <typename VoxelType>
 	void MinizBlockCompressor<VoxelType>::compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
 	{
+		// It seems we have to reinitialise the deflator for each fresh dataset (it's probably intended for streaming, which we're not doing here)
+		tdefl_status status = tdefl_init(m_pDeflator, NULL, NULL, m_uCompressionFlags);
+		if (status != TDEFL_STATUS_OKAY)
+		{
+			std::stringstream ss;
+			ss << "tdefl_init() failed with return code '" << status << "'";
+			POLYVOX_THROW(std::runtime_error, ss.str());
+		}
+
 		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());
-		uint32_t uSrcLength = pSrcBlock->getDataSizeInBytes();
+		size_t uSrcLength = pSrcBlock->getDataSizeInBytes();
 
 		uint8_t tempBuffer[10000];
 		uint8_t* pDstData = reinterpret_cast<uint8_t*>( tempBuffer );				
-		uint32_t uDstLength = 10000;
+		size_t uDstLength = 10000;
 
 		uint32_t uCompressedLength = 0;
 
@@ -138,26 +145,10 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t MinizBlockCompressor<VoxelType>::compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t MinizBlockCompressor<VoxelType>::compress(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength)
 	{
-		//Get the deflator
-		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(m_pDeflator);
-
-		// It seems we have to reinitialise the deflator for each fresh dataset (it's probably intended for streaming, which we're not doing here)
-		tdefl_status status = tdefl_init(pDeflator, NULL, NULL, m_uCompressionFlags);
-		if (status != TDEFL_STATUS_OKAY)
-		{
-			std::stringstream ss;
-			ss << "tdefl_init() failed with return code '" << status << "'";
-			POLYVOX_THROW(std::runtime_error, ss.str());
-		}
-
-		// Change the type to avoid compiler warnings
-		size_t ulSrcLength = uSrcLength;
-		size_t ulDstLength = uDstLength;
-
 		// Compress as much of the input as possible (or all of it) to the output buffer.
-		status = tdefl_compress(pDeflator, pSrcData, &ulSrcLength, pDstData, &ulDstLength, TDEFL_FINISH);
+		tdefl_status status = tdefl_compress(m_pDeflator, pSrcData, &uSrcLength, pDstData, &uDstLength, TDEFL_FINISH);
 
 		//Check whther the compression was successful.
 		if (status != TDEFL_STATUS_DONE)
@@ -168,7 +159,7 @@ namespace PolyVox
 		}
 
 		// The compression modifies 'ulDstLength' to hold the new length.
-		return ulDstLength;
+		return uDstLength;
 	}
 
 	template <typename VoxelType>
