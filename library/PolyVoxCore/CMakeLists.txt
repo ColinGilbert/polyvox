@@ -31,7 +31,6 @@ endif()
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
-	source/MinizCompressor.cpp
 	source/Region.cpp
 	source/VertexTypes.cpp
 )
@@ -52,7 +51,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BlockCompressor.h
 	include/PolyVoxCore/CompressedBlock.h
 	include/PolyVoxCore/CompressedBlock.inl
-	include/PolyVoxCore/Compressor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
@@ -77,7 +75,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MinizBlockCompressor.h
 	include/PolyVoxCore/MinizBlockCompressor.inl
-	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Picking.h

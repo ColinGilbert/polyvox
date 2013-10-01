@@ -26,8 +26,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BlockCompressor.h"
 
-#include "PolyVoxCore/MinizCompressor.h"
-
 namespace PolyVox
 {
 	template <typename VoxelType>
