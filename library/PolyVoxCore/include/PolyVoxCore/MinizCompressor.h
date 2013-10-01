@@ -3,6 +3,8 @@
 
 #include "PolyVoxCore/Compressor.h"
 
+#include "PolyVoxCore/Impl/MinizWrapper.h"
+
 namespace PolyVox
 {
 	/**
@@ -34,7 +36,7 @@ namespace PolyVox
 		// tdefl_compressor contains all the state needed by the low-level compressor so it's a pretty big struct (~300k).
 		// We're storing it by void* because miniz does not supply a header and we don't want to include the .c file from 
 		// here as it will cause linker problems.
-		void* m_pDeflator;
+		tdefl_compressor* m_pDeflator;
 	};
 }
 

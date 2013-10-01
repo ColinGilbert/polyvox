@@ -4,12 +4,12 @@
 
 // Diable things we don't need, and in particular the zlib compatible names which
 // would cause conflicts if a user application is using both PolyVox and zlib.
-#define MINIZ_NO_STDIO
+/*#define MINIZ_NO_STDIO
 #define MINIZ_NO_ARCHIVE_APIS
 #define MINIZ_NO_TIME
 #define MINIZ_NO_ZLIB_APIS
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
-#define MINIZ_NO_MALLOC
+#define MINIZ_NO_MALLOC*/
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
@@ -20,7 +20,7 @@
 // directives) but the other problem is that we are using #pragma GCC system_header to supress warnings which would
 // then be in the .c part of the code. If we ever update GCC on the CDash machine so that it properly supports '#pragma
 // GCC diagnosic ignored' (or so that it doesn't warn in the first place) then we can reconsider spliting miniz.c in two.
-#include "PolyVoxCore/Impl/miniz.c"
+//#include "PolyVoxCore/Impl/miniz.c"
 
 
 #include <sstream>
@@ -39,14 +39,14 @@ namespace PolyVox
 	{
 		// Create and store the deflator.
 		tdefl_compressor* pDeflator = new tdefl_compressor;
-		m_pDeflator = reinterpret_cast<void*>(pDeflator);
+		m_pDeflator = /*reinterpret_cast<void*>*/(pDeflator);
 
 		// The number of dictionary probes to use at each compression level (0-10). 0=implies fastest/minimal possible probing.
 		// The discontinuity is unsettling but may be explained by the 'iCompressionLevel <= 3' check later?
 		static const mz_uint s_tdefl_num_probes[11] = { 0, 1, 6, 32,  16, 32, 128, 256,  512, 768, 1500 };
 
 		// Create tdefl() compatible flags (we have to compose the low-level flags ourselves, or use tdefl_create_comp_flags_from_zip_params() but that means MINIZ_NO_ZLIB_APIS can't be defined).
-		m_uCompressionFlags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[MZ_MIN(10, iCompressionLevel)] | ((iCompressionLevel <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
+		m_uCompressionFlags = TDEFL_WRITE_ZLIB_HEADER | s_tdefl_num_probes[(std::min)(10, iCompressionLevel)] | ((iCompressionLevel <= 3) ? TDEFL_GREEDY_PARSING_FLAG : 0);
 		if (!iCompressionLevel)
 		{
 			m_uCompressionFlags |= TDEFL_FORCE_ALL_RAW_BLOCKS;
@@ -56,7 +56,7 @@ namespace PolyVox
 	MinizCompressor::~MinizCompressor()
 	{
 		// Delete the deflator
-		tdefl_compressor* pDeflator = reinterpret_cast<tdefl_compressor*>(m_pDeflator);
+		tdefl_compressor* pDeflator = /*reinterpret_cast<tdefl_compressor*>*/(m_pDeflator);
 		delete pDeflator;
 	}
 
@@ -67,7 +67,7 @@ namespace PolyVox
 		unsigned long source_len = uUncompressedInputSize;
 
 		// This is really over conservative. (And lame, but it's actually pretty tricky to compute a true upper bound given the way tdefl's blocking works.)
-		return MZ_MAX(128 + (source_len * 110) / 100, 128 + source_len + ((source_len / (31 * 1024)) + 1) * 5);
+		return (std::max)(128 + (source_len * 110) / 100, 128 + source_len + ((source_len / (31 * 1024)) + 1) * 5);
 	}
 
 	uint32_t MinizCompressor::compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
