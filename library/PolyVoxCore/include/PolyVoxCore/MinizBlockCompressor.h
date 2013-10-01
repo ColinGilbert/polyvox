@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BlockCompressor.h"
 
-#include "PolyVoxCore/MinizCompressor.h"
+#include "PolyVoxCore/Impl/MinizWrapper.h"
 
 namespace PolyVox
 {
@@ -37,13 +37,23 @@ namespace PolyVox
 	class MinizBlockCompressor : public BlockCompressor<VoxelType>
 	{
 	public:
-		MinizBlockCompressor();
+		MinizBlockCompressor(int iCompressionLevel = 6); // Miniz defines MZ_DEFAULT_LEVEL = 6 so we use the same here
 		~MinizBlockCompressor();
 
 		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
 		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
 
-		MinizCompressor* m_pCompressor;
+	private:
+		uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize);
+		uint32_t compress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
+		uint32_t decompress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
+
+		unsigned int m_uCompressionFlags;
+
+		// tdefl_compressor contains all the state needed by the low-level compressor so it's a pretty big struct (~300k).
+		// We're storing it by void* because miniz does not supply a header and we don't want to include the .c file from 
+		// here as it will cause linker problems.
+		tdefl_compressor* m_pDeflator;
 	};
 }
 
