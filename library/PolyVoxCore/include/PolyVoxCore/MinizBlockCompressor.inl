@@ -80,7 +80,7 @@ namespace PolyVox
 		try
 		{
 			// Perform the compression
-			uCompressedLength = compress(pSrcData, uSrcLength, pDstData, uDstLength);
+			uCompressedLength = compressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
 
 			// Copy the resulting compressed data into the compressed block
 			pDstBlock->setData(pDstData, uCompressedLength);			
@@ -101,7 +101,7 @@ namespace PolyVox
 			try
 			{		
 				// Perform the compression
-				uCompressedLength = compress(pSrcData, uSrcLength, pDstData, uDstLength);
+				uCompressedLength = compressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
 
 				// Copy the resulting compressed data into the compressed block
 				pDstBlock->setData(pDstData, uCompressedLength);
@@ -128,7 +128,7 @@ namespace PolyVox
 
 		
 		//RLECompressor<VoxelType, uint16_t> compressor;
-		uint32_t uUncompressedLength = decompress(pSrcData, uSrcLength, pDstData, uDstLength);
+		uint32_t uUncompressedLength = decompressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
 
 		POLYVOX_ASSERT(uUncompressedLength == pDstBlock->getDataSizeInBytes(), "Destination length has changed.");
 	}
@@ -145,7 +145,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t MinizBlockCompressor<VoxelType>::compress(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength)
+	uint32_t MinizBlockCompressor<VoxelType>::compressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength)
 	{
 		// Compress as much of the input as possible (or all of it) to the output buffer.
 		tdefl_status status = tdefl_compress(m_pDeflator, pSrcData, &uSrcLength, pDstData, &uDstLength, TDEFL_FINISH);
@@ -163,7 +163,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t MinizBlockCompressor<VoxelType>::decompress(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t MinizBlockCompressor<VoxelType>::decompressWithMiniz(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		// I don't know exactly why this limitation exists but it's an implementation detail of miniz. It shouldn't matter for our purposes 
 		// as our detination is a Block and those are always a power of two. If you need to use this class for other purposes then you'll
