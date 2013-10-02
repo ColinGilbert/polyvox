@@ -62,9 +62,11 @@ namespace PolyVox
 		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());
 		size_t uSrcLength = pSrcBlock->getDataSizeInBytes();
 
-		uint8_t tempBuffer[1000];
-		uint8_t* pDstData = reinterpret_cast<uint8_t*>( tempBuffer );				
-		size_t uDstLength = 1000;
+		// This compressor is expected to be used many times to compress a large number of blocks, but they are all
+		// expected to have the same size. Therefore the resize() function below will only perform allocation once.
+		m_vecTempBuffer.resize(getExpectedCompressedSize(uSrcLength));
+		uint8_t* pDstData = &(m_vecTempBuffer[0]);
+		size_t uDstLength = m_vecTempBuffer.size();
 
 		uint32_t uCompressedLength = 0;
 
@@ -82,12 +84,13 @@ namespace PolyVox
 			// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
 			// Note that ideally we will choose our earlier buffer size so that this almost never happens.
 			logWarning() << "The compressor failed to compress the block, probabaly due to the buffer being too small.";
-			logWarning() << "The compression will be tried again with a larger buffer";
-			uint32_t uMaxCompressedSize = getMaxCompressedSize(uSrcLength);
-			uint8_t* buffer = new uint8_t[ uMaxCompressedSize ];
+			logWarning() << "The compression will be tried again with a larger buffer.";
 
-			pDstData = reinterpret_cast<uint8_t*>( buffer );				
-			uDstLength = uMaxCompressedSize;
+			std::vector<uint8_t> vecExtraBigBuffer;
+			vecExtraBigBuffer.resize(getMaxCompressedSize(uSrcLength));
+
+			uint8_t* pDstData = &(vecExtraBigBuffer[0]);
+			size_t uDstLength = vecExtraBigBuffer.size();
 
 			try
 			{		
@@ -101,11 +104,8 @@ namespace PolyVox
 			{
 				// At this point it didn't work even with a bigger buffer.
 				// Not much more we can do so just rethrow the exception.
-				delete[] buffer;
 				POLYVOX_THROW(std::runtime_error, "Failed to compress block data");
 			}
-
-			delete[] buffer;
 		}
 	}
 
@@ -123,6 +123,15 @@ namespace PolyVox
 
 		// We know we should have received exactly one block's worth of data. If not then something went wrong.
 		POLYVOX_THROW_IF(uUncompressedLength != pDstBlock->getDataSizeInBytes(), std::runtime_error, "Decompressed data does not have the expected length");
+	}
+
+	template <typename VoxelType>
+	uint32_t MinizBlockCompressor<VoxelType>::getExpectedCompressedSize(uint32_t uUncompressedInputSize)
+	{
+		// We expect this block compressor will be used for smoothly changing volume data such as density fields and so
+		// the compression rate might not be great. The value beloew is basically a guess based on previous experience.
+		uint32_t uExpectedCompressionRate = 4;
+		return uUncompressedInputSize / uExpectedCompressionRate;
 	}
 
 	template <typename VoxelType>
