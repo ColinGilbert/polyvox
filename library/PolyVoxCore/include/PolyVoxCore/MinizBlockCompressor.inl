@@ -59,21 +59,12 @@ namespace PolyVox
 	template <typename VoxelType>
 	void MinizBlockCompressor<VoxelType>::compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
 	{
-		// It seems we have to reinitialise the deflator for each fresh dataset (it's probably intended for streaming, which we're not doing here)
-		tdefl_status status = tdefl_init(m_pDeflator, NULL, NULL, m_uCompressionFlags);
-		if (status != TDEFL_STATUS_OKAY)
-		{
-			std::stringstream ss;
-			ss << "tdefl_init() failed with return code '" << status << "'";
-			POLYVOX_THROW(std::runtime_error, ss.str());
-		}
-
 		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());
 		size_t uSrcLength = pSrcBlock->getDataSizeInBytes();
 
-		uint8_t tempBuffer[10000];
+		uint8_t tempBuffer[1000];
 		uint8_t* pDstData = reinterpret_cast<uint8_t*>( tempBuffer );				
-		size_t uDstLength = 10000;
+		size_t uDstLength = 1000;
 
 		uint32_t uCompressedLength = 0;
 
@@ -121,16 +112,17 @@ namespace PolyVox
 	template <typename VoxelType>
 	void MinizBlockCompressor<VoxelType>::decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock)
 	{
+		// Get raw pointers so that the data can be decompressed directly into the destination block.
 		const void* pSrcData = reinterpret_cast<const void*>(pSrcBlock->getData());
 		void* pDstData = reinterpret_cast<void*>(pDstBlock->getData());
 		uint32_t uSrcLength = pSrcBlock->getDataSizeInBytes();
 		uint32_t uDstLength = pDstBlock->getDataSizeInBytes();
 
-		
-		//RLECompressor<VoxelType, uint16_t> compressor;
+		// Perform the decompression
 		uint32_t uUncompressedLength = decompressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
 
-		POLYVOX_ASSERT(uUncompressedLength == pDstBlock->getDataSizeInBytes(), "Destination length has changed.");
+		// We know we should have received exactly one block's worth of data. If not then something went wrong.
+		POLYVOX_THROW_IF(uUncompressedLength != pDstBlock->getDataSizeInBytes(), std::runtime_error, "Decompressed data does not have the expected length");
 	}
 
 	template <typename VoxelType>
@@ -147,10 +139,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t MinizBlockCompressor<VoxelType>::compressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength)
 	{
-		// Compress as much of the input as possible (or all of it) to the output buffer.
-		tdefl_status status = tdefl_compress(m_pDeflator, pSrcData, &uSrcLength, pDstData, &uDstLength, TDEFL_FINISH);
+		// It seems we have to reinitialise the deflator for each fresh dataset (it's probably intended for streaming, which we're not doing here)
+		tdefl_status status = tdefl_init(m_pDeflator, NULL, NULL, m_uCompressionFlags);
+		if (status != TDEFL_STATUS_OKAY)
+		{
+			std::stringstream ss;
+			ss << "tdefl_init() failed with return code '" << status << "'";
+			POLYVOX_THROW(std::runtime_error, ss.str());
+		}
 
-		//Check whther the compression was successful.
+		// Compress as much of the input as possible (or all of it) to the output buffer.
+		status = tdefl_compress(m_pDeflator, pSrcData, &uSrcLength, pDstData, &uDstLength, TDEFL_FINISH);
+
+		//Check whether the compression was successful.
 		if (status != TDEFL_STATUS_DONE)
 		{
 			std::stringstream ss;
@@ -166,14 +167,10 @@ namespace PolyVox
 	uint32_t MinizBlockCompressor<VoxelType>::decompressWithMiniz(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
 	{
 		// I don't know exactly why this limitation exists but it's an implementation detail of miniz. It shouldn't matter for our purposes 
-		// as our detination is a Block and those are always a power of two. If you need to use this class for other purposes then you'll
+		// as our destination is a Block and those are always a power of two. If you need to use this code for other purposes then you'll
 		// probably have to scale up your dst buffer to the nearest appropriate size. Alternatively you can use the mz_uncompress function,
 		// but that means enabling parts of the miniz API which are #defined out at the top of this file.
-		POLYVOX_ASSERT(isPowerOf2(uDstLength), "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
-		if(isPowerOf2(uDstLength) == false)
-		{
-			POLYVOX_THROW(std::invalid_argument, "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
-		}
+		POLYVOX_THROW_IF(isPowerOf2(uDstLength) == false, std::invalid_argument, "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
 
 		// Change the type to avoid compiler warnings
 		size_t ulSrcLength = uSrcLength;
@@ -187,7 +184,7 @@ namespace PolyVox
 		// different locations within it. In our scenario it's only called once so the start and the location are the same (both pDstData).
 		tinfl_status status = tinfl_decompress(&inflator, (const mz_uint8 *)pSrcData, &ulSrcLength, (mz_uint8 *)pDstData, (mz_uint8 *)pDstData, &ulDstLength, TINFL_FLAG_PARSE_ZLIB_HEADER);
 
-		//Check whther the decompression was successful.
+		//Check whether the decompression was successful.
 		if (status != TINFL_STATUS_DONE)
 		{
 			std::stringstream ss;
