@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2013 David Williams and Matthew Williams
+Copyright (c) 2005-2013 David Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,39 +21,19 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_RLEBlockCompressor_H__
-#define __PolyVox_RLEBlockCompressor_H__
+#ifndef __PolyVox_MinizWrapper_H__
+#define __PolyVox_MinizWrapper_H__
 
-#include "PolyVoxCore/BlockCompressor.h"
+// Diable things we don't need, and in particular the zlib compatible names which
+// would cause conflicts if a user application is using both PolyVox and zlib.
+#define MINIZ_NO_STDIO
+#define MINIZ_NO_ARCHIVE_APIS
+#define MINIZ_NO_TIME
+#define MINIZ_NO_ZLIB_APIS
+#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
+#define MINIZ_NO_MALLOC
 
-namespace PolyVox
-{
-	template <typename VoxelType>
-	class Run
-	{
-	public:
-		typedef uint16_t LengthType;
-		VoxelType value;
-		LengthType length;
-	};
+#define MINIZ_HEADER_FILE_ONLY
+#include "PolyVoxCore/Impl/miniz.c"
 
-	/**
-	 * Provides an interface for performing paging of data.
-	 */
-	template <typename VoxelType>
-	class RLEBlockCompressor : public BlockCompressor<VoxelType>
-	{
-		
-
-	public:
-		RLEBlockCompressor();
-		~RLEBlockCompressor();
-
-		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
-		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
-	};
-}
-
-#include "PolyVoxCore/RLEBlockCompressor.inl"
-
-#endif //__PolyVox_RLEBlockCompressor_H__
+#endif //__PolyVox_MinizWrapper_H__

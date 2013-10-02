@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2005-2013 David Williams and Matthew Williams
+Copyright (c) 2005-2013 David Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,39 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_RLEBlockCompressor_H__
-#define __PolyVox_RLEBlockCompressor_H__
+#include "PolyVoxCore/Impl/MinizWrapper.h"
 
-#include "PolyVoxCore/BlockCompressor.h"
-
-namespace PolyVox
-{
-	template <typename VoxelType>
-	class Run
-	{
-	public:
-		typedef uint16_t LengthType;
-		VoxelType value;
-		LengthType length;
-	};
-
-	/**
-	 * Provides an interface for performing paging of data.
-	 */
-	template <typename VoxelType>
-	class RLEBlockCompressor : public BlockCompressor<VoxelType>
-	{
-		
-
-	public:
-		RLEBlockCompressor();
-		~RLEBlockCompressor();
-
-		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
-		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
-	};
-}
-
-#include "PolyVoxCore/RLEBlockCompressor.inl"
-
-#endif //__PolyVox_RLEBlockCompressor_H__
+#undef MINIZ_HEADER_FILE_ONLY
+#include "PolyVoxCore/Impl/miniz.c"
