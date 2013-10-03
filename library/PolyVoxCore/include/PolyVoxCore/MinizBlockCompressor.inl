@@ -59,21 +59,28 @@ namespace PolyVox
 	template <typename VoxelType>
 	void MinizBlockCompressor<VoxelType>::compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
 	{
+		// The uncompressed data will be read straight out of the block
 		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());
 		size_t uSrcLength = pSrcBlock->getDataSizeInBytes();
 
 		// This compressor is expected to be used many times to compress a large number of blocks, but they are all
-		// expected to have the same size. Therefore the resize() function below will only perform allocation once.
-		m_vecTempBuffer.resize(getExpectedCompressedSize(uSrcLength));
+		// expected to have the same size. Therefore the resize() function below should only perform allocation once.
+		uint32_t expectedCompressedSize = getExpectedCompressedSize(uSrcLength);
+		if(m_vecTempBuffer.size() != expectedCompressedSize)
+		{
+			logInfo() << "Resizing temp buffer to " << expectedCompressedSize << "bytes. "
+				<< "This should only happen the first time the MinizBlockCompressor is used";
+			m_vecTempBuffer.resize(expectedCompressedSize);
+		}
+
+		// The compressed data will be written into this temporary buffer.
 		uint8_t* pDstData = &(m_vecTempBuffer[0]);
 		size_t uDstLength = m_vecTempBuffer.size();
-
-		uint32_t uCompressedLength = 0;
 
 		try
 		{
 			// Perform the compression
-			uCompressedLength = compressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
+			uint32_t uCompressedLength = compressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
 
 			// Copy the resulting compressed data into the compressed block
 			pDstBlock->setData(pDstData, uCompressedLength);			
@@ -95,7 +102,7 @@ namespace PolyVox
 			try
 			{		
 				// Perform the compression
-				uCompressedLength = compressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
+				uint32_t uCompressedLength = compressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
 
 				// Copy the resulting compressed data into the compressed block
 				pDstBlock->setData(pDstData, uCompressedLength);
