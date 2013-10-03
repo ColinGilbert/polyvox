@@ -24,6 +24,13 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MinizWrapper_H__
 #define __PolyVox_MinizWrapper_H__
 
+// The miniz library is suplied as a single '.c' file, but this is messy for a project like PolyVox
+// because it consists mostly of headers. Many of our headers may want to make use of Miniz code which
+// means we need to be careful about #including 'miniz.c' multiple times and getting linker errors.
+// We simplify this situation with this 'MinizWrapper.h' and 'MinizWrapper.c' which include 'miniz.c'
+// with only declarations and definitions respectively. 'MinizWrapper.cpp' only gets compiled once,
+// and all other parts of PolyVox can simply include 'MinizWrapper.h' to get the declarations.
+
 // Diable things we don't need, and in particular the zlib compatible names which
 // would cause conflicts if a user application is using both PolyVox and zlib.
 #define MINIZ_NO_STDIO
@@ -33,6 +40,9 @@ freely, subject to the following restrictions:
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #define MINIZ_NO_MALLOC
 
+// Include only the declarations of the functions in miniz.c. Don't include
+// the actual definitions, as this 'MinizWrapper.h' may be included from multiple
+// locations and we want to avoid linker errors regarding multiple definitions.
 #define MINIZ_HEADER_FILE_ONLY
 #include "PolyVoxCore/Impl/miniz.c"
 

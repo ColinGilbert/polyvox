@@ -21,7 +21,9 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+// Please see this header file for comment about the purpose of MinizWrapper.h/cpp
 #include "PolyVoxCore/Impl/MinizWrapper.h"
 
+// Get the full definitions, not just the declarations.
 #undef MINIZ_HEADER_FILE_ONLY
 #include "PolyVoxCore/Impl/miniz.c"
