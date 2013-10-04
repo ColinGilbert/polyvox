@@ -31,9 +31,6 @@ namespace PolyVox
         const Type& v0,const Type& v1,
         const float x)
     {
-		//This function is called frequently and is very short, so assert rather than exceptions.
-        POLYVOX_ASSERT((x >= 0.0f) && (x <= 1.0f), "Interpolation input out of 0.0 to 1.0 range.");
-
 		//Interpolate along X
 		Type v0_1 = (v1 - v0) * x + v0;
 
@@ -45,10 +42,6 @@ namespace PolyVox
         const Type& v00,const Type& v10,const Type& v01,const Type& v11,
         const float x, const float y)
     {
-		//This function is called frequently and is very short, so assert rather than exceptions.
-        POLYVOX_ASSERT((x >= 0.0f) && (y >= 0.0f) && 
-            (x <= 1.0f) && (y <= 1.0f), "Interpolation input out of 0.0 to 1.0 range.");
-
 		// Linearly interpolate along x
 		Type v00_10 = lerp(v00, v10, x);
 		Type v01_11 = lerp(v01, v11, x);
@@ -65,10 +58,6 @@ namespace PolyVox
         const Type& v001,const Type& v101,const Type& v011,const Type& v111,
         const float x, const float y, const float z)
     {
-		//This function is called frequently and is very short, so assert rather than exceptions.
-        POLYVOX_ASSERT((x >= 0.0f) && (y >= 0.0f) && (z >= 0.0f) && 
-            (x <= 1.0f) && (y <= 1.0f) && (z <= 1.0f), "Interpolation input out of 0.0 to 1.0 range.");
-
 		// Bilinearly interpolate along Y
 		Type v000_v100__v010_v110 = bilerp(v000, v100, v010, v110, x, y);
 		Type v001_v101__v011_v111 = bilerp(v001, v101, v011, v111, x, y);
