@@ -46,8 +46,8 @@ namespace PolyVox
 	private:
 		uint32_t getExpectedCompressedSize(uint32_t uUncompressedInputSize);
 		uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize);
-		uint32_t compressWithMiniz(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
-		uint32_t decompressWithMiniz(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength);
+		uint32_t compressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength);
+		uint32_t decompressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength);
 
 		unsigned int m_uCompressionFlags;
 

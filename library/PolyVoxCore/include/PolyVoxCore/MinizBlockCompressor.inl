@@ -122,8 +122,8 @@ namespace PolyVox
 		// Get raw pointers so that the data can be decompressed directly into the destination block.
 		const void* pSrcData = reinterpret_cast<const void*>(pSrcBlock->getData());
 		void* pDstData = reinterpret_cast<void*>(pDstBlock->getData());
-		uint32_t uSrcLength = pSrcBlock->getDataSizeInBytes();
-		uint32_t uDstLength = pDstBlock->getDataSizeInBytes();
+		size_t uSrcLength = pSrcBlock->getDataSizeInBytes();
+		size_t uDstLength = pDstBlock->getDataSizeInBytes();
 
 		// Perform the decompression
 		uint32_t uUncompressedLength = decompressWithMiniz(pSrcData, uSrcLength, pDstData, uDstLength);
@@ -180,7 +180,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	uint32_t MinizBlockCompressor<VoxelType>::decompressWithMiniz(const void* pSrcData, uint32_t uSrcLength, void* pDstData, uint32_t uDstLength)
+	uint32_t MinizBlockCompressor<VoxelType>::decompressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength)
 	{
 		// I don't know exactly why this limitation exists but it's an implementation detail of miniz. It shouldn't matter for our purposes 
 		// as our destination is a Block and those are always a power of two. If you need to use this code for other purposes then you'll
@@ -188,17 +188,13 @@ namespace PolyVox
 		// but that means enabling parts of the miniz API which are #defined out at the top of this file.
 		POLYVOX_THROW_IF(isPowerOf2(uDstLength) == false, std::invalid_argument, "Miniz decompressor requires the destination buffer to have a size which is a power of two.");
 
-		// Change the type to avoid compiler warnings
-		size_t ulSrcLength = uSrcLength;
-		size_t ulDstLength = uDstLength;
-
 		// Create and initialise the decompressor (I believe this is much small than the compressor).
 		tinfl_decompressor inflator;
 		tinfl_init(&inflator);
 
 		// Do the decompression. In some scenarios 'tinfl_decompress' would be called multiple times with the same dest buffer but
 		// different locations within it. In our scenario it's only called once so the start and the location are the same (both pDstData).
-		tinfl_status status = tinfl_decompress(&inflator, (const mz_uint8 *)pSrcData, &ulSrcLength, (mz_uint8 *)pDstData, (mz_uint8 *)pDstData, &ulDstLength, TINFL_FLAG_PARSE_ZLIB_HEADER);
+		tinfl_status status = tinfl_decompress(&inflator, (const mz_uint8 *)pSrcData, &uSrcLength, (mz_uint8 *)pDstData, (mz_uint8 *)pDstData, &uDstLength, TINFL_FLAG_PARSE_ZLIB_HEADER);
 
 		//Check whether the decompression was successful.
 		if (status != TINFL_STATUS_DONE)
@@ -209,6 +205,6 @@ namespace PolyVox
 		}
 
 		// The decompression modifies 'ulDstLength' to hold the new length.
-		return ulDstLength;
+		return uDstLength;
 	}
 }
