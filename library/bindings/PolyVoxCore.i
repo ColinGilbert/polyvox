@@ -79,7 +79,6 @@ EXTRACTOR(shortname, LargeVolume)
 %include "Block.i"
 %include "CompressedBlock.i"
 %include "UncompressedBlock.i"
-%include "Compressor.i"
 %include "BlockCompressor.i"
 %include "Pager.i"
 %include "FilePager.i"
