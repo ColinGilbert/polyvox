@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BlockCompressor.h"
 
-#include "PolyVoxCore/MinizCompressor.h"
+#include "PolyVoxCore/Impl/MinizWrapper.h"
 
 namespace PolyVox
 {
@@ -37,13 +37,26 @@ namespace PolyVox
 	class MinizBlockCompressor : public BlockCompressor<VoxelType>
 	{
 	public:
-		MinizBlockCompressor();
+		MinizBlockCompressor(int iCompressionLevel = 6); // Miniz defines MZ_DEFAULT_LEVEL = 6 so we use the same here
 		~MinizBlockCompressor();
 
 		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
 		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
 
-		MinizCompressor* m_pCompressor;
+	private:
+		uint32_t getExpectedCompressedSize(uint32_t uUncompressedInputSize);
+		uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize);
+		uint32_t compressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength);
+		uint32_t decompressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength);
+
+		unsigned int m_uCompressionFlags;
+
+		// Data gets compressed into this, then we check how big the result
+		// is and copy the required number of bytes to the destination block.
+		std::vector<uint8_t> m_vecTempBuffer;
+
+		// tdefl_compressor contains all the state needed by the low-level compressor so it's a pretty big struct (~300k).
+		tdefl_compressor* m_pDeflator;
 	};
 }
 

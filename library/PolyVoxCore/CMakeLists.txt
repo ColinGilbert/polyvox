@@ -31,7 +31,6 @@ endif()
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
-	source/MinizCompressor.cpp
 	source/Region.cpp
 	source/VertexTypes.cpp
 )
@@ -52,7 +51,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BlockCompressor.h
 	include/PolyVoxCore/CompressedBlock.h
 	include/PolyVoxCore/CompressedBlock.inl
-	include/PolyVoxCore/Compressor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/CubicSurfaceExtractorWithNormals.h
@@ -77,7 +75,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/MinizBlockCompressor.h
 	include/PolyVoxCore/MinizBlockCompressor.inl
-	include/PolyVoxCore/MinizCompressor.h
 	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Picking.h
@@ -110,6 +107,7 @@ SET(CORE_INC_FILES
 SET(IMPL_SRC_FILES
 	source/Impl/ErrorHandling.cpp
 	source/Impl/MarchingCubesTables.cpp
+	source/Impl/MinizWrapper.cpp
 	source/Impl/RandomUnitVectors.cpp
 	source/Impl/RandomVectors.cpp
 	source/Impl/Timer.cpp
@@ -124,6 +122,7 @@ SET(IMPL_INC_FILES
     include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h
 	include/PolyVoxCore/Impl/MarchingCubesTables.h
+	include/PolyVoxCore/Impl/MinizWrapper.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
 	include/PolyVoxCore/Impl/RandomVectors.h
 	include/PolyVoxCore/Impl/SubArray.h

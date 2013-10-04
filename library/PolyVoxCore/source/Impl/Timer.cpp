@@ -78,16 +78,19 @@ namespace PolyVox
 
 	void Timer::start(void)
 	{
+		m_start = clock::now();
 	}
 
 	float Timer::elapsedTimeInSeconds(void)
 	{
-		return 0.0f;
+		std::chrono::duration<float> elapsed_seconds = clock::now() - m_start;
+		return elapsed_seconds.count();
 	}
 
 	uint32_t Timer::elapsedTimeInMilliSeconds(void)
 	{
-		return 0;
+		std::chrono::duration<float, std::milli> elapsed_milliseconds = clock::now() - m_start;
+		return elapsed_milliseconds.count();
 	}
 #endif //_MSC_VER
 }
