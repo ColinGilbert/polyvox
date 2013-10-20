@@ -75,8 +75,19 @@ namespace PolyVox
 		Type getDensity() const { return m_uDensity; }
 		Type getMaterial() const { return m_uMaterial; }
 
-		void setDensity(Type uDensity) { m_uDensity = uDensity; }
-		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
+		void setDensity(Type uDensity)
+		{
+			POLYVOX_ASSERT(uDensity >= getMinDensity(), "Density out of range");
+			POLYVOX_ASSERT(uDensity <= getMaxDensity(), "Density out of range");
+			m_uDensity = uDensity;
+		}
+
+		void setMaterial(Type uMaterial)
+		{
+			POLYVOX_ASSERT(uMaterial >= 0, "Material out of range");
+			POLYVOX_ASSERT(uMaterial <= (0x01 << NoOfMaterialBits) - 1, "Material out of range");
+			m_uMaterial = uMaterial;
+		}
 
 		static Type getMaxDensity() { return (0x01 << NoOfDensityBits) - 1; }
 		static Type getMinDensity() { return 0; }
