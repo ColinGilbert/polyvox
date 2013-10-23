@@ -77,15 +77,19 @@ namespace PolyVox
 
 		void setDensity(Type uDensity)
 		{
-			POLYVOX_ASSERT(uDensity >= getMinDensity(), "Density out of range");
-			POLYVOX_ASSERT(uDensity <= getMaxDensity(), "Density out of range");
+			// Validate range of parameters. The casts are used to bypass a GCC warning 'comparison
+			// is always true due to limited range of data type' which is not helpful in this case.
+			POLYVOX_ASSERT(static_cast<int32_t>(uDensity) >= static_cast<int32_t>(getMinDensity()), "Density out of range");
+			POLYVOX_ASSERT(static_cast<int32_t>(uDensity) <= static_cast<int32_t>(getMaxDensity()), "Density out of range");
 			m_uDensity = uDensity;
 		}
 
 		void setMaterial(Type uMaterial)
 		{
-			POLYVOX_ASSERT(uMaterial >= 0, "Material out of range");
-			POLYVOX_ASSERT(uMaterial <= (0x01 << NoOfMaterialBits) - 1, "Material out of range");
+			// Validate range of parameters. The casts are used to bypass a GCC warning 'comparison
+			// is always true due to limited range of data type' which is not helpful in this case.
+			POLYVOX_ASSERT(static_cast<int32_t>(uMaterial) >= static_cast<int32_t>(0), "Material out of range");
+			POLYVOX_ASSERT(static_cast<int32_t>(uMaterial) <= static_cast<int32_t>((0x01 << NoOfMaterialBits) - 1), "Material out of range");
 			m_uMaterial = uMaterial;
 		}
 
