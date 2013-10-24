@@ -48,7 +48,12 @@ freely, subject to the following restrictions:
 
 // Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
 // platform specific. But macros can contain other macros, so we create macros to control the warnings and use
-// those instead. This set of warning supression macros can be extended to GCC/Clang when required.
+// those instead.
+//
+// Note that we have seperate macros for POLYVOX_MSC_..., POLYVOX_GCC_..., etc. In princpiple we could have just one
+// as compilers should ignore pragmas they don't recognise, but in practice at least MSVC complains about this as
+// well. So in practice it's just eaier to have seperate macros. We could look into the compiler switch to not warn
+// on unrecognised pragmas though.
 #if defined(_MSC_VER)
 	#define POLYVOX_MSC_WARNING_PUSH __pragma(warning(push))
 	#define POLYVOX_DISABLE_MSC_WARNING(x) __pragma(warning(disable:x))
@@ -57,6 +62,16 @@ freely, subject to the following restrictions:
 	#define POLYVOX_MSC_WARNING_PUSH
 	#define POLYVOX_DISABLE_MSC_WARNING(x)
 	#define POLYVOX_MSC_WARNING_POP
+#endif
+
+#if defined(__GNUC__)
+	#define POLYVOX_GCC_WARNING_PUSH #pragma GCC diagnostic push
+	#define POLYVOX_DISABLE_GCC_WARNING(x) #pragma GCC diagnostic ignored x
+	#define POLYVOX_GCC_WARNING_POP #pragma GCC diagnostic pop
+#else
+	#define POLYVOX_GCC_WARNING_PUSH
+	#define POLYVOX_DISABLE_GCC_WARNING(x)
+	#define POLYVOX_GCC_WARNING_POP
 #endif
 
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
