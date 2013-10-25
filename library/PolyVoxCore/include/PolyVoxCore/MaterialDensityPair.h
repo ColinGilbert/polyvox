@@ -75,31 +75,8 @@ namespace PolyVox
 		Type getDensity() const { return m_uDensity; }
 		Type getMaterial() const { return m_uMaterial; }
 
-		void setDensity(Type uDensity)
-		{
-			// Depending on our underlying type it may be impossible for the assert below to be triggered (i.e. if density is stored as
-			// Type, rather than just using a few bits of Type). GCC will warn about this but it's redundant so we diable the warning.
-			POLYVOX_GCC_WARNING_PUSH
-				POLYVOX_DISABLE_GCC_WARNING("-Wtype-limits")
-				POLYVOX_ASSERT(uDensity >= getMinDensity(), "Density out of range");
-				POLYVOX_ASSERT(uDensity <= getMaxDensity(), "Density out of range");
-			POLYVOX_GCC_WARNING_POP
-
-			m_uDensity = uDensity;
-		}
-
-		void setMaterial(Type uMaterial)
-		{
-			// Depending on our underlying type it may be impossible for the assert below to be triggered (i.e. if material is stored as
-			// Type, rather than just using a few bits of Type). GCC will warn about this but it's redundant so we diable the warning.
-			POLYVOX_GCC_WARNING_PUSH
-				POLYVOX_DISABLE_GCC_WARNING("-Wtype-limits")
-				POLYVOX_ASSERT(uMaterial >= 0, "Material out of range");
-				POLYVOX_ASSERT(uMaterial <= (0x01 << NoOfMaterialBits) - 1, "Material out of range");
-			POLYVOX_GCC_WARNING_POP
-
-			m_uMaterial = uMaterial;
-		}
+		void setDensity(Type uDensity) { m_uDensity = uDensity; }
+		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
 
 		static Type getMaxDensity() { return (0x01 << NoOfDensityBits) - 1; }
 		static Type getMinDensity() { return 0; }
