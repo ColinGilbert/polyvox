@@ -436,6 +436,9 @@ namespace PolyVox
 	{
 		typename CompressedBlockMap::iterator i;
 
+		// Flushing will remove the most accessed block, so invalidate the pointer.
+		m_pLastAccessedBlock = 0;
+
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
 		while(m_pUncompressedBlockCache.size() > 0)
@@ -585,14 +588,10 @@ namespace PolyVox
 	{
 		UncompressedBlock<VoxelType>* pUncompressedBlock = itUncompressedBlock->second;
 
-		// This should not often happen as blocks are normally deleted based on being least recently used.
-		// However, I can imagine that flushing a large number of blocks could cause this to occur. Just
-		// to be safe we handle it by invalidating the last accessed block pointer.
-		if(pUncompressedBlock == m_pLastAccessedBlock)
-		{
-			logWarning() << "The last accessed block is being erased from the uncompressed cache.";
-			m_pLastAccessedBlock = 0;
-		}
+		// This should never happen as blocks are deleted based on being least recently used.
+		// I the case that we are flushing we delete all blocks, but the flush function will
+		// reset the 'm_pLastAccessedBlock' anyway to prevent it being accidentally reused.
+		POLYVOX_ASSERT(pUncompressedBlock != m_pLastAccessedBlock, "Attempted to delete last accessed block.");
 
 		// Before deleting the block we may need to recompress its data. We
 		// only do this if the data has been modified since it was decompressed.
