@@ -319,8 +319,8 @@ namespace PolyVox
 
 		uint32_t calculateBlockMemoryUsage(void) const;
 
-		void flushOldestExcessiveBlocks(void) const;
-		void flushExcessiveCacheEntries(void) const;
+		void ensureCompressedBlockMapHasFreeSpace(void) const;
+		void ensureUncompressedBlockMapHasFreeSpace(void) const;
 
 		void initialise();
 

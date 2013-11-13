@@ -436,6 +436,9 @@ namespace PolyVox
 	{
 		typename CompressedBlockMap::iterator i;
 
+		// Flushing will remove the most accessed block, so invalidate the pointer.
+		m_pLastAccessedBlock = 0;
+
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
 		while(m_pUncompressedBlockCache.size() > 0)
@@ -585,14 +588,10 @@ namespace PolyVox
 	{
 		UncompressedBlock<VoxelType>* pUncompressedBlock = itUncompressedBlock->second;
 
-		// This should not often happen as blocks are normally deleted based on being least recently used.
-		// However, I can imagine that flushing a large number of blocks could cause this to occur. Just
-		// to be safe we handle it by invalidating the last accessed block pointer.
-		if(pUncompressedBlock == m_pLastAccessedBlock)
-		{
-			logWarning() << "The last accessed block is being erased from the uncompressed cache.";
-			m_pLastAccessedBlock = 0;
-		}
+		// This should never happen as blocks are deleted based on being least recently used.
+		// I the case that we are flushing we delete all blocks, but the flush function will
+		// reset the 'm_pLastAccessedBlock' anyway to prevent it being accidentally reused.
+		POLYVOX_ASSERT(pUncompressedBlock != m_pLastAccessedBlock, "Attempted to delete last accessed block.");
 
 		// Before deleting the block we may need to recompress its data. We
 		// only do this if the data has been modified since it was decompressed.
@@ -625,16 +624,13 @@ namespace PolyVox
 		if(itBlock != m_pBlocks.end())
 		{
 			pBlock = itBlock->second;
-			pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
-			return pBlock;
 		}
 		else
 		{
+			ensureCompressedBlockMapHasFreeSpace();
+
 			// The block wasn't found so we create a new one
 			pBlock = new CompressedBlock<VoxelType>;
-
-			// It's important to set the timestamp before we flush later.
-			pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
 
 			// Pass the block to the Pager to give it a chance to initialise it with any data
 			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
@@ -644,12 +640,10 @@ namespace PolyVox
 
 			// Add the block to the map
 			itBlock = m_pBlocks.insert(std::make_pair(v3dBlockPos, pBlock)).first;
-
-			// Paging in this new block may mean we are now using too much memory. If necessary, flush some old blocks.
-			flushOldestExcessiveBlocks();
-
-			return pBlock;
 		}
+
+		pBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+		return pBlock;
 	}
 
 	template <typename VoxelType>
@@ -666,30 +660,22 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}
 
+		UncompressedBlock<VoxelType>* pUncompressedBlock = 0;
+
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pUncompressedBlockCache.find(v3dBlockPos);
 		// check whether the block is already loaded
 		if(itUncompressedBlock != m_pUncompressedBlockCache.end())
 		{
-			UncompressedBlock<VoxelType>* pUncompressedBlock = itUncompressedBlock->second;
-
-			pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
-			m_pLastAccessedBlock = pUncompressedBlock;
-			m_v3dLastAccessedBlockPos = v3dBlockPos;
-
-			return pUncompressedBlock;			
+			pUncompressedBlock = itUncompressedBlock->second;		
 		}
 		else
 		{
-			// At this point we just create a new block.
-			UncompressedBlock<VoxelType>* pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
-			
-			// It's important to set the timestamp before we flush later.
-			pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+			// At this point we know that the uncompresed block did not exist in the cache. We will
+			// create it and add it to the cache, which means we need to make sure there is space.
+			ensureUncompressedBlockMapHasFreeSpace();
 
-			// We set these before flushing because the flush can cause block to be erased, and there
-			// is a test to make sure the block which is being erase is not the last accessed block.
-			m_pLastAccessedBlock = pUncompressedBlock;
-			m_v3dLastAccessedBlockPos = v3dBlockPos;
+			// We can now create a new block.
+			pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
 
 			// An uncompressed bock is always backed by a compressed one, and this is created by getCompressedBlock() if it doesn't 
 			// already exist. If it does already exist and has data then we bring this across into the ucompressed version.
@@ -702,14 +688,14 @@ namespace PolyVox
 			}
 			
 			// Add our new block to the map.
-			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));			
-
-			// Our block cache may now have grown too large. Flush some entries if necessary.
-			// FIXME - Watch out for flushing the block we just created!
-			flushExcessiveCacheEntries();
-
-			return pUncompressedBlock;
+			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));	
 		}
+
+		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
+		m_pLastAccessedBlock = pUncompressedBlock;
+		m_v3dLastAccessedBlockPos = v3dBlockPos;
+
+		return pUncompressedBlock;	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -762,7 +748,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::flushOldestExcessiveBlocks(void) const
+	void LargeVolume<VoxelType>::ensureCompressedBlockMapHasFreeSpace(void) const
 	{
 		while(m_pBlocks.size() > m_uMaxNumberOfBlocksInMemory) 
 		{
@@ -784,7 +770,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::flushExcessiveCacheEntries(void) const
+	void LargeVolume<VoxelType>::ensureUncompressedBlockMapHasFreeSpace(void) const
 	{
 		while(m_pUncompressedBlockCache.size() > m_uMaxNumberOfUncompressedBlocks) 
 		{
