@@ -43,6 +43,7 @@ namespace PolyVox
 		
 		float elapsedTimeInSeconds(void);
 		uint32_t elapsedTimeInMilliSeconds(void);
+		uint32_t elapsedTimeInMicroSeconds(void);
 		
 	private:
 #if defined(_MSC_VER)
