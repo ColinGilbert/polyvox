@@ -67,6 +67,11 @@ namespace PolyVox
 	{
 		return static_cast<uint32_t>(elapsedTimeInSeconds() * 1000.0f);
 	}
+
+	uint32_t Timer::elapsedTimeInMicroSeconds(void)
+	{
+		return static_cast<uint32_t>(elapsedTimeInSeconds() * 1000000.0f);
+	}
 #else //_MSC_VER
 	Timer::Timer(bool bAutoStart)
 	{
@@ -91,6 +96,12 @@ namespace PolyVox
 	{
 		std::chrono::duration<float, std::milli> elapsed_milliseconds = clock::now() - m_start;
 		return elapsed_milliseconds.count();
+	}
+
+	uint32_t Timer::elapsedTimeInMicroSeconds(void)
+	{
+		std::chrono::duration<float, std::micro> elapsed_microseconds = clock::now() - m_start;
+		return elapsed_microseconds.count();
 	}
 #endif //_MSC_VER
 }
