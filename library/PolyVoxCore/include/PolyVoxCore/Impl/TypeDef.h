@@ -117,11 +117,4 @@ freely, subject to the following restrictions:
 	#define polyvox_shared_ptr boost::shared_ptr
 #endif
 
-#define USE_LARGE_VOLUME
-#ifdef USE_LARGE_VOLUME
-	#define POLYVOX_VOLUME LargeVolume
-#else
-	#define POLYVOX_VOLUME SimpleVolume
-#endif
-
 #endif
