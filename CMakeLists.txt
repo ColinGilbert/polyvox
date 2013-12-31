@@ -65,7 +65,7 @@ endif()
 IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 ENDIF()
-if(CMAKE_CXX_COMPILER MATCHES "clang")
+if(CMAKE_CXX_COMPILER MATCHES "Clang")
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 endif()
 
