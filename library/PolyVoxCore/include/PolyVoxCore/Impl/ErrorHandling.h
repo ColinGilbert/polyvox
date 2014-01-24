@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/Config.h"
 
+#include "PolyVoxCore/Impl/Logging.h"
+
 #include <cstdlib>  // For std::exit
 #include <iostream> // For std::cerr
 #include <stdexcept>
@@ -60,125 +62,6 @@ freely, subject to the following restrictions:
 #endif
 
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
-
-/*
- * Logging
- * --------
- * PolyVox provides basic logging facilities which can be redirected by your application.
- */
-
-#define LOG_DECLARATION(name) \
-	std::ostream& log(name)(void); \
-	void set(name)Stream(std::ostream& nameStream);
-
-namespace PolyVox
-{
-	namespace Impl
-	{
-		std::ostream*& getTraceStreamInstance();
-		std::ostream*& getDebugStreamInstance();
-		std::ostream*& getInfoStreamInstance();
-		std::ostream*& getWarningStreamInstance();
-		std::ostream*& getErrorStreamInstance();
-		std::ostream*& getFatalStreamInstance();
-	}
-
-	/// Get a stream which will consume all input without outputting anything.
-	std::ostream* getNullStream(void);
-
-	// These take pointers rather than references to emphasise that the 
-	// user needs to keep the target alive as long as PolyVox is writing data.
-	void setTraceStream(std::ostream* pStream);
-	void setDebugStream(std::ostream* pStream);
-	void setInfoStream(std::ostream* pStream);
-	void setWarningStream(std::ostream* pStream);
-	void setErrorStream(std::ostream* pStream);
-	void setFatalStream(std::ostream* pStream);
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logTrace
-	{
-		logTrace(){}
-		~logTrace(){*(Impl::getTraceStreamInstance()) << std::endl;}
-
-		template<class T>
-		logTrace &operator<<(const T &x)
-		{
-			*(Impl::getTraceStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logDebug
-	{
-		logDebug(){}
-		~logDebug(){*(Impl::getDebugStreamInstance()) << std::endl;}
-
-		template<class T>
-		logDebug &operator<<(const T &x)
-		{
-			*(Impl::getDebugStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logInfo
-	{
-		logInfo(){}
-		~logInfo(){*(Impl::getInfoStreamInstance()) << std::endl;}
-
-		template<class T>
-		logInfo &operator<<(const T &x)
-		{
-			*(Impl::getInfoStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logWarning
-	{
-		logWarning(){}
-		~logWarning(){*(Impl::getWarningStreamInstance()) << std::endl;}
-
-		template<class T>
-		logWarning &operator<<(const T &x)
-		{
-			*(Impl::getWarningStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logError
-	{
-		logError(){}
-		~logError(){*(Impl::getErrorStreamInstance()) << std::endl;}
-
-		template<class T>
-		logError &operator<<(const T &x)
-		{
-			*(Impl::getErrorStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logFatal
-	{
-		logFatal(){}
-		~logFatal(){*(Impl::getFatalStreamInstance()) << std::endl;}
-
-		template<class T>
-		logFatal &operator<<(const T &x)
-		{
-			*(Impl::getFatalStreamInstance()) << x;
-			return *this;
-		}
-	};
-}
 
 /*
  * Assertions
