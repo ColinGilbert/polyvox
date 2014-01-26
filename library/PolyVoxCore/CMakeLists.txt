@@ -106,6 +106,7 @@ SET(CORE_INC_FILES
 
 SET(IMPL_SRC_FILES
 	source/Impl/ErrorHandling.cpp
+	source/Impl/Logging.cpp
 	source/Impl/MarchingCubesTables.cpp
 	source/Impl/MinizWrapper.cpp
 	source/Impl/RandomUnitVectors.cpp
@@ -121,6 +122,7 @@ SET(IMPL_INC_FILES
     include/PolyVoxCore/Impl/CompilerCapabilities.h
     include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h
+	include/PolyVoxCore/Impl/Logging.h
 	include/PolyVoxCore/Impl/MarchingCubesTables.h
 	include/PolyVoxCore/Impl/MinizWrapper.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
