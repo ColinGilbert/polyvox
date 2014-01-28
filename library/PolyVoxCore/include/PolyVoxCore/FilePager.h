@@ -62,10 +62,7 @@ namespace PolyVox
 		{
 			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
 			{
-				if(!std::remove(iter->c_str()))
-				{
-					logWarning() << "Failed to delete '" << *iter << "' when destroying FilePager";
-				}
+				POLYVOX_LOG_WARNING_IF(!std::remove(iter->c_str()), "Failed to delete '" << *iter << "' when destroying FilePager");
 			}
 
 			m_vecCreatedFiles.clear();
