@@ -23,6 +23,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Region.h"
 
+#include <algorithm>
 #include <limits>
 
 namespace PolyVox
