@@ -199,9 +199,9 @@ namespace PolyVox
 		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
 		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 
-		logTrace() << "Cubic surface extraction took " << timer.elapsedTimeInMilliSeconds()
+		POLYVOX_LOG_TRACE("Cubic surface extraction took " << timer.elapsedTimeInMilliSeconds()
 			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
-			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")";
+			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
 	}
 
 	template<typename VolumeType, typename IsQuadNeeded>

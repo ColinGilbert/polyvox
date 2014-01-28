@@ -258,8 +258,8 @@ namespace PolyVox
 		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
 
 		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-		logDebug() << "The maximum number of uncompresed blocks has been set to " << m_uMaxNumberOfUncompressedBlocks
-			<< ", which is " << m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes << " bytes"; 
+		POLYVOX_LOG_DEBUG("The maximum number of uncompresed blocks has been set to " << m_uMaxNumberOfUncompressedBlocks
+			<< ", which is " << m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes << " bytes"); 
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

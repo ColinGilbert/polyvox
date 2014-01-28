@@ -62,10 +62,7 @@ namespace PolyVox
 		{
 			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
 			{
-				if(!std::remove(iter->c_str()))
-				{
-					logWarning() << "Failed to delete '" << *iter << "' when destroying FilePager";
-				}
+				POLYVOX_LOG_WARNING_IF(!std::remove(iter->c_str()), "Failed to delete '" << *iter << "' when destroying FilePager");
 			}
 
 			m_vecCreatedFiles.clear();
@@ -89,7 +86,7 @@ namespace PolyVox
 			FILE* pFile = fopen(filename.c_str(), "rb");
 			if(pFile)
 			{
-				logTrace() << "Paging in data for " << region;
+				POLYVOX_LOG_TRACE("Paging in data for " << region);
 
 				fseek(pFile, 0L, SEEK_END);
 				size_t fileSizeInBytes = ftell(pFile);
@@ -109,7 +106,7 @@ namespace PolyVox
 			}
 			else
 			{
-				logTrace() << "No data found for " << region << " during paging in.";
+				POLYVOX_LOG_TRACE("No data found for " << region << " during paging in.");
 			}
 		}
 
@@ -118,7 +115,7 @@ namespace PolyVox
 			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
 			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
 
-			logTrace() << "Paging out data for " << region;
+			POLYVOX_LOG_TRACE("Paging out data for " << region);
 
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"

@@ -68,8 +68,8 @@ namespace PolyVox
 		uint32_t expectedCompressedSize = getExpectedCompressedSize(uSrcLength);
 		if(m_vecTempBuffer.size() != expectedCompressedSize)
 		{
-			logInfo() << "Resizing temp buffer to " << expectedCompressedSize << "bytes. "
-				<< "This should only happen the first time the MinizBlockCompressor is used";
+			POLYVOX_LOG_INFO("Resizing temp buffer to " << expectedCompressedSize << "bytes. "
+				<< "This should only happen the first time the MinizBlockCompressor is used");
 			m_vecTempBuffer.resize(expectedCompressedSize);
 		}
 
@@ -90,8 +90,8 @@ namespace PolyVox
 			// It is possible for the compression to fail. A common cause for this would be if the destination
 			// buffer is not big enough. So now we try again using a buffer that is definitely big enough.
 			// Note that ideally we will choose our earlier buffer size so that this almost never happens.
-			logWarning() << "The compressor failed to compress the block, probabaly due to the buffer being too small.";
-			logWarning() << "The compression will be tried again with a larger buffer.";
+			POLYVOX_LOG_WARNING("The compressor failed to compress the block, probabaly due to the buffer being too small.");
+			POLYVOX_LOG_WARNING("The compression will be tried again with a larger buffer.");
 
 			std::vector<uint8_t> vecExtraBigBuffer;
 			vecExtraBigBuffer.resize(getMaxCompressedSize(uSrcLength));

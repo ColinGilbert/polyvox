@@ -45,7 +45,7 @@ namespace PolyVox
 		LARGE_INTEGER li;
 		if(!QueryPerformanceFrequency(&li))
 		{
-			logWarning() << "QueryPerformanceFrequency failed!";
+			POLYVOX_LOG_WARNING("QueryPerformanceFrequency failed!");
 			m_fPCFreq = 1.0f;
 		}
 

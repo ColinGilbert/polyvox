@@ -159,7 +159,7 @@ namespace PolyVox
 		do \
 		{ \
 			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			*(PolyVox::Impl::getTraceStreamInstance()) << (message) << std::endl; \
+			*(PolyVox::Impl::getTraceStreamInstance()) << message << std::endl; \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -174,7 +174,7 @@ namespace PolyVox
 			if ((condition)) \
 			{ \
 				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				*(PolyVox::Impl::getTraceStreamInstance()) << (message) << std::endl; \
+				*(PolyVox::Impl::getTraceStreamInstance()) << message << std::endl; \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -212,7 +212,7 @@ namespace PolyVox
 		do \
 		{ \
 			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			*(PolyVox::Impl::getDebugStreamInstance()) << (message) << std::endl; \
+			*(PolyVox::Impl::getDebugStreamInstance()) << message << std::endl; \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -227,7 +227,7 @@ namespace PolyVox
 			if ((condition)) \
 			{ \
 				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				*(PolyVox::Impl::getDebugStreamInstance()) << (message) << std::endl; \
+				*(PolyVox::Impl::getDebugStreamInstance()) << message << std::endl; \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -265,7 +265,7 @@ namespace PolyVox
 		do \
 		{ \
 			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			*(PolyVox::Impl::getInfoStreamInstance()) << (message) << std::endl; \
+			*(PolyVox::Impl::getInfoStreamInstance()) << message << std::endl; \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -280,7 +280,7 @@ namespace PolyVox
 			if ((condition)) \
 			{ \
 				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				*(PolyVox::Impl::getInfoStreamInstance()) << (message) << std::endl; \
+				*(PolyVox::Impl::getInfoStreamInstance()) << message << std::endl; \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -318,7 +318,7 @@ namespace PolyVox
 		do \
 		{ \
 			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			*(PolyVox::Impl::getWarningStreamInstance()) << (message) << std::endl; \
+			*(PolyVox::Impl::getWarningStreamInstance()) << message << std::endl; \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -333,7 +333,7 @@ namespace PolyVox
 			if ((condition)) \
 			{ \
 				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				*(PolyVox::Impl::getWarningStreamInstance()) << (message) << std::endl; \
+				*(PolyVox::Impl::getWarningStreamInstance()) << message << std::endl; \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -371,7 +371,7 @@ namespace PolyVox
 		do \
 		{ \
 			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			*(PolyVox::Impl::getErrorStreamInstance()) << (message) << std::endl; \
+			*(PolyVox::Impl::getErrorStreamInstance()) << message << std::endl; \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -386,7 +386,7 @@ namespace PolyVox
 			if ((condition)) \
 			{ \
 				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				*(PolyVox::Impl::getErrorStreamInstance()) << (message) << std::endl; \
+				*(PolyVox::Impl::getErrorStreamInstance()) << message << std::endl; \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -424,7 +424,7 @@ namespace PolyVox
 		do \
 		{ \
 			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			*(PolyVox::Impl::getFatalStreamInstance()) << (message) << std::endl; \
+			*(PolyVox::Impl::getFatalStreamInstance()) << message << std::endl; \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -439,7 +439,7 @@ namespace PolyVox
 			if ((condition)) \
 			{ \
 				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				*(PolyVox::Impl::getFatalStreamInstance()) << (message) << std::endl; \
+				*(PolyVox::Impl::getFatalStreamInstance()) << message << std::endl; \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
