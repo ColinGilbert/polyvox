@@ -25,6 +25,22 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	namespace Impl
+	{
+		// Perhaps read this note when we want to move everything
+		// to the header file: http://stackoverflow.com/a/7834555
+		Logger*& getLoggerInstance()
+		{
+			static Logger* s_pLogger = 0;
+			return s_pLogger;
+		}
+	}
+
+	void setLogger(Logger* pLogger)
+	{
+		Impl::getLoggerInstance() = pLogger;
+	}
+
 	/** 
 	 * \return A pointer to the null stream.
 	 */

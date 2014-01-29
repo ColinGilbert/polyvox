@@ -35,12 +35,54 @@ freely, subject to the following restrictions:
  * PolyVox provides basic logging facilities which can be redirected by your application.
  */
 
-#define LOG_DECLARATION(name) \
-	std::ostream& log(name)(void); \
-	void set(name)Stream(std::ostream& nameStream);
-
 namespace PolyVox
 {
+	class Logger
+	{
+	public:
+		// Passing zero to the null stream constructor guarentees it will discard all input. See
+		// here http://stackoverflow.com/a/8244052 and here http://stackoverflow.com/a/6240980
+		Logger() : m_NullStream(0) {};
+		virtual ~Logger() {};
+
+		virtual std::ostream& getTraceStream() = 0;
+		virtual std::ostream& getDebugStream() = 0;
+		virtual std::ostream& getInfoStream() = 0;
+		virtual std::ostream& getWarningStream() = 0;
+		virtual std::ostream& getErrorStream() = 0;
+		virtual std::ostream& getFatalStream() = 0;
+
+	protected:
+		std::ostream& getNullStream()
+		{
+			return m_NullStream;
+		}
+
+	private:
+		std::ostream m_NullStream;
+	};
+
+	class DefaultLogger : Logger
+	{
+	public:
+		DefaultLogger() : Logger() {}
+		virtual ~DefaultLogger() {}
+
+		std::ostream& getTraceStream() { return getNullStream(); }
+		std::ostream& getDebugStream() { return getNullStream(); }
+		std::ostream& getInfoStream() { return (std::cout); }
+		std::ostream& getWarningStream() { return (std::cerr); }
+		std::ostream& getErrorStream() { return (std::cerr); }
+		std::ostream& getFatalStream() { return (std::cerr); }
+	};
+
+	namespace Impl
+	{
+		Logger*& getLoggerInstance();
+	}
+
+	void setLogger(Logger* pLogger);
+
 	namespace Impl
 	{
 		std::ostream*& getTraceStreamInstance();
