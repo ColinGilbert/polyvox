@@ -31,7 +31,7 @@ namespace PolyVox
 		// to the header file: http://stackoverflow.com/a/7834555
 		Logger*& getLoggerInstance()
 		{
-			static Logger* s_pLogger = 0;
+			static Logger* s_pLogger = new DefaultLogger;
 			return s_pLogger;
 		}
 	}
