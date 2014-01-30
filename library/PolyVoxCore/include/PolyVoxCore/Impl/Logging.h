@@ -111,23 +111,10 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_TRACE(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	#define POLYVOX_LOG_TRACE(message)
 	#define POLYVOX_LOG_TRACE_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+		POLYVOX_UNUSED(condition)
 
 #endif
 
@@ -166,23 +153,10 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_DEBUG(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	#define POLYVOX_LOG_DEBUG(message)
 	#define POLYVOX_LOG_DEBUG_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+		POLYVOX_UNUSED(condition)
 
 #endif
 
@@ -221,23 +195,10 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_INFO(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	#define POLYVOX_LOG_INFO(message)
 	#define POLYVOX_LOG_INFO_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+		POLYVOX_UNUSED(condition)	
 
 #endif
 
@@ -276,23 +237,10 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_WARNING(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	#define POLYVOX_LOG_WARNING(message)
 	#define POLYVOX_LOG_WARNING_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+		POLYVOX_UNUSED(condition)
 
 #endif
 
@@ -331,23 +279,10 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_ERROR(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	#define POLYVOX_LOG_ERROR(message)
 	#define POLYVOX_LOG_ERROR_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+		POLYVOX_UNUSED(condition)
 
 #endif
 
@@ -386,23 +321,10 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_FATAL(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	#define POLYVOX_LOG_FATAL(message)
 	#define POLYVOX_LOG_FATAL_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+		POLYVOX_UNUSED(condition)
 
 #endif
 
