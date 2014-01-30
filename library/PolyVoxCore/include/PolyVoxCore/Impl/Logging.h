@@ -42,24 +42,15 @@ namespace PolyVox
 	public:
 		// Passing zero to the null stream constructor guarentees it will discard all input. See
 		// here http://stackoverflow.com/a/8244052 and here http://stackoverflow.com/a/6240980
-		Logger() : m_NullStream(0) {};
+		Logger() {};
 		virtual ~Logger() {};
 
-		virtual std::ostream& getTraceStream() = 0;
-		virtual std::ostream& getDebugStream() = 0;
-		virtual std::ostream& getInfoStream() = 0;
-		virtual std::ostream& getWarningStream() = 0;
-		virtual std::ostream& getErrorStream() = 0;
-		virtual std::ostream& getFatalStream() = 0;
-
-	protected:
-		std::ostream& getNullStream()
-		{
-			return m_NullStream;
-		}
-
-	private:
-		std::ostream m_NullStream;
+		virtual void logTraceMessage(const std::string& message) = 0;
+		virtual void logDebugMessage(const std::string& message) = 0;
+		virtual void logInfoMessage(const std::string& message) = 0;
+		virtual void logWarningMessage(const std::string& message) = 0;
+		virtual void logErrorMessage(const std::string& message) = 0;
+		virtual void logFatalMessage(const std::string& message) = 0;
 	};
 
 	class DefaultLogger : public Logger
@@ -68,12 +59,13 @@ namespace PolyVox
 		DefaultLogger() : Logger() {}
 		virtual ~DefaultLogger() {}
 
-		std::ostream& getTraceStream() { return getNullStream(); }
-		std::ostream& getDebugStream() { return getNullStream(); }
-		std::ostream& getInfoStream() { return (std::cout); }
-		std::ostream& getWarningStream() { return (std::cerr); }
-		std::ostream& getErrorStream() { return (std::cerr); }
-		std::ostream& getFatalStream() { return (std::cerr); }
+		// Appending the 'std::endl' forces the stream to be flushed.
+		void logTraceMessage(const std::string& /*message*/) {  }
+		void logDebugMessage(const std::string& /*message*/) {  }
+		void logInfoMessage(const std::string& message) { std::cout << message << std::endl; }
+		void logWarningMessage(const std::string& message) { std::cerr << message << std::endl; }
+		void logErrorMessage(const std::string& message) { std::cerr << message << std::endl; }
+		void logFatalMessage(const std::string& message) { std::cerr << message << std::endl; }
 	};
 
 	namespace Impl
@@ -200,8 +192,9 @@ namespace PolyVox
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			(PolyVox::Impl::getLoggerInstance()->getTraceStream()) << message << std::endl; \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logTraceMessage(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -215,8 +208,9 @@ namespace PolyVox
 		{ \
 			if ((condition)) \
 			{ \
-				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				(PolyVox::Impl::getLoggerInstance()->getTraceStream()) << message << std::endl; \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logTraceMessage(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -253,8 +247,9 @@ namespace PolyVox
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			(PolyVox::Impl::getLoggerInstance()->getDebugStream()) << message << std::endl; \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logDebugMessage(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -268,8 +263,9 @@ namespace PolyVox
 		{ \
 			if ((condition)) \
 			{ \
-				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				(PolyVox::Impl::getLoggerInstance()->getDebugStream()) << message << std::endl; \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logDebugMessage(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -306,8 +302,9 @@ namespace PolyVox
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			(PolyVox::Impl::getLoggerInstance()->getInfoStream()) << message << std::endl; \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logInfoMessage(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -321,8 +318,9 @@ namespace PolyVox
 		{ \
 			if ((condition)) \
 			{ \
-				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				(PolyVox::Impl::getLoggerInstance()->getInfoStream()) << message << std::endl; \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logInfoMessage(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -359,8 +357,9 @@ namespace PolyVox
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			(PolyVox::Impl::getLoggerInstance()->getWarningStream()) << message << std::endl; \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logWarningMessage(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -374,8 +373,9 @@ namespace PolyVox
 		{ \
 			if ((condition)) \
 			{ \
-				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				(PolyVox::Impl::getLoggerInstance()->getWarningStream()) << message << std::endl; \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logWarningMessage(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -412,8 +412,9 @@ namespace PolyVox
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			(PolyVox::Impl::getLoggerInstance()->getErrorStream()) << message << std::endl; \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -427,8 +428,9 @@ namespace PolyVox
 		{ \
 			if ((condition)) \
 			{ \
-				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				(PolyVox::Impl::getLoggerInstance()->getErrorStream()) << message << std::endl; \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -465,8 +467,9 @@ namespace PolyVox
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			/* Appending the 'std::endl' forces the stream to be flushed. */ \
-			(PolyVox::Impl::getLoggerInstance()->getFatalStream()) << message << std::endl; \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logFatalMessage(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -480,8 +483,9 @@ namespace PolyVox
 		{ \
 			if ((condition)) \
 			{ \
-				/* Appending the 'std::endl' forces the stream to be flushed. */ \
-				(PolyVox::Impl::getLoggerInstance()->getFatalStream()) << message << std::endl; \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logFatalMessage(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
