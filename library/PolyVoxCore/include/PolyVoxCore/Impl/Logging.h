@@ -112,9 +112,11 @@ namespace PolyVox
 #else
 
 	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
 	#define POLYVOX_LOG_TRACE(message)
-	#define POLYVOX_LOG_TRACE_IF(condition, message) \
-		POLYVOX_UNUSED(condition)
+	#define POLYVOX_LOG_TRACE_IF(condition, message)
 
 #endif
 
@@ -154,9 +156,11 @@ namespace PolyVox
 #else
 
 	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
 	#define POLYVOX_LOG_DEBUG(message)
-	#define POLYVOX_LOG_DEBUG_IF(condition, message) \
-		POLYVOX_UNUSED(condition)
+	#define POLYVOX_LOG_DEBUG_IF(condition, message)
 
 #endif
 
@@ -196,9 +200,11 @@ namespace PolyVox
 #else
 
 	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
 	#define POLYVOX_LOG_INFO(message)
-	#define POLYVOX_LOG_INFO_IF(condition, message) \
-		POLYVOX_UNUSED(condition)	
+	#define POLYVOX_LOG_INFO_IF(condition, message)
 
 #endif
 
@@ -238,9 +244,11 @@ namespace PolyVox
 #else
 
 	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
 	#define POLYVOX_LOG_WARNING(message)
-	#define POLYVOX_LOG_WARNING_IF(condition, message) \
-		POLYVOX_UNUSED(condition)
+	#define POLYVOX_LOG_WARNING_IF(condition, message)
 
 #endif
 
@@ -280,9 +288,11 @@ namespace PolyVox
 #else
 
 	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
 	#define POLYVOX_LOG_ERROR(message)
-	#define POLYVOX_LOG_ERROR_IF(condition, message) \
-		POLYVOX_UNUSED(condition)
+	#define POLYVOX_LOG_ERROR_IF(condition, message)
 
 #endif
 
@@ -322,9 +332,11 @@ namespace PolyVox
 #else
 
 	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
 	#define POLYVOX_LOG_FATAL(message)
-	#define POLYVOX_LOG_FATAL_IF(condition, message) \
-		POLYVOX_UNUSED(condition)
+	#define POLYVOX_LOG_FATAL_IF(condition, message)
 
 #endif
 
