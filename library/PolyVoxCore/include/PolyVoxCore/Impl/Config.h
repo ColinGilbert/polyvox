@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Config_H__
 #define __PolyVox_Config_H__
 
-#define POLYVOX_LOG_TRACE_ENABLED
+//#define POLYVOX_LOG_TRACE_ENABLED
 #define POLYVOX_LOG_DEBUG_ENABLED
 #define POLYVOX_LOG_INFO_ENABLED
 #define POLYVOX_LOG_WARNING_ENABLED

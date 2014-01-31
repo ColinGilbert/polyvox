@@ -5,45 +5,42 @@ PolyVox includes a number of error handling features designed to help you identi
 
 Logging
 =======
-PolyVox has a simple logging mechanism which allows it to write messages with an associated severity (from Debug up to Fatal). It is possible to redirect the output of these logging functions so you can integrate them with your applications logging framework or suppress them completely.
+PolyVox has a simple logging mechanism which allows it to write messages with an associated severity (from Debug up to Fatal). This logging mechanism is not really intended for use by client code (i.e. calling the logging macros from your own application) but you can of course do so at your own risk. However, it is possible to redirect the output of these logging functions so you can integrate them with your applications logging framework or suppress them completely.
 
-The following functions are used as follows within PolyVox (note that newlines are appended automatically):
+Fatal messages are only issued in non-recoverable scenarios when the application is about to crash, and may provide the last piece of information you have about what went wrong. Error messages are issued when something has happened which prevents successful completion of a task, for example if you provide invalid parameters to a function (error messages are also issued whenever an exception is thrown). Warning messages mean the system was able to continue but the results may not be what you expected. Info messages are used for general information about what PolyVox is doing. Debug and trace messages produce very verbose output and a lot of detail about what PolyVox is doing internally. In general, debug messages are used for tasks the user has directly initiated (e.g. they might provide time information for surface extraction) while trace messages are used for things which happen spontaneously (such as data being paged out of memory).
 
-.. sourcecode :: c++
-
- logTrace()   << "Trace Message";
- logDebug()   << "Debug Message";
- logInfo()    << "Info Message";
- logWarning() << "Warning Message";
- logError()   << "Error Message";
- logFatal()   << "Fatal Message";
-
-Fatal messages are only issued in non-recoverable scenarios when the application is about to crash, and may provide the last peice of information you have about what went wrong. Error messages are issued when something has happened which prevents sucessful completion of a task, for example if you provide invalid parameters to a function (error messages are also issued whenever an exception is thrown). Warning messages mean the system was able to continue but the results may not be what you expected. Info messages are used for general information about what PolyVox is doing. Debug and trace messages produce very verbose output and a lot of detail about what PolyVox is doing internally. In general, debug messages are used for tasks the user has directly initiated (e.g. they might provide time information for surface extraction) while trace messages are used for things which happen spontaneously (such as data being paged out of memory). Trace messages are most likely to clutter up your logs and so are most easily suppressed.
-
-To redirect log messages you can provide an implementation of std::ostream and apply it with one of the functions below:
+To redirect log messages you can subclass Logger, create an instance, and set it as active as follows::
 
 .. sourcecode :: c++
 
- setTraceStream(&myOutputStream);
- setDebugStream(&myOutputStream);
- setInfoStream(&myOutputStream);
- setWarningStream(&myOutputStream);
- setErrorStream(&myOutputStream);
- setFatalStream(&myOutputStream);
+ class CustomLogger : public Logger
+ {
+ public:
+	CustomLogger() : Logger() {}
+ 	virtual ~CustomLogger() {}
 
-PolyVox provides a function called 'getNullStream()' which returns a stream which consumes all input without writing it anywhere. You can use this to supress particular log streams. For example, you can suppress the Trace stream with:
-
-.. sourcecode :: c++
-
- setTraceStream(getNullStream());
+ 	void logTraceMessage(const std::string& message) { /* Do something with the message */ }
+	void logDebugMessage(const std::string& message) { /* Do something with the message */ }
+	void logInfoMessage(const std::string& message) { /* Do something with the message */ }
+	void logWarningMessage(const std::string& message) { /* Do something with the message */ }
+	void logErrorMessage(const std::string& message) { /* Do something with the message */ }
+	void logFatalMessage(const std::string& message) { /* Do something with the message */ }
+ };
  
-Or you could direct it to std::cout with:
+ CustomLogger* myCustomLogger = new CustomLogger();
+ 
+ setLogger(myCustomLogger);
+ 
+When shutting down you should then do something like the following:
 
 .. sourcecode :: c++
 
- setTraceStream(&(std::cout));
+ setLogger(myCustomLogger);
+ delete myCustomLogger;
  
-Note that by default the fatal, error and warning streams go to std::cerr, the info stream goes to std:cout, and the debug and trace streams are suppressed.
+Note that the default implementation (DefaultLogger) sends the fatal, error and warning streams to std::cerr, the info stream to std:cout, and that the debug and trace streams are suppressed.
+
+PolyVox logging can be disabled completely in Config.h by undefining POLYVOX_LOG_TRACE_ENABLED through to POLYVOX_LOG_FATAL_ENABLED. Each of these can be disabled individually and the corresponding code will then be completely stripped from PolyVox. This is a compile-time setting - if you wish to change the log level at run-time then in your own implementation you could implement a filtering mechanism which only does something with the messages if some 'log severity' setting is greater than a certain threshold which can be changed at runtime.
 
 Exceptions
 ==========

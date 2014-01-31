@@ -83,13 +83,15 @@ freely, subject to the following restrictions:
 		{ \
 			if (!(condition)) \
 			{ \
-				PolyVox::logFatal() << "\n"; \
-				PolyVox::logFatal() << "    PolyVox Assertion Failed!"; \
-				PolyVox::logFatal() << "    ========================="; \
-				PolyVox::logFatal() << "    Condition: " << #condition; \
-				PolyVox::logFatal() << "    Message:   " << (message); \
-				PolyVox::logFatal() << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__; \
-				PolyVox::logFatal() << "\n"; \
+				std::stringstream ss; \
+				ss << "\n"; \
+				ss << "    PolyVox Assertion Failed!"; \
+				ss << "    ========================="; \
+				ss << "    Condition: " << #condition; \
+				ss << "    Message:   " << (message); \
+				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__; \
+				ss << "\n"; \
+				PolyVox::Impl::getLoggerInstance()->logFatalMessage(ss.str()); \
 				POLYVOX_HALT(); \
 			} \
 		} while(0) \
@@ -154,8 +156,10 @@ freely, subject to the following restrictions:
 		{ \
 			if ((condition)) \
 			{ \
-				PolyVox::logError() << (message); \
-				throw type((message)); \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
+				throw type(ss.str()); \
 			} \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
@@ -168,8 +172,10 @@ freely, subject to the following restrictions:
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			PolyVox::logError() << (message); \
-			throw type((message)); \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
+			throw type(ss.str()); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP
 
@@ -192,8 +198,10 @@ freely, subject to the following restrictions:
 		{ \
 			if ((condition)) \
 			{ \
-				PolyVox::logError() << (message); \
-				type except = (type)((message)); \
+				std::stringstream ss; \
+				ss << message; \
+				PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
+				type except = (type)(ss.str()); \
 				getThrowHandler()((except), __FILE__, __LINE__); \
 			} \
 		} while(0) \
@@ -207,8 +215,10 @@ freely, subject to the following restrictions:
 		POLYVOX_DISABLE_MSC_WARNING(4127) \
 		do \
 		{ \
-			PolyVox::logError() << (message); \
-			type except = (type)((message)); \
+			std::stringstream ss; \
+			ss << message; \
+			PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
+			type except = (type)(ss.str()); \
 			getThrowHandler()((except), __FILE__, __LINE__); \
 		} while(0) \
 		POLYVOX_MSC_WARNING_POP

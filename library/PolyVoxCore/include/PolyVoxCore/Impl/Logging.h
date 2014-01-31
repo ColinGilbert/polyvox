@@ -74,112 +74,6 @@ namespace PolyVox
 	}
 
 	void setLogger(Logger* pLogger);
-
-	namespace Impl
-	{
-		std::ostream*& getTraceStreamInstance();
-		std::ostream*& getDebugStreamInstance();
-		std::ostream*& getInfoStreamInstance();
-		std::ostream*& getWarningStreamInstance();
-		std::ostream*& getErrorStreamInstance();
-		std::ostream*& getFatalStreamInstance();
-	}
-
-	/// Get a stream which will consume all input without outputting anything.
-	std::ostream* getNullStream(void);
-
-	// These take pointers rather than references to emphasise that the 
-	// user needs to keep the target alive as long as PolyVox is writing data.
-	void setTraceStream(std::ostream* pStream);
-	void setDebugStream(std::ostream* pStream);
-	void setInfoStream(std::ostream* pStream);
-	void setWarningStream(std::ostream* pStream);
-	void setErrorStream(std::ostream* pStream);
-	void setFatalStream(std::ostream* pStream);
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logTrace
-	{
-		logTrace(){}
-		~logTrace(){*(Impl::getTraceStreamInstance()) << std::endl;}
-
-		template<class T>
-		logTrace &operator<<(const T &x)
-		{
-			*(Impl::getTraceStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logDebug
-	{
-		logDebug(){}
-		~logDebug(){*(Impl::getDebugStreamInstance()) << std::endl;}
-
-		template<class T>
-		logDebug &operator<<(const T &x)
-		{
-			*(Impl::getDebugStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logInfo
-	{
-		logInfo(){}
-		~logInfo(){*(Impl::getInfoStreamInstance()) << std::endl;}
-
-		template<class T>
-		logInfo &operator<<(const T &x)
-		{
-			*(Impl::getInfoStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logWarning
-	{
-		logWarning(){}
-		~logWarning(){*(Impl::getWarningStreamInstance()) << std::endl;}
-
-		template<class T>
-		logWarning &operator<<(const T &x)
-		{
-			*(Impl::getWarningStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logError
-	{
-		logError(){}
-		~logError(){*(Impl::getErrorStreamInstance()) << std::endl;}
-
-		template<class T>
-		logError &operator<<(const T &x)
-		{
-			*(Impl::getErrorStreamInstance()) << x;
-			return *this;
-		}
-	};
-
-	// Automatically appending 'std::endl' as described here: http://stackoverflow.com/a/2179782
-	struct logFatal
-	{
-		logFatal(){}
-		~logFatal(){*(Impl::getFatalStreamInstance()) << std::endl;}
-
-		template<class T>
-		logFatal &operator<<(const T &x)
-		{
-			*(Impl::getFatalStreamInstance()) << x;
-			return *this;
-		}
-	};
 }
 
 #ifdef POLYVOX_LOG_TRACE_ENABLED
@@ -217,23 +111,12 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_TRACE(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
-	#define POLYVOX_LOG_TRACE_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
+	#define POLYVOX_LOG_TRACE(message)
+	#define POLYVOX_LOG_TRACE_IF(condition, message)
 
 #endif
 
@@ -272,23 +155,12 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_DEBUG(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
-	#define POLYVOX_LOG_DEBUG_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
+	#define POLYVOX_LOG_DEBUG(message)
+	#define POLYVOX_LOG_DEBUG_IF(condition, message)
 
 #endif
 
@@ -327,23 +199,12 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_INFO(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
-	#define POLYVOX_LOG_INFO_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
+	#define POLYVOX_LOG_INFO(message)
+	#define POLYVOX_LOG_INFO_IF(condition, message)
 
 #endif
 
@@ -382,23 +243,12 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_WARNING(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
-	#define POLYVOX_LOG_WARNING_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
+	#define POLYVOX_LOG_WARNING(message)
+	#define POLYVOX_LOG_WARNING_IF(condition, message)
 
 #endif
 
@@ -437,23 +287,12 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_ERROR(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
-	#define POLYVOX_LOG_ERROR_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
+	#define POLYVOX_LOG_ERROR(message)
+	#define POLYVOX_LOG_ERROR_IF(condition, message)
 
 #endif
 
@@ -492,23 +331,12 @@ namespace PolyVox
 
 #else
 
-	#define POLYVOX_LOG_FATAL(message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
-
-	#define POLYVOX_LOG_FATAL_IF(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP	
+	// We don't bother with the do...while(0) construct here as we're not executing multiple statements
+	// We also don't bother with forcing variables to be 'used'. If this causes a problem then calling
+	// code can just force them to be used itself in addition to calling the logging macro. Basically 
+	// we just want to reduce the chance of extra code being generated.
+	#define POLYVOX_LOG_FATAL(message)
+	#define POLYVOX_LOG_FATAL_IF(condition, message)
 
 #endif
 
