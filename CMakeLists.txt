@@ -69,10 +69,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 endif()
 
-if(NOT MSVC) #This is causing problems in Visual Studio so disable it for now
-	INCLUDE(cmake/Modules/CheckCXX11Features.cmake)
-endif()
-
 ADD_SUBDIRECTORY(library)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)

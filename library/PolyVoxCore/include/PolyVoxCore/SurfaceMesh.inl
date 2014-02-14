@@ -245,9 +245,9 @@ namespace PolyVox
 	}*/
 
 	/*template <typename VertexType>
-	polyvox_shared_ptr< SurfaceMesh<VertexType> > SurfaceMesh<VertexType>::extractSubset(std::set<uint8_t> setMaterials)
+	std::shared_ptr< SurfaceMesh<VertexType> > SurfaceMesh<VertexType>::extractSubset(std::set<uint8_t> setMaterials)
 	{
-		polyvox_shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
+		std::shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
 
 		if(m_vecVertices.size() == 0) //FIXME - I don't think we should need this test, but I have seen crashes otherwise...
 		{
@@ -395,9 +395,9 @@ namespace PolyVox
 
 	//Currently a free function - think where this needs to go.
 	template <typename VertexType>
-	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials)
+	std::shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials)
 	{
-		polyvox_shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
+		std::shared_ptr< SurfaceMesh<VertexType> > result(new SurfaceMesh<VertexType>);
 		
 		result->m_Region = inputMesh.m_Region;
 

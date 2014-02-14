@@ -53,7 +53,7 @@ namespace PolyVox
     template <uint32_t Size,typename StorageType, typename OperationType>
     Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y)
     {
-		POLYVOX_STATIC_ASSERT(Size == 2, "This constructor should only be used for vectors with two elements.");
+		static_assert(Size == 2, "This constructor should only be used for vectors with two elements.");
 
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -68,7 +68,7 @@ namespace PolyVox
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z)
 	{
-		POLYVOX_STATIC_ASSERT(Size == 3, "This constructor should only be used for vectors with three elements.");
+		static_assert(Size == 3, "This constructor should only be used for vectors with three elements.");
 
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -86,7 +86,7 @@ namespace PolyVox
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	Vector<Size,StorageType,OperationType>::Vector(StorageType x, StorageType y, StorageType z, StorageType w)
 	{
-		POLYVOX_STATIC_ASSERT(Size == 4, "This constructor should only be used for vectors with four elements.");
+		static_assert(Size == 4, "This constructor should only be used for vectors with four elements.");
 
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -136,7 +136,7 @@ namespace PolyVox
 		// vector with one element, and supporting this would cause confusion over the
 		// behaviour of the constructor taking a single value, as this fills all elements
 		// to that value rather than just the first one.
-		POLYVOX_STATIC_ASSERT(Size > 1, "Vector must have a length greater than one.");
+		static_assert(Size > 1, "Vector must have a length greater than one.");
     }
 
     /**
@@ -446,7 +446,7 @@ namespace PolyVox
     template <uint32_t Size, typename StorageType, typename OperationType>
 	inline StorageType Vector<Size, StorageType, OperationType>::getZ(void) const
     {
-		POLYVOX_STATIC_ASSERT(Size >= 3, "You can only get the 'z' component from a vector with at least three elements.");
+		static_assert(Size >= 3, "You can only get the 'z' component from a vector with at least three elements.");
 
         return m_tElements[2];
     }	
@@ -457,7 +457,7 @@ namespace PolyVox
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	inline StorageType Vector<Size, StorageType, OperationType>::getW(void) const
 	{
-		POLYVOX_STATIC_ASSERT(Size >= 4, "You can only get the 'w' component from a vector with at least four elements.");
+		static_assert(Size >= 4, "You can only get the 'w' component from a vector with at least four elements.");
 
 		return m_tElements[3];
 	}  
@@ -499,7 +499,7 @@ namespace PolyVox
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z)
 	{
-		POLYVOX_STATIC_ASSERT(Size >= 3, "You can only use this version of setElements() on a vector with at least three elements.");
+		static_assert(Size >= 3, "You can only use this version of setElements() on a vector with at least three elements.");
 
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -516,7 +516,7 @@ namespace PolyVox
 	template <uint32_t Size,typename StorageType, typename OperationType>
 	inline void Vector<Size,StorageType,OperationType>::setElements(StorageType x, StorageType y, StorageType z, StorageType w)
 	{
-		POLYVOX_STATIC_ASSERT(Size >= 4, "You can only use this version of setElements() on a vector with at least four elements.");
+		static_assert(Size >= 4, "You can only use this version of setElements() on a vector with at least four elements.");
 
 		m_tElements[0] = x;
 		m_tElements[1] = y;
@@ -548,7 +548,7 @@ namespace PolyVox
     template <uint32_t Size, typename StorageType, typename OperationType>
 	inline void Vector<Size, StorageType, OperationType>::setZ(StorageType tZ)
     {
-		POLYVOX_STATIC_ASSERT(Size >= 3, "You can only set the 'w' component from a vector with at least three elements.");
+		static_assert(Size >= 3, "You can only set the 'w' component from a vector with at least three elements.");
 
 		m_tElements[2] = tZ;
     }
@@ -559,7 +559,7 @@ namespace PolyVox
 	template <uint32_t Size, typename StorageType, typename OperationType>
 	inline void Vector<Size, StorageType, OperationType>::setW(StorageType tW)
     {
-		POLYVOX_STATIC_ASSERT(Size >= 4, "You can only set the 'w' component from a vector with at least four elements.");
+		static_assert(Size >= 4, "You can only set the 'w' component from a vector with at least four elements.");
 
 		m_tElements[3] = tW;
     }

@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "Impl/TypeDef.h"
 
+#include <cstdint>
+
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////

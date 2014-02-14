@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TypeDef_H__
 #define __PolyVox_TypeDef_H__
 
-#include "PolyVoxCore/Impl/CompilerCapabilities.h"
-
 //Definitions needed to make library functions accessable
 // See http://gcc.gnu.org/wiki/Visibility for more info.
 #if defined _WIN32 || defined __CYGWIN__
@@ -68,53 +66,5 @@ freely, subject to the following restrictions:
   #define POLYVOX_API
   #define POLYVOX_LOCAL
 #endif // POLYVOX_SHARED
-
-//Check which compiler we are using and work around unsupported features as necessary.
-#if defined(_MSC_VER) && (_MSC_VER < 1600) 
-	//To support old (pre-vc2010) Microsoft compilers we use boost to replace the
-	//std::shared_ptr and potentially other C++0x features. To use this capability you
-	//will need to make sure you have boost installed on your system.
-	#include <boost/function.hpp>
-	#define polyvox_function boost::function
-
-	#include <boost/bind.hpp>
-	#define polyvox_bind boost::bind
-	#define polyvox_placeholder_1 _1
-	#define polyvox_placeholder_2 _2
-#else
-	//We have a decent compiler - use real C++0x features
-	#include <functional>
-	#define polyvox_function std::function
-	#define polyvox_bind std::bind
-	#define polyvox_placeholder_1 std::placeholders::_1
-	#define polyvox_placeholder_2 std::placeholders::_2
-#endif
-
-#if defined(HAS_CXX11_CONSTEXPR)
-	#define polyvox_constexpr_const constexpr //constexpr which falls back to const
-	#define polyvox_constexpr constexpr //constexpr which falls back to nothing
-#else
-	#define polyvox_constexpr_const const
-	#define polyvox_constexpr
-#endif
-
-#if defined(HAS_CXX11_CSTDINT_H)
-	#include <cstdint>
-#else
-	typedef signed char     int8_t;
-	typedef unsigned char   uint8_t;
-	typedef short           int16_t;
-	typedef unsigned short  uint16_t;
-	typedef long            int32_t;
-	typedef unsigned long   uint32_t;
-#endif
-
-#if defined(HAS_CXX11_SHARED_PTR)
-	#include <memory>
-	#define polyvox_shared_ptr std::shared_ptr
-#else
-	#include <boost/smart_ptr.hpp>
-	#define polyvox_shared_ptr boost::shared_ptr
-#endif
 
 #endif
