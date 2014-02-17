@@ -29,13 +29,9 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Array.h"
 
+#include <functional>
 #include <list>
 #include <stdexcept> //For runtime_error
-
-namespace std {
-template<class _Signature >
-class function;
-}
 
 namespace PolyVox
 {
