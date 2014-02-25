@@ -365,7 +365,7 @@ namespace PolyVox
 	void SurfaceMesh<VertexType>::removeUnusedVertices(void)
 	{
 		std::vector<bool> isVertexUsed(m_vecVertices.size());
-		fill(isVertexUsed.begin(), isVertexUsed.end(), false);
+		std::fill(isVertexUsed.begin(), isVertexUsed.end(), false);
 
 		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
 		{

@@ -653,7 +653,10 @@ namespace PolyVox
 	inline void Vector<Size, StorageType, OperationType>::normalise(void)
     {
         float fLength = this->length();
-		if(fLength <= 0.0)
+
+		// We could wait until the NAN occurs before throwing, but then we'd have to add some roll-back code.
+		// This seems like a lot of overhead for a common operation which should rarely go wrong.
+		if(fLength <= 0.0001)
 		{
 			POLYVOX_THROW(invalid_operation, "Cannot normalise a vector with a length of zero");
 		}
