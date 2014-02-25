@@ -75,7 +75,7 @@ namespace PolyVox
 	   //RATE THE STD::SET CAUSES PROBLEMS WITH SWIG. IF YOU UNCOMMENT ANY OF THESE FUNCTIONS, PLEASE POST ON
 	   //THE FORUM SO WE CAN KNOW THE FUNCTIONALITY IS STILL NEEDED IN SOME FORM.
 	   //void sumNearbyNormals(bool bNormaliseResult = true);
-	   //polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
+	   //std::shared_ptr< SurfaceMesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
 	   //void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
 
 	   int noOfDegenerateTris(void);
@@ -96,7 +96,7 @@ namespace PolyVox
 	};	
 
 	template <typename VertexType>
-	polyvox_shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
+	std::shared_ptr< SurfaceMesh<VertexType> > extractSubset(SurfaceMesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
 }
 
 #include "PolyVoxCore/SurfaceMesh.inl"

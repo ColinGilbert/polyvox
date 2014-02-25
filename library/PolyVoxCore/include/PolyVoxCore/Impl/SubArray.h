@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
+#include <cstdint>
+
 namespace PolyVox
 {
 	template <uint32_t noOfDims, typename ElementType> class Array;

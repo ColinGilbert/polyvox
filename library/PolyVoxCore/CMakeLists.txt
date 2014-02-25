@@ -22,11 +22,6 @@
 
 PROJECT(PolyVoxCore)
 
-if(NOT MSVC)
-	#Set up the C++11 feature header file based on the CheckCXX11Features script
-	CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h.in ${CMAKE_CURRENT_BINARY_DIR}/include/PolyVoxCore/Impl/CompilerCapabilities.h)
-endif()
-
 #Projects source files
 SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
@@ -119,7 +114,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/ArraySizesImpl.h
 	include/PolyVoxCore/Impl/ArraySizesImpl.inl
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
-    include/PolyVoxCore/Impl/CompilerCapabilities.h
     include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h
 	include/PolyVoxCore/Impl/Logging.h

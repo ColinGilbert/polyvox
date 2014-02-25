@@ -111,35 +111,6 @@ freely, subject to the following restrictions:
 #endif
 
 /*
- * Static Assertions
- * -----------------
- * These map to C+11 static_assert if available or our own implentation otherwise.
- */
-
-#if defined(HAS_CXX11_STATIC_ASSERT)
-	//In this case we can just use static_assert
-	#define POLYVOX_STATIC_ASSERT static_assert
-#else
-	namespace PolyVox
-	{
-		// empty default template
-		template <bool b>
-		struct StaticAssert {};
-
-		// template specialized on true
-		template <>
-		struct StaticAssert<true>
-		{
-			// If the static assertion is failing then this function won't exist. It will then
-			// appear in the error message which gives a clue to the user about what is wrong.
-			static void ERROR_The_static_assertion_has_failed() {}
-		};
-	}
-
-	#define POLYVOX_STATIC_ASSERT(condition, message) StaticAssert<(condition)>::ERROR_The_static_assertion_has_failed();
-#endif
-
-/*
  * Exceptions
  * ----------
  * ...

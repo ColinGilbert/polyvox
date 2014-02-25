@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
+#include <cstdint>
+
 namespace PolyVox
 {
 	extern const POLYVOX_API uint16_t edgeTable[256];

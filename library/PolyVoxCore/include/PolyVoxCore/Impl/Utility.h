@@ -26,6 +26,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
+#include <cstdint>
+
 namespace PolyVox
 {
 	POLYVOX_API uint8_t logBase2(uint32_t uInput);

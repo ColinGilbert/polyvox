@@ -26,6 +26,8 @@ distribution.
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
+#include <cstdint>
+
 namespace PolyVox
 {
 	/*

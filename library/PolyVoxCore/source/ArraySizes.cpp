@@ -23,6 +23,8 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/ArraySizes.h"
 
+#include <cstdint>
+
 namespace PolyVox
 {	
 	/**
