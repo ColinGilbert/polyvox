@@ -103,6 +103,18 @@ namespace PolyVox
 			return 1;
 		}
 
+		MaterialType blendMaterials(MaterialType a, MaterialType b, float weight)
+		{
+			if(weight < 0.5f)
+			{
+				return a;
+			}
+			else
+			{
+				return b;
+			}
+		}
+
 		/**
 		 * Returns the density value which was passed to the constructor.
 		 *

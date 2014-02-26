@@ -168,6 +168,11 @@ namespace PolyVox
 			return 1;
 		}
 
+		MaterialType blendMaterials(MaterialType /*a*/, MaterialType /*b*/, float /*weight*/)
+		{
+			return 1;
+		}
+
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;
