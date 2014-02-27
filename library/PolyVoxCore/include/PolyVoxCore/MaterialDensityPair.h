@@ -132,6 +132,18 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
+		MaterialType blendMaterials(MaterialType a, MaterialType b, float weight)
+		{
+			if(weight < 0.5f)
+			{
+				return a;
+			}
+			else
+			{
+				return b;
+			}
+		}
+
 		DensityType getThreshold(void)
 		{			
 			return m_tThreshold;

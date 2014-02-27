@@ -55,6 +55,11 @@ public:
 		return 1;
 	}
 
+	float blendMaterials(float /*a*/, float /*b*/, float /*weight*/)
+	{
+		return 1;
+	}
+
 	float getThreshold(void)
 	{
 		return 50.0f;
