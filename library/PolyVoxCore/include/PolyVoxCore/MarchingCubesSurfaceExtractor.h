@@ -210,6 +210,22 @@ namespace PolyVox
 		//Our threshold value
 		typename Controller::DensityType m_tThreshold;
 	};
+
+	template< typename VolumeType, typename Controller>
+	SurfaceMesh<PositionMaterialNormal> extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	{
+		SurfaceMesh<PositionMaterialNormal> result;
+		MarchingCubesSurfaceExtractor<VolumeType, Controller> extractor(volData, region, &result, eWrapMode, tBorderValue, controller);
+		extractor.execute();
+		return result;
+	}
+
+	template< typename VolumeType>
+	SurfaceMesh<PositionMaterialNormal> extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
+	{
+		DefaultMarchingCubesController<typename VolumeType::VoxelType> controller;
+		return extractMarchingCubesSurface(volData, region, eWrapMode, tBorderValue, controller);
+	}
 }
 
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.inl"
