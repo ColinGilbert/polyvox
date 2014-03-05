@@ -87,8 +87,8 @@ int main(int argc, char *argv[])
 	//Execute the surface extractor.
 	//surfaceExtractor.execute();
 
-	DefaultIsQuadNeeded< uint8_t > isQuadNeeded;
-	mesh = extractCubicSurfaceWithNormals< SimpleVolume<uint8_t>, DefaultIsQuadNeeded< uint8_t > >(&volData, volData.getEnclosingRegion(), WrapModes::Border, 0, isQuadNeeded);
+	//DefaultIsQuadNeeded< uint8_t > isQuadNeeded;
+	mesh = extractCubicSurfaceWithNormals< SimpleVolume<uint8_t> >(&volData, volData.getEnclosingRegion());
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);

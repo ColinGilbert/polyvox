@@ -72,6 +72,13 @@ namespace PolyVox
 		extractor.execute();
 		return result;
 	}
+
+	template<typename VolumeType>
+	SurfaceMesh<PositionMaterialNormal> extractCubicSurfaceWithNormals(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
+	{
+		DefaultIsQuadNeeded<typename VolumeType::VoxelType> isQuadNeeded;
+		return extractCubicSurfaceWithNormals<VolumeType, DefaultIsQuadNeeded<typename VolumeType::VoxelType> >(volData, region, eWrapMode, tBorderValue, isQuadNeeded);
+	}
 }
 
 #include "PolyVoxCore/CubicSurfaceExtractorWithNormals.inl"
