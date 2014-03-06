@@ -132,15 +132,15 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
-		MaterialType blendMaterials(MaterialType a, MaterialType b, float weight)
+		MaterialType blendMaterials(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> a, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> b, float /*weight*/)
 		{
-			if(weight < 0.5f)
+			if(convertToDensity(a) > convertToDensity(b))
 			{
-				return a;
+				return convertToMaterial(a);
 			}
 			else
 			{
-				return b;
+				return convertToMaterial(b);
 			}
 		}
 
