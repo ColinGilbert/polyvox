@@ -184,9 +184,7 @@ void TestVolumeSubclass::testExtractSurface()
 		}
 	}
 
-	SurfaceMesh<PositionMaterial> result;
-	CubicSurfaceExtractor< VolumeSubclass<Material8> > cubicSurfaceExtractor(&volumeSubclass, volumeSubclass.getEnclosingRegion(), &result);
-	cubicSurfaceExtractor.execute();
+	auto result = extractCubicSurface(&volumeSubclass, volumeSubclass.getEnclosingRegion());
 
 	QCOMPARE(result.getNoOfVertices(), static_cast<uint32_t>(8));
 }
