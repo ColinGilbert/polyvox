@@ -43,18 +43,14 @@ IF(WIN32)
 ENDIF()
 
 # Qt is required for building the tests, the example and optionally for bundling the documentation
-FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtTest)
-INCLUDE(${QT_USE_FILE})
-if(CMAKE_VERSION VERSION_LESS "2.8.6")
-	set_package_info(Doxygen "API documentation generator" http://www.doxygen.org "Building the API documentation")
-	set_package_info(Qt4 "C++ framework" http://qt-project.org "Building the examples and tests")
-else()
-	set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
-	set_package_properties(Qt4 PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
-	set_package_properties(Qt4 PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
-	set_package_properties(Qt4 PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
-endif()
+find_package(Qt5Test 5.2 REQUIRED)
+find_package(Qt5OpenGL 5.2 REQUIRED)
 
+set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
+set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
+set_package_properties(Qt5Test PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
+set_package_properties(Qt5OpenGL PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
+set_package_properties(Qt5OpenGL PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
 
 IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
@@ -66,7 +62,7 @@ endif()
 ADD_SUBDIRECTORY(library)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
-IF(ENABLE_EXAMPLES AND QT_QTOPENGL_FOUND)
+IF(ENABLE_EXAMPLES AND Qt5OpenGL_FOUND)
 	ADD_SUBDIRECTORY(examples/common)
 	ADD_SUBDIRECTORY(examples/Basic)
 	ADD_SUBDIRECTORY(examples/Paging)
@@ -81,7 +77,7 @@ ENDIF()
 INCLUDE(Packaging.cmake)
 
 OPTION(ENABLE_TESTS "Should the tests be built" ON)
-IF(ENABLE_TESTS AND QT_QTTEST_FOUND)
+IF(ENABLE_TESTS AND Qt5Test_FOUND)
 	INCLUDE(CTest)
 	MARK_AS_ADVANCED(FORCE BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)

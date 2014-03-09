@@ -19,8 +19,6 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(BasicExample)
 
 #Projects source files
@@ -52,7 +50,7 @@ ADD_EXECUTABLE(BasicExample ${SRC_FILES})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(BasicExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(BasicExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
+TARGET_LINK_LIBRARIES(BasicExample glew Qt5::OpenGL ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows
