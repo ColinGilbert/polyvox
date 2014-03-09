@@ -20,7 +20,7 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6)
 
 PROJECT(PolyVox)
 
@@ -83,7 +83,6 @@ INCLUDE(Packaging.cmake)
 OPTION(ENABLE_TESTS "Should the tests be built" ON)
 IF(ENABLE_TESTS AND QT_QTTEST_FOUND)
 	INCLUDE(CTest)
-	MARK_AS_ADVANCED(FORCE DART_TESTING_TIMEOUT) #This is only needed to hide the variable in the GUI (CMake bug) until 2.8.5
 	MARK_AS_ADVANCED(FORCE BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
 	SET(BUILD_TESTS ON)
