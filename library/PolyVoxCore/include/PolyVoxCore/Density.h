@@ -168,7 +168,7 @@ namespace PolyVox
 			return 1;
 		}
 
-		MaterialType blendMaterials(MaterialType /*a*/, MaterialType /*b*/, float /*weight*/)
+		MaterialType blendMaterials(Density<Type> /*a*/, Density<Type> /*b*/, float /*weight*/)
 		{
 			return 1;
 		}

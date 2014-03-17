@@ -456,12 +456,8 @@ namespace PolyVox
 						v3dNormal.normalise();
 					}
 
-					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
-					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
-					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					const typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					const typename Controller::MaterialType uMaterial100 = m_controller.convertToMaterial(v100);
-					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(uMaterial000, uMaterial100, fInterp);
+					// Allow the controller to decide how the material should be derived from the voxels.
+					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
 
 					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -489,12 +485,8 @@ namespace PolyVox
 						v3dNormal.normalise();
 					}
 
-					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
-					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
-					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					const typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					const typename Controller::MaterialType uMaterial010 = m_controller.convertToMaterial(v010);
-					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(uMaterial000, uMaterial010, fInterp);
+					// Allow the controller to decide how the material should be derived from the voxels.
+					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
 
 					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -521,12 +513,8 @@ namespace PolyVox
 						v3dNormal.normalise();
 					}
 
-					//Choose one of the two materials to use for the vertex (we don't interpolate as interpolation of
-					//material IDs does not make sense). We take the largest, so that if we are working on a material-only
-					//volume we get the one which is non-zero. Both materials can be non-zero if our volume has a density component.
-					const typename Controller::MaterialType uMaterial000 = m_controller.convertToMaterial(v000);
-					const typename Controller::MaterialType uMaterial001 = m_controller.convertToMaterial(v001);
-					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(uMaterial000, uMaterial001, fInterp);
+					// Allow the controller to decide how the material should be derived from the voxels.
+					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
 
 					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
