@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -78,10 +78,10 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	//A mesh object to hold the result of surface extraction
-	SurfaceMesh<PositionMaterialNormal> mesh;
+	SurfaceMesh<PositionMaterial> mesh;
 
 	//Create a surface extractor. Comment out one of the following two lines to decide which type gets created.
-	CubicSurfaceExtractorWithNormals< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	CubicSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 	//MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
 
 	//Execute the surface extractor.
