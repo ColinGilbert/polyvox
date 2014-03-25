@@ -121,7 +121,7 @@ void OpenGLWidget::initializeGL()
 	
 	shader.bind();
 	
-	QMatrix4x4 worldToCameraMatrix{};
+	QMatrix4x4 worldToCameraMatrix;
 	worldToCameraMatrix.translate(0, 0, -50); //Move the camera back by 50 units
 	
 	shader.setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
@@ -138,7 +138,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 	float zNear = 1.0;
 	float zFar = 1000.0;
 	
-	QMatrix4x4 cameraToClipMatrix{};
+	QMatrix4x4 cameraToClipMatrix;
 	cameraToClipMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
 	
 	shader.bind();
@@ -151,7 +151,7 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	QMatrix4x4 modelToWorldMatrix{};
+	QMatrix4x4 modelToWorldMatrix;
 	modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	modelToWorldMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
 	modelToWorldMatrix.translate(-32, -32, -32); //centre the model on the origin
