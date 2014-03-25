@@ -26,14 +26,14 @@ distribution.
 
 #include "PolyVoxCore/SurfaceMesh.h"
 
-#include <QOpenGLFunctions_3_1>
+#include <QOpenGLFunctions>
 
 #include <QGLWidget>
 #include <QOpenGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 
-class OpenGLWidget : public QGLWidget, protected QOpenGLFunctions_3_1
+class OpenGLWidget : public QGLWidget, protected QOpenGLFunctions
 {
 public:
 	//Constructor

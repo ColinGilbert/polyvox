@@ -21,8 +21,8 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	const auto& vecVertices = surfaceMesh.getVertices();
 	
 	//Create the VAO for the mesh
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	//glGenVertexArrays(1, &vertexArrayObject);
+	//glBindVertexArray(vertexArrayObject);
 	
 	//The GL_ARRAY_BUFFER will contain the list of vertex positions
 	glGenBuffers(1, &vertexBuffer);
@@ -38,18 +38,14 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PositionMaterial), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 	
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 	
 	noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
 }
 
 void OpenGLWidget::initializeGL()
 {
-	if(!initializeOpenGLFunctions())
-	{
-		std::cerr << "Could not initialise OpenGL functions" << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	initializeOpenGLFunctions();
 	
 	//Print out some information about the OpenGL implementation.
 	std::cout << "OpenGL Implementation Details:" << std::endl;
@@ -164,11 +160,11 @@ void OpenGLWidget::paintGL()
 	
 	shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); //Update to the latest camera matrix
 	
-	glBindVertexArray(vertexArrayObject);
+	//glBindVertexArray(vertexArrayObject);
 	
 	glDrawElements(GL_TRIANGLES, noOfIndices, GL_UNSIGNED_INT, 0);
 	
-	glBindVertexArray(0);
+	//glBindVertexArray(0);
 	
 	shader.release();
 	

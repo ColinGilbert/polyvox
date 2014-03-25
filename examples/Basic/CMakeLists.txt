@@ -46,7 +46,7 @@ ADD_EXECUTABLE(BasicExample ${SRC_FILES})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(BasicExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(BasicExample Qt5::OpenGL PolyVoxCore)
+TARGET_LINK_LIBRARIES(BasicExample Qt5::OpenGL ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows
