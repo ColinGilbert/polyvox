@@ -68,44 +68,44 @@ void OpenGLWidget::initializeGL()
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
 	
-	if(!shader.addShaderFromSourceCode(QOpenGLShader::Vertex, R"(
-		#version 140
+	if(!shader.addShaderFromSourceCode(QOpenGLShader::Vertex,
+		"#version 140\n"
 		
-		in vec4 position; //This will be the position of the vertex in model-space
+		"in vec4 position; //This will be the position of the vertex in model-space\n"
 		
-		uniform mat4 cameraToClipMatrix;
-		uniform mat4 worldToCameraMatrix;
-		uniform mat4 modelToWorldMatrix;
+		"uniform mat4 cameraToClipMatrix;\n"
+		"uniform mat4 worldToCameraMatrix;\n"
+		"uniform mat4 modelToWorldMatrix;\n"
 		
-		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
+		"out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals\n"
 		
-		void main()
-		{
-			worldPosition = modelToWorldMatrix * position;
-			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
-			gl_Position = cameraToClipMatrix * cameraPosition;
-		}
-	)"))
+		"void main()\n"
+		"{\n"
+		"	worldPosition = modelToWorldMatrix * position;\n"
+		"	vec4 cameraPosition = worldToCameraMatrix * worldPosition;\n"
+		"	gl_Position = cameraToClipMatrix * cameraPosition;\n"
+		"}\n"
+	))
 	{
 		std::cerr << shader.log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	if(!shader.addShaderFromSourceCode(QOpenGLShader::Fragment, R"(
-		#version 130
+	if(!shader.addShaderFromSourceCode(QOpenGLShader::Fragment,
+		"#version 130\n"
 		
-		in vec4 worldPosition; //Passed in from the vertex shader
+		"in vec4 worldPosition; //Passed in from the vertex shader\n"
 		
-		out vec4 outputColor;
+		"out vec4 outputColor;\n"
 		
-		void main()
-		{
-			vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
+		"void main()\n"
+		"{\n"
+		"	vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));\n"
 			
-			float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
-			outputColor = vec4(1.0, 0.5, color, 1.0);
-		}
-	)"))
+		"	float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);\n"
+		"	outputColor = vec4(1.0, 0.5, color, 1.0);\n"
+		"}\n"
+	))
 	{
 		std::cerr << shader.log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
