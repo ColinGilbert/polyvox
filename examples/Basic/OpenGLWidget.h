@@ -33,7 +33,7 @@ distribution.
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 
-class OpenGLWidget : public QGLWidget
+class OpenGLWidget : public QGLWidget, protected QOpenGLFunctions_3_1
 {
 public:
 	//Constructor
@@ -60,7 +60,6 @@ private:
 	GLuint vertexArrayObject;
 	
 	QOpenGLShaderProgram shader;
-	QOpenGLFunctions_3_1* gl;
 
 	//Mouse data
 	QPoint m_LastFrameMousePos;
