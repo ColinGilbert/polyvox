@@ -11,6 +11,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
 	,m_xRotation(0)
 	,m_yRotation(0)
+	,gl(nullptr)
 {
 }
 
@@ -21,57 +22,63 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	const auto& vecVertices = surfaceMesh.getVertices();
 	
 	//Create the VAO for the mesh
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	gl->glGenVertexArrays(1, &vertexArrayObject);
+	gl->glBindVertexArray(vertexArrayObject);
 	
 	//The GL_ARRAY_BUFFER will contain the list of vertex positions
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterial), vecVertices.data(), GL_STATIC_DRAW);
+	gl->glGenBuffers(1, &vertexBuffer);
+	gl->glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	gl->glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterial), vecVertices.data(), GL_STATIC_DRAW);
 	
 	//and GL_ELEMENT_ARRAY_BUFFER will contain the indices
-	glGenBuffers(1, &indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
+	gl->glGenBuffers(1, &indexBuffer);
+	gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	gl->glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
 	
 	//We need to tell OpenGL how to understand the format of the vertex data
-	glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PositionMaterial), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+	gl->glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
+	gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PositionMaterial), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 	
-	glBindVertexArray(0);
+	gl->glBindVertexArray(0);
 	
 	noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
 }
 
 void OpenGLWidget::initializeGL()
 {
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
+	//'gl' will give us access to all the OpenGL functions
+	gl = context()->contextHandle()->versionFunctions<QOpenGLFunctions_3_1>();
+	if(!gl)
 	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		std::cout << "GLEW Error: " << glewGetErrorString(err) << std::endl;
+		std::cerr << "Could not obtain required OpenGL context version" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	if(!gl->initializeOpenGLFunctions())
+	{
+		std::cerr << "Could not initialise OpenGL functions" << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	
 	//Print out some information about the OpenGL implementation.
 	std::cout << "OpenGL Implementation Details:" << std::endl;
-	if(glGetString(GL_VENDOR))
-	  std::cout << "\tGL_VENDOR: " << glGetString(GL_VENDOR) << std::endl;
-	if(glGetString(GL_RENDERER))
-	  std::cout << "\tGL_RENDERER: " << glGetString(GL_RENDERER) << std::endl;
-	if(glGetString(GL_VERSION))
-	  std::cout << "\tGL_VERSION: " << glGetString(GL_VERSION) << std::endl;
-	if(glGetString(GL_SHADING_LANGUAGE_VERSION))
-	  std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	if(gl->glGetString(GL_VENDOR))
+	  std::cout << "\tGL_VENDOR: " << gl->glGetString(GL_VENDOR) << std::endl;
+	if(gl->glGetString(GL_RENDERER))
+	  std::cout << "\tGL_RENDERER: " << gl->glGetString(GL_RENDERER) << std::endl;
+	if(gl->glGetString(GL_VERSION))
+	  std::cout << "\tGL_VERSION: " << gl->glGetString(GL_VERSION) << std::endl;
+	if(gl->glGetString(GL_SHADING_LANGUAGE_VERSION))
+	  std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << gl->glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	//Set up the clear colour
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth(1.0f);
+	gl->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	gl->glClearDepth(1.0f);
 	
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0, 1.0);
+	gl->glEnable(GL_CULL_FACE);
+	gl->glEnable(GL_DEPTH_TEST);
+	gl->glDepthMask(GL_TRUE);
+	gl->glDepthFunc(GL_LEQUAL);
+	gl->glDepthRange(0.0, 1.0);
 	
 	if(!shader.addShaderFromSourceCode(QOpenGLShader::Vertex, R"(
 		#version 140
@@ -137,7 +144,7 @@ void OpenGLWidget::initializeGL()
 void OpenGLWidget::resizeGL(int w, int h)
 {
 	//Setup the viewport
-	glViewport(0, 0, w, h);
+	gl->glViewport(0, 0, w, h);
 	
 	auto aspectRatio = w / (float)h;
 	float zNear = 1.0;
@@ -154,7 +161,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 void OpenGLWidget::paintGL()
 {
 	//Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	QMatrix4x4 modelToWorldMatrix{};
 	modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
@@ -165,15 +172,15 @@ void OpenGLWidget::paintGL()
 	
 	shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); //Update to the latest camera matrix
 	
-	glBindVertexArray(vertexArrayObject);
+	gl->glBindVertexArray(vertexArrayObject);
 	
-	glDrawElements(GL_TRIANGLES, noOfIndices, GL_UNSIGNED_INT, 0);
+	gl->glDrawElements(GL_TRIANGLES, noOfIndices, GL_UNSIGNED_INT, 0);
 	
-	glBindVertexArray(0);
+	gl->glBindVertexArray(0);
 	
 	shader.release();
 	
-	GLenum errCode = glGetError();
+	GLenum errCode = gl->glGetError();
 	if(errCode != GL_NO_ERROR)
 	{
 	  std::cerr << "OpenGL Error: " << errCode << std::endl;

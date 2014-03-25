@@ -26,10 +26,12 @@ distribution.
 
 #include "PolyVoxCore/SurfaceMesh.h"
 
-#include "glew/glew.h"
+#include <QOpenGLFunctions_3_1>
 
 #include <QGLWidget>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 
 class OpenGLWidget : public QGLWidget
 {
@@ -58,6 +60,7 @@ private:
 	GLuint vertexArrayObject;
 	
 	QOpenGLShaderProgram shader;
+	QOpenGLFunctions_3_1* gl;
 
 	//Mouse data
 	QPoint m_LastFrameMousePos;
