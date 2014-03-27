@@ -43,8 +43,8 @@ IF(WIN32)
 ENDIF()
 
 # Qt is required for building the tests, the example and optionally for bundling the documentation
-find_package(Qt5Test 5.2 REQUIRED)
-find_package(Qt5OpenGL 5.2 REQUIRED)
+find_package(Qt5Test 5.2)
+find_package(Qt5OpenGL 5.2)
 
 set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
 set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
