@@ -7,6 +7,15 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
+	,m_uBeginIndex(0)
+	,m_uEndIndex(0)
+	,indexBuffer(0)
+	,vertexBuffer(0)
+	
+	,m_uBeginIndexLow(0)
+	,m_uEndIndexLow(0)
+	,indexBufferLow(0)
+	,vertexBufferLow(0)
 	,m_xRotation(0)
 	,m_yRotation(0)
 {
