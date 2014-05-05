@@ -19,6 +19,8 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
 PROJECT(SmoothLODExample)
 
 #Projects source files
@@ -50,7 +52,7 @@ ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(SmoothLODExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(SmoothLODExample glew Qt5::OpenGL ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
+TARGET_LINK_LIBRARIES(SmoothLODExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 SET_PROPERTY(TARGET SmoothLODExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows

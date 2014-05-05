@@ -2,7 +2,7 @@
 
 #include <QMouseEvent>
 #include <QMatrix4x4>
-#include <QtMath>
+//#include <QtMath>
 
 using namespace PolyVox;
 using namespace std;
@@ -73,7 +73,7 @@ void OpenGLWidget::initializeGL()
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
 	
-	if(!shader.addShaderFromSourceCode(QOpenGLShader::Vertex, R"(
+	if (!shader.addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
 		
 		in vec4 position; //This will be the position of the vertex in model-space
@@ -96,7 +96,7 @@ void OpenGLWidget::initializeGL()
 		exit(EXIT_FAILURE);
 	}
 	
-	if(!shader.addShaderFromSourceCode(QOpenGLShader::Fragment, R"(
+	if (!shader.addShaderFromSourceCode(QGLShader::Fragment, R"(
 		#version 130
 		
 		in vec4 worldPosition; //Passed in from the vertex shader

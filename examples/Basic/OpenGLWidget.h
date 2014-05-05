@@ -29,7 +29,7 @@ distribution.
 #include "glew/glew.h"
 
 #include <QGLWidget>
-#include <QOpenGLShaderProgram>
+#include <QGLShaderProgram>
 
 class OpenGLWidget : public QGLWidget
 {
@@ -57,7 +57,7 @@ private:
 	GLuint vertexBuffer;
 	GLuint vertexArrayObject;
 	
-	QOpenGLShaderProgram shader;
+	QGLShaderProgram shader;
 
 	//Mouse data
 	QPoint m_LastFrameMousePos;
