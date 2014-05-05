@@ -34,27 +34,6 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {	
 #ifdef SWIG
-	class PositionMaterial
-#else
-	class POLYVOX_API PositionMaterial
-#endif
-	{
-	public:	
-		PositionMaterial();
-		PositionMaterial(Vector3DFloat positionToSet, float materialToSet);
-
-		float getMaterial(void) const;
-		const Vector3DFloat& getPosition(void) const;
-
-		void setMaterial(float materialToSet);
-		void setPosition(const Vector3DFloat& positionToSet);
-	public:		
-		//Nicely fits into four floats.
-		Vector3DFloat position;
-		float material;
-	};	
-
-#ifdef SWIG
 	class PositionMaterialNormal
 #else
 	class POLYVOX_API PositionMaterialNormal
