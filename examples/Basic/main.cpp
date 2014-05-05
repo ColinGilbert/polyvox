@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	//A mesh object to hold the result of surface extraction
-	SurfaceMesh<PositionMaterial> mesh;
+	SurfaceMesh<PositionMaterialNormal> mesh;
 
 	//Create a surface extractor. Comment out one of the following two lines to decide which type gets created.
 	CubicSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);

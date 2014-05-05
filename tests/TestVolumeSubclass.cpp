@@ -184,7 +184,7 @@ void TestVolumeSubclass::testExtractSurface()
 		}
 	}
 
-	SurfaceMesh<PositionMaterial> result;
+	SurfaceMesh<PositionMaterialNormal> result;
 	CubicSurfaceExtractor< VolumeSubclass<Material8> > cubicSurfaceExtractor(&volumeSubclass, volumeSubclass.getEnclosingRegion(), &result);
 	cubicSurfaceExtractor.execute();
 
