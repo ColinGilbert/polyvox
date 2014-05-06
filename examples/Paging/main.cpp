@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include "Perlin.h"
 
 #include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/RLEBlockCompressor.h"
@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
 
 	//Extract the surface
 	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals< LargeVolume<MaterialDensityPair44> > surfaceExtractor(&volData, reg, &mesh);
+	CubicSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(&volData, reg, &mesh);
 	//MarchingCubesSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(&volData, reg, &mesh);
 	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
 	surfaceExtractor.execute();

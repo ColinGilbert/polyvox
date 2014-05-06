@@ -62,10 +62,10 @@ void OpenGLWidget::initializeGL()
 	glEnable(GL_DEPTH_TEST);					
 	glDepthFunc(GL_LEQUAL);						
 
-	//Anable smooth lighting
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glShadeModel(GL_SMOOTH);
+	//Enable smooth lighting
+	//glEnable(GL_LIGHTING);
+	//glEnable(GL_LIGHT0);
+	//glShadeModel(GL_SMOOTH);
 
 	//We'll be rendering with index/vertex arrays
 	glEnableClientState(GL_VERTEX_ARRAY);
