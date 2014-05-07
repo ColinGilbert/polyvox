@@ -29,9 +29,9 @@ freely, subject to the following restrictions:
 using namespace PolyVox;
 using namespace std;
 
-void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal>& mesh, unsigned int uLodLevel)
+void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> >& mesh, unsigned int uLodLevel)
 {
-	const vector<PositionMaterialNormal>& vecVertices = mesh.getVertices();
+	const vector<PositionMaterialNormal<MaterialDensityPair44> >& vecVertices = mesh.getVertices();
 	const vector<uint32_t>& vecIndices = mesh.getIndices();
 
 	int beginIndex = mesh.m_vecLodRecords[uLodLevel].beginIndex;
@@ -41,7 +41,7 @@ void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal>& mes
 	//for(vector<PolyVox::uint32_t>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
 	for(int index = beginIndex; index < endIndex; ++index)
 	{
-		const PositionMaterialNormal& vertex = vecVertices[vecIndices[index]];
+		const PositionMaterialNormal<MaterialDensityPair44> & vertex = vecVertices[vecIndices[index]];
 		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
 		//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
 		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
@@ -49,7 +49,9 @@ void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal>& mes
 
 
 
-		uint8_t material = static_cast<uint8_t>(vertex.getMaterial() + 0.5);
+		//uint8_t material = static_cast<uint8_t>(static_cast<double>(vertex.getMaterial()) + 0.5);
+		uint8_t material = 1;
+
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
 

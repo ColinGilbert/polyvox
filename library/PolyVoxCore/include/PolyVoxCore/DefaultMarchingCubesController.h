@@ -64,10 +64,8 @@ namespace PolyVox
 	public:
 		/// Used to inform the MarchingCubesSurfaceExtractor about which type it should use for representing densities.
 		typedef VoxelType DensityType;
-		/// Used to inform the MarchingCubesSurfaceExtractor about which type it should use for representing materials. We're using a float here
-		/// because this implementation always returns a constant value off 1.0f. PolyVox also uses floats to store the materials in the mesh vertices
-		/// but this is not really desirable on modern hardware. We'll probably come back to material representation in the future.
-		typedef float MaterialType;
+		/// Used to inform the MarchingCubesSurfaceExtractor about which type it should use for representing materials.
+		typedef VoxelType MaterialType;
 
 		/**
 		 * Constructor

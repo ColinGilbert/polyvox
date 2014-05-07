@@ -24,10 +24,11 @@ freely, subject to the following restrictions:
 #ifndef __OpenGLExample_OpenGLImmediateModeSupport_H__
 #define __OpenGLExample_OpenGLImmediateModeSupport_H__
 
+#include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 
 #include "glew/glew.h"
 
-void renderRegionImmediateMode(PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& mesh, unsigned int uLodLevel);
+void renderRegionImmediateMode(PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal<PolyVox::MaterialDensityPair44> >& mesh, unsigned int uLodLevel);
 
 #endif //__OpenGLExample_OpenGLImmediateModeSupport_H__

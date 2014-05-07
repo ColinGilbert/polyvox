@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename Controller>
-	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal>* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -457,9 +457,9 @@ namespace PolyVox
 					}
 
 					// Allow the controller to decide how the material should be derived from the voxels.
-					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
+					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
 
-					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
+					const PositionMaterialNormal<typename VolumeType::VoxelType> surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
 
@@ -486,10 +486,10 @@ namespace PolyVox
 					}
 
 					// Allow the controller to decide how the material should be derived from the voxels.
-					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
+					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
 
-					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
-					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+					PositionMaterialNormal<typename VolumeType::VoxelType> surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
 
 					m_sampVolume.moveNegativeY();
@@ -514,9 +514,9 @@ namespace PolyVox
 					}
 
 					// Allow the controller to decide how the material should be derived from the voxels.
-					const typename Controller::MaterialType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
+					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
 
-					const PositionMaterialNormal surfaceVertex(v3dPosition, v3dNormal, static_cast<float>(uMaterial));
+					const PositionMaterialNormal<typename VolumeType::VoxelType> surfaceVertex(v3dPosition, v3dNormal, uMaterial);
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
 

@@ -87,7 +87,7 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
 
-					std::shared_ptr< SurfaceMesh<PositionMaterialNormal> > mesh(new SurfaceMesh<PositionMaterialNormal>);
+					std::shared_ptr< SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> > > mesh(new SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> >);
 					MarchingCubesSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
@@ -193,7 +193,7 @@ void OpenGLWidget::paintGL()
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 					if(m_mapSurfaceMeshes.find(v3dRegPos) != m_mapSurfaceMeshes.end())
 					{
-						std::shared_ptr< SurfaceMesh<PositionMaterialNormal> > meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
+						std::shared_ptr< SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> > > meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
 						unsigned int uLodLevel = 0; //meshCurrent->m_vecLodRecords.size() - 1;
 						if(m_bUseOpenGLVertexBufferObjects)
 						{													

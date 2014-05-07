@@ -21,11 +21,11 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
+void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal<uint8_t> >& surfaceMesh)
 {
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
-	const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
+	const vector<PositionMaterialNormal<uint8_t> >& vecVertices = surfaceMesh.getVertices();
 
 	//Build an OpenGL index buffer
 	glGenBuffers(1, &indexBuffer);
@@ -37,17 +37,17 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal), pVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal<uint8_t>), pVertices, GL_STATIC_DRAW);
 
 	m_uBeginIndex = 0;
 	m_uEndIndex = vecIndices.size();
 }
 
-void OpenGLWidget::setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
+void OpenGLWidget::setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<PositionMaterialNormal<uint8_t> >& surfaceMesh)
 {
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
-	const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
+	const vector<PositionMaterialNormal<uint8_t> >& vecVertices = surfaceMesh.getVertices();
 
 	//Build an OpenGL index buffer
 	glGenBuffers(1, &indexBufferLow);
@@ -59,7 +59,7 @@ void OpenGLWidget::setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<Posit
 	glGenBuffers(1, &vertexBufferLow);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferLow);
 	const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal), pVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal<uint8_t>), pVertices, GL_STATIC_DRAW);
 
 	m_uBeginIndexLow = 0;
 	m_uEndIndexLow = vecIndices.size();
@@ -152,8 +152,8 @@ void OpenGLWidget::paintGL()
 
 	//Bind the vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal), 0);
-	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
+	glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal<uint8_t>), 0);
+	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal<uint8_t>), (GLvoid*)12);
 
 	glDrawRangeElements(GL_TRIANGLES, m_uBeginIndex, m_uEndIndex-1, m_uEndIndex - m_uBeginIndex, GL_UNSIGNED_INT, 0);
 
@@ -162,8 +162,8 @@ void OpenGLWidget::paintGL()
 
 	//Bind the vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferLow);
-	glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal), 0);
-	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
+	glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal<uint8_t>), 0);
+	glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal<uint8_t>), (GLvoid*)12);
 
 	glDrawRangeElements(GL_TRIANGLES, m_uBeginIndexLow, m_uEndIndexLow-1, m_uEndIndexLow - m_uBeginIndexLow, GL_UNSIGNED_INT, 0);
 	

@@ -90,11 +90,11 @@ namespace PolyVox
 	class DefaultIsQuadNeeded< MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> >
 	{
 	public:
-		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, uint32_t& materialToUse)
+		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>& materialToUse)
 		{
 			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
-				materialToUse = static_cast<uint32_t>(back.getMaterial());
+				materialToUse = back;
 				return true;
 			}
 			else
@@ -132,15 +132,15 @@ namespace PolyVox
 			return voxel.getMaterial();
 		}
 
-		MaterialType blendMaterials(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> a, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> b, float /*weight*/)
+		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> blendMaterials(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> a, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> b, float /*weight*/)
 		{
 			if(convertToDensity(a) > convertToDensity(b))
 			{
-				return convertToMaterial(a);
+				return a;
 			}
 			else
 			{
-				return convertToMaterial(b);
+				return b;
 			}
 		}
 

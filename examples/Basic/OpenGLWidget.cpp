@@ -14,7 +14,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
+void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal<uint8_t> >& surfaceMesh)
 {
 	//Convienient access to the vertices and indices
 	const auto& vecIndices = surfaceMesh.getIndices();
@@ -27,7 +27,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	//The GL_ARRAY_BUFFER will contain the list of vertex positions
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal), vecVertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal<uint8_t>), vecVertices.data(), GL_STATIC_DRAW);
 	
 	//and GL_ELEMENT_ARRAY_BUFFER will contain the indices
 	glGenBuffers(1, &indexBuffer);
@@ -36,7 +36,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	
 	//We need to tell OpenGL how to understand the format of the vertex data
 	glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PositionMaterialNormal), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PositionMaterialNormal<uint8_t>), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 	
 	glBindVertexArray(0);
 	
