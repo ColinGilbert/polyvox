@@ -49,8 +49,8 @@ void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal<Mater
 
 
 
-		//uint8_t material = static_cast<uint8_t>(static_cast<double>(vertex.getMaterial()) + 0.5);
-		uint8_t material = 1;
+		uint8_t material = static_cast<uint8_t>(static_cast<double>(vertex.getMaterial().getMaterial()) + 0.5);
+		//uint8_t material = 1;
 
 
 		OpenGLColour colour = convertMaterialIDToColour(material);
