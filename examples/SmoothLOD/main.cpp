@@ -90,15 +90,11 @@ int main(int argc, char *argv[])
 	volumeResampler.execute();
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> meshLowLOD;
-	MarchingCubesSurfaceExtractor< RawVolume<uint8_t> > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
-	surfaceExtractor.execute();
+	auto meshLowLOD = extractMarchingCubesSurface(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> meshHighLOD;
-	MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
-	surfaceExtractorHigh.execute();
+	auto meshHighLOD = extractMarchingCubesSurface(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
 	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
 
 	//Pass the surface to the OpenGL window
