@@ -97,7 +97,7 @@ namespace PolyVox
 	{
 		return position;
 	}
-
+	
 	void PositionMaterial::setMaterial(float materialToSet)
 	{
 		material = materialToSet;
