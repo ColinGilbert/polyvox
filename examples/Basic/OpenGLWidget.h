@@ -29,6 +29,7 @@ distribution.
 #include "glew/glew.h"
 
 #include <QGLWidget>
+#include <QGLShaderProgram>
 
 class OpenGLWidget : public QGLWidget
 {
@@ -40,8 +41,8 @@ public:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
 
-	//Convert a SrfaceMesh to OpenGL index/vertex buffers
-	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal>& surfaceMesh);
+	//Convert a SurfaceMesh to OpenGL index/vertex buffers
+	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::PositionMaterial>& surfaceMesh);
 
 protected:
 	//Qt OpenGL functions
@@ -51,11 +52,12 @@ protected:
 
 private:
 	//Index/vertex buffer data
-	GLuint m_uBeginIndex;
-	GLuint m_uEndIndex;
 	GLuint noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
+	GLuint vertexArrayObject;
+	
+	QGLShaderProgram shader;
 
 	//Mouse data
 	QPoint m_LastFrameMousePos;

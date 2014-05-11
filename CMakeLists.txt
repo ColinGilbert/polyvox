@@ -20,7 +20,7 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6)
 
 PROJECT(PolyVox)
 
@@ -55,12 +55,6 @@ else()
 	set_package_properties(Qt4 PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
 endif()
 
-if(MSVC AND (MSVC_VERSION LESS 1600))
-	# Require boost for older (pre-vc2010) Visual Studio compilers
-	# See library/include/polyvoxcore/impl/TypeDef.h
-	find_package(Boost REQUIRED)
-	include_directories(${Boost_INCLUDE_DIRS})
-endif()
 
 IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
@@ -89,7 +83,6 @@ INCLUDE(Packaging.cmake)
 OPTION(ENABLE_TESTS "Should the tests be built" ON)
 IF(ENABLE_TESTS AND QT_QTTEST_FOUND)
 	INCLUDE(CTest)
-	MARK_AS_ADVANCED(FORCE DART_TESTING_TIMEOUT) #This is only needed to hide the variable in the GUI (CMake bug) until 2.8.5
 	MARK_AS_ADVANCED(FORCE BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
 	SET(BUILD_TESTS ON)

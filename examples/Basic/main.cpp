@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/SurfaceMesh.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	//auto mesh = extractCubicSurfaceWithNormals(&volData, volData.getEnclosingRegion());
-	auto mesh = extractMarchingCubesSurface(&volData, volData.getEnclosingRegion());
+	auto mesh = extractCubicSurface(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractMarchingCubesSurface(&volData, volData.getEnclosingRegion());
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);
