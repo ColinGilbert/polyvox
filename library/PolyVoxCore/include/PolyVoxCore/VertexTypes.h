@@ -36,107 +36,49 @@ namespace PolyVox
 #ifdef SWIG
 	class PositionMaterial
 #else
-	template<typename MaterialType>
 	class POLYVOX_API PositionMaterial
 #endif
 	{
 	public:	
-		PositionMaterial()
-		{
-		}
+		PositionMaterial();
+		PositionMaterial(Vector3DFloat positionToSet, float materialToSet);
 
-		PositionMaterial(Vector3DFloat positionToSet, MaterialType materialToSet)
-			:position(positionToSet)
-			,material(materialToSet)
-		{
-		}
+		float getMaterial(void) const;
+		const Vector3DFloat& getPosition(void) const;
 
-		MaterialType getMaterial(void) const
-		{
-			return material;
-		}
-
-		const Vector3DFloat& getPosition(void) const
-		{
-			return position;
-		}
-
-		void setMaterial(MaterialType materialToSet)
-		{
-			material = materialToSet;
-		}
-
-		void setPosition(const Vector3DFloat& positionToSet)
-		{
-			position = positionToSet;
-		}
+		void setMaterial(float materialToSet);
+		void setPosition(const Vector3DFloat& positionToSet);
 	public:		
 		//Nicely fits into four floats.
 		Vector3DFloat position;
-		MaterialType material;
+		float material;
 	};	
 
 #ifdef SWIG
 	class PositionMaterialNormal
 #else
-	template<typename MaterialType>
 	class POLYVOX_API PositionMaterialNormal
 #endif
 	{
 	public:	
-		PositionMaterialNormal()
-		{
-		}
+		PositionMaterialNormal();
+		PositionMaterialNormal(Vector3DFloat positionToSet, float materialToSet);
+		PositionMaterialNormal(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet);	
 
-		PositionMaterialNormal(Vector3DFloat positionToSet, MaterialType materialToSet)
-			:position(positionToSet)
-			,material(materialToSet)
-		{
-		}
+		float getMaterial(void) const;
+		const Vector3DFloat& getNormal(void) const;
+		const Vector3DFloat& getPosition(void) const;	
 
-		PositionMaterialNormal(Vector3DFloat positionToSet, Vector3DFloat normalToSet, MaterialType materialToSet)
-			:position(positionToSet)
-			,normal(normalToSet)
-			,material(materialToSet)
-		{
-		}
-
-		MaterialType getMaterial(void) const
-		{
-			return material;
-		}
-
-		const Vector3DFloat& getNormal(void) const
-		{
-			return normal;
-		}
-
-		const Vector3DFloat& getPosition(void) const
-		{
-			return position;
-		}
-
-		void setMaterial(MaterialType materialToSet)
-		{
-			material = materialToSet;
-		}
-
-		void setNormal(const Vector3DFloat& normalToSet)
-		{
-			normal = normalToSet;
-		}
-
-		void setPosition(const Vector3DFloat& positionToSet)
-		{
-			position = positionToSet;
-		}
+		void setMaterial(float materialToSet);
+		void setNormal(const Vector3DFloat& normalToSet);
+		void setPosition(const Vector3DFloat& positionToSet);
 
 	public:		
 		//Nicely fits into seven floats, meaning we
 		//can squeeze in one more for material blending.
 		Vector3DFloat position;
 		Vector3DFloat normal;
-		MaterialType material; //FIXME: This shouldn't be float on CPU?
+		float material; //FIXME: This shouldn't be float on CPU?
 	};
 }
 

@@ -25,9 +25,86 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	PositionMaterialNormal::PositionMaterialNormal()
+	{
+	}
+
+	PositionMaterialNormal::PositionMaterialNormal(Vector3DFloat positionToSet, float materialToSet)
+		:position(positionToSet)
+		,material(materialToSet)
+	{
+		
+	}
+
+	PositionMaterialNormal::PositionMaterialNormal(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet)
+		:position(positionToSet)
+		,normal(normalToSet)
+		,material(materialToSet)
+	{
+	}
+
+	float PositionMaterialNormal::getMaterial(void) const
+	{
+		return material;
+	}
+
+	const Vector3DFloat& PositionMaterialNormal::getNormal(void) const
+	{
+		return normal;
+	}
+
+	const Vector3DFloat& PositionMaterialNormal::getPosition(void) const
+	{
+		return position;
+	}
+
+	void PositionMaterialNormal::setMaterial(float materialToSet)
+	{
+		material = materialToSet;
+	}
+
+	void PositionMaterialNormal::setNormal(const Vector3DFloat& normalToSet)
+	{
+		normal = normalToSet;
+	}	
+
+	void PositionMaterialNormal::setPosition(const Vector3DFloat& positionToSet)
+	{
+		position = positionToSet;
+	}
+
 	////////////////////////////////////////////////////////////////////////////////
 	// PositionMaterial
 	////////////////////////////////////////////////////////////////////////////////
 
+	PositionMaterial::PositionMaterial()
+	{
+	}
+
+	PositionMaterial::PositionMaterial(Vector3DFloat positionToSet, float materialToSet)
+		:position(positionToSet)
+		,material(materialToSet)
+	{
+		
+	}
+
+	float PositionMaterial::getMaterial(void) const
+	{
+		return material;
+	}
+
+	const Vector3DFloat& PositionMaterial::getPosition(void) const
+	{
+		return position;
+	}
 	
+	void PositionMaterial::setMaterial(float materialToSet)
+	{
+		material = materialToSet;
+	}
+
+	void PositionMaterial::setPosition(const Vector3DFloat& positionToSet)
+	{
+		position = positionToSet;
+	}
 }

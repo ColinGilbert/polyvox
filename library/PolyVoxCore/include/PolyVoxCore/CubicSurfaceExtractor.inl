@@ -36,7 +36,7 @@ namespace PolyVox
 	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
 	template<typename VolumeType, typename IsQuadNeeded>
-	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterial>* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
@@ -88,7 +88,7 @@ namespace PolyVox
 				{
 					uint32_t regX = x - m_regSizeInVoxels.getLowerX();						
 
-					typename VolumeType::VoxelType material; //Filled in by callback
+					uint32_t material; //Filled in by callback
 					typename VolumeType::VoxelType currentVoxel = volumeSampler.getVoxel();
 					typename VolumeType::VoxelType negXVoxel = volumeSampler.peekVoxel1nx0py0pz();
 					typename VolumeType::VoxelType negYVoxel = volumeSampler.peekVoxel0px1ny0pz();
@@ -205,7 +205,7 @@ namespace PolyVox
 	}
 
 	template<typename VolumeType, typename IsQuadNeeded>
-	int32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
+	int32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, uint32_t uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		for(uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
 		{
@@ -214,14 +214,14 @@ namespace PolyVox
 			if(rEntry.iIndex == -1)
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
-				rEntry.iIndex = m_meshCurrent->addVertex(PositionMaterial<typename VolumeType::VoxelType> (Vector3DFloat(static_cast<float>(uX) - 0.5f, static_cast<float>(uY) - 0.5f, static_cast<float>(uZ) - 0.5f), uMaterialIn));
+				rEntry.iIndex = m_meshCurrent->addVertex(PositionMaterial(Vector3DFloat(static_cast<float>(uX) - 0.5f, static_cast<float>(uY) - 0.5f, static_cast<float>(uZ) - 0.5f), uMaterialIn));
 				rEntry.uMaterial = uMaterialIn;
 
 				return rEntry.iIndex;
 			}
 
 			//If we have an existing vertex and the material matches then we can return it.
-			if(rEntry.uMaterial == uMaterialIn)
+			if(rEntry.uMaterial == static_cast<int32_t>(uMaterialIn))
 			{
 				return rEntry.iIndex;
 			}
@@ -268,7 +268,7 @@ namespace PolyVox
 	{
 		//All four vertices of a given quad have the same material,
 		//so just check that the first pair of vertices match.
-		if(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() == m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial())
+		if(std::abs(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() - m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial()) < 0.001)
 		{
 			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
 			//Adjacent quads must share two vertices, and the second quad could be to the
