@@ -36,7 +36,7 @@ namespace PolyVox
 	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
 	template<typename VolumeType, typename IsQuadNeeded>
-	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<PositionMaterialNormal<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
@@ -214,7 +214,7 @@ namespace PolyVox
 			if(rEntry.iIndex == -1)
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
-				rEntry.iIndex = m_meshCurrent->addVertex(PositionMaterialNormal<typename VolumeType::VoxelType>(Vector3DFloat(static_cast<float>(uX)-0.5f, static_cast<float>(uY)-0.5f, static_cast<float>(uZ)-0.5f), uMaterialIn));
+				rEntry.iIndex = m_meshCurrent->addVertex(CubicVertex<typename VolumeType::VoxelType>(Vector3DFloat(static_cast<float>(uX)-0.5f, static_cast<float>(uY)-0.5f, static_cast<float>(uZ)-0.5f), uMaterialIn));
 				rEntry.uMaterial = uMaterialIn;
 
 				return rEntry.iIndex;

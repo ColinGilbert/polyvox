@@ -29,6 +29,6 @@ freely, subject to the following restrictions:
 
 #include "glew/glew.h"
 
-void renderRegionImmediateMode(PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal<PolyVox::MaterialDensityPair44> >& mesh, unsigned int uLodLevel);
+void renderRegionImmediateMode(PolyVox::SurfaceMesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> >& mesh, unsigned int uLodLevel);
 
 #endif //__OpenGLExample_OpenGLImmediateModeSupport_H__

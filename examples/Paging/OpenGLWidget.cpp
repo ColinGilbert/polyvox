@@ -15,7 +15,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> >& surfaceMesh)
+void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex<MaterialDensityPair44> >& surfaceMesh)
 {
 	if((surfaceMesh.getNoOfIndices() == 0) || (surfaceMesh.getNoOfVertices() == 0))
 	{
@@ -25,7 +25,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
-	const vector<PositionMaterialNormal<MaterialDensityPair44> >& vecVertices = surfaceMesh.getVertices();
+	const vector<CubicVertex<MaterialDensityPair44> >& vecVertices = surfaceMesh.getVertices();
 
 	//Build an OpenGL index buffer
 	glGenBuffers(1, &indexBuffer);
@@ -37,7 +37,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMat
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal<MaterialDensityPair44>), pVertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(CubicVertex<MaterialDensityPair44>), pVertices, GL_STATIC_DRAW);
 
 	m_uBeginIndex = 0;
 	m_uEndIndex = vecIndices.size();
@@ -109,8 +109,8 @@ void OpenGLWidget::paintGL()
 
 	//Bind the vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal<MaterialDensityPair44>), 0);
-	//glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal<MaterialDensityPair44>), (GLvoid*)12);
+	glVertexPointer(3, GL_FLOAT, sizeof(CubicVertex<MaterialDensityPair44>), 0);
+	//glNormalPointer(GL_FLOAT, sizeof(CubicVertex<MaterialDensityPair44>), (GLvoid*)12);
 
 	glDrawRangeElements(GL_TRIANGLES, m_uBeginIndex, m_uEndIndex-1, m_uEndIndex - m_uBeginIndex, GL_UNSIGNED_INT, 0);
 }

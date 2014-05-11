@@ -42,7 +42,7 @@ public:
 	void mousePressEvent(QMouseEvent* event);
 
 	//Convert a SurfaceMesh to OpenGL index/vertex buffers
-	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::PositionMaterialNormal<uint8_t> >& surfaceMesh);
+	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
 
 protected:
 	//Qt OpenGL functions

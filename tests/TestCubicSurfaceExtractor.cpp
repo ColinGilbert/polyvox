@@ -106,7 +106,7 @@ uint32_t testForType(void)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x += uRegionSideLength)
 			{
-				SurfaceMesh<PositionMaterialNormal<VoxelType> > result;
+				SurfaceMesh<CubicVertex<VoxelType> > result;
 				Region regionToExtract(x, y, z, x + uRegionSideLength - 1, y + uRegionSideLength - 1, z + uRegionSideLength - 1);
 				CubicSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, regionToExtract, &result);
 				extractor.execute();
@@ -131,7 +131,7 @@ void TestCubicSurfaceExtractor::testExecute()
 	const static uint32_t uIndexToCheck = 2000;
 	const static uint32_t uExpectedIndex = 1334;
 
-	SurfaceMesh<PositionMaterialNormal> mesh;*/
+	SurfaceMesh<CubicVertex> mesh;*/
 
 	/*testForType<int8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);

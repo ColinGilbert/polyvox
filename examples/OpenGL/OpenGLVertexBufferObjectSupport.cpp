@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 using namespace PolyVox;
 using namespace std;
 
-OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> >& mesh)
+OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> >& mesh)
 {
 	//Represents our filled in OpenGL vertex and index buffer objects.
 	OpenGLSurfaceMesh result;
@@ -39,7 +39,7 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<PositionMaterialNorma
 	result.sourceMesh = &mesh;
 
 	//Convienient access to the vertices and indices
-	const vector<PositionMaterialNormal<MaterialDensityPair44> >& vecVertices = mesh.getVertices();
+	const vector<MarchingCubesVertex<MaterialDensityPair44> >& vecVertices = mesh.getVertices();
 	const vector<uint32_t>& vecIndices = mesh.getIndices();
 
 	//If we have any indices...
@@ -63,9 +63,9 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<PositionMaterialNorma
 	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(GLfloat) * 9, 0, GL_STATIC_DRAW);
 	GLfloat* ptr = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE);
 
-	for (vector<PositionMaterialNormal<MaterialDensityPair44> >::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
+	for (vector<MarchingCubesVertex<MaterialDensityPair44> >::const_iterator iterVertex = vecVertices.begin(); iterVertex != vecVertices.end(); ++iterVertex)
 	{
-		const PositionMaterialNormal<MaterialDensityPair44> & vertex = *iterVertex;
+		const MarchingCubesVertex<MaterialDensityPair44> & vertex = *iterVertex;
 		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
 		//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
 		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());

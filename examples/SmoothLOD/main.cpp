@@ -90,13 +90,13 @@ int main(int argc, char *argv[])
 	volumeResampler.execute();
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal<uint8_t> > meshLowLOD;
+	SurfaceMesh<MarchingCubesVertex<uint8_t> > meshLowLOD;
 	MarchingCubesSurfaceExtractor< RawVolume<uint8_t> > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
 	surfaceExtractor.execute();
 	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal<uint8_t> > meshHighLOD;
+	SurfaceMesh<MarchingCubesVertex<uint8_t> > meshHighLOD;
 	MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
 	surfaceExtractorHigh.execute();
 	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));

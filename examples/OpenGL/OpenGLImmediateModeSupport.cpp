@@ -29,9 +29,9 @@ freely, subject to the following restrictions:
 using namespace PolyVox;
 using namespace std;
 
-void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal<MaterialDensityPair44> >& mesh, unsigned int uLodLevel)
+void renderRegionImmediateMode(PolyVox::SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> >& mesh, unsigned int uLodLevel)
 {
-	const vector<PositionMaterialNormal<MaterialDensityPair44> >& vecVertices = mesh.getVertices();
+	const vector<MarchingCubesVertex<MaterialDensityPair44> >& vecVertices = mesh.getVertices();
 	const vector<uint32_t>& vecIndices = mesh.getIndices();
 
 	int beginIndex = mesh.m_vecLodRecords[uLodLevel].beginIndex;
@@ -41,7 +41,7 @@ void renderRegionImmediateMode(PolyVox::SurfaceMesh<PositionMaterialNormal<Mater
 	//for(vector<PolyVox::uint32_t>::const_iterator iterIndex = vecIndices.begin(); iterIndex != vecIndices.end(); ++iterIndex)
 	for(int index = beginIndex; index < endIndex; ++index)
 	{
-		const PositionMaterialNormal<MaterialDensityPair44> & vertex = vecVertices[vecIndices[index]];
+		const MarchingCubesVertex<MaterialDensityPair44> & vertex = vecVertices[vecIndices[index]];
 		const Vector3DFloat& v3dVertexPos = vertex.getPosition();
 		//const Vector3DFloat v3dRegionOffset(uRegionX * g_uRegionSideLength, uRegionY * g_uRegionSideLength, uRegionZ * g_uRegionSideLength);
 		const Vector3DFloat v3dFinalVertexPos = v3dVertexPos + static_cast<Vector3DFloat>(mesh.m_Region.getLowerCorner());
