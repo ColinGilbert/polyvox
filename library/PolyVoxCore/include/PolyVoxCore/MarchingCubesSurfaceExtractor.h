@@ -210,6 +210,28 @@ namespace PolyVox
 		//Our threshold value
 		typename Controller::DensityType m_tThreshold;
 	};
+
+	template< typename VolumeType, typename Controller>
+	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	{
+		SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
+		MarchingCubesSurfaceExtractor<VolumeType, Controller> extractor(volData, region, &result, eWrapMode, tBorderValue, controller);
+		extractor.execute();
+		return result;
+	}
+
+	template< typename VolumeType>
+	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
+	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
+#if defined(_MSC_VER)
+	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
+#else
+	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
+#endif
+	{
+		DefaultMarchingCubesController<typename VolumeType::VoxelType> controller;
+		return extractMarchingCubesSurface(volData, region, eWrapMode, tBorderValue, controller);
+	}
 }
 
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.inl"

@@ -186,11 +186,7 @@ int main(int argc, char *argv[])
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
 	//Extract the surface
-	SurfaceMesh<CubicVertex<MaterialDensityPair44> > mesh;
-	CubicSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(&volData, reg, &mesh);
-	//MarchingCubesSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(&volData, reg, &mesh);
-	//CubicSurfaceExtractorWithNormals<MaterialDensityPair44> surfaceExtractor(&volData, reg, &mesh);
-	surfaceExtractor.execute();
+	auto mesh = extractCubicSurface(&volData, reg);
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
 	//Pass the surface to the OpenGL window
