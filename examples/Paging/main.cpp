@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #include "Perlin.h"
 
 #include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
+#include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/RLEBlockCompressor.h"
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
 	//Extract the surface
-	auto mesh = extractMarchingCubesSurface(&volData, reg);
+	auto mesh = extractCubicSurface(&volData, reg);
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
 	//Pass the surface to the OpenGL window

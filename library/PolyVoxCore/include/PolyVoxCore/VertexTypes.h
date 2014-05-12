@@ -34,51 +34,125 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {	
 #ifdef SWIG
-	class PositionMaterial
+	class CubicVertex
 #else
-	class POLYVOX_API PositionMaterial
+	template<typename VoxelType>
+	class POLYVOX_API CubicVertex
 #endif
 	{
 	public:	
-		PositionMaterial();
-		PositionMaterial(Vector3DFloat positionToSet, float materialToSet);
+		CubicVertex()
+		{
+		}
 
-		float getMaterial(void) const;
-		const Vector3DFloat& getPosition(void) const;
+		CubicVertex(Vector3DFloat positionToSet, VoxelType materialToSet)
+			:position(positionToSet)
+			,material(materialToSet)
+		{
+		}
 
-		void setMaterial(float materialToSet);
-		void setPosition(const Vector3DFloat& positionToSet);
-	public:		
-		//Nicely fits into four floats.
-		Vector3DFloat position;
-		float material;
-	};	
+		CubicVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, VoxelType materialToSet)
+			:position(positionToSet)
+			,normal(normalToSet)
+			,material(materialToSet)
+		{
+		}
 
-#ifdef SWIG
-	class PositionMaterialNormal
-#else
-	class POLYVOX_API PositionMaterialNormal
-#endif
-	{
-	public:	
-		PositionMaterialNormal();
-		PositionMaterialNormal(Vector3DFloat positionToSet, float materialToSet);
-		PositionMaterialNormal(Vector3DFloat positionToSet, Vector3DFloat normalToSet, float materialToSet);	
+		VoxelType getMaterial(void) const
+		{
+			return material;
+		}
 
-		float getMaterial(void) const;
-		const Vector3DFloat& getNormal(void) const;
-		const Vector3DFloat& getPosition(void) const;	
+		const Vector3DFloat& getNormal(void) const
+		{
+			return normal;
+		}
 
-		void setMaterial(float materialToSet);
-		void setNormal(const Vector3DFloat& normalToSet);
-		void setPosition(const Vector3DFloat& positionToSet);
+		const Vector3DFloat& getPosition(void) const
+		{
+			return position;
+		}
 
-	public:		
-		//Nicely fits into seven floats, meaning we
-		//can squeeze in one more for material blending.
+		void setMaterial(VoxelType materialToSet)
+		{
+			material = materialToSet;
+		}
+
+		void setNormal(const Vector3DFloat& normalToSet)
+		{
+			normal = normalToSet;
+		}
+
+		void setPosition(const Vector3DFloat& positionToSet)
+		{
+			position = positionToSet;
+		}
+
+	public:
 		Vector3DFloat position;
 		Vector3DFloat normal;
-		float material; //FIXME: This shouldn't be float on CPU?
+		VoxelType material;
+	};
+
+#ifdef SWIG
+	class MarchingCubesVertex
+#else
+	template<typename VoxelType>
+	class POLYVOX_API MarchingCubesVertex
+#endif
+	{
+	public:
+		MarchingCubesVertex()
+		{
+		}
+
+		MarchingCubesVertex(Vector3DFloat positionToSet, VoxelType materialToSet)
+			:position(positionToSet)
+			, material(materialToSet)
+		{
+		}
+
+		MarchingCubesVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, VoxelType materialToSet)
+			:position(positionToSet)
+			, normal(normalToSet)
+			, material(materialToSet)
+		{
+		}
+
+		VoxelType getMaterial(void) const
+		{
+			return material;
+		}
+
+		const Vector3DFloat& getNormal(void) const
+		{
+			return normal;
+		}
+
+		const Vector3DFloat& getPosition(void) const
+		{
+			return position;
+		}
+
+		void setMaterial(VoxelType materialToSet)
+		{
+			material = materialToSet;
+		}
+
+		void setNormal(const Vector3DFloat& normalToSet)
+		{
+			normal = normalToSet;
+		}
+
+		void setPosition(const Vector3DFloat& positionToSet)
+		{
+			position = positionToSet;
+		}
+
+	public:
+		Vector3DFloat position;
+		Vector3DFloat normal;
+		VoxelType material;
 	};
 }
 
