@@ -77,15 +77,9 @@ int main(int argc, char *argv[])
 	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
-	//A mesh object to hold the result of surface extraction
-	SurfaceMesh<PositionMaterial> mesh;
-
-	//Create a surface extractor. Comment out one of the following two lines to decide which type gets created.
-	CubicSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	//MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-
-	//Execute the surface extractor.
-	surfaceExtractor.execute();
+	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
+	auto mesh = extractCubicSurface(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractMarchingCubesSurface(&volData, volData.getEnclosingRegion());
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);

@@ -157,6 +157,28 @@ namespace PolyVox
 		WrapMode m_eWrapMode;
 		typename VolumeType::VoxelType m_tBorderValue;
 	};
+
+	template<typename VolumeType, typename IsQuadNeeded>
+	SurfaceMesh<PositionMaterial> extractCubicSurface(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	{
+		SurfaceMesh<PositionMaterial> result;
+		CubicSurfaceExtractor<VolumeType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+		extractor.execute();
+		return result;
+	}
+
+	template<typename VolumeType>
+	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
+	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
+#if defined(_MSC_VER)
+	SurfaceMesh<PositionMaterial> extractCubicSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true)
+#else
+	SurfaceMesh<PositionMaterial> extractCubicSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+#endif
+	{
+		DefaultIsQuadNeeded<typename VolumeType::VoxelType> isQuadNeeded;
+		return extractCubicSurface<VolumeType, DefaultIsQuadNeeded<typename VolumeType::VoxelType> >(volData, region, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+	}
 }
 
 #include "PolyVoxCore/CubicSurfaceExtractor.inl"

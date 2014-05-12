@@ -106,10 +106,9 @@ uint32_t testForType(void)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x += uRegionSideLength)
 			{
-				SurfaceMesh<PositionMaterial> result;
 				Region regionToExtract(x, y, z, x + uRegionSideLength - 1, y + uRegionSideLength - 1, z + uRegionSideLength - 1);
-				CubicSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, regionToExtract, &result);
-				extractor.execute();
+
+				auto result = extractCubicSurface(&volData, regionToExtract);
 
 				uTotalVertices += result.getNoOfVertices();
 				uTotalIndices += result.getNoOfIndices();
