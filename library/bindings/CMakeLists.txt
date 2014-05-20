@@ -38,9 +38,9 @@ if(ENABLE_BINDINGS)
 		set(CMAKE_SWIG_FLAGS "")
 		set_source_files_properties(PolyVoxCore.i PROPERTIES CPLUSPLUS ON)
 		
+		include_directories(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
 		if(PYTHONLIBS_FOUND)
 			include_directories(${PYTHON_INCLUDE_PATH})
-			include_directories(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include/PolyVoxCore)
 			link_directories(${PolyVoxCore_BINARY_DIR})
 			
 			#set_source_files_properties(PolyVoxCore.i PROPERTIES SWIG_FLAGS "-builtin")
