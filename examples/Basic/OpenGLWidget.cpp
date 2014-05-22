@@ -19,19 +19,23 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex
 	//Convienient access to the vertices and indices
 	const auto& vecIndices = surfaceMesh.getIndices();
 	const auto& vecVertices = surfaceMesh.getVertices();
+
+	// This struct holds the OpenGL properties (buffer handles, etc) which will be used
+	// to render our mesh. We copy the data from the PolyVox mesh into this structure.
+	OpenGLMeshData meshData;
 	
 	//Create the VAO for the mesh
-	glGenVertexArrays(1, &(mMeshData.vertexArrayObject));
-	glBindVertexArray(mMeshData.vertexArrayObject);
+	glGenVertexArrays(1, &(meshData.vertexArrayObject));
+	glBindVertexArray(meshData.vertexArrayObject);
 	
 	//The GL_ARRAY_BUFFER will contain the list of vertex positions
-	glGenBuffers(1, &(mMeshData.vertexBuffer));
-	glBindBuffer(GL_ARRAY_BUFFER, mMeshData.vertexBuffer);
+	glGenBuffers(1, &(meshData.vertexBuffer));
+	glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(CubicVertex<uint8_t>), vecVertices.data(), GL_STATIC_DRAW);
 	
 	//and GL_ELEMENT_ARRAY_BUFFER will contain the indices
-	glGenBuffers(1, &(mMeshData.indexBuffer));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mMeshData.indexBuffer);
+	glGenBuffers(1, &(meshData.indexBuffer));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshData.indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
 	
 	//We need to tell OpenGL how to understand the format of the vertex data
@@ -40,7 +44,9 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex
 	
 	glBindVertexArray(0);
 	
-	mMeshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
+	meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
+
+	mMeshData.push_back(meshData);
 }
 
 void OpenGLWidget::initializeGL()
@@ -155,21 +161,24 @@ void OpenGLWidget::paintGL()
 {
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	QMatrix4x4 modelToWorldMatrix{};
 	modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	modelToWorldMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
 	modelToWorldMatrix.translate(-32, -32, -32); //centre the model on the origin
-	
+
 	shader.bind();
-	
+
 	shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); //Update to the latest camera matrix
-	
-	glBindVertexArray(mMeshData.vertexArrayObject);
-	
-	glDrawElements(GL_TRIANGLES, mMeshData.noOfIndices, GL_UNSIGNED_INT, 0);
-	
-	glBindVertexArray(0);
+
+	for (OpenGLMeshData meshData : mMeshData)
+	{
+		glBindVertexArray(meshData.vertexArrayObject);
+
+		glDrawElements(GL_TRIANGLES, meshData.noOfIndices, GL_UNSIGNED_INT, 0);
+
+		glBindVertexArray(0);
+	}
 	
 	shader.release();
 	

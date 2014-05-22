@@ -60,7 +60,7 @@ protected:
 
 private:
 	//Index/vertex buffer data
-	OpenGLMeshData mMeshData;
+	std::vector<OpenGLMeshData> mMeshData;
 	
 	QGLShaderProgram shader;
 
