@@ -31,6 +31,14 @@ distribution.
 #include <QGLWidget>
 #include <QGLShaderProgram>
 
+struct OpenGLMeshData
+{
+	GLuint noOfIndices;
+	GLuint indexBuffer;
+	GLuint vertexBuffer;
+	GLuint vertexArrayObject;
+};
+
 class OpenGLWidget : public QGLWidget
 {
 public:
@@ -52,10 +60,7 @@ protected:
 
 private:
 	//Index/vertex buffer data
-	GLuint noOfIndices;
-	GLuint indexBuffer;
-	GLuint vertexBuffer;
-	GLuint vertexArrayObject;
+	OpenGLMeshData mMeshData;
 	
 	QGLShaderProgram shader;
 

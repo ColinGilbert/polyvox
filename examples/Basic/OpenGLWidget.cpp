@@ -21,17 +21,17 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex
 	const auto& vecVertices = surfaceMesh.getVertices();
 	
 	//Create the VAO for the mesh
-	glGenVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
+	glGenVertexArrays(1, &(mMeshData.vertexArrayObject));
+	glBindVertexArray(mMeshData.vertexArrayObject);
 	
 	//The GL_ARRAY_BUFFER will contain the list of vertex positions
-	glGenBuffers(1, &vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	glGenBuffers(1, &(mMeshData.vertexBuffer));
+	glBindBuffer(GL_ARRAY_BUFFER, mMeshData.vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(CubicVertex<uint8_t>), vecVertices.data(), GL_STATIC_DRAW);
 	
 	//and GL_ELEMENT_ARRAY_BUFFER will contain the indices
-	glGenBuffers(1, &indexBuffer);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+	glGenBuffers(1, &(mMeshData.indexBuffer));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mMeshData.indexBuffer);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
 	
 	//We need to tell OpenGL how to understand the format of the vertex data
@@ -40,7 +40,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex
 	
 	glBindVertexArray(0);
 	
-	noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
+	mMeshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
 }
 
 void OpenGLWidget::initializeGL()
@@ -165,9 +165,9 @@ void OpenGLWidget::paintGL()
 	
 	shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); //Update to the latest camera matrix
 	
-	glBindVertexArray(vertexArrayObject);
+	glBindVertexArray(mMeshData.vertexArrayObject);
 	
-	glDrawElements(GL_TRIANGLES, noOfIndices, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, mMeshData.noOfIndices, GL_UNSIGNED_INT, 0);
 	
 	glBindVertexArray(0);
 	
