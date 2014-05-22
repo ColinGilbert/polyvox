@@ -128,7 +128,7 @@ SurfaceMesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we coul
 	DefaultMarchingCubesController<VoxelType> controller;
 	controller.setThreshold(50);
 
-	auto result = extractMarchingCubesSurface(&volData, volData.getEnclosingRegion(), WrapModes::Border, VoxelType(), controller);
+	auto result = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion(), WrapModes::Border, VoxelType(), controller);
 
 	return result;
 }

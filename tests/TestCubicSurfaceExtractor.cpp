@@ -108,7 +108,7 @@ uint32_t testForType(void)
 			{
 				Region regionToExtract(x, y, z, x + uRegionSideLength - 1, y + uRegionSideLength - 1, z + uRegionSideLength - 1);
 
-				auto result = extractCubicSurface(&volData, regionToExtract);
+				auto result = extractCubicMesh(&volData, regionToExtract);
 
 				uTotalVertices += result.getNoOfVertices();
 				uTotalIndices += result.getNoOfIndices();
