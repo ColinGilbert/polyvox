@@ -9,6 +9,8 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
+	,mCenterPoint(32,32,32)
+	,mDistFromCenter(50)
 	,m_xRotation(0)
 	,m_yRotation(0)
 {
@@ -129,6 +131,8 @@ void OpenGLWidget::initializeGL()
 		std::cerr << shader.log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
+
+	setupWorldToCameraMatrix();
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -196,17 +200,22 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 	m_yRotation += diff.y();
 	m_LastFrameMousePos = m_CurrentMousePos;
 
+	setupWorldToCameraMatrix();
+
+	update();
+}
+
+void OpenGLWidget::setupWorldToCameraMatrix()
+{
 	shader.bind();
 
 	QMatrix4x4 worldToCameraMatrix{};
-	worldToCameraMatrix.translate(0, 0, -50); //Move the camera back by 50 units
+	worldToCameraMatrix.translate(0, 0, -mDistFromCenter); //Move the camera back by the required amount
 	worldToCameraMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	worldToCameraMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
-	worldToCameraMatrix.translate(-32, -32, -32); //centre the model on the origin
+	worldToCameraMatrix.translate(-mCenterPoint); //centre the model on the origin
 
 	shader.setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
 
 	shader.release();
-
-	update();
 }

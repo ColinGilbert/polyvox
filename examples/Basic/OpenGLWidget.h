@@ -59,6 +59,9 @@ protected:
 	void paintGL();
 
 private:
+
+	void setupWorldToCameraMatrix();
+
 	//Index/vertex buffer data
 	std::vector<OpenGLMeshData> mMeshData;
 	
@@ -67,6 +70,10 @@ private:
 	//Mouse data
 	QPoint m_LastFrameMousePos;
 	QPoint m_CurrentMousePos;
+
+	//Camera setup
+	QVector3D mCenterPoint;
+	float mDistFromCenter;
 	int m_xRotation;
 	int m_yRotation;
 };
