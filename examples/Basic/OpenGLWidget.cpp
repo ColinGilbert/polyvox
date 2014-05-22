@@ -129,15 +129,6 @@ void OpenGLWidget::initializeGL()
 		std::cerr << shader.log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	
-	shader.bind();
-	
-	QMatrix4x4 worldToCameraMatrix{};
-	worldToCameraMatrix.translate(0, 0, -50); //Move the camera back by 50 units
-	
-	shader.setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
-	
-	shader.release();
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -163,9 +154,9 @@ void OpenGLWidget::paintGL()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	QMatrix4x4 modelToWorldMatrix{};
-	modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
-	modelToWorldMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
-	modelToWorldMatrix.translate(-32, -32, -32); //centre the model on the origin
+	//modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
+	//modelToWorldMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
+	//modelToWorldMatrix.translate(-32, -32, -32); //centre the model on the origin
 
 	shader.bind();
 
@@ -204,6 +195,18 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 	m_xRotation += diff.x();
 	m_yRotation += diff.y();
 	m_LastFrameMousePos = m_CurrentMousePos;
+
+	shader.bind();
+
+	QMatrix4x4 worldToCameraMatrix{};
+	worldToCameraMatrix.translate(0, 0, -50); //Move the camera back by 50 units
+	worldToCameraMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
+	worldToCameraMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
+	worldToCameraMatrix.translate(-32, -32, -32); //centre the model on the origin
+
+	shader.setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
+
+	shader.release();
 
 	update();
 }
