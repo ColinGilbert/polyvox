@@ -50,8 +50,8 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volData)
 {
 	//First we free anything from the previous volume (if there was one).
-	m_mapOpenGLSurfaceMeshes.clear();
-	m_mapSurfaceMeshes.clear();
+	m_mapOpenGLMeshes.clear();
+	m_mapMeshes.clear();
 	m_volData = volData;
 
 	//If we have any volume data then generate the new surface patches.
@@ -87,7 +87,7 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 					//Extract the surface for this region
 					//extractSurface(m_volData, 0, PolyVox::Region(regLowerCorner, regUpperCorner), meshCurrent);
 
-					std::shared_ptr< SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> > > mesh(new SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> >);
+					std::shared_ptr< Mesh<MarchingCubesVertex<MaterialDensityPair44> > > mesh(new Mesh<MarchingCubesVertex<MaterialDensityPair44> >);
 					MarchingCubesSurfaceExtractor< LargeVolume<MaterialDensityPair44> > surfaceExtractor(volData, PolyVox::Region(regLowerCorner, regUpperCorner), mesh.get());
 					surfaceExtractor.execute();
 
@@ -105,12 +105,12 @@ void OpenGLWidget::setVolume(PolyVox::LargeVolume<MaterialDensityPair44>* volDat
 						Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
 						if(m_bUseOpenGLVertexBufferObjects)
 						{
-							OpenGLSurfaceMesh openGLSurfaceMesh = BuildOpenGLSurfaceMesh(*(mesh.get()));					
-							m_mapOpenGLSurfaceMeshes.insert(make_pair(v3dRegPos, openGLSurfaceMesh));
+							OpenGLMesh openGLMesh = BuildOpenGLMesh(*(mesh.get()));					
+							m_mapOpenGLMeshes.insert(make_pair(v3dRegPos, openGLMesh));
 						}
 						//else
 						//{
-							m_mapSurfaceMeshes.insert(make_pair(v3dRegPos, mesh));
+							m_mapMeshes.insert(make_pair(v3dRegPos, mesh));
 						//}
 						//delete meshCurrent;
 					}
@@ -191,13 +191,13 @@ void OpenGLWidget::paintGL()
 				for(uint16_t uRegionX = 0; uRegionX < m_uVolumeWidthInRegions; ++uRegionX)
 				{
 					Vector3DUint8 v3dRegPos(uRegionX,uRegionY,uRegionZ);
-					if(m_mapSurfaceMeshes.find(v3dRegPos) != m_mapSurfaceMeshes.end())
+					if(m_mapMeshes.find(v3dRegPos) != m_mapMeshes.end())
 					{
-						std::shared_ptr< SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> > > meshCurrent = m_mapSurfaceMeshes[v3dRegPos];
+						std::shared_ptr< Mesh<MarchingCubesVertex<MaterialDensityPair44> > > meshCurrent = m_mapMeshes[v3dRegPos];
 						unsigned int uLodLevel = 0; //meshCurrent->m_vecLodRecords.size() - 1;
 						if(m_bUseOpenGLVertexBufferObjects)
 						{													
-							renderRegionVertexBufferObject(m_mapOpenGLSurfaceMeshes[v3dRegPos], uLodLevel);
+							renderRegionVertexBufferObject(m_mapOpenGLMeshes[v3dRegPos], uLodLevel);
 						}
 						else
 						{						

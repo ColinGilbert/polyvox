@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"
 
 namespace PolyVox
@@ -41,9 +41,9 @@ namespace PolyVox
 		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), Controller controller = Controller());
 #else
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
 #endif
 
 		void execute();
@@ -193,7 +193,7 @@ namespace PolyVox
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -212,9 +212,9 @@ namespace PolyVox
 	};
 
 	template< typename VolumeType, typename Controller>
-	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
 	{
-		SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
 		MarchingCubesSurfaceExtractor<VolumeType, Controller> extractor(volData, region, &result, eWrapMode, tBorderValue, controller);
 		extractor.execute();
 		return result;
@@ -224,9 +224,9 @@ namespace PolyVox
 	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
 #else
-	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 #endif
 	{
 		DefaultMarchingCubesController<typename VolumeType::VoxelType> controller;

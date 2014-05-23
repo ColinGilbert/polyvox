@@ -24,12 +24,12 @@ freely, subject to the following restrictions:
 #include "OpenGLImmediateModeSupport.h"
 #include "OpenGLSupport.h"
 
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 
 using namespace PolyVox;
 using namespace std;
 
-void renderRegionImmediateMode(PolyVox::SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> >& mesh, unsigned int uLodLevel)
+void renderRegionImmediateMode(PolyVox::Mesh<MarchingCubesVertex<MaterialDensityPair44> >& mesh, unsigned int uLodLevel)
 {
 	const vector<MarchingCubesVertex<MaterialDensityPair44> >& vecVertices = mesh.getVertices();
 	const vector<uint32_t>& vecIndices = mesh.getIndices();

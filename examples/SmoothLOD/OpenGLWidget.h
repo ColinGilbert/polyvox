@@ -24,7 +24,7 @@ distribution.
 #ifndef __BasicExample_OpenGLWidget_H__
 #define __BasicExample_OpenGLWidget_H__
 
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 
 #include "glew/glew.h"
 
@@ -41,8 +41,8 @@ public:
 	void mousePressEvent(QMouseEvent* event);
 
 	//Convert a SrfaceMesh to OpenGL index/vertex buffers
-	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::MarchingCubesVertex <uint8_t> >& surfaceMesh);
-	void setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<PolyVox::MarchingCubesVertex<uint8_t> >& surfaceMesh);
+	void setMeshToRender(const PolyVox::Mesh<PolyVox::MarchingCubesVertex <uint8_t> >& surfaceMesh);
+	void setMeshToRenderLowLOD(const PolyVox::Mesh<PolyVox::MarchingCubesVertex<uint8_t> >& surfaceMesh);
 
 protected:
 	//Qt OpenGL functions

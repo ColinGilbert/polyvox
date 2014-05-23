@@ -25,15 +25,15 @@ freely, subject to the following restrictions:
 #include "OpenGLVertexBufferObjectSupport.h"
 
 #include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 
 using namespace PolyVox;
 using namespace std;
 
-OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<MarchingCubesVertex<MaterialDensityPair44> >& mesh)
+OpenGLMesh BuildOpenGLMesh(const Mesh<MarchingCubesVertex<MaterialDensityPair44> >& mesh)
 {
 	//Represents our filled in OpenGL vertex and index buffer objects.
-	OpenGLSurfaceMesh result;
+	OpenGLMesh result;
 
 	//The source
 	result.sourceMesh = &mesh;
@@ -102,23 +102,23 @@ OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const SurfaceMesh<MarchingCubesVertex<M
 	return result;
 }
 
-void renderRegionVertexBufferObject(const OpenGLSurfaceMesh& openGLSurfaceMesh, unsigned int uLodLevel)
+void renderRegionVertexBufferObject(const OpenGLMesh& openGLMesh, unsigned int uLodLevel)
 {
-	int beginIndex = openGLSurfaceMesh.sourceMesh->m_vecLodRecords[uLodLevel].beginIndex;
-	int endIndex = openGLSurfaceMesh.sourceMesh->m_vecLodRecords[uLodLevel].endIndex;
-	glBindBuffer(GL_ARRAY_BUFFER, openGLSurfaceMesh.vertexBuffer);
+	int beginIndex = openGLMesh.sourceMesh->m_vecLodRecords[uLodLevel].beginIndex;
+	int endIndex = openGLMesh.sourceMesh->m_vecLodRecords[uLodLevel].endIndex;
+	glBindBuffer(GL_ARRAY_BUFFER, openGLMesh.vertexBuffer);
 	glVertexPointer(3, GL_FLOAT, 36, 0);
 	glNormalPointer(GL_FLOAT, 36, (GLvoid*)12);
 	glColorPointer(3, GL_FLOAT, 36, (GLvoid*)24);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openGLSurfaceMesh.indexBuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, openGLMesh.indexBuffer);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 
-	//glDrawElements(GL_TRIANGLES, openGLSurfaceMesh.noOfIndices, GL_UNSIGNED_INT, 0);
-	glDrawRangeElements(GL_TRIANGLES, beginIndex, endIndex-1, endIndex - beginIndex,/* openGLSurfaceMesh.noOfIndices,*/ GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, openGLMesh.noOfIndices, GL_UNSIGNED_INT, 0);
+	glDrawRangeElements(GL_TRIANGLES, beginIndex, endIndex-1, endIndex - beginIndex,/* openGLMesh.noOfIndices,*/ GL_UNSIGNED_INT, 0);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);

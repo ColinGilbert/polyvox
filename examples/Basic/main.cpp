@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
 #include <QApplication>
@@ -85,9 +85,9 @@ int main(int argc, char *argv[])
 	//auto mesh2 = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(32, 32, 32), Vector3DInt32(63, 63, 63)));
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setMeshToRender(mesh);
 	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
-	//openGLWidget.setSurfaceMeshToRender(mesh2);
+	//openGLWidget.setMeshToRender(mesh2);
 
 	//Run the message pump.
 	return app.exec();

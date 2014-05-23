@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/LowPassFilter.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/RLEBlockCompressor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"

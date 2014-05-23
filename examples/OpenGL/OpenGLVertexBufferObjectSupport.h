@@ -28,15 +28,15 @@ freely, subject to the following restrictions:
 
 #include "glew/glew.h"
 
-struct OpenGLSurfaceMesh
+struct OpenGLMesh
 {
 	GLulong noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
-	const PolyVox::SurfaceMesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> >* sourceMesh;
+	const PolyVox::Mesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> >* sourceMesh;
 };
 
-OpenGLSurfaceMesh BuildOpenGLSurfaceMesh(const PolyVox::SurfaceMesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> >& mesh);
-void renderRegionVertexBufferObject(const OpenGLSurfaceMesh& openGLSurfaceMesh, unsigned int uLodLevel);
+OpenGLMesh BuildOpenGLMesh(const PolyVox::Mesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> >& mesh);
+void renderRegionVertexBufferObject(const OpenGLMesh& openGLMesh, unsigned int uLodLevel);
 
 #endif //__OpenGLExample_OpenGLVertexBufferObjectSupport_H__

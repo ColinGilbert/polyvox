@@ -21,7 +21,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<MarchingCubesVertex<uint8_t> >& surfaceMesh)
+void OpenGLWidget::setMeshToRender(const PolyVox::Mesh<MarchingCubesVertex<uint8_t> >& surfaceMesh)
 {
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
@@ -43,7 +43,7 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<MarchingCub
 	m_uEndIndex = vecIndices.size();
 }
 
-void OpenGLWidget::setSurfaceMeshToRenderLowLOD(const PolyVox::SurfaceMesh<MarchingCubesVertex<uint8_t> >& surfaceMesh)
+void OpenGLWidget::setMeshToRenderLowLOD(const PolyVox::Mesh<MarchingCubesVertex<uint8_t> >& surfaceMesh)
 {
 	//Convienient access to the vertices and indices
 	const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();

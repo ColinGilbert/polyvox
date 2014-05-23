@@ -102,7 +102,7 @@ void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
-SurfaceMesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid specifying this return type by using auto/decltype?
+Mesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid specifying this return type by using auto/decltype?
 {
 	const int32_t uVolumeSideLength = 32;
 
@@ -133,7 +133,7 @@ SurfaceMesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we coul
 	return result;
 }
 
-void testCustomController(SurfaceMesh<MarchingCubesVertex<float> >& result)
+void testCustomController(Mesh<MarchingCubesVertex<float> >& result)
 {
 	const int32_t uVolumeSideLength = 32;
 
@@ -165,7 +165,7 @@ void TestSurfaceExtractor::testExecute()
 	const static float fExpectedMaterial = 42.0f;
 	const static float fNoMaterial = 1.0f;
 
-	SurfaceMesh<MarchingCubesVertex<int8_t> > mesh;
+	Mesh<MarchingCubesVertex<int8_t> > mesh;
 	//Run the test for various voxel types.
 	QBENCHMARK {
 		mesh = testForType<int8_t>();

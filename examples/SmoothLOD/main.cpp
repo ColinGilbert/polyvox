@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Density.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/SimpleVolume.h"
 #include "PolyVoxCore/VolumeResampler.h"
@@ -98,8 +98,8 @@ int main(int argc, char *argv[])
 	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(meshHighLOD);
-	openGLWidget.setSurfaceMeshToRenderLowLOD(meshLowLOD);
+	openGLWidget.setMeshToRender(meshHighLOD);
+	openGLWidget.setMeshToRenderLowLOD(meshLowLOD);
 
 	//Run the message pump.
 	return app.exec();

@@ -30,7 +30,7 @@ freely, subject to the following restrictions:
 #include <QTimer>
 
 #include "PolyVoxCore/LargeVolume.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
 #include "OpenGLImmediateModeSupport.h"
@@ -87,8 +87,8 @@ class OpenGLWidget : public QGLWidget
 	PolyVox::LargeVolume<PolyVox::MaterialDensityPair44>* m_volData;
 
 	//Rather than storing one big mesh, the volume is broken into regions and a mesh is stored for each region
-	std::map<PolyVox::Vector3DUint8, OpenGLSurfaceMesh, Vector3DUint8Compare> m_mapOpenGLSurfaceMeshes;
-	std::map<PolyVox::Vector3DUint8, std::shared_ptr<PolyVox::SurfaceMesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> > >, Vector3DUint8Compare> m_mapSurfaceMeshes;
+	std::map<PolyVox::Vector3DUint8, OpenGLMesh, Vector3DUint8Compare> m_mapOpenGLMeshes;
+	std::map<PolyVox::Vector3DUint8, std::shared_ptr<PolyVox::Mesh<PolyVox::MarchingCubesVertex<PolyVox::MaterialDensityPair44> > >, Vector3DUint8Compare> m_mapMeshes;
 
 	unsigned int m_uRegionSideLength;
 	unsigned int m_uVolumeWidthInRegions;

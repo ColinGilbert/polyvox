@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/RLEBlockCompressor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/LargeVolume.h"
 
 #include <QApplication>
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setMeshToRender(mesh);
 
 	//Run the message pump.
 	return app.exec();

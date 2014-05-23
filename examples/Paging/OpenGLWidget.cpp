@@ -15,7 +15,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex<MaterialDensityPair44> >& surfaceMesh)
+void OpenGLWidget::setMeshToRender(const PolyVox::Mesh<CubicVertex<MaterialDensityPair44> >& surfaceMesh)
 {
 	if((surfaceMesh.getNoOfIndices() == 0) || (surfaceMesh.getNoOfVertices() == 0))
 	{

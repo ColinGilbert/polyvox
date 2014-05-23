@@ -24,7 +24,7 @@ distribution.
 #ifndef __BasicExample_OpenGLWidget_H__
 #define __BasicExample_OpenGLWidget_H__
 
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 
 #include "glew/glew.h"
 
@@ -50,7 +50,7 @@ public:
 	void mousePressEvent(QMouseEvent* event);
 
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers
-	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
+	void setMeshToRender(const PolyVox::Mesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
 
 	// The viewable region can be adjusted so that this example framework can be use for different volume sizes.
 	void setViewableRegion(PolyVox::Region viewableRegion);

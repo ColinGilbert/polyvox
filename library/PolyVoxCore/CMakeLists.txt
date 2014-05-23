@@ -84,8 +84,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
 	include/PolyVoxCore/SimpleVolumeSampler.inl
-	include/PolyVoxCore/SurfaceMesh.h
-	include/PolyVoxCore/SurfaceMesh.inl
+	include/PolyVoxCore/Mesh.h
+	include/PolyVoxCore/Mesh.inl
 	include/PolyVoxCore/UncompressedBlock.h
 	include/PolyVoxCore/UncompressedBlock.inl
 	include/PolyVoxCore/Vector.h

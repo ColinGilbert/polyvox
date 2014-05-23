@@ -130,7 +130,7 @@ void TestCubicSurfaceExtractor::testExecute()
 	const static uint32_t uIndexToCheck = 2000;
 	const static uint32_t uExpectedIndex = 1334;
 
-	SurfaceMesh<CubicVertex> mesh;*/
+	Mesh<CubicVertex> mesh;*/
 
 	/*testForType<int8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);

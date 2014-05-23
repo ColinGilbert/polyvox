@@ -25,7 +25,7 @@ distribution.
 #define __BasicExample_OpenGLWidget_H__
 
 #include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 
 #include "glew/glew.h"
 
@@ -42,7 +42,7 @@ public:
 	void mousePressEvent(QMouseEvent* event);
 
 	//Convert a SrfaceMesh to OpenGL index/vertex buffers
-	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::CubicVertex<PolyVox::MaterialDensityPair44> >& surfaceMesh);
+	void setMeshToRender(const PolyVox::Mesh<PolyVox::CubicVertex<PolyVox::MaterialDensityPair44> >& surfaceMesh);
 
 protected:
 	//Qt OpenGL functions

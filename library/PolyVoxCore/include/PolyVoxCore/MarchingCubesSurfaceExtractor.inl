@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename Controller>
-	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)

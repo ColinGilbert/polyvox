@@ -15,7 +15,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex<uint8_t> >& surfaceMesh)
+void OpenGLWidget::setMeshToRender(const PolyVox::Mesh<CubicVertex<uint8_t> >& surfaceMesh)
 {
 	//Convienient access to the vertices and indices
 	const auto& vecIndices = surfaceMesh.getIndices();
