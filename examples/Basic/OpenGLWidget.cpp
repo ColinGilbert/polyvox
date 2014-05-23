@@ -86,44 +86,44 @@ void OpenGLWidget::initializeGL()
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
 	
-	if (!shader.addShaderFromSourceCode(QGLShader::Vertex, R"(
-		#version 140
+	if (!shader.addShaderFromSourceCode(QGLShader::Vertex,
+		"#version 140\n"
 		
-		in vec4 position; //This will be the position of the vertex in model-space
+		"in vec4 position; //This will be the position of the vertex in model-space\n"
 		
-		uniform mat4 cameraToClipMatrix;
-		uniform mat4 worldToCameraMatrix;
-		uniform mat4 modelToWorldMatrix;
+		"uniform mat4 cameraToClipMatrix;\n"
+		"uniform mat4 worldToCameraMatrix;\n"
+		"uniform mat4 modelToWorldMatrix;\n"
 		
-		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
+		"out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals\n"
 		
-		void main()
-		{
-			worldPosition = modelToWorldMatrix * position;
-			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
-			gl_Position = cameraToClipMatrix * cameraPosition;
-		}
-	)"))
+		"void main()\n"
+		"{\n"
+		"	worldPosition = modelToWorldMatrix * position;\n"
+		"	vec4 cameraPosition = worldToCameraMatrix * worldPosition;\n"
+		"	gl_Position = cameraToClipMatrix * cameraPosition;\n"
+		"}\n"
+		))
 	{
 		std::cerr << shader.log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	if (!shader.addShaderFromSourceCode(QGLShader::Fragment, R"(
-		#version 130
+	if (!shader.addShaderFromSourceCode(QGLShader::Fragment,
+		"#version 130\n"
 		
-		in vec4 worldPosition; //Passed in from the vertex shader
+		"in vec4 worldPosition; //Passed in from the vertex shader\n"
 		
-		out vec4 outputColor;
+		"out vec4 outputColor;\n"
 		
-		void main()
-		{
-			vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
+		"void main()\n"
+		"{\n"
+		"	vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));\n"
 			
-			float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
-			outputColor = vec4(1.0, 0.5, color, 1.0);
-		}
-	)"))
+		"	float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);\n"
+		"	outputColor = vec4(1.0, 0.5, color, 1.0);\n"
+		"}"
+	))
 	{
 		std::cerr << shader.log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
@@ -149,7 +149,7 @@ void OpenGLWidget::resizeGL(int w, int h)
 	float zNear = 1.0;
 	float zFar = 1000.0;
 	
-	QMatrix4x4 cameraToClipMatrix{};
+	QMatrix4x4 cameraToClipMatrix;
 	cameraToClipMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
 	
 	shader.bind();
@@ -162,7 +162,7 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	QMatrix4x4 modelToWorldMatrix{};
+	QMatrix4x4 modelToWorldMatrix;
 	//modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	//modelToWorldMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
 	//modelToWorldMatrix.translate(-32, -32, -32); //centre the model on the origin
@@ -220,7 +220,7 @@ void OpenGLWidget::setupWorldToCameraMatrix()
 	QVector3D centerPoint = (lowerCorner + upperCorner) * 0.5;
 	float fDiagonalLength = (upperCorner - lowerCorner).length();
 
-	QMatrix4x4 worldToCameraMatrix{};
+	QMatrix4x4 worldToCameraMatrix;
 	worldToCameraMatrix.translate(0, 0, -fDiagonalLength / 2.0f); //Move the camera back by the required amount
 	worldToCameraMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	worldToCameraMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
