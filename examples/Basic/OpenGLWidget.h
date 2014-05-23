@@ -51,11 +51,15 @@ public:
 
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers
 	void setMeshToRender(const PolyVox::Mesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
+	void setMeshToRender(const PolyVox::Mesh<PolyVox::MarchingCubesVertex<uint8_t> >& surfaceMesh);
 
 	// The viewable region can be adjusted so that this example framework can be use for different volume sizes.
 	void setViewableRegion(PolyVox::Region viewableRegion);
 
 protected:
+	template <typename MeshType>
+	void setMeshToRenderImpl(const MeshType& surfaceMesh);
+
 	// Qt OpenGL functions
 	void initializeGL();
 	void resizeGL(int w, int h);
