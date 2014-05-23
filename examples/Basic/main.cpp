@@ -78,16 +78,16 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
 	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
 
-	//auto mesh = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 31, 31)));
-	//auto mesh2 = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(32, 32, 32), Vector3DInt32(63, 63, 63)));
+	auto mesh = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 31, 31)));
+	auto mesh2 = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(32, 32, 32), Vector3DInt32(63, 63, 63)));
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.addMesh(mesh);
+	openGLWidget.addMesh(mesh2);
 	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
-	//openGLWidget.addMesh(mesh2);
 
 	//Run the message pump.
 	return app.exec();

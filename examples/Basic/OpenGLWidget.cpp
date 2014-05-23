@@ -127,17 +127,14 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	QMatrix4x4 modelToWorldMatrix{};
-	//modelToWorldMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
-	//modelToWorldMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
-	//modelToWorldMatrix.translate(-32, -32, -32); //centre the model on the origin
-
 	shader.bind();
-
-	shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); //Update to the latest camera matrix
 
 	for (OpenGLMeshData meshData : mMeshData)
 	{
+		QMatrix4x4 modelToWorldMatrix{};
+		modelToWorldMatrix.translate(meshData.translation.getX(), meshData.translation.getY(), meshData.translation.getZ()); // Centre the model on the origin
+		shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); // Update to the latest camera matrix
+
 		glBindVertexArray(meshData.vertexArrayObject);
 
 		glDrawElements(GL_TRIANGLES, meshData.noOfIndices, GL_UNSIGNED_INT, 0);
