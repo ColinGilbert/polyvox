@@ -52,6 +52,8 @@ public:
 	//Convert a SurfaceMesh to OpenGL index/vertex buffers
 	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
 
+	void setViewableRegion(PolyVox::Region viewableRegion);
+
 protected:
 	//Qt OpenGL functions
 	void initializeGL();
@@ -72,8 +74,7 @@ private:
 	QPoint m_CurrentMousePos;
 
 	//Camera setup
-	QVector3D mCenterPoint;
-	float mDistFromCenter;
+	PolyVox::Region m_viewableRegion;
 	int m_xRotation;
 	int m_yRotation;
 };

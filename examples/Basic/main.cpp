@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 	//openGLWidget.setSurfaceMeshToRender(mesh2);
 
 	//Run the message pump.

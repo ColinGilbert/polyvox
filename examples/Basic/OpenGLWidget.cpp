@@ -9,8 +9,7 @@ using namespace std;
 
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
-	,mCenterPoint(32,32,32)
-	,mDistFromCenter(50)
+	,m_viewableRegion(Region(0, 0, 0, 255, 255, 255))
 	,m_xRotation(0)
 	,m_yRotation(0)
 {
@@ -49,6 +48,12 @@ void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<CubicVertex
 	meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
 
 	mMeshData.push_back(meshData);
+}
+
+void OpenGLWidget::setViewableRegion(Region viewableRegion)
+{
+	m_viewableRegion = viewableRegion;
+	setupWorldToCameraMatrix();
 }
 
 void OpenGLWidget::initializeGL()
@@ -209,11 +214,17 @@ void OpenGLWidget::setupWorldToCameraMatrix()
 {
 	shader.bind();
 
+	QVector3D lowerCorner(m_viewableRegion.getLowerX(), m_viewableRegion.getLowerY(), m_viewableRegion.getLowerZ());
+	QVector3D upperCorner(m_viewableRegion.getUpperX(), m_viewableRegion.getUpperY(), m_viewableRegion.getUpperZ());
+
+	QVector3D centerPoint = (lowerCorner + upperCorner) * 0.5;
+	float fDiagonalLength = (upperCorner - lowerCorner).length();
+
 	QMatrix4x4 worldToCameraMatrix{};
-	worldToCameraMatrix.translate(0, 0, -mDistFromCenter); //Move the camera back by the required amount
+	worldToCameraMatrix.translate(0, 0, -fDiagonalLength / 2.0f); //Move the camera back by the required amount
 	worldToCameraMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	worldToCameraMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
-	worldToCameraMatrix.translate(-mCenterPoint); //centre the model on the origin
+	worldToCameraMatrix.translate(-centerPoint); //centre the model on the origin
 
 	shader.setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
 
