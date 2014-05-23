@@ -81,21 +81,59 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, 1, midPos-10), Vector3DInt32(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
-	//I've removed this smoothing because it doesn't really make sense to apply a low pass filter to a volume with material values. 
-	//I could implement the mathematical operators for MaterialDensityPair in such a way that they ignores the materials but this 
-	//seems to be setting a bad example. Users can add this operators in their own classes if they want smoothing.
-	//RawVolume<MaterialDensityPair44> tempVolume(PolyVox::Region(0,0,0,128, 128, 128));
-	//LowPassFilter< LargeVolume<MaterialDensityPair44>, RawVolume<MaterialDensityPair44> > pass1(&volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
-	//pass1.executeSAT();
-	//LowPassFilter< RawVolume<MaterialDensityPair44>, LargeVolume<MaterialDensityPair44> > pass2(&tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
-	//pass2.executeSAT();
-
 	QApplication app(argc, argv);
 
 	OpenGLWidget openGLWidget(0);
 
 
 	openGLWidget.show();
+
+	QGLShaderProgram* shader = new QGLShaderProgram;
+
+	if (!shader->addShaderFromSourceCode(QGLShader::Vertex, R"(
+		#version 140
+		
+		in vec4 position; //This will be the position of the vertex in model-space
+		
+		uniform mat4 cameraToClipMatrix;
+		uniform mat4 worldToCameraMatrix;
+		uniform mat4 modelToWorldMatrix;
+		
+		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
+		
+		void main()
+		{
+			worldPosition = modelToWorldMatrix * position;
+			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
+			gl_Position = cameraToClipMatrix * cameraPosition;
+		}
+	)"))
+	{
+		std::cerr << shader->log().toStdString() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (!shader->addShaderFromSourceCode(QGLShader::Fragment, R"(
+		#version 130
+		
+		in vec4 worldPosition; //Passed in from the vertex shader
+		
+		out vec4 outputColor;
+		
+		void main()
+		{
+			vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
+			
+			float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
+			outputColor = vec4(1.0, 1.0, 1.0, 1.0);
+		}
+	)"))
+	{
+		std::cerr << shader->log().toStdString() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	openGLWidget.setShader(shader);
 
 	QTime time;
 	time.start();

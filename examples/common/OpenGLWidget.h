@@ -53,6 +53,11 @@ public:
 	// The viewable region can be adjusted so that this example framework can be use for different volume sizes.
 	void setViewableRegion(PolyVox::Region viewableRegion);
 
+	void setShader(QGLShaderProgram* shader)
+	{
+		this->shader = shader;
+	}
+
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers. Inlined because it's templatised.
 	template <typename MeshType>
 	void addMesh(const MeshType& surfaceMesh)
@@ -107,7 +112,11 @@ private:
 	// Index/vertex buffer data
 	std::vector<OpenGLMeshData> mMeshData;
 	
-	QGLShaderProgram shader;
+	QGLShaderProgram* shader;
+
+	// Matrices
+	QMatrix4x4 worldToCameraMatrix;
+	QMatrix4x4 cameraToClipMatrix;
 
 	// Mouse data
 	QPoint m_LastFrameMousePos;

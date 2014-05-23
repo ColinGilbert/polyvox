@@ -50,8 +50,10 @@ void OpenGLWidget::initializeGL()
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
+
+	shader = new QGLShaderProgram;
 	
-	if (!shader.addShaderFromSourceCode(QGLShader::Vertex, R"(
+	if (!shader->addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
 		
 		in vec4 position; //This will be the position of the vertex in model-space
@@ -70,11 +72,11 @@ void OpenGLWidget::initializeGL()
 		}
 	)"))
 	{
-		std::cerr << shader.log().toStdString() << std::endl;
+		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	if (!shader.addShaderFromSourceCode(QGLShader::Fragment, R"(
+	if (!shader->addShaderFromSourceCode(QGLShader::Fragment, R"(
 		#version 130
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
@@ -90,15 +92,15 @@ void OpenGLWidget::initializeGL()
 		}
 	)"))
 	{
-		std::cerr << shader.log().toStdString() << std::endl;
+		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	shader.bindAttributeLocation("position", 0);
+	shader->bindAttributeLocation("position", 0);
 	
-	if(!shader.link())
+	if (!shader->link())
 	{
-		std::cerr << shader.log().toStdString() << std::endl;
+		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -114,12 +116,8 @@ void OpenGLWidget::resizeGL(int w, int h)
 	float zNear = 1.0;
 	float zFar = 1000.0;
 	
-	QMatrix4x4 cameraToClipMatrix{};
+	cameraToClipMatrix.setToIdentity();
 	cameraToClipMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
-	
-	shader.bind();
-	shader.setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
-	shader.release();
 }
 
 void OpenGLWidget::paintGL()
@@ -127,13 +125,16 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	shader.bind();
+	shader->bind();
+
+	shader->setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
+	shader->setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
 
 	for (OpenGLMeshData meshData : mMeshData)
 	{
 		QMatrix4x4 modelToWorldMatrix{};
 		modelToWorldMatrix.translate(meshData.translation.getX(), meshData.translation.getY(), meshData.translation.getZ()); // Centre the model on the origin
-		shader.setUniformValue("modelToWorldMatrix", modelToWorldMatrix); // Update to the latest camera matrix
+		shader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix); // Update to the latest camera matrix
 
 		glBindVertexArray(meshData.vertexArrayObject);
 
@@ -142,7 +143,7 @@ void OpenGLWidget::paintGL()
 		glBindVertexArray(0);
 	}
 	
-	shader.release();
+	shader->release();
 	
 	GLenum errCode = glGetError();
 	if(errCode != GL_NO_ERROR)
@@ -174,21 +175,15 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 
 void OpenGLWidget::setupWorldToCameraMatrix()
 {
-	shader.bind();
-
 	QVector3D lowerCorner(m_viewableRegion.getLowerX(), m_viewableRegion.getLowerY(), m_viewableRegion.getLowerZ());
 	QVector3D upperCorner(m_viewableRegion.getUpperX(), m_viewableRegion.getUpperY(), m_viewableRegion.getUpperZ());
 
 	QVector3D centerPoint = (lowerCorner + upperCorner) * 0.5;
 	float fDiagonalLength = (upperCorner - lowerCorner).length();
 
-	QMatrix4x4 worldToCameraMatrix{};
+	worldToCameraMatrix.setToIdentity();
 	worldToCameraMatrix.translate(0, 0, -fDiagonalLength / 2.0f); //Move the camera back by the required amount
 	worldToCameraMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
 	worldToCameraMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
 	worldToCameraMatrix.translate(-centerPoint); //centre the model on the origin
-
-	shader.setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
-
-	shader.release();
 }
