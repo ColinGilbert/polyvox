@@ -26,18 +26,12 @@ PROJECT(OpenGLExample)
 #Projects source files
 SET(SRC_FILES
 	main.cpp
-	OpenGLImmediateModeSupport.cpp
-	OpenGLSupport.cpp
-	OpenGLVertexBufferObjectSupport.cpp
-	OpenGLWidget.cpp
+	../common/OpenGLWidget.cpp
 	Shapes.cpp
 	)
 
 #Projects headers files	
 SET(INC_FILES
-	OpenGLImmediateModeSupport.h
-	OpenGLSupport.h
-	OpenGLVertexBufferObjectSupport.h
 	OpenGLWidget.h
 	Shapes.h
 )

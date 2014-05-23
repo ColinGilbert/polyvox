@@ -22,6 +22,7 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 
 #include "PolyVoxCore/FilePager.h"
+#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/LowPassFilter.h"
@@ -30,8 +31,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
-#include "OpenGLImmediateModeSupport.h"
-#include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
 #include "OpenGLWidget.h"
@@ -47,6 +46,8 @@ freely, subject to the following restrictions:
 using namespace std;
 using namespace PolyVox;
 using namespace std;
+
+const int32_t g_uVolumeSideLength = 128;
 
 int main(int argc, char *argv[])
 {
@@ -98,8 +99,15 @@ int main(int argc, char *argv[])
 
 	QTime time;
 	time.start();
-	openGLWidget.setVolume(&volData);
+	//openGLWidget.setVolume(&volData);
 	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
+
+	auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+
+	//Pass the surface to the OpenGL window
+	openGLWidget.addMesh(mesh);
+	//openGLWidget.addMesh(mesh2);
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//return 0;
 
