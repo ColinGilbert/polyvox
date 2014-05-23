@@ -50,15 +50,14 @@ public:
 	void mousePressEvent(QMouseEvent* event);
 
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers
-	void setMeshToRender(const PolyVox::Mesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
-	void setMeshToRender(const PolyVox::Mesh<PolyVox::MarchingCubesVertex<uint8_t> >& surfaceMesh);
+	template <typename MeshType>
+	void addMesh(const MeshType& surfaceMesh);
 
 	// The viewable region can be adjusted so that this example framework can be use for different volume sizes.
 	void setViewableRegion(PolyVox::Region viewableRegion);
 
 protected:
-	template <typename MeshType>
-	void setMeshToRenderImpl(const MeshType& surfaceMesh);
+	
 
 	// Qt OpenGL functions
 	void initializeGL();
@@ -83,5 +82,41 @@ private:
 	int m_xRotation;
 	int m_yRotation;
 };
+
+template <typename MeshType>
+void OpenGLWidget::addMesh(const MeshType& surfaceMesh)
+{
+	//Convienient access to the vertices and indices
+	const auto& vecIndices = surfaceMesh.getIndices();
+	const auto& vecVertices = surfaceMesh.getVertices();
+
+	// This struct holds the OpenGL properties (buffer handles, etc) which will be used
+	// to render our mesh. We copy the data from the PolyVox mesh into this structure.
+	OpenGLMeshData meshData;
+
+	//Create the VAO for the mesh
+	glGenVertexArrays(1, &(meshData.vertexArrayObject));
+	glBindVertexArray(meshData.vertexArrayObject);
+
+	//The GL_ARRAY_BUFFER will contain the list of vertex positions
+	glGenBuffers(1, &(meshData.vertexBuffer));
+	glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(CubicVertex<uint8_t>), vecVertices.data(), GL_STATIC_DRAW);
+
+	//and GL_ELEMENT_ARRAY_BUFFER will contain the indices
+	glGenBuffers(1, &(meshData.indexBuffer));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshData.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
+
+	//We need to tell OpenGL how to understand the format of the vertex data
+	glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(CubicVertex<uint8_t>), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+
+	glBindVertexArray(0);
+
+	meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
+
+	mMeshData.push_back(meshData);
+}
 
 #endif //__BasicExample_OpenGLWidget_H__

@@ -85,9 +85,9 @@ int main(int argc, char *argv[])
 	//auto mesh2 = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(32, 32, 32), Vector3DInt32(63, 63, 63)));
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setMeshToRender(mesh);
+	openGLWidget.addMesh(mesh);
 	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
-	//openGLWidget.setMeshToRender(mesh2);
+	//openGLWidget.addMesh(mesh2);
 
 	//Run the message pump.
 	return app.exec();
