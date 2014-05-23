@@ -42,20 +42,21 @@ struct OpenGLMeshData
 class OpenGLWidget : public QGLWidget
 {
 public:
-	//Constructor
+	// Constructor
 	OpenGLWidget(QWidget *parent);
 
-	//Mouse handling
+	// Mouse handling
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
 
-	//Convert a SurfaceMesh to OpenGL index/vertex buffers
+	// Convert a SurfaceMesh to OpenGL index/vertex buffers
 	void setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PolyVox::CubicVertex<uint8_t> >& surfaceMesh);
 
+	// The viewable region can be adjusted so that this example framework can be use for different volume sizes.
 	void setViewableRegion(PolyVox::Region viewableRegion);
 
 protected:
-	//Qt OpenGL functions
+	// Qt OpenGL functions
 	void initializeGL();
 	void resizeGL(int w, int h);
 	void paintGL();
@@ -64,16 +65,16 @@ private:
 
 	void setupWorldToCameraMatrix();
 
-	//Index/vertex buffer data
+	// Index/vertex buffer data
 	std::vector<OpenGLMeshData> mMeshData;
 	
 	QGLShaderProgram shader;
 
-	//Mouse data
+	// Mouse data
 	QPoint m_LastFrameMousePos;
 	QPoint m_CurrentMousePos;
 
-	//Camera setup
+	// Camera setup
 	PolyVox::Region m_viewableRegion;
 	int m_xRotation;
 	int m_yRotation;
