@@ -26,7 +26,7 @@ PROJECT(BasicExample)
 #Projects source files
 SET(SRC_FILES
 	main.cpp
-	OpenGLWidget.cpp
+	../common/OpenGLWidget.cpp
 )
 
 #Projects headers files	
