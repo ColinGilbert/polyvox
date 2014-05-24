@@ -135,21 +135,26 @@ int main(int argc, char *argv[])
 
 			vec3 normal = worldNormal.xyz;
 
-			if(outMaterial.x == 1)
+			switch(outMaterial.x)
 			{
+			case 1:
 				outputColor = vec4(1.0, 0.0, 0.0, 1.0);
-			}
-			else if(outMaterial.x == 2)
-			{
+				break;
+			case 2:
 				outputColor = vec4(0.0, 1.0, 0.0, 1.0);
-			}
-			else if(outMaterial.x == 3)
-			{
+				break;
+			case 3:
 				outputColor = vec4(0.0, 0.0, 1.0, 1.0);
-			}
-			else
-			{
+				break;
+			case 4:
 				outputColor = vec4(1.0, 1.0, 0.0, 1.0);
+				break;
+			case 5:
+				outputColor = vec4(1.0, 0.0, 1.0, 1.0);
+				break;
+			default:
+				outputColor = vec4(1.0, 1.0, 1.0, 1.0);
+				break;
 			}
 			
 			//float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
