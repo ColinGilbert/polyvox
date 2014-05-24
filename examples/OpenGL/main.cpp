@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		
 		in vec4 position; // This will be the position of the vertex in model-space
 		in vec4 normal; // The normal data may not have been set
-		in vec2 material;
+		in ivec2 material;
 		
 		uniform mat4 cameraToClipMatrix;
 		uniform mat4 worldToCameraMatrix;
@@ -103,14 +103,14 @@ int main(int argc, char *argv[])
 		
 		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
 		out vec4 worldNormal;
-		out vec2 outMaterial;
+		flat out ivec2 outMaterial;
 		
 		void main()
 		{
 			//material = vec2(
 			worldPosition = modelToWorldMatrix * position;
 			worldNormal = normal;
-			outMaterial = vec2(material.x, material.y);
+			outMaterial = ivec2(material.x, material.y);
 			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
 			gl_Position = cameraToClipMatrix * cameraPosition;
 		}
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
 		in vec4 worldNormal;
-		in vec2 outMaterial;
+		flat in ivec2 outMaterial;
 		
 		out vec4 outputColor;
 		
@@ -135,15 +135,15 @@ int main(int argc, char *argv[])
 
 			vec3 normal = worldNormal.xyz;
 
-			if(outMaterial.x < 1.5)
+			if(outMaterial.x == 1)
 			{
 				outputColor = vec4(1.0, 0.0, 0.0, 1.0);
 			}
-			else if(outMaterial.x < 2.5)
+			else if(outMaterial.x == 2)
 			{
 				outputColor = vec4(0.0, 1.0, 0.0, 1.0);
 			}
-			else if(outMaterial.x < 3.5)
+			else if(outMaterial.x == 3)
 			{
 				outputColor = vec4(0.0, 0.0, 1.0, 1.0);
 			}
