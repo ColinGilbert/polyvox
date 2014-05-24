@@ -36,11 +36,14 @@ namespace PolyVox
 #ifdef SWIG
 	class CubicVertex
 #else
-	template<typename VoxelType>
+	template<typename _VoxelType>
 	class POLYVOX_API CubicVertex
 #endif
 	{
 	public:	
+
+		typedef _VoxelType VoxelType;
+
 		CubicVertex()
 		{
 		}
@@ -97,11 +100,14 @@ namespace PolyVox
 #ifdef SWIG
 	class MarchingCubesVertex
 #else
-	template<typename VoxelType>
+	template<typename _VoxelType>
 	class POLYVOX_API MarchingCubesVertex
 #endif
 	{
 	public:
+
+		typedef _VoxelType VoxelType;
+
 		MarchingCubesVertex()
 		{
 		}

@@ -45,10 +45,13 @@ namespace PolyVox
 		int endIndex; //Let's put it just past the end STL style
 	};
 
-	template <typename VertexType>
+	template <typename _VertexType>
 	class Mesh
 	{
 	public:
+
+		typedef _VertexType VertexType;
+
 	   Mesh();
 	   ~Mesh();	   
 
