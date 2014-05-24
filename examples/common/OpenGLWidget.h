@@ -86,7 +86,10 @@ public:
 
 		//We need to tell OpenGL how to understand the format of the vertex data
 		glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshType::VertexType), 0); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+
+		glEnableVertexAttribArray(1); //We're talking about shader attribute '1'
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, normal)));
 
 		glBindVertexArray(0);
 

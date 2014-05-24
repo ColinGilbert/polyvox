@@ -56,7 +56,7 @@ void OpenGLWidget::initializeGL()
 	if (!shader->addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
 		
-		in vec4 position; //This will be the position of the vertex in model-space
+		in vec4 position; // This will be the position of the vertex in model-space
 		
 		uniform mat4 cameraToClipMatrix;
 		uniform mat4 worldToCameraMatrix;
@@ -80,6 +80,7 @@ void OpenGLWidget::initializeGL()
 		#version 130
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
+		in vec4 worldNormal;
 		
 		out vec4 outputColor;
 		
@@ -97,6 +98,7 @@ void OpenGLWidget::initializeGL()
 	}
 	
 	shader->bindAttributeLocation("position", 0);
+	shader->bindAttributeLocation("normal", 1);
 	
 	if (!shader->link())
 	{

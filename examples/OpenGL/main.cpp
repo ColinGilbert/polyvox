@@ -93,17 +93,20 @@ int main(int argc, char *argv[])
 	if (!shader->addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
 		
-		in vec4 position; //This will be the position of the vertex in model-space
+		in vec4 position; // This will be the position of the vertex in model-space
+		in vec4 normal; // The normal data may not have been set
 		
 		uniform mat4 cameraToClipMatrix;
 		uniform mat4 worldToCameraMatrix;
 		uniform mat4 modelToWorldMatrix;
 		
 		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
+		out vec4 worldNormal;
 		
 		void main()
 		{
 			worldPosition = modelToWorldMatrix * position;
+			worldNormal = normal;
 			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
 			gl_Position = cameraToClipMatrix * cameraPosition;
 		}
@@ -117,15 +120,20 @@ int main(int argc, char *argv[])
 		#version 130
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
+		in vec4 worldNormal;
 		
 		out vec4 outputColor;
 		
 		void main()
 		{
-			vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
+			//vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
+
+			vec3 normal = worldNormal.xyz;
+
+			outputColor = vec4(normalize(normal.xyz), 1.0);
 			
-			float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
-			outputColor = vec4(1.0, 1.0, 1.0, 1.0);
+			//float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
+			//outputColor = vec4(1.0, 0.5, color, 1.0);
 		}
 	)"))
 	{
