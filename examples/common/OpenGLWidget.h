@@ -91,6 +91,9 @@ public:
 		glEnableVertexAttribArray(1); //We're talking about shader attribute '1'
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, normal)));
 
+		glEnableVertexAttribArray(2); //We're talking about shader attribute '2'
+		glVertexAttribPointer(2, 2, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, material)));
+
 		glBindVertexArray(0);
 
 		meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later

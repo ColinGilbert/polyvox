@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRadius, uint8_t uValue)
+void createSphereInVolume(LargeVolume<MaterialDensityPair88>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / static_cast<int32_t>(2);
@@ -48,17 +48,17 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, float fRa
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? MaterialDensityPair44::getMaxDensity() : MaterialDensityPair44::getMinDensity()));
+					volData.setVoxelAt(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? MaterialDensityPair88::getMaxDensity() : MaterialDensityPair88::getMinDensity()));
 				}
 			}
 		}
 	}
 }
 
-void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
+void createCubeInVolume(LargeVolume<MaterialDensityPair88>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
-	uint8_t maxDen = MaterialDensityPair44::getMaxDensity();
-	uint8_t minDen = MaterialDensityPair44::getMinDensity();
+	uint8_t maxDen = MaterialDensityPair88::getMaxDensity();
+	uint8_t minDen = MaterialDensityPair88::getMinDensity();
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
 	{
@@ -66,7 +66,7 @@ void createCubeInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DInt
 		{
 			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
 			{
-				volData.setVoxelAt(x,y,z, MaterialDensityPair44(uValue, uValue > 0 ? maxDen : minDen));
+				volData.setVoxelAt(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? maxDen : minDen));
 			}
 		}
 	}

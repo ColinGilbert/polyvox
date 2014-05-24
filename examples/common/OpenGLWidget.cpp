@@ -99,6 +99,7 @@ void OpenGLWidget::initializeGL()
 	
 	shader->bindAttributeLocation("position", 0);
 	shader->bindAttributeLocation("normal", 1);
+	shader->bindAttributeLocation("material", 2);
 	
 	if (!shader->link())
 	{

@@ -51,9 +51,9 @@ const int32_t g_uVolumeSideLength = 128;
 
 int main(int argc, char *argv[])
 {
-	RLEBlockCompressor<MaterialDensityPair44>* compressor = new RLEBlockCompressor<MaterialDensityPair44>();
-	FilePager<MaterialDensityPair44>* pager = new FilePager<MaterialDensityPair44>("./");
-	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)), compressor, pager);
+	RLEBlockCompressor<MaterialDensityPair88>* compressor = new RLEBlockCompressor<MaterialDensityPair88>();
+	FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>("./");
+	LargeVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), compressor, pager);
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;
@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
 		
 		in vec4 position; // This will be the position of the vertex in model-space
 		in vec4 normal; // The normal data may not have been set
+		in vec2 material;
 		
 		uniform mat4 cameraToClipMatrix;
 		uniform mat4 worldToCameraMatrix;
@@ -102,11 +103,14 @@ int main(int argc, char *argv[])
 		
 		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
 		out vec4 worldNormal;
+		out vec2 outMaterial;
 		
 		void main()
 		{
+			//material = vec2(
 			worldPosition = modelToWorldMatrix * position;
 			worldNormal = normal;
+			outMaterial = vec2(material.x, material.y);
 			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
 			gl_Position = cameraToClipMatrix * cameraPosition;
 		}
@@ -121,6 +125,7 @@ int main(int argc, char *argv[])
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
 		in vec4 worldNormal;
+		in vec2 outMaterial;
 		
 		out vec4 outputColor;
 		
@@ -130,7 +135,22 @@ int main(int argc, char *argv[])
 
 			vec3 normal = worldNormal.xyz;
 
-			outputColor = vec4(normalize(normal.xyz), 1.0);
+			if(outMaterial.x < 1.5)
+			{
+				outputColor = vec4(1.0, 0.0, 0.0, 1.0);
+			}
+			else if(outMaterial.x < 2.5)
+			{
+				outputColor = vec4(0.0, 1.0, 0.0, 1.0);
+			}
+			else if(outMaterial.x < 3.5)
+			{
+				outputColor = vec4(0.0, 0.0, 1.0, 1.0);
+			}
+			else
+			{
+				outputColor = vec4(1.0, 1.0, 0.0, 1.0);
+			}
 			
 			//float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
 			//outputColor = vec4(1.0, 0.5, color, 1.0);
