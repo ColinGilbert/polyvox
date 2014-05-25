@@ -45,7 +45,6 @@ void OpenGLWidget::initializeGL()
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0f);
 	
-	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
