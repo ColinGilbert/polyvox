@@ -26,7 +26,7 @@ PROJECT(PagingExample)
 #Projects source files
 SET(SRC_FILES
 	main.cpp
-	OpenGLWidget.cpp
+	../common/OpenGLWidget.cpp
 	Perlin.cpp
 )
 

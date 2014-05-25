@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setMeshToRender(mesh);
+	openGLWidget.addMesh(mesh);
 
 	//Run the message pump.
 	return app.exec();
