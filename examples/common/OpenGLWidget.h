@@ -61,10 +61,7 @@ public:
 
 	// For our purposes we use a single shader for the whole volume, and
 	// this example framework is only meant to show a single volume at a time
-	void setShader(QGLShaderProgram* shader)
-	{
-		this->shader = shader;
-	}
+	void setShader(QSharedPointer<QGLShaderProgram> shader);
 
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers. Inlined because it's templatised.
 	template <typename MeshType>
@@ -127,7 +124,7 @@ private:
 	// Index/vertex buffer data
 	std::vector<OpenGLMeshData> mMeshData;
 	
-	QGLShaderProgram* shader;
+	QSharedPointer<QGLShaderProgram> mShader;
 
 	// Matrices
 	QMatrix4x4 worldToCameraMatrix;

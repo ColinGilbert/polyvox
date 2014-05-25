@@ -21,6 +21,11 @@ void OpenGLWidget::setViewableRegion(Region viewableRegion)
 	setupWorldToCameraMatrix();
 }
 
+void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
+{
+	mShader = shader;
+}
+
 void OpenGLWidget::initializeGL()
 {
 	GLenum err = glewInit();
@@ -50,9 +55,9 @@ void OpenGLWidget::initializeGL()
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
 
-	shader = new QGLShaderProgram;
+	mShader = QSharedPointer<QGLShaderProgram>(new QGLShaderProgram);
 	
-	if (!shader->addShaderFromSourceCode(QGLShader::Vertex, R"(
+	if (!mShader->addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
 		
 		in vec4 position; // This will be the position of the vertex in model-space
@@ -71,11 +76,11 @@ void OpenGLWidget::initializeGL()
 		}
 	)"))
 	{
-		std::cerr << shader->log().toStdString() << std::endl;
+		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	if (!shader->addShaderFromSourceCode(QGLShader::Fragment, R"(
+	if (!mShader->addShaderFromSourceCode(QGLShader::Fragment, R"(
 		#version 130
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
@@ -92,17 +97,17 @@ void OpenGLWidget::initializeGL()
 		}
 	)"))
 	{
-		std::cerr << shader->log().toStdString() << std::endl;
+		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	
-	shader->bindAttributeLocation("position", 0);
-	shader->bindAttributeLocation("normal", 1);
-	shader->bindAttributeLocation("material", 2);
+	mShader->bindAttributeLocation("position", 0);
+	mShader->bindAttributeLocation("normal", 1);
+	mShader->bindAttributeLocation("material", 2);
 	
-	if (!shader->link())
+	if (!mShader->link())
 	{
-		std::cerr << shader->log().toStdString() << std::endl;
+		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
@@ -127,17 +132,17 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	shader->bind();
+	mShader->bind();
 
-	shader->setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
-	shader->setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
+	mShader->setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
+	mShader->setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
 
 	for (OpenGLMeshData meshData : mMeshData)
 	{
 		QMatrix4x4 modelToWorldMatrix{};
 		modelToWorldMatrix.translate(meshData.translation); 
 		modelToWorldMatrix.scale(meshData.scale);
-		shader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
+		mShader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
 
 		glBindVertexArray(meshData.vertexArrayObject);
 
@@ -146,7 +151,7 @@ void OpenGLWidget::paintGL()
 		glBindVertexArray(0);
 	}
 	
-	shader->release();
+	mShader->release();
 	
 	GLenum errCode = glGetError();
 	if(errCode != GL_NO_ERROR)

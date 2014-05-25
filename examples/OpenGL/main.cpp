@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 
 	openGLWidget.show();
 
-	QGLShaderProgram* shader = new QGLShaderProgram;
+	QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
 
 	if (!shader->addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
