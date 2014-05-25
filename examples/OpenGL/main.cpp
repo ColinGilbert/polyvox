@@ -107,7 +107,6 @@ int main(int argc, char *argv[])
 		
 		void main()
 		{
-			//material = vec2(
 			worldPosition = modelToWorldMatrix * position;
 			worldNormal = normal;
 			outMaterial = ivec2(material.x, material.y);
@@ -173,14 +172,38 @@ int main(int argc, char *argv[])
 	//openGLWidget.setVolume(&volData);
 	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
 
-	auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+	const int32_t extractedRegionSize = 32;
+	const int32_t gapBetweenRegions = 1; // Set this to '1' 
+	int meshCounter = 0;
 
-	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(mesh);
-	//openGLWidget.addMesh(mesh2);
+	for (int32_t z = 0; z < volData.getDepth(); z += extractedRegionSize)
+	{
+		for (int32_t y = 0; y < volData.getHeight(); y += extractedRegionSize)
+		{
+			for (int32_t x = 0; x < volData.getWidth(); x += extractedRegionSize)
+			{
+				// Specify the region to extract based on a starting position and the desired region sze.
+				Region regToExtract(x, y, z, x + extractedRegionSize, y + extractedRegionSize, z + extractedRegionSize);
+
+				// If you uncomment this line you will be able to see that the volume is rendered as multiple seperate meshes.
+				//regToExtract.shrink(1);
+
+				// Perform the extraction for this region of the volume
+				auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
+
+				//Pass the surface to the OpenGL window
+				openGLWidget.addMesh(mesh);
+
+				meshCounter++;
+			}
+		}
+	}
+
+	cout << "Rendering volume as " << meshCounter << " seperate meshes" << endl;
+
+
 	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
-	//return 0;
 
 	return app.exec();
 } 
