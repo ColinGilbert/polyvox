@@ -38,6 +38,7 @@ struct OpenGLMeshData
 	GLuint vertexBuffer;
 	GLuint vertexArrayObject;
 	PolyVox::Vector3DInt32 translation;
+	float scale;
 };
 
 class OpenGLWidget : public QGLWidget
@@ -60,7 +61,7 @@ public:
 
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers. Inlined because it's templatised.
 	template <typename MeshType>
-	void addMesh(const MeshType& surfaceMesh)
+	void addMesh(const MeshType& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 	{
 		//Convienient access to the vertices and indices
 		const auto& vecIndices = surfaceMesh.getIndices();
@@ -99,7 +100,8 @@ public:
 
 		meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
 
-		meshData.translation = surfaceMesh.m_Region.getLowerCorner();
+		meshData.translation = translation;
+		meshData.scale = scale;
 
 		mMeshData.push_back(meshData);
 	}

@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 				auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
 
 				//Pass the surface to the OpenGL window
-				openGLWidget.addMesh(mesh);
+				openGLWidget.addMesh(mesh, Vector3DInt32(x, y, z));
 
 				meshCounter++;
 			}
