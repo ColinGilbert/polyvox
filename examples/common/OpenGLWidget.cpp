@@ -136,8 +136,9 @@ void OpenGLWidget::paintGL()
 	for (OpenGLMeshData meshData : mMeshData)
 	{
 		QMatrix4x4 modelToWorldMatrix{};
-		modelToWorldMatrix.translate(meshData.translation.getX(), meshData.translation.getY(), meshData.translation.getZ()); // Centre the model on the origin
-		shader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix); // Update to the latest camera matrix
+		modelToWorldMatrix.translate(meshData.translation.getX(), meshData.translation.getY(), meshData.translation.getZ()); 
+		modelToWorldMatrix.scale(meshData.scale);
+		shader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
 
 		glBindVertexArray(meshData.vertexArrayObject);
 
