@@ -98,8 +98,10 @@ int main(int argc, char *argv[])
 	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setMeshToRender(meshHighLOD);
-	openGLWidget.setMeshToRenderLowLOD(meshLowLOD);
+	openGLWidget.addMesh(meshHighLOD);
+	openGLWidget.addMesh(meshLowLOD);
+
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();
