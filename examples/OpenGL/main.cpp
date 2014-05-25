@@ -173,7 +173,6 @@ int main(int argc, char *argv[])
 	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
 
 	const int32_t extractedRegionSize = 32;
-	const int32_t gapBetweenRegions = 1; // Set this to '1' 
 	int meshCounter = 0;
 
 	for (int32_t z = 0; z < volData.getDepth(); z += extractedRegionSize)

@@ -31,16 +31,21 @@ distribution.
 #include <QGLWidget>
 #include <QGLShaderProgram>
 
+// This structure holds all the data required
+// to render one of our meshes through OpenGL. 
 struct OpenGLMeshData
 {
 	GLuint noOfIndices;
 	GLuint indexBuffer;
 	GLuint vertexBuffer;
 	GLuint vertexArrayObject;
-	PolyVox::Vector3DInt32 translation;
+	QVector3D translation;
 	float scale;
 };
 
+// Our OpenGLWidget is used by all the examples to render the extracted meshes. It is
+// fairly specific to our needs (you probably won't want to use it in your own project)
+// but should provide a useful illustration of how PolyVox meshes can be rendered.
 class OpenGLWidget : public QGLWidget
 {
 public:
@@ -51,9 +56,11 @@ public:
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
 
-	// The viewable region can be adjusted so that this example framework can be use for different volume sizes.
+	// The viewable region can be adjusted so that this example framework can be used for different volume sizes.
 	void setViewableRegion(PolyVox::Region viewableRegion);
 
+	// For our purposes we use a single shader for the whole volume, and
+	// this example framework is only meant to show a single volume at a time
 	void setShader(QGLShaderProgram* shader)
 	{
 		this->shader = shader;
@@ -100,14 +107,13 @@ public:
 
 		meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
 
-		meshData.translation = translation;
+		meshData.translation = QVector3D(translation.getX(), translation.getY(), translation.getZ());
 		meshData.scale = scale;
 
 		mMeshData.push_back(meshData);
 	}
 
 protected:
-	
 
 	// Qt OpenGL functions
 	void initializeGL();

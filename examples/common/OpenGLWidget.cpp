@@ -135,7 +135,7 @@ void OpenGLWidget::paintGL()
 	for (OpenGLMeshData meshData : mMeshData)
 	{
 		QMatrix4x4 modelToWorldMatrix{};
-		modelToWorldMatrix.translate(meshData.translation.getX(), meshData.translation.getY(), meshData.translation.getZ()); 
+		modelToWorldMatrix.translate(meshData.translation); 
 		modelToWorldMatrix.scale(meshData.scale);
 		shader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
 
