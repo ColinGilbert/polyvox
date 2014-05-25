@@ -192,6 +192,8 @@ int main(int argc, char *argv[])
 	//Pass the surface to the OpenGL window
 	openGLWidget.addMesh(mesh);
 
+	openGLWidget.setViewableRegion(reg);
+
 	//Run the message pump.
 	return app.exec();
 } 
