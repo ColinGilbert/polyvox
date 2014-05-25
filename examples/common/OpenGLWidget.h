@@ -52,17 +52,6 @@ public:
 	// Constructor
 	OpenGLWidget(QWidget *parent);
 
-	// Mouse handling
-	void mouseMoveEvent(QMouseEvent* event);
-	void mousePressEvent(QMouseEvent* event);
-
-	// The viewable region can be adjusted so that this example framework can be used for different volume sizes.
-	void setViewableRegion(PolyVox::Region viewableRegion);
-
-	// For our purposes we use a single shader for the whole volume, and
-	// this example framework is only meant to show a single volume at a time
-	void setShader(QSharedPointer<QGLShaderProgram> shader);
-
 	// Convert a SurfaceMesh to OpenGL index/vertex buffers. Inlined because it's templatised.
 	template <typename MeshType>
 	void addMesh(const MeshType& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
@@ -109,6 +98,17 @@ public:
 
 		mMeshData.push_back(meshData);
 	}
+
+	// For our purposes we use a single shader for the whole volume, and
+	// this example framework is only meant to show a single volume at a time
+	void setShader(QSharedPointer<QGLShaderProgram> shader);
+
+	// The viewable region can be adjusted so that this example framework can be used for different volume sizes.
+	void setViewableRegion(PolyVox::Region viewableRegion);
+
+	// Mouse handling
+	void mouseMoveEvent(QMouseEvent* event);
+	void mousePressEvent(QMouseEvent* event);
 
 protected:
 

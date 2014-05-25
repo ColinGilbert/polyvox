@@ -7,6 +7,9 @@
 using namespace PolyVox;
 using namespace std;
 
+////////////////////////////////////////////////////////////////////////////////
+// Public functions
+////////////////////////////////////////////////////////////////////////////////
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
 	,m_viewableRegion(Region(0, 0, 0, 255, 255, 255))
@@ -15,17 +18,41 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
+void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
+{
+	mShader = shader;
+}
+
 void OpenGLWidget::setViewableRegion(Region viewableRegion)
 {
 	m_viewableRegion = viewableRegion;
 	setupWorldToCameraMatrix();
 }
 
-void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
+void OpenGLWidget::mousePressEvent(QMouseEvent* event)
 {
-	mShader = shader;
+	m_CurrentMousePos = event->pos();
+	m_LastFrameMousePos = m_CurrentMousePos;
+
+	update();
 }
 
+void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	m_CurrentMousePos = event->pos();
+	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
+	m_xRotation += diff.x();
+	m_yRotation += diff.y();
+	m_LastFrameMousePos = m_CurrentMousePos;
+
+	setupWorldToCameraMatrix();
+
+	update();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Protected functions
+////////////////////////////////////////////////////////////////////////////////
 void OpenGLWidget::initializeGL()
 {
 	GLenum err = glewInit();
@@ -160,27 +187,9 @@ void OpenGLWidget::paintGL()
 	}
 }
 
-void OpenGLWidget::mousePressEvent(QMouseEvent* event)
-{
-	m_CurrentMousePos = event->pos();
-	m_LastFrameMousePos = m_CurrentMousePos;
-
-	update();
-}
-
-void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
-{
-	m_CurrentMousePos = event->pos();
-	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
-	m_xRotation += diff.x();
-	m_yRotation += diff.y();
-	m_LastFrameMousePos = m_CurrentMousePos;
-
-	setupWorldToCameraMatrix();
-
-	update();
-}
-
+////////////////////////////////////////////////////////////////////////////////
+// Private functions
+////////////////////////////////////////////////////////////////////////////////
 void OpenGLWidget::setupWorldToCameraMatrix()
 {
 	QVector3D lowerCorner(m_viewableRegion.getLowerX(), m_viewableRegion.getLowerY(), m_viewableRegion.getLowerZ());
