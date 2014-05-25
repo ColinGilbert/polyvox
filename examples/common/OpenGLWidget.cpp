@@ -89,7 +89,7 @@ void OpenGLWidget::initializeGL()
 			vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
 			
 			float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
-			outputColor = vec4(1.0, 0.5, color, 1.0);
+			outputColor = vec4(abs(normal) * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
 		}
 	)"))
 	{
