@@ -52,11 +52,11 @@ public:
 	// Constructor
 	OpenGLWidget(QWidget *parent);
 
-	// Convert a SurfaceMesh to OpenGL index/vertex buffers. Inlined because it's templatised.
+	// Convert a PolyVox mesh to OpenGL index/vertex buffers. Inlined because it's templatised.
 	template <typename MeshType>
 	void addMesh(const MeshType& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 	{
-		//Convienient access to the vertices and indices
+		// Convienient access to the vertices and indices
 		const auto& vecIndices = surfaceMesh.getIndices();
 		const auto& vecVertices = surfaceMesh.getVertices();
 
@@ -64,38 +64,46 @@ public:
 		// to render our mesh. We copy the data from the PolyVox mesh into this structure.
 		OpenGLMeshData meshData;
 
-		//Create the VAO for the mesh
+		// Create the VAO for the mesh
 		glGenVertexArrays(1, &(meshData.vertexArrayObject));
 		glBindVertexArray(meshData.vertexArrayObject);
 
-		//The GL_ARRAY_BUFFER will contain the list of vertex positions
+		// The GL_ARRAY_BUFFER will contain the list of vertex positions
 		glGenBuffers(1, &(meshData.vertexBuffer));
 		glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(MeshType::VertexType), vecVertices.data(), GL_STATIC_DRAW);
 
-		//and GL_ELEMENT_ARRAY_BUFFER will contain the indices
+		// and GL_ELEMENT_ARRAY_BUFFER will contain the indices
 		glGenBuffers(1, &(meshData.indexBuffer));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshData.indexBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
 
-		//We need to tell OpenGL how to understand the format of the vertex data
-		glEnableVertexAttribArray(0); //We're talking about shader attribute '0' 
+		// Every surface extractor outputs valid positions for the vertices, so tell OpenGL how these are laid out
+		glEnableVertexAttribArray(0); // Attrib '0' is the vertex positions
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 
-		glEnableVertexAttribArray(1); //We're talking about shader attribute '1'
+		// Some surface extractors also generate normals, so tell OpenGL how these are laid out. If a surface extractor
+		// does not generate normals then nonsense values are written into the buffer here and sghould be ignored by the
+		// shader. This is mostly just to simplify this example code - in a real application you will know whether your
+		// chosen surface extractor generates normals and can skip uploading them if not.
+		glEnableVertexAttribArray(1); // Attrib '1' is the vertex normals.
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, normal)));
 
+		// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
+		// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
 		glEnableVertexAttribArray(2); //We're talking about shader attribute '2'
-		GLint size = (std::min)(sizeof(MeshType::VertexType::VoxelType), size_t(4));
+		GLint size = (std::min)(sizeof(MeshType::VertexType::VoxelType), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
 		glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(MeshType::VertexType), (GLvoid*)(offsetof(MeshType::VertexType, material)));
 
+		// We're done uploading and can now unbind.
 		glBindVertexArray(0);
 
-		meshData.noOfIndices = vecIndices.size(); //Save this for the call to glDrawElements later
-
+		// A few additional properties can be copied across for use during rendering.
+		meshData.noOfIndices = vecIndices.size();
 		meshData.translation = QVector3D(translation.getX(), translation.getY(), translation.getZ());
 		meshData.scale = scale;
 
+		// Now add the mesh to the list of meshes to render.
 		mMeshData.push_back(meshData);
 	}
 

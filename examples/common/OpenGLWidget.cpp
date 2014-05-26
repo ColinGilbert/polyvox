@@ -26,27 +26,32 @@ void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
 void OpenGLWidget::setViewableRegion(Region viewableRegion)
 {
 	m_viewableRegion = viewableRegion;
+
+	// The user has specifed a new viewable region
+	// so we need to regenerate our camera matrix.
 	setupWorldToCameraMatrix();
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent* event)
 {
+	// Initialise these variables which will be used when the mouse actually moves.
 	m_CurrentMousePos = event->pos();
 	m_LastFrameMousePos = m_CurrentMousePos;
-
-	update();
 }
 
 void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 {
+	// Update the x and y rotations based on the mouse movement.
 	m_CurrentMousePos = event->pos();
 	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
 	m_xRotation += diff.x();
 	m_yRotation += diff.y();
 	m_LastFrameMousePos = m_CurrentMousePos;
 
+	// The camera rotation has changed so we need to regenerate the matrix.
 	setupWorldToCameraMatrix();
 
+	// Re-render.
 	update();
 }
 
