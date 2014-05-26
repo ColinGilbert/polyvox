@@ -89,19 +89,25 @@ void OpenGLWidget::initializeGL()
 
 	mShader = QSharedPointer<QGLShaderProgram>(new QGLShaderProgram);
 	
+	// This is basically a simple fallback vertex shader which does the most basic rendering possible.  
+	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
 	if (!mShader->addShaderFromSourceCode(QGLShader::Vertex, R"(
 		#version 140
 		
 		in vec4 position; // This will be the position of the vertex in model-space
 		
+		// The usual matrices are provided
 		uniform mat4 cameraToClipMatrix;
 		uniform mat4 worldToCameraMatrix;
 		uniform mat4 modelToWorldMatrix;
 		
-		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
+		// This will be used by the fragment shader to calculate flat-shaded normals. This is an unconventional approach
+		// but we use it in this example framework because not all surface extractor generate surface normals.
+		out vec4 worldPosition;
 		
 		void main()
 		{
+			// Standard sequence of OpenGL transformations.
 			worldPosition = modelToWorldMatrix * position;
 			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
 			gl_Position = cameraToClipMatrix * cameraPosition;
@@ -112,19 +118,26 @@ void OpenGLWidget::initializeGL()
 		exit(EXIT_FAILURE);
 	}
 	
+	// This is basically a simple fallback fragment shader which does the most basic rendering possible.  
+	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
 	if (!mShader->addShaderFromSourceCode(QGLShader::Fragment, R"(
 		#version 130
 		
-		in vec4 worldPosition; //Passed in from the vertex shader
+		// Passed in from the vertex shader
+		in vec4 worldPosition;
 		in vec4 worldNormal;
 		
+		// the color that gets written to the display
 		out vec4 outputColor;
 		
 		void main()
 		{
+			// Again, for the purposes of these examples we cannot be sure that per-vertex normals are provided. A sensible fallback 
+			// is to use this little trick to compute per-fragment flat-shaded normals from the world positions using derivative operations.
 			vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
 			
-			float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
+			// We are just using the normal as the output color, and making it lighter so it looks a bit nicer. 
+			// Obviously a real shader would also do texuring, lighting, or whatever is required for the application.
 			outputColor = vec4(abs(normal) * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
 		}
 	)"))
@@ -133,7 +146,11 @@ void OpenGLWidget::initializeGL()
 		exit(EXIT_FAILURE);
 	}
 	
+	// Bind the position semantic - this is defined in the vertex shader above.
 	mShader->bindAttributeLocation("position", 0);
+
+	// Bind the other semantics. Note that these don't actually exist in our example shader above! However, other
+	// example shaders may choose to provide them and having the binding code here does not seem to cause any problems.
 	mShader->bindAttributeLocation("normal", 1);
 	mShader->bindAttributeLocation("material", 2);
 	
@@ -143,6 +160,7 @@ void OpenGLWidget::initializeGL()
 		exit(EXIT_FAILURE);
 	}
 
+	// Initial setup of camera.
 	setupWorldToCameraMatrix();
 }
 
@@ -164,27 +182,34 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// Our example framework only uses a single shader for the scene (for all meshes).
 	mShader->bind();
 
+	// These two matrices are constant for all meshes.
 	mShader->setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
 	mShader->setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
 
+	// Iterate over each mesh which the user added to our list, and render it.
 	for (OpenGLMeshData meshData : mMeshData)
 	{
+		//Set up the model matrrix based on provided translation and scale.
 		QMatrix4x4 modelToWorldMatrix{};
 		modelToWorldMatrix.translate(meshData.translation); 
 		modelToWorldMatrix.scale(meshData.scale);
 		mShader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
 
+		// Bind the vertex array for the current mesh
 		glBindVertexArray(meshData.vertexArrayObject);
-
+		// Draw the mesh
 		glDrawElements(GL_TRIANGLES, meshData.noOfIndices, GL_UNSIGNED_INT, 0);
-
+		// Unbind the vertex array.
 		glBindVertexArray(0);
 	}
 	
+	 // We're done with the shader for this frame.
 	mShader->release();
 	
+	// Check for errors.
 	GLenum errCode = glGetError();
 	if(errCode != GL_NO_ERROR)
 	{
