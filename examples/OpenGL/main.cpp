@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
 			for (int32_t x = 0; x < volData.getWidth(); x += extractedRegionSize)
 			{
 				// Specify the region to extract based on a starting position and the desired region sze.
-				Region regToExtract(x, y, z, x + extractedRegionSize, y + extractedRegionSize, z + extractedRegionSize);
+				PolyVox::Region regToExtract(x, y, z, x + extractedRegionSize, y + extractedRegionSize, z + extractedRegionSize);
 
 				// If you uncomment this line you will be able to see that the volume is rendered as multiple seperate meshes.
 				//regToExtract.shrink(1);

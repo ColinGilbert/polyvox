@@ -12,7 +12,7 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
-	,m_viewableRegion(Region(0, 0, 0, 255, 255, 255))
+	,m_viewableRegion(PolyVox::Region(0, 0, 0, 255, 255, 255))
 	,m_xRotation(0)
 	,m_yRotation(0)
 {
@@ -23,7 +23,7 @@ void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
 	mShader = shader;
 }
 
-void OpenGLWidget::setViewableRegion(Region viewableRegion)
+void OpenGLWidget::setViewableRegion(PolyVox::Region viewableRegion)
 {
 	m_viewableRegion = viewableRegion;
 
