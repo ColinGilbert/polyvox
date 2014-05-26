@@ -103,16 +103,19 @@ int main(int argc, char *argv[])
 		
 		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
 		out vec3 normalFromVS;
-		flat out ivec2 outMaterial;
+		flat out ivec2 materialFromVS;
 		
 		void main()
 		{
-			worldPosition = modelToWorldMatrix * position;
-			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
-			gl_Position = cameraToClipMatrix * cameraPosition;
+			// Compute the usual OpenGL transformation to clip space.
+			gl_Position = cameraToClipMatrix * worldToCameraMatrix * modelToWorldMatrix * position;
 
+			// This example is demonstrating the marching cubes mesh, which does have per-vertex normals. We can 
+			// just pass them through, though real code might want to deal with transforming normals appropriatly.
 			normalFromVS = normal.xyz;
-			outMaterial = ivec2(material.x, material.y);
+
+			// Nothing special here, we just pass the material through to the fragment shader.
+			materialFromVS = material;
 		}
 	)"))
 	{
@@ -125,7 +128,7 @@ int main(int argc, char *argv[])
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
 		in vec3 normalFromVS;
-		flat in ivec2 outMaterial;
+		flat in ivec2 materialFromVS;
 		
 		out vec4 outputColor;
 		
@@ -134,7 +137,7 @@ int main(int argc, char *argv[])
 			// The first byte of our voxel data is the material.
 			// We use this to decide how to color the fragment.
 			vec4 surfaceColor;
-			switch(outMaterial.x)
+			switch(materialFromVS.x)
 			{
 			case 1:
 				surfaceColor = vec4(1.0, 0.0, 0.0, 1.0);
