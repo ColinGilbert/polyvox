@@ -102,16 +102,17 @@ int main(int argc, char *argv[])
 		uniform mat4 modelToWorldMatrix;
 		
 		out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals
-		out vec4 worldNormal;
+		out vec3 normalFromVS;
 		flat out ivec2 outMaterial;
 		
 		void main()
 		{
 			worldPosition = modelToWorldMatrix * position;
-			worldNormal = normal;
-			outMaterial = ivec2(material.x, material.y);
 			vec4 cameraPosition = worldToCameraMatrix * worldPosition;
 			gl_Position = cameraToClipMatrix * cameraPosition;
+
+			normalFromVS = normal.xyz;
+			outMaterial = ivec2(material.x, material.y);
 		}
 	)"))
 	{
@@ -123,16 +124,16 @@ int main(int argc, char *argv[])
 		#version 130
 		
 		in vec4 worldPosition; //Passed in from the vertex shader
-		in vec4 worldNormal;
+		in vec3 normalFromVS;
 		flat in ivec2 outMaterial;
 		
 		out vec4 outputColor;
 		
 		void main()
 		{
-			vec3 normal = worldNormal.xyz;
-			vec4 surfaceColor = vec4(0.0, 0.0, 0.0, 0.0);
-
+			// The first byte of our voxel data is the material.
+			// We use this to decide how to color the fragment.
+			vec4 surfaceColor;
 			switch(outMaterial.x)
 			{
 			case 1:
@@ -155,13 +156,15 @@ int main(int argc, char *argv[])
 				break;
 			}
 
-			vec3 lightDir = vec3(1.0, 0.0, 0.0);
-			float diffuse = dot(lightDir, normal);
-			diffuse *= 0.6;
-			float ambient = 0.4;
-			float lightVal = diffuse + ambient;
+			// Quick and dirty lighting, obviously a real implementation
+			// should pass light properties as shader parameters, etc.
+			vec3 lightDir = vec3(0.0, 0.0, 1.0);
+			float diffuse = clamp(dot(lightDir, normalFromVS), 0.0, 1.0);
+			diffuse *= 0.7; // Dim the diffuse a bit
+			float ambient = 0.3; // Add some ambient
+			float lightIntensity = diffuse + ambient; // Compute the final light intensity
 
-			outputColor = surfaceColor * lightVal;
+			outputColor = surfaceColor * lightIntensity; //Compute final rendered color
 		}
 	)"))
 	{
