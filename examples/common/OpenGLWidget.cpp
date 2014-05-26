@@ -193,7 +193,7 @@ void OpenGLWidget::paintGL()
 	for (OpenGLMeshData meshData : mMeshData)
 	{
 		//Set up the model matrrix based on provided translation and scale.
-		QMatrix4x4 modelToWorldMatrix{};
+		QMatrix4x4 modelToWorldMatrix;
 		modelToWorldMatrix.translate(meshData.translation); 
 		modelToWorldMatrix.scale(meshData.scale);
 		mShader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
