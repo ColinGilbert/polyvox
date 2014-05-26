@@ -130,34 +130,38 @@ int main(int argc, char *argv[])
 		
 		void main()
 		{
-			//vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));
-
 			vec3 normal = worldNormal.xyz;
+			vec4 surfaceColor = vec4(0.0, 0.0, 0.0, 0.0);
 
 			switch(outMaterial.x)
 			{
 			case 1:
-				outputColor = vec4(1.0, 0.0, 0.0, 1.0);
+				surfaceColor = vec4(1.0, 0.0, 0.0, 1.0);
 				break;
 			case 2:
-				outputColor = vec4(0.0, 1.0, 0.0, 1.0);
+				surfaceColor = vec4(0.0, 1.0, 0.0, 1.0);
 				break;
 			case 3:
-				outputColor = vec4(0.0, 0.0, 1.0, 1.0);
+				surfaceColor = vec4(0.0, 0.0, 1.0, 1.0);
 				break;
 			case 4:
-				outputColor = vec4(1.0, 1.0, 0.0, 1.0);
+				surfaceColor = vec4(1.0, 1.0, 0.0, 1.0);
 				break;
 			case 5:
-				outputColor = vec4(1.0, 0.0, 1.0, 1.0);
+				surfaceColor = vec4(1.0, 0.0, 1.0, 1.0);
 				break;
 			default:
-				outputColor = vec4(1.0, 1.0, 1.0, 1.0);
+				surfaceColor = vec4(1.0, 1.0, 1.0, 1.0);
 				break;
 			}
-			
-			//float color = clamp(abs(dot(normalize(normal.xyz), vec3(0.9,0.1,0.5))), 0, 1);
-			//outputColor = vec4(1.0, 0.5, color, 1.0);
+
+			vec3 lightDir = vec3(1.0, 0.0, 0.0);
+			float diffuse = dot(lightDir, normal);
+			diffuse *= 0.6;
+			float ambient = 0.4;
+			float lightVal = diffuse + ambient;
+
+			outputColor = surfaceColor * lightVal;
 		}
 	)"))
 	{
