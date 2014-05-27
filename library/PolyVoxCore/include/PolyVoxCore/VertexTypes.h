@@ -32,134 +32,72 @@ freely, subject to the following restrictions:
 #include <vector>
 
 namespace PolyVox
-{	
-#ifdef SWIG
-	class CubicVertex
+{
+	#ifdef SWIG
+	struct Vertex
 #else
 	template<typename _VoxelType>
-	class POLYVOX_API CubicVertex
+	struct POLYVOX_API Vertex
 #endif
 	{
-	public:	
-
 		typedef _VoxelType VoxelType;
 
-		CubicVertex()
-		{
-		}
-
-		CubicVertex(Vector3DFloat positionToSet, VoxelType materialToSet)
-			:position(positionToSet)
-			,material(materialToSet)
-		{
-		}
-
-		CubicVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, VoxelType materialToSet)
-			:position(positionToSet)
-			,normal(normalToSet)
-			,material(materialToSet)
-		{
-		}
-
-		VoxelType getMaterial(void) const
-		{
-			return material;
-		}
-
-		const Vector3DFloat& getNormal(void) const
-		{
-			return normal;
-		}
-
-		const Vector3DFloat& getPosition(void) const
-		{
-			return position;
-		}
-
-		void setMaterial(VoxelType materialToSet)
-		{
-			material = materialToSet;
-		}
-
-		void setNormal(const Vector3DFloat& normalToSet)
-		{
-			normal = normalToSet;
-		}
-
-		void setPosition(const Vector3DFloat& positionToSet)
-		{
-			position = positionToSet;
-		}
-
-	public:
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		VoxelType material;
 	};
 
 #ifdef SWIG
-	class MarchingCubesVertex
+	struct CubicVertex
 #else
 	template<typename _VoxelType>
-	class POLYVOX_API MarchingCubesVertex
+	struct POLYVOX_API CubicVertex
 #endif
 	{
-	public:
-
 		typedef _VoxelType VoxelType;
 
-		MarchingCubesVertex()
-		{
-		}
-
-		MarchingCubesVertex(Vector3DFloat positionToSet, VoxelType materialToSet)
-			:position(positionToSet)
-			, material(materialToSet)
-		{
-		}
-
-		MarchingCubesVertex(Vector3DFloat positionToSet, Vector3DFloat normalToSet, VoxelType materialToSet)
-			:position(positionToSet)
-			, normal(normalToSet)
-			, material(materialToSet)
-		{
-		}
-
-		VoxelType getMaterial(void) const
-		{
-			return material;
-		}
-
-		const Vector3DFloat& getNormal(void) const
-		{
-			return normal;
-		}
-
-		const Vector3DFloat& getPosition(void) const
-		{
-			return position;
-		}
-
-		void setMaterial(VoxelType materialToSet)
-		{
-			material = materialToSet;
-		}
-
-		void setNormal(const Vector3DFloat& normalToSet)
-		{
-			normal = normalToSet;
-		}
-
-		void setPosition(const Vector3DFloat& positionToSet)
-		{
-			position = positionToSet;
-		}
-
-	public:
 		Vector3DFloat position;
 		Vector3DFloat normal;
 		VoxelType material;
 	};
+
+#ifdef SWIG
+	struct MarchingCubesVertex
+#else
+	template<typename _VoxelType>
+	struct POLYVOX_API MarchingCubesVertex
+#endif
+	{
+		typedef _VoxelType VoxelType;
+
+		Vector3DFloat position;
+		Vector3DFloat normal;
+		VoxelType material;
+	};
+
+	// Hopefully the compiler will implement the 'Return value optimization' here, but
+	// performance critical code will most likely decode the vertices in a shader anyway.
+	template<typename VoxelType>
+	Vertex<VoxelType> decode(const CubicVertex<VoxelType>& cubicVertex)
+	{
+		Vertex<VoxelType> result;
+		result.position = cubicVertex.position;
+		result.normal = cubicVertex.normal;
+		result.material = cubicVertex.material;
+		return result;
+	}
+
+	// Hopefully the compiler will implement the 'Return value optimization' here, but
+	// performance critical code will most likely decode the vertices in a shader anyway.
+	template<typename VoxelType>
+	Vertex<VoxelType> decode(const MarchingCubesVertex<VoxelType>& cubicVertex)
+	{
+		Vertex<VoxelType> result;
+		result.position = cubicVertex.position;
+		result.normal = cubicVertex.normal;
+		result.material = cubicVertex.material;
+		return result;
+	}
 }
 
 #endif

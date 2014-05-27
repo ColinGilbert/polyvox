@@ -172,58 +172,58 @@ void TestSurfaceExtractor::testExecute()
 	}
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), static_cast<int8_t>(fNoMaterial));
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].material, static_cast<int8_t>(fNoMaterial));
 
 	auto mesh1 = testForType<uint8_t>();
 	QCOMPARE(mesh1.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh1.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh1.getVertices()[uMaterialToCheck].getMaterial(), static_cast<uint8_t>(fNoMaterial));
+	QCOMPARE(mesh1.getVertices()[uMaterialToCheck].material, static_cast<uint8_t>(fNoMaterial));
 
 	auto mesh2 = testForType<int16_t>();
 	QCOMPARE(mesh2.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh2.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh2.getVertices()[uMaterialToCheck].getMaterial(), static_cast<int16_t>(fNoMaterial));
+	QCOMPARE(mesh2.getVertices()[uMaterialToCheck].material, static_cast<int16_t>(fNoMaterial));
 
 	auto mesh3 = testForType<uint16_t>();
 	QCOMPARE(mesh3.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh3.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh3.getVertices()[uMaterialToCheck].getMaterial(), static_cast<uint16_t>(fNoMaterial));
+	QCOMPARE(mesh3.getVertices()[uMaterialToCheck].material, static_cast<uint16_t>(fNoMaterial));
 
 	auto mesh4 = testForType<int32_t>();
 	QCOMPARE(mesh4.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh4.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh4.getVertices()[uMaterialToCheck].getMaterial(), static_cast<int32_t>(fNoMaterial));
+	QCOMPARE(mesh4.getVertices()[uMaterialToCheck].material, static_cast<int32_t>(fNoMaterial));
 
 	auto mesh5 = testForType<uint32_t>();
 	QCOMPARE(mesh5.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh5.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh5.getVertices()[uMaterialToCheck].getMaterial(), static_cast<uint32_t>(fNoMaterial));
+	QCOMPARE(mesh5.getVertices()[uMaterialToCheck].material, static_cast<uint32_t>(fNoMaterial));
 
 	auto mesh6 = testForType<float>();
 	QCOMPARE(mesh6.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh6.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh6.getVertices()[uMaterialToCheck].getMaterial(), static_cast<float>(fNoMaterial));
+	QCOMPARE(mesh6.getVertices()[uMaterialToCheck].material, static_cast<float>(fNoMaterial));
 
 	auto mesh7 = testForType<double>();
 	QCOMPARE(mesh7.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh7.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh7.getVertices()[uMaterialToCheck].getMaterial(), static_cast<double>(fNoMaterial));
+	QCOMPARE(mesh7.getVertices()[uMaterialToCheck].material, static_cast<double>(fNoMaterial));
 
 	auto mesh8 = testForType<Density8>();
 	QCOMPARE(mesh8.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh8.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh8.getVertices()[uMaterialToCheck].getMaterial(), static_cast<Density8>(fNoMaterial));
+	QCOMPARE(mesh8.getVertices()[uMaterialToCheck].material, static_cast<Density8>(fNoMaterial));
 
 	auto mesh9 = testForType<MaterialDensityPair88>();
 	QCOMPARE(mesh9.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh9.getNoOfIndices(), uExpectedIndices);
-	//QCOMPARE(mesh9.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);
+	//QCOMPARE(mesh9.getVertices()[uMaterialToCheck].material, fExpectedMaterial);
 
 	//Test whether the CustomSurfaceExtractor works.
 	/*testCustomController(floatMesh);
 	QCOMPARE(floatMesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(floatMesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(floatMesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);*/
+	QCOMPARE(floatMesh.getVertices()[uMaterialToCheck].material, fNoMaterial);*/
 }
 
 QTEST_MAIN(TestSurfaceExtractor)

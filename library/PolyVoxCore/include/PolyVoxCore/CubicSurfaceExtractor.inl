@@ -214,7 +214,10 @@ namespace PolyVox
 			if(rEntry.iIndex == -1)
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
-				rEntry.iIndex = m_meshCurrent->addVertex(CubicVertex<typename VolumeType::VoxelType>(Vector3DFloat(static_cast<float>(uX)-0.5f, static_cast<float>(uY)-0.5f, static_cast<float>(uZ)-0.5f), uMaterialIn));
+				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
+				cubicVertex.position.setElements(static_cast<float>(uX)-0.5f, static_cast<float>(uY)-0.5f, static_cast<float>(uZ)-0.5f);
+				cubicVertex.material = uMaterialIn;
+				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
 				rEntry.uMaterial = uMaterialIn;
 
 				return rEntry.iIndex;
@@ -268,7 +271,7 @@ namespace PolyVox
 	{
 		//All four vertices of a given quad have the same material,
 		//so just check that the first pair of vertices match.
-		if(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() == m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial())
+		if(m_meshCurrent->getVertices()[q1.vertices[0]].material == m_meshCurrent->getVertices()[q2.vertices[0]].material)
 		{
 			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
 			//Adjacent quads must share two vertices, and the second quad could be to the

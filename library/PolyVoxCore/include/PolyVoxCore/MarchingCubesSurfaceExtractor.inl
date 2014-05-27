@@ -459,7 +459,11 @@ namespace PolyVox
 					// Allow the controller to decide how the material should be derived from the voxels.
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
 
-					const MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+					surfaceVertex.position = v3dPosition;
+					surfaceVertex.normal = v3dNormal;
+					surfaceVertex.material = uMaterial;
+
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
 
@@ -488,7 +492,11 @@ namespace PolyVox
 					// Allow the controller to decide how the material should be derived from the voxels.
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
 
-					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+					surfaceVertex.position = v3dPosition;
+					surfaceVertex.normal = v3dNormal;
+					surfaceVertex.material = uMaterial;
+
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
 
@@ -516,7 +524,11 @@ namespace PolyVox
 					// Allow the controller to decide how the material should be derived from the voxels.
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
 
-					const MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex(v3dPosition, v3dNormal, uMaterial);
+					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+					surfaceVertex.position = v3dPosition;
+					surfaceVertex.normal = v3dNormal;
+					surfaceVertex.material = uMaterial;
+
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
 
