@@ -45,6 +45,12 @@ namespace PolyVox
 		,m_tBorderValue(tBorderValue)
 	{
 		m_funcIsQuadNeededCallback = isQuadNeeded;
+
+		// This extractor has a limit as to how large the extracted region can be, because the vertex positions are encoded with a single byte per component.
+		int32_t maxReionDimension = 256;
+		POLYVOX_THROW_IF(region.getWidthInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
+		POLYVOX_THROW_IF(region.getHeightInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
+		POLYVOX_THROW_IF(region.getDepthInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
 	}
 
 	template<typename VolumeType, typename IsQuadNeeded>

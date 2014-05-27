@@ -186,13 +186,15 @@ int main(int argc, char *argv[])
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
 	//Extract the surface
-	auto mesh = extractCubicMesh(&volData, reg);
+	auto mesh = extractCubicMesh(&volData, reg2);
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
-	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(mesh);
+	auto decodedMesh = decode(mesh);
 
-	openGLWidget.setViewableRegion(reg);
+	//Pass the surface to the OpenGL window
+	openGLWidget.addMesh(decodedMesh);
+
+	openGLWidget.setViewableRegion(reg2);
 
 	//Run the message pump.
 	return app.exec();
