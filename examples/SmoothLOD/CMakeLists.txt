@@ -55,6 +55,9 @@ ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(SmoothLODExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 SET_PROPERTY(TARGET SmoothLODExample PROPERTY FOLDER "Examples")
 
+configure_file(../common/example.vert example.vert COPYONLY)
+configure_file(../common/example.frag example.frag COPYONLY)
+
 #Install - Only install the example in Windows
 IF(WIN32)
 	INSTALL(TARGETS SmoothLODExample

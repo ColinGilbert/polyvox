@@ -2,6 +2,7 @@
 
 #include <QMouseEvent>
 #include <QMatrix4x4>
+#include <QCoreApplication>
 //#include <QtMath>
 
 using namespace PolyVox;
@@ -91,28 +92,7 @@ void OpenGLWidget::initializeGL()
 	
 	// This is basically a simple fallback vertex shader which does the most basic rendering possible.  
 	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
-	if (!mShader->addShaderFromSourceCode(QGLShader::Vertex,
-		"#version 140\n"
-		
-		"in vec4 position; // This will be the position of the vertex in model-space\n"
-		
-		"// The usual matrices are provided\n"
-		"uniform mat4 cameraToClipMatrix;\n"
-		"uniform mat4 worldToCameraMatrix;\n"
-		"uniform mat4 modelToWorldMatrix;\n"
-		
-		"// This will be used by the fragment shader to calculate flat-shaded normals. This is an unconventional approach\n"
-		"// but we use it in this example framework because not all surface extractor generate surface normals.\n"
-		"out vec4 worldPosition;\n"
-		
-		"void main()\n"
-		"{\n"
-		"	// Standard sequence of OpenGL transformations.\n"
-		"	worldPosition = modelToWorldMatrix * position;\n"
-		"	vec4 cameraPosition = worldToCameraMatrix * worldPosition;\n"
-		"	gl_Position = cameraToClipMatrix * cameraPosition;\n"
-		"}\n"
-	))
+	if (!mShader->addShaderFromSourceFile(QGLShader::Vertex, QCoreApplication::applicationDirPath()+"/"+"example.vert"))
 	{
 		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
@@ -120,27 +100,7 @@ void OpenGLWidget::initializeGL()
 	
 	// This is basically a simple fallback fragment shader which does the most basic rendering possible.  
 	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
-	if (!mShader->addShaderFromSourceCode(QGLShader::Fragment,
-		"#version 130\n"
-		
-		"// Passed in from the vertex shader\n"
-		"in vec4 worldPosition;\n"
-		"in vec4 worldNormal;\n"
-		
-		"// the color that gets written to the display\n"
-		"out vec4 outputColor;\n"
-		
-		"void main()\n"
-		"{\n"
-		"	// Again, for the purposes of these examples we cannot be sure that per-vertex normals are provided. A sensible fallback \n"
-		"	// is to use this little trick to compute per-fragment flat-shaded normals from the world positions using derivative operations.\n"
-		"	vec3 normal = normalize(cross(dFdy(worldPosition.xyz), dFdx(worldPosition.xyz)));\n"
-			
-		"	// We are just using the normal as the output color, and making it lighter so it looks a bit nicer. \n"
-		"	// Obviously a real shader would also do texuring, lighting, or whatever is required for the application.\n"
-		"	outputColor = vec4(abs(normal) * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);\n"
-		"}\n"
-	))
+	if (!mShader->addShaderFromSourceFile(QGLShader::Fragment, QCoreApplication::applicationDirPath()+"/"+"example.frag"))
 	{
 		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
