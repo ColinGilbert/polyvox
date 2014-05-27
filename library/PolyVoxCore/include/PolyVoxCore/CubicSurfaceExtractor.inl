@@ -215,7 +215,7 @@ namespace PolyVox
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
 				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
-				cubicVertex.position.setElements(static_cast<float>(uX)-0.5f, static_cast<float>(uY)-0.5f, static_cast<float>(uZ)-0.5f);
+				cubicVertex.position.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
 				cubicVertex.material = uMaterialIn;
 				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
 				rEntry.uMaterial = uMaterialIn;

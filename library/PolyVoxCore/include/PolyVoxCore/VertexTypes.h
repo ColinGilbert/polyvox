@@ -56,8 +56,8 @@ namespace PolyVox
 	{
 		typedef _VoxelType VoxelType;
 
-		Vector3DFloat position;
-		Vector3DFloat normal;
+		Vector3DUint8 position;
+		uint8_t normal;
 		VoxelType material;
 	};
 
@@ -81,8 +81,9 @@ namespace PolyVox
 	Vertex<VoxelType> decode(const CubicVertex<VoxelType>& cubicVertex)
 	{
 		Vertex<VoxelType> result;
-		result.position = cubicVertex.position;
-		result.normal = cubicVertex.normal;
+		Vector3DUint8 temp = cubicVertex.position; // For some reason we can't cast Vector3DUint8 to Vector3DFloat - investigate why.
+		result.position = Vector3DFloat(temp.getX(), temp.getY(), temp.getZ()) - Vector3DFloat(0.5, 0.5, 0.5);
+		//result.normal = cubicVertex.normal;
 		result.material = cubicVertex.material;
 		return result;
 	}

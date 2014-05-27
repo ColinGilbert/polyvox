@@ -81,11 +81,12 @@ int main(int argc, char *argv[])
 	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
 	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
 
-	//auto mesh = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 31, 31)));
-	//auto mesh2 = extractCubicMesh(&volData, PolyVox::Region(Vector3DInt32(32, 32, 32), Vector3DInt32(63, 63, 63)));
+	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
+	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
+	auto decodedMesh = decode(mesh);
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(mesh);
+	openGLWidget.addMesh(decodedMesh);
 	//openGLWidget.addMesh(mesh2);
 	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 

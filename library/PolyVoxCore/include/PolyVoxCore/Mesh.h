@@ -105,7 +105,7 @@ namespace PolyVox
 	Mesh< Vertex< typename MeshType::VertexType::VoxelType > > decode(const MeshType& mesh)
 	{
 		Mesh< Vertex< typename MeshType::VertexType::VoxelType > > result;
-		result.m_vecVertices.reserve(mesh.m_vecVertices.size());
+		result.m_vecVertices.resize(mesh.m_vecVertices.size());
 
 		for(uint32_t ct = 0; ct < mesh.m_vecVertices.size(); ct++)
 		{
