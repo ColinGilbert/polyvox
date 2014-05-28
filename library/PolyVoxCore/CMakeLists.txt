@@ -130,11 +130,11 @@ SET(IMPL_INC_FILES
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
-SOURCE_GROUP("Sources" FILES ${CORE_SRC_FILES})
-SOURCE_GROUP("Headers" FILES ${CORE_INC_FILES})
+SOURCE_GROUP("Source Files" FILES ${CORE_SRC_FILES})
+SOURCE_GROUP("Header Files" FILES ${CORE_INC_FILES})
 
-SOURCE_GROUP("Sources\\Impl" FILES ${IMPL_SRC_FILES})
-SOURCE_GROUP("Headers\\Impl" FILES ${IMPL_INC_FILES})
+SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
+SOURCE_GROUP("Header Files\\Impl" FILES ${IMPL_INC_FILES})
 
 #Tell CMake the paths
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include)

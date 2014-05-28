@@ -36,11 +36,6 @@ SET(INC_FILES
 
 add_definitions(-DGLEW_STATIC)
 
-#"Sources" and "Headers" are the group names in Visual Studio.
-#They may have other uses too...
-SOURCE_GROUP("Sources" FILES ${SRC_FILES})
-SOURCE_GROUP("Headers" FILES ${INC_FILES})
-
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
@@ -49,6 +44,9 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #This will include the shader files inside the compiled binary
 QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
+
+# Put the resources in a seperate folder in Visual Studio
+SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC})
 
 #Build
 ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
