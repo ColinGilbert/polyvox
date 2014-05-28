@@ -90,86 +90,13 @@ int main(int argc, char *argv[])
 
 	QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
 
-	if (!shader->addShaderFromSourceCode(QGLShader::Vertex,
-		"#version 140\n"
-		
-		"in vec4 position; // This will be the position of the vertex in model-space\n"
-		"in vec4 normal; // The normal data may not have been set\n"
-		"in ivec2 material;\n"
-		
-		"uniform mat4 cameraToClipMatrix;\n"
-		"uniform mat4 worldToCameraMatrix;\n"
-		"uniform mat4 modelToWorldMatrix;\n"
-		
-		"out vec4 worldPosition; //This is being passed to the fragment shader to calculate the normals\n"
-		"out vec3 normalFromVS;\n"
-		"flat out ivec2 materialFromVS;\n"
-		
-		"void main()\n"
-		"{\n"
-		"	// Compute the usual OpenGL transformation to clip space.\n"
-		"	gl_Position = cameraToClipMatrix * worldToCameraMatrix * modelToWorldMatrix * position;\n"
-
-		"	// This example is demonstrating the marching cubes mesh, which does have per-vertex normals. We can \n"
-		"	// just pass them through, though real code might want to deal with transforming normals appropriatly.\n"
-		"	normalFromVS = normal.xyz;\n"
-
-		"	// Nothing special here, we just pass the material through to the fragment shader.\n"
-		"	materialFromVS = material;\n"
-		"}\n"
-	))
+	if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/openglexample.vert"))
 	{
 		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 
-	if (!shader->addShaderFromSourceCode(QGLShader::Fragment,
-		"#version 130\n"
-		
-		"in vec4 worldPosition; //Passed in from the vertex shader\n"
-		"in vec3 normalFromVS;\n"
-		"flat in ivec2 materialFromVS;\n"
-		
-		"out vec4 outputColor;\n"
-		
-		"void main()\n"
-		"{\n"
-		"	// The first byte of our voxel data is the material.\n"
-		"	// We use this to decide how to color the fragment.\n"
-		"	vec4 surfaceColor;\n"
-		"	switch(materialFromVS.x)\n"
-		"	{\n"
-		"	case 1:\n"
-		"		surfaceColor = vec4(1.0, 0.0, 0.0, 1.0);\n"
-		"		break;\n"
-		"	case 2:\n"
-		"		surfaceColor = vec4(0.0, 1.0, 0.0, 1.0);\n"
-		"		break;\n"
-		"	case 3:\n"
-		"		surfaceColor = vec4(0.0, 0.0, 1.0, 1.0);\n"
-		"		break;\n"
-		"	case 4:\n"
-		"		surfaceColor = vec4(1.0, 1.0, 0.0, 1.0);\n"
-		"		break;\n"
-		"	case 5:\n"
-		"		surfaceColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
-		"		break;\n"
-		"	default:\n"
-		"		surfaceColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
-		"		break;\n"
-		"	}\n"
-
-		"	// Quick and dirty lighting, obviously a real implementation\n"
-		"	// should pass light properties as shader parameters, etc.\n"
-		"	vec3 lightDir = vec3(0.0, 0.0, 1.0);\n"
-		"	float diffuse = clamp(dot(lightDir, normalFromVS), 0.0, 1.0);\n"
-		"	diffuse *= 0.7; // Dim the diffuse a bit\n"
-		"	float ambient = 0.3; // Add some ambient\n"
-		"	float lightIntensity = diffuse + ambient; // Compute the final light intensity\n"
-
-		"	outputColor = surfaceColor * lightIntensity; //Compute final rendered color\n"
-		"}\n"
-	))
+	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/openglexample.frag"))
 	{
 		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);

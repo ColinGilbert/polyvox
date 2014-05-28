@@ -47,16 +47,16 @@ FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${GLEW_SOURCE_DIR})
 LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
+#This will include the shader files inside the compiled binary
+QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
+
 #Build
-ADD_EXECUTABLE(BasicExample ${SRC_FILES})
+ADD_EXECUTABLE(BasicExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(BasicExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
 TARGET_LINK_LIBRARIES(BasicExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
 SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "Examples")
-
-configure_file(../common/example.vert example.vert COPYONLY)
-configure_file(../common/example.frag example.frag COPYONLY)
 
 #Install - Only install the example in Windows
 IF(WIN32)

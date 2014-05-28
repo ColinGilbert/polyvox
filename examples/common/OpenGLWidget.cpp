@@ -92,7 +92,7 @@ void OpenGLWidget::initializeGL()
 	
 	// This is basically a simple fallback vertex shader which does the most basic rendering possible.  
 	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
-	if (!mShader->addShaderFromSourceFile(QGLShader::Vertex, QCoreApplication::applicationDirPath()+"/"+"example.vert"))
+	if (!mShader->addShaderFromSourceFile(QGLShader::Vertex, ":/example.vert"))
 	{
 		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
@@ -100,7 +100,7 @@ void OpenGLWidget::initializeGL()
 	
 	// This is basically a simple fallback fragment shader which does the most basic rendering possible.  
 	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
-	if (!mShader->addShaderFromSourceFile(QGLShader::Fragment, QCoreApplication::applicationDirPath()+"/"+"example.frag"))
+	if (!mShader->addShaderFromSourceFile(QGLShader::Fragment, ":/example.frag"))
 	{
 		std::cerr << mShader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);

@@ -47,8 +47,11 @@ FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${GLEW_SOURCE_DIR})
 LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
+#This will include the shader files inside the compiled binary
+QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
+
 #Build
-ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES})
+ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(SmoothLODExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
 ENDIF(MSVC)
