@@ -125,6 +125,22 @@ int main(int argc, char *argv[])
 	OpenGLWidget openGLWidget(0);
 	openGLWidget.show();
 
+	QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
+
+	if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/decode.vert"))
+	{
+		std::cerr << shader->log().toStdString() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/decode.frag"))
+	{
+		std::cerr << shader->log().toStdString() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	openGLWidget.setShader(shader);
+
 	//Create an empty volume and then place a sphere in it
 	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);

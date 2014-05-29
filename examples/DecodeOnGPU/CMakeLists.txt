@@ -44,12 +44,13 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #This will include the shader files inside the compiled binary
 QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
+QT4_ADD_RESOURCES(DECODE_RESOURCES_RCC decode.qrc)
 
 # Put the resources in a seperate folder in Visual Studio
-SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC})
+SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC} decode.qrc ${DECODE_RESOURCES_RCC})
 
 #Build
-ADD_EXECUTABLE(DecodeOnGPUExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
+ADD_EXECUTABLE(DecodeOnGPUExample ${SRC_FILES} ${COMMON_RESOURCES_RCC} ${DECODE_RESOURCES_RCC})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(DecodeOnGPUExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
