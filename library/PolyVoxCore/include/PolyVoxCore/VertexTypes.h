@@ -70,7 +70,7 @@ namespace PolyVox
 	{
 		typedef _VoxelType VoxelType;
 
-		Vector3DFloat position;
+		Vector3DUint16 position;
 		Vector3DFloat normal;
 		VoxelType material;
 	};
@@ -94,7 +94,8 @@ namespace PolyVox
 	Vertex<VoxelType> decode(const MarchingCubesVertex<VoxelType>& cubicVertex)
 	{
 		Vertex<VoxelType> result;
-		result.position = cubicVertex.position;
+		result.position = Vector3DFloat(cubicVertex.position.getX(), cubicVertex.position.getY(), cubicVertex.position.getZ());
+		result.position *= (1.0 / 256.0);
 		result.normal = cubicVertex.normal;
 		result.material = cubicVertex.material;
 		return result;

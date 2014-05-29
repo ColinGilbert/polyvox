@@ -127,8 +127,11 @@ int main(int argc, char *argv[])
 				// Perform the extraction for this region of the volume
 				auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
 
+				// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+				auto decodedMesh = decode(mesh);
+
 				//Pass the surface to the OpenGL window
-				openGLWidget.addMesh(mesh, Vector3DInt32(x, y, z));
+				openGLWidget.addMesh(decodedMesh, Vector3DInt32(x, y, z));
 
 				meshCounter++;
 			}
