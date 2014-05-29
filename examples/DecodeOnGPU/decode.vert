@@ -1,6 +1,6 @@
 #version 140
 
-in vec4 position; // This will be the position of the vertex in model-space
+in uvec4 position; // This will be the position of the vertex in model-space
 
 // The usual matrices are provided
 uniform mat4 cameraToClipMatrix;
@@ -13,8 +13,11 @@ out vec4 worldPosition;
 
 void main()
 {
+	vec4 decodedPosition = position;
+	decodedPosition.xyz = decodedPosition.xyz * (1.0 / 256.0);
+	
 	// Standard sequence of OpenGL transformations.
-	worldPosition = modelToWorldMatrix * position;
+	worldPosition = modelToWorldMatrix * decodedPosition;
 	vec4 cameraPosition = worldToCameraMatrix * worldPosition;
 	gl_Position = cameraToClipMatrix * cameraPosition;
 }

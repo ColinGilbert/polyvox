@@ -66,7 +66,7 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 	}
 }
 
-OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::Vertex< uint8_t > >& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
+OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVertex< uint8_t > >& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 {
 	// Convienient access to the vertices and indices
 	const auto& vecIndices = surfaceMesh.getIndices();
@@ -83,7 +83,7 @@ OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::Vertex< uint8_t
 	// The GL_ARRAY_BUFFER will contain the list of vertex positions
 	glGenBuffers(1, &(meshData.vertexBuffer));
 	glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(Vertex< uint8_t >), vecVertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(MarchingCubesVertex< uint8_t >), vecVertices.data(), GL_STATIC_DRAW);
 
 	// and GL_ELEMENT_ARRAY_BUFFER will contain the indices
 	glGenBuffers(1, &(meshData.indexBuffer));
@@ -92,20 +92,20 @@ OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::Vertex< uint8_t
 
 	// Every surface extractor outputs valid positions for the vertices, so tell OpenGL how these are laid out
 	glEnableVertexAttribArray(0); // Attrib '0' is the vertex positions
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex< uint8_t >), (GLvoid*)(offsetof(Vertex< uint8_t >, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+	glVertexAttribIPointer(0, 3, GL_UNSIGNED_SHORT, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 
 	// Some surface extractors also generate normals, so tell OpenGL how these are laid out. If a surface extractor
 	// does not generate normals then nonsense values are written into the buffer here and sghould be ignored by the
 	// shader. This is mostly just to simplify this example code - in a real application you will know whether your
 	// chosen surface extractor generates normals and can skip uploading them if not.
 	glEnableVertexAttribArray(1); // Attrib '1' is the vertex normals.
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex< uint8_t >), (GLvoid*)(offsetof(Vertex< uint8_t >, normal)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, normal)));
 
 	// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
 	// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
 	glEnableVertexAttribArray(2); //We're talking about shader attribute '2'
 	GLint size = (std::min)(sizeof(uint8_t), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
-	glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(Vertex< uint8_t >), (GLvoid*)(offsetof(Vertex< uint8_t >, data)));
+	glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, data)));
 
 	// We're done uploading and can now unbind.
 	glBindVertexArray(0);
@@ -133,11 +133,15 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
+	std::cout << shader->log().toStdString() << std::endl;
+
 	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/decode.frag"))
 	{
 		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
+
+	std::cout << shader->log().toStdString() << std::endl;
 
 	openGLWidget.setShader(shader);
 
@@ -146,15 +150,15 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
-	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+	auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
 
 	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
 	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
-	auto decodedMesh = decode(mesh);
+	//auto decodedMesh = decode(mesh);
 
 	//Pass the surface to the OpenGL window
-	OpenGLMeshData meshData = buildOpenGLMeshData(decodedMesh);
+	OpenGLMeshData meshData = buildOpenGLMeshData(mesh);
 	openGLWidget.addMeshData(meshData);
 
 	openGLWidget.setViewableRegion(volData.getEnclosingRegion());

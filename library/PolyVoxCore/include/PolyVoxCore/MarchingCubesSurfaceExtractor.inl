@@ -446,7 +446,7 @@ namespace PolyVox
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerZ()));
-					const Vector3DUint16 v3dPositionAsUint(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+					const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
 
@@ -461,7 +461,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.position = v3dPositionAsUint;
+					surfaceVertex.position = v3dScaledPosition;
 					surfaceVertex.normal = v3dNormal;
 					surfaceVertex.data = uMaterial;
 
@@ -480,7 +480,7 @@ namespace PolyVox
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()));
-					const Vector3DUint16 v3dPositionAsUint(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+					const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
 
@@ -495,7 +495,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.position = v3dPositionAsUint;
+					surfaceVertex.position = v3dScaledPosition;
 					surfaceVertex.normal = v3dNormal;
 					surfaceVertex.data = uMaterial;
 
@@ -514,7 +514,7 @@ namespace PolyVox
 					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
 
 					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()) + fInterp);
-					const Vector3DUint16 v3dPositionAsUint(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+					const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
 					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
@@ -528,7 +528,7 @@ namespace PolyVox
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.position = v3dPositionAsUint;
+					surfaceVertex.position = v3dScaledPosition;
 					surfaceVertex.normal = v3dNormal;
 					surfaceVertex.data = uMaterial;
 
