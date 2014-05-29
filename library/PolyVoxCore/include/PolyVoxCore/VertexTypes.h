@@ -36,68 +36,68 @@ namespace PolyVox
 	#ifdef SWIG
 	struct Vertex
 #else
-	template<typename _VoxelType>
+	template<typename _DataType>
 	struct POLYVOX_API Vertex
 #endif
 	{
-		typedef _VoxelType VoxelType;
+		typedef _DataType DataType;
 
 		Vector3DFloat position;
 		Vector3DFloat normal;
-		VoxelType material;
+		DataType data;
 	};
 
 #ifdef SWIG
 	struct CubicVertex
 #else
-	template<typename _VoxelType>
+	template<typename _DataType>
 	struct POLYVOX_API CubicVertex
 #endif
 	{
-		typedef _VoxelType VoxelType;
+		typedef _DataType DataType;
 
 		Vector3DUint8 position;
 		uint8_t normal;
-		VoxelType material;
+		DataType data;
 	};
 
 #ifdef SWIG
 	struct MarchingCubesVertex
 #else
-	template<typename _VoxelType>
+	template<typename _DataType>
 	struct POLYVOX_API MarchingCubesVertex
 #endif
 	{
-		typedef _VoxelType VoxelType;
+		typedef _DataType DataType;
 
 		Vector3DUint16 position;
 		Vector3DFloat normal;
-		VoxelType material;
+		DataType data;
 	};
 
 	// Hopefully the compiler will implement the 'Return value optimization' here, but
 	// performance critical code will most likely decode the vertices in a shader anyway.
-	template<typename VoxelType>
-	Vertex<VoxelType> decode(const CubicVertex<VoxelType>& cubicVertex)
+	template<typename DataType>
+	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
 	{
-		Vertex<VoxelType> result;
+		Vertex<DataType> result;
 		Vector3DUint8 temp = cubicVertex.position; // For some reason we can't cast Vector3DUint8 to Vector3DFloat - investigate why.
 		result.position = Vector3DFloat(temp.getX(), temp.getY(), temp.getZ()) - Vector3DFloat(0.5, 0.5, 0.5);
 		//result.normal = cubicVertex.normal;
-		result.material = cubicVertex.material;
+		result.data = cubicVertex.data;
 		return result;
 	}
 
 	// Hopefully the compiler will implement the 'Return value optimization' here, but
 	// performance critical code will most likely decode the vertices in a shader anyway.
-	template<typename VoxelType>
-	Vertex<VoxelType> decode(const MarchingCubesVertex<VoxelType>& cubicVertex)
+	template<typename DataType>
+	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& cubicVertex)
 	{
-		Vertex<VoxelType> result;
+		Vertex<DataType> result;
 		result.position = Vector3DFloat(cubicVertex.position.getX(), cubicVertex.position.getY(), cubicVertex.position.getZ());
 		result.position *= (1.0 / 256.0);
 		result.normal = cubicVertex.normal;
-		result.material = cubicVertex.material;
+		result.data = cubicVertex.data;
 		return result;
 	}
 }

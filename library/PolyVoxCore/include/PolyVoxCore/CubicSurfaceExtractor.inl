@@ -222,7 +222,7 @@ namespace PolyVox
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
 				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
 				cubicVertex.position.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
-				cubicVertex.material = uMaterialIn;
+				cubicVertex.data = uMaterialIn;
 				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
 				rEntry.uMaterial = uMaterialIn;
 
@@ -275,9 +275,9 @@ namespace PolyVox
 	template<typename VolumeType, typename IsQuadNeeded>
 	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
 	{
-		//All four vertices of a given quad have the same material,
+		//All four vertices of a given quad have the same data,
 		//so just check that the first pair of vertices match.
-		if(m_meshCurrent->getVertices()[q1.vertices[0]].material == m_meshCurrent->getVertices()[q2.vertices[0]].material)
+		if (m_meshCurrent->getVertices()[q1.vertices[0]].data == m_meshCurrent->getVertices()[q2.vertices[0]].data)
 		{
 			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
 			//Adjacent quads must share two vertices, and the second quad could be to the

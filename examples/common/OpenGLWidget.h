@@ -92,8 +92,8 @@ public:
 		// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
 		// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
 		glEnableVertexAttribArray(2); //We're talking about shader attribute '2'
-		GLint size = (std::min)(sizeof(typename MeshType::VertexType::VoxelType), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
-		glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, material)));
+		GLint size = (std::min)(sizeof(typename MeshType::VertexType::DataType), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
+		glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, data)));
 
 		// We're done uploading and can now unbind.
 		glBindVertexArray(0);

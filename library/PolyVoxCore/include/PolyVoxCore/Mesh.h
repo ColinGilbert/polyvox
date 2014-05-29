@@ -102,9 +102,9 @@ namespace PolyVox
 	std::shared_ptr< Mesh<VertexType> > extractSubset(Mesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
 
 	template <typename MeshType>
-	Mesh< Vertex< typename MeshType::VertexType::VoxelType > > decode(const MeshType& mesh)
+	Mesh< Vertex< typename MeshType::VertexType::DataType > > decode(const MeshType& mesh)
 	{
-		Mesh< Vertex< typename MeshType::VertexType::VoxelType > > result;
+		Mesh< Vertex< typename MeshType::VertexType::DataType > > result;
 		result.m_vecVertices.resize(mesh.m_vecVertices.size());
 
 		for(uint32_t ct = 0; ct < mesh.m_vecVertices.size(); ct++)

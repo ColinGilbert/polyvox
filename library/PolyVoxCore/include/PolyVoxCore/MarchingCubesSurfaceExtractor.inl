@@ -463,7 +463,7 @@ namespace PolyVox
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 					surfaceVertex.position = v3dPositionAsUint;
 					surfaceVertex.normal = v3dNormal;
-					surfaceVertex.material = uMaterial;
+					surfaceVertex.data = uMaterial;
 
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesX[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
@@ -497,7 +497,7 @@ namespace PolyVox
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 					surfaceVertex.position = v3dPositionAsUint;
 					surfaceVertex.normal = v3dNormal;
-					surfaceVertex.material = uMaterial;
+					surfaceVertex.data = uMaterial;
 
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesY[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
@@ -530,7 +530,7 @@ namespace PolyVox
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 					surfaceVertex.position = v3dPositionAsUint;
 					surfaceVertex.normal = v3dNormal;
-					surfaceVertex.material = uMaterial;
+					surfaceVertex.data = uMaterial;
 
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 					m_pCurrentVertexIndicesZ[iXVolSpace - m_regSizeInVoxels.getLowerX()][iYVolSpace - m_regSizeInVoxels.getLowerY()] = uLastVertexIndex;
