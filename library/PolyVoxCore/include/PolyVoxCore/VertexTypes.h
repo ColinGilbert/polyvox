@@ -71,7 +71,7 @@ namespace PolyVox
 		typedef _DataType DataType;
 
 		Vector3DUint16 position;
-		Vector3DFloat normal;
+		uint16_t normal;
 		DataType data;
 	};
 
@@ -91,13 +91,20 @@ namespace PolyVox
 	// Hopefully the compiler will implement the 'Return value optimization' here, but
 	// performance critical code will most likely decode the vertices in a shader anyway.
 	template<typename DataType>
-	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& cubicVertex)
+	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& marchingCubesVertex)
 	{
 		Vertex<DataType> result;
-		result.position = Vector3DFloat(cubicVertex.position.getX(), cubicVertex.position.getY(), cubicVertex.position.getZ());
+		result.position = Vector3DFloat(marchingCubesVertex.position.getX(), marchingCubesVertex.position.getY(), marchingCubesVertex.position.getZ());
 		result.position *= (1.0 / 256.0);
-		result.normal = cubicVertex.normal;
-		result.data = cubicVertex.data;
+
+		uint16_t encodedX = (marchingCubesVertex.normal >> 10) & 0x1F;
+		uint16_t encodedY = (marchingCubesVertex.normal >> 5) & 0x1F;
+		uint16_t encodedZ = (marchingCubesVertex.normal) & 0x1F;
+		result.normal = Vector3DFloat(encodedX, encodedY, encodedZ);
+		result.normal /= 15.5f;
+		result.normal -= Vector3DFloat(1.0f, 1.0f, 1.0f);
+
+		result.data = marchingCubesVertex.data;
 		return result;
 	}
 }
