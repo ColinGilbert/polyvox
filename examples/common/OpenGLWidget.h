@@ -53,8 +53,8 @@ public:
 	OpenGLWidget(QWidget *parent);
 
 	// Convert a PolyVox mesh to OpenGL index/vertex buffers. Inlined because it's templatised.
-	template <typename MeshType>
-	void addMesh(const MeshType& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
+	template <typename DataType>
+	void addMesh(const PolyVox::Mesh< PolyVox::Vertex< DataType > >& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 	{
 		// Convienient access to the vertices and indices
 		const auto& vecIndices = surfaceMesh.getIndices();
@@ -71,7 +71,7 @@ public:
 		// The GL_ARRAY_BUFFER will contain the list of vertex positions
 		glGenBuffers(1, &(meshData.vertexBuffer));
 		glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(typename MeshType::VertexType), vecVertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(Vertex< DataType >), vecVertices.data(), GL_STATIC_DRAW);
 
 		// and GL_ELEMENT_ARRAY_BUFFER will contain the indices
 		glGenBuffers(1, &(meshData.indexBuffer));
@@ -80,20 +80,20 @@ public:
 
 		// Every surface extractor outputs valid positions for the vertices, so tell OpenGL how these are laid out
 		glEnableVertexAttribArray(0); // Attrib '0' is the vertex positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex< DataType >), (GLvoid*)(offsetof(Vertex< DataType >, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 
 		// Some surface extractors also generate normals, so tell OpenGL how these are laid out. If a surface extractor
 		// does not generate normals then nonsense values are written into the buffer here and sghould be ignored by the
 		// shader. This is mostly just to simplify this example code - in a real application you will know whether your
 		// chosen surface extractor generates normals and can skip uploading them if not.
 		glEnableVertexAttribArray(1); // Attrib '1' is the vertex normals.
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, normal)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex< DataType >), (GLvoid*)(offsetof(Vertex< DataType >, normal)));
 
 		// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
 		// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
 		glEnableVertexAttribArray(2); //We're talking about shader attribute '2'
-		GLint size = (std::min)(sizeof(typename MeshType::VertexType::DataType), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
-		glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, data)));
+		GLint size = (std::min)(sizeof(DataType), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
+		glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(Vertex< DataType >), (GLvoid*)(offsetof(Vertex< DataType >, data)));
 
 		// We're done uploading and can now unbind.
 		glBindVertexArray(0);
@@ -104,6 +104,11 @@ public:
 		meshData.scale = scale;
 
 		// Now add the mesh to the list of meshes to render.
+		addMeshData(meshData);
+	}
+
+	void addMeshData(OpenGLMeshData meshData)
+	{
 		mMeshData.push_back(meshData);
 	}
 
