@@ -99,7 +99,7 @@ OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVe
 	// shader. This is mostly just to simplify this example code - in a real application you will know whether your
 	// chosen surface extractor generates normals and can skip uploading them if not.
 	glEnableVertexAttribArray(1); // Attrib '1' is the vertex normals.
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, normal)));
+	glVertexAttribIPointer(1, 1, GL_UNSIGNED_SHORT, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, normal)));
 
 	// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
 	// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
