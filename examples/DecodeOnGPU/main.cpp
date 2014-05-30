@@ -133,15 +133,11 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	std::cout << shader->log().toStdString() << std::endl;
-
 	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/decode.frag"))
 	{
 		std::cerr << shader->log().toStdString() << std::endl;
 		exit(EXIT_FAILURE);
 	}
-
-	std::cout << shader->log().toStdString() << std::endl;
 
 	openGLWidget.setShader(shader);
 
