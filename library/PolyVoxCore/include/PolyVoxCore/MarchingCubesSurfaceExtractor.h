@@ -57,7 +57,7 @@ namespace PolyVox
 	};
 
 	/// Decodes a position from a MarchingCubesVertex
-	Vector3DFloat decode(const Vector3DUint16& position)
+	inline Vector3DFloat decode(const Vector3DUint16& position)
 	{
 		Vector3DFloat result(position.getX(), position.getY(), position.getZ());
 		result *= (1.0f / 256.0f); // Division is compile-time constant
@@ -65,7 +65,7 @@ namespace PolyVox
 	}
 
 	/// Decodes a normal from a MarchingCubesVertex
-	Vector3DFloat decode(const uint16_t normal)
+	inline Vector3DFloat decode(const uint16_t normal)
 	{
 		// Get normal components in the range 0 to 31
 		uint16_t x = (normal >> 10) & 0x1F;
