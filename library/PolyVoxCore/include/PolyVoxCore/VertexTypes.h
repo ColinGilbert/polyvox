@@ -46,67 +46,6 @@ namespace PolyVox
 		Vector3DFloat normal;
 		DataType data;
 	};
-
-#ifdef SWIG
-	struct CubicVertex
-#else
-	template<typename _DataType>
-	struct POLYVOX_API CubicVertex
-#endif
-	{
-		typedef _DataType DataType;
-
-		Vector3DUint8 position;
-		uint8_t normal;
-		DataType data;
-	};
-
-#ifdef SWIG
-	struct MarchingCubesVertex
-#else
-	template<typename _DataType>
-	struct POLYVOX_API MarchingCubesVertex
-#endif
-	{
-		typedef _DataType DataType;
-
-		Vector3DUint16 position;
-		uint16_t normal;
-		DataType data;
-	};
-
-	// Hopefully the compiler will implement the 'Return value optimization' here, but
-	// performance critical code will most likely decode the vertices in a shader anyway.
-	template<typename DataType>
-	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
-	{
-		Vertex<DataType> result;
-		Vector3DUint8 temp = cubicVertex.position; // For some reason we can't cast Vector3DUint8 to Vector3DFloat - investigate why.
-		result.position = Vector3DFloat(temp.getX(), temp.getY(), temp.getZ()) - Vector3DFloat(0.5, 0.5, 0.5);
-		//result.normal = cubicVertex.normal;
-		result.data = cubicVertex.data;
-		return result;
-	}
-
-	// Hopefully the compiler will implement the 'Return value optimization' here, but
-	// performance critical code will most likely decode the vertices in a shader anyway.
-	template<typename DataType>
-	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& marchingCubesVertex)
-	{
-		Vertex<DataType> result;
-		result.position = Vector3DFloat(marchingCubesVertex.position.getX(), marchingCubesVertex.position.getY(), marchingCubesVertex.position.getZ());
-		result.position *= (1.0 / 256.0);
-
-		uint16_t encodedX = (marchingCubesVertex.normal >> 10) & 0x1F;
-		uint16_t encodedY = (marchingCubesVertex.normal >> 5) & 0x1F;
-		uint16_t encodedZ = (marchingCubesVertex.normal) & 0x1F;
-		result.normal = Vector3DFloat(encodedX, encodedY, encodedZ);
-		result.normal /= 15.5f;
-		result.normal -= Vector3DFloat(1.0f, 1.0f, 1.0f);
-
-		result.data = marchingCubesVertex.data;
-		return result;
-	}
 }
 
 #endif
