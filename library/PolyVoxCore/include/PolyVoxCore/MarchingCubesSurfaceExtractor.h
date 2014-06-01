@@ -49,23 +49,33 @@ namespace PolyVox
 		DataType data;
 	};
 
-	// Hopefully the compiler will implement the 'Return value optimization' here, but
-	// performance critical code will most likely decode the vertices in a shader anyway.
+	Vector3DFloat decode(const Vector3DUint16& position)
+	{
+		Vector3DFloat result(position.getX(), position.getY(), position.getZ());
+		result *= (1.0f / 256.0f); // Division is compile-time constant
+		return result;
+	}
+
+	Vector3DFloat decode(const uint16_t normal)
+	{
+		uint16_t x = (normal >> 10) & 0x1F;
+		uint16_t y = (normal >> 5) & 0x1F;
+		uint16_t z = (normal) & 0x1F;
+
+		Vector3DFloat result(x, y, z);
+		result *= (1.0f / 15.5f); // Division is compile-time constant
+		result -= Vector3DFloat(1.0f, 1.0f, 1.0f);
+
+		return result;
+	}
+
 	template<typename DataType>
 	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& marchingCubesVertex)
 	{
 		Vertex<DataType> result;
-		result.position = Vector3DFloat(marchingCubesVertex.position.getX(), marchingCubesVertex.position.getY(), marchingCubesVertex.position.getZ());
-		result.position *= (1.0 / 256.0);
-
-		uint16_t encodedX = (marchingCubesVertex.normal >> 10) & 0x1F;
-		uint16_t encodedY = (marchingCubesVertex.normal >> 5) & 0x1F;
-		uint16_t encodedZ = (marchingCubesVertex.normal) & 0x1F;
-		result.normal = Vector3DFloat(encodedX, encodedY, encodedZ);
-		result.normal /= 15.5f;
-		result.normal -= Vector3DFloat(1.0f, 1.0f, 1.0f);
-
-		result.data = marchingCubesVertex.data;
+		result.position = decode(marchingCubesVertex.position);
+		result.normal = decode(marchingCubesVertex.normal);
+		result.data = marchingCubesVertex.data; // Data is not encoded
 		return result;
 	}
 
