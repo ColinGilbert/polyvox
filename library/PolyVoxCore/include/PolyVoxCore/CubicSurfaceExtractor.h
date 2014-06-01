@@ -47,6 +47,8 @@ namespace PolyVox
 
 		Vector3DUint8 position;
 		uint8_t normal;
+
+		// User data
 		DataType data;
 	};
 
