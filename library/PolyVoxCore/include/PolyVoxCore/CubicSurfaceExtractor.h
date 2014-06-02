@@ -47,19 +47,16 @@ namespace PolyVox
 
 		// Each component of the position is stored as a single unsigned byte.
 		// The true position is found by offseting each component by 0.5f.
-		Vector3DUint8 position;
-
-		// Currently unused and just serves as passing
-		uint8_t unused;
+		Vector3DUint8 encodedPosition;
 
 		// User data
 		DataType data;
 	};
 
 	/// Decodes a position from a CubicVertex
-	inline Vector3DFloat decode(const Vector3DUint8& position)
+	inline Vector3DFloat decode(const Vector3DUint8& encodedPosition)
 	{
-		Vector3DFloat result(position.getX(), position.getY(), position.getZ());
+		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
 		result -= 0.5f; // Apply the required offset
 		return result;
 	}
@@ -69,7 +66,7 @@ namespace PolyVox
 	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
 	{
 		Vertex<DataType> result;
-		result.position = decode(cubicVertex.position);
+		result.position = decode(cubicVertex.encodedPosition);
 		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
 		result.data = cubicVertex.data; // Data is not encoded
 		return result;

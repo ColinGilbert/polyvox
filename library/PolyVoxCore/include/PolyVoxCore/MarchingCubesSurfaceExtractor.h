@@ -45,32 +45,32 @@ namespace PolyVox
 		typedef _DataType DataType;
 
 		// Each component of the position is stored using 8.8 fixed-point encoding.
-		Vector3DUint16 position;
+		Vector3DUint16 encodedPosition;
 
 		// Each component of the normal is encoded using 5 bits of this variable.
 		// The 16 bits are -xxxxxyyyyyzzzzz (note the left-most bit is currently 
 		// unused). Some extra shifting and scaling is required to make it signed.
-		uint16_t normal;
+		uint16_t encodedNormal;
 
 		// User data
 		DataType data;
 	};
 
 	/// Decodes a position from a MarchingCubesVertex
-	inline Vector3DFloat decode(const Vector3DUint16& position)
+	inline Vector3DFloat decode(const Vector3DUint16& encodedPosition)
 	{
-		Vector3DFloat result(position.getX(), position.getY(), position.getZ());
+		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
 		result *= (1.0f / 256.0f); // Division is compile-time constant
 		return result;
 	}
 
 	/// Decodes a normal from a MarchingCubesVertex
-	inline Vector3DFloat decode(const uint16_t normal)
+	inline Vector3DFloat decode(const uint16_t encodedNormal)
 	{
 		// Get normal components in the range 0 to 31
-		uint16_t x = (normal >> 10) & 0x1F;
-		uint16_t y = (normal >> 5) & 0x1F;
-		uint16_t z = (normal) & 0x1F;
+		uint16_t x = (encodedNormal >> 10) & 0x1F;
+		uint16_t y = (encodedNormal >> 5) & 0x1F;
+		uint16_t z = (encodedNormal) & 0x1F;
 
 		// Build the resulting vector
 		Vector3DFloat result(x, y, z);
@@ -89,8 +89,8 @@ namespace PolyVox
 	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& marchingCubesVertex)
 	{
 		Vertex<DataType> result;
-		result.position = decode(marchingCubesVertex.position);
-		result.normal = decode(marchingCubesVertex.normal);
+		result.position = decode(marchingCubesVertex.encodedPosition);
+		result.normal = decode(marchingCubesVertex.encodedNormal);
 		result.data = marchingCubesVertex.data; // Data is not encoded
 		return result;
 	}
