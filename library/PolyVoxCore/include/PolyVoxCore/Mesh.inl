@@ -55,7 +55,19 @@ namespace PolyVox
 	const std::vector<VertexType>& Mesh<VertexType>::getVertices(void) const
 	{
 		return m_vecVertices;
-	}		
+	}
+
+	template <typename VertexType>
+	const Vector3DInt32& Mesh<VertexType>::getOffset(void) const
+	{
+		return m_offset;
+	}
+
+	template <typename VertexType>
+	void Mesh<VertexType>::setOffset(const Vector3DInt32& offset)
+	{
+		m_offset = offset;
+	}
 
 	template <typename VertexType>
 	void Mesh<VertexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)

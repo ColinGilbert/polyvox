@@ -122,7 +122,7 @@ namespace PolyVox
 			m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
 		}
 
-		m_meshCurrent->m_Region = m_regSizeInVoxels;
+		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 
 		m_meshCurrent->m_vecLodRecords.clear();
 		LodRecord lodRecord;

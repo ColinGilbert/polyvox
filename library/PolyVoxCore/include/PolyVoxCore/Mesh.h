@@ -59,6 +59,9 @@ namespace PolyVox
 		uint32_t getNoOfIndices(void) const;
 		uint32_t getNoOfVertices(void) const;
 		const std::vector<VertexType>& getVertices(void) const;
+		const Vector3DInt32& getOffset(void) const;
+
+		void setOffset(const Vector3DInt32& offset);
 
 		void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
 		uint32_t addVertex(const VertexType& vertex);
@@ -66,7 +69,7 @@ namespace PolyVox
 		bool isEmpty(void) const;
 		void removeUnusedVertices(void);
 
-		Region m_Region;
+		Vector3DInt32 m_offset;
 	
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
@@ -88,7 +91,7 @@ namespace PolyVox
 
 		result.m_vecTriangleIndices = mesh.m_vecTriangleIndices;
 
-		result.m_Region = mesh.m_Region;
+		result.m_offset = mesh.m_offset;
 
 		return result;
 	}
