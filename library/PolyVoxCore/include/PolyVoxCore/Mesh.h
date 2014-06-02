@@ -69,37 +69,18 @@ namespace PolyVox
 	   void clear(void);
 	   bool isEmpty(void) const;
 
-	   void scaleVertices(float amount);
-	   void translateVertices(const Vector3DFloat& amount);
-
-	   //THESE FUNCTIONS TO BE REMOVED IN THE FUTURE. OR AT LEAST MOVED OUT OF THIS CLASS INTO FREE FUNCTIONS.
-	   //THEY ARE CAUSING PROBLEMS WITH THE SWIG BINDINGS. THE FUNCTIONS REGARDING NORMALS MAKE NO SENSE WHEN
-	   //A VERTEX MIGHT NOT HAVE NORMALS. THE EXTRACT SUBSET FUNCTION SHOULD MAYBE BE APPLICATION CODE, AT ANY
-	   //RATE THE STD::SET CAUSES PROBLEMS WITH SWIG. IF YOU UNCOMMENT ANY OF THESE FUNCTIONS, PLEASE POST ON
-	   //THE FORUM SO WE CAN KNOW THE FUNCTIONALITY IS STILL NEEDED IN SOME FORM.
-	   //void sumNearbyNormals(bool bNormaliseResult = true);
-	   //std::shared_ptr< Mesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
-	   //void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
-
 	   int noOfDegenerateTris(void);
 	   void removeDegenerateTris(void);
 	   void removeUnusedVertices(void);
 
 	   Region m_Region;
-
-	   int32_t m_iTimeStamp;
-
-	   int32_t m_iNoOfLod0Tris;
 	
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<VertexType> m_vecVertices;
 
 		std::vector<LodRecord> m_vecLodRecords;
-	};	
-
-	template <typename VertexType>
-	std::shared_ptr< Mesh<VertexType> > extractSubset(Mesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
+	};
 
 	template <typename MeshType>
 	Mesh< Vertex< typename MeshType::VertexType::DataType > > decode(const MeshType& mesh)
