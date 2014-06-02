@@ -45,23 +45,33 @@ namespace PolyVox
 	{
 		typedef _DataType DataType;
 
+		// Each component of the position is stored as a single unsigned byte.
+		// The true position is found by offseting each component by 0.5f.
 		Vector3DUint8 position;
-		uint8_t normal;
+
+		// Currently unused and just serves as passing
+		uint8_t unused;
 
 		// User data
 		DataType data;
 	};
 
-	// Hopefully the compiler will implement the 'Return value optimization' here, but
-	// performance critical code will most likely decode the vertices in a shader anyway.
+	/// Decodes a position from a CubicVertex
+	inline Vector3DFloat decode(const Vector3DUint8& position)
+	{
+		Vector3DFloat result(position.getX(), position.getY(), position.getZ());
+		result -= 0.5f; // Apply the required offset
+		return result;
+	}
+
+	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
 	template<typename DataType>
 	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
 	{
 		Vertex<DataType> result;
-		Vector3DUint8 temp = cubicVertex.position; // For some reason we can't cast Vector3DUint8 to Vector3DFloat - investigate why.
-		result.position = Vector3DFloat(temp.getX(), temp.getY(), temp.getZ()) - Vector3DFloat(0.5, 0.5, 0.5);
-		//result.normal = cubicVertex.normal;
-		result.data = cubicVertex.data;
+		result.position = decode(cubicVertex.position);
+		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
+		result.data = cubicVertex.data; // Data is not encoded
 		return result;
 	}
 
