@@ -190,8 +190,8 @@ namespace PolyVox
 				for(typename std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
 				{
 					Quad& quad = *quadIter;				
-					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
+					m_meshCurrent->addTriangle(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
+					m_meshCurrent->addTriangle(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
 				}			
 			}
 		}

@@ -52,28 +52,21 @@ namespace PolyVox
 
 		typedef _VertexType VertexType;
 
-	   Mesh();
-	   ~Mesh();	   
+		Mesh();
+		~Mesh();	   
 
-	   const std::vector<uint32_t>& getIndices(void) const;
-	   uint32_t getNoOfIndices(void) const;
-	   uint32_t getNoOfNonUniformTrianges(void) const;
-	   uint32_t getNoOfUniformTrianges(void) const;
-	   uint32_t getNoOfVertices(void) const;	   
-	   std::vector<VertexType>& getRawVertexData(void); //FIXME - this should be removed
-	   const std::vector<VertexType>& getVertices(void) const;
+		const std::vector<uint32_t>& getIndices(void) const;
+		uint32_t getNoOfIndices(void) const;
+		uint32_t getNoOfVertices(void) const;
+		const std::vector<VertexType>& getVertices(void) const;
 
-	   void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
-	   void addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2);
-	   uint32_t addVertex(const VertexType& vertex);
-	   void clear(void);
-	   bool isEmpty(void) const;
+		void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
+		uint32_t addVertex(const VertexType& vertex);
+		void clear(void);
+		bool isEmpty(void) const;
+		void removeUnusedVertices(void);
 
-	   int noOfDegenerateTris(void);
-	   void removeDegenerateTris(void);
-	   void removeUnusedVertices(void);
-
-	   Region m_Region;
+		Region m_Region;
 	
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
