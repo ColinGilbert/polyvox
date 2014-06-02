@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/VertexTypes.h" //Should probably do away with this on in the future...
+#include "PolyVoxCore/Vertex.h" //Should probably do away with this on in the future...
 
 #include <algorithm>
 #include <cstdlib>

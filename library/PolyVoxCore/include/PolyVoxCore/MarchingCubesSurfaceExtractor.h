@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"
-#include "PolyVoxCore/VertexTypes.h"
+#include "PolyVoxCore/Vertex.h"
 
 namespace PolyVox
 {
