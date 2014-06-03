@@ -38,12 +38,12 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename _VertexType>
+	template <typename VertexType>
 	class Mesh
 	{
 	public:
 
-		typedef _VertexType VertexType;
+		typedef VertexType VertexType;
 
 		Mesh();
 		~Mesh();	   
