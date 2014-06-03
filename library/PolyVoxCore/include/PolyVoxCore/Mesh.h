@@ -38,13 +38,13 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VertexType, typename IndexType = uint32_t>
+	template <typename _VertexType, typename _IndexType = uint32_t>
 	class Mesh
 	{
 	public:
 
-		typedef VertexType VertexType;
-		typedef IndexType IndexType;
+		typedef _VertexType VertexType;
+		typedef _IndexType IndexType;
 
 		Mesh();
 		~Mesh();	   
@@ -76,7 +76,7 @@ namespace PolyVox
 		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > result;
 		result.m_vecVertices.resize(mesh.m_vecVertices.size());
 
-		for(MeshType::IndexType ct = 0; ct < mesh.m_vecVertices.size(); ct++)
+		for(typename MeshType::IndexType ct = 0; ct < mesh.m_vecVertices.size(); ct++)
 		{
 			result.m_vecVertices[ct] = decode(mesh.m_vecVertices[ct]);
 		}
