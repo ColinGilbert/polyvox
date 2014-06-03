@@ -85,6 +85,9 @@ namespace PolyVox
 	template <typename VertexType, typename IndexType>
 	IndexType Mesh<VertexType, IndexType>::addVertex(const VertexType& vertex)
 	{
+		// We should not add more vertices than our chosen index type will let us index.
+		POLYVOX_THROW_IF(m_vecVertices.size() >= std::numeric_limits<IndexType>::max(), std::out_of_range, "Mesh has more vertices that the chosen index type allows.");
+
 		m_vecVertices.push_back(vertex);
 		return m_vecVertices.size() - 1;
 	}
