@@ -130,8 +130,9 @@ int main(int argc, char *argv[])
 				// The returned mesh needs to be decoded to be appropriate for GPU rendering.
 				auto decodedMesh = decode(mesh);
 
-				//Pass the surface to the OpenGL window
-				openGLWidget.addMesh(decodedMesh, Vector3DInt32(x, y, z));
+				// Pass the surface to the OpenGL window. Note that we are also passing an offset in this multi-mesh example. This is because
+				// the surface extractors return a mesh with 'local space' positions to reduce storage requirements and precision problems.
+				openGLWidget.addMesh(decodedMesh, decodedMesh.getOffset());
 
 				meshCounter++;
 			}

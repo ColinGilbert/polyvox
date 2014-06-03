@@ -122,7 +122,7 @@ namespace PolyVox
 			m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
 		}
 
-		m_meshCurrent->m_Region = m_regSizeInVoxels;
+		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 
 		m_meshCurrent->m_vecLodRecords.clear();
 		LodRecord lodRecord;
@@ -470,8 +470,8 @@ namespace PolyVox
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.position = v3dScaledPosition;
-					surfaceVertex.normal = encodedNormal;
+					surfaceVertex.encodedPosition = v3dScaledPosition;
+					surfaceVertex.encodedNormal = encodedNormal;
 					surfaceVertex.data = uMaterial;
 
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -513,8 +513,8 @@ namespace PolyVox
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.position = v3dScaledPosition;
-					surfaceVertex.normal = encodedNormal;
+					surfaceVertex.encodedPosition = v3dScaledPosition;
+					surfaceVertex.encodedNormal = encodedNormal;
 					surfaceVertex.data = uMaterial;
 
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -555,8 +555,8 @@ namespace PolyVox
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.position = v3dScaledPosition;
-					surfaceVertex.normal = encodedNormal;
+					surfaceVertex.encodedPosition = v3dScaledPosition;
+					surfaceVertex.encodedNormal = encodedNormal;
 					surfaceVertex.data = uMaterial;
 
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);

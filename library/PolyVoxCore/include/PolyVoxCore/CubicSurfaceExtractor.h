@@ -32,9 +32,46 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/DefaultIsQuadNeeded.h"
 #include "PolyVoxCore/Mesh.h"
+#include "PolyVoxCore/Vertex.h"
 
 namespace PolyVox
 {
+#ifdef SWIG
+	struct CubicVertex
+#else
+	template<typename _DataType>
+	struct POLYVOX_API CubicVertex
+#endif
+	{
+		typedef _DataType DataType;
+
+		// Each component of the position is stored as a single unsigned byte.
+		// The true position is found by offseting each component by 0.5f.
+		Vector3DUint8 encodedPosition;
+
+		// User data
+		DataType data;
+	};
+
+	/// Decodes a position from a CubicVertex
+	inline Vector3DFloat decode(const Vector3DUint8& encodedPosition)
+	{
+		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
+		result -= 0.5f; // Apply the required offset
+		return result;
+	}
+
+	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
+	template<typename DataType>
+	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
+	{
+		Vertex<DataType> result;
+		result.position = decode(cubicVertex.encodedPosition);
+		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
+		result.data = cubicVertex.data; // Data is not encoded
+		return result;
+	}
+
 	/// The CubicSurfaceExtractor creates a mesh in which each voxel appears to be rendered as a cube
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// Introduction

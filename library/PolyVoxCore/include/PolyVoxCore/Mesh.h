@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "Impl/TypeDef.h"
 
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/VertexTypes.h" //Should probably do away with this on in the future...
+#include "PolyVoxCore/Vertex.h" //Should probably do away with this on in the future...
 
 #include <algorithm>
 #include <cstdlib>
@@ -52,54 +52,31 @@ namespace PolyVox
 
 		typedef _VertexType VertexType;
 
-	   Mesh();
-	   ~Mesh();	   
+		Mesh();
+		~Mesh();	   
 
-	   const std::vector<uint32_t>& getIndices(void) const;
-	   uint32_t getNoOfIndices(void) const;
-	   uint32_t getNoOfNonUniformTrianges(void) const;
-	   uint32_t getNoOfUniformTrianges(void) const;
-	   uint32_t getNoOfVertices(void) const;	   
-	   std::vector<VertexType>& getRawVertexData(void); //FIXME - this should be removed
-	   const std::vector<VertexType>& getVertices(void) const;
+		const std::vector<uint32_t>& getIndices(void) const;
+		uint32_t getNoOfIndices(void) const;
+		uint32_t getNoOfVertices(void) const;
+		const std::vector<VertexType>& getVertices(void) const;
+		const Vector3DInt32& getOffset(void) const;
 
-	   void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
-	   void addTriangleCubic(uint32_t index0, uint32_t index1, uint32_t index2);
-	   uint32_t addVertex(const VertexType& vertex);
-	   void clear(void);
-	   bool isEmpty(void) const;
+		void setOffset(const Vector3DInt32& offset);
 
-	   void scaleVertices(float amount);
-	   void translateVertices(const Vector3DFloat& amount);
+		void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
+		uint32_t addVertex(const VertexType& vertex);
+		void clear(void);
+		bool isEmpty(void) const;
+		void removeUnusedVertices(void);
 
-	   //THESE FUNCTIONS TO BE REMOVED IN THE FUTURE. OR AT LEAST MOVED OUT OF THIS CLASS INTO FREE FUNCTIONS.
-	   //THEY ARE CAUSING PROBLEMS WITH THE SWIG BINDINGS. THE FUNCTIONS REGARDING NORMALS MAKE NO SENSE WHEN
-	   //A VERTEX MIGHT NOT HAVE NORMALS. THE EXTRACT SUBSET FUNCTION SHOULD MAYBE BE APPLICATION CODE, AT ANY
-	   //RATE THE STD::SET CAUSES PROBLEMS WITH SWIG. IF YOU UNCOMMENT ANY OF THESE FUNCTIONS, PLEASE POST ON
-	   //THE FORUM SO WE CAN KNOW THE FUNCTIONALITY IS STILL NEEDED IN SOME FORM.
-	   //void sumNearbyNormals(bool bNormaliseResult = true);
-	   //std::shared_ptr< Mesh<VertexType> > extractSubset(std::set<uint8_t> setMaterials);
-	   //void generateAveragedFaceNormals(bool bNormalise, bool bIncludeEdgeVertices = false);
-
-	   int noOfDegenerateTris(void);
-	   void removeDegenerateTris(void);
-	   void removeUnusedVertices(void);
-
-	   Region m_Region;
-
-	   int32_t m_iTimeStamp;
-
-	   int32_t m_iNoOfLod0Tris;
+		Vector3DInt32 m_offset;
 	
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<VertexType> m_vecVertices;
 
 		std::vector<LodRecord> m_vecLodRecords;
-	};	
-
-	template <typename VertexType>
-	std::shared_ptr< Mesh<VertexType> > extractSubset(Mesh<VertexType>& inputMesh, std::set<uint8_t> setMaterials);
+	};
 
 	template <typename MeshType>
 	Mesh< Vertex< typename MeshType::VertexType::DataType > > decode(const MeshType& mesh)
@@ -114,7 +91,7 @@ namespace PolyVox
 
 		result.m_vecTriangleIndices = mesh.m_vecTriangleIndices;
 
-		result.m_Region = mesh.m_Region;
+		result.m_offset = mesh.m_offset;
 
 		return result;
 	}

@@ -190,13 +190,13 @@ namespace PolyVox
 				for(typename std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
 				{
 					Quad& quad = *quadIter;				
-					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
+					m_meshCurrent->addTriangle(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
+					m_meshCurrent->addTriangle(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
 				}			
 			}
 		}
 
-		m_meshCurrent->m_Region = m_regSizeInVoxels;
+		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 		m_meshCurrent->removeUnusedVertices();
 
 		m_meshCurrent->m_vecLodRecords.clear();
@@ -221,7 +221,7 @@ namespace PolyVox
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
 				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
-				cubicVertex.position.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
+				cubicVertex.encodedPosition.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
 				cubicVertex.data = uMaterialIn;
 				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
 				rEntry.uMaterial = uMaterialIn;

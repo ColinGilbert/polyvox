@@ -92,14 +92,14 @@ OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVe
 
 	// Every surface extractor outputs valid positions for the vertices, so tell OpenGL how these are laid out
 	glEnableVertexAttribArray(0); // Attrib '0' is the vertex positions
-	glVertexAttribIPointer(0, 3, GL_UNSIGNED_SHORT, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+	glVertexAttribIPointer(0, 3, GL_UNSIGNED_SHORT, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, encodedPosition))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
 
 	// Some surface extractors also generate normals, so tell OpenGL how these are laid out. If a surface extractor
 	// does not generate normals then nonsense values are written into the buffer here and sghould be ignored by the
 	// shader. This is mostly just to simplify this example code - in a real application you will know whether your
 	// chosen surface extractor generates normals and can skip uploading them if not.
 	glEnableVertexAttribArray(1); // Attrib '1' is the vertex normals.
-	glVertexAttribIPointer(1, 1, GL_UNSIGNED_SHORT, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, normal)));
+	glVertexAttribIPointer(1, 1, GL_UNSIGNED_SHORT, sizeof(MarchingCubesVertex< uint8_t >), (GLvoid*)(offsetof(MarchingCubesVertex< uint8_t >, encodedNormal)));
 
 	// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
 	// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
