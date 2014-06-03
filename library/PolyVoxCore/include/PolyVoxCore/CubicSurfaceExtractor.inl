@@ -32,11 +32,11 @@ namespace PolyVox
 	// happens when we have a 2x2x2 group of voxels, all with different materials and some/all partially transparent.
 	// The vertex position at the center of this group is then going to be used by all eight voxels all with different
 	// materials.
-	template<typename VolumeType, typename IsQuadNeeded>
-	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	const uint32_t CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
@@ -45,10 +45,16 @@ namespace PolyVox
 		,m_tBorderValue(tBorderValue)
 	{
 		m_funcIsQuadNeededCallback = isQuadNeeded;
+
+		// This extractor has a limit as to how large the extracted region can be, because the vertex positions are encoded with a single byte per component.
+		int32_t maxReionDimension = 256;
+		POLYVOX_THROW_IF(region.getWidthInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
+		POLYVOX_THROW_IF(region.getHeightInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
+		POLYVOX_THROW_IF(region.getDepthInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	void CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::execute()
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	void CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::execute()
 	{
 		Timer timer;
 		m_meshCurrent->clear();
@@ -184,28 +190,22 @@ namespace PolyVox
 				for(typename std::list<Quad>::iterator quadIter = listQuads.begin(); quadIter != iterEnd; quadIter++)
 				{
 					Quad& quad = *quadIter;				
-					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
-					m_meshCurrent->addTriangleCubic(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
+					m_meshCurrent->addTriangle(quad.vertices[0], quad.vertices[1],quad.vertices[2]);
+					m_meshCurrent->addTriangle(quad.vertices[0], quad.vertices[2],quad.vertices[3]);
 				}			
 			}
 		}
 
-		m_meshCurrent->m_Region = m_regSizeInVoxels;
+		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 		m_meshCurrent->removeUnusedVertices();
-
-		m_meshCurrent->m_vecLodRecords.clear();
-		LodRecord lodRecord;
-		lodRecord.beginIndex = 0;
-		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
-		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
 
 		POLYVOX_LOG_TRACE("Cubic surface extraction took " << timer.elapsedTimeInMilliSeconds()
 			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
 			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	int32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	int32_t CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		for(uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
 		{
@@ -214,7 +214,10 @@ namespace PolyVox
 			if(rEntry.iIndex == -1)
 			{
 				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
-				rEntry.iIndex = m_meshCurrent->addVertex(CubicVertex<typename VolumeType::VoxelType>(Vector3DFloat(static_cast<float>(uX)-0.5f, static_cast<float>(uY)-0.5f, static_cast<float>(uZ)-0.5f), uMaterialIn));
+				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
+				cubicVertex.encodedPosition.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
+				cubicVertex.data = uMaterialIn;
+				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
 				rEntry.uMaterial = uMaterialIn;
 
 				return rEntry.iIndex;
@@ -233,8 +236,8 @@ namespace PolyVox
 		return -1; //Should never happen.
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::performQuadMerging(std::list<Quad>& quads)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	bool CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::performQuadMerging(std::list<Quad>& quads)
 	{
 		bool bDidMerge = false;
 		for(typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
@@ -263,12 +266,12 @@ namespace PolyVox
 		return bDidMerge;
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	bool CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
 	{
-		//All four vertices of a given quad have the same material,
+		//All four vertices of a given quad have the same data,
 		//so just check that the first pair of vertices match.
-		if(m_meshCurrent->getVertices()[q1.vertices[0]].getMaterial() == m_meshCurrent->getVertices()[q2.vertices[0]].getMaterial())
+		if (m_meshCurrent->getVertices()[q1.vertices[0]].data == m_meshCurrent->getVertices()[q2.vertices[0]].data)
 		{
 			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
 			//Adjacent quads must share two vertices, and the second quad could be to the

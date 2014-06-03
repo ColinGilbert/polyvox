@@ -21,19 +21,17 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-PROJECT(OpenGLExample)
+PROJECT(DecodeOnGPUExample)
 
 #Projects source files
 SET(SRC_FILES
 	main.cpp
 	../common/OpenGLWidget.cpp
-	Shapes.cpp
-	)
+)
 
 #Projects headers files	
-SET(INC_FILES
+SET(INC_FILES	
 	OpenGLWidget.h
-	Shapes.h
 )
 
 add_definitions(-DGLEW_STATIC)
@@ -46,22 +44,22 @@ LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #This will include the shader files inside the compiled binary
 QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
-QT4_ADD_RESOURCES(OPENGLEXAMPLE_RESOURCES_RCC openglexample.qrc)
+QT4_ADD_RESOURCES(DECODE_RESOURCES_RCC decode.qrc)
 
 # Put the resources in a seperate folder in Visual Studio
-SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC} openglexample.qrc ${OPENGLEXAMPLE_RESOURCES_RCC})
+SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC} decode.qrc ${DECODE_RESOURCES_RCC})
 
 #Build
-ADD_EXECUTABLE(OpenGLExample ${SRC_FILES} ${COMMON_RESOURCES_RCC} ${OPENGLEXAMPLE_RESOURCES_RCC})
+ADD_EXECUTABLE(DecodeOnGPUExample ${SRC_FILES} ${COMMON_RESOURCES_RCC} ${DECODE_RESOURCES_RCC})
 IF(MSVC)
-	SET_TARGET_PROPERTIES(OpenGLExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
+	SET_TARGET_PROPERTIES(DecodeOnGPUExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(OpenGLExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
-SET_PROPERTY(TARGET OpenGLExample PROPERTY FOLDER "Examples")
+TARGET_LINK_LIBRARIES(DecodeOnGPUExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
+SET_PROPERTY(TARGET DecodeOnGPUExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows
 IF(WIN32)
-	INSTALL(TARGETS OpenGLExample
+	INSTALL(TARGETS DecodeOnGPUExample
 		RUNTIME DESTINATION Examples/OpenGL/bin
 		LIBRARY DESTINATION Examples/OpenGL/lib
 		ARCHIVE DESTINATION Examples/OpenGL/lib

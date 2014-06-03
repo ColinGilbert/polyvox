@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/SimpleVolume.h"
 
 #include <QApplication>
@@ -78,11 +78,17 @@ int main(int argc, char *argv[])
 	createSphereInVolume(volData, 30);
 
 	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	auto mesh = extractCubicSurface(&volData, volData.getEnclosingRegion());
-	//auto mesh = extractMarchingCubesSurface(&volData, volData.getEnclosingRegion());
+	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+
+	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
+	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
+	auto decodedMesh = decode(mesh);
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.addMesh(decodedMesh);
+	//openGLWidget.addMesh(mesh2);
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();

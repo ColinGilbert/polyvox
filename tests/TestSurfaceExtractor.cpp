@@ -102,7 +102,7 @@ void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
-SurfaceMesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid specifying this return type by using auto/decltype?
+Mesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid specifying this return type by using auto/decltype?
 {
 	const int32_t uVolumeSideLength = 32;
 
@@ -128,12 +128,12 @@ SurfaceMesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we coul
 	DefaultMarchingCubesController<VoxelType> controller;
 	controller.setThreshold(50);
 
-	auto result = extractMarchingCubesSurface(&volData, volData.getEnclosingRegion(), WrapModes::Border, VoxelType(), controller);
+	auto result = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion(), WrapModes::Border, VoxelType(), controller);
 
 	return result;
 }
 
-void testCustomController(SurfaceMesh<MarchingCubesVertex<float> >& result)
+void testCustomController(Mesh<MarchingCubesVertex<float> >& result)
 {
 	const int32_t uVolumeSideLength = 32;
 
@@ -162,68 +162,68 @@ void TestSurfaceExtractor::testExecute()
 	const static uint32_t uExpectedVertices = 4731;
 	const static uint32_t uExpectedIndices = 12810;
 	const static uint32_t uMaterialToCheck = 3000;
-	const static float fExpectedMaterial = 42.0f;
+	const static float fExpectedData = 42.0f;
 	const static float fNoMaterial = 1.0f;
 
-	SurfaceMesh<MarchingCubesVertex<int8_t> > mesh;
+	Mesh<MarchingCubesVertex<int8_t> > mesh;
 	//Run the test for various voxel types.
 	QBENCHMARK {
 		mesh = testForType<int8_t>();
 	}
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), static_cast<int8_t>(fNoMaterial));
+	QCOMPARE(mesh.getVertices()[uMaterialToCheck].data, static_cast<int8_t>(fExpectedData));
 
 	auto mesh1 = testForType<uint8_t>();
 	QCOMPARE(mesh1.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh1.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh1.getVertices()[uMaterialToCheck].getMaterial(), static_cast<uint8_t>(fNoMaterial));
+	QCOMPARE(mesh1.getVertices()[uMaterialToCheck].data, static_cast<uint8_t>(fExpectedData));
 
 	auto mesh2 = testForType<int16_t>();
 	QCOMPARE(mesh2.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh2.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh2.getVertices()[uMaterialToCheck].getMaterial(), static_cast<int16_t>(fNoMaterial));
+	QCOMPARE(mesh2.getVertices()[uMaterialToCheck].data, static_cast<int16_t>(fExpectedData));
 
 	auto mesh3 = testForType<uint16_t>();
 	QCOMPARE(mesh3.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh3.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh3.getVertices()[uMaterialToCheck].getMaterial(), static_cast<uint16_t>(fNoMaterial));
+	QCOMPARE(mesh3.getVertices()[uMaterialToCheck].data, static_cast<uint16_t>(fExpectedData));
 
 	auto mesh4 = testForType<int32_t>();
 	QCOMPARE(mesh4.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh4.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh4.getVertices()[uMaterialToCheck].getMaterial(), static_cast<int32_t>(fNoMaterial));
+	QCOMPARE(mesh4.getVertices()[uMaterialToCheck].data, static_cast<int32_t>(fExpectedData));
 
 	auto mesh5 = testForType<uint32_t>();
 	QCOMPARE(mesh5.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh5.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh5.getVertices()[uMaterialToCheck].getMaterial(), static_cast<uint32_t>(fNoMaterial));
+	QCOMPARE(mesh5.getVertices()[uMaterialToCheck].data, static_cast<uint32_t>(fExpectedData));
 
 	auto mesh6 = testForType<float>();
 	QCOMPARE(mesh6.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh6.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh6.getVertices()[uMaterialToCheck].getMaterial(), static_cast<float>(fNoMaterial));
+	QCOMPARE(mesh6.getVertices()[uMaterialToCheck].data, static_cast<float>(fExpectedData));
 
 	auto mesh7 = testForType<double>();
 	QCOMPARE(mesh7.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh7.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh7.getVertices()[uMaterialToCheck].getMaterial(), static_cast<double>(fNoMaterial));
+	QCOMPARE(mesh7.getVertices()[uMaterialToCheck].data, static_cast<double>(fExpectedData));
 
 	auto mesh8 = testForType<Density8>();
 	QCOMPARE(mesh8.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh8.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh8.getVertices()[uMaterialToCheck].getMaterial(), static_cast<Density8>(fNoMaterial));
+	QCOMPARE(mesh8.getVertices()[uMaterialToCheck].data, static_cast<Density8>(fExpectedData));
 
 	auto mesh9 = testForType<MaterialDensityPair88>();
 	QCOMPARE(mesh9.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(mesh9.getNoOfIndices(), uExpectedIndices);
-	//QCOMPARE(mesh9.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);
+	//QCOMPARE(mesh9.getVertices()[uMaterialToCheck].data, fExpectedMaterial);
 
 	//Test whether the CustomSurfaceExtractor works.
 	/*testCustomController(floatMesh);
 	QCOMPARE(floatMesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(floatMesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(floatMesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);*/
+	QCOMPARE(floatMesh.getVertices()[uMaterialToCheck].data, fExpectedData);*/
 }
 
 QTEST_MAIN(TestSurfaceExtractor)

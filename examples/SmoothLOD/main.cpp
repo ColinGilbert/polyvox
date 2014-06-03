@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Density.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/SimpleVolume.h"
 #include "PolyVoxCore/VolumeResampler.h"
@@ -90,16 +90,20 @@ int main(int argc, char *argv[])
 	volumeResampler.execute();
 
 	//Extract the surface
-	auto meshLowLOD = extractMarchingCubesSurface(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
-	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
+	auto meshLowLOD = extractMarchingCubesMesh(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+	auto decodedMeshLowLOD = decode(meshLowLOD);
 
 	//Extract the surface
-	auto meshHighLOD = extractMarchingCubesSurface(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
-	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
+	auto meshHighLOD = extractMarchingCubesMesh(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
+	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+	auto decodedMeshHighLOD = decode(meshHighLOD);
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(meshHighLOD);
-	openGLWidget.setSurfaceMeshToRenderLowLOD(meshLowLOD);
+	openGLWidget.addMesh(decodedMeshHighLOD, Vector3DInt32(30, 0, 0));
+	openGLWidget.addMesh(decodedMeshLowLOD, Vector3DInt32(0, 0, 0), 63.0f / 31.0f);
+
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();

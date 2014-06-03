@@ -27,7 +27,6 @@ SET(CORE_SRC_FILES
 	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
 	source/Region.cpp
-	source/VertexTypes.cpp
 )
 
 #Projects headers files
@@ -66,6 +65,8 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.inl
 	include/PolyVoxCore/Material.h
 	include/PolyVoxCore/MaterialDensityPair.h
+	include/PolyVoxCore/Mesh.h
+	include/PolyVoxCore/Mesh.inl
 	include/PolyVoxCore/MinizBlockCompressor.h
 	include/PolyVoxCore/MinizBlockCompressor.inl
 	include/PolyVoxCore/Pager.h
@@ -84,13 +85,11 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/SimpleVolume.inl
 	include/PolyVoxCore/SimpleVolumeBlock.inl
 	include/PolyVoxCore/SimpleVolumeSampler.inl
-	include/PolyVoxCore/SurfaceMesh.h
-	include/PolyVoxCore/SurfaceMesh.inl
 	include/PolyVoxCore/UncompressedBlock.h
 	include/PolyVoxCore/UncompressedBlock.inl
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
-	include/PolyVoxCore/VertexTypes.h
+	include/PolyVoxCore/Vertex.h
 	include/PolyVoxCore/VolumeResampler.h
 	include/PolyVoxCore/VolumeResampler.inl
 	include/PolyVoxCore/VoxelFilters.h
@@ -130,11 +129,11 @@ SET(IMPL_INC_FILES
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
-SOURCE_GROUP("Sources" FILES ${CORE_SRC_FILES})
-SOURCE_GROUP("Headers" FILES ${CORE_INC_FILES})
+SOURCE_GROUP("Source Files" FILES ${CORE_SRC_FILES})
+SOURCE_GROUP("Header Files" FILES ${CORE_INC_FILES})
 
-SOURCE_GROUP("Sources\\Impl" FILES ${IMPL_SRC_FILES})
-SOURCE_GROUP("Headers\\Impl" FILES ${IMPL_INC_FILES})
+SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
+SOURCE_GROUP("Header Files\\Impl" FILES ${IMPL_INC_FILES})
 
 #Tell CMake the paths
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include)

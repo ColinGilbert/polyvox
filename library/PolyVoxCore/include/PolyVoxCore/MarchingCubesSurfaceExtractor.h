@@ -29,11 +29,72 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"
+#include "PolyVoxCore/Vertex.h"
 
 namespace PolyVox
 {
+#ifdef SWIG
+	struct MarchingCubesVertex
+#else
+	template<typename _DataType>
+	struct POLYVOX_API MarchingCubesVertex
+#endif
+	{
+		typedef _DataType DataType;
+
+		// Each component of the position is stored using 8.8 fixed-point encoding.
+		Vector3DUint16 encodedPosition;
+
+		// Each component of the normal is encoded using 5 bits of this variable.
+		// The 16 bits are -xxxxxyyyyyzzzzz (note the left-most bit is currently 
+		// unused). Some extra shifting and scaling is required to make it signed.
+		uint16_t encodedNormal;
+
+		// User data
+		DataType data;
+	};
+
+	/// Decodes a position from a MarchingCubesVertex
+	inline Vector3DFloat decode(const Vector3DUint16& encodedPosition)
+	{
+		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
+		result *= (1.0f / 256.0f); // Division is compile-time constant
+		return result;
+	}
+
+	/// Decodes a normal from a MarchingCubesVertex
+	inline Vector3DFloat decode(const uint16_t encodedNormal)
+	{
+		// Get normal components in the range 0 to 31
+		uint16_t x = (encodedNormal >> 10) & 0x1F;
+		uint16_t y = (encodedNormal >> 5) & 0x1F;
+		uint16_t z = (encodedNormal) & 0x1F;
+
+		// Build the resulting vector
+		Vector3DFloat result(x, y, z);
+
+		// Convert to range 0.0 to 2.0
+		result *= (1.0f / 15.5f); // Division is compile-time constant
+
+		// Convert to range -1.0 to 1.0
+		result -= Vector3DFloat(1.0f, 1.0f, 1.0f);
+
+		return result;
+	}
+
+	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
+	template<typename DataType>
+	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& marchingCubesVertex)
+	{
+		Vertex<DataType> result;
+		result.position = decode(marchingCubesVertex.encodedPosition);
+		result.normal = decode(marchingCubesVertex.encodedNormal);
+		result.data = marchingCubesVertex.data; // Data is not encoded
+		return result;
+	}
+
 	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	class MarchingCubesSurfaceExtractor
 	{
@@ -41,9 +102,9 @@ namespace PolyVox
 		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), Controller controller = Controller());
 #else
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
 #endif
 
 		void execute();
@@ -193,7 +254,7 @@ namespace PolyVox
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -212,9 +273,9 @@ namespace PolyVox
 	};
 
 	template< typename VolumeType, typename Controller>
-	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
 	{
-		SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
 		MarchingCubesSurfaceExtractor<VolumeType, Controller> extractor(volData, region, &result, eWrapMode, tBorderValue, controller);
 		extractor.execute();
 		return result;
@@ -224,13 +285,13 @@ namespace PolyVox
 	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
 #else
-	SurfaceMesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 #endif
 	{
 		DefaultMarchingCubesController<typename VolumeType::VoxelType> controller;
-		return extractMarchingCubesSurface(volData, region, eWrapMode, tBorderValue, controller);
+		return extractMarchingCubesMesh(volData, region, eWrapMode, tBorderValue, controller);
 	}
 }
 

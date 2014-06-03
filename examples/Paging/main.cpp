@@ -29,7 +29,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/RLEBlockCompressor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/LargeVolume.h"
 
 #include <QApplication>
@@ -186,11 +186,15 @@ int main(int argc, char *argv[])
 	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
 	//Extract the surface
-	auto mesh = extractCubicSurface(&volData, reg);
+	auto mesh = extractCubicMesh(&volData, reg2);
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
+	auto decodedMesh = decode(mesh);
+
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.addMesh(decodedMesh);
+
+	openGLWidget.setViewableRegion(reg2);
 
 	//Run the message pump.
 	return app.exec();

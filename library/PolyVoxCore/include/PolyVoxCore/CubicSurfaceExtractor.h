@@ -31,10 +31,47 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/DefaultIsQuadNeeded.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
+#include "PolyVoxCore/Vertex.h"
 
 namespace PolyVox
 {
+#ifdef SWIG
+	struct CubicVertex
+#else
+	template<typename _DataType>
+	struct POLYVOX_API CubicVertex
+#endif
+	{
+		typedef _DataType DataType;
+
+		// Each component of the position is stored as a single unsigned byte.
+		// The true position is found by offseting each component by 0.5f.
+		Vector3DUint8 encodedPosition;
+
+		// User data
+		DataType data;
+	};
+
+	/// Decodes a position from a CubicVertex
+	inline Vector3DFloat decode(const Vector3DUint8& encodedPosition)
+	{
+		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
+		result -= 0.5f; // Apply the required offset
+		return result;
+	}
+
+	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
+	template<typename DataType>
+	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
+	{
+		Vertex<DataType> result;
+		result.position = decode(cubicVertex.encodedPosition);
+		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
+		result.data = cubicVertex.data; // Data is not encoded
+		return result;
+	}
+
 	/// The CubicSurfaceExtractor creates a mesh in which each voxel appears to be rendered as a cube
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// Introduction
@@ -76,7 +113,7 @@ namespace PolyVox
 	///
 	/// Another scenario which sometimes results in confusion is when you wish to extract a region which corresponds to the whole volume, partcularly when solid voxels extend right to the edge of the volume.  
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType, typename IsQuadNeeded>
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
 	class CubicSurfaceExtractor
 	{
 		struct IndexAndMaterial
@@ -113,9 +150,9 @@ namespace PolyVox
 		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 #else
-		CubicSurfaceExtractor(VolumeType* volData, Region region, SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 #endif
 
 
@@ -135,7 +172,7 @@ namespace PolyVox
 		Region m_regSizeInVoxels;
 
 		//The surface patch we are currently filling.
-		SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
+		MeshType* m_meshCurrent;
 
 		//Used to avoid creating duplicate vertices.
 		Array<3, IndexAndMaterial> m_previousSliceVertices;
@@ -159,10 +196,11 @@ namespace PolyVox
 	};
 
 	template<typename VolumeType, typename IsQuadNeeded>
-	SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicSurface(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 	{
-		SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> > result;
-		CubicSurfaceExtractor<VolumeType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+		typedef Mesh<CubicVertex<typename VolumeType::VoxelType> > MeshType;
+		MeshType result;
+		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
 		extractor.execute();
 		return result;
 	}
@@ -171,13 +209,13 @@ namespace PolyVox
 	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-	SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true)
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true)
 #else
-	SurfaceMesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicSurface(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
 #endif
 	{
 		DefaultIsQuadNeeded<typename VolumeType::VoxelType> isQuadNeeded;
-		return extractCubicSurface<VolumeType, DefaultIsQuadNeeded<typename VolumeType::VoxelType> >(volData, region, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+		return extractCubicMesh<VolumeType, DefaultIsQuadNeeded<typename VolumeType::VoxelType> >(volData, region, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
 	}
 }
 

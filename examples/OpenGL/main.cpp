@@ -22,16 +22,15 @@ freely, subject to the following restrictions:
 *******************************************************************************/
 
 #include "PolyVoxCore/FilePager.h"
+#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/LowPassFilter.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/RLEBlockCompressor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
+#include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
-#include "OpenGLImmediateModeSupport.h"
-#include "OpenGLVertexBufferObjectSupport.h"
 #include "Shapes.h"
 
 #include "OpenGLWidget.h"
@@ -48,11 +47,13 @@ using namespace std;
 using namespace PolyVox;
 using namespace std;
 
+const int32_t g_uVolumeSideLength = 128;
+
 int main(int argc, char *argv[])
 {
-	RLEBlockCompressor<MaterialDensityPair44>* compressor = new RLEBlockCompressor<MaterialDensityPair44>();
-	FilePager<MaterialDensityPair44>* pager = new FilePager<MaterialDensityPair44>("./");
-	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1)), compressor, pager);
+	RLEBlockCompressor<MaterialDensityPair88>* compressor = new RLEBlockCompressor<MaterialDensityPair88>();
+	FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>("./");
+	LargeVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), compressor, pager);
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;
@@ -80,15 +81,6 @@ int main(int argc, char *argv[])
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, 1, midPos-10), Vector3DInt32(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
 	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
 
-	//I've removed this smoothing because it doesn't really make sense to apply a low pass filter to a volume with material values. 
-	//I could implement the mathematical operators for MaterialDensityPair in such a way that they ignores the materials but this 
-	//seems to be setting a bad example. Users can add this operators in their own classes if they want smoothing.
-	//RawVolume<MaterialDensityPair44> tempVolume(PolyVox::Region(0,0,0,128, 128, 128));
-	//LowPassFilter< LargeVolume<MaterialDensityPair44>, RawVolume<MaterialDensityPair44> > pass1(&volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
-	//pass1.executeSAT();
-	//LowPassFilter< RawVolume<MaterialDensityPair44>, LargeVolume<MaterialDensityPair44> > pass2(&tempVolume, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), &volData, PolyVox::Region(Vector3DInt32(62, 62, 62), Vector3DInt32(126, 126, 126)), 3);
-	//pass2.executeSAT();
-
 	QApplication app(argc, argv);
 
 	OpenGLWidget openGLWidget(0);
@@ -96,12 +88,62 @@ int main(int argc, char *argv[])
 
 	openGLWidget.show();
 
+	QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
+
+	if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/openglexample.vert"))
+	{
+		std::cerr << shader->log().toStdString() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/openglexample.frag"))
+	{
+		std::cerr << shader->log().toStdString() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	openGLWidget.setShader(shader);
+
 	QTime time;
 	time.start();
-	openGLWidget.setVolume(&volData);
+	//openGLWidget.setVolume(&volData);
 	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
 
-	//return 0;
+	const int32_t extractedRegionSize = 32;
+	int meshCounter = 0;
+
+	for (int32_t z = 0; z < volData.getDepth(); z += extractedRegionSize)
+	{
+		for (int32_t y = 0; y < volData.getHeight(); y += extractedRegionSize)
+		{
+			for (int32_t x = 0; x < volData.getWidth(); x += extractedRegionSize)
+			{
+				// Specify the region to extract based on a starting position and the desired region sze.
+				PolyVox::Region regToExtract(x, y, z, x + extractedRegionSize, y + extractedRegionSize, z + extractedRegionSize);
+
+				// If you uncomment this line you will be able to see that the volume is rendered as multiple seperate meshes.
+				//regToExtract.shrink(1);
+
+				// Perform the extraction for this region of the volume
+				auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
+
+				// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+				auto decodedMesh = decode(mesh);
+
+				// Pass the surface to the OpenGL window. Note that we are also passing an offset in this multi-mesh example. This is because
+				// the surface extractors return a mesh with 'local space' positions to reduce storage requirements and precision problems.
+				openGLWidget.addMesh(decodedMesh, decodedMesh.getOffset());
+
+				meshCounter++;
+			}
+		}
+	}
+
+	cout << "Rendering volume as " << meshCounter << " seperate meshes" << endl;
+
+
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
+
 
 	return app.exec();
 } 

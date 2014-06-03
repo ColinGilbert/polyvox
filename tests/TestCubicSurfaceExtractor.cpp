@@ -108,7 +108,7 @@ uint32_t testForType(void)
 			{
 				Region regionToExtract(x, y, z, x + uRegionSideLength - 1, y + uRegionSideLength - 1, z + uRegionSideLength - 1);
 
-				auto result = extractCubicSurface(&volData, regionToExtract);
+				auto result = extractCubicMesh(&volData, regionToExtract);
 
 				uTotalVertices += result.getNoOfVertices();
 				uTotalIndices += result.getNoOfIndices();
@@ -130,7 +130,7 @@ void TestCubicSurfaceExtractor::testExecute()
 	const static uint32_t uIndexToCheck = 2000;
 	const static uint32_t uExpectedIndex = 1334;
 
-	SurfaceMesh<CubicVertex> mesh;*/
+	Mesh<CubicVertex> mesh;*/
 
 	/*testForType<int8_t>(mesh);
 	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);

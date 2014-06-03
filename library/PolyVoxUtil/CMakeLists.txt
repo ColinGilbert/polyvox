@@ -36,8 +36,8 @@ ADD_DEFINITIONS(-DPOLYVOX_SHARED_EXPORTS) #Export symbols in the .dll
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
-SOURCE_GROUP("Sources" FILES ${UTIL_SRC_FILES})
-SOURCE_GROUP("Headers" FILES ${UTIL_INC_FILES})
+SOURCE_GROUP("Source Files" FILES ${UTIL_SRC_FILES})
+SOURCE_GROUP("Header Files" FILES ${UTIL_INC_FILES})
 
 #Tell CMake the paths
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/include ${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include)
