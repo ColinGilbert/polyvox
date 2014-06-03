@@ -23,54 +23,54 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename VertexType>
-	Mesh<VertexType>::Mesh()
+	template <typename VertexType, typename IndexType>
+	Mesh<VertexType, IndexType>::Mesh()
 	{
 	}
 
-	template <typename VertexType>
-	Mesh<VertexType>::~Mesh()	  
+	template <typename VertexType, typename IndexType>
+	Mesh<VertexType, IndexType>::~Mesh()	  
 	{
 	}
 
-	template <typename VertexType>
-	const std::vector<uint32_t>& Mesh<VertexType>::getIndices(void) const
+	template <typename VertexType, typename IndexType>
+	const std::vector<uint32_t>& Mesh<VertexType, IndexType>::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}
 
-	template <typename VertexType>
-	uint32_t Mesh<VertexType>::getNoOfIndices(void) const
+	template <typename VertexType, typename IndexType>
+	uint32_t Mesh<VertexType, IndexType>::getNoOfIndices(void) const
 	{
 		return m_vecTriangleIndices.size();
 	}
 
-	template <typename VertexType>
-	uint32_t Mesh<VertexType>::getNoOfVertices(void) const
+	template <typename VertexType, typename IndexType>
+	uint32_t Mesh<VertexType, IndexType>::getNoOfVertices(void) const
 	{
 		return m_vecVertices.size();
 	}
 
-	template <typename VertexType>
-	const std::vector<VertexType>& Mesh<VertexType>::getVertices(void) const
+	template <typename VertexType, typename IndexType>
+	const std::vector<VertexType>& Mesh<VertexType, IndexType>::getVertices(void) const
 	{
 		return m_vecVertices;
 	}
 
-	template <typename VertexType>
-	const Vector3DInt32& Mesh<VertexType>::getOffset(void) const
+	template <typename VertexType, typename IndexType>
+	const Vector3DInt32& Mesh<VertexType, IndexType>::getOffset(void) const
 	{
 		return m_offset;
 	}
 
-	template <typename VertexType>
-	void Mesh<VertexType>::setOffset(const Vector3DInt32& offset)
+	template <typename VertexType, typename IndexType>
+	void Mesh<VertexType, IndexType>::setOffset(const Vector3DInt32& offset)
 	{
 		m_offset = offset;
 	}
 
-	template <typename VertexType>
-	void Mesh<VertexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
+	template <typename VertexType, typename IndexType>
+	void Mesh<VertexType, IndexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
 	{
 		//Make sure the specified indices correspond to valid vertices.
 		POLYVOX_ASSERT(index0 < m_vecVertices.size(), "Index points at an invalid vertex.");
@@ -82,28 +82,28 @@ namespace PolyVox
 		m_vecTriangleIndices.push_back(index2);
 	}
 
-	template <typename VertexType>
-	uint32_t Mesh<VertexType>::addVertex(const VertexType& vertex)
+	template <typename VertexType, typename IndexType>
+	uint32_t Mesh<VertexType, IndexType>::addVertex(const VertexType& vertex)
 	{
 		m_vecVertices.push_back(vertex);
 		return m_vecVertices.size() - 1;
 	}
 
-	template <typename VertexType>
-	void Mesh<VertexType>::clear(void)
+	template <typename VertexType, typename IndexType>
+	void Mesh<VertexType, IndexType>::clear(void)
 	{
 		m_vecVertices.clear();
 		m_vecTriangleIndices.clear();
 	}
 
-	template <typename VertexType>
-	bool Mesh<VertexType>::isEmpty(void) const
+	template <typename VertexType, typename IndexType>
+	bool Mesh<VertexType, IndexType>::isEmpty(void) const
 	{
 		return (getNoOfVertices() == 0) || (getNoOfIndices() == 0);
 	}
 
-	template <typename VertexType>
-	void Mesh<VertexType>::removeUnusedVertices(void)
+	template <typename VertexType, typename IndexType>
+	void Mesh<VertexType, IndexType>::removeUnusedVertices(void)
 	{
 		std::vector<bool> isVertexUsed(m_vecVertices.size());
 		std::fill(isVertexUsed.begin(), isVertexUsed.end(), false);
