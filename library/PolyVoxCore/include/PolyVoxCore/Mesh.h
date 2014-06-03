@@ -38,13 +38,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	class LodRecord
-	{
-	public:
-		int beginIndex;
-		int endIndex; //Let's put it just past the end STL style
-	};
-
 	template <typename _VertexType>
 	class Mesh
 	{
@@ -74,8 +67,6 @@ namespace PolyVox
 	public:		
 		std::vector<uint32_t> m_vecTriangleIndices;
 		std::vector<VertexType> m_vecVertices;
-
-		std::vector<LodRecord> m_vecLodRecords;
 	};
 
 	template <typename MeshType>

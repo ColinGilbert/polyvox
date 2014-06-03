@@ -124,12 +124,6 @@ namespace PolyVox
 
 		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 
-		m_meshCurrent->m_vecLodRecords.clear();
-		LodRecord lodRecord;
-		lodRecord.beginIndex = 0;
-		lodRecord.endIndex = m_meshCurrent->getNoOfIndices();
-		m_meshCurrent->m_vecLodRecords.push_back(lodRecord);
-
 		POLYVOX_LOG_TRACE("Marching cubes surface extraction took " << timer.elapsedTimeInMilliSeconds()
 			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
 			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
