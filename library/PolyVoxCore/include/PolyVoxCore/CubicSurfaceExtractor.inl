@@ -32,11 +32,11 @@ namespace PolyVox
 	// happens when we have a 2x2x2 group of voxels, all with different materials and some/all partially transparent.
 	// The vertex position at the center of this group is then going to be used by all eight voxels all with different
 	// materials.
-	template<typename VolumeType, typename IsQuadNeeded>
-	const uint32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	const uint32_t CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, Mesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
@@ -53,8 +53,8 @@ namespace PolyVox
 		POLYVOX_THROW_IF(region.getDepthInVoxels() > maxReionDimension, std::invalid_argument, "Requested extraction region exceeds maximum dimensions");
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	void CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::execute()
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	void CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::execute()
 	{
 		Timer timer;
 		m_meshCurrent->clear();
@@ -204,8 +204,8 @@ namespace PolyVox
 			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	int32_t CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	int32_t CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial>& existingVertices)
 	{
 		for(uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
 		{
@@ -236,8 +236,8 @@ namespace PolyVox
 		return -1; //Should never happen.
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::performQuadMerging(std::list<Quad>& quads)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	bool CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::performQuadMerging(std::list<Quad>& quads)
 	{
 		bool bDidMerge = false;
 		for(typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
@@ -266,8 +266,8 @@ namespace PolyVox
 		return bDidMerge;
 	}
 
-	template<typename VolumeType, typename IsQuadNeeded>
-	bool CubicSurfaceExtractor<VolumeType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	bool CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
 	{
 		//All four vertices of a given quad have the same data,
 		//so just check that the first pair of vertices match.

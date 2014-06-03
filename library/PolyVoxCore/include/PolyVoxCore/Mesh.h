@@ -49,16 +49,16 @@ namespace PolyVox
 		Mesh();
 		~Mesh();	   
 
-		const std::vector<uint32_t>& getIndices(void) const;
+		const std::vector<IndexType>& getIndices(void) const;
 		uint32_t getNoOfIndices(void) const;
-		uint32_t getNoOfVertices(void) const;
+		IndexType getNoOfVertices(void) const;
 		const std::vector<VertexType>& getVertices(void) const;
 		const Vector3DInt32& getOffset(void) const;
 
 		void setOffset(const Vector3DInt32& offset);
 
-		void addTriangle(uint32_t index0, uint32_t index1, uint32_t index2);
-		uint32_t addVertex(const VertexType& vertex);
+		void addTriangle(IndexType index0, IndexType index1, IndexType index2);
+		IndexType addVertex(const VertexType& vertex);
 		void clear(void);
 		bool isEmpty(void) const;
 		void removeUnusedVertices(void);
@@ -66,17 +66,17 @@ namespace PolyVox
 		Vector3DInt32 m_offset;
 	
 	public:		
-		std::vector<uint32_t> m_vecTriangleIndices;
+		std::vector<IndexType> m_vecTriangleIndices;
 		std::vector<VertexType> m_vecVertices;
 	};
 
 	template <typename MeshType>
-	Mesh< Vertex< typename MeshType::VertexType::DataType > > decode(const MeshType& mesh)
+	Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decode(const MeshType& mesh)
 	{
-		Mesh< Vertex< typename MeshType::VertexType::DataType > > result;
+		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > result;
 		result.m_vecVertices.resize(mesh.m_vecVertices.size());
 
-		for(uint32_t ct = 0; ct < mesh.m_vecVertices.size(); ct++)
+		for(MeshType::IndexType ct = 0; ct < mesh.m_vecVertices.size(); ct++)
 		{
 			result.m_vecVertices[ct] = decode(mesh.m_vecVertices[ct]);
 		}

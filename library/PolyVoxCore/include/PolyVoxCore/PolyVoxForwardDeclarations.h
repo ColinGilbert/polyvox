@@ -76,7 +76,7 @@ namespace PolyVox
 	// CubicSurfaceExtractor
 	////////////////////////////////////////////////////////////////////////////////
 	template<typename VoxelType> class DefaultIsQuadNeeded;
-	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> > class CubicSurfaceExtractor;
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> > class CubicSurfaceExtractor;
 
 	////////////////////////////////////////////////////////////////////////////////
 	// CubicVertex

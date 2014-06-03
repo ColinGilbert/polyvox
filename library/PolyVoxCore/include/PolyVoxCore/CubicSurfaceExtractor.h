@@ -113,7 +113,7 @@ namespace PolyVox
 	///
 	/// Another scenario which sometimes results in confusion is when you wish to extract a region which corresponds to the whole volume, partcularly when solid voxels extend right to the edge of the volume.  
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType, typename IsQuadNeeded>
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
 	class CubicSurfaceExtractor
 	{
 		struct IndexAndMaterial
@@ -150,9 +150,9 @@ namespace PolyVox
 		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
 		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
 #if defined(_MSC_VER)
-		CubicSurfaceExtractor(VolumeType* volData, Region region, Mesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 #else
-		CubicSurfaceExtractor(VolumeType* volData, Region region, Mesh<CubicVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
 #endif
 
 
@@ -172,7 +172,7 @@ namespace PolyVox
 		Region m_regSizeInVoxels;
 
 		//The surface patch we are currently filling.
-		Mesh<CubicVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
+		MeshType* m_meshCurrent;
 
 		//Used to avoid creating duplicate vertices.
 		Array<3, IndexAndMaterial> m_previousSliceVertices;
@@ -198,8 +198,9 @@ namespace PolyVox
 	template<typename VolumeType, typename IsQuadNeeded>
 	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
 	{
-		Mesh<CubicVertex<typename VolumeType::VoxelType> > result;
-		CubicSurfaceExtractor<VolumeType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+		typedef Mesh<CubicVertex<typename VolumeType::VoxelType> > MeshType;
+		MeshType result;
+		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
 		extractor.execute();
 		return result;
 	}

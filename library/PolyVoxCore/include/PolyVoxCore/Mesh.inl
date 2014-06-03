@@ -34,7 +34,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	const std::vector<uint32_t>& Mesh<VertexType, IndexType>::getIndices(void) const
+	const std::vector<IndexType>& Mesh<VertexType, IndexType>::getIndices(void) const
 	{
 		return m_vecTriangleIndices;
 	}
@@ -46,7 +46,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	uint32_t Mesh<VertexType, IndexType>::getNoOfVertices(void) const
+	IndexType Mesh<VertexType, IndexType>::getNoOfVertices(void) const
 	{
 		return m_vecVertices.size();
 	}
@@ -70,7 +70,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	void Mesh<VertexType, IndexType>::addTriangle(uint32_t index0, uint32_t index1, uint32_t index2)
+	void Mesh<VertexType, IndexType>::addTriangle(IndexType index0, IndexType index1, IndexType index2)
 	{
 		//Make sure the specified indices correspond to valid vertices.
 		POLYVOX_ASSERT(index0 < m_vecVertices.size(), "Index points at an invalid vertex.");
@@ -83,7 +83,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	uint32_t Mesh<VertexType, IndexType>::addVertex(const VertexType& vertex)
+	IndexType Mesh<VertexType, IndexType>::addVertex(const VertexType& vertex)
 	{
 		m_vecVertices.push_back(vertex);
 		return m_vecVertices.size() - 1;
@@ -116,7 +116,7 @@ namespace PolyVox
 
 		int noOfUsedVertices = 0;
 		std::vector<uint32_t> newPos(m_vecVertices.size());
-		for(uint32_t vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
+		for(IndexType vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
 		{
 			if(isVertexUsed[vertCt])
 			{
