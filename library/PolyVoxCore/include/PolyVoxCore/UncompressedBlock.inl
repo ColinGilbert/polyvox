@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVoxCore/Impl/Utility.h"
+
 namespace PolyVox
 {
 	template <typename VoxelType>
