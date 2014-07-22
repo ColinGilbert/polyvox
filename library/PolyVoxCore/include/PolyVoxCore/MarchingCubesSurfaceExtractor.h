@@ -64,6 +64,20 @@ namespace PolyVox
 		return result;
 	}
 
+	inline uint16_t encodeNormal(const Vector3DFloat& normal)
+	{
+		Vector3DFloat v3dNormal = normal;
+		v3dNormal += Vector3DFloat(1.0f, 1.0f, 1.0f);
+		uint16_t encodedX = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getX() * 15.5f));
+		uint16_t encodedY = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getY() * 15.5f));
+		uint16_t encodedZ = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getZ() * 15.5f));
+		POLYVOX_ASSERT(encodedX < 32, "Encoded value out of range");
+		POLYVOX_ASSERT(encodedY < 32, "Encoded value out of range");
+		POLYVOX_ASSERT(encodedZ < 32, "Encoded value out of range");
+		uint16_t encodedNormal = (encodedX << 10) | (encodedY << 5) | encodedZ;
+		return encodedNormal;
+	}
+
 	/// Decodes a normal from a MarchingCubesVertex
 	inline Vector3DFloat decode(const uint16_t encodedNormal)
 	{

@@ -451,21 +451,12 @@ namespace PolyVox
 						v3dNormal.normalise();
 					}
 
-					v3dNormal += Vector3DFloat(1.0f, 1.0f, 1.0f);
-					uint16_t encodedX = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getX() * 15.5f));
-					uint16_t encodedY = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getY() * 15.5f));
-					uint16_t encodedZ = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getZ() * 15.5f));
-					POLYVOX_ASSERT(encodedX < 32, "Encoded value out of range");
-					POLYVOX_ASSERT(encodedY < 32, "Encoded value out of range");
-					POLYVOX_ASSERT(encodedZ < 32, "Encoded value out of range");
-					uint16_t encodedNormal = (encodedX << 10) | (encodedY << 5) | encodedZ;
-
 					// Allow the controller to decide how the material should be derived from the voxels.
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 					surfaceVertex.encodedPosition = v3dScaledPosition;
-					surfaceVertex.encodedNormal = encodedNormal;
+					surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 					surfaceVertex.data = uMaterial;
 
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -494,21 +485,12 @@ namespace PolyVox
 						v3dNormal.normalise();
 					}
 
-					v3dNormal += Vector3DFloat(1.0f, 1.0f, 1.0f);
-					uint16_t encodedX = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getX() * 15.5f));
-					uint16_t encodedY = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getY() * 15.5f));
-					uint16_t encodedZ = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getZ() * 15.5f));
-					POLYVOX_ASSERT(encodedX < 32, "Encoded value out of range");
-					POLYVOX_ASSERT(encodedY < 32, "Encoded value out of range");
-					POLYVOX_ASSERT(encodedZ < 32, "Encoded value out of range");
-					uint16_t encodedNormal = (encodedX << 10) | (encodedY << 5) | encodedZ;
-
 					// Allow the controller to decide how the material should be derived from the voxels.
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 					surfaceVertex.encodedPosition = v3dScaledPosition;
-					surfaceVertex.encodedNormal = encodedNormal;
+					surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 					surfaceVertex.data = uMaterial;
 
 					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
@@ -536,21 +518,12 @@ namespace PolyVox
 						v3dNormal.normalise();
 					}
 
-					v3dNormal += Vector3DFloat(1.0f, 1.0f, 1.0f);
-					uint16_t encodedX = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getX() * 15.5f));
-					uint16_t encodedY = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getY() * 15.5f));
-					uint16_t encodedZ = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getZ() * 15.5f));
-					POLYVOX_ASSERT(encodedX < 32, "Encoded value out of range");
-					POLYVOX_ASSERT(encodedY < 32, "Encoded value out of range");
-					POLYVOX_ASSERT(encodedZ < 32, "Encoded value out of range");
-					uint16_t encodedNormal = (encodedX << 10) | (encodedY << 5) | encodedZ;
-
 					// Allow the controller to decide how the material should be derived from the voxels.
 					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
 
 					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 					surfaceVertex.encodedPosition = v3dScaledPosition;
-					surfaceVertex.encodedNormal = encodedNormal;
+					surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 					surfaceVertex.data = uMaterial;
 
 					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
