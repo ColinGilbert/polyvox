@@ -2,7 +2,7 @@
 
 // Passed in from the vertex shader
 in vec4 worldPosition;
-in vec4 worldNormal;
+in vec3 worldNormal;
 
 // the color that gets written to the display
 out vec4 outputColor;
@@ -15,5 +15,5 @@ void main()
 	
 	// We are just using the normal as the output color, and making it lighter so it looks a bit nicer. 
 	// Obviously a real shader would also do texuring, lighting, or whatever is required for the application.
-	outputColor = vec4(abs(normal) * 0.5 + vec3(0.5, 0.5, 0.5), 1.0);
+	outputColor = vec4(abs(worldNormal.xyz), 1.0);
 }

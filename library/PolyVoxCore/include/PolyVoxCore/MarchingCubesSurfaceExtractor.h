@@ -50,7 +50,7 @@ namespace PolyVox
 		// Each component of the normal is encoded using 5 bits of this variable.
 		// The 16 bits are -xxxxxyyyyyzzzzz (note the left-most bit is currently 
 		// unused). Some extra shifting and scaling is required to make it signed.
-		uint16_t encodedNormal;
+		Vector2DFloat encodedNormal;
 
 		// User data
 		DataType data;
@@ -64,7 +64,7 @@ namespace PolyVox
 		return result;
 	}
 
-	inline uint16_t encodeNormal(const Vector3DFloat& normal)
+	/*inline uint16_t encodeNormal(const Vector3DFloat& normal)
 	{
 		Vector3DFloat v3dNormal = normal;
 		v3dNormal += Vector3DFloat(1.0f, 1.0f, 1.0f);
@@ -96,6 +96,64 @@ namespace PolyVox
 		result -= Vector3DFloat(1.0f, 1.0f, 1.0f);
 
 		return result;
+	}*/
+
+	// Returns ±1
+	float signNotZero(float v)
+	{
+		return v >= 0.0 ? +1.0 : -1.0;
+	}
+
+	Vector2DFloat signNotZero(Vector2DFloat v)
+	{
+		return Vector2DFloat((v.getX() >= 0.0) ? +1.0 : -1.0, (v.getY() >= 0.0) ? +1.0 : -1.0);
+	}
+
+	// Assume normalized input. Output is on [-1, 1] for each component.
+	Vector2DFloat float32x3_to_oct(Vector3DFloat v)
+	{
+		// Project the sphere onto the octahedron, and then onto the xy plane
+		Vector2DFloat p(v.getX(), v.getY());			
+		p = p * (1.0f / (abs(v.getX()) + abs(v.getY()) + abs(v.getZ())));
+
+		float refX = ((1.0f - abs(p.getY())) * signNotZero(p.getX()));
+		float refY = ((1.0f - abs(p.getX())) * signNotZero(p.getY()));
+
+		Vector2DFloat ref(refX, refY);
+
+		// Reflect the folds of the lower hemisphere over the diagonals
+		return (v.getZ() <= 0.0) ? ref : p;
+	}
+
+	Vector3DFloat oct_to_float32x3(Vector2DFloat e)
+	{
+		Vector3DFloat v = Vector3DFloat(e.getX(), e.getY(), 1.0 - abs(e.getX()) - abs(e.getY()));
+
+		float refX = ((1.0f - abs(v.getY())) * signNotZero(v.getX()));
+		float refY = ((1.0f - abs(v.getX())) * signNotZero(v.getY()));
+
+		Vector2DFloat ref(refX, refY);
+
+		if (v.getZ() < 0.0f)
+		{
+			//v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
+			v.setX(refX);
+			v.setY(refY);
+		}
+
+		v.normalise();
+
+		return v;
+	}
+
+	inline Vector2DFloat encodeNormal(const Vector3DFloat& normal)
+	{
+		return float32x3_to_oct(normal);
+	}
+
+	inline Vector3DFloat decode(const Vector2DFloat& encodedNormal)
+	{
+		return oct_to_float32x3(encodedNormal);
 	}
 
 	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.

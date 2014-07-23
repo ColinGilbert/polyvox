@@ -50,14 +50,34 @@ void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
-				uint8_t uVoxelValue = 0;
+				// We actually want our volume to have high values in the center and low values as we move out, because our
+				// eath should be a solid sphere surrounded by empty space. If we invert the distance then this is a step in
+				// the right direction. We still have zero in the center, but lower (negative) values as we move out.
+				float density = -fDistToCenter;
 
-				//If the current voxel is less than 'radius' units from the center then we make it solid.
-				if(fDistToCenter <= fRadius)
-				{
-					//Our new voxel value
-					uVoxelValue = 255;
-				}
+				// By adding the 'planetRadius' we now have a function which starts at 'planetRadius' and still decreases as it
+				// moves out. The function passes through zero at a distance of 'planetRadius' and then continues do decrease
+				// as it gets even further out.
+				density += fRadius;
+
+				// Ideally we would like our final density value to be '255' for voxels inside the planet and '0' for voxels
+				// outside the planet. At the surface there should be a transition but this should occur not too quickly and
+				// not too slowly, as both of these will result in a jagged appearance to the mesh.
+				//
+				// We probably want the transition to occur over a few voxels, whereas it currently occurs over 255 voxels
+				// because it was derived from the distance. By scaling the density field we effectivly compress the rate
+				// at which it changes at the surface. We also make the center much too high and the outside very low, but
+				// we will clamp these to the corect range later.
+				//
+				// Note: You can try commenting out or changing the value on this line to see the effect it has.
+				density *= 50;
+
+				// Until now we've been defining our density field as if the threshold was at zero, with positive densities
+				// being solid and negative densities being empty. But actually Cubiquity operates on the range 0 to 255, and
+				// uses a threashold of 127 to decide where to place the generated surface.  Therefore we shift and clamp our
+				// density value and store it in a byte.
+				density += 127;
+				uint8_t uVoxelValue = (uint8_t)(clamp(density, 0.0f, 255.0f));
 
 				//Wrte the voxel value into the volume	
 				volData.setVoxelAt(x, y, z, uVoxelValue);
@@ -74,12 +94,12 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
-	createSphereInVolume(volData, 30);
+	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 31, 31)));
+	createSphereInVolume(volData, 15);
 
 	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
-	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+	auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
 
 	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
 	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
