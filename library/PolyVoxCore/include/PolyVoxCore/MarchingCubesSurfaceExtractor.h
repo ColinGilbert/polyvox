@@ -50,7 +50,7 @@ namespace PolyVox
 		// Each component of the normal is encoded using 5 bits of this variable.
 		// The 16 bits are -xxxxxyyyyyzzzzz (note the left-most bit is currently 
 		// unused). Some extra shifting and scaling is required to make it signed.
-		Vector2DFloat encodedNormal;
+		uint16_t encodedNormal;
 
 		// User data
 		DataType data;
@@ -146,14 +146,32 @@ namespace PolyVox
 		return v;
 	}
 
-	inline Vector2DFloat encodeNormal(const Vector3DFloat& normal)
+	inline uint16_t encodeNormal(const Vector3DFloat& normal)
 	{
-		return float32x3_to_oct(normal);
+		Vector2DFloat floatResult = float32x3_to_oct(normal);
+
+		floatResult += Vector2DFloat(1.0f, 1.0f); // To range 0.0f to 2.0f
+		floatResult *= Vector2DFloat(127.5f, 127.5f); // To range 0.0f to 255.0f
+
+		uint16_t resultX = static_cast<uint16_t>(floatResult.getX() + 0.5f);
+		uint16_t resultY = static_cast<uint16_t>(floatResult.getY() + 0.5f);
+
+		resultX &= 0xFF;
+		resultY &= 0xFF;
+
+		return (resultX << 8) | resultY;
 	}
 
-	inline Vector3DFloat decode(const Vector2DFloat& encodedNormal)
+	inline Vector3DFloat decode(const uint16_t& encodedNormal)
 	{
-		return oct_to_float32x3(encodedNormal);
+		uint16_t x = (encodedNormal >> 8) & 0xFF;
+		uint16_t y = (encodedNormal     ) & 0xFF;
+		Vector2DFloat floatNormal(x, y);
+
+		floatNormal /= Vector2DFloat(127.5f, 127.5f);
+		floatNormal -= Vector2DFloat(1.0f, 1.0f);
+
+		return oct_to_float32x3(floatNormal);
 	}
 
 	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
