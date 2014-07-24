@@ -13,17 +13,30 @@ uniform mat4 modelToWorldMatrix;
 out vec4 worldPosition;
 out vec4 worldNormal;
 
+// Returns +/- 1
+vec2 signNotZero(vec2 v)
+{
+	return vec2((v.x >= 0.0) ? +1.0 : -1.0, (v.y >= 0.0) ? +1.0 : -1.0);
+}
+
 void main()
 {
 	vec4 decodedPosition = position;
 	decodedPosition.xyz = decodedPosition.xyz * (1.0 / 256.0);
 	
-	uint encodedX = (normal >> 10u) & 0x1Fu;
-	uint encodedY = (normal >> 5u) & 0x1Fu;
-	uint encodedZ = (normal) & 0x1Fu;
-	worldNormal.xyz = vec3(encodedX, encodedY, encodedZ);
-	worldNormal.xyz = worldNormal.xyz / 15.5;
-	worldNormal.xyz = worldNormal.xyz - vec3(1.0, 1.0, 1.0);
+	//Get the encoded bytes of the normal
+	uint encodedX = (normal >> 8u) & 0xFFu;
+	uint encodedY = (normal) & 0xFFu;
+	
+	// Map to range [-1.0, +1.0]
+	vec2 e = vec2(encodedX, encodedY);
+	e = e * vec2(1.0 / 127.5, 1.0 / 127.5);
+	e = e - vec2(1.0, 1.0);
+	
+	// Now decode normal using listing 2 of http://jcgt.org/published/0003/02/01/
+	vec3 v = vec3(e.xy, 1.0 - abs(e.x) - abs(e.y));
+	if (v.z < 0) v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);	
+	worldNormal.xyz = normalize(v);
 	worldNormal.w = 1.0;
 	
 	// Standard sequence of OpenGL transformations.

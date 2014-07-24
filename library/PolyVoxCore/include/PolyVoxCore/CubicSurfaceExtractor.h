@@ -54,7 +54,7 @@ namespace PolyVox
 	};
 
 	/// Decodes a position from a CubicVertex
-	inline Vector3DFloat decode(const Vector3DUint8& encodedPosition)
+	inline Vector3DFloat decodePosition(const Vector3DUint8& encodedPosition)
 	{
 		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
 		result -= 0.5f; // Apply the required offset
@@ -63,10 +63,10 @@ namespace PolyVox
 
 	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
 	template<typename DataType>
-	Vertex<DataType> decode(const CubicVertex<DataType>& cubicVertex)
+	Vertex<DataType> decodeVertex(const CubicVertex<DataType>& cubicVertex)
 	{
 		Vertex<DataType> result;
-		result.position = decode(cubicVertex.encodedPosition);
+		result.position = decodePosition(cubicVertex.encodedPosition);
 		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
 		result.data = cubicVertex.data; // Data is not encoded
 		return result;

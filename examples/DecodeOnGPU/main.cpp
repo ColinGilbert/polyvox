@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 
 	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
 	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
-	//auto decodedMesh = decode(mesh);
+	//auto decodedMesh = decodeMesh(mesh);
 
 	//Pass the surface to the OpenGL window
 	OpenGLMeshData meshData = buildOpenGLMeshData(mesh);
