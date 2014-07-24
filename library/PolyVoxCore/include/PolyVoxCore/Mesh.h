@@ -72,14 +72,14 @@ namespace PolyVox
 	};
 
 	template <typename MeshType>
-	Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decode(const MeshType& mesh)
+	Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodeMesh(const MeshType& mesh)
 	{
 		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > result;
 		result.m_vecVertices.resize(mesh.m_vecVertices.size());
 
 		for(typename MeshType::IndexType ct = 0; ct < mesh.m_vecVertices.size(); ct++)
 		{
-			result.m_vecVertices[ct] = decode(mesh.m_vecVertices[ct]);
+			result.m_vecVertices[ct] = decodeVertex(mesh.m_vecVertices[ct]);
 		}
 
 		result.m_vecTriangleIndices = mesh.m_vecTriangleIndices;

@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 	auto mesh = extractCubicMesh(&volData, reg2);
 	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
-	auto decodedMesh = decode(mesh);
+	auto decodedMesh = decodeMesh(mesh);
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.addMesh(decodedMesh);

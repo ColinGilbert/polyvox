@@ -92,12 +92,12 @@ int main(int argc, char *argv[])
 	//Extract the surface
 	auto meshLowLOD = extractMarchingCubesMesh(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
-	auto decodedMeshLowLOD = decode(meshLowLOD);
+	auto decodedMeshLowLOD = decodeMesh(meshLowLOD);
 
 	//Extract the surface
 	auto meshHighLOD = extractMarchingCubesMesh(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
 	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
-	auto decodedMeshHighLOD = decode(meshHighLOD);
+	auto decodedMeshHighLOD = decodeMesh(meshHighLOD);
 
 	//Pass the surface to the OpenGL window
 	openGLWidget.addMesh(decodedMeshHighLOD, Vector3DInt32(30, 0, 0));

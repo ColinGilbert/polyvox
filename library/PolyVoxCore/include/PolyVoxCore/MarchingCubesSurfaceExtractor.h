@@ -47,9 +47,8 @@ namespace PolyVox
 		// Each component of the position is stored using 8.8 fixed-point encoding.
 		Vector3DUint16 encodedPosition;
 
-		// Each component of the normal is encoded using 5 bits of this variable.
-		// The 16 bits are -xxxxxyyyyyzzzzz (note the left-most bit is currently 
-		// unused). Some extra shifting and scaling is required to make it signed.
+		// The normal is encoded as a 16-bit unsigned integer using the 'oct16'
+		// encoding described here: http://jcgt.org/published/0003/02/01/
 		uint16_t encodedNormal;
 
 		// User data
@@ -57,7 +56,7 @@ namespace PolyVox
 	};
 
 	/// Decodes a position from a MarchingCubesVertex
-	inline Vector3DFloat decode(const Vector3DUint16& encodedPosition)
+	inline Vector3DFloat decodePosition(const Vector3DUint16& encodedPosition)
 	{
 		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
 		result *= (1.0f / 256.0f); // Division is compile-time constant
@@ -107,7 +106,7 @@ namespace PolyVox
 		return (resultX << 8) | resultY;
 	}
 
-	inline Vector3DFloat decode(const uint16_t& encodedNormal)
+	inline Vector3DFloat decodeNormal(const uint16_t& encodedNormal)
 	{
 		// Extract the two bytes from the uint16_t.
 		uint16_t ux = (encodedNormal >> 8) & 0xFF;
@@ -139,11 +138,11 @@ namespace PolyVox
 
 	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
 	template<typename DataType>
-	Vertex<DataType> decode(const MarchingCubesVertex<DataType>& marchingCubesVertex)
+	Vertex<DataType> decodeVertex(const MarchingCubesVertex<DataType>& marchingCubesVertex)
 	{
 		Vertex<DataType> result;
-		result.position = decode(marchingCubesVertex.encodedPosition);
-		result.normal = decode(marchingCubesVertex.encodedNormal);
+		result.position = decodePosition(marchingCubesVertex.encodedPosition);
+		result.normal = decodeNormal(marchingCubesVertex.encodedNormal);
 		result.data = marchingCubesVertex.data; // Data is not encoded
 		return result;
 	}

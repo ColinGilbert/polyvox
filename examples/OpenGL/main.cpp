@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 				auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
 
 				// The returned mesh needs to be decoded to be appropriate for GPU rendering.
-				auto decodedMesh = decode(mesh);
+				auto decodedMesh = decodeMesh(mesh);
 
 				// Pass the surface to the OpenGL window. Note that we are also passing an offset in this multi-mesh example. This is because
 				// the surface extractors return a mesh with 'local space' positions to reduce storage requirements and precision problems.
