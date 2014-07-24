@@ -162,7 +162,7 @@ void TestSurfaceExtractor::testExecute()
 	const static uint32_t uExpectedVertices = 4731;
 	const static uint32_t uExpectedIndices = 12810;
 	const static uint32_t uMaterialToCheck = 3000;
-	const static float fExpectedData = 42.0f;
+	const static float fExpectedData = 1.0f;
 	const static float fNoMaterial = 1.0f;
 
 	Mesh<MarchingCubesVertex<int8_t> > mesh;
