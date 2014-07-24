@@ -64,65 +64,37 @@ namespace PolyVox
 		return result;
 	}
 
-	/*inline uint16_t encodeNormal(const Vector3DFloat& normal)
-	{
-		Vector3DFloat v3dNormal = normal;
-		v3dNormal += Vector3DFloat(1.0f, 1.0f, 1.0f);
-		uint16_t encodedX = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getX() * 15.5f));
-		uint16_t encodedY = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getY() * 15.5f));
-		uint16_t encodedZ = static_cast<uint16_t>(roundToNearestInteger(v3dNormal.getZ() * 15.5f));
-		POLYVOX_ASSERT(encodedX < 32, "Encoded value out of range");
-		POLYVOX_ASSERT(encodedY < 32, "Encoded value out of range");
-		POLYVOX_ASSERT(encodedZ < 32, "Encoded value out of range");
-		uint16_t encodedNormal = (encodedX << 10) | (encodedY << 5) | encodedZ;
-		return encodedNormal;
-	}
-
-	/// Decodes a normal from a MarchingCubesVertex
-	inline Vector3DFloat decode(const uint16_t encodedNormal)
-	{
-		// Get normal components in the range 0 to 31
-		uint16_t x = (encodedNormal >> 10) & 0x1F;
-		uint16_t y = (encodedNormal >> 5) & 0x1F;
-		uint16_t z = (encodedNormal) & 0x1F;
-
-		// Build the resulting vector
-		Vector3DFloat result(x, y, z);
-
-		// Convert to range 0.0 to 2.0
-		result *= (1.0f / 15.5f); // Division is compile-time constant
-
-		// Convert to range -1.0 to 1.0
-		result -= Vector3DFloat(1.0f, 1.0f, 1.0f);
-
-		return result;
-	}*/
-
 	// Returns ±1
 	float signNotZero(float v)
 	{
-		return v >= 0.0 ? +1.0 : -1.0;
-	}
-
-	Vector2DFloat signNotZero(Vector2DFloat v)
-	{
-		return Vector2DFloat((v.getX() >= 0.0) ? +1.0 : -1.0, (v.getY() >= 0.0) ? +1.0 : -1.0);
+		return v >= 0.0f ? +1.0f : -1.0f;
 	}
 
 	// Assume normalized input. Output is on [-1, 1] for each component.
 	Vector2DFloat float32x3_to_oct(Vector3DFloat v)
 	{
-		// Project the sphere onto the octahedron, and then onto the xy plane
-		Vector2DFloat p(v.getX(), v.getY());			
-		p = p * (1.0f / (abs(v.getX()) + abs(v.getY()) + abs(v.getZ())));
+		// Get the input components
+		float vx = v.getX();
+		float vy = v.getY();
+		float vz = v.getZ();
 
-		float refX = ((1.0f - abs(p.getY())) * signNotZero(p.getX()));
-		float refY = ((1.0f - abs(p.getX())) * signNotZero(p.getY()));
-
-		Vector2DFloat ref(refX, refY);
+		// Project the sphere onto the octahedron, and then onto the xy plane					
+		float px = vx * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
+		float py = vy * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
 
 		// Reflect the folds of the lower hemisphere over the diagonals
-		return (v.getZ() <= 0.0) ? ref : p;
+		if (vz <= 0.0f)
+		{
+			float refx = ((1.0f - abs(py)) * signNotZero(px));
+			float refy = ((1.0f - abs(px)) * signNotZero(py));
+			px = refx;
+			py = refy;
+		}
+
+		Vector2DFloat p(px, py);
+
+		// Reflect the folds of the lower hemisphere over the diagonals
+		return p;
 	}
 
 	Vector3DFloat oct_to_float32x3(Vector2DFloat e)
@@ -148,17 +120,44 @@ namespace PolyVox
 
 	inline uint16_t encodeNormal(const Vector3DFloat& normal)
 	{
-		Vector2DFloat floatResult = float32x3_to_oct(normal);
+		// The first part of this function is based off the code in Listing 1 of http://jcgt.org/published/0003/02/01/
+		// It was rewritten in C++ and is restructued for the CPU rather than the GPU.
 
-		floatResult += Vector2DFloat(1.0f, 1.0f); // To range 0.0f to 2.0f
-		floatResult *= Vector2DFloat(127.5f, 127.5f); // To range 0.0f to 255.0f
+		// Get the input components
+		float vx = normal.getX();
+		float vy = normal.getY();
+		float vz = normal.getZ();
 
-		uint16_t resultX = static_cast<uint16_t>(floatResult.getX() + 0.5f);
-		uint16_t resultY = static_cast<uint16_t>(floatResult.getY() + 0.5f);
+		// Project the sphere onto the octahedron, and then onto the xy plane					
+		float px = vx * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
+		float py = vy * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
 
+		// Reflect the folds of the lower hemisphere over the diagonals.
+		if (vz <= 0.0f)
+		{
+			float refx = ((1.0f - abs(py)) * (px >= 0.0f ? +1.0f : -1.0f));
+			float refy = ((1.0f - abs(px)) * (py >= 0.0f ? +1.0f : -1.0f));
+			px = refx;
+			py = refy;
+		}
+
+		// The next part was not given in the paper. We map our two
+		// floats into two bytes and store them in a single uint16_t
+
+		// Move from range [-1.0f, 1.0f] to [0.0f, 255.0f]
+		px = (px + 1.0) * 127.5f;
+		py = (py + 1.0) * 127.5f;
+
+		// Convert to uints
+		uint16_t resultX = static_cast<uint16_t>(px + 0.5f);
+		uint16_t resultY = static_cast<uint16_t>(py + 0.5f);
+
+		// Make sure only the lower bits are set. Probably
+		// not necessary but we're just being careful really.
 		resultX &= 0xFF;
 		resultY &= 0xFF;
 
+		// Contatenate the bytes and return the result.
 		return (resultX << 8) | resultY;
 	}
 
