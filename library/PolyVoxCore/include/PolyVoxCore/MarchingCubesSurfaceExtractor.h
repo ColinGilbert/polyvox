@@ -64,60 +64,6 @@ namespace PolyVox
 		return result;
 	}
 
-	// Returns ±1
-	float signNotZero(float v)
-	{
-		return v >= 0.0f ? +1.0f : -1.0f;
-	}
-
-	// Assume normalized input. Output is on [-1, 1] for each component.
-	Vector2DFloat float32x3_to_oct(Vector3DFloat v)
-	{
-		// Get the input components
-		float vx = v.getX();
-		float vy = v.getY();
-		float vz = v.getZ();
-
-		// Project the sphere onto the octahedron, and then onto the xy plane					
-		float px = vx * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
-		float py = vy * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
-
-		// Reflect the folds of the lower hemisphere over the diagonals
-		if (vz <= 0.0f)
-		{
-			float refx = ((1.0f - abs(py)) * signNotZero(px));
-			float refy = ((1.0f - abs(px)) * signNotZero(py));
-			px = refx;
-			py = refy;
-		}
-
-		Vector2DFloat p(px, py);
-
-		// Reflect the folds of the lower hemisphere over the diagonals
-		return p;
-	}
-
-	Vector3DFloat oct_to_float32x3(Vector2DFloat e)
-	{
-		Vector3DFloat v = Vector3DFloat(e.getX(), e.getY(), 1.0 - abs(e.getX()) - abs(e.getY()));
-
-		float refX = ((1.0f - abs(v.getY())) * signNotZero(v.getX()));
-		float refY = ((1.0f - abs(v.getX())) * signNotZero(v.getY()));
-
-		Vector2DFloat ref(refX, refY);
-
-		if (v.getZ() < 0.0f)
-		{
-			//v.xy = (1.0 - abs(v.yx)) * signNotZero(v.xy);
-			v.setX(refX);
-			v.setY(refY);
-		}
-
-		v.normalise();
-
-		return v;
-	}
-
 	inline uint16_t encodeNormal(const Vector3DFloat& normal)
 	{
 		// The first part of this function is based off the code in Listing 1 of http://jcgt.org/published/0003/02/01/
@@ -163,14 +109,32 @@ namespace PolyVox
 
 	inline Vector3DFloat decode(const uint16_t& encodedNormal)
 	{
-		uint16_t x = (encodedNormal >> 8) & 0xFF;
-		uint16_t y = (encodedNormal     ) & 0xFF;
-		Vector2DFloat floatNormal(x, y);
+		// Extract the two bytes from the uint16_t.
+		uint16_t ux = (encodedNormal >> 8) & 0xFF;
+		uint16_t uy = (encodedNormal     ) & 0xFF;
 
-		floatNormal /= Vector2DFloat(127.5f, 127.5f);
-		floatNormal -= Vector2DFloat(1.0f, 1.0f);
+		// Convert to floats in the range [-1.0f, +1.0f].
+		float ex = ux / 127.5f - 1.0f;
+		float ey = uy / 127.5f - 1.0f;
 
-		return oct_to_float32x3(floatNormal);
+		// Reconstruct the origninal vector. This is a C++ implementation
+		// of Listing 2 of http://jcgt.org/published/0003/02/01/
+		float vx = ex;
+		float vy = ey;
+		float vz = 1.0f - abs(ex) - abs(ey);
+
+		if (vz < 0.0f)
+		{
+			float refX = ((1.0f - abs(vy)) * (vx >= 0.0f ? +1.0f : -1.0f));
+			float refY = ((1.0f - abs(vx)) * (vy >= 0.0f ? +1.0f : -1.0f));
+			vx = refX;
+			vy = refY;
+		}
+
+		// Normalise and return the result.
+		Vector3DFloat v(vx, vy, vz);
+		v.normalise();
+		return v;
 	}
 
 	/// Decodes a MarchingCubesVertex by converting it into a regular Vertex which can then be directly used for rendering.
