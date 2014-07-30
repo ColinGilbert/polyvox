@@ -74,14 +74,14 @@ namespace PolyVox
 		float vz = normal.getZ();
 
 		// Project the sphere onto the octahedron, and then onto the xy plane					
-		float px = vx * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
-		float py = vy * (1.0f / (abs(vx) + abs(vy) + abs(vz)));
+		float px = vx * (1.0f / (std::abs(vx) + std::abs(vy) + std::abs(vz)));
+		float py = vy * (1.0f / (std::abs(vx) + std::abs(vy) + std::abs(vz)));
 
 		// Reflect the folds of the lower hemisphere over the diagonals.
 		if (vz <= 0.0f)
 		{
-			float refx = ((1.0f - abs(py)) * (px >= 0.0f ? +1.0f : -1.0f));
-			float refy = ((1.0f - abs(px)) * (py >= 0.0f ? +1.0f : -1.0f));
+			float refx = ((1.0f - std::abs(py)) * (px >= 0.0f ? +1.0f : -1.0f));
+			float refy = ((1.0f - std::abs(px)) * (py >= 0.0f ? +1.0f : -1.0f));
 			px = refx;
 			py = refy;
 		}
@@ -120,12 +120,12 @@ namespace PolyVox
 		// of Listing 2 of http://jcgt.org/published/0003/02/01/
 		float vx = ex;
 		float vy = ey;
-		float vz = 1.0f - abs(ex) - abs(ey);
+		float vz = 1.0f - std::abs(ex) - std::abs(ey);
 
 		if (vz < 0.0f)
 		{
-			float refX = ((1.0f - abs(vy)) * (vx >= 0.0f ? +1.0f : -1.0f));
-			float refY = ((1.0f - abs(vx)) * (vy >= 0.0f ? +1.0f : -1.0f));
+			float refX = ((1.0f - std::abs(vy)) * (vx >= 0.0f ? +1.0f : -1.0f));
+			float refY = ((1.0f - std::abs(vx)) * (vy >= 0.0f ? +1.0f : -1.0f));
 			vx = refX;
 			vy = refY;
 		}
