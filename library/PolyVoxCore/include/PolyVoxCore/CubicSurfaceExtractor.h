@@ -188,10 +188,10 @@ namespace PolyVox
 		typename VolumeType::VoxelType m_tBorderValue;
 	};
 
-	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
+	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType>, typename IndexType = DefaultIndexType >
 	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded())
 	{
-		typedef Mesh<CubicVertex<typename VolumeType::VoxelType> > MeshType;
+		typedef Mesh<CubicVertex<typename VolumeType::VoxelType>, IndexType > MeshType;
 		MeshType result;
 		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
 		extractor.execute();
