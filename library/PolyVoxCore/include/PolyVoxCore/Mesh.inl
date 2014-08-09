@@ -34,9 +34,21 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	const std::vector<IndexType>& Mesh<VertexType, IndexType>::getIndices(void) const
+	IndexType Mesh<VertexType, IndexType>::getNoOfVertices(void) const
 	{
-		return m_vecTriangleIndices;
+		return m_vecVertices.size();
+	}
+
+	template <typename VertexType, typename IndexType>
+	const VertexType& Mesh<VertexType, IndexType>::getVertex(IndexType index) const
+	{
+		return m_vecVertices[index];
+	}
+
+	template <typename VertexType, typename IndexType>
+	const std::vector<VertexType>& Mesh<VertexType, IndexType>::getVertices(void) const
+	{
+		return m_vecVertices;
 	}
 
 	template <typename VertexType, typename IndexType>
@@ -46,15 +58,15 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	IndexType Mesh<VertexType, IndexType>::getNoOfVertices(void) const
+	IndexType Mesh<VertexType, IndexType>::getIndex(uint32_t index) const
 	{
-		return m_vecVertices.size();
+		return m_vecTriangleIndices[index];
 	}
 
 	template <typename VertexType, typename IndexType>
-	const std::vector<VertexType>& Mesh<VertexType, IndexType>::getVertices(void) const
+	const std::vector<IndexType>& Mesh<VertexType, IndexType>::getIndices(void) const
 	{
-		return m_vecVertices;
+		return m_vecTriangleIndices;
 	}
 
 	template <typename VertexType, typename IndexType>
