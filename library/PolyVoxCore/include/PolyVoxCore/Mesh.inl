@@ -46,6 +46,12 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
+	const VertexType*  Mesh<VertexType, IndexType>::getRawVertexData(void) const
+	{
+		return &(m_vecVertices[0]);
+	}
+
+	template <typename VertexType, typename IndexType>
 	const std::vector<VertexType>& Mesh<VertexType, IndexType>::getVertices(void) const
 	{
 		return m_vecVertices;
@@ -54,19 +60,25 @@ namespace PolyVox
 	template <typename VertexType, typename IndexType>
 	uint32_t Mesh<VertexType, IndexType>::getNoOfIndices(void) const
 	{
-		return m_vecTriangleIndices.size();
+		return m_vecIndices.size();
 	}
 
 	template <typename VertexType, typename IndexType>
 	IndexType Mesh<VertexType, IndexType>::getIndex(uint32_t index) const
 	{
-		return m_vecTriangleIndices[index];
+		return m_vecIndices[index];
+	}
+
+	template <typename VertexType, typename IndexType>
+	const IndexType* Mesh<VertexType, IndexType>::getRawIndexData(void)
+	{
+		return &(m_vecIndices[0]);
 	}
 
 	template <typename VertexType, typename IndexType>
 	const std::vector<IndexType>& Mesh<VertexType, IndexType>::getIndices(void) const
 	{
-		return m_vecTriangleIndices;
+		return m_vecIndices;
 	}
 
 	template <typename VertexType, typename IndexType>
@@ -89,9 +101,9 @@ namespace PolyVox
 		POLYVOX_ASSERT(index1 < m_vecVertices.size(), "Index points at an invalid vertex.");
 		POLYVOX_ASSERT(index2 < m_vecVertices.size(), "Index points at an invalid vertex.");
 
-		m_vecTriangleIndices.push_back(index0);
-		m_vecTriangleIndices.push_back(index1);
-		m_vecTriangleIndices.push_back(index2);
+		m_vecIndices.push_back(index0);
+		m_vecIndices.push_back(index1);
+		m_vecIndices.push_back(index2);
 	}
 
 	template <typename VertexType, typename IndexType>
@@ -108,7 +120,7 @@ namespace PolyVox
 	void Mesh<VertexType, IndexType>::clear(void)
 	{
 		m_vecVertices.clear();
-		m_vecTriangleIndices.clear();
+		m_vecIndices.clear();
 	}
 
 	template <typename VertexType, typename IndexType>
@@ -123,9 +135,9 @@ namespace PolyVox
 		std::vector<bool> isVertexUsed(m_vecVertices.size());
 		std::fill(isVertexUsed.begin(), isVertexUsed.end(), false);
 
-		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
+		for(uint32_t triCt = 0; triCt < m_vecIndices.size(); triCt++)
 		{
-			int v = m_vecTriangleIndices[triCt];
+			int v = m_vecIndices[triCt];
 			isVertexUsed[v] = true;
 		}
 
@@ -143,9 +155,9 @@ namespace PolyVox
 
 		m_vecVertices.resize(noOfUsedVertices);
 
-		for(uint32_t triCt = 0; triCt < m_vecTriangleIndices.size(); triCt++)
+		for(uint32_t triCt = 0; triCt < m_vecIndices.size(); triCt++)
 		{
-			m_vecTriangleIndices[triCt] = newPos[m_vecTriangleIndices[triCt]];
+			m_vecIndices[triCt] = newPos[m_vecIndices[triCt]];
 		}
 	}
 }

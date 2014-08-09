@@ -52,17 +52,15 @@ namespace PolyVox
 
 		IndexType getNoOfVertices(void) const;
 		const VertexType& getVertex(IndexType index) const;
-		const std::vector<VertexType>& getVertices(void) const; //Should probably deprecate
+		const VertexType* getRawVertexData(void) const;
+		POLYVOX_DEPRECATED const std::vector<VertexType>& getVertices(void) const;
 
 		uint32_t getNoOfIndices(void) const;
 		IndexType getIndex(uint32_t index) const;
-		const std::vector<IndexType>& getIndices(void) const; //Should probably deprecate	
+		const IndexType* getRawIndexData(void);
+		POLYVOX_DEPRECATED const std::vector<IndexType>& getIndices(void) const;
 
 		const Vector3DInt32& getOffset(void) const;
-
-		//void setNoOfVertices(IndexType noOfVertices);
-		//void setVertex()
-
 		void setOffset(const Vector3DInt32& offset);
 
 		IndexType addVertex(const VertexType& vertex);
@@ -70,13 +68,12 @@ namespace PolyVox
 
 		void clear(void);
 		bool isEmpty(void) const;
-		void removeUnusedVertices(void);
-
-		Vector3DInt32 m_offset;
+		void removeUnusedVertices(void);		
 	
 	private:		
-		std::vector<IndexType> m_vecTriangleIndices;
+		std::vector<IndexType> m_vecIndices;
 		std::vector<VertexType> m_vecVertices;
+		Vector3DInt32 m_offset;
 	};
 
 	template <typename MeshType>
