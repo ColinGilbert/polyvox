@@ -153,8 +153,7 @@ void testCustomController(Mesh<MarchingCubesVertex<float> >& result)
 	}
 
 	CustomMarchingCubesController controller;
-	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomMarchingCubesController > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, 0, controller);
-	extractor.execute();
+	extractMarchingCubesMesh(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, 0, controller);
 }
 
 void TestSurfaceExtractor::testExecute()

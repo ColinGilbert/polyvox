@@ -147,11 +147,11 @@ namespace PolyVox
 		return result;
 	}
 
-	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType>, typename IndexType = DefaultIndexType >
+	template< typename VolumeType, typename MeshType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, IndexType >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
 
 		void execute();
 
@@ -318,12 +318,18 @@ namespace PolyVox
 		typename Controller::DensityType m_tThreshold;
 	};
 
+	template< typename VolumeType, typename MeshType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
+	void extractMarchingCubesMesh(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller())
+	{
+		MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller> extractor(volData, region, result, eWrapMode, tBorderValue, controller);
+		extractor.execute();
+	}
+
 	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType>, typename IndexType = DefaultIndexType >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller())
 	{
 		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, IndexType > result;
-		MarchingCubesSurfaceExtractor<VolumeType, Controller, IndexType> extractor(volData, region, &result, eWrapMode, tBorderValue, controller);
-		extractor.execute();
+		extractMarchingCubesMesh(volData, region, &result, eWrapMode, tBorderValue, controller);
 		return result;
 	}
 }
