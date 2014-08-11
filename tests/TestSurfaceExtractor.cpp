@@ -100,32 +100,30 @@ void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 	voxel.setMaterial(valueToWrite);
 }
 
-/*template <typename VoxelType>
+template <typename VoxelType>
 SimpleVolume<VoxelType>* createAndFillVolume(void)
 {
-	const int32_t uVolumeSideLength = 32;
+	const int32_t uVolumeSideLength = 64;
 
 	//Create empty volume
 	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)));
 
+	// Fill
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
 		for (int32_t y = 0; y < uVolumeSideLength; y++)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				VoxelType voxelValue;
-				//Create a density field which changes throughout the volume.
-				writeDensityValueToVoxel<VoxelType>(x + y + z, voxelValue);
-				//Two different materials in two halves of the volume
-				writeMaterialValueToVoxel<VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
-				volData->setVoxelAt(x, y, z, voxelValue);
+				// Create a density field which changes throughout the volume. It's
+				// zero in the lower corner and increasing as the coordinates increase.
+				volData->setVoxelAt(x, y, z, x + y + z);
 			}
 		}
 	}
 
 	return volData;
-}*/
+}
 
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
@@ -251,12 +249,18 @@ void TestSurfaceExtractor::testExecute()
 	QCOMPARE(floatMesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(floatMesh.getVertices()[uMaterialToCheck].data, fExpectedData);*/
 
-	/*auto uintVol = createAndFillVolume<uint8_t>();
+	auto uintVol = createAndFillVolume<uint8_t>();
 	auto uintMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion());
-	QCOMPARE(uintMesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(uintMesh.getNoOfIndices(), uExpectedIndices);*/
-	//QCOMPARE(uintMesh.getVertices()[uMaterialToCheck].data, static_cast<uint8_t>(fExpectedData));
-	//std::cout << uintMesh.getVertices()[uMaterialToCheck].data << std::endl;
+	QCOMPARE(uintMesh.getNoOfVertices(), 12096u); // Verifies size of mesh
+	QCOMPARE(uintMesh.getNoOfIndices(), 35157u); // Verifies size of mesh
+	QCOMPARE(uintMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit index buffer
+
+	auto intVol = createAndFillVolume<int8_t>();
+	CustomMarchingCubesController intCustomController;
+	auto intMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion(), WrapModes::Border, int8_t(0), intCustomController);
+	QCOMPARE(intMesh.getNoOfVertices(), 16113u); // Verifies size of mesh
+	QCOMPARE(intMesh.getNoOfIndices(), 22053u); // Verifies size of mesh
+	QCOMPARE(intMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit index buffer
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
