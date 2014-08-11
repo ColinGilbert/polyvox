@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template<typename VolumeType, typename MeshType, typename Controller>
-	MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller, MeshType* result = nullptr)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -34,6 +34,7 @@ namespace PolyVox
 		,m_controller(controller)
 		,m_tThreshold(m_controller.getThreshold())
 	{
+		POLYVOX_THROW_IF(m_meshCurrent == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));

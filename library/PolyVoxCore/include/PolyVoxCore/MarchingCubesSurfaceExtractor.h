@@ -151,7 +151,7 @@ namespace PolyVox
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller(), MeshType* result = nullptr);
 
 		void execute();
 
@@ -321,9 +321,9 @@ namespace PolyVox
 	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
 	// more sense to use the other variaent of this function where the mesh is a return value rather than a parameter.
 	template< typename VolumeType, typename MeshType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
-	void extractMarchingCubesMesh(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller())
+	void extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller(), MeshType* result = nullptr)
 	{
-		MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller> extractor(volData, region, result, eWrapMode, tBorderValue, controller);
+		MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller> extractor(volData, region, eWrapMode, tBorderValue, controller, result);
 		extractor.execute();
 	}
 
@@ -331,7 +331,7 @@ namespace PolyVox
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller())
 	{
 		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, IndexType > result;
-		extractMarchingCubesMesh(volData, region, &result, eWrapMode, tBorderValue, controller);
+		extractMarchingCubesMesh(volData, region, eWrapMode, tBorderValue, controller, &result);
 		return result;
 	}
 }
