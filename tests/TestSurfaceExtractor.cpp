@@ -100,14 +100,13 @@ void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 	voxel.setMaterial(valueToWrite);
 }
 
-// Runs the surface extractor for a given type. 
 template <typename VoxelType>
-Mesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid specifying this return type by using auto/decltype?
+SimpleVolume<VoxelType>* createAndFillVolume(void)
 {
 	const int32_t uVolumeSideLength = 32;
 
 	//Create empty volume
-	SimpleVolume<VoxelType> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)));
 
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
@@ -120,15 +119,25 @@ Mesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid
 				writeDensityValueToVoxel<VoxelType>(x + y + z, voxelValue);
 				//Two different materials in two halves of the volume
 				writeMaterialValueToVoxel<VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
-				volData.setVoxelAt(x, y, z, voxelValue);
+				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}
 	}
 
+	return volData;
+}
+
+// Runs the surface extractor for a given type. 
+template <typename VoxelType>
+Mesh<MarchingCubesVertex<VoxelType> > testForType(void) //I think we could avoid specifying this return type by using auto/decltype?
+{
+	//Create empty volume
+	SimpleVolume<VoxelType>* volData = createAndFillVolume<VoxelType>();
+
 	DefaultMarchingCubesController<VoxelType> controller;
 	controller.setThreshold(50);
 
-	auto result = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion(), WrapModes::Border, VoxelType(), controller);
+	auto result = extractMarchingCubesMesh(volData, volData->getEnclosingRegion(), WrapModes::Border, VoxelType(), controller);
 
 	return result;
 }
@@ -223,6 +232,13 @@ void TestSurfaceExtractor::testExecute()
 	QCOMPARE(floatMesh.getNoOfVertices(), uExpectedVertices);
 	QCOMPARE(floatMesh.getNoOfIndices(), uExpectedIndices);
 	QCOMPARE(floatMesh.getVertices()[uMaterialToCheck].data, fExpectedData);*/
+
+	auto uintVol = createAndFillVolume<uint8_t>();
+	auto uintMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion());
+	QCOMPARE(uintMesh.getNoOfVertices(), uExpectedVertices);
+	QCOMPARE(uintMesh.getNoOfIndices(), uExpectedIndices);
+	//QCOMPARE(uintMesh.getVertices()[uMaterialToCheck].data, static_cast<uint8_t>(fExpectedData));
+	std::cout << uintMesh.getVertices()[uMaterialToCheck].data << std::endl;
 }
 
 QTEST_MAIN(TestSurfaceExtractor)

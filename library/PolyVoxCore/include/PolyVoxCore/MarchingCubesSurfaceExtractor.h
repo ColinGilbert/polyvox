@@ -318,6 +318,8 @@ namespace PolyVox
 		typename Controller::DensityType m_tThreshold;
 	};
 
+	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
+	// more sense to use the other variaent of this function where the mesh is a return value rather than a parameter.
 	template< typename VolumeType, typename MeshType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	void extractMarchingCubesMesh(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller())
 	{
