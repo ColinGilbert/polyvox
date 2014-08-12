@@ -268,6 +268,14 @@ void TestSurfaceExtractor::testExecute()
 	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
 	QCOMPARE(intMesh.getNoOfIndices(), uint32_t(34041)); // Verifies size of mesh
 	QCOMPARE(intMesh.getIndex(100), uint16_t(29)); // Verifies that we have 16-bit indices
+
+	auto doubleVol = createAndFillVolume<double>();
+	CustomMarchingCubesController doubleCustomController;
+	Mesh< MarchingCubesVertex< double >, uint16_t > doubleMesh;
+	extractMarchingCubesMesh(doubleVol, doubleVol->getEnclosingRegion(), WrapModes::Border, double(0), doubleCustomController, &doubleMesh);
+	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(16113)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(doubleMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
+	QCOMPARE(doubleMesh.getIndex(100), uint16_t(26)); // Verifies that we have 32-bit indices
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
