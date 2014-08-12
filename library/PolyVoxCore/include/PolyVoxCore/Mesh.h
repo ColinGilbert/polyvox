@@ -81,13 +81,13 @@ namespace PolyVox
 	{
 		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodedMesh;
 
-		for (auto ct = 0; ct < encodedMesh.getNoOfVertices(); ct++)
+		for (MeshType::IndexType ct = 0; ct < encodedMesh.getNoOfVertices(); ct++)
 		{
 			decodedMesh.addVertex(decodeVertex(encodedMesh.getVertex(ct)));
 		}
 
 		POLYVOX_ASSERT(encodedMesh.getNoOfIndices() % 3 == 0, "The number of indices must always be a multiple of three.");
-		for (auto ct = 0; ct < encodedMesh.getNoOfIndices(); ct += 3)
+		for (uint32_t ct = 0; ct < encodedMesh.getNoOfIndices(); ct += 3)
 		{
 			decodedMesh.addTriangle(encodedMesh.getIndex(ct), encodedMesh.getIndex(ct + 1), encodedMesh.getIndex(ct + 2));
 		}

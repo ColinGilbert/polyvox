@@ -90,8 +90,8 @@ namespace PolyVox
 		// floats into two bytes and store them in a single uint16_t
 
 		// Move from range [-1.0f, 1.0f] to [0.0f, 255.0f]
-		px = (px + 1.0) * 127.5f;
-		py = (py + 1.0) * 127.5f;
+		px = (px + 1.0f) * 127.5f;
+		py = (py + 1.0f) * 127.5f;
 
 		// Convert to uints
 		uint16_t resultX = static_cast<uint16_t>(px + 0.5f);
@@ -300,7 +300,7 @@ namespace PolyVox
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
+		MeshType* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -327,10 +327,10 @@ namespace PolyVox
 		extractor.execute();
 	}
 
-	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType>, typename IndexType = DefaultIndexType >
+	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller())
 	{
-		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, IndexType > result;
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > result;
 		extractMarchingCubesMesh(volData, region, eWrapMode, tBorderValue, controller, &result);
 		return result;
 	}

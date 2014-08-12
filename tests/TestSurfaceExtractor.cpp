@@ -251,22 +251,23 @@ void TestSurfaceExtractor::testExecute()
 
 	auto uintVol = createAndFillVolume<uint8_t>();
 	auto uintMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion());
-	QCOMPARE(uintMesh.getNoOfVertices(), 12096u); // Verifies size of mesh
-	QCOMPARE(uintMesh.getNoOfIndices(), 35157u); // Verifies size of mesh
-	QCOMPARE(uintMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit index buffer
+	QCOMPARE(uintMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(uintMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
+	QCOMPARE(uintMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
 
 	auto floatVol = createAndFillVolume<float>();
 	CustomMarchingCubesController floatCustomController;
 	auto floatMesh = extractMarchingCubesMesh(floatVol, floatVol->getEnclosingRegion(), WrapModes::Border, float(0), floatCustomController);
-	QCOMPARE(floatMesh.getNoOfVertices(), 16113u); // Verifies size of mesh
-	QCOMPARE(floatMesh.getNoOfIndices(), 22053u); // Verifies size of mesh
-	QCOMPARE(floatMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit index buffer
+	QCOMPARE(floatMesh.getNoOfVertices(), uint32_t(16113)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(floatMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
+	QCOMPARE(floatMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit indices
 
 	auto intVol = createAndFillVolume<int8_t>();
-	auto intMesh = extractMarchingCubesMesh(intVol, intVol->getEnclosingRegion(), WrapModes::Border, int8_t(0), DefaultMarchingCubesController<int8_t>());
-	QCOMPARE(intMesh.getNoOfVertices(), 11718u); // Verifies size of mesh
-	QCOMPARE(intMesh.getNoOfIndices(), 34041u); // Verifies size of mesh
-	QCOMPARE(intMesh.getIndex(100), uint32_t(29)); // Verifies that we have 32-bit index buffer
+	Mesh< MarchingCubesVertex< int8_t >, uint16_t > intMesh;
+	extractMarchingCubesMesh(intVol, intVol->getEnclosingRegion(), WrapModes::Border, int8_t(0), DefaultMarchingCubesController<int8_t>(), &intMesh);
+	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
+	QCOMPARE(intMesh.getNoOfIndices(), uint32_t(34041)); // Verifies size of mesh
+	QCOMPARE(intMesh.getIndex(100), uint16_t(29)); // Verifies that we have 16-bit indices
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
