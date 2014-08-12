@@ -117,7 +117,10 @@ SimpleVolume<VoxelType>* createAndFillVolume(void)
 			{
 				// Create a density field which changes throughout the volume. It's
 				// zero in the lower corner and increasing as the coordinates increase.
-				volData->setVoxelAt(x, y, z, x + y + z);
+				VoxelType voxelValue;
+				writeDensityValueToVoxel<VoxelType>(x + y + z, voxelValue);
+				writeMaterialValueToVoxel<VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
+				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}
 	}
@@ -276,6 +279,13 @@ void TestSurfaceExtractor::testExecute()
 	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(16113)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(doubleMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
 	QCOMPARE(doubleMesh.getIndex(100), uint16_t(26)); // Verifies that we have 32-bit indices
+
+	auto materialVol = createAndFillVolume<MaterialDensityPair88>();
+	auto materialMesh = extractMarchingCubesMesh(materialVol, materialVol->getEnclosingRegion());
+	QCOMPARE(materialMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(materialMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
+	QCOMPARE(materialMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
+	QCOMPARE(materialMesh.getVertex(100).data.getMaterial(), uint16_t(79));
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
