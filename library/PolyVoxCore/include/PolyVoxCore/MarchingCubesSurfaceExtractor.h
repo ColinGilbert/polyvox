@@ -318,6 +318,13 @@ namespace PolyVox
 		typename Controller::DensityType m_tThreshold;
 	};
 
+	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
+	// There are a few reasons why this might be useful to more advanced users:
+	//
+	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
+	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
+	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
+	//
 	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
 	// more sense to use the other variaent of this function where the mesh is a return value rather than a parameter.
 	template< typename VolumeType, typename MeshType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
