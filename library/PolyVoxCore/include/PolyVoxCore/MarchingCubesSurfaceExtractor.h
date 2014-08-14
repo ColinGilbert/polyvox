@@ -326,15 +326,19 @@ namespace PolyVox
 	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
 	//
 	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
-	// more sense to use the other variaent of this function where the mesh is a return value rather than a parameter.
+	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
+	//
+	// Note: This function is called 'extractMarchingCubesCustomMesh' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
+	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
+	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template< typename VolumeType, typename MeshType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	void extractMarchingCubesCustomMesh(VolumeType* volData, Region region, MeshType* result, Controller controller = Controller(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
-		result->getNoOfVertices();
 		MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller> extractor(volData, region, result, controller, eWrapMode, tBorderValue);
 		extractor.execute();
 	}
 
+	// This version of the function is easier to use - it automatically creates and returns a mesh of the appropriate type so the user doesn't have to worry about it.
 	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, Controller controller = Controller(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
