@@ -142,7 +142,7 @@ void TestSurfaceExtractor::testExecute()
 	// This test makes use of a custom controller
 	auto floatVol = createAndFillVolume<float>();
 	CustomMarchingCubesController floatCustomController;
-	auto floatMesh = extractMarchingCubesMesh(floatVol, floatVol->getEnclosingRegion(), floatCustomController, WrapModes::Border, float(0));
+	auto floatMesh = extractMarchingCubesMesh(floatVol, floatVol->getEnclosingRegion(), floatCustomController);
 	QCOMPARE(floatMesh.getNoOfVertices(), uint32_t(16113)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(floatMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
 	QCOMPARE(floatMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit indices
@@ -152,7 +152,7 @@ void TestSurfaceExtractor::testExecute()
 	// use a default for the second-to-last parameter but noot use a default for the last parameter.
 	auto intVol = createAndFillVolume<int8_t>();
 	Mesh< MarchingCubesVertex< int8_t >, uint16_t > intMesh;
-	extractMarchingCubesCustomMesh(intVol, intVol->getEnclosingRegion(), &intMesh);
+	extractMarchingCubesMesh(intVol, intVol->getEnclosingRegion(), &intMesh);
 	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
 	QCOMPARE(intMesh.getNoOfIndices(), uint32_t(34041)); // Verifies size of mesh
 	QCOMPARE(intMesh.getIndex(100), uint16_t(29)); // Verifies that we have 16-bit indices
@@ -162,7 +162,7 @@ void TestSurfaceExtractor::testExecute()
 	auto doubleVol = createAndFillVolume<double>();
 	CustomMarchingCubesController doubleCustomController;
 	Mesh< MarchingCubesVertex< double >, uint16_t > doubleMesh;
-	extractMarchingCubesCustomMesh(doubleVol, doubleVol->getEnclosingRegion(), &doubleMesh, doubleCustomController, WrapModes::Border, double(0));
+	extractMarchingCubesMesh(doubleVol, doubleVol->getEnclosingRegion(), &doubleMesh, doubleCustomController);
 	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(16113)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(doubleMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
 	QCOMPARE(doubleMesh.getIndex(100), uint16_t(26)); // Verifies that we have 32-bit indices
