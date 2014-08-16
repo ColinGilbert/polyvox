@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<typename VolumeType, typename MeshType, typename Controller>
-	MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, Controller controller, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue)
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -42,8 +42,8 @@ namespace PolyVox
 		m_sampVolume.setWrapMode(eWrapMode, tBorderValue);
 	}
 
-	template<typename VolumeType, typename MeshType, typename Controller>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::execute()
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::execute()
 	{		
 		Timer timer;
 		m_meshCurrent->clear();
@@ -130,9 +130,9 @@ namespace PolyVox
 			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
 	}
 
-	template<typename VolumeType, typename MeshType, typename Controller>
+	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -196,9 +196,9 @@ namespace PolyVox
 		return m_uNoOfOccupiedCells;
 	}
 
-	template<typename VolumeType, typename MeshType, typename Controller>
+	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace)
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -396,8 +396,8 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VolumeType, typename MeshType, typename Controller>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -536,8 +536,8 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VolumeType, typename MeshType, typename Controller>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, Controller>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,
