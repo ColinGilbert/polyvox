@@ -345,7 +345,7 @@ namespace PolyVox
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), typename ControllerType::DensityType doNotUseThisParameter = typename ControllerType::DensityType())
 	{
-		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > result;
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
 		extractMarchingCubesMesh<VolumeType, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > >(volData, region, &result, controller, eWrapMode, tBorderValue);
 		return result;
 	}
