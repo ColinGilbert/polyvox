@@ -33,6 +33,26 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+template<typename _VoxelType>
+class CustomIsQuadNeeded
+{
+public:
+	typedef _VoxelType VoxelType;
+
+	bool operator()(VoxelType back, VoxelType front, VoxelType& materialToUse)
+	{
+		if ((back > 0) && (front == 0))
+		{
+			materialToUse = static_cast<VoxelType>(back);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+};
+
 
 // These 'writeDensityValueToVoxel' functions provide a unified interface for writting densities to primative and class voxel types.
 // They are conceptually the inverse of the 'convertToDensity' function used by the MarchingCubesSurfaceExtractor. They probably shouldn't be part
@@ -123,12 +143,12 @@ uint32_t testForType(void)
 
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
-SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(VoxelType maxVoxelValue)
+SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(VoxelType minValue, VoxelType maxValue)
 {
-	const int32_t uVolumeSideLength = 64;
+	const int32_t uVolumeSideLength = 32;
 
 	//Create empty volume
-	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), 32);
+	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), 16);
 
 	srand(12345);
 
@@ -139,16 +159,15 @@ SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(VoxelType maxVoxelValue)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				if (maxVoxelValue == 0)
+				if (minValue == maxValue)
 				{
-					// This test case is currently only dealing with unsigned voxel, so if
-					// the max requested voxel value is zero then every voxel should be zero
-					volData->setVoxelAt(x, y, z, VoxelType(0));
+					// In this case we are filling the whole volume with a single value.
+					volData->setVoxelAt(x, y, z, minValue);
 				}
 				else
 				{
 					// Otherwise we write random voxel values between zero and the requested maximum
-					int voxelValue = rand() % (maxVoxelValue + 1);
+					int voxelValue = (rand() % (maxValue - minValue + 1)) + minValue;
 					volData->setVoxelAt(x, y, z, static_cast<VoxelType>(voxelValue));
 				}
 			}
@@ -222,10 +241,27 @@ void TestCubicSurfaceExtractor::testExecute()
 	}
 	QCOMPARE(result, uExpectedSumOfVerticesAndIndices);
 
-	auto volData = createAndFillVolumeWithNoise<uint32_t>(2);
-	auto mesh = extractCubicMesh(volData, volData->getEnclosingRegion());
-	QCOMPARE(mesh.getNoOfVertices(), uint32_t(451651));
-	QCOMPARE(mesh.getNoOfIndices(), uint32_t(1715934));
+	auto uint8Vol = createAndFillVolumeWithNoise<uint8_t>(0, 2);
+	auto uint8Mesh = extractCubicMesh(uint8Vol, uint8Vol->getEnclosingRegion());
+	QCOMPARE(uint8Mesh.getNoOfVertices(), uint32_t(57687));
+	QCOMPARE(uint8Mesh.getNoOfIndices(), uint32_t(216234));
+
+	auto int8Vol = createAndFillVolumeWithNoise<int8_t>(0, 2);
+	auto int8Mesh = extractCubicMesh(int8Vol, int8Vol->getEnclosingRegion(), DefaultIsQuadNeeded<int8_t>());
+	QCOMPARE(int8Mesh.getNoOfVertices(), uint32_t(57687));
+	QCOMPARE(int8Mesh.getNoOfIndices(), uint32_t(216234));
+
+	auto uint32Vol = createAndFillVolumeWithNoise<uint32_t>(0, 2);
+	Mesh< CubicVertex< uint32_t >, uint16_t > uint32Mesh;
+	extractCubicProvidedMesh(uint32Vol, uint32Vol->getEnclosingRegion(), &uint32Mesh);
+	QCOMPARE(uint32Mesh.getNoOfVertices(), uint16_t(57687));
+	QCOMPARE(uint32Mesh.getNoOfIndices(), uint32_t(216234));
+
+	auto int32Vol = createAndFillVolumeWithNoise<int32_t>(0, 2);
+	Mesh< CubicVertex< int32_t >, uint16_t > int32Mesh;
+	extractCubicProvidedMesh(int32Vol, int32Vol->getEnclosingRegion(), &int32Mesh, DefaultIsQuadNeeded<int32_t>());
+	QCOMPARE(int32Mesh.getNoOfVertices(), uint16_t(57687));
+	QCOMPARE(int32Mesh.getNoOfIndices(), uint32_t(216234));
 
 }
 

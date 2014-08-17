@@ -36,7 +36,7 @@ namespace PolyVox
 	const uint32_t CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
-	CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
+	CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)

@@ -147,7 +147,7 @@ namespace PolyVox
 		};
 
 	public:
-		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true);
 
 		void execute();		
 
@@ -189,17 +189,17 @@ namespace PolyVox
 	};
 
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
-	void extractCubicMesh(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded())
+	void extractCubicProvidedMesh(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
 	{
-		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
 		extractor.execute();
 	}
 
 	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
-	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded())
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
 	{
 		Mesh< CubicVertex<typename VolumeType::VoxelType> > result;
-		extractCubicMesh(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
+		extractCubicProvidedMesh(volData, region, &result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
 		return result;
 	}
 }
