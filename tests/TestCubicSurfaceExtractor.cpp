@@ -121,6 +121,43 @@ uint32_t testForType(void)
 	return uTotalVertices + uTotalIndices;
 }
 
+// Runs the surface extractor for a given type. 
+template <typename VoxelType>
+SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(VoxelType maxVoxelValue)
+{
+	const int32_t uVolumeSideLength = 64;
+
+	//Create empty volume
+	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), 32);
+
+	srand(12345);
+
+	//Fill the volume with data
+	for (int32_t z = 0; z < uVolumeSideLength; z++)
+	{
+		for (int32_t y = 0; y < uVolumeSideLength; y++)
+		{
+			for (int32_t x = 0; x < uVolumeSideLength; x++)
+			{
+				if (maxVoxelValue == 0)
+				{
+					// This test case is currently only dealing with unsigned voxel, so if
+					// the max requested voxel value is zero then every voxel should be zero
+					volData->setVoxelAt(x, y, z, VoxelType(0));
+				}
+				else
+				{
+					// Otherwise we write random voxel values between zero and the requested maximum
+					int voxelValue = rand() % (maxVoxelValue + 1);
+					volData->setVoxelAt(x, y, z, static_cast<VoxelType>(voxelValue));
+				}
+			}
+		}
+	}
+
+	return volData;
+}
+
 void TestCubicSurfaceExtractor::testExecute()
 {
 	/*const static uint32_t uExpectedVertices = 6624;
@@ -184,6 +221,12 @@ void TestCubicSurfaceExtractor::testExecute()
 		result = testForType<MaterialDensityPair88>();
 	}
 	QCOMPARE(result, uExpectedSumOfVerticesAndIndices);
+
+	auto volData = createAndFillVolumeWithNoise<uint32_t>(2);
+	auto mesh = extractCubicMesh(volData, volData->getEnclosingRegion());
+	QCOMPARE(mesh.getNoOfVertices(), uint32_t(451651));
+	QCOMPARE(mesh.getNoOfIndices(), uint32_t(1715934));
+
 }
 
 QTEST_MAIN(TestCubicSurfaceExtractor)
