@@ -41,7 +41,9 @@ public:
 
 	bool operator()(VoxelType back, VoxelType front, VoxelType& materialToUse)
 	{
-		if ((back > 0) && (front == 0))
+		// Not a useful test - it just does something different 
+		// to the DefaultIsQuadNeeded so we can check it compiles.
+		if ((back > 1) && (front <= 1))
 		{
 			materialToUse = static_cast<VoxelType>(back);
 			return true;
@@ -241,27 +243,31 @@ void TestCubicSurfaceExtractor::testExecute()
 	}
 	QCOMPARE(result, uExpectedSumOfVerticesAndIndices);
 
+	// Test with default mesh and contoller types.
 	auto uint8Vol = createAndFillVolumeWithNoise<uint8_t>(0, 2);
 	auto uint8Mesh = extractCubicMesh(uint8Vol, uint8Vol->getEnclosingRegion());
 	QCOMPARE(uint8Mesh.getNoOfVertices(), uint32_t(57687));
 	QCOMPARE(uint8Mesh.getNoOfIndices(), uint32_t(216234));
 
+	// Test with default mesh type but user-provided controller.
 	auto int8Vol = createAndFillVolumeWithNoise<int8_t>(0, 2);
-	auto int8Mesh = extractCubicMesh(int8Vol, int8Vol->getEnclosingRegion(), DefaultIsQuadNeeded<int8_t>());
-	QCOMPARE(int8Mesh.getNoOfVertices(), uint32_t(57687));
-	QCOMPARE(int8Mesh.getNoOfIndices(), uint32_t(216234));
+	auto int8Mesh = extractCubicMesh(int8Vol, int8Vol->getEnclosingRegion(), CustomIsQuadNeeded<int8_t>());
+	QCOMPARE(int8Mesh.getNoOfVertices(), uint32_t(29027));
+	QCOMPARE(int8Mesh.getNoOfIndices(), uint32_t(178356));
 
+	// Test with default controller but user-provided mesh.
 	auto uint32Vol = createAndFillVolumeWithNoise<uint32_t>(0, 2);
 	Mesh< CubicVertex< uint32_t >, uint16_t > uint32Mesh;
-	extractCubicProvidedMesh(uint32Vol, uint32Vol->getEnclosingRegion(), &uint32Mesh);
+	extractCubicMeshCustom(uint32Vol, uint32Vol->getEnclosingRegion(), &uint32Mesh);
 	QCOMPARE(uint32Mesh.getNoOfVertices(), uint16_t(57687));
 	QCOMPARE(uint32Mesh.getNoOfIndices(), uint32_t(216234));
 
+	// Test with both mesh and controller being provided by the user.
 	auto int32Vol = createAndFillVolumeWithNoise<int32_t>(0, 2);
 	Mesh< CubicVertex< int32_t >, uint16_t > int32Mesh;
-	extractCubicProvidedMesh(int32Vol, int32Vol->getEnclosingRegion(), &int32Mesh, DefaultIsQuadNeeded<int32_t>());
-	QCOMPARE(int32Mesh.getNoOfVertices(), uint16_t(57687));
-	QCOMPARE(int32Mesh.getNoOfIndices(), uint32_t(216234));
+	extractCubicMeshCustom(int32Vol, int32Vol->getEnclosingRegion(), &int32Mesh, CustomIsQuadNeeded<int32_t>());
+	QCOMPARE(int32Mesh.getNoOfVertices(), uint16_t(29027));
+	QCOMPARE(int32Mesh.getNoOfIndices(), uint32_t(178356));
 
 }
 
