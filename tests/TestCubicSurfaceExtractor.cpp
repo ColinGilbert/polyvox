@@ -257,14 +257,14 @@ void TestCubicSurfaceExtractor::testExecute()
 
 	// Test with default controller but user-provided mesh.
 	auto uint32Vol = createAndFillVolumeWithNoise<uint32_t>(0, 2);
-	Mesh< CubicVertex< uint32_t >, uint16_t > uint32Mesh;
+	CubicMesh< uint32_t, uint16_t > uint32Mesh;
 	extractCubicMeshCustom(uint32Vol, uint32Vol->getEnclosingRegion(), &uint32Mesh);
 	QCOMPARE(uint32Mesh.getNoOfVertices(), uint16_t(57687));
 	QCOMPARE(uint32Mesh.getNoOfIndices(), uint32_t(216234));
 
 	// Test with both mesh and controller being provided by the user.
 	auto int32Vol = createAndFillVolumeWithNoise<int32_t>(0, 2);
-	Mesh< CubicVertex< int32_t >, uint16_t > int32Mesh;
+	CubicMesh< int32_t, uint16_t > int32Mesh;
 	extractCubicMeshCustom(int32Vol, int32Vol->getEnclosingRegion(), &int32Mesh, CustomIsQuadNeeded<int32_t>());
 	QCOMPARE(int32Mesh.getNoOfVertices(), uint16_t(29027));
 	QCOMPARE(int32Mesh.getNoOfIndices(), uint32_t(178356));

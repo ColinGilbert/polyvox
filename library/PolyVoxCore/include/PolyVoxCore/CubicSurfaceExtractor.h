@@ -53,6 +53,10 @@ namespace PolyVox
 		DataType data;
 	};
 
+	// Convienient shorthand for declaring a mesh of 'cubic' vertices
+	template <typename VertexDataType, typename IndexType = DefaultIndexType>
+	using CubicMesh = Mesh< CubicVertex<VertexDataType>, IndexType >;
+
 	/// Decodes a position from a CubicVertex
 	inline Vector3DFloat decodePosition(const Vector3DUint8& encodedPosition)
 	{
@@ -196,9 +200,9 @@ namespace PolyVox
 	}
 
 	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
-	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+	CubicMesh<typename VolumeType::VoxelType> extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
 	{
-		Mesh< CubicVertex<typename VolumeType::VoxelType> > result;
+		CubicMesh<typename VolumeType::VoxelType> result;
 		extractCubicMeshCustom(volData, region, &result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
 		return result;
 	}

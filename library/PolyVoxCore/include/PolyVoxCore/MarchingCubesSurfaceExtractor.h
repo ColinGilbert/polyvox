@@ -55,6 +55,10 @@ namespace PolyVox
 		DataType data;
 	};
 
+	// Convienient shorthand for declaring a mesh of marching cubes vertices
+	template <typename VertexDataType, typename IndexType = DefaultIndexType>
+	using MarchingCubesMesh = Mesh< MarchingCubesVertex<VertexDataType>, IndexType >;
+
 	/// Decodes a position from a MarchingCubesVertex
 	inline Vector3DFloat decodePosition(const Vector3DUint16& encodedPosition)
 	{
@@ -339,10 +343,10 @@ namespace PolyVox
 	}
 
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
-	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
+	MarchingCubesMesh<typename VolumeType::VoxelType> extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
-		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
-		extractMarchingCubesMeshCustom<VolumeType, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > >(volData, region, &result, controller, eWrapMode, tBorderValue);
+		MarchingCubesMesh<typename VolumeType::VoxelType> result;
+		extractMarchingCubesMeshCustom(volData, region, &result, controller, eWrapMode, tBorderValue);
 		return result;
 	}
 }
