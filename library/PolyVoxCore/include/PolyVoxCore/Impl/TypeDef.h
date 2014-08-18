@@ -24,6 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TypeDef_H__
 #define __PolyVox_TypeDef_H__
 
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#error "Your version of Visual Studio is too old to build PolyVox. You need at least version Visual Stusio 2013"
+#endif
+
 //Definitions needed to make library functions accessable
 // See http://gcc.gnu.org/wiki/Visibility for more info.
 #if defined _WIN32 || defined __CYGWIN__
