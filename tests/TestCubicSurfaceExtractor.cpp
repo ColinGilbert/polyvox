@@ -63,6 +63,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 	//Create empty volume
 	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)));
 
+	// Seed generator for consistency between runs.
 	srand(12345);
 
 	//Fill the volume with data

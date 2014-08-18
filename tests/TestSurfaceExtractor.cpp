@@ -122,7 +122,41 @@ SimpleVolume<VoxelType>* createAndFillVolume(void)
 	return volData;
 }
 
-void TestSurfaceExtractor::testExecute()
+// From http://stackoverflow.com/a/5289624
+float randomFloat(float a, float b)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
+template <typename VolumeType>
+VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minValue, float maxValue)
+{
+	//Create empty volume
+	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)));
+
+	// Seed generator for consistency between runs.
+	srand(12345);
+
+	// Fill
+	for (int32_t z = 0; z < iVolumeSideLength; z++)
+	{
+		for (int32_t y = 0; y < iVolumeSideLength; y++)
+		{
+			for (int32_t x = 0; x < iVolumeSideLength; x++)
+			{
+				float voxelValue = randomFloat(minValue, maxValue);
+				volData->setVoxelAt(x, y, z, voxelValue);
+			}
+		}
+	}
+
+	return volData;
+}
+
+void TestSurfaceExtractor::testBehaviour()
 {
 	// These tests apply the Marching Cubes surface extractor to volumes of various voxel types. In addition we sometimes make use of custom controllers
 	// and user-provided meshes to make sure these various combinations work as expected.
@@ -174,6 +208,22 @@ void TestSurfaceExtractor::testExecute()
 	QCOMPARE(materialMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
 	QCOMPARE(materialMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
 	QCOMPARE(materialMesh.getVertex(100).data.getMaterial(), uint16_t(79)); // Verify the data attached to the vertex
+}
+
+void TestSurfaceExtractor::testEmptyVolumePerformance()
+{
+	auto emptyVol = createAndFillVolumeWithNoise< SimpleVolume<float> >(128, -2.0f, -1.0f);
+	MarchingCubesMesh< float, uint16_t > emptyMesh;
+	QBENCHMARK{ extractMarchingCubesMeshCustom(emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
+	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
+}
+
+void TestSurfaceExtractor::testNoiseVolumePerformance()
+{
+	auto noiseVol = createAndFillVolumeWithNoise< SimpleVolume<float> >(128, -1.0f, 1.0f);
+	MarchingCubesMesh< float, uint16_t > noiseMesh;
+	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(48967));
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
