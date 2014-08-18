@@ -57,21 +57,19 @@ public:
 
 // Runs the surface extractor for a given type. 
 template <typename VoxelType>
-SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(VoxelType minValue, VoxelType maxValue)
+SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, VoxelType minValue, VoxelType maxValue)
 {
-	const int32_t uVolumeSideLength = 32;
-
 	//Create empty volume
-	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), 16);
+	SimpleVolume<VoxelType>* volData = new SimpleVolume<VoxelType>(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), 32);
 
 	srand(12345);
 
 	//Fill the volume with data
-	for (int32_t z = 0; z < uVolumeSideLength; z++)
+	for (int32_t z = 0; z < iVolumeSideLength; z++)
 	{
-		for (int32_t y = 0; y < uVolumeSideLength; y++)
+		for (int32_t y = 0; y < iVolumeSideLength; y++)
 		{
-			for (int32_t x = 0; x < uVolumeSideLength; x++)
+			for (int32_t x = 0; x < iVolumeSideLength; x++)
 			{
 				if (minValue == maxValue)
 				{
@@ -91,43 +89,49 @@ SimpleVolume<VoxelType>* createAndFillVolumeWithNoise(VoxelType minValue, VoxelT
 	return volData;
 }
 
-void TestCubicSurfaceExtractor::testExecute()
+void TestCubicSurfaceExtractor::testBehaviour()
 {
-	// Behavioural tests
-
 	// Test with default mesh and contoller types.
-	auto uint8Vol = createAndFillVolumeWithNoise<uint8_t>(0, 2);
+	auto uint8Vol = createAndFillVolumeWithNoise<uint8_t>(32, 0, 2);
 	auto uint8Mesh = extractCubicMesh(uint8Vol, uint8Vol->getEnclosingRegion());
 	QCOMPARE(uint8Mesh.getNoOfVertices(), uint32_t(57687));
 	QCOMPARE(uint8Mesh.getNoOfIndices(), uint32_t(216234));
 
 	// Test with default mesh type but user-provided controller.
-	auto int8Vol = createAndFillVolumeWithNoise<int8_t>(0, 2);
+	auto int8Vol = createAndFillVolumeWithNoise<int8_t>(32, 0, 2);
 	auto int8Mesh = extractCubicMesh(int8Vol, int8Vol->getEnclosingRegion(), CustomIsQuadNeeded<int8_t>());
 	QCOMPARE(int8Mesh.getNoOfVertices(), uint32_t(29027));
 	QCOMPARE(int8Mesh.getNoOfIndices(), uint32_t(178356));
 
 	// Test with default controller but user-provided mesh.
-	auto uint32Vol = createAndFillVolumeWithNoise<uint32_t>(0, 2);
+	auto uint32Vol = createAndFillVolumeWithNoise<uint32_t>(32, 0, 2);
 	CubicMesh< uint32_t, uint16_t > uint32Mesh;
 	extractCubicMeshCustom(uint32Vol, uint32Vol->getEnclosingRegion(), &uint32Mesh);
 	QCOMPARE(uint32Mesh.getNoOfVertices(), uint16_t(57687));
 	QCOMPARE(uint32Mesh.getNoOfIndices(), uint32_t(216234));
 
 	// Test with both mesh and controller being provided by the user.
-	auto int32Vol = createAndFillVolumeWithNoise<int32_t>(0, 2);
+	auto int32Vol = createAndFillVolumeWithNoise<int32_t>(32, 0, 2);
 	CubicMesh< int32_t, uint16_t > int32Mesh;
 	extractCubicMeshCustom(int32Vol, int32Vol->getEnclosingRegion(), &int32Mesh, CustomIsQuadNeeded<int32_t>());
 	QCOMPARE(int32Mesh.getNoOfVertices(), uint16_t(29027));
 	QCOMPARE(int32Mesh.getNoOfIndices(), uint32_t(178356));
+}
 
-	// Performance tests
-
-	auto emptyVol = createAndFillVolumeWithNoise<uint32_t>(0, 0);
+void TestCubicSurfaceExtractor::testEmptyVolumePerformance()
+{
+	auto emptyVol = createAndFillVolumeWithNoise<uint32_t>(32, 0, 0);
 	CubicMesh< uint32_t, uint16_t > emptyMesh;
 	QBENCHMARK{ extractCubicMeshCustom(emptyVol, emptyVol->getEnclosingRegion(), &emptyMesh); }
 	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
+}
 
+void TestCubicSurfaceExtractor::testNoiseVolumePerformance()
+{
+	auto noiseVol = createAndFillVolumeWithNoise<uint32_t>(32, 0, 1);
+	CubicMesh< uint32_t, uint16_t > noiseMesh;
+	QBENCHMARK{ extractCubicMeshCustom(noiseVol, noiseVol->getEnclosingRegion(), &noiseMesh); }
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(28429));
 }
 
 QTEST_MAIN(TestCubicSurfaceExtractor)
