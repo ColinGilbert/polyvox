@@ -121,18 +121,18 @@ void TestCubicSurfaceExtractor::testBehaviour()
 
 void TestCubicSurfaceExtractor::testEmptyVolumePerformance()
 {
-	auto emptyVol = createAndFillVolumeWithNoise< RawVolume<uint32_t> >(32, 0, 0);
+	auto emptyVol = createAndFillVolumeWithNoise< SimpleVolume<uint32_t> >(128, 0, 0);
 	CubicMesh< uint32_t, uint16_t > emptyMesh;
-	QBENCHMARK{ extractCubicMeshCustom(emptyVol, emptyVol->getEnclosingRegion(), &emptyMesh); }
+	QBENCHMARK{ extractCubicMeshCustom(emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
 	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
 }
 
 void TestCubicSurfaceExtractor::testNoiseVolumePerformance()
 {
-	auto noiseVol = createAndFillVolumeWithNoise< RawVolume<uint32_t> >(32, 0, 1);
+	auto noiseVol = createAndFillVolumeWithNoise< SimpleVolume<uint32_t> >(128, 0, 2);
 	CubicMesh< uint32_t, uint16_t > noiseMesh;
-	QBENCHMARK{ extractCubicMeshCustom(noiseVol, noiseVol->getEnclosingRegion(), &noiseMesh); }
-	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(28429));
+	QBENCHMARK{ extractCubicMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(57729));
 }
 
 QTEST_MAIN(TestCubicSurfaceExtractor)
