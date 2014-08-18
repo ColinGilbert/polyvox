@@ -151,6 +151,7 @@ namespace PolyVox
 		return result;
 	}
 
+	/// Do not use this class directly. Use the 'extractMarchingCubesSurface' function instead (see examples).
 	template< typename VolumeType, typename MeshType, typename ControllerType>
 	class MarchingCubesSurfaceExtractor
 	{
@@ -332,7 +333,7 @@ namespace PolyVox
 	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
 	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
 	//
-	// Note: This function is called 'extractMarchingCubesCustomMesh' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
+	// Note: This function is called 'extractMarchingCubesMeshCustom' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
 	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
 	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
