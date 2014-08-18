@@ -331,22 +331,18 @@ namespace PolyVox
 	// Note: This function is called 'extractMarchingCubesCustomMesh' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
 	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
 	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
-	//
-	// Note: the last parameter is a dummy, which is used to avoid ambiguities between which version of the function to call by using SFINAE.
 	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
-	void extractMarchingCubesMesh(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), typename MeshType::VertexType doNotUseThisParameter = typename MeshType::VertexType())
+	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
 		MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType> extractor(volData, region, result, controller, eWrapMode, tBorderValue);
 		extractor.execute();
 	}
 
-	// This version of the function is easier to use - it automatically creates and returns a mesh of the appropriate type so the user doesn't have to worry about it.
-	// Note: the last parameter is a dummy, which is used to avoid ambiguities between which version of the function to call by using SFINAE.
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
-	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), typename ControllerType::DensityType doNotUseThisParameter = typename ControllerType::DensityType())
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
 		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
-		extractMarchingCubesMesh<VolumeType, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > >(volData, region, &result, controller, eWrapMode, tBorderValue);
+		extractMarchingCubesMeshCustom<VolumeType, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > >(volData, region, &result, controller, eWrapMode, tBorderValue);
 		return result;
 	}
 }
