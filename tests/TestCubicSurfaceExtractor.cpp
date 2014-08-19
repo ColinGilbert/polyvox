@@ -91,6 +91,40 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 	return volData;
 }
 
+// Runs the surface extractor for a given type. 
+template <typename VolumeType>
+VolumeType* createAndFillVolumeRealistic(int32_t iVolumeSideLength)
+{
+	//Create empty volume
+	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)));
+
+	// Seed generator for consistency between runs.
+	srand(12345);
+
+	//Fill the volume with data
+	for (int32_t z = 0; z < iVolumeSideLength; z++)
+	{
+		for (int32_t y = 0; y < iVolumeSideLength; y++)
+		{
+			for (int32_t x = 0; x < iVolumeSideLength; x++)
+			{
+				// Should create a checker board pattern stretched along z? This is 'realistic' in the sense
+				// that it's not empty/random data, and should allow significant decimation to be performed.
+				if ((x ^ y) & 0x01)
+				{
+					volData->setVoxelAt(x, y, z, 0);
+				}
+				else
+				{
+					volData->setVoxelAt(x, y, z, 1);
+				}
+			}
+		}
+	}
+
+	return volData;
+}
+
 void TestCubicSurfaceExtractor::testBehaviour()
 {
 	// Test with default mesh and contoller types.
@@ -126,6 +160,14 @@ void TestCubicSurfaceExtractor::testEmptyVolumePerformance()
 	Mesh< CubicVertex< uint32_t >, uint16_t > emptyMesh;
 	QBENCHMARK{ extractCubicMeshCustom(emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
 	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
+}
+
+void TestCubicSurfaceExtractor::testRealisticVolumePerformance()
+{
+	auto realisticVol = createAndFillVolumeRealistic< SimpleVolume<uint32_t> >(128);
+	Mesh< CubicVertex< uint32_t >, uint16_t > realisticMesh;
+	QBENCHMARK{ extractCubicMeshCustom(realisticVol, Region(32, 32, 32, 63, 63, 63), &realisticMesh); }
+	QCOMPARE(realisticMesh.getNoOfVertices(), uint16_t(2176));
 }
 
 void TestCubicSurfaceExtractor::testNoiseVolumePerformance()
