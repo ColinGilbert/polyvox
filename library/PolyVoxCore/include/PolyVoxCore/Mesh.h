@@ -81,7 +81,7 @@ namespace PolyVox
 	{
 		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodedMesh;
 
-		for (MeshType::IndexType ct = 0; ct < encodedMesh.getNoOfVertices(); ct++)
+		for (typename MeshType::IndexType ct = 0; ct < encodedMesh.getNoOfVertices(); ct++)
 		{
 			decodedMesh.addVertex(decodeVertex(encodedMesh.getVertex(ct)));
 		}
