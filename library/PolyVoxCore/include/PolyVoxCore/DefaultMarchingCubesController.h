@@ -75,8 +75,15 @@ namespace PolyVox
 		 * if the voxel type is 'float' then the representable range is -FLT_MAX to FLT_MAX and the threshold will be set to zero.
 		 */
 		DefaultMarchingCubesController(void)
-			:m_tThreshold(((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2)
-		{			
+		{	
+			if (std::is_signed<DensityType>())
+			{
+				m_tThreshold = DensityType(0);
+			}
+			else
+			{
+				m_tThreshold = (((std::numeric_limits<DensityType>::min)() + (std::numeric_limits<DensityType>::max)()) / 2);
+			}
 		}
 
 		/**

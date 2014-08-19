@@ -55,6 +55,11 @@ namespace PolyVox
 		DataType data;
 	};
 
+	// Convienient shorthand for declaring a mesh of marching cubes vertices
+	// Currently disabled because it requires GCC 4.7
+	//template <typename VertexDataType, typename IndexType = DefaultIndexType>
+	//using MarchingCubesMesh = Mesh< MarchingCubesVertex<VertexDataType>, IndexType >;
+
 	/// Decodes a position from a MarchingCubesVertex
 	inline Vector3DFloat decodePosition(const Vector3DUint16& encodedPosition)
 	{
@@ -90,8 +95,8 @@ namespace PolyVox
 		// floats into two bytes and store them in a single uint16_t
 
 		// Move from range [-1.0f, 1.0f] to [0.0f, 255.0f]
-		px = (px + 1.0) * 127.5f;
-		py = (py + 1.0) * 127.5f;
+		px = (px + 1.0f) * 127.5f;
+		py = (py + 1.0f) * 127.5f;
 
 		// Convert to uints
 		uint16_t resultX = static_cast<uint16_t>(px + 0.5f);
@@ -147,17 +152,12 @@ namespace PolyVox
 		return result;
 	}
 
-	template< typename VolumeType, typename Controller = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
+	/// Do not use this class directly. Use the 'extractMarchingCubesSurface' function instead (see examples).
+	template< typename VolumeType, typename MeshType, typename ControllerType>
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
-		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
-#if defined(_MSC_VER)
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), Controller controller = Controller());
-#else
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), Controller controller = Controller());
-#endif
+		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType());
 
 		void execute();
 
@@ -306,7 +306,7 @@ namespace PolyVox
 		uint32_t m_uNoOfOccupiedCells;
 
 		//The surface patch we are currently filling.
-		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* m_meshCurrent;
+		MeshType* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
@@ -318,32 +318,38 @@ namespace PolyVox
 		Region m_regSliceCurrent;
 
 		//Used to convert arbitrary voxel types in densities and materials.
-		Controller m_controller;
+		ControllerType m_controller;
 
 		//Our threshold value
-		typename Controller::DensityType m_tThreshold;
+		typename ControllerType::DensityType m_tThreshold;
 	};
 
-	template< typename VolumeType, typename Controller>
-	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
+	// There are a few reasons why this might be useful to more advanced users:
+	//
+	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
+	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
+	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
+	//
+	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
+	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
+	//
+	// Note: This function is called 'extractMarchingCubesMeshCustom' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
+	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
+	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
+	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
+	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
-		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
-		MarchingCubesSurfaceExtractor<VolumeType, Controller> extractor(volData, region, &result, eWrapMode, tBorderValue, controller);
+		MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType> extractor(volData, region, result, controller, eWrapMode, tBorderValue);
 		extractor.execute();
-		return result;
 	}
 
-	template< typename VolumeType>
-	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
-	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
-#if defined(_MSC_VER)
-	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType())
-#else
-	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
-#endif
+	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
+	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType())
 	{
-		DefaultMarchingCubesController<typename VolumeType::VoxelType> controller;
-		return extractMarchingCubesMesh(volData, region, eWrapMode, tBorderValue, controller);
+		Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > result;
+		extractMarchingCubesMeshCustom<VolumeType, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType>, DefaultIndexType > >(volData, region, &result, controller, eWrapMode, tBorderValue);
+		return result;
 	}
 }
 

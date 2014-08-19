@@ -25,8 +25,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template<typename VolumeType, typename Controller>
-	MarchingCubesSurfaceExtractor<VolumeType, Controller>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> >* result, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, Controller controller)
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue)
 		:m_volData(volData)
 		,m_sampVolume(volData)
 		,m_meshCurrent(result)
@@ -34,6 +34,7 @@ namespace PolyVox
 		,m_controller(controller)
 		,m_tThreshold(m_controller.getThreshold())
 	{
+		POLYVOX_THROW_IF(m_meshCurrent == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 		//m_regSizeInVoxels.cropTo(m_volData->getEnclosingRegion());
 		m_regSizeInCells = m_regSizeInVoxels;
 		m_regSizeInCells.setUpperCorner(m_regSizeInCells.getUpperCorner() - Vector3DInt32(1,1,1));
@@ -41,8 +42,8 @@ namespace PolyVox
 		m_sampVolume.setWrapMode(eWrapMode, tBorderValue);
 	}
 
-	template<typename VolumeType, typename Controller>
-	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::execute()
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::execute()
 	{		
 		Timer timer;
 		m_meshCurrent->clear();
@@ -129,9 +130,9 @@ namespace PolyVox
 			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
 	}
 
-	template<typename VolumeType, typename Controller>
+	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	uint32_t MarchingCubesSurfaceExtractor<VolumeType, Controller>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -195,9 +196,9 @@ namespace PolyVox
 		return m_uNoOfOccupiedCells;
 	}
 
-	template<typename VolumeType, typename Controller>
+	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace)
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -395,8 +396,8 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VolumeType, typename Controller>
-	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -535,8 +536,8 @@ namespace PolyVox
 		}
 	}
 
-	template<typename VolumeType, typename Controller>
-	void MarchingCubesSurfaceExtractor<VolumeType, Controller>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,

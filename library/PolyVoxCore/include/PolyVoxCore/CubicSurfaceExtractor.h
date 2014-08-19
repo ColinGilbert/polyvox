@@ -53,6 +53,11 @@ namespace PolyVox
 		DataType data;
 	};
 
+	// Convienient shorthand for declaring a mesh of 'cubic' vertices
+	// Currently disabled because it requires GCC 4.7
+	//template <typename VertexDataType, typename IndexType = DefaultIndexType>
+	//using CubicMesh = Mesh< CubicVertex<VertexDataType>, IndexType >;
+
 	/// Decodes a position from a CubicVertex
 	inline Vector3DFloat decodePosition(const Vector3DUint8& encodedPosition)
 	{
@@ -70,6 +75,102 @@ namespace PolyVox
 		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
 		result.data = cubicVertex.data; // Data is not encoded
 		return result;
+	}
+	
+	/// Do not use this class directly. Use the 'extractCubicSurface' function instead (see examples).
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
+	class CubicSurfaceExtractor
+	{
+		struct IndexAndMaterial
+		{
+			int32_t iIndex;
+			typename VolumeType::VoxelType uMaterial;
+		};
+
+		enum FaceNames
+		{
+			PositiveX,
+			PositiveY,
+			PositiveZ,
+			NegativeX,
+			NegativeY,
+			NegativeZ,
+			NoOfFaces
+		};
+
+		struct Quad
+		{
+			Quad(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3)
+			{
+				vertices[0] = v0;
+				vertices[1] = v1;
+				vertices[2] = v2;
+				vertices[3] = v3;
+			}
+
+			uint32_t vertices[4];
+		};
+
+	public:
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true);
+
+		void execute();		
+
+	private:
+		int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterial, Array<3, IndexAndMaterial>& existingVertices);
+		bool performQuadMerging(std::list<Quad>& quads);
+		bool mergeQuads(Quad& q1, Quad& q2);
+
+		IsQuadNeeded m_funcIsQuadNeededCallback;
+
+		//The volume data and a sampler to access it.
+		VolumeType* m_volData;
+
+		//Information about the region we are currently processing
+		Region m_regSizeInVoxels;
+
+		//The surface patch we are currently filling.
+		MeshType* m_meshCurrent;
+
+		//Used to avoid creating duplicate vertices.
+		Array<3, IndexAndMaterial> m_previousSliceVertices;
+		Array<3, IndexAndMaterial> m_currentSliceVertices;
+
+		//During extraction we create a number of different lists of quads. All the 
+		//quads in a given list are in the same plane and facing in the same direction.
+		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
+
+		//Controls whether quad merging should be performed. This might be undesirable
+		//is the user needs per-vertex attributes, or to perform per vertex lighting.
+		bool m_bMergeQuads;
+
+		//This constant defines the maximum number of quads which can share a
+		//vertex in a cubic style mesh. See the initialisation for more details.
+		static const uint32_t MaxVerticesPerPosition;
+
+		//The wrap mode
+		WrapMode m_eWrapMode;
+		typename VolumeType::VoxelType m_tBorderValue;
+	};
+
+	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
+	// There are a few reasons why this might be useful to more advanced users:
+	//
+	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
+	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
+	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
+	//
+	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
+	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
+	//
+	// Note: This function is called 'extractCubicMeshCustom' rather than 'extractCubicMesh' to avoid ambiguity when only three parameters
+	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
+	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
+	template<typename VolumeType, typename MeshType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
+	void extractCubicMeshCustom(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+	{
+		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
+		extractor.execute();
 	}
 
 	/// The CubicSurfaceExtractor creates a mesh in which each voxel appears to be rendered as a cube
@@ -113,109 +214,12 @@ namespace PolyVox
 	///
 	/// Another scenario which sometimes results in confusion is when you wish to extract a region which corresponds to the whole volume, partcularly when solid voxels extend right to the edge of the volume.  
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
-	class CubicSurfaceExtractor
+	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
 	{
-		struct IndexAndMaterial
-		{
-			int32_t iIndex;
-			typename VolumeType::VoxelType uMaterial;
-		};
-
-		enum FaceNames
-		{
-			PositiveX,
-			PositiveY,
-			PositiveZ,
-			NegativeX,
-			NegativeY,
-			NegativeZ,
-			NoOfFaces
-		};
-
-		struct Quad
-		{
-			Quad(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3)
-			{
-				vertices[0] = v0;
-				vertices[1] = v1;
-				vertices[2] = v2;
-				vertices[3] = v3;
-			}
-
-			uint32_t vertices[4];
-		};
-
-	public:
-		// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
-		// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
-#if defined(_MSC_VER)
-		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
-#else
-		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true, IsQuadNeeded isQuadNeeded = IsQuadNeeded());
-#endif
-
-
-		void execute();		
-
-	private:
-		int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterial, Array<3, IndexAndMaterial>& existingVertices);
-		bool performQuadMerging(std::list<Quad>& quads);
-		bool mergeQuads(Quad& q1, Quad& q2);
-
-		IsQuadNeeded m_funcIsQuadNeededCallback;
-
-		//The volume data and a sampler to access it.
-		VolumeType* m_volData;
-
-		//Information about the region we are currently processing
-		Region m_regSizeInVoxels;
-
-		//The surface patch we are currently filling.
-		MeshType* m_meshCurrent;
-
-		//Used to avoid creating duplicate vertices.
-		Array<3, IndexAndMaterial> m_previousSliceVertices;
-		Array<3, IndexAndMaterial> m_currentSliceVertices;
-
-		//During extraction we create a number of different lists of quads. All the 
-		//quads in a given list are in the same plane and facing in the same direction.
-		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
-
-		//Controls whether quad merging should be performed. This might be undesirable
-		//is the user needs per-vertex attributes, or to perform per vertex lighting.
-		bool m_bMergeQuads;
-
-		//This constant defines the maximum number of quads which can share a
-		//vertex in a cubic style mesh. See the initialisation for more details.
-		static const uint32_t MaxVerticesPerPosition;
-
-		//The wrap mode
-		WrapMode m_eWrapMode;
-		typename VolumeType::VoxelType m_tBorderValue;
-	};
-
-	template<typename VolumeType, typename IsQuadNeeded>
-	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads, IsQuadNeeded isQuadNeeded)
-	{
-		typedef Mesh<CubicVertex<typename VolumeType::VoxelType> > MeshType;
-		MeshType result;
-		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, &result, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
-		extractor.execute();
+		Mesh< CubicVertex<typename VolumeType::VoxelType> > result;
+		extractCubicMeshCustom(volData, region, &result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
 		return result;
-	}
-
-	template<typename VolumeType>
-	// This is a bit ugly - it seems that the C++03 syntax is different from the C++11 syntax? See this thread: http://stackoverflow.com/questions/6076015/typename-outside-of-template
-	// Long term we should probably come back to this and if the #ifdef is still needed then maybe it should check for C++11 mode instead of MSVC? 
-#if defined(_MSC_VER)
-	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = VolumeType::VoxelType(), bool bMergeQuads = true)
-#else
-	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
-#endif
-	{
-		DefaultIsQuadNeeded<typename VolumeType::VoxelType> isQuadNeeded;
-		return extractCubicMesh<VolumeType, DefaultIsQuadNeeded<typename VolumeType::VoxelType> >(volData, region, eWrapMode, tBorderValue, bMergeQuads, isQuadNeeded);
 	}
 }
 

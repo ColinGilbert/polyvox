@@ -31,7 +31,10 @@ class TestCubicSurfaceExtractor: public QObject
 	Q_OBJECT
 	
 	private slots:
-		void testExecute();
+		void testBehaviour();
+		void testEmptyVolumePerformance();
+		void testRealisticVolumePerformance();
+		void testNoiseVolumePerformance();
 };
 
 #endif

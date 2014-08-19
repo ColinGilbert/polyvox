@@ -50,43 +50,51 @@ namespace PolyVox
 		Mesh();
 		~Mesh();	   
 
-		const std::vector<IndexType>& getIndices(void) const;
-		uint32_t getNoOfIndices(void) const;
 		IndexType getNoOfVertices(void) const;
-		const std::vector<VertexType>& getVertices(void) const;
-		const Vector3DInt32& getOffset(void) const;
+		const VertexType& getVertex(IndexType index) const;
+		const VertexType* getRawVertexData(void) const;
+		POLYVOX_DEPRECATED const std::vector<VertexType>& getVertices(void) const;
 
+		uint32_t getNoOfIndices(void) const;
+		IndexType getIndex(uint32_t index) const;
+		const IndexType* getRawIndexData(void);
+		POLYVOX_DEPRECATED const std::vector<IndexType>& getIndices(void) const;
+
+		const Vector3DInt32& getOffset(void) const;
 		void setOffset(const Vector3DInt32& offset);
 
-		void addTriangle(IndexType index0, IndexType index1, IndexType index2);
 		IndexType addVertex(const VertexType& vertex);
+		void addTriangle(IndexType index0, IndexType index1, IndexType index2);
+
 		void clear(void);
 		bool isEmpty(void) const;
-		void removeUnusedVertices(void);
-
-		Vector3DInt32 m_offset;
+		void removeUnusedVertices(void);		
 	
-	public:		
-		std::vector<IndexType> m_vecTriangleIndices;
+	private:		
+		std::vector<IndexType> m_vecIndices;
 		std::vector<VertexType> m_vecVertices;
+		Vector3DInt32 m_offset;
 	};
 
 	template <typename MeshType>
-	Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodeMesh(const MeshType& mesh)
+	Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodeMesh(const MeshType& encodedMesh)
 	{
-		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > result;
-		result.m_vecVertices.resize(mesh.m_vecVertices.size());
+		Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodedMesh;
 
-		for(typename MeshType::IndexType ct = 0; ct < mesh.m_vecVertices.size(); ct++)
+		for (typename MeshType::IndexType ct = 0; ct < encodedMesh.getNoOfVertices(); ct++)
 		{
-			result.m_vecVertices[ct] = decodeVertex(mesh.m_vecVertices[ct]);
+			decodedMesh.addVertex(decodeVertex(encodedMesh.getVertex(ct)));
 		}
 
-		result.m_vecTriangleIndices = mesh.m_vecTriangleIndices;
+		POLYVOX_ASSERT(encodedMesh.getNoOfIndices() % 3 == 0, "The number of indices must always be a multiple of three.");
+		for (uint32_t ct = 0; ct < encodedMesh.getNoOfIndices(); ct += 3)
+		{
+			decodedMesh.addTriangle(encodedMesh.getIndex(ct), encodedMesh.getIndex(ct + 1), encodedMesh.getIndex(ct + 2));
+		}
 
-		result.m_offset = mesh.m_offset;
+		decodedMesh.setOffset(encodedMesh.getOffset());
 
-		return result;
+		return decodedMesh;
 	}
 }
 

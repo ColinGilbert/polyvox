@@ -161,7 +161,7 @@ void OpenGLWidget::paintGL()
 		// Bind the vertex array for the current mesh
 		glBindVertexArray(meshData.vertexArrayObject);
 		// Draw the mesh
-		glDrawElements(GL_TRIANGLES, meshData.noOfIndices, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, meshData.noOfIndices, meshData.indexType, 0);
 		// Unbind the vertex array.
 		glBindVertexArray(0);
 	}
