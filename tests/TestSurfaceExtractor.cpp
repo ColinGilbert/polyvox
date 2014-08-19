@@ -182,9 +182,10 @@ void TestSurfaceExtractor::testBehaviour()
 	QCOMPARE(floatMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit indices
 	QCOMPARE(floatMesh.getVertex(100).data, float(1.0f)); // Not really meaningful for a primative type
 
-	// This test makes use of a user provided mesh, while stil using the default controller.
+	// This test makes use of a user provided mesh. It uses the default controller, but we have to explicitly provide this because C++ won't let us
+	// use a default for the second-to-last parameter but noot use a default for the last parameter.
 	auto intVol = createAndFillVolume<int8_t>();
-	MarchingCubesMesh< int8_t, uint16_t > intMesh;
+	Mesh< MarchingCubesVertex< int8_t >, uint16_t > intMesh;
 	extractMarchingCubesMeshCustom(intVol, intVol->getEnclosingRegion(), &intMesh);
 	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
 	QCOMPARE(intMesh.getNoOfIndices(), uint32_t(34041)); // Verifies size of mesh
@@ -194,7 +195,7 @@ void TestSurfaceExtractor::testBehaviour()
 	// This test makes use of a user-provided mesh and also a custom controller.
 	auto doubleVol = createAndFillVolume<double>();
 	CustomMarchingCubesController doubleCustomController;
-	MarchingCubesMesh< double, uint16_t > doubleMesh;
+	Mesh< MarchingCubesVertex< double >, uint16_t > doubleMesh;
 	extractMarchingCubesMeshCustom(doubleVol, doubleVol->getEnclosingRegion(), &doubleMesh, doubleCustomController);
 	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(16113)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(doubleMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
@@ -213,7 +214,7 @@ void TestSurfaceExtractor::testBehaviour()
 void TestSurfaceExtractor::testEmptyVolumePerformance()
 {
 	auto emptyVol = createAndFillVolumeWithNoise< SimpleVolume<float> >(128, -2.0f, -1.0f);
-	MarchingCubesMesh< float, uint16_t > emptyMesh;
+	Mesh< MarchingCubesVertex< float >, uint16_t > emptyMesh;
 	QBENCHMARK{ extractMarchingCubesMeshCustom(emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
 	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
 }
@@ -221,7 +222,7 @@ void TestSurfaceExtractor::testEmptyVolumePerformance()
 void TestSurfaceExtractor::testNoiseVolumePerformance()
 {
 	auto noiseVol = createAndFillVolumeWithNoise< SimpleVolume<float> >(128, -1.0f, 1.0f);
-	MarchingCubesMesh< float, uint16_t > noiseMesh;
+	Mesh< MarchingCubesVertex< float >, uint16_t > noiseMesh;
 	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
 	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(48967));
 }

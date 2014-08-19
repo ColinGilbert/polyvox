@@ -54,8 +54,9 @@ namespace PolyVox
 	};
 
 	// Convienient shorthand for declaring a mesh of 'cubic' vertices
-	template <typename VertexDataType, typename IndexType = DefaultIndexType>
-	using CubicMesh = Mesh< CubicVertex<VertexDataType>, IndexType >;
+	// Currently disabled because it requires GCC 4.7
+	//template <typename VertexDataType, typename IndexType = DefaultIndexType>
+	//using CubicMesh = Mesh< CubicVertex<VertexDataType>, IndexType >;
 
 	/// Decodes a position from a CubicVertex
 	inline Vector3DFloat decodePosition(const Vector3DUint8& encodedPosition)
@@ -214,9 +215,9 @@ namespace PolyVox
 	/// Another scenario which sometimes results in confusion is when you wish to extract a region which corresponds to the whole volume, partcularly when solid voxels extend right to the edge of the volume.  
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
-	CubicMesh<typename VolumeType::VoxelType> extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
 	{
-		CubicMesh<typename VolumeType::VoxelType> result;
+		Mesh< CubicVertex<typename VolumeType::VoxelType> > result;
 		extractCubicMeshCustom(volData, region, &result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
 		return result;
 	}
