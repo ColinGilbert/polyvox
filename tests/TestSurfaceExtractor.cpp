@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Density.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/SimpleVolume.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 
