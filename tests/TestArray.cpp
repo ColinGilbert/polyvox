@@ -25,39 +25,11 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Array.h"
 
+#include "PolyVoxCore/Impl/Array2D.h"
+
 #include <QtTest>
 
 using namespace PolyVox;
-
-template <typename ElementType>
-class Array2D
-{
-public:
-
-	Array2D(uint32_t width, uint32_t height)
-		:m_uWidth(width)
-		,m_uHeight(height)
-		,m_pData(0)
-	{
-		m_pData = new ElementType[m_uWidth * m_uHeight];
-	}
-
-	~Array2D()
-	{
-		delete[] m_pData;
-	}
-
-	ElementType& operator()(uint32_t x, uint32_t y)
-	{
-		return m_pData[y * m_uWidth + x];
-	}
-
-private:
-
-	uint32_t m_uWidth;
-	uint32_t m_uHeight;
-	ElementType* m_pData;
-};
 
 void TestArray::testCArraySpeed()
 {

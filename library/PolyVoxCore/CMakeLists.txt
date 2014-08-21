@@ -108,6 +108,7 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
+	include/PolyVoxCore/Impl/Array2D.h
 	include/PolyVoxCore/Impl/ArraySizesImpl.h
 	include/PolyVoxCore/Impl/ArraySizesImpl.inl
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
