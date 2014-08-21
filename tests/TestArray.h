@@ -31,6 +31,8 @@ class TestArray: public QObject
 	Q_OBJECT
 	
 	private slots:
+		void testCArraySpeed();
+		void testPolyVoxArraySpeed();
 		void testReadWrite();
 };
 

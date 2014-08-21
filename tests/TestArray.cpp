@@ -29,6 +29,52 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
+void TestArray::testCArraySpeed()
+{
+	const int width = 128;
+	const int height = 128;
+
+	int cArray[width][height];
+
+	QBENCHMARK
+	{
+		int ct = 1;
+		int expectedTotal = 0;
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				cArray[x][y] = ct;
+				expectedTotal += cArray[x][y];
+				ct++;
+			}
+		}
+	}
+}
+
+void TestArray::testPolyVoxArraySpeed()
+{
+	const int width = 128;
+	const int height = 128;
+
+	Array<2, int> polyvoxArray(ArraySizes(width)(height));
+
+	QBENCHMARK
+	{
+		int ct = 1;
+		int expectedTotal = 0;
+		for (int y = 0; y < height; y++)
+		{
+			for (int x = 0; x < width; x++)
+			{
+				polyvoxArray[x][y] = ct;
+				expectedTotal += polyvoxArray[x][y];
+				ct++;
+			}
+		}
+	}
+}
+
 void TestArray::testReadWrite()
 {
 	int width = 5;
