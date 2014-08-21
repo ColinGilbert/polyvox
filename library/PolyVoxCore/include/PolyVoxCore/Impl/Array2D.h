@@ -44,9 +44,31 @@ namespace PolyVox
 			delete[] m_pData;
 		}
 
+		ElementType operator()(uint32_t x, uint32_t y) const
+		{
+			return m_pData[y * m_uWidth + x];
+		}
+
 		ElementType& operator()(uint32_t x, uint32_t y)
 		{
 			return m_pData[y * m_uWidth + x];
+		}
+
+		ElementType* getRawData()
+		{
+			return m_pData;
+		}
+
+		size_t getNoOfElements()
+		{
+			return m_uWidth * m_uHeight;
+		}
+
+		void swap(Array2D& other)
+		{
+			ElementType* temp = other.m_pData;
+			other.m_pData = m_pData;
+			m_pData = temp;
 		}
 
 	private:
@@ -55,6 +77,23 @@ namespace PolyVox
 		uint32_t m_uHeight;
 		ElementType* m_pData;
 	};
+
+	///A 2D Array of floats.
+	typedef Array2D<float> Array2DFloat;
+	///A 2D Array of doubles.
+	typedef Array2D<double> Array2DDouble;
+	///A 2D Array of signed 8-bit values.
+	typedef Array2D<int8_t> Array2DInt8;
+	///A 2D Array of unsigned 8-bit values.
+	typedef Array2D<uint8_t> Array2DUint8;
+	///A 2D Array of signed 16-bit values.
+	typedef Array2D<int16_t> Array2DInt16;
+	///A 2D Array of unsigned 16-bit values.
+	typedef Array2D<uint16_t> Array2DUint16;
+	///A 2D Array of signed 32-bit values.
+	typedef Array2D<int32_t> Array2DInt32;
+	///A 2D Array of unsigned 32-bit values.
+	typedef Array2D<uint32_t> Array2DUint32;
 }
 
 #endif //__PolyVox_Array2D_H__

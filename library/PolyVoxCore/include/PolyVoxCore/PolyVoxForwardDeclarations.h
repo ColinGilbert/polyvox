@@ -44,14 +44,14 @@ namespace PolyVox
 	typedef Array<1,int32_t> Array1DInt32;
 	typedef Array<1,uint32_t> Array1DUint32;
 
-	typedef Array<2,float> Array2DFloat;
+	/*typedef Array<2,float> Array2DFloat;
 	typedef Array<2,double> Array2DDouble;
 	typedef Array<2,int8_t> Array2DInt8;
 	typedef Array<2,uint8_t> Array2DUint8;
 	typedef Array<2,int16_t> Array2DInt16;
 	typedef Array<2,uint16_t> Array2DUint16;
 	typedef Array<2,int32_t> Array2DInt32;
-	typedef Array<2,uint32_t> Array2DUint32;
+	typedef Array<2,uint32_t> Array2DUint32;*/
 
 	typedef Array<3,float> Array3DFloat;
 	typedef Array<3,double> Array3DDouble;

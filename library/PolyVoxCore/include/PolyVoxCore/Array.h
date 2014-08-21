@@ -171,7 +171,7 @@ namespace PolyVox
 	typedef Array<1,uint32_t> Array1DUint32;
 
 	///A 2D Array of floats.
-	typedef Array<2,float> Array2DFloat;
+	/*typedef Array<2,float> Array2DFloat;
 	///A 2D Array of doubles.
     typedef Array<2,double> Array2DDouble;
 	///A 2D Array of signed 8-bit values.
@@ -185,7 +185,7 @@ namespace PolyVox
 	///A 2D Array of signed 32-bit values.
 	typedef Array<2,int32_t> Array2DInt32;
 	///A 2D Array of unsigned 32-bit values.
-	typedef Array<2,uint32_t> Array2DUint32;
+	typedef Array<2,uint32_t> Array2DUint32;*/
 
 	///A 3D Array of floats.
 	typedef Array<3,float> Array3DFloat;
