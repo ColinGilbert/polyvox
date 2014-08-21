@@ -156,8 +156,6 @@ namespace PolyVox
 	template< typename VolumeType, typename MeshType, typename ControllerType>
 	class MarchingCubesSurfaceExtractor
 	{
-	private:
-		const static int BitmaskSize = 128;
 	public:
 		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller, WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType());
 
@@ -166,14 +164,14 @@ namespace PolyVox
 	private:
 		//Compute the cell bitmask for a particular slice in z.
 		template<bool isPrevZAvail>
-		uint32_t computeBitmaskForSlice(uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize], uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize]);
+		uint32_t computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask);
 
 		//Compute the cell bitmask for a given cell.
 		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-		void computeBitmaskForCell(uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize], uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize], uint32_t uXRegSpace, uint32_t uYRegSpace);
+		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace);
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
-		void generateVerticesForSlice(uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize],
+		void generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 			Array2DInt32& m_pCurrentVertexIndicesX,
 			Array2DInt32& m_pCurrentVertexIndicesY,
 			Array2DInt32& m_pCurrentVertexIndicesZ);
@@ -293,7 +291,7 @@ namespace PolyVox
 		////////////////////////////////////////////////////////////////////////////////
 
 		//Use the cell bitmasks to generate all the indices needed for that slice
-		void generateIndicesForSlice(uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize],
+		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 			const Array2DInt32& m_pPreviousVertexIndicesX,
 			const Array2DInt32& m_pPreviousVertexIndicesY,
 			const Array2DInt32& m_pPreviousVertexIndicesZ,

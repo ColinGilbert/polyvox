@@ -52,12 +52,6 @@ namespace PolyVox
 		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 1;
 		const uint32_t arraySizes[2]= {uArrayWidth, uArrayHeight}; // Array dimensions
 
-		// PolyVox has a hardcoded limit on how big the regions it can extract are. This lets us allocate various
-		// arrays at compile time rather than run time. If you *really* need to you can increase this by changing
-		// the 'BitmaskSize' constant, but you should be sure you really know what you are doing. 
-		POLYVOX_THROW_IF(uArrayWidth > BitmaskSize, std::invalid_argument, "Requested extraction region is too large");
-		POLYVOX_THROW_IF(uArrayHeight > BitmaskSize, std::invalid_argument, "Requested extraction region is too large");
-
 		//For edge indices
 		Array2DInt32 m_pPreviousVertexIndicesX(arraySizes);
 		Array2DInt32 m_pPreviousVertexIndicesY(arraySizes);
@@ -66,8 +60,8 @@ namespace PolyVox
 		Array2DInt32 m_pCurrentVertexIndicesY(arraySizes);
 		Array2DInt32 m_pCurrentVertexIndicesZ(arraySizes);
 
-		uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize];
-		uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize];
+		Array2DUint8 pPreviousBitmask(arraySizes);
+		Array2DUint8 pCurrentBitmask(arraySizes);
 
 		//Create a region corresponding to the first slice
 		m_regSlicePrevious = m_regSizeInVoxels;
@@ -92,8 +86,7 @@ namespace PolyVox
 		}
 
 		std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-		//pPreviousBitmask.swap(pCurrentBitmask);
-		memcpy(pPreviousBitmask, pCurrentBitmask, BitmaskSize * BitmaskSize);
+		pPreviousBitmask.swap(pCurrentBitmask);
 		m_pPreviousVertexIndicesX.swap(m_pCurrentVertexIndicesX);
 		m_pPreviousVertexIndicesY.swap(m_pCurrentVertexIndicesY);
 		m_pPreviousVertexIndicesZ.swap(m_pCurrentVertexIndicesZ);
@@ -121,8 +114,7 @@ namespace PolyVox
 			}
 
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-			//pPreviousBitmask.swap(pCurrentBitmask);
-			memcpy(pPreviousBitmask, pCurrentBitmask, BitmaskSize * BitmaskSize);
+			pPreviousBitmask.swap(pCurrentBitmask);
 			m_pPreviousVertexIndicesX.swap(m_pCurrentVertexIndicesX);
 			m_pPreviousVertexIndicesY.swap(m_pCurrentVertexIndicesY);
 			m_pPreviousVertexIndicesZ.swap(m_pCurrentVertexIndicesZ);
@@ -140,7 +132,7 @@ namespace PolyVox
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize], uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize])
+	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
@@ -206,7 +198,7 @@ namespace PolyVox
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForCell(uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize], uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize], uint32_t uXRegSpace, uint32_t uYRegSpace)
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace)
 	{
 		uint8_t iCubeIndex = 0;
 
@@ -405,7 +397,7 @@ namespace PolyVox
 	}
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(uint8_t pCurrentBitmask[BitmaskSize][BitmaskSize],
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
 		Array2DInt32& m_pCurrentVertexIndicesX,
 		Array2DInt32& m_pCurrentVertexIndicesY,
 		Array2DInt32& m_pCurrentVertexIndicesZ)
@@ -545,7 +537,7 @@ namespace PolyVox
 	}
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateIndicesForSlice(uint8_t pPreviousBitmask[BitmaskSize][BitmaskSize],
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
 		const Array2DInt32& m_pPreviousVertexIndicesX,
 		const Array2DInt32& m_pPreviousVertexIndicesY,
 		const Array2DInt32& m_pPreviousVertexIndicesZ,
