@@ -115,6 +115,9 @@ OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVe
 	meshData.translation = QVector3D(translation.getX(), translation.getY(), translation.getZ());
 	meshData.scale = scale;
 
+	// Set 16 or 32-bit index buffer size.
+	meshData.indexType = sizeof(PolyVox::Mesh< PolyVox::MarchingCubesVertex< uint8_t > >::IndexType) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+
 	return meshData;
 }
 
