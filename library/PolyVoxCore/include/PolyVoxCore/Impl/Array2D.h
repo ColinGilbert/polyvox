@@ -50,11 +50,13 @@ namespace PolyVox
 
 		ElementType operator()(uint32_t x, uint32_t y) const
 		{
+			POLYVOX_ASSERT((x < m_uWidth && y < m_uHeight), "Array access is out-of-range.");
 			return m_pData[y * m_uWidth + x];
 		}
 
 		ElementType& operator()(uint32_t x, uint32_t y)
 		{
+			POLYVOX_ASSERT((x < m_uWidth && y < m_uHeight), "Array access is out-of-range.");
 			return m_pData[y * m_uWidth + x];
 		}
 
