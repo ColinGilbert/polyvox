@@ -33,22 +33,26 @@ using namespace PolyVox;
 
 void TestArray::testCArraySpeed()
 {
-	const int width = 128;
-	const int height = 128;
+	const int width = 32;
+	const int height = 32;
+	const int depth = 32;
 
-	int cArray[width][height];
+	int cArray[width][height][depth];
 
 	QBENCHMARK
 	{
 		int ct = 1;
 		int expectedTotal = 0;
-		for (int y = 0; y < height; y++)
+		for (int z = 0; z < depth; z++)
 		{
-			for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
 			{
-				cArray[x][y] = ct;
-				expectedTotal += cArray[x][y];
-				ct++;
+				for (int x = 0; x < width; x++)
+				{
+					cArray[x][y][z] = ct;
+					expectedTotal += cArray[x][y][z];
+					ct++;
+				}
 			}
 		}
 	}
@@ -56,22 +60,26 @@ void TestArray::testCArraySpeed()
 
 void TestArray::testPolyVoxArraySpeed()
 {
-	const int width = 128;
-	const int height = 128;
+	const int width = 32;
+	const int height = 32;
+	const int depth = 32;
 
-	Array<2, int> polyvoxArray(ArraySizes(width)(height));
+	Array<3, int> polyvoxArray(ArraySizes(width)(height)(depth));
 
 	QBENCHMARK
 	{
 		int ct = 1;
 		int expectedTotal = 0;
-		for (int y = 0; y < height; y++)
+		for (int z = 0; z < depth; z++)
 		{
-			for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
 			{
-				polyvoxArray[x][y] = ct;
-				expectedTotal += polyvoxArray[x][y];
-				ct++;
+				for (int x = 0; x < width; x++)
+				{
+					polyvoxArray[x][y][z] = ct;
+					expectedTotal += polyvoxArray[x][y][z];
+					ct++;
+				}
 			}
 		}
 	}
@@ -79,22 +87,26 @@ void TestArray::testPolyVoxArraySpeed()
 
 void TestArray::testPolyVoxArray2DSpeed()
 {
-	const int width = 128;
-	const int height = 128;
+	const int width = 32;
+	const int height = 32;
+	const int depth = 32;
 
-	Array2D<int> polyvoxArray(width,height);
+	Array2D<3, int> polyvoxArray(width, height, depth);
 
 	QBENCHMARK
 	{
 		int ct = 1;
 		int expectedTotal = 0;
-		for (int y = 0; y < height; y++)
+		for (int z = 0; z < depth; z++)
 		{
-			for (int x = 0; x < width; x++)
+			for (int y = 0; y < height; y++)
 			{
-				polyvoxArray(x,y) = ct;
-				expectedTotal += polyvoxArray(x,y);
-				ct++;
+				for (int x = 0; x < width; x++)
+				{
+					polyvoxArray(x, y, z) = ct;
+					expectedTotal += polyvoxArray(x, y, z);
+					ct++;
+				}
 			}
 		}
 	}
