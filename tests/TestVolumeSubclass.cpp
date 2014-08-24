@@ -23,7 +23,8 @@ freely, subject to the following restrictions:
 
 #include "TestVolumeSubclass.h"
 
-#include "PolyVoxCore/Array.h"
+#include "PolyVoxCore/Impl/Array2D.h"
+
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/Material.h"
@@ -62,8 +63,9 @@ public:
 	/// Constructor for creating a fixed size volume.
 	VolumeSubclass(const Region& regValid)
 		:BaseVolume<VoxelType>(regValid)
+		, mVolumeData(this->getWidth(), this->getHeight(), this->getDepth())
 	{
-		mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
+		//mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
 	}
 	/// Destructor
 	~VolumeSubclass() {};
@@ -97,7 +99,7 @@ public:
 					POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
 				}
 
-				return mVolumeData[uXPos][uYPos][uZPos];
+				return mVolumeData(uXPos, uYPos, uZPos);
 			}
 		case WrapModes::Clamp:
 			{
@@ -108,13 +110,13 @@ public:
 				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
 				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
 				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
-				return mVolumeData[uXPos][uYPos][uZPos];
+				return mVolumeData(uXPos, uYPos, uZPos);
 			}
 		case WrapModes::Border:
 			{
 				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 				{
-					return mVolumeData[uXPos][uYPos][uZPos];
+					return mVolumeData(uXPos, uYPos, uZPos);
 				}
 				else
 				{
@@ -123,7 +125,7 @@ public:
 			}
 		case WrapModes::AssumeValid:
 			{
-				return mVolumeData[uXPos][uYPos][uZPos];
+				return mVolumeData(uXPos, uYPos, uZPos);
 			}
 		default:
 			{
@@ -147,7 +149,7 @@ public:
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			mVolumeData[uXPos][uYPos][uZPos] = tValue;
+			mVolumeData(uXPos, uYPos, uZPos) = tValue;
 			return true;
 		}
 		else
@@ -165,7 +167,7 @@ public:
 	//void resize(const Region& regValidRegion);
 
 private:	
-	Array<3, VoxelType> mVolumeData;
+	Array2D<3, VoxelType> mVolumeData;
 };
 
 void TestVolumeSubclass::testExtractSurface()
