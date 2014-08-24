@@ -39,6 +39,10 @@ namespace PolyVox
 			m_pData = new ElementType[m_uWidth * m_uHeight];
 		}
 
+		// These are deleted to avoid accidental copying.
+		Array2D<ElementType>(const Array2D<ElementType>&) = delete;
+		Array2D<ElementType>& operator=(const Array2D<ElementType>&) = delete;
+
 		~Array2D()
 		{
 			delete[] m_pData;
@@ -72,10 +76,6 @@ namespace PolyVox
 		}
 
 	private:
-
-		// These are private to avoid accidental copying.
-		Array2D<ElementType>(const Array2D<ElementType>& rhs);
-		Array2D<ElementType>& operator=(const Array2D<ElementType>& rhs);
 
 		uint32_t m_uWidth;
 		uint32_t m_uHeight;
