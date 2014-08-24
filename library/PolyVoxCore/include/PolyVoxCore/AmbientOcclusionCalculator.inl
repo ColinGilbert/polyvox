@@ -128,7 +128,7 @@ namespace PolyVox
 						POLYVOX_ASSERT((fVisibility >= 0.0f) && (fVisibility <= 1.0f), "Visibility value out of range.");
 					}
 
-					(*arrayResult)[z / iRatioZ][y / iRatioY][x / iRatioX] = static_cast<uint8_t>(255.0f * fVisibility);
+					(*arrayResult)(z / iRatioZ, y / iRatioY, x / iRatioX) = static_cast<uint8_t>(255.0f * fVisibility);
 				}
 			}
 		}

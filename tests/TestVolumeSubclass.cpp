@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "TestVolumeSubclass.h"
 
-#include "PolyVoxCore/Impl/Array2D.h"
+#include "PolyVoxCore/Array.h"
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/CubicSurfaceExtractor.h"
@@ -167,7 +167,7 @@ public:
 	//void resize(const Region& regValidRegion);
 
 private:	
-	Array2D<3, VoxelType> mVolumeData;
+	Array<3, VoxelType> mVolumeData;
 };
 
 void TestVolumeSubclass::testExtractSurface()

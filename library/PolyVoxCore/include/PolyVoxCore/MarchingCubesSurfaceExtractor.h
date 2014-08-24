@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "Impl/MarchingCubesTables.h"
 #include "Impl/TypeDef.h"
 
-#include "PolyVoxCore/Impl/Array2D.h"
+#include "PolyVoxCore/Array.h"
 #include "PolyVoxCore/BaseVolume.h" //For wrap modes... should move these?
 #include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/DefaultMarchingCubesController.h"

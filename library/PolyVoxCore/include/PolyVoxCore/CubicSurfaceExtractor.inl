@@ -43,6 +43,8 @@ namespace PolyVox
 		,m_bMergeQuads(bMergeQuads)
 		,m_eWrapMode(eWrapMode)
 		,m_tBorderValue(tBorderValue)
+		,m_previousSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
+		,m_currentSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
 	{
 		m_funcIsQuadNeededCallback = isQuadNeeded;
 
@@ -59,12 +61,12 @@ namespace PolyVox
 		Timer timer;
 		m_meshCurrent->clear();
 
-		uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
-		uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2;
+		//uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
+		//uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2;
 
-		uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxVerticesPerPosition};
-		m_previousSliceVertices.resize(arraySize);
-		m_currentSliceVertices.resize(arraySize);
+		//uint32_t arraySize[3]= {uArrayWidth, uArrayHeight, MaxVerticesPerPosition};
+		//m_previousSliceVertices.resize(arraySize);
+		//m_currentSliceVertices.resize(arraySize);
 		memset(m_previousSliceVertices.getRawData(), 0xff, m_previousSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 		memset(m_currentSliceVertices.getRawData(), 0xff, m_currentSliceVertices.getNoOfElements() * sizeof(IndexAndMaterial));
 
@@ -209,7 +211,7 @@ namespace PolyVox
 	{
 		for(uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
 		{
-			IndexAndMaterial& rEntry = existingVertices[uX][uY][ct];
+			IndexAndMaterial& rEntry = existingVertices(uX, uY, ct);
 
 			if(rEntry.iIndex == -1)
 			{

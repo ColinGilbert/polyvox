@@ -27,8 +27,6 @@ freely, subject to the following restrictions:
 #include "Impl/AStarPathfinderImpl.h"
 #include "Impl/TypeDef.h"
 
-#include "PolyVoxCore/Array.h"
-
 #include <functional>
 #include <list>
 #include <stdexcept> //For runtime_error
