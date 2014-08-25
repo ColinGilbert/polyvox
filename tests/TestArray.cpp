@@ -31,9 +31,9 @@ using namespace PolyVox;
 
 void TestArray::testCArraySpeed()
 {
-	const int width = 32;
+	const int width = 64;
 	const int height = 32;
-	const int depth = 32;
+	const int depth = 16;
 
 	int cArray[width][height][depth];
 
@@ -58,9 +58,9 @@ void TestArray::testCArraySpeed()
 
 void TestArray::testPolyVoxArraySpeed()
 {
-	const int width = 32;
+	const int width = 64;
 	const int height = 32;
-	const int depth = 32;
+	const int depth = 16;
 
 	Array<3, int> polyvoxArray(width, height, depth);
 

@@ -95,7 +95,7 @@ namespace PolyVox
 		{
 			static_assert(noOfDims == 3, "This accessor can only be used with a three-dimensional array");
 			POLYVOX_ASSERT(x < m_uDimensions[0] && y < m_uDimensions[1] && z < m_uDimensions[2], "Array access is out-of-range.");
-			return m_pElements[z * m_uDimensions[1] * m_uDimensions[1] + y * m_uDimensions[0] + x];
+			return m_pElements[z * m_uDimensions[0] * m_uDimensions[1] + y * m_uDimensions[0] + x];
 		}
 
 		uint32_t getDimension(uint32_t dimension)
