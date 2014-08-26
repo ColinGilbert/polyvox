@@ -24,7 +24,6 @@ PROJECT(PolyVoxCore)
 
 #Projects source files
 SET(CORE_SRC_FILES
-	source/ArraySizes.cpp
 	source/AStarPathfinder.cpp
 	source/Region.cpp
 )
@@ -34,8 +33,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/AmbientOcclusionCalculator.h
 	include/PolyVoxCore/AmbientOcclusionCalculator.inl
 	include/PolyVoxCore/Array.h
-	include/PolyVoxCore/Array.inl
-	include/PolyVoxCore/ArraySizes.h
 	include/PolyVoxCore/AStarPathfinder.h
 	include/PolyVoxCore/AStarPathfinder.inl
 	include/PolyVoxCore/BaseVolume.h
@@ -108,8 +105,6 @@ SET(IMPL_SRC_FILES
 )
 
 SET(IMPL_INC_FILES
-	include/PolyVoxCore/Impl/ArraySizesImpl.h
-	include/PolyVoxCore/Impl/ArraySizesImpl.inl
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
     include/PolyVoxCore/Impl/Config.h
 	include/PolyVoxCore/Impl/ErrorHandling.h
@@ -118,8 +113,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/MinizWrapper.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
 	include/PolyVoxCore/Impl/RandomVectors.h
-	include/PolyVoxCore/Impl/SubArray.h
-	include/PolyVoxCore/Impl/SubArray.inl
 	include/PolyVoxCore/Impl/Timer.h
 	include/PolyVoxCore/Impl/TypeDef.h
 	include/PolyVoxCore/Impl/Utility.h

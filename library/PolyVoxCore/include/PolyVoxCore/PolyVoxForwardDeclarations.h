@@ -33,7 +33,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	// Array
 	////////////////////////////////////////////////////////////////////////////////
-	template<uint32_t dimensions, typename ElementType> class Array;
+	/*template<uint32_t dimensions, typename ElementType> class Array;
 
 	typedef Array<1,float> Array1DFloat;
 	typedef Array<1,double> Array1DDouble;
@@ -42,25 +42,25 @@ namespace PolyVox
 	typedef Array<1,int16_t> Array1DInt16;
 	typedef Array<1,uint16_t> Array1DUint16;
 	typedef Array<1,int32_t> Array1DInt32;
-	typedef Array<1,uint32_t> Array1DUint32;
+	typedef Array<1,uint32_t> Array1DUint32;*/
 
-	typedef Array<2,float> Array2DFloat;
+	/*typedef Array<2,float> Array2DFloat;
 	typedef Array<2,double> Array2DDouble;
 	typedef Array<2,int8_t> Array2DInt8;
 	typedef Array<2,uint8_t> Array2DUint8;
 	typedef Array<2,int16_t> Array2DInt16;
 	typedef Array<2,uint16_t> Array2DUint16;
 	typedef Array<2,int32_t> Array2DInt32;
-	typedef Array<2,uint32_t> Array2DUint32;
+	typedef Array<2,uint32_t> Array2DUint32;*/
 
-	typedef Array<3,float> Array3DFloat;
+	/*typedef Array<3,float> Array3DFloat;
 	typedef Array<3,double> Array3DDouble;
 	typedef Array<3,int8_t> Array3DInt8;
 	typedef Array<3,uint8_t> Array3DUint8;
 	typedef Array<3,int16_t> Array3DInt16;
 	typedef Array<3,uint16_t> Array3DUint16;
 	typedef Array<3,int32_t> Array3DInt32;
-	typedef Array<3,uint32_t> Array3DUint32;
+	typedef Array<3,uint32_t> Array3DUint32;*/
 
 	////////////////////////////////////////////////////////////////////////////////
 	// BlockCompressor
