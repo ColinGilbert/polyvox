@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Pager_H__
 #define __PolyVox_Pager_H__
 
-#include "PolyVoxCore/CompressedBlock.h"
+#include "PolyVoxCore/UncompressedBlock.h"
 #include "PolyVoxCore/Impl/TypeDef.h"
 
 namespace PolyVox
@@ -41,8 +41,8 @@ namespace PolyVox
 		/// Destructor
 		virtual ~Pager() {};
 
-		virtual void pageIn(const Region& region, CompressedBlock<VoxelType>* pBlockData) = 0;
-		virtual void pageOut(const Region& region, CompressedBlock<VoxelType>* pBlockData) = 0;
+		virtual void pageIn(const Region& region, UncompressedBlock<VoxelType>* pBlockData) = 0;
+		virtual void pageOut(const Region& region, UncompressedBlock<VoxelType>* pBlockData) = 0;
 	};
 }
 

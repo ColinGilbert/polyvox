@@ -571,7 +571,7 @@ namespace PolyVox
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength-1, m_uBlockSideLength-1, m_uBlockSideLength-1);
 
 			// Page the data out
-			m_pPager->pageOut(Region(v3dLower, v3dUpper), pCompressedBlock);
+			//m_pPager->pageOut(Region(v3dLower, v3dUpper), pCompressedBlock);
 
 			// The compressed data is no longer modified with respect to the data on disk
 			pCompressedBlock->m_bDataModified = false;
@@ -591,7 +591,7 @@ namespace PolyVox
 		// This should never happen as blocks are deleted based on being least recently used.
 		// I the case that we are flushing we delete all blocks, but the flush function will
 		// reset the 'm_pLastAccessedBlock' anyway to prevent it being accidentally reused.
-		POLYVOX_ASSERT(pUncompressedBlock != m_pLastAccessedBlock, "Attempted to delete last accessed block.");
+		//POLYVOX_ASSERT(pUncompressedBlock != m_pLastAccessedBlock, "Attempted to delete last accessed block.");
 
 		// Before deleting the block we may need to recompress its data. We
 		// only do this if the data has been modified since it was decompressed.
@@ -599,9 +599,13 @@ namespace PolyVox
 		{
 			// Get the compressed block which we will copy the data back in to.
 			Vector3DInt32 v3dBlockPos = itUncompressedBlock->first;
-			CompressedBlock<VoxelType>* pCompressedBlock = getCompressedBlock(v3dBlockPos.getX(), v3dBlockPos.getY(), v3dBlockPos.getZ());
 
-			m_pBlockCompressor->compress(pUncompressedBlock, pCompressedBlock);
+			// From the coordinates of the block we deduce the coordinates of the contained voxels.
+			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
+			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength - 1, m_uBlockSideLength - 1, m_uBlockSideLength - 1);
+
+			// Page the data out
+			m_pPager->pageOut(Region(v3dLower, v3dUpper), itUncompressedBlock->second);
 
 			// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
 			pUncompressedBlock->m_bDataModified = false;
@@ -679,13 +683,19 @@ namespace PolyVox
 
 			// An uncompressed bock is always backed by a compressed one, and this is created by getCompressedBlock() if it doesn't 
 			// already exist. If it does already exist and has data then we bring this across into the ucompressed version.
-			if(getCompressedBlock(uBlockX, uBlockY, uBlockZ)->getData() != 0)
+			/*if(getCompressedBlock(uBlockX, uBlockY, uBlockZ)->getData() != 0)
 			{
 				// FIXME - multiple getCompressedBlock() calls (including the one above)
-				CompressedBlock<VoxelType>* pBlock = getCompressedBlock(uBlockX, uBlockY, uBlockZ);
+				CompressedBlock<VoxelType>* pBlock = getCompressedBlock(uBlockX, uBlockY, );
 
 				m_pBlockCompressor->decompress(pBlock, pUncompressedBlock);
-			}
+			}*/
+
+			// Pass the block to the Pager to give it a chance to initialise it with any data
+			Vector3DInt32 v3dLower(uBlockX << m_uBlockSideLengthPower, uBlockY << m_uBlockSideLengthPower, uBlockZ << m_uBlockSideLengthPower);
+			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength - 1, m_uBlockSideLength - 1, m_uBlockSideLength - 1);
+			Region reg(v3dLower, v3dUpper);
+			m_pPager->pageIn(reg, pUncompressedBlock);
 			
 			// Add our new block to the map.
 			m_pUncompressedBlockCache.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));	

@@ -68,7 +68,7 @@ namespace PolyVox
 			m_vecCreatedFiles.clear();
 		}
 
-		virtual void pageIn(const Region& region, CompressedBlock<VoxelType>* pBlockData)
+		virtual void pageIn(const Region& region, UncompressedBlock<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
 			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
@@ -88,14 +88,16 @@ namespace PolyVox
 			{
 				POLYVOX_LOG_TRACE("Paging in data for " << region);
 
-				fseek(pFile, 0L, SEEK_END);
+				/*fseek(pFile, 0L, SEEK_END);
 				size_t fileSizeInBytes = ftell(pFile);
 				fseek(pFile, 0L, SEEK_SET);
 				
 				uint8_t* buffer = new uint8_t[fileSizeInBytes];
 				fread(buffer, sizeof(uint8_t), fileSizeInBytes, pFile);
 				pBlockData->setData(buffer, fileSizeInBytes);
-				delete[] buffer;
+				delete[] buffer;*/
+
+				fread(pBlockData->getData(), sizeof(uint8_t), pBlockData->getDataSizeInBytes(), pFile);
 
 				if(ferror(pFile))
 				{
@@ -110,7 +112,7 @@ namespace PolyVox
 			}
 		}
 
-		virtual void pageOut(const Region& region, CompressedBlock<VoxelType>* pBlockData)
+		virtual void pageOut(const Region& region, UncompressedBlock<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
 			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");

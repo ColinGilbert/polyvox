@@ -313,7 +313,7 @@ TestVolume::~TestVolume()
  * RawVolume Tests
  */
 
-void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
+/*void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 
@@ -399,13 +399,13 @@ void TestVolume::testRawVolumeSamplersWithExternalBackwards()
 		result = testSamplersWithWrappingBackwards(m_pRawVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-769775893));
-}
+}*/
 
 /*
  * SimpleVolume Tests
  */
 
-void TestVolume::testSimpleVolumeDirectAccessAllInternalForwards()
+/*void TestVolume::testSimpleVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
@@ -483,7 +483,7 @@ void TestVolume::testSimpleVolumeSamplersWithExternalBackwards()
 		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-769775893));
-}
+}*/
 
 /*
  * LargeVolume Tests
