@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/LowPassFilter.h"
 #include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/RLEBlockCompressor.h"
 #include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/Impl/Utility.h"
 
@@ -51,7 +50,6 @@ const int32_t g_uVolumeSideLength = 128;
 
 int main(int argc, char *argv[])
 {
-	RLEBlockCompressor<MaterialDensityPair88>* compressor = new RLEBlockCompressor<MaterialDensityPair88>();
 	FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>("./");
 	LargeVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);
 

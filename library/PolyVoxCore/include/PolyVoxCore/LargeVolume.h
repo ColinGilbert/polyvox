@@ -26,7 +26,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/Block.h"
-#include "PolyVoxCore/BlockCompressor.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"

@@ -25,7 +25,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Density.h"
 #include "PolyVoxCore/FilePager.h"
-#include "PolyVoxCore/MinizBlockCompressor.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/SimpleVolume.h"
@@ -103,7 +102,6 @@ VolumeType* createAndFillVolume(void)
 {
 	const int32_t uVolumeSideLength = 64;
 
-	MinizBlockCompressor<VolumeType::VoxelType>* compressor = new MinizBlockCompressor<VolumeType::VoxelType>();
 	FilePager<VolumeType::VoxelType>* pager = new FilePager<VolumeType::VoxelType>("./");
 
 	//Create empty volume
@@ -141,7 +139,6 @@ float randomFloat(float a, float b)
 template <typename VolumeType>
 VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minValue, float maxValue)
 {
-	MinizBlockCompressor<float>* compressor = new MinizBlockCompressor<float>();
 	FilePager<float>* pager = new FilePager<float>("./");
 
 	//Create empty volume

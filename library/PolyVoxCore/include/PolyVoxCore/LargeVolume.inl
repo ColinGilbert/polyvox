@@ -23,8 +23,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
-#include "PolyVoxCore/MinizBlockCompressor.h" // For creating a default compressor when none is provided.
-
 #include <algorithm>
 
 namespace PolyVox
