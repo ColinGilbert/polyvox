@@ -24,12 +24,13 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_UncompressedBlock_H__
 #define __PolyVox_UncompressedBlock_H__
 
-#include "PolyVoxCore/Block.h"
+#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVoxCore/Vector.h"
 
 namespace PolyVox
 {
 	template <typename VoxelType>
-    class UncompressedBlock : public Block<VoxelType>
+    class UncompressedBlock
     {
 		friend class LargeVolume<VoxelType>;
 
@@ -52,6 +53,13 @@ namespace PolyVox
 
 		/// Private assignment operator to prevent accisdental copying
 		UncompressedBlock& operator=(const UncompressedBlock& /*rhs*/) {};
+
+		// This is updated by the LargeVolume and used to discard the least recently used blocks.
+		uint32_t m_uBlockLastAccessed;
+
+		// This is so we can tell whether a uncompressed block has to be recompressed and whether
+		// a compressed block has to be paged back to disk, or whether they can just be discarded.
+		bool m_bDataModified;
 
 		// Made this private for consistancy with CompressedBlock.
 		// Users shouldn't really need this for UncompressedBlock anyway.

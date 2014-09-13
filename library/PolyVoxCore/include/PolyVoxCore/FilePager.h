@@ -34,6 +34,7 @@ freely, subject to the following restrictions:
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace PolyVox
 {
