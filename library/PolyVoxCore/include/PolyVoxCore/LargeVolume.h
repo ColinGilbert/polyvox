@@ -232,15 +232,8 @@ namespace PolyVox
 		/// Constructor for creating a fixed size volume.
 		LargeVolume
 		(
-			const Region& regValid,
-			uint16_t uBlockSideLength = 32			
-		);
-		/// Constructor for creating a fixed size volume.
-		LargeVolume
-		(
-			const Region& regValid,
-			BlockCompressor<VoxelType>* pBlockCompressor,	
-			Pager<VoxelType>* pPager ,	
+			const Region& regValid,	
+			Pager<VoxelType>* pPager = nullptr,	
 			uint16_t uBlockSideLength = 32
 		);
 		/// Destructor
@@ -265,8 +258,6 @@ namespace PolyVox
 
 		/// Sets the number of blocks for which uncompressed data is stored
 		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
-		/// Sets the number of blocks which can be in memory before the paging system starts unloading them
-        void setMaxNumberOfBlocksInMemory(uint32_t uMaxNumberOfBlocksInMemory);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by a 3D vector
@@ -282,10 +273,6 @@ namespace PolyVox
 		/// Removes all voxels from memory
 		void flushAll();
 
-		/// Empties the cache of uncompressed blocks
-		void clearBlockCache(void);
-		/// Calculates the approximate compression ratio of the store volume data
-		float calculateCompressionRatio(void);
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
@@ -314,12 +301,10 @@ namespace PolyVox
 			}
 		};	
 
-		typedef std::map<Vector3DInt32, CompressedBlock<VoxelType>*, BlockPositionCompare> CompressedBlockMap;
 		typedef std::map<Vector3DInt32, UncompressedBlock<VoxelType>*, BlockPositionCompare> UncompressedBlockMap;
 
 		uint32_t calculateBlockMemoryUsage(void) const;
 
-		void ensureCompressedBlockMapHasFreeSpace(void) const;
 		void ensureUncompressedBlockMapHasFreeSpace(void) const;
 
 		void initialise();
@@ -332,21 +317,17 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
-		CompressedBlock<VoxelType>* getCompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 		UncompressedBlock<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
-		void eraseBlock(typename CompressedBlockMap::iterator itCompressedBlock) const;
 		void eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const;
 
 		// The block data
-		mutable CompressedBlockMap m_pBlocks;
 		mutable UncompressedBlockMap m_pUncompressedBlockCache;
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
 		mutable UncompressedBlock<VoxelType>* m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
-		uint32_t m_uMaxNumberOfBlocksInMemory;
 
 		// The size of the volume
 		Region m_regValidRegionInBlocks;
@@ -355,8 +336,6 @@ namespace PolyVox
 		uint16_t m_uBlockSideLength;
 		uint8_t m_uBlockSideLengthPower;
 
-		// The compressor used by the Blocks to compress their data if required.
-		BlockCompressor<VoxelType>* m_pBlockCompressor;
 		Pager<VoxelType>* m_pPager;
 
 		// Compressed data for an empty block (sometimes needed for initialisation).
@@ -364,7 +343,7 @@ namespace PolyVox
 
 		// Whether we created the compressor or whether it was provided
 		// by the user. This controls whether we delete it on destruction.
-		bool m_bIsOurCompressor;
+		//bool m_bIsOurCompressor;
 	};
 }
 

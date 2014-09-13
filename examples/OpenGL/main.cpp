@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 {
 	RLEBlockCompressor<MaterialDensityPair88>* compressor = new RLEBlockCompressor<MaterialDensityPair88>();
 	FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>("./");
-	LargeVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), compressor, pager);
+	LargeVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;

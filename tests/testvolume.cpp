@@ -278,10 +278,10 @@ TestVolume::TestVolume()
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pBlockCompressor, m_pFilePager, 32);
+	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pFilePager, 32);
 
-	m_pLargeVolume->setMaxNumberOfBlocksInMemory(32);
-	m_pLargeVolume->setMaxNumberOfUncompressedBlocks(16);
+	//m_pLargeVolume->setMaxNumberOfBlocksInMemory(32);
+	m_pLargeVolume->setMaxNumberOfUncompressedBlocks(64);
 
 	//Fill the volume with some data
 	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)

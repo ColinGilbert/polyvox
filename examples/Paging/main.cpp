@@ -159,8 +159,8 @@ int main(int argc, char *argv[])
 
 	RLEBlockCompressor<MaterialDensityPair44>* compressor = new RLEBlockCompressor<MaterialDensityPair44>();
 	PerlinNoisePager* pager = new PerlinNoisePager();
-	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, compressor, pager, 256);
-	volData.setMaxNumberOfBlocksInMemory(4096);
+	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, pager, 256);
+	//volData.setMaxNumberOfBlocksInMemory(4096);
 	volData.setMaxNumberOfUncompressedBlocks(64);
 
 	//volData.setMaxNumberOfUncompressedBlocks(4096);
@@ -168,22 +168,22 @@ int main(int argc, char *argv[])
 	//createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	//volData.setBlockCacheSize(64);
 	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,255,255));
 	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 	volData.prefetch(reg);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	PolyVox::Region reg2(Vector3DInt32(0,0,0), Vector3DInt32(255,255,255));
 	std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
 	volData.flush(reg2);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 	std::cout << "Flushing entire volume" << std::endl;
 	volData.flushAll();
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
 	//Extract the surface
 	auto mesh = extractCubicMesh(&volData, reg2);

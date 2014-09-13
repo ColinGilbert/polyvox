@@ -107,7 +107,7 @@ VolumeType* createAndFillVolume(void)
 	FilePager<VolumeType::VoxelType>* pager = new FilePager<VolumeType::VoxelType>("./");
 
 	//Create empty volume
-	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), compressor, pager);
+	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), pager);
 
 	// Fill
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
@@ -145,7 +145,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 	FilePager<float>* pager = new FilePager<float>("./");
 
 	//Create empty volume
-	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), compressor, pager);
+	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), pager);
 
 	// Seed generator for consistency between runs.
 	srand(12345);
