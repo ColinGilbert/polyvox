@@ -302,8 +302,6 @@ namespace PolyVox
 
 		typedef std::map<Vector3DInt32, UncompressedBlock<VoxelType>*, BlockPositionCompare> UncompressedBlockMap;
 
-		uint32_t calculateBlockMemoryUsage(void) const;
-
 		void ensureUncompressedBlockMapHasFreeSpace(void) const;
 
 		void initialise();
@@ -321,7 +319,7 @@ namespace PolyVox
 		void eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const;
 
 		// The block data
-		mutable UncompressedBlockMap m_pUncompressedBlockCache;
+		mutable UncompressedBlockMap m_pBlocks;
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
