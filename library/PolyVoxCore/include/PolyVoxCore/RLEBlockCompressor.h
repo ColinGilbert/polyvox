@@ -49,7 +49,7 @@ namespace PolyVox
 		RLEBlockCompressor();
 		~RLEBlockCompressor();
 
-		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
+		void compressData(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
 		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
 	};
 }

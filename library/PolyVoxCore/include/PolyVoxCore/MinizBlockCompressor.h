@@ -40,10 +40,10 @@ namespace PolyVox
 		MinizBlockCompressor(int iCompressionLevel = 6); // Miniz defines MZ_DEFAULT_LEVEL = 6 so we use the same here
 		~MinizBlockCompressor();
 
-		void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
+		void compressData(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock);
 		void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock);
 
-	private:
+	public:
 		uint32_t getExpectedCompressedSize(uint32_t uUncompressedInputSize);
 		uint32_t getMaxCompressedSize(uint32_t uUncompressedInputSize);
 		uint32_t compressWithMiniz(const void* pSrcData, size_t uSrcLength, void* pDstData, size_t uDstLength);

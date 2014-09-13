@@ -57,7 +57,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void MinizBlockCompressor<VoxelType>::compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
+	void MinizBlockCompressor<VoxelType>::compressData(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
 	{
 		// The uncompressed data will be read straight out of the block
 		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());

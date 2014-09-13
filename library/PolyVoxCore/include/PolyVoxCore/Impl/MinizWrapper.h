@@ -33,12 +33,12 @@ freely, subject to the following restrictions:
 
 // Diable things we don't need, and in particular the zlib compatible names which
 // would cause conflicts if a user application is using both PolyVox and zlib.
-#define MINIZ_NO_STDIO
-#define MINIZ_NO_ARCHIVE_APIS
-#define MINIZ_NO_TIME
-#define MINIZ_NO_ZLIB_APIS
-#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
-#define MINIZ_NO_MALLOC
+//#define MINIZ_NO_STDIO
+//#define MINIZ_NO_ARCHIVE_APIS
+//#define MINIZ_NO_TIME
+//#define MINIZ_NO_ZLIB_APIS
+//#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
+//#define MINIZ_NO_MALLOC
 
 // Include only the declarations of the functions in miniz.c. Don't include
 // the actual definitions, as this 'MinizWrapper.h' may be included from multiple

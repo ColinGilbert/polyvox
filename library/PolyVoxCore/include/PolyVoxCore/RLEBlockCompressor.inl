@@ -36,7 +36,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void RLEBlockCompressor<VoxelType>::compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
+	void RLEBlockCompressor<VoxelType>::compressData(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock)
 	{
 		void* pSrcData = reinterpret_cast<void*>(pSrcBlock->getData());
 		uint32_t uSrcLength = pSrcBlock->getDataSizeInBytes();

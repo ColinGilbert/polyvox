@@ -40,7 +40,7 @@ namespace PolyVox
 		BlockCompressor() {};
 		virtual ~BlockCompressor() {};
 
-		virtual void compress(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock) = 0;
+		virtual void compressData(UncompressedBlock<VoxelType>* pSrcBlock, CompressedBlock<VoxelType>* pDstBlock) = 0;
 		virtual void decompress(CompressedBlock<VoxelType>* pSrcBlock, UncompressedBlock<VoxelType>* pDstBlock) = 0;
 	};
 }
