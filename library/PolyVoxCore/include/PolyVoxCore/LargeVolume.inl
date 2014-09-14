@@ -186,7 +186,7 @@ namespace PolyVox
 			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-			const UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+			auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 			return pUncompressedBlock->getVoxel(xOffset, yOffset, zOffset);
 		}
@@ -262,7 +262,7 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 	}
 
@@ -299,7 +299,7 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 
 		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 
@@ -486,7 +486,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const
 	{
-		UncompressedBlock<VoxelType>* pUncompressedBlock = itUncompressedBlock->second;
+		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = itUncompressedBlock->second;
 
 		// This should never happen as blocks are deleted based on being least recently used.
 		// I the case that we are flushing we delete all blocks, but the flush function will
@@ -511,14 +511,14 @@ namespace PolyVox
 			pUncompressedBlock->m_bDataModified = false;
 		}
 
-		delete itUncompressedBlock->second;
+		//delete itUncompressedBlock->second;
 
 		// We can now remove the block data from memory.
 		m_pBlocks.erase(itUncompressedBlock);
 	}
 
 	template <typename VoxelType>
-	UncompressedBlock<VoxelType>* LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	std::shared_ptr< UncompressedBlock<VoxelType> > LargeVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
@@ -531,7 +531,7 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}
 
-		UncompressedBlock<VoxelType>* pUncompressedBlock = 0;
+		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = nullptr;
 
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pBlocks.find(v3dBlockPos);
 		// check whether the block is already loaded
@@ -546,7 +546,8 @@ namespace PolyVox
 			ensureUncompressedBlockMapHasFreeSpace();
 
 			// We can now create a new block.
-			pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
+			//pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
+			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(m_uBlockSideLength);
 
 			// An uncompressed bock is always backed by a compressed one, and this is created by getCompressedBlock() if it doesn't 
 			// already exist. If it does already exist and has data then we bring this across into the ucompressed version.
@@ -677,7 +678,7 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		UncompressedBlock<VoxelType>* pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
 		return pUncompressedBlock->getVoxel(xOffset, yOffset, zOffset);
 	}
 }

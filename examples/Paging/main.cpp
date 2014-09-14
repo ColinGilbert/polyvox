@@ -90,7 +90,7 @@ public:
 	/// Destructor
 	virtual ~PerlinNoisePager() {};
 
-	virtual void pageIn(const PolyVox::Region& region, UncompressedBlock<MaterialDensityPair44>* pBlockData)
+	virtual void pageIn(const PolyVox::Region& region, std::shared_ptr< UncompressedBlock<MaterialDensityPair44> > pBlockData)
 	{
 		// FIXME - this isn't a great example... it's a shame we have to hard clode the block size and also create/destroy
 		// a compressor each time. These could at least be moved outside somewhere if we can't fix it in a better way...
@@ -143,7 +143,7 @@ public:
 		//delete compressor;
 	}
 
-	virtual void pageOut(const PolyVox::Region& region, UncompressedBlock<MaterialDensityPair44>* /*pBlockData*/)
+	virtual void pageOut(const PolyVox::Region& region, std::shared_ptr< UncompressedBlock<MaterialDensityPair44> > /*pBlockData*/)
 	{
 		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
 	}

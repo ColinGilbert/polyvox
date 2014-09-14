@@ -300,7 +300,7 @@ namespace PolyVox
 			}
 		};	
 
-		typedef std::map<Vector3DInt32, UncompressedBlock<VoxelType>*, BlockPositionCompare> UncompressedBlockMap;
+		typedef std::map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> UncompressedBlockMap;
 
 		void ensureUncompressedBlockMapHasFreeSpace(void) const;
 
@@ -314,7 +314,7 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
-		UncompressedBlock<VoxelType>* getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		std::shared_ptr< UncompressedBlock<VoxelType> > getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
 		void eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const;
 
@@ -323,7 +323,7 @@ namespace PolyVox
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable UncompressedBlock<VoxelType>* m_pLastAccessedBlock;
+		mutable std::shared_ptr< UncompressedBlock<VoxelType> > m_pLastAccessedBlock;
 		uint32_t m_uMaxNumberOfUncompressedBlocks;
 
 		// The size of the volume
