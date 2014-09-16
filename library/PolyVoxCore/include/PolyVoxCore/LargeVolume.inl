@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/Impl/ErrorHandling.h"
 
 #include <algorithm>
+#include <limits>
 
 namespace PolyVox
 {
@@ -46,8 +47,19 @@ namespace PolyVox
 	:BaseVolume<VoxelType>(regValid)
 	{
 		m_uBlockSideLength = uBlockSideLength;
-
 		m_pPager = pPager;
+
+		if (m_pPager)
+		{
+			// If a pager is available then we can set a sensible limit on our memory usage.
+			m_uMaxNumberOfUncompressedBlocks = 256;
+		}
+		else
+		{
+			// If there is no pager provided then we set the block limit to the maximum
+			// value to ensure the system never attempts to page blocks out of memory.
+			m_uMaxNumberOfUncompressedBlocks = (std::numeric_limits<uint32_t>::max)();
+		}
 
 		initialise();
 	}
@@ -215,6 +227,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks)
 	{
+		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
+
 		//clearBlockCache();
 
 		/*if (m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
@@ -386,6 +400,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushAll()
 	{
+		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot flush data out of the volume because it was created without a pager attached.");
+
 		// Flushing will remove the most accessed block, so invalidate the pointer.
 		m_pLastAccessedBlock = 0;
 
@@ -403,6 +419,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flush(Region regFlush)
 	{
+		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot flush data out of the volume because it was created without a pager attached.");
+
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
 		{
@@ -486,6 +504,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const
 	{
+		POLYVOX_ASSERT(m_pPager, "A block should never be erased if there is no pager attached to handle it");
+
 		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = itUncompressedBlock->second;
 
 		// This should never happen as blocks are deleted based on being least recently used.
@@ -548,16 +568,6 @@ namespace PolyVox
 			// We can now create a new block.
 			//pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
 			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(m_uBlockSideLength);
-
-			// An uncompressed bock is always backed by a compressed one, and this is created by getCompressedBlock() if it doesn't 
-			// already exist. If it does already exist and has data then we bring this across into the ucompressed version.
-			/*if(getCompressedBlock(uBlockX, uBlockY, uBlockZ)->getData() != 0)
-			{
-				// FIXME - multiple getCompressedBlock() calls (including the one above)
-				CompressedBlock<VoxelType>* pBlock = getCompressedBlock(uBlockX, uBlockY, );
-
-				m_pBlockCompressor->decompress(pBlock, pUncompressedBlock);
-			}*/
 
 			// Pass the block to the Pager to give it a chance to initialise it with any data
 			Vector3DInt32 v3dLower(uBlockX << m_uBlockSideLengthPower, uBlockY << m_uBlockSideLengthPower, uBlockZ << m_uBlockSideLengthPower);
