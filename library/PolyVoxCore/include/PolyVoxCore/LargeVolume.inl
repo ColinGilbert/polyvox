@@ -551,32 +551,49 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}
 
+		// Try to find the required block in our block list.
 		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = nullptr;
-
 		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pBlocks.find(v3dBlockPos);
-		// check whether the block is already loaded
+
+		// Check whether the block was found.
 		if(itUncompressedBlock != m_pBlocks.end())
 		{
+			// The block was found so we can use it.
 			pUncompressedBlock = itUncompressedBlock->second;		
 		}
 		else
 		{
-			// At this point we know that the uncompresed block did not exist in the cache. We will
-			// create it and add it to the cache, which means we need to make sure there is space.
-			ensureUncompressedBlockMapHasFreeSpace();
-
-			// We can now create a new block.
-			//pUncompressedBlock = new UncompressedBlock<VoxelType>(m_uBlockSideLength);
+			// The blcok was not found so we will create a new one.
 			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(m_uBlockSideLength);
 
 			// Pass the block to the Pager to give it a chance to initialise it with any data
-			Vector3DInt32 v3dLower(uBlockX << m_uBlockSideLengthPower, uBlockY << m_uBlockSideLengthPower, uBlockZ << m_uBlockSideLengthPower);
-			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength - 1, m_uBlockSideLength - 1, m_uBlockSideLength - 1);
-			Region reg(v3dLower, v3dUpper);
-			m_pPager->pageIn(reg, pUncompressedBlock);
-			
+			if (m_pPager)
+			{
+				Vector3DInt32 v3dLower(uBlockX << m_uBlockSideLengthPower, uBlockY << m_uBlockSideLengthPower, uBlockZ << m_uBlockSideLengthPower);
+				Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength - 1, m_uBlockSideLength - 1, m_uBlockSideLength - 1);
+				Region reg(v3dLower, v3dUpper);
+				m_pPager->pageIn(reg, pUncompressedBlock);
+			}
+
+			while (m_pBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
+			{
+				// Find the least recently used block. Hopefully this isn't too slow.
+				typename UncompressedBlockMap::iterator i;
+				typename UncompressedBlockMap::iterator itUnloadBlock = m_pBlocks.begin();
+				for (i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+				{
+					if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
+					{
+						itUnloadBlock = i;
+					}
+				}
+
+				// Erase the least recently used block
+				eraseBlock(itUnloadBlock);
+			}
+
 			// Add our new block to the map.
-			m_pBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));	
+			m_pBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 		}
 
 		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
@@ -607,28 +624,6 @@ namespace PolyVox
 		//uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;
-	}
-
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::ensureUncompressedBlockMapHasFreeSpace(void) const
-	{
-		while(m_pBlocks.size() > m_uMaxNumberOfUncompressedBlocks) 
-		{
-			// Find the least recently used block. The uncompressed block cache should be
-			// much smaller than the total number of blocks, so hopefully this isn't too slow.
-			typename UncompressedBlockMap::iterator i;
-			typename UncompressedBlockMap::iterator itUnloadBlock = m_pBlocks.begin();
-			for(i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
-			{
-				if(i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
-				{
-					itUnloadBlock = i;
-				}
-			}
-
-			// Erase the least recently used block
-			eraseBlock(itUnloadBlock);
-		}
 	}
 
 	template <typename VoxelType>

@@ -302,8 +302,6 @@ namespace PolyVox
 
 		typedef std::map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> UncompressedBlockMap;
 
-		void ensureUncompressedBlockMapHasFreeSpace(void) const;
-
 		void initialise();
 
 		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
