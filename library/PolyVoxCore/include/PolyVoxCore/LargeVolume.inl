@@ -547,7 +547,8 @@ namespace PolyVox
 			// The block was found so we can use it.
 			pUncompressedBlock = itUncompressedBlock->second;		
 		}
-		else
+
+		if (!pUncompressedBlock)
 		{
 			// There's some (slim) chance that it exists in the list of all blocks, because a sampler may be holding on to it.
 			typename WeakPtrBlockMap::iterator itWeakUncompressedBlock = m_pAllBlocks.find(v3dBlockPos);
@@ -564,32 +565,33 @@ namespace PolyVox
 					m_pAllBlocks.erase(itWeakUncompressedBlock);
 				}
 			}
-			else
+		}
+
+		if (!pUncompressedBlock)
+		{
+			// The block was not found so we will create a new one.
+			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
+
+			while (m_pRecentlyUsedBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
 			{
-				// The block was not found so we will create a new one.
-				pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
-
-				while (m_pRecentlyUsedBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
+				// Find the least recently used block. Hopefully this isn't too slow.
+				typename SharedPtrBlockMap::iterator i;
+				typename SharedPtrBlockMap::iterator itUnloadBlock = m_pRecentlyUsedBlocks.begin();
+				for (i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
 				{
-					// Find the least recently used block. Hopefully this isn't too slow.
-					typename SharedPtrBlockMap::iterator i;
-					typename SharedPtrBlockMap::iterator itUnloadBlock = m_pRecentlyUsedBlocks.begin();
-					for (i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
+					if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
 					{
-						if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
-						{
-							itUnloadBlock = i;
-						}
+						itUnloadBlock = i;
 					}
-
-					// Erase the least recently used block
-					eraseBlock(itUnloadBlock);
 				}
 
-				// Add our new block to the map.
-				m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
-				m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+				// Erase the least recently used block
+				eraseBlock(itUnloadBlock);
 			}
+
+			// Add our new block to the map.
+			m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+			m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 		}
 
 		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
