@@ -315,8 +315,6 @@ namespace PolyVox
 	
 		std::shared_ptr< UncompressedBlock<VoxelType> > getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
-		void eraseBlock(typename SharedPtrBlockMap::iterator itUncompressedBlock) const;
-
 		// The block data
 		mutable WeakPtrBlockMap m_pAllBlocks;
 		mutable SharedPtrBlockMap m_pRecentlyUsedBlocks;

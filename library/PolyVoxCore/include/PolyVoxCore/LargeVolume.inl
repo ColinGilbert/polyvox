@@ -407,10 +407,10 @@ namespace PolyVox
 
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
-		while (m_pRecentlyUsedBlocks.size() > 0)
+		/*while (m_pRecentlyUsedBlocks.size() > 0)
 		{
 			eraseBlock(m_pRecentlyUsedBlocks.begin());
-		}
+		}*/
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -419,7 +419,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flush(Region regFlush)
 	{
-		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot flush data out of the volume because it was created without a pager attached.");
+		/*POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot flush data out of the volume because it was created without a pager attached.");
 
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
@@ -454,7 +454,7 @@ namespace PolyVox
 					}
 				} // for z
 			} // for y
-		} // for x
+		} // for x*/
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -499,28 +499,6 @@ namespace PolyVox
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
 		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
 		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
-	}
-
-	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename SharedPtrBlockMap::iterator itUncompressedBlock) const
-	{
-		POLYVOX_ASSERT(m_pPager, "A block should never be erased if there is no pager attached to handle it");
-
-		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = itUncompressedBlock->second;
-
-		// This should never happen as blocks are deleted based on being least recently used.
-		// I the case that we are flushing we delete all blocks, but the flush function will
-		// reset the 'm_pLastAccessedBlock' anyway to prevent it being accidentally reused.
-		//POLYVOX_ASSERT(pUncompressedBlock != m_pLastAccessedBlock, "Attempted to delete last accessed block.");
-
-		// Before deleting the block we may need to recompress its data. We
-		// only do this if the data has been modified since it was decompressed.
-		
-
-		//delete itUncompressedBlock->second;
-
-		// We can now remove the block data from memory.
-		m_pRecentlyUsedBlocks.erase(itUncompressedBlock);
 	}
 
 	template <typename VoxelType>
@@ -578,12 +556,16 @@ namespace PolyVox
 			// The block was not found so we will create a new one.
 			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
 
+			// As we are loading a new block we should try to ensure we don't go over our target memory usage.
 			while (m_pRecentlyUsedBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
 			{
+				// This should never hit, because it should not have been possible for
+				// the user to limit the number of blocks if they did not provide a pager.
+				POLYVOX_ASSERT(m_pPager, "A valid pager is required to limit number of blocks");
+
 				// Find the least recently used block. Hopefully this isn't too slow.
-				typename SharedPtrBlockMap::iterator i;
 				typename SharedPtrBlockMap::iterator itUnloadBlock = m_pRecentlyUsedBlocks.begin();
-				for (i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
+				for (typename SharedPtrBlockMap::iterator i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
 				{
 					if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
 					{
@@ -592,7 +574,7 @@ namespace PolyVox
 				}
 
 				// Erase the least recently used block
-				eraseBlock(itUnloadBlock);
+				m_pRecentlyUsedBlocks.erase(itUnloadBlock);
 			}
 
 			// Add our new block to the maps.
