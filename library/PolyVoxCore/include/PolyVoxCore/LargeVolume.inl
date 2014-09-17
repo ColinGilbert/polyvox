@@ -400,17 +400,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flushAll()
 	{
-		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot flush data out of the volume because it was created without a pager attached.");
+		POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
 
-		// Flushing will remove the most accessed block, so invalidate the pointer.
-		m_pLastAccessedBlock = 0;
+		// Clear this pointer so it doesn't hang on to any blocks.
+		m_pLastAccessedBlock = nullptr;
 
-		//Replaced the for loop here as the call to
-		//eraseBlock was invalidating the iterator.
-		/*while (m_pRecentlyUsedBlocks.size() > 0)
-		{
-			eraseBlock(m_pRecentlyUsedBlocks.begin());
-		}*/
+		// Erase all the most recently used blocks.
+		m_pRecentlyUsedBlocks.clear();
+
+		// Remove deleted blocks from the list of all loaded blocks.
+		purgeNullPtrsFromAllBlocks();
+
+		// If there are still some blocks left then this is a cause for concern. Perhaps samplers are holding on to them?
+		POLYVOX_LOG_WARNING_IF(m_pAllBlocks.size() > 0, "Blocks still exist after performing flushAll()! Perhaps you have samplers attached?");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -419,7 +421,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flush(Region regFlush)
 	{
-		/*POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot flush data out of the volume because it was created without a pager attached.");
+		/*POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
+
+		// Clear this pointer so it doesn't hang on to any blocks.
+		m_pLastAccessedBlock = nullptr;
 
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
