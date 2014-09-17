@@ -537,36 +537,42 @@ namespace PolyVox
 			return m_pLastAccessedBlock;
 		}
 
-		// Try to find the required block in our block list.
+		// The block was not the same as last time, but we can now hope it is in the set of most recently used blocks.
 		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = nullptr;
 		typename SharedPtrBlockMap::iterator itUncompressedBlock = m_pRecentlyUsedBlocks.find(v3dBlockPos);
 
 		// Check whether the block was found.
-		if (itUncompressedBlock != m_pRecentlyUsedBlocks.end())
+		if ((itUncompressedBlock) != m_pRecentlyUsedBlocks.end())
 		{
 			// The block was found so we can use it.
 			pUncompressedBlock = itUncompressedBlock->second;		
+			POLYVOX_ASSERT(pUncompressedBlock, "Recent block list shold never contain a null pointer.");
 		}
 
 		if (!pUncompressedBlock)
 		{
-			// There's some (slim) chance that it exists in the list of all blocks, because a sampler may be holding on to it.
+			// Although it's not in our recently use blocks, there's some (slim) chance that it
+			// exists in the list of all loaded blocks, because a sampler may be holding on to it.
 			typename WeakPtrBlockMap::iterator itWeakUncompressedBlock = m_pAllBlocks.find(v3dBlockPos);
 			if (itWeakUncompressedBlock != m_pAllBlocks.end())
 			{
-				if (!itWeakUncompressedBlock->second.expired())
+				// We've found an entry in the 'all blocks' list, but it can be null. This happens if a sampler was the
+				// last thing to be keeping it alive and then the sampler let it go. In this case we remove it from the
+				// list, and it will get added again soon when we pag e it in and fil it with valid data.
+				if (itWeakUncompressedBlock->second.expired())
 				{
-					// The block was found so we can use it.
-					pUncompressedBlock = std::shared_ptr< UncompressedBlock<VoxelType> >(itWeakUncompressedBlock->second);
-					m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+					m_pAllBlocks.erase(itWeakUncompressedBlock);
 				}
 				else
 				{
-					m_pAllBlocks.erase(itWeakUncompressedBlock);
+					// The block is valid. We know it's not in the recently used list (we checked earlier) so it should be added.
+					pUncompressedBlock = std::shared_ptr< UncompressedBlock<VoxelType> >(itWeakUncompressedBlock->second);
+					m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 				}
 			}
 		}
 
+		// If we still haven't found the block then it's time to create a new one and page it in from disk.
 		if (!pUncompressedBlock)
 		{
 			// The block was not found so we will create a new one.
@@ -589,7 +595,7 @@ namespace PolyVox
 				eraseBlock(itUnloadBlock);
 			}
 
-			// Add our new block to the map.
+			// Add our new block to the maps.
 			m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 			m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 		}
