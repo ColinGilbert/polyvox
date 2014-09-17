@@ -557,6 +557,7 @@ namespace PolyVox
 			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
 
 			// As we are loading a new block we should try to ensure we don't go over our target memory usage.
+			bool erasedBlock = false;
 			while (m_pRecentlyUsedBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
 			{
 				// This should never hit, because it should not have been possible for
@@ -575,6 +576,14 @@ namespace PolyVox
 
 				// Erase the least recently used block
 				m_pRecentlyUsedBlocks.erase(itUnloadBlock);
+				erasedBlock = true;
+			}
+
+			// If we've deleted any blocks from the recently used list then this
+			// seems like a good place to purge the 'all blocks' list as well.
+			if (erasedBlock)
+			{
+				purgeNullPtrsFromAllBlocks();
 			}
 
 			// Add our new block to the maps.
@@ -610,6 +619,18 @@ namespace PolyVox
 		//uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
 		return uSizeInBytes;
+	}
+
+	template <typename VoxelType>
+	void LargeVolume<VoxelType>::purgeNullPtrsFromAllBlocks(void) const
+	{
+		for (auto blockIter = m_pAllBlocks.begin(); blockIter != m_pAllBlocks.end(); blockIter++)
+		{
+			if (blockIter->second.expired())
+			{
+				blockIter = m_pAllBlocks.erase(blockIter);
+			}
+		}
 	}
 
 	template <typename VoxelType>
