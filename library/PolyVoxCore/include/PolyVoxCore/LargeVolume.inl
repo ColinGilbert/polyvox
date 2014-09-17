@@ -231,7 +231,7 @@ namespace PolyVox
 
 		//clearBlockCache();
 
-		/*if (m_pBlocks.size() > uMaxNumberOfBlocksInMemory)
+		/*if (m_pRecentlyUsedBlocks.size() > uMaxNumberOfBlocksInMemory)
 		{
 			flushAll();
 		}*/
@@ -369,9 +369,9 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					/*typename CompressedBlockMap::iterator itBlock = m_pBlocks.find(pos);
+					/*typename CompressedBlockMap::iterator itBlock = m_pRecentlyUsedBlocks.find(pos);
 					
-					if(itBlock != m_pBlocks.end())
+					if(itBlock != m_pRecentlyUsedBlocks.end())
 					{
 						// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
 						// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
@@ -407,9 +407,9 @@ namespace PolyVox
 
 		//Replaced the for loop here as the call to
 		//eraseBlock was invalidating the iterator.
-		while(m_pBlocks.size() > 0)
+		while (m_pRecentlyUsedBlocks.size() > 0)
 		{
-			eraseBlock(m_pBlocks.begin());
+			eraseBlock(m_pRecentlyUsedBlocks.begin());
 		}
 	}
 
@@ -440,8 +440,8 @@ namespace PolyVox
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
 					Vector3DInt32 pos(x,y,z);
-					typename UncompressedBlockMap::iterator itBlock = m_pBlocks.find(pos);
-					if (itBlock == m_pBlocks.end())
+					typename SharedPtrBlockMap::iterator itBlock = m_pRecentlyUsedBlocks.find(pos);
+					if (itBlock == m_pRecentlyUsedBlocks.end())
 					{
 						// not loaded, not unloading
 						continue;
@@ -493,7 +493,7 @@ namespace PolyVox
 		//setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
 
 		//Clear the previous data
-		m_pBlocks.clear();
+		m_pRecentlyUsedBlocks.clear();
 
 		//Other properties we might find useful later
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
@@ -502,7 +502,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const
+	void LargeVolume<VoxelType>::eraseBlock(typename SharedPtrBlockMap::iterator itUncompressedBlock) const
 	{
 		POLYVOX_ASSERT(m_pPager, "A block should never be erased if there is no pager attached to handle it");
 
@@ -520,7 +520,7 @@ namespace PolyVox
 		//delete itUncompressedBlock->second;
 
 		// We can now remove the block data from memory.
-		m_pBlocks.erase(itUncompressedBlock);
+		m_pRecentlyUsedBlocks.erase(itUncompressedBlock);
 	}
 
 	template <typename VoxelType>
@@ -539,38 +539,57 @@ namespace PolyVox
 
 		// Try to find the required block in our block list.
 		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = nullptr;
-		typename UncompressedBlockMap::iterator itUncompressedBlock = m_pBlocks.find(v3dBlockPos);
+		typename SharedPtrBlockMap::iterator itUncompressedBlock = m_pRecentlyUsedBlocks.find(v3dBlockPos);
 
 		// Check whether the block was found.
-		if(itUncompressedBlock != m_pBlocks.end())
+		if (itUncompressedBlock != m_pRecentlyUsedBlocks.end())
 		{
 			// The block was found so we can use it.
 			pUncompressedBlock = itUncompressedBlock->second;		
 		}
 		else
 		{
-			// The blcok was not found so we will create a new one.
-			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
-
-			while (m_pBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
+			// There's some (slim) chance that it exists in the list of all blocks, because a sampler may be holding on to it.
+			typename WeakPtrBlockMap::iterator itWeakUncompressedBlock = m_pAllBlocks.find(v3dBlockPos);
+			if (itWeakUncompressedBlock != m_pAllBlocks.end())
 			{
-				// Find the least recently used block. Hopefully this isn't too slow.
-				typename UncompressedBlockMap::iterator i;
-				typename UncompressedBlockMap::iterator itUnloadBlock = m_pBlocks.begin();
-				for (i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+				if (!itWeakUncompressedBlock->second.expired())
 				{
-					if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
+					// The block was found so we can use it.
+					pUncompressedBlock = std::shared_ptr< UncompressedBlock<VoxelType> >(itWeakUncompressedBlock->second);
+					m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+				}
+				else
+				{
+					m_pAllBlocks.erase(itWeakUncompressedBlock);
+				}
+			}
+			else
+			{
+				// The block was not found so we will create a new one.
+				pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
+
+				while (m_pRecentlyUsedBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
+				{
+					// Find the least recently used block. Hopefully this isn't too slow.
+					typename SharedPtrBlockMap::iterator i;
+					typename SharedPtrBlockMap::iterator itUnloadBlock = m_pRecentlyUsedBlocks.begin();
+					for (i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
 					{
-						itUnloadBlock = i;
+						if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
+						{
+							itUnloadBlock = i;
+						}
 					}
+
+					// Erase the least recently used block
+					eraseBlock(itUnloadBlock);
 				}
 
-				// Erase the least recently used block
-				eraseBlock(itUnloadBlock);
+				// Add our new block to the map.
+				m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+				m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 			}
-
-			// Add our new block to the map.
-			m_pBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
 		}
 
 		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
@@ -589,8 +608,8 @@ namespace PolyVox
 		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
 		//Memory used by the blocks
-		typename UncompressedBlockMap::iterator i;
-		for (i = m_pBlocks.begin(); i != m_pBlocks.end(); i++)
+		typename SharedPtrBlockMap::iterator i;
+		for (i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
 		{
 			//Inaccurate - account for rest of loaded block.
 			uSizeInBytes += i->second->calculateSizeInBytes();

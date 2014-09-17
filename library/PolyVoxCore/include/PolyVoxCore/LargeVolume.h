@@ -300,7 +300,8 @@ namespace PolyVox
 			}
 		};	
 
-		typedef std::map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> UncompressedBlockMap;
+		typedef std::map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> SharedPtrBlockMap;
+		typedef std::map<Vector3DInt32, std::weak_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> WeakPtrBlockMap;
 
 		void initialise();
 
@@ -314,10 +315,11 @@ namespace PolyVox
 	
 		std::shared_ptr< UncompressedBlock<VoxelType> > getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
-		void eraseBlock(typename UncompressedBlockMap::iterator itUncompressedBlock) const;
+		void eraseBlock(typename SharedPtrBlockMap::iterator itUncompressedBlock) const;
 
 		// The block data
-		mutable UncompressedBlockMap m_pBlocks;
+		mutable WeakPtrBlockMap m_pAllBlocks;
+		mutable SharedPtrBlockMap m_pRecentlyUsedBlocks;
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
