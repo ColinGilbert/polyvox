@@ -43,8 +43,8 @@ namespace PolyVox
 		/// Destructor
 		virtual ~Pager() {};
 
-		virtual void pageIn(const Region& region, std::shared_ptr< UncompressedBlock<VoxelType> > pBlockData) = 0;
-		virtual void pageOut(const Region& region, std::shared_ptr< UncompressedBlock<VoxelType> > pBlockData) = 0;
+		virtual void pageIn(const Region& region, UncompressedBlock<VoxelType>* pBlockData) = 0;
+		virtual void pageOut(const Region& region, UncompressedBlock<VoxelType>* pBlockData) = 0;
 	};
 }
 

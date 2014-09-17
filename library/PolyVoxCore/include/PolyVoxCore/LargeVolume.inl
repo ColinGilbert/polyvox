@@ -515,21 +515,7 @@ namespace PolyVox
 
 		// Before deleting the block we may need to recompress its data. We
 		// only do this if the data has been modified since it was decompressed.
-		if(pUncompressedBlock->m_bDataModified)
-		{
-			// Get the compressed block which we will copy the data back in to.
-			Vector3DInt32 v3dBlockPos = itUncompressedBlock->first;
-
-			// From the coordinates of the block we deduce the coordinates of the contained voxels.
-			Vector3DInt32 v3dLower(v3dBlockPos.getX() << m_uBlockSideLengthPower, v3dBlockPos.getY() << m_uBlockSideLengthPower, v3dBlockPos.getZ() << m_uBlockSideLengthPower);
-			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength - 1, m_uBlockSideLength - 1, m_uBlockSideLength - 1);
-
-			// Page the data out
-			m_pPager->pageOut(Region(v3dLower, v3dUpper), itUncompressedBlock->second);
-
-			// The compressed data has been updated, so the uncompressed data is no longer modified with respect to it.
-			pUncompressedBlock->m_bDataModified = false;
-		}
+		
 
 		//delete itUncompressedBlock->second;
 
@@ -564,16 +550,7 @@ namespace PolyVox
 		else
 		{
 			// The blcok was not found so we will create a new one.
-			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(m_uBlockSideLength);
-
-			// Pass the block to the Pager to give it a chance to initialise it with any data
-			if (m_pPager)
-			{
-				Vector3DInt32 v3dLower(uBlockX << m_uBlockSideLengthPower, uBlockY << m_uBlockSideLengthPower, uBlockZ << m_uBlockSideLengthPower);
-				Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uBlockSideLength - 1, m_uBlockSideLength - 1, m_uBlockSideLength - 1);
-				Region reg(v3dLower, v3dUpper);
-				m_pPager->pageIn(reg, pUncompressedBlock);
-			}
+			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
 
 			while (m_pBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
 			{

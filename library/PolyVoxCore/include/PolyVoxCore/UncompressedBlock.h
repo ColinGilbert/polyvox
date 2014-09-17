@@ -35,7 +35,7 @@ namespace PolyVox
 		friend class LargeVolume<VoxelType>;
 
 	public:
-		UncompressedBlock(uint16_t uSideLength);
+		UncompressedBlock(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager = nullptr);
 		~UncompressedBlock();
 
 		VoxelType* getData(void) const;
@@ -67,7 +67,9 @@ namespace PolyVox
 
         VoxelType* m_tData;
         uint16_t m_uSideLength;
-        uint8_t m_uSideLengthPower;     
+        uint8_t m_uSideLengthPower;
+		Pager<VoxelType>* m_pPager;
+		Vector3DInt32 m_v3dBlockSpacePosition;
 	};
 }
 
