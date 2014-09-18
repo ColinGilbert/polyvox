@@ -158,7 +158,7 @@ int main(int argc, char *argv[])
 
 	PerlinNoisePager* pager = new PerlinNoisePager();
 	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, pager, 256);
-	volData.setTargetMemoryUsage(2 * 1024 * 1024); // 2Mb
+	volData.setMemoryUsageLimit(2 * 1024 * 1024); // 2Mb
 
 	//createSphereInVolume(volData, 30);
 	//createPerlinTerrain(volData);

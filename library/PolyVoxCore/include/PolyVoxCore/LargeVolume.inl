@@ -52,13 +52,13 @@ namespace PolyVox
 		if (m_pPager)
 		{
 			// If a pager is available then we can set a sensible limit on our memory usage.
-			m_uMaxNumberOfUncompressedBlocks = 256;
+			m_uBlockCountLimit = 256;
 		}
 		else
 		{
 			// If there is no pager provided then we set the block limit to the maximum
 			// value to ensure the system never attempts to page blocks out of memory.
-			m_uMaxNumberOfUncompressedBlocks = (std::numeric_limits<uint32_t>::max)();
+			m_uBlockCountLimit = (std::numeric_limits<uint32_t>::max)();
 		}
 
 		initialise();
@@ -225,26 +225,26 @@ namespace PolyVox
 	/// \param uMaxNumberOfUncompressedBlocks The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setTargetMemoryUsage(uint32_t uTargetMemoryUsageInBytes)
+	void LargeVolume<VoxelType>::setMemoryUsageLimit(uint32_t uMemoryUsageInBytes)
 	{
 		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
 
 		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
-		m_uMaxNumberOfUncompressedBlocks = uTargetMemoryUsageInBytes / uUncompressedBlockSizeInBytes;
+		m_uBlockCountLimit = uMemoryUsageInBytes / uUncompressedBlockSizeInBytes;
 
 		const uint32_t uMinPracticalNoOfBlocks = 4;
-		POLYVOX_LOG_WARNING_IF(m_uMaxNumberOfUncompressedBlocks < uMinPracticalNoOfBlocks, "The target memory usage is set too low and cannot be adhered to.");
-		m_uMaxNumberOfUncompressedBlocks = (std::max)(m_uMaxNumberOfUncompressedBlocks, uMinPracticalNoOfBlocks);
+		POLYVOX_LOG_WARNING_IF(m_uBlockCountLimit < uMinPracticalNoOfBlocks, "The memory usage limit is set too low and cannot be adhered to.");
+		m_uBlockCountLimit = (std::max)(m_uBlockCountLimit, uMinPracticalNoOfBlocks);
 
 
-		if (m_pRecentlyUsedBlocks.size() > m_uMaxNumberOfUncompressedBlocks)
+		if (m_pRecentlyUsedBlocks.size() > m_uBlockCountLimit)
 		{
 			flushAll();
 		}
 
-		POLYVOX_LOG_DEBUG("Target memory usage for volume set to " << uTargetMemoryUsageInBytes << "bytes (" 
-			<< m_uMaxNumberOfUncompressedBlocks << " blocks of " << uUncompressedBlockSizeInBytes << "bytes each).");
+		POLYVOX_LOG_DEBUG("Target memory usage for volume set to " << uMemoryUsageInBytes << "bytes ("
+			<< m_uBlockCountLimit << " blocks of " << uUncompressedBlockSizeInBytes << "bytes each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -360,8 +360,8 @@ namespace PolyVox
 		// Ensure we don't page in more blocks than the volume can hold.
 		Region region(v3dStart, v3dEnd);
 		uint32_t uNoOfBlocks = static_cast<uint32_t>(region.getWidthInVoxels() * region.getHeightInVoxels() * region.getDepthInVoxels());
-		POLYVOX_LOG_WARNING_IF(uNoOfBlocks > m_uMaxNumberOfUncompressedBlocks, "Attempting to prefetch more than the maximum number of blocks.");
-		uNoOfBlocks = (std::min)(uNoOfBlocks, m_uMaxNumberOfUncompressedBlocks);
+		POLYVOX_LOG_WARNING_IF(uNoOfBlocks > m_uBlockCountLimit, "Attempting to prefetch more than the maximum number of blocks.");
+		uNoOfBlocks = (std::min)(uNoOfBlocks, m_uBlockCountLimit);
 
 		// Loops over the specified positions and touch the corresponding blocks.
 		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
@@ -455,7 +455,7 @@ namespace PolyVox
 		}
 
 		m_uTimestamper = 0;
-		//m_uMaxNumberOfUncompressedBlocks = 16;
+		//m_uBlockCountLimit = 16;
 		//m_uMaxNumberOfBlocksInMemory = 1024;
 		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
 		m_pLastAccessedBlock = 0;
@@ -470,7 +470,7 @@ namespace PolyVox
 		m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uBlockSideLengthPower);
 		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
 
-		//setMaxNumberOfUncompressedBlocks(m_uMaxNumberOfUncompressedBlocks);
+		//setMaxNumberOfUncompressedBlocks(m_uBlockCountLimit);
 
 		//Clear the previous data
 		m_pRecentlyUsedBlocks.clear();
@@ -538,7 +538,7 @@ namespace PolyVox
 
 			// As we are loading a new block we should try to ensure we don't go over our target memory usage.
 			bool erasedBlock = false;
-			while (m_pRecentlyUsedBlocks.size() + 1 > m_uMaxNumberOfUncompressedBlocks) // +1 ready for new block we will add next.
+			while (m_pRecentlyUsedBlocks.size() + 1 > m_uBlockCountLimit) // +1 ready for new block we will add next.
 			{
 				// This should never hit, because it should not have been possible for
 				// the user to limit the number of blocks if they did not provide a pager.
