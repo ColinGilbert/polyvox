@@ -614,13 +614,9 @@ namespace PolyVox
 		// Purge null blocks so we know that all blocks are used.
 		purgeNullPtrsFromAllBlocks();
 
-		// We include the size of the LargeVolume class but it should be insignificant.
-		uint32_t uSizeInBytes = sizeof(LargeVolume);
-
-		// Memory used by the blocks
-		uSizeInBytes += UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength) * m_pAllBlocks.size();
-
-		return uSizeInBytes;
+		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
+		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
+		return UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength) * m_pAllBlocks.size();
 	}
 
 	template <typename VoxelType>

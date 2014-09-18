@@ -148,8 +148,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t UncompressedBlock<VoxelType>::calculateSizeInBytes(uint32_t uSideLength)
 	{
-		// Returns the size of this class plus the size of the uncompressed data.
-		uint32_t uSizeInBytes = sizeof(UncompressedBlock<VoxelType>) + (uSideLength * uSideLength * uSideLength * sizeof(VoxelType));
+		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
+		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
+		uint32_t uSizeInBytes = uSideLength * uSideLength * uSideLength * sizeof(VoxelType);
 		return  uSizeInBytes;
 	}
 }
