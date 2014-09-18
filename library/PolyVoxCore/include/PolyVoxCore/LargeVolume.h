@@ -334,6 +334,11 @@ namespace PolyVox
 		uint8_t m_uBlockSideLengthPower;
 
 		Pager<VoxelType>* m_pPager;
+
+		// Enough to make sure a blocks and it's neighbours can be loaded, with a few to spare.
+		static const uint32_t uMinPracticalNoOfBlocks = 32;
+		// Should preent multi-gigabyte volumes with reasonable block sizes.
+		static const uint32_t uMaxPracticalNoOfBlocks = 32768;
 	};
 }
 

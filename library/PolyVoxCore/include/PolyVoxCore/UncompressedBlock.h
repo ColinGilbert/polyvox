@@ -64,6 +64,7 @@ namespace PolyVox
 		// Made this private for consistancy with CompressedBlock.
 		// Users shouldn't really need this for UncompressedBlock anyway.
 		uint32_t calculateSizeInBytes(void);
+		static uint32_t calculateSizeInBytes(uint32_t uSideLength);
 
         VoxelType* m_tData;
         uint16_t m_uSideLength;

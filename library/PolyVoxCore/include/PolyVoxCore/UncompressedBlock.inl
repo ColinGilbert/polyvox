@@ -141,8 +141,15 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t UncompressedBlock<VoxelType>::calculateSizeInBytes(void)
 	{
+		// Call through to the static version
+		return calculateSizeInBytes(m_uSideLength);
+	}
+
+	template <typename VoxelType>
+	uint32_t UncompressedBlock<VoxelType>::calculateSizeInBytes(uint32_t uSideLength)
+	{
 		// Returns the size of this class plus the size of the uncompressed data.
-		uint32_t uSizeInBytes = sizeof(UncompressedBlock<VoxelType>) + (m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType));
+		uint32_t uSizeInBytes = sizeof(UncompressedBlock<VoxelType>) + (uSideLength * uSideLength * uSideLength * sizeof(VoxelType));
 		return  uSizeInBytes;
 	}
 }

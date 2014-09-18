@@ -51,8 +51,25 @@ namespace PolyVox
 
 		if (m_pPager)
 		{
-			// If a pager is available then we can set a sensible limit on our memory usage.
-			m_uBlockCountLimit = 256;
+			// If the user is creating a vast (almost infinite) volume then we can bet they will be
+			// expecting a high memory usage and will want a fair number of blocks to play around with.
+			if (regValid == Region::MaxRegion)
+			{
+				m_uBlockCountLimit = 1024;
+			}
+			else
+			{
+				// Otherwise we try to choose a block count to avoid too much thrashing, particularly when iterating
+				// over the whole volume. This means at least enough blocks to cover one edge of the volume, and ideally 
+				// enough for a whole face. Which face? Longest edge by shortest edge seems like a reasonable guess.
+				uint32_t longestSide = (std::max)(regValid.getWidthInVoxels(), (std::max)(regValid.getHeightInVoxels(), regValid.getDepthInVoxels()));
+				uint32_t shortestSide = (std::min)(regValid.getWidthInVoxels(), (std::min)(regValid.getHeightInVoxels(), regValid.getDepthInVoxels()));
+
+				longestSide /= m_uBlockSideLength;
+				shortestSide /= m_uBlockSideLength;
+
+				m_uBlockCountLimit = longestSide * shortestSide;
+			}
 		}
 		else
 		{
@@ -60,6 +77,14 @@ namespace PolyVox
 			// value to ensure the system never attempts to page blocks out of memory.
 			m_uBlockCountLimit = (std::numeric_limits<uint32_t>::max)();
 		}
+
+		// Make sure the calculated block limit is within practical bounds
+		m_uBlockCountLimit = (std::max)(m_uBlockCountLimit, uMinPracticalNoOfBlocks);
+		m_uBlockCountLimit = (std::min)(m_uBlockCountLimit, uMaxPracticalNoOfBlocks);
+
+		uint32_t uUncompressedBlockSizeInBytes = UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
+		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uBlockCountLimit * uUncompressedBlockSizeInBytes) / (1024 * 1024)
+			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uUncompressedBlockSizeInBytes / 1024 << "Kb each).");
 
 		initialise();
 	}
@@ -229,22 +254,24 @@ namespace PolyVox
 	{
 		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
 
-		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-
+		// Calculate the number of blocks based on the memory limit and the size of each block.
+		uint32_t uUncompressedBlockSizeInBytes = UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
 		m_uBlockCountLimit = uMemoryUsageInBytes / uUncompressedBlockSizeInBytes;
 
-		const uint32_t uMinPracticalNoOfBlocks = 4;
-		POLYVOX_LOG_WARNING_IF(m_uBlockCountLimit < uMinPracticalNoOfBlocks, "The memory usage limit is set too low and cannot be adhered to.");
+		// We need at least a few blocks available to avoid thrashing, and in pratice there will probably be hundreds.
+		POLYVOX_LOG_WARNING_IF(m_uBlockCountLimit < uMinPracticalNoOfBlocks, "Requested memory usage limit of " 
+			<< uMemoryUsageInBytes / (1024 * 1024) << "Mb is too low and cannot be adhered to.");
 		m_uBlockCountLimit = (std::max)(m_uBlockCountLimit, uMinPracticalNoOfBlocks);
+		m_uBlockCountLimit = (std::min)(m_uBlockCountLimit, uMaxPracticalNoOfBlocks);
 
-
+		// If the new limit is less than the number of blocks already loaded then the easiest solution is to flush and start loading again.
 		if (m_pRecentlyUsedBlocks.size() > m_uBlockCountLimit)
 		{
 			flushAll();
 		}
 
-		POLYVOX_LOG_DEBUG("Target memory usage for volume set to " << uMemoryUsageInBytes << "bytes ("
-			<< m_uBlockCountLimit << " blocks of " << uUncompressedBlockSizeInBytes << "bytes each).");
+		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uBlockCountLimit * uUncompressedBlockSizeInBytes) / (1024 * 1024)
+			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uUncompressedBlockSizeInBytes / 1024 << "Kb each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -579,24 +606,19 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Note: This function needs reviewing for accuracy...
+	/// Calculate the memory usage of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	uint32_t LargeVolume<VoxelType>::calculateSizeInBytes(void)
 	{
+		// Purge null blocks so we know that all blocks are used.
+		purgeNullPtrsFromAllBlocks();
+
+		// We include the size of the LargeVolume class but it should be insignificant.
 		uint32_t uSizeInBytes = sizeof(LargeVolume);
 
-		//Memory used by the blocks
-		typename SharedPtrBlockMap::iterator i;
-		for (i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
-		{
-			//Inaccurate - account for rest of loaded block.
-			uSizeInBytes += i->second->calculateSizeInBytes();
-		}
-
-		//Memory used by the block cache.
-		//uSizeInBytes += m_vecBlocksWithUncompressedData.capacity() * sizeof(Block<VoxelType>);
-		//uSizeInBytes += m_vecBlocksWithUncompressedData.size() * m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
+		// Memory used by the blocks
+		uSizeInBytes += UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength) * m_pAllBlocks.size();
 
 		return uSizeInBytes;
 	}
