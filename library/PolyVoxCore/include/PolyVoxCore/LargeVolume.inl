@@ -340,6 +340,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::prefetch(Region regPrefetch)
 	{
+		// Convert the start and end positions into block space coordinates
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
 		{
@@ -352,46 +353,21 @@ namespace PolyVox
 			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
 		}
 
-		Vector3DInt32 v3dSize = v3dEnd - v3dStart + Vector3DInt32(1,1,1);
-		uint32_t numblocks = static_cast<uint32_t>(v3dSize.getX() * v3dSize.getY() * v3dSize.getZ());
+		Region region(v3dStart, v3dEnd);
+		uint32_t uNoOfBlocks = static_cast<uint32_t>(region.getWidthInVoxels() * region.getHeightInVoxels() * region.getDepthInVoxels());
+		POLYVOX_LOG_WARNING_IF(uNoOfBlocks > m_uMaxNumberOfUncompressedBlocks, "Attempting to prefetch more than the maximum number of blocks.");
+		uNoOfBlocks = (std::min)(uNoOfBlocks, m_uMaxNumberOfUncompressedBlocks);
 
-		// FIXME - reinstate some logic to handle when the prefetched region is too large.
-
-		/*if(numblocks > m_uMaxNumberOfBlocksInMemory)
-		{
-			// cannot support the amount of blocks... so only load the maximum possible
-			numblocks = m_uMaxNumberOfBlocksInMemory;
-		}*/
 		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
 		{
 			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
-				{
-					Vector3DInt32 pos(x,y,z);
-					/*typename CompressedBlockMap::iterator itBlock = m_pRecentlyUsedBlocks.find(pos);
-					
-					if(itBlock != m_pRecentlyUsedBlocks.end())
-					{
-						// If the block is already loaded then we don't load it again. This means it does not get uncompressed,
-						// whereas if we were to call getUncompressedBlock() regardless then it would also get uncompressed.
-						// This might be nice, but on the prefetch region could be bigger than the uncompressed cache size.
-						// This would limit the amount of prefetching we could do.
-						continue;
-					}*/
-
-					if(numblocks == 0)
-					{
-						// Loading any more blocks would attempt to overflow the memory and therefore erase blocks
-						// we loaded in the beginning. This wouldn't cause logic problems but would be wasteful.
-						return;
-					}
-					// load a block
-					numblocks--;
+				{					
 					getUncompressedBlock(x,y,z);
-				} // for z
-			} // for y
-		} // for x
+				}
+			}
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
