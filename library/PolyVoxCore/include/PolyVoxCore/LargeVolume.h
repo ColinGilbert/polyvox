@@ -33,6 +33,7 @@ freely, subject to the following restrictions:
 #include <limits>
 #include <cstdlib> //For abort()
 #include <cstring> //For memcpy
+#include <unordered_map>
 #include <list>
 #include <map>
 #include <memory>
@@ -284,24 +285,8 @@ namespace PolyVox
 
 	private:
 
-		struct BlockPositionCompare
-		{
-			bool operator() (const PolyVox::Vector3DInt32& a, const PolyVox::Vector3DInt32& b) const
-			{
-				const uint32_t size = 3;
-				for(uint32_t ct = 0; ct < size; ++ct)
-				{
-					if (a.getElement(ct) < b.getElement(ct))
-						return true;
-					if (b.getElement(ct) < a.getElement(ct))
-						return false;
-				}
-				return false;
-			}
-		};	
-
-		typedef std::map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> SharedPtrBlockMap;
-		typedef std::map<Vector3DInt32, std::weak_ptr< UncompressedBlock<VoxelType> >, BlockPositionCompare> WeakPtrBlockMap;
+		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> > > SharedPtrBlockMap;
+		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< UncompressedBlock<VoxelType> > > WeakPtrBlockMap;
 
 		void initialise();
 

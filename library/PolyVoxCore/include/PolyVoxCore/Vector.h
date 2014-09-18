@@ -31,6 +31,7 @@ freely, subject to the following restrictions:
 
 #include <cmath>
 #include <cstring>
+#include <functional>
 #include <iostream>
 
 namespace PolyVox
@@ -227,6 +228,19 @@ namespace PolyVox
 
 
 }//namespace PolyVox
+
+namespace std
+{
+	template <>
+	struct hash<PolyVox::Vector3DInt32>
+	{
+		std::size_t operator()(const PolyVox::Vector3DInt32& vec) const
+		{
+			return ((vec.getX() & 0xFF)) | ((vec.getY() & 0xFF) << 8) | ((vec.getZ() & 0xFF) << 16);
+		}
+	};
+}
+
 
 #include "PolyVoxCore/Vector.inl"
 
