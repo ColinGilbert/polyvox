@@ -421,11 +421,12 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::flush(Region regFlush)
 	{
-		/*POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
+		POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
 
 		// Clear this pointer so it doesn't hang on to any blocks.
 		m_pLastAccessedBlock = nullptr;
 
+		// Convert the start and end positions into block space coordinates
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
 		{
@@ -438,28 +439,20 @@ namespace PolyVox
 			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
 		}
 
+		// Loops over the specified positions and delete the corresponding blocks.
 		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
 		{
 			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
-					Vector3DInt32 pos(x,y,z);
-					typename SharedPtrBlockMap::iterator itBlock = m_pRecentlyUsedBlocks.find(pos);
-					if (itBlock == m_pRecentlyUsedBlocks.end())
-					{
-						// not loaded, not unloading
-						continue;
-					}
-					eraseBlock(itBlock);
-					// eraseBlock might cause a call to getUncompressedBlock, which again sets m_pLastAccessedBlock
-					if(m_v3dLastAccessedBlockPos == pos)
-					{
-						m_pLastAccessedBlock = 0;
-					}
-				} // for z
-			} // for y
-		} // for x*/
+					m_pRecentlyUsedBlocks.erase(Vector3DInt32(x, y, z)); m_pLastAccessedBlock = 0;
+				}
+			}
+		}
+
+		// We might now have so null pointers in the 'all blocks' list so clean them up.
+		purgeNullPtrsFromAllBlocks();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -541,7 +534,7 @@ namespace PolyVox
 			{
 				// We've found an entry in the 'all blocks' list, but it can be null. This happens if a sampler was the
 				// last thing to be keeping it alive and then the sampler let it go. In this case we remove it from the
-				// list, and it will get added again soon when we pag e it in and fil it with valid data.
+				// list, and it will get added again soon when we page it in and fill it with valid data.
 				if (itWeakUncompressedBlock->second.expired())
 				{
 					m_pAllBlocks.erase(itWeakUncompressedBlock);
