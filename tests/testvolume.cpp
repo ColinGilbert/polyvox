@@ -277,8 +277,7 @@ TestVolume::TestVolume()
 	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
 	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pFilePager, 32);
 
-	//m_pLargeVolume->setMaxNumberOfBlocksInMemory(32);
-	m_pLargeVolume->setMaxNumberOfUncompressedBlocks(64);
+	m_pLargeVolume->setTargetMemoryUsage(1 * 1024 * 1024);
 
 	//Fill the volume with some data
 	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)

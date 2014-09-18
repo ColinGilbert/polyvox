@@ -158,10 +158,8 @@ int main(int argc, char *argv[])
 
 	PerlinNoisePager* pager = new PerlinNoisePager();
 	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, pager, 256);
-	//volData.setMaxNumberOfBlocksInMemory(4096);
-	volData.setMaxNumberOfUncompressedBlocks(64);
+	volData.setTargetMemoryUsage(2 * 1024 * 1024); // 2Mb
 
-	//volData.setMaxNumberOfUncompressedBlocks(4096);
 	//createSphereInVolume(volData, 30);
 	//createPerlinTerrain(volData);
 	//createPerlinVolumeSlow(volData);

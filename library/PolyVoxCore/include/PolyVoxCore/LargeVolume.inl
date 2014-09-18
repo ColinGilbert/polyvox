@@ -225,22 +225,26 @@ namespace PolyVox
 	/// \param uMaxNumberOfUncompressedBlocks The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void LargeVolume<VoxelType>::setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks)
+	void LargeVolume<VoxelType>::setTargetMemoryUsage(uint32_t uTargetMemoryUsageInBytes)
 	{
 		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
 
-		//clearBlockCache();
+		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
 
-		/*if (m_pRecentlyUsedBlocks.size() > uMaxNumberOfBlocksInMemory)
+		m_uMaxNumberOfUncompressedBlocks = uTargetMemoryUsageInBytes / uUncompressedBlockSizeInBytes;
+
+		const uint32_t uMinPracticalNoOfBlocks = 4;
+		POLYVOX_LOG_WARNING_IF(m_uMaxNumberOfUncompressedBlocks < uMinPracticalNoOfBlocks, "The target memory usage is set too low and cannot be adhered to.");
+		m_uMaxNumberOfUncompressedBlocks = (std::max)(m_uMaxNumberOfUncompressedBlocks, uMinPracticalNoOfBlocks);
+
+
+		if (m_pRecentlyUsedBlocks.size() > m_uMaxNumberOfUncompressedBlocks)
 		{
 			flushAll();
-		}*/
+		}
 
-		m_uMaxNumberOfUncompressedBlocks = uMaxNumberOfUncompressedBlocks;
-
-		uint32_t uUncompressedBlockSizeInBytes = m_uBlockSideLength * m_uBlockSideLength * m_uBlockSideLength * sizeof(VoxelType);
-		POLYVOX_LOG_DEBUG("The maximum number of uncompresed blocks has been set to " << m_uMaxNumberOfUncompressedBlocks
-			<< ", which is " << m_uMaxNumberOfUncompressedBlocks * uUncompressedBlockSizeInBytes << " bytes"); 
+		POLYVOX_LOG_DEBUG("Target memory usage for volume set to " << uTargetMemoryUsageInBytes << "bytes (" 
+			<< m_uMaxNumberOfUncompressedBlocks << " blocks of " << uUncompressedBlockSizeInBytes << "bytes each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -353,11 +357,13 @@ namespace PolyVox
 			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
 		}
 
+		// Ensure we don't page in more blocks than the volume can hold.
 		Region region(v3dStart, v3dEnd);
 		uint32_t uNoOfBlocks = static_cast<uint32_t>(region.getWidthInVoxels() * region.getHeightInVoxels() * region.getDepthInVoxels());
 		POLYVOX_LOG_WARNING_IF(uNoOfBlocks > m_uMaxNumberOfUncompressedBlocks, "Attempting to prefetch more than the maximum number of blocks.");
 		uNoOfBlocks = (std::min)(uNoOfBlocks, m_uMaxNumberOfUncompressedBlocks);
 
+		// Loops over the specified positions and touch the corresponding blocks.
 		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
 		{
 			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
@@ -598,11 +604,15 @@ namespace PolyVox
 	template <typename VoxelType>
 	void LargeVolume<VoxelType>::purgeNullPtrsFromAllBlocks(void) const
 	{
-		for (auto blockIter = m_pAllBlocks.begin(); blockIter != m_pAllBlocks.end(); blockIter++)
+		for (auto blockIter = m_pAllBlocks.begin(); blockIter != m_pAllBlocks.end();)
 		{
 			if (blockIter->second.expired())
 			{
 				blockIter = m_pAllBlocks.erase(blockIter);
+			}
+			else
+			{
+				blockIter++;
 			}
 		}
 	}

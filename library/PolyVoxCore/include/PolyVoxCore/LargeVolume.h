@@ -256,7 +256,7 @@ namespace PolyVox
 		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
 		/// Sets the number of blocks for which uncompressed data is stored
-		void setMaxNumberOfUncompressedBlocks(uint32_t uMaxNumberOfUncompressedBlocks);
+		void setTargetMemoryUsage(uint32_t uTargetMemoryUsageInBytes);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by a 3D vector
