@@ -54,6 +54,11 @@ namespace PolyVox
 			// Page the data in
 			m_pPager->pageIn(reg, this);
 		}
+		else
+		{
+			// Just fill with zeros
+			std::fill(m_tData, m_tData + uNoOfVoxels, VoxelType());
+		}
 
 		// We'll use this later to decide if data needs to be paged out again.
 		m_bDataModified = false;
