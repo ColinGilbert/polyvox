@@ -50,8 +50,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/IteratorController.h
 	include/PolyVoxCore/IteratorController.inl
 	include/PolyVoxCore/LargeVolume.h
-	include/PolyVoxCore/LargeVolume.inl
-	include/PolyVoxCore/LargeVolumeSampler.inl
 	include/PolyVoxCore/LowPassFilter.h
 	include/PolyVoxCore/LowPassFilter.inl
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.h
@@ -60,6 +58,9 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/Mesh.h
 	include/PolyVoxCore/Mesh.inl
+	include/PolyVoxCore/PagedVolume.h
+	include/PolyVoxCore/PagedVolume.inl
+	include/PolyVoxCore/PagedVolumeSampler.inl
 	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Picking.h
@@ -71,9 +72,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
 	include/PolyVoxCore/SimpleVolume.h
-	include/PolyVoxCore/SimpleVolume.inl
-	include/PolyVoxCore/SimpleVolumeBlock.inl
-	include/PolyVoxCore/SimpleVolumeSampler.inl
 	include/PolyVoxCore/UncompressedBlock.h
 	include/PolyVoxCore/UncompressedBlock.inl
 	include/PolyVoxCore/Vector.h

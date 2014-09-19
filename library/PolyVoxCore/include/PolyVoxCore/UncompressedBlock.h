@@ -32,7 +32,7 @@ namespace PolyVox
 	template <typename VoxelType>
     class UncompressedBlock
     {
-		friend class LargeVolume<VoxelType>;
+		friend class PagedVolume<VoxelType>;
 
 	public:
 		UncompressedBlock(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager = nullptr);
@@ -54,7 +54,7 @@ namespace PolyVox
 		/// Private assignment operator to prevent accisdental copying
 		UncompressedBlock& operator=(const UncompressedBlock& /*rhs*/) {};
 
-		// This is updated by the LargeVolume and used to discard the least recently used blocks.
+		// This is updated by the PagedVolume and used to discard the least recently used blocks.
 		uint32_t m_uBlockLastAccessed;
 
 		// This is so we can tell whether a uncompressed block has to be recompressed and whether
