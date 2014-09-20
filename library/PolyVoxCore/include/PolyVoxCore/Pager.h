@@ -43,8 +43,8 @@ namespace PolyVox
 		/// Destructor
 		virtual ~Pager() {};
 
-		virtual void pageIn(const Region& region, Chunk<VoxelType>* pBlockData) = 0;
-		virtual void pageOut(const Region& region, Chunk<VoxelType>* pBlockData) = 0;
+		virtual void pageIn(const Region& region, Chunk<VoxelType>* pChunk) = 0;
+		virtual void pageOut(const Region& region, Chunk<VoxelType>* pChunk) = 0;
 	};
 }
 

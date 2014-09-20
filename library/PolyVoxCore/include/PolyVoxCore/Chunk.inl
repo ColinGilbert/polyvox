@@ -27,13 +27,13 @@ namespace PolyVox
 {
 	template <typename VoxelType>
 	Chunk<VoxelType>::Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager)
-		:m_uBlockLastAccessed(0)
+		:m_uChunkLastAccessed(0)
 		,m_bDataModified(true)
 		,m_tData(0)
 		,m_uSideLength(0)
 		,m_uSideLengthPower(0)
 		,m_pPager(pPager)
-		,m_v3dBlockSpacePosition(v3dPosition)
+		,m_v3dChunkSpacePosition(v3dPosition)
 	{
 		// Compute the side length               
 		m_uSideLength = uSideLength;
@@ -47,7 +47,7 @@ namespace PolyVox
 		if (m_pPager)
 		{
 			// From the coordinates of the block we deduce the coordinates of the contained voxels.
-			Vector3DInt32 v3dLower = m_v3dBlockSpacePosition * static_cast<int32_t>(m_uSideLength);
+			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
 			Region reg(v3dLower, v3dUpper);
 
@@ -70,7 +70,7 @@ namespace PolyVox
 		if (m_pPager && m_bDataModified)
 		{
 			// From the coordinates of the block we deduce the coordinates of the contained voxels.
-			Vector3DInt32 v3dLower = m_v3dBlockSpacePosition * static_cast<int32_t>(m_uSideLength);
+			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
 
 			// Page the data out
@@ -98,9 +98,9 @@ namespace PolyVox
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
-		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
+		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
+		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		return m_tData
@@ -122,9 +122,9 @@ namespace PolyVox
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
-		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the block");
-		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the block");
+		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
+		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
+		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - block must be decompressed before accessing voxels.");
 
 		m_tData

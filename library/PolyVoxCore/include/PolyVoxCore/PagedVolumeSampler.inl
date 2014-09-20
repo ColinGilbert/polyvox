@@ -21,12 +21,12 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#define CAN_GO_NEG_X(val) ((val > this->mVolume->getEnclosingRegion().getLowerX()) && (val % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_POS_X(val) ((val < this->mVolume->getEnclosingRegion().getUpperX()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_NEG_Y(val) ((val > this->mVolume->getEnclosingRegion().getLowerY()) && (val % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_POS_Y(val) ((val < this->mVolume->getEnclosingRegion().getUpperY()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_NEG_Z(val) ((val > this->mVolume->getEnclosingRegion().getLowerZ()) && (val % this->mVolume->m_uBlockSideLength != 0))
-#define CAN_GO_POS_Z(val) ((val < this->mVolume->getEnclosingRegion().getUpperZ()) && ((val + 1) % this->mVolume->m_uBlockSideLength != 0))
+#define CAN_GO_NEG_X(val) ((val > this->mVolume->getEnclosingRegion().getLowerX()) && (val % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_POS_X(val) ((val < this->mVolume->getEnclosingRegion().getUpperX()) && ((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_NEG_Y(val) ((val > this->mVolume->getEnclosingRegion().getLowerY()) && (val % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_POS_Y(val) ((val < this->mVolume->getEnclosingRegion().getUpperY()) && ((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_NEG_Z(val) ((val > this->mVolume->getEnclosingRegion().getLowerZ()) && (val % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_POS_Z(val) ((val < this->mVolume->getEnclosingRegion().getUpperZ()) && ((val + 1) % this->mVolume->m_uChunkSideLength != 0))
 
 namespace PolyVox
 {
@@ -107,17 +107,17 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid())
 		{
-			const int32_t uXBlock = this->mXPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
-			const int32_t uYBlock = this->mYPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
-			const int32_t uZBlock = this->mZPosInVolume >> this->mVolume->m_uBlockSideLengthPower;
+			const int32_t uXBlock = this->mXPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
+			const int32_t uYBlock = this->mYPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
+			const int32_t uZBlock = this->mZPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
 
-			const uint16_t uXPosInBlock = static_cast<uint16_t>(this->mXPosInVolume - (uXBlock << this->mVolume->m_uBlockSideLengthPower));
-			const uint16_t uYPosInBlock = static_cast<uint16_t>(this->mYPosInVolume - (uYBlock << this->mVolume->m_uBlockSideLengthPower));
-			const uint16_t uZPosInBlock = static_cast<uint16_t>(this->mZPosInVolume - (uZBlock << this->mVolume->m_uBlockSideLengthPower));
+			const uint16_t uXPosInBlock = static_cast<uint16_t>(this->mXPosInVolume - (uXBlock << this->mVolume->m_uChunkSideLengthPower));
+			const uint16_t uYPosInBlock = static_cast<uint16_t>(this->mYPosInVolume - (uYBlock << this->mVolume->m_uChunkSideLengthPower));
+			const uint16_t uZPosInBlock = static_cast<uint16_t>(this->mZPosInVolume - (uZBlock << this->mVolume->m_uChunkSideLengthPower));
 
 			const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
-					uYPosInBlock * this->mVolume->m_uBlockSideLength + 
-					uZPosInBlock * this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
+					uYPosInBlock * this->mVolume->m_uChunkSideLength + 
+					uZPosInBlock * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 
 			auto pUncompressedCurrentBlock = this->mVolume->getChunk(uXBlock, uYBlock, uZBlock);
 
@@ -157,7 +157,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new block.
 			++mCurrentVoxel;			
@@ -179,10 +179,10 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new block.
-			mCurrentVoxel += this->mVolume->m_uBlockSideLength;
+			mCurrentVoxel += this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
@@ -201,10 +201,10 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new block.
-			mCurrentVoxel += this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
+			mCurrentVoxel += this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
@@ -223,7 +223,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new block.
 			--mCurrentVoxel;			
@@ -245,10 +245,10 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new block.
-			mCurrentVoxel -= this->mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
@@ -267,10 +267,10 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume + 1) % this->mVolume->m_uBlockSideLength != 0))
+		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new block.
-			mCurrentVoxel -= this->mVolume->m_uBlockSideLength * this->mVolume->m_uBlockSideLength;
+			mCurrentVoxel -= this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
@@ -284,7 +284,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -294,7 +294,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -304,7 +304,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -314,7 +314,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -334,7 +334,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -344,7 +344,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -354,7 +354,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -364,7 +364,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -376,7 +376,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -386,7 +386,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_Y(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -396,7 +396,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -406,7 +406,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -426,7 +426,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -436,7 +436,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -446,7 +446,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_Y(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -456,7 +456,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -468,7 +468,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -478,7 +478,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -488,7 +488,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -498,7 +498,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -518,7 +518,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -528,7 +528,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength - this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -538,7 +538,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume,this->m_eWrapMode, this->m_tBorder);
 	}
@@ -548,7 +548,7 @@ namespace PolyVox
 	{
 		if((this->isCurrentPositionValid()) && CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1 + this->mVolume->m_uBlockSideLength + this->mVolume->m_uBlockSideLength*this->mVolume->m_uBlockSideLength);
+			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
 		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1,this->m_eWrapMode, this->m_tBorder);
 	}

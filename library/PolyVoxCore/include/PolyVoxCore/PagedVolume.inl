@@ -35,18 +35,18 @@ namespace PolyVox
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
 	/// \param bPagingEnabled Controls whether or not paging is enabled for this PagedVolume.
-	/// \param uBlockSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
+	/// \param uChunkSideLength The size of the blocks making up the volume. Small blocks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::PagedVolume
 	(
 		const Region& regValid,
 		Pager<VoxelType>* pPager,
-		uint16_t uBlockSideLength
+		uint16_t uChunkSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)
 	{
-		m_uBlockSideLength = uBlockSideLength;
+		m_uChunkSideLength = uChunkSideLength;
 		m_pPager = pPager;
 
 		if (m_pPager)
@@ -65,8 +65,8 @@ namespace PolyVox
 				uint32_t longestSide = (std::max)(regValid.getWidthInVoxels(), (std::max)(regValid.getHeightInVoxels(), regValid.getDepthInVoxels()));
 				uint32_t shortestSide = (std::min)(regValid.getWidthInVoxels(), (std::min)(regValid.getHeightInVoxels(), regValid.getDepthInVoxels()));
 
-				longestSide /= m_uBlockSideLength;
-				shortestSide /= m_uBlockSideLength;
+				longestSide /= m_uChunkSideLength;
+				shortestSide /= m_uChunkSideLength;
 
 				m_uBlockCountLimit = longestSide * shortestSide;
 			}
@@ -82,7 +82,7 @@ namespace PolyVox
 		m_uBlockCountLimit = (std::max)(m_uBlockCountLimit, uMinPracticalNoOfBlocks);
 		m_uBlockCountLimit = (std::min)(m_uBlockCountLimit, uMaxPracticalNoOfBlocks);
 
-		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
+		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uChunkSideLength);
 		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uBlockCountLimit * uChunkSizeInBytes) / (1024 * 1024)
 			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uChunkSizeInBytes / 1024 << "Kb each).");
 
@@ -215,13 +215,13 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-			const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-			const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+			const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
+			const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
+			const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
 
-			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
-			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
-			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
+			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
+			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
 
 			auto pChunk = getChunk(blockX, blockY, blockZ);
 
@@ -255,7 +255,7 @@ namespace PolyVox
 		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
 
 		// Calculate the number of blocks based on the memory limit and the size of each block.
-		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
+		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uChunkSideLength);
 		m_uBlockCountLimit = uMemoryUsageInBytes / uChunkSizeInBytes;
 
 		// We need at least a few blocks available to avoid thrashing, and in pratice there will probably be hundreds.
@@ -265,7 +265,7 @@ namespace PolyVox
 		m_uBlockCountLimit = (std::min)(m_uBlockCountLimit, uMaxPracticalNoOfBlocks);
 
 		// If the new limit is less than the number of blocks already loaded then the easiest solution is to flush and start loading again.
-		if (m_pRecentlyUsedBlocks.size() > m_uBlockCountLimit)
+		if (m_pRecentlyUsedChunks.size() > m_uBlockCountLimit)
 		{
 			flushAll();
 		}
@@ -299,13 +299,13 @@ namespace PolyVox
 			}
 		}
 
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+		const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
 
 		auto pChunk = getChunk(blockX, blockY, blockZ);
 		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
@@ -336,13 +336,13 @@ namespace PolyVox
 		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+		const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
 
 		auto pChunk = getChunk(blockX, blockY, blockZ);
 
@@ -375,13 +375,13 @@ namespace PolyVox
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
 		{
-			v3dStart.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+			v3dStart.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uChunkSideLengthPower);
 		}
 
 		Vector3DInt32 v3dEnd;
 		for(int i = 0; i < 3; i++)
 		{
-			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uChunkSideLengthPower);
 		}
 
 		// Ensure we don't page in more blocks than the volume can hold.
@@ -412,16 +412,16 @@ namespace PolyVox
 		POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
 
 		// Clear this pointer so it doesn't hang on to any blocks.
-		m_pLastAccessedBlock = nullptr;
+		m_pLastAccessedChunk = nullptr;
 
 		// Erase all the most recently used blocks.
-		m_pRecentlyUsedBlocks.clear();
+		m_pRecentlyUsedChunks.clear();
 
 		// Remove deleted blocks from the list of all loaded blocks.
-		purgeNullPtrsFromAllBlocks();
+		purgeNullPtrsFromAllChunks();
 
 		// If there are still some blocks left then this is a cause for concern. Perhaps samplers are holding on to them?
-		POLYVOX_LOG_WARNING_IF(m_pAllBlocks.size() > 0, "Blocks still exist after performing flushAll()! Perhaps you have samplers attached?");
+		POLYVOX_LOG_WARNING_IF(m_pAllChunks.size() > 0, "Blocks still exist after performing flushAll()! Perhaps you have samplers attached?");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -433,19 +433,19 @@ namespace PolyVox
 		POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
 
 		// Clear this pointer so it doesn't hang on to any blocks.
-		m_pLastAccessedBlock = nullptr;
+		m_pLastAccessedChunk = nullptr;
 
 		// Convert the start and end positions into block space coordinates
 		Vector3DInt32 v3dStart;
 		for(int i = 0; i < 3; i++)
 		{
-			v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uBlockSideLengthPower);
+			v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uChunkSideLengthPower);
 		}
 
 		Vector3DInt32 v3dEnd;
 		for(int i = 0; i < 3; i++)
 		{
-			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uBlockSideLengthPower);
+			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uChunkSideLengthPower);
 		}
 
 		// Loops over the specified positions and delete the corresponding blocks.
@@ -455,13 +455,13 @@ namespace PolyVox
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
-					m_pRecentlyUsedBlocks.erase(Vector3DInt32(x, y, z)); m_pLastAccessedBlock = 0;
+					m_pRecentlyUsedChunks.erase(Vector3DInt32(x, y, z)); m_pLastAccessedChunk = 0;
 				}
 			}
 		}
 
 		// We might now have so null pointers in the 'all blocks' list so clean them up.
-		purgeNullPtrsFromAllBlocks();
+		purgeNullPtrsFromAllChunks();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -471,12 +471,12 @@ namespace PolyVox
 	void PagedVolume<VoxelType>::initialise()
 	{		
 		//Validate parameters
-		if(m_uBlockSideLength == 0)
+		if(m_uChunkSideLength == 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length cannot be zero.");
 		}
 
-		if(!isPowerOf2(m_uBlockSideLength))
+		if(!isPowerOf2(m_uChunkSideLength))
 		{
 			POLYVOX_THROW(std::invalid_argument, "Block side length must be a power of two.");
 		}
@@ -484,23 +484,23 @@ namespace PolyVox
 		m_uTimestamper = 0;
 		//m_uBlockCountLimit = 16;
 		//m_uMaxNumberOfBlocksInMemory = 1024;
-		m_v3dLastAccessedBlockPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedBlock pointer will be null;
-		m_pLastAccessedBlock = 0;
+		m_v3dLastAccessedChunkPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null;
+		m_pLastAccessedChunk = 0;
 
 		//Compute the block side length
-		m_uBlockSideLengthPower = logBase2(m_uBlockSideLength);
+		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
 
-		m_regValidRegionInBlocks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uBlockSideLengthPower);
-		m_regValidRegionInBlocks.setLowerY(this->m_regValidRegion.getLowerY() >> m_uBlockSideLengthPower);
-		m_regValidRegionInBlocks.setLowerZ(this->m_regValidRegion.getLowerZ() >> m_uBlockSideLengthPower);
-		m_regValidRegionInBlocks.setUpperX(this->m_regValidRegion.getUpperX() >> m_uBlockSideLengthPower);
-		m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uBlockSideLengthPower);
-		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
+		m_regValidRegionInBlocks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uChunkSideLengthPower);
+		m_regValidRegionInBlocks.setLowerY(this->m_regValidRegion.getLowerY() >> m_uChunkSideLengthPower);
+		m_regValidRegionInBlocks.setLowerZ(this->m_regValidRegion.getLowerZ() >> m_uChunkSideLengthPower);
+		m_regValidRegionInBlocks.setUpperX(this->m_regValidRegion.getUpperX() >> m_uChunkSideLengthPower);
+		m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uChunkSideLengthPower);
+		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uChunkSideLengthPower);
 
 		//setMaxNumberOfChunks(m_uBlockCountLimit);
 
 		//Clear the previous data
-		m_pRecentlyUsedBlocks.clear();
+		m_pRecentlyUsedChunks.clear();
 
 		//Other properties we might find useful later
 		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
@@ -517,17 +517,17 @@ namespace PolyVox
 		//the time stamp. If we updated it everytime then that would be every time we touched
 		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
 		//This check should also provide a significant speed boost as usually it is true.
-		if((v3dBlockPos == m_v3dLastAccessedBlockPos) && (m_pLastAccessedBlock != 0))
+		if((v3dBlockPos == m_v3dLastAccessedChunkPos) && (m_pLastAccessedChunk != 0))
 		{
-			return m_pLastAccessedBlock;
+			return m_pLastAccessedChunk;
 		}
 
 		// The block was not the same as last time, but we can now hope it is in the set of most recently used blocks.
 		std::shared_ptr< Chunk<VoxelType> > pChunk = nullptr;
-		typename SharedPtrBlockMap::iterator itChunk = m_pRecentlyUsedBlocks.find(v3dBlockPos);
+		typename SharedPtrChunkMap::iterator itChunk = m_pRecentlyUsedChunks.find(v3dBlockPos);
 
 		// Check whether the block was found.
-		if ((itChunk) != m_pRecentlyUsedBlocks.end())
+		if ((itChunk) != m_pRecentlyUsedChunks.end())
 		{
 			// The block was found so we can use it.
 			pChunk = itChunk->second;		
@@ -538,21 +538,21 @@ namespace PolyVox
 		{
 			// Although it's not in our recently use blocks, there's some (slim) chance that it
 			// exists in the list of all loaded blocks, because a sampler may be holding on to it.
-			typename WeakPtrBlockMap::iterator itWeakChunk = m_pAllBlocks.find(v3dBlockPos);
-			if (itWeakChunk != m_pAllBlocks.end())
+			typename WeakPtrChunkMap::iterator itWeakChunk = m_pAllChunks.find(v3dBlockPos);
+			if (itWeakChunk != m_pAllChunks.end())
 			{
 				// We've found an entry in the 'all blocks' list, but it can be null. This happens if a sampler was the
 				// last thing to be keeping it alive and then the sampler let it go. In this case we remove it from the
 				// list, and it will get added again soon when we page it in and fill it with valid data.
 				if (itWeakChunk->second.expired())
 				{
-					m_pAllBlocks.erase(itWeakChunk);
+					m_pAllChunks.erase(itWeakChunk);
 				}
 				else
 				{
 					// The block is valid. We know it's not in the recently used list (we checked earlier) so it should be added.
 					pChunk = std::shared_ptr< Chunk<VoxelType> >(itWeakChunk->second);
-					m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pChunk));
+					m_pRecentlyUsedChunks.insert(std::make_pair(v3dBlockPos, pChunk));
 				}
 			}
 		}
@@ -561,28 +561,28 @@ namespace PolyVox
 		if (!pChunk)
 		{
 			// The block was not found so we will create a new one.
-			pChunk = std::make_shared< Chunk<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
+			pChunk = std::make_shared< Chunk<VoxelType> >(v3dBlockPos, m_uChunkSideLength, m_pPager);
 
 			// As we are loading a new block we should try to ensure we don't go over our target memory usage.
 			bool erasedBlock = false;
-			while (m_pRecentlyUsedBlocks.size() + 1 > m_uBlockCountLimit) // +1 ready for new block we will add next.
+			while (m_pRecentlyUsedChunks.size() + 1 > m_uBlockCountLimit) // +1 ready for new block we will add next.
 			{
 				// This should never hit, because it should not have been possible for
 				// the user to limit the number of blocks if they did not provide a pager.
 				POLYVOX_ASSERT(m_pPager, "A valid pager is required to limit number of blocks");
 
 				// Find the least recently used block. Hopefully this isn't too slow.
-				typename SharedPtrBlockMap::iterator itUnloadBlock = m_pRecentlyUsedBlocks.begin();
-				for (typename SharedPtrBlockMap::iterator i = m_pRecentlyUsedBlocks.begin(); i != m_pRecentlyUsedBlocks.end(); i++)
+				typename SharedPtrChunkMap::iterator itUnloadBlock = m_pRecentlyUsedChunks.begin();
+				for (typename SharedPtrChunkMap::iterator i = m_pRecentlyUsedChunks.begin(); i != m_pRecentlyUsedChunks.end(); i++)
 				{
-					if (i->second->m_uBlockLastAccessed < itUnloadBlock->second->m_uBlockLastAccessed)
+					if (i->second->m_uChunkLastAccessed < itUnloadBlock->second->m_uChunkLastAccessed)
 					{
 						itUnloadBlock = i;
 					}
 				}
 
 				// Erase the least recently used block
-				m_pRecentlyUsedBlocks.erase(itUnloadBlock);
+				m_pRecentlyUsedChunks.erase(itUnloadBlock);
 				erasedBlock = true;
 			}
 
@@ -590,17 +590,17 @@ namespace PolyVox
 			// seems like a good place to purge the 'all blocks' list as well.
 			if (erasedBlock)
 			{
-				purgeNullPtrsFromAllBlocks();
+				purgeNullPtrsFromAllChunks();
 			}
 
 			// Add our new block to the maps.
-			m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pChunk));
-			m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pChunk));
+			m_pAllChunks.insert(std::make_pair(v3dBlockPos, pChunk));
+			m_pRecentlyUsedChunks.insert(std::make_pair(v3dBlockPos, pChunk));
 		}
 
-		pChunk->m_uBlockLastAccessed = ++m_uTimestamper;
-		m_pLastAccessedBlock = pChunk;
-		m_v3dLastAccessedBlockPos = v3dBlockPos;
+		pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
+		m_pLastAccessedChunk = pChunk;
+		m_v3dLastAccessedChunkPos = v3dBlockPos;
 
 		return pChunk;	
 	}
@@ -612,21 +612,21 @@ namespace PolyVox
 	uint32_t PagedVolume<VoxelType>::calculateSizeInBytes(void)
 	{
 		// Purge null blocks so we know that all blocks are used.
-		purgeNullPtrsFromAllBlocks();
+		purgeNullPtrsFromAllChunks();
 
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
-		return Chunk<VoxelType>::calculateSizeInBytes(m_uBlockSideLength) * m_pAllBlocks.size();
+		return Chunk<VoxelType>::calculateSizeInBytes(m_uChunkSideLength) * m_pAllChunks.size();
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::purgeNullPtrsFromAllBlocks(void) const
+	void PagedVolume<VoxelType>::purgeNullPtrsFromAllChunks(void) const
 	{
-		for (auto blockIter = m_pAllBlocks.begin(); blockIter != m_pAllBlocks.end();)
+		for (auto blockIter = m_pAllChunks.begin(); blockIter != m_pAllChunks.end();)
 		{
 			if (blockIter->second.expired())
 			{
-				blockIter = m_pAllBlocks.erase(blockIter);
+				blockIter = m_pAllChunks.erase(blockIter);
 			}
 			else
 			{
@@ -684,13 +684,13 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType /*tBorder*/) const
 	{
-		const int32_t blockX = uXPos >> m_uBlockSideLengthPower;
-		const int32_t blockY = uYPos >> m_uBlockSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uBlockSideLengthPower;
+		const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uBlockSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
 
 		auto pChunk = getChunk(blockX, blockY, blockZ);
 		return pChunk->getVoxel(xOffset, yOffset, zOffset);

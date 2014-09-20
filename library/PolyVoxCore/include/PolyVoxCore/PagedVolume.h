@@ -234,7 +234,7 @@ namespace PolyVox
 		(
 			const Region& regValid,	
 			Pager<VoxelType>* pPager = nullptr,	
-			uint16_t uBlockSideLength = 32
+			uint16_t uChunkSideLength = 32
 		);
 		/// Destructor
 		~PagedVolume();
@@ -285,8 +285,8 @@ namespace PolyVox
 
 	private:
 
-		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk<VoxelType> > > SharedPtrBlockMap;
-		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk<VoxelType> > > WeakPtrBlockMap;
+		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk<VoxelType> > > SharedPtrChunkMap;
+		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk<VoxelType> > > WeakPtrChunkMap;
 
 		void initialise();
 
@@ -300,23 +300,23 @@ namespace PolyVox
 	
 		std::shared_ptr< Chunk<VoxelType> > getChunk(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
-		void purgeNullPtrsFromAllBlocks(void) const;
+		void purgeNullPtrsFromAllChunks(void) const;
 
 		// The block data
-		mutable WeakPtrBlockMap m_pAllBlocks;
-		mutable SharedPtrBlockMap m_pRecentlyUsedBlocks;
+		mutable WeakPtrChunkMap m_pAllChunks;
+		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;
 
 		mutable uint32_t m_uTimestamper;
-		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable std::shared_ptr< Chunk<VoxelType> > m_pLastAccessedBlock;
+		mutable Vector3DInt32 m_v3dLastAccessedChunkPos;
+		mutable std::shared_ptr< Chunk<VoxelType> > m_pLastAccessedChunk;
 		uint32_t m_uBlockCountLimit;
 
 		// The size of the volume
 		Region m_regValidRegionInBlocks;
 
 		// The size of the blocks
-		uint16_t m_uBlockSideLength;
-		uint8_t m_uBlockSideLengthPower;
+		uint16_t m_uChunkSideLength;
+		uint8_t m_uChunkSideLengthPower;
 
 		Pager<VoxelType>* m_pPager;
 

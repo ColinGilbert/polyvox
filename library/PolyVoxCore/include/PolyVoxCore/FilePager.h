@@ -76,10 +76,10 @@ namespace PolyVox
 			m_vecCreatedFiles.clear();
 		}
 
-		virtual void pageIn(const Region& region, Chunk<VoxelType>* pBlockData)
+		virtual void pageIn(const Region& region, Chunk<VoxelType>* pChunk)
 		{
-			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
-			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
+			POLYVOX_ASSERT(pChunk, "Attempting to page in NULL block");
+			//POLYVOX_ASSERT(pChunk->hasUncompressedData() == false, "Block should not have uncompressed data");
 
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
@@ -102,10 +102,10 @@ namespace PolyVox
 				
 				uint8_t* buffer = new uint8_t[fileSizeInBytes];
 				fread(buffer, sizeof(uint8_t), fileSizeInBytes, pFile);
-				pBlockData->setData(buffer, fileSizeInBytes);
+				pChunk->setData(buffer, fileSizeInBytes);
 				delete[] buffer;*/
 
-				fread(pBlockData->getData(), sizeof(uint8_t), pBlockData->getDataSizeInBytes(), pFile);
+				fread(pChunk->getData(), sizeof(uint8_t), pChunk->getDataSizeInBytes(), pFile);
 
 				if(ferror(pFile))
 				{
@@ -120,10 +120,10 @@ namespace PolyVox
 			}
 		}
 
-		virtual void pageOut(const Region& region, Chunk<VoxelType>* pBlockData)
+		virtual void pageOut(const Region& region, Chunk<VoxelType>* pChunk)
 		{
-			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
-			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
+			POLYVOX_ASSERT(pChunk, "Attempting to page out NULL block");
+			//POLYVOX_ASSERT(pChunk->hasUncompressedData() == false, "Block should not have uncompressed data");
 
 			POLYVOX_LOG_TRACE("Paging out data for " << region);
 
@@ -146,7 +146,7 @@ namespace PolyVox
 			//The file has been created, so add it to the list to delete on shutdown.
 			m_vecCreatedFiles.push_back(filename);
 
-			fwrite(pBlockData->getData(), sizeof(uint8_t), pBlockData->getDataSizeInBytes(), pFile);
+			fwrite(pChunk->getData(), sizeof(uint8_t), pChunk->getDataSizeInBytes(), pFile);
 
 			if(ferror(pFile))
 			{

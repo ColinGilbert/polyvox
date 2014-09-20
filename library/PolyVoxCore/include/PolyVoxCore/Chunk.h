@@ -55,7 +55,7 @@ namespace PolyVox
 		Chunk& operator=(const Chunk& /*rhs*/) {};
 
 		// This is updated by the PagedVolume and used to discard the least recently used blocks.
-		uint32_t m_uBlockLastAccessed;
+		uint32_t m_uChunkLastAccessed;
 
 		// This is so we can tell whether a uncompressed block has to be recompressed and whether
 		// a compressed block has to be paged back to disk, or whether they can just be discarded.
@@ -70,7 +70,7 @@ namespace PolyVox
         uint16_t m_uSideLength;
         uint8_t m_uSideLengthPower;
 		Pager<VoxelType>* m_pPager;
-		Vector3DInt32 m_v3dBlockSpacePosition;
+		Vector3DInt32 m_v3dChunkSpacePosition;
 	};
 }
 
