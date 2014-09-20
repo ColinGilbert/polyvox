@@ -46,10 +46,17 @@ namespace PolyVox
 	{
 	public:
 		/// Constructor
-		FilePager(const std::string& strFolderName)
+		FilePager(const std::string& strFolderName = ".")
 			:Pager<VoxelType>()
 			,m_strFolderName(strFolderName)
 		{
+			// Add the trailing slash, assuming the user dind't already do it.
+				if ((m_strFolderName.back() != '/') && (m_strFolderName.back() != '\\'))
+			{
+					m_strFolderName.append("/");
+			}
+
+			// Build a unique prefix to avoid multiple pagers using the same filenames.
 			srand(static_cast<unsigned int>(time(0)));
 			int iRandomValue = rand();
 
@@ -63,7 +70,7 @@ namespace PolyVox
 		{
 			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
 			{
-				POLYVOX_LOG_WARNING_IF(!std::remove(iter->c_str()), "Failed to delete '" << *iter << "' when destroying FilePager");
+				POLYVOX_LOG_WARNING_IF(std::remove(iter->c_str()) != 0, "Failed to delete '" << *iter << "' when destroying FilePager");
 			}
 
 			m_vecCreatedFiles.clear();

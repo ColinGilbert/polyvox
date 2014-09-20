@@ -269,7 +269,7 @@ TestVolume::TestVolume()
 {
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
 
-	m_pFilePager = new FilePager<int32_t>("./");
+	m_pFilePager = new FilePager<int32_t>(".");
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);

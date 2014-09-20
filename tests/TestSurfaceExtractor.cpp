@@ -102,7 +102,7 @@ VolumeType* createAndFillVolume(void)
 {
 	const int32_t uVolumeSideLength = 64;
 
-	FilePager<VolumeType::VoxelType>* pager = new FilePager<VolumeType::VoxelType>("./");
+	FilePager<VolumeType::VoxelType>* pager = new FilePager<VolumeType::VoxelType>(".");
 
 	//Create empty volume
 	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), pager);
@@ -139,7 +139,7 @@ float randomFloat(float a, float b)
 template <typename VolumeType>
 VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minValue, float maxValue)
 {
-	FilePager<float>* pager = new FilePager<float>("./");
+	FilePager<float>* pager = new FilePager<float>(".");
 
 	//Create empty volume
 	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), pager);
