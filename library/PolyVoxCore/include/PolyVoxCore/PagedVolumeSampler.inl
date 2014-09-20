@@ -107,21 +107,21 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid())
 		{
-			const int32_t uXBlock = this->mXPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
-			const int32_t uYBlock = this->mYPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
-			const int32_t uZBlock = this->mZPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
+			const int32_t uXChunk = this->mXPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
+			const int32_t uYChunk = this->mYPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
+			const int32_t uZChunk = this->mZPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
 
-			const uint16_t uXPosInBlock = static_cast<uint16_t>(this->mXPosInVolume - (uXBlock << this->mVolume->m_uChunkSideLengthPower));
-			const uint16_t uYPosInBlock = static_cast<uint16_t>(this->mYPosInVolume - (uYBlock << this->mVolume->m_uChunkSideLengthPower));
-			const uint16_t uZPosInBlock = static_cast<uint16_t>(this->mZPosInVolume - (uZBlock << this->mVolume->m_uChunkSideLengthPower));
+			const uint16_t uXPosInChunk = static_cast<uint16_t>(this->mXPosInVolume - (uXChunk << this->mVolume->m_uChunkSideLengthPower));
+			const uint16_t uYPosInChunk = static_cast<uint16_t>(this->mYPosInVolume - (uYChunk << this->mVolume->m_uChunkSideLengthPower));
+			const uint16_t uZPosInChunk = static_cast<uint16_t>(this->mZPosInVolume - (uZChunk << this->mVolume->m_uChunkSideLengthPower));
 
-			const uint32_t uVoxelIndexInBlock = uXPosInBlock + 
-					uYPosInBlock * this->mVolume->m_uChunkSideLength + 
-					uZPosInBlock * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
+			const uint32_t uVoxelIndexInChunk = uXPosInChunk +
+				uYPosInChunk * this->mVolume->m_uChunkSideLength +
+				uZPosInChunk * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 
-			auto pUncompressedCurrentBlock = this->mVolume->getChunk(uXBlock, uYBlock, uZBlock);
+			auto pCurrentChunk = this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
 
-			mCurrentVoxel = pUncompressedCurrentBlock->m_tData + uVoxelIndexInBlock;
+			mCurrentVoxel = pCurrentChunk->m_tData + uVoxelIndexInChunk;
 		}
 		else
 		{

@@ -156,7 +156,6 @@ int main(int argc, char *argv[])
 	//createPerlinVolumeSlow(volData);
 	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
 	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-	//volData.setBlockCacheSize(64);
 	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,255,255));
 	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 	volData.prefetch(reg);

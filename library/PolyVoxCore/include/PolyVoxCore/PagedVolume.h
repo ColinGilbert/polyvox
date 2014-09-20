@@ -298,7 +298,7 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
-		std::shared_ptr< Chunk<VoxelType> > getChunk(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		std::shared_ptr< Chunk<VoxelType> > getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
 		void purgeNullPtrsFromAllChunks(void) const;
 
@@ -309,10 +309,10 @@ namespace PolyVox
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedChunkPos;
 		mutable std::shared_ptr< Chunk<VoxelType> > m_pLastAccessedChunk;
-		uint32_t m_uBlockCountLimit;
+		uint32_t m_uChunkCountLimit;
 
 		// The size of the volume
-		Region m_regValidRegionInBlocks;
+		Region m_regValidRegionInChunks;
 
 		// The size of the chunks
 		uint16_t m_uChunkSideLength;
@@ -321,9 +321,9 @@ namespace PolyVox
 		Pager<VoxelType>* m_pPager;
 
 		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		static const uint32_t uMinPracticalNoOfBlocks = 32;
+		static const uint32_t uMinPracticalNoOfChunks = 32;
 		// Should preent multi-gigabyte volumes with reasonable chunk sizes.
-		static const uint32_t uMaxPracticalNoOfBlocks = 32768;
+		static const uint32_t uMaxPracticalNoOfChunks = 32768;
 	};
 }
 
