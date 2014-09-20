@@ -50,7 +50,6 @@ namespace PolyVox
 
 		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 1;
 		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 1;
-		const uint32_t arraySizes[2]= {uArrayWidth, uArrayHeight}; // Array dimensions
 
 		//For edge indices
 		Array2DInt32 m_pPreviousVertexIndicesX(uArrayWidth, uArrayHeight);

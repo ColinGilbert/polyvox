@@ -31,7 +31,6 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other PagedVolume constructor).
 	/// \param regValid Specifies the minimum and maximum valid voxel positions.
-	/// \param pBlockCompressor An implementation of the Compressor interface which is used to compress blocks in memory.
 	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
 	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
 	/// \param bPagingEnabled Controls whether or not paging is enabled for this PagedVolume.
@@ -215,15 +214,15 @@ namespace PolyVox
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
-			const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
-			const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
+			const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
+			const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
+			const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
 
-			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
-			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
-			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
+			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
+			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
+			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
-			auto pChunk = getChunk(blockX, blockY, blockZ);
+			auto pChunk = getChunk(chunkX, chunkY, chunkZ);
 
 			return pChunk->getVoxel(xOffset, yOffset, zOffset);
 		}
@@ -299,15 +298,15 @@ namespace PolyVox
 			}
 		}
 
-		const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
-		const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
+		const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
-		auto pChunk = getChunk(blockX, blockY, blockZ);
+		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
 		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 	}
 
@@ -336,15 +335,15 @@ namespace PolyVox
 		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
 		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
 
-		const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
-		const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
+		const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
-		auto pChunk = getChunk(blockX, blockY, blockZ);
+		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
 
 		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 
@@ -622,15 +621,15 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::purgeNullPtrsFromAllChunks(void) const
 	{
-		for (auto blockIter = m_pAllChunks.begin(); blockIter != m_pAllChunks.end();)
+		for (auto chunkIter = m_pAllChunks.begin(); chunkIter != m_pAllChunks.end();)
 		{
-			if (blockIter->second.expired())
+			if (chunkIter->second.expired())
 			{
-				blockIter = m_pAllChunks.erase(blockIter);
+				chunkIter = m_pAllChunks.erase(chunkIter);
 			}
 			else
 			{
-				blockIter++;
+				chunkIter++;
 			}
 		}
 	}
@@ -684,15 +683,15 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType /*tBorder*/) const
 	{
-		const int32_t blockX = uXPos >> m_uChunkSideLengthPower;
-		const int32_t blockY = uYPos >> m_uChunkSideLengthPower;
-		const int32_t blockZ = uZPos >> m_uChunkSideLengthPower;
+		const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (blockX << m_uChunkSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uChunkSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uChunkSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
-		auto pChunk = getChunk(blockX, blockY, blockZ);
+		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
 		return pChunk->getVoxel(xOffset, yOffset, zOffset);
 	}
 }
