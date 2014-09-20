@@ -76,7 +76,7 @@ namespace PolyVox
 			m_vecCreatedFiles.clear();
 		}
 
-		virtual void pageIn(const Region& region, UncompressedBlock<VoxelType>* pBlockData)
+		virtual void pageIn(const Region& region, Chunk<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
 			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
@@ -120,7 +120,7 @@ namespace PolyVox
 			}
 		}
 
-		virtual void pageOut(const Region& region, UncompressedBlock<VoxelType>* pBlockData)
+		virtual void pageOut(const Region& region, Chunk<VoxelType>* pBlockData)
 		{
 			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
 			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");

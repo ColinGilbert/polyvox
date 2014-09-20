@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/UncompressedBlock.h"
+#include "PolyVoxCore/Chunk.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
@@ -285,8 +285,8 @@ namespace PolyVox
 
 	private:
 
-		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< UncompressedBlock<VoxelType> > > SharedPtrBlockMap;
-		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< UncompressedBlock<VoxelType> > > WeakPtrBlockMap;
+		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk<VoxelType> > > SharedPtrBlockMap;
+		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk<VoxelType> > > WeakPtrBlockMap;
 
 		void initialise();
 
@@ -298,7 +298,7 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
-		std::shared_ptr< UncompressedBlock<VoxelType> > getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
+		std::shared_ptr< Chunk<VoxelType> > getChunk(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const;
 
 		void purgeNullPtrsFromAllBlocks(void) const;
 
@@ -308,7 +308,7 @@ namespace PolyVox
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedBlockPos;
-		mutable std::shared_ptr< UncompressedBlock<VoxelType> > m_pLastAccessedBlock;
+		mutable std::shared_ptr< Chunk<VoxelType> > m_pLastAccessedBlock;
 		uint32_t m_uBlockCountLimit;
 
 		// The size of the volume

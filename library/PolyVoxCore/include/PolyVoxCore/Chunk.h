@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_UncompressedBlock_H__
-#define __PolyVox_UncompressedBlock_H__
+#ifndef __PolyVox_Chunk_H__
+#define __PolyVox_Chunk_H__
 
 #include "PolyVoxCore/PolyVoxForwardDeclarations.h"
 #include "PolyVoxCore/Vector.h"
@@ -30,13 +30,13 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-    class UncompressedBlock
+    class Chunk
     {
 		friend class PagedVolume<VoxelType>;
 
 	public:
-		UncompressedBlock(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager = nullptr);
-		~UncompressedBlock();
+		Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager = nullptr);
+		~Chunk();
 
 		VoxelType* getData(void) const;
 		uint32_t getDataSizeInBytes(void) const;
@@ -49,10 +49,10 @@ namespace PolyVox
 
 	private:
 		/// Private copy constructor to prevent accisdental copying
-		UncompressedBlock(const UncompressedBlock& /*rhs*/) {};
+		Chunk(const Chunk& /*rhs*/) {};
 
 		/// Private assignment operator to prevent accisdental copying
-		UncompressedBlock& operator=(const UncompressedBlock& /*rhs*/) {};
+		Chunk& operator=(const Chunk& /*rhs*/) {};
 
 		// This is updated by the PagedVolume and used to discard the least recently used blocks.
 		uint32_t m_uBlockLastAccessed;
@@ -62,7 +62,7 @@ namespace PolyVox
 		bool m_bDataModified;
 
 		// Made this private for consistancy with CompressedBlock.
-		// Users shouldn't really need this for UncompressedBlock anyway.
+		// Users shouldn't really need this for Chunk anyway.
 		uint32_t calculateSizeInBytes(void);
 		static uint32_t calculateSizeInBytes(uint32_t uSideLength);
 
@@ -74,6 +74,6 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVoxCore/UncompressedBlock.inl"
+#include "PolyVoxCore/Chunk.inl"
 
 #endif

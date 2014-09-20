@@ -82,9 +82,9 @@ namespace PolyVox
 		m_uBlockCountLimit = (std::max)(m_uBlockCountLimit, uMinPracticalNoOfBlocks);
 		m_uBlockCountLimit = (std::min)(m_uBlockCountLimit, uMaxPracticalNoOfBlocks);
 
-		uint32_t uUncompressedBlockSizeInBytes = UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
-		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uBlockCountLimit * uUncompressedBlockSizeInBytes) / (1024 * 1024)
-			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uUncompressedBlockSizeInBytes / 1024 << "Kb each).");
+		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
+		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uBlockCountLimit * uChunkSizeInBytes) / (1024 * 1024)
+			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uChunkSizeInBytes / 1024 << "Kb each).");
 
 		initialise();
 	}
@@ -223,9 +223,9 @@ namespace PolyVox
 			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-			auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+			auto pChunk = getChunk(blockX, blockY, blockZ);
 
-			return pUncompressedBlock->getVoxel(xOffset, yOffset, zOffset);
+			return pChunk->getVoxel(xOffset, yOffset, zOffset);
 		}
 		else
 		{
@@ -247,7 +247,7 @@ namespace PolyVox
 	/// Increasing the size of the block cache will increase memory but may improve performance.
 	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
 	/// volume data and then set it to a smaller value (e.g.64) for general processing.
-	/// \param uMaxNumberOfUncompressedBlocks The number of blocks for which uncompressed data can be cached.
+	/// \param uMaxNumberOfChunks The number of blocks for which uncompressed data can be cached.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::setMemoryUsageLimit(uint32_t uMemoryUsageInBytes)
@@ -255,8 +255,8 @@ namespace PolyVox
 		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
 
 		// Calculate the number of blocks based on the memory limit and the size of each block.
-		uint32_t uUncompressedBlockSizeInBytes = UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
-		m_uBlockCountLimit = uMemoryUsageInBytes / uUncompressedBlockSizeInBytes;
+		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uBlockSideLength);
+		m_uBlockCountLimit = uMemoryUsageInBytes / uChunkSizeInBytes;
 
 		// We need at least a few blocks available to avoid thrashing, and in pratice there will probably be hundreds.
 		POLYVOX_LOG_WARNING_IF(m_uBlockCountLimit < uMinPracticalNoOfBlocks, "Requested memory usage limit of " 
@@ -270,8 +270,8 @@ namespace PolyVox
 			flushAll();
 		}
 
-		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uBlockCountLimit * uUncompressedBlockSizeInBytes) / (1024 * 1024)
-			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uUncompressedBlockSizeInBytes / 1024 << "Kb each).");
+		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uBlockCountLimit * uChunkSizeInBytes) / (1024 * 1024)
+			<< "Mb (" << m_uBlockCountLimit << " blocks of " << uChunkSizeInBytes / 1024 << "Kb each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -307,8 +307,8 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset, tValue);
+		auto pChunk = getChunk(blockX, blockY, blockZ);
+		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -344,9 +344,9 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
+		auto pChunk = getChunk(blockX, blockY, blockZ);
 
-		pUncompressedBlock->setVoxelAt(xOffset, yOffset, zOffset, tValue);
+		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
 
 		//Return true to indicate that we modified a voxel.
 		return true;
@@ -397,7 +397,7 @@ namespace PolyVox
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{					
-					getUncompressedBlock(x,y,z);
+					getChunk(x,y,z);
 				}
 			}
 		}
@@ -497,7 +497,7 @@ namespace PolyVox
 		m_regValidRegionInBlocks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uBlockSideLengthPower);
 		m_regValidRegionInBlocks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uBlockSideLengthPower);
 
-		//setMaxNumberOfUncompressedBlocks(m_uBlockCountLimit);
+		//setMaxNumberOfChunks(m_uBlockCountLimit);
 
 		//Clear the previous data
 		m_pRecentlyUsedBlocks.clear();
@@ -509,7 +509,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	std::shared_ptr< UncompressedBlock<VoxelType> > PagedVolume<VoxelType>::getUncompressedBlock(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
+	std::shared_ptr< Chunk<VoxelType> > PagedVolume<VoxelType>::getChunk(int32_t uBlockX, int32_t uBlockY, int32_t uBlockZ) const
 	{
 		Vector3DInt32 v3dBlockPos(uBlockX, uBlockY, uBlockZ);
 
@@ -523,45 +523,45 @@ namespace PolyVox
 		}
 
 		// The block was not the same as last time, but we can now hope it is in the set of most recently used blocks.
-		std::shared_ptr< UncompressedBlock<VoxelType> > pUncompressedBlock = nullptr;
-		typename SharedPtrBlockMap::iterator itUncompressedBlock = m_pRecentlyUsedBlocks.find(v3dBlockPos);
+		std::shared_ptr< Chunk<VoxelType> > pChunk = nullptr;
+		typename SharedPtrBlockMap::iterator itChunk = m_pRecentlyUsedBlocks.find(v3dBlockPos);
 
 		// Check whether the block was found.
-		if ((itUncompressedBlock) != m_pRecentlyUsedBlocks.end())
+		if ((itChunk) != m_pRecentlyUsedBlocks.end())
 		{
 			// The block was found so we can use it.
-			pUncompressedBlock = itUncompressedBlock->second;		
-			POLYVOX_ASSERT(pUncompressedBlock, "Recent block list shold never contain a null pointer.");
+			pChunk = itChunk->second;		
+			POLYVOX_ASSERT(pChunk, "Recent block list shold never contain a null pointer.");
 		}
 
-		if (!pUncompressedBlock)
+		if (!pChunk)
 		{
 			// Although it's not in our recently use blocks, there's some (slim) chance that it
 			// exists in the list of all loaded blocks, because a sampler may be holding on to it.
-			typename WeakPtrBlockMap::iterator itWeakUncompressedBlock = m_pAllBlocks.find(v3dBlockPos);
-			if (itWeakUncompressedBlock != m_pAllBlocks.end())
+			typename WeakPtrBlockMap::iterator itWeakChunk = m_pAllBlocks.find(v3dBlockPos);
+			if (itWeakChunk != m_pAllBlocks.end())
 			{
 				// We've found an entry in the 'all blocks' list, but it can be null. This happens if a sampler was the
 				// last thing to be keeping it alive and then the sampler let it go. In this case we remove it from the
 				// list, and it will get added again soon when we page it in and fill it with valid data.
-				if (itWeakUncompressedBlock->second.expired())
+				if (itWeakChunk->second.expired())
 				{
-					m_pAllBlocks.erase(itWeakUncompressedBlock);
+					m_pAllBlocks.erase(itWeakChunk);
 				}
 				else
 				{
 					// The block is valid. We know it's not in the recently used list (we checked earlier) so it should be added.
-					pUncompressedBlock = std::shared_ptr< UncompressedBlock<VoxelType> >(itWeakUncompressedBlock->second);
-					m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+					pChunk = std::shared_ptr< Chunk<VoxelType> >(itWeakChunk->second);
+					m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pChunk));
 				}
 			}
 		}
 
 		// If we still haven't found the block then it's time to create a new one and page it in from disk.
-		if (!pUncompressedBlock)
+		if (!pChunk)
 		{
 			// The block was not found so we will create a new one.
-			pUncompressedBlock = std::make_shared< UncompressedBlock<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
+			pChunk = std::make_shared< Chunk<VoxelType> >(v3dBlockPos, m_uBlockSideLength, m_pPager);
 
 			// As we are loading a new block we should try to ensure we don't go over our target memory usage.
 			bool erasedBlock = false;
@@ -594,15 +594,15 @@ namespace PolyVox
 			}
 
 			// Add our new block to the maps.
-			m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
-			m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pUncompressedBlock));
+			m_pAllBlocks.insert(std::make_pair(v3dBlockPos, pChunk));
+			m_pRecentlyUsedBlocks.insert(std::make_pair(v3dBlockPos, pChunk));
 		}
 
-		pUncompressedBlock->m_uBlockLastAccessed = ++m_uTimestamper;
-		m_pLastAccessedBlock = pUncompressedBlock;
+		pChunk->m_uBlockLastAccessed = ++m_uTimestamper;
+		m_pLastAccessedBlock = pChunk;
 		m_v3dLastAccessedBlockPos = v3dBlockPos;
 
-		return pUncompressedBlock;	
+		return pChunk;	
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -616,7 +616,7 @@ namespace PolyVox
 
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
-		return UncompressedBlock<VoxelType>::calculateSizeInBytes(m_uBlockSideLength) * m_pAllBlocks.size();
+		return Chunk<VoxelType>::calculateSizeInBytes(m_uBlockSideLength) * m_pAllBlocks.size();
 	}
 
 	template <typename VoxelType>
@@ -692,8 +692,8 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (blockY << m_uBlockSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (blockZ << m_uBlockSideLengthPower));
 
-		auto pUncompressedBlock = getUncompressedBlock(blockX, blockY, blockZ);
-		return pUncompressedBlock->getVoxel(xOffset, yOffset, zOffset);
+		auto pChunk = getChunk(blockX, blockY, blockZ);
+		return pChunk->getVoxel(xOffset, yOffset, zOffset);
 	}
 }
 
