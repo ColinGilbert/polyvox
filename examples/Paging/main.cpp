@@ -92,10 +92,6 @@ public:
 
 	virtual void pageIn(const PolyVox::Region& region, Chunk<MaterialDensityPair44>* pChunk)
 	{
-		// FIXME - this isn't a great example... it's a shame we have to hard clode the block size and also create/destroy
-		// a compressor each time. These could at least be moved outside somewhere if we can't fix it in a better way...
-		//Chunk<MaterialDensityPair44> block(256);
-
 		Perlin perlin(2,2,1,234);
 
 		for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
@@ -129,18 +125,13 @@ public:
 						voxel.setDensity(MaterialDensityPair44::getMinDensity());
 					}
 
-					// Voxel position within a block always start from zero. So if a block represents region (4, 8, 12) to (11, 19, 15)
-					// then the valid block voxels are from (0, 0, 0) to (7, 11, 3). Hence we subtract the lower corner position of the
-					// region from the volume space position in order to get the block space position.
+					// Voxel position within a chunk always start from zero. So if a chunk represents region (4, 8, 12) to (11, 19, 15)
+					// then the valid chunk voxels are from (0, 0, 0) to (7, 11, 3). Hence we subtract the lower corner position of the
+					// region from the volume space position in order to get the chunk space position.
 					pChunk->setVoxelAt(x - region.getLowerX(), y - region.getLowerY(), z - region.getLowerZ(), voxel);
 				}
 			}
 		}
-
-		// Now compress the computed data into the provided block.
-		//RLEBlockCompressor<MaterialDensityPair44>* compressor = new RLEBlockCompressor<MaterialDensityPair44>();
-		//compressor->compress(&block, pChunk);
-		//delete compressor;
 	}
 
 	virtual void pageOut(const PolyVox::Region& region, Chunk<MaterialDensityPair44>* /*pChunk*/)

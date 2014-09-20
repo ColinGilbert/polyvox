@@ -78,8 +78,8 @@ namespace PolyVox
 
 		virtual void pageIn(const Region& region, Chunk<VoxelType>* pChunk)
 		{
-			POLYVOX_ASSERT(pChunk, "Attempting to page in NULL block");
-			//POLYVOX_ASSERT(pChunk->hasUncompressedData() == false, "Block should not have uncompressed data");
+			POLYVOX_ASSERT(pChunk, "Attempting to page in NULL chunk");
+			POLYVOX_ASSERT(pChunk->getData() == false, "Chunk must have valid data");
 
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
@@ -109,7 +109,7 @@ namespace PolyVox
 
 				if(ferror(pFile))
 				{
-					POLYVOX_THROW(std::runtime_error, "Error reading in block data, even though a file exists.");
+					POLYVOX_THROW(std::runtime_error, "Error reading in chunk data, even though a file exists.");
 				}
 
 				fclose(pFile);
@@ -122,8 +122,8 @@ namespace PolyVox
 
 		virtual void pageOut(const Region& region, Chunk<VoxelType>* pChunk)
 		{
-			POLYVOX_ASSERT(pChunk, "Attempting to page out NULL block");
-			//POLYVOX_ASSERT(pChunk->hasUncompressedData() == false, "Block should not have uncompressed data");
+			POLYVOX_ASSERT(pChunk, "Attempting to page out NULL chunk");
+			POLYVOX_ASSERT(pChunk->getData() == false, "Chunk must have valid data");
 
 			POLYVOX_LOG_TRACE("Paging out data for " << region);
 
@@ -140,7 +140,7 @@ namespace PolyVox
 			FILE* pFile = fopen(filename.c_str(), "wb");
 			if(!pFile)
 			{
-				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out block data.");
+				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out chunk data.");
 			}
 
 			//The file has been created, so add it to the list to delete on shutdown.
@@ -150,7 +150,7 @@ namespace PolyVox
 
 			if(ferror(pFile))
 			{
-				POLYVOX_THROW(std::runtime_error, "Error writing out block data.");
+				POLYVOX_THROW(std::runtime_error, "Error writing out chunk data.");
 			}
 
 			fclose(pFile);

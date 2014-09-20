@@ -54,15 +54,13 @@ namespace PolyVox
 		/// Private assignment operator to prevent accisdental copying
 		Chunk& operator=(const Chunk& /*rhs*/) {};
 
-		// This is updated by the PagedVolume and used to discard the least recently used blocks.
+		// This is updated by the PagedVolume and used to discard the least recently used chunks.
 		uint32_t m_uChunkLastAccessed;
 
-		// This is so we can tell whether a uncompressed block has to be recompressed and whether
-		// a compressed block has to be paged back to disk, or whether they can just be discarded.
+		// This is so we can tell whether a uncompressed chunk has to be recompressed and whether
+		// a compressed chunk has to be paged back to disk, or whether they can just be discarded.
 		bool m_bDataModified;
 
-		// Made this private for consistancy with CompressedBlock.
-		// Users shouldn't really need this for Chunk anyway.
 		uint32_t calculateSizeInBytes(void);
 		static uint32_t calculateSizeInBytes(uint32_t uSideLength);
 

@@ -159,12 +159,12 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
-			//No need to compute new block.
+			//No need to compute new chunk.
 			++mCurrentVoxel;			
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			//We've hit the chunk boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
@@ -181,12 +181,12 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
-			//No need to compute new block.
+			//No need to compute new chunk.
 			mCurrentVoxel += this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			//We've hit the chunk boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
@@ -203,12 +203,12 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
-			//No need to compute new block.
+			//No need to compute new chunk.
 			mCurrentVoxel += this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			//We've hit the chunk boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
@@ -225,12 +225,12 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mXPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
-			//No need to compute new block.
+			//No need to compute new chunk.
 			--mCurrentVoxel;			
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			//We've hit the chunk boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
@@ -247,12 +247,12 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mYPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
-			//No need to compute new block.
+			//No need to compute new chunk.
 			mCurrentVoxel -= this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			//We've hit the chunk boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
@@ -269,12 +269,12 @@ namespace PolyVox
 		// Then we update the voxel pointer
 		if((this->isCurrentPositionValid()) && bIsOldPositionValid && ((this->mZPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
-			//No need to compute new block.
+			//No need to compute new chunk.
 			mCurrentVoxel -= this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 		}
 		else
 		{
-			//We've hit the block boundary. Just calling setPosition() is the easiest way to resolve this.
+			//We've hit the chunk boundary. Just calling setPosition() is the easiest way to resolve this.
 			setPosition(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}

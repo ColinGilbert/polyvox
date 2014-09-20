@@ -43,10 +43,10 @@ namespace PolyVox
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
 		m_tData = new VoxelType[uNoOfVoxels];    
 
-		// Pass the block to the Pager to give it a chance to initialise it with any data
+		// Pass the chunk to the Pager to give it a chance to initialise it with any data
 		if (m_pPager)
 		{
-			// From the coordinates of the block we deduce the coordinates of the contained voxels.
+			// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
 			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
 			Region reg(v3dLower, v3dUpper);
@@ -69,7 +69,7 @@ namespace PolyVox
 	{
 		if (m_pPager && m_bDataModified)
 		{
-			// From the coordinates of the block we deduce the coordinates of the contained voxels.
+			// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
 			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
 			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
 
@@ -101,7 +101,7 @@ namespace PolyVox
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
-		POLYVOX_ASSERT(m_tData, "No uncompressed data - block must be decompressed before accessing voxels.");
+		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
 		return m_tData
 			[
@@ -125,7 +125,7 @@ namespace PolyVox
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
-		POLYVOX_ASSERT(m_tData, "No uncompressed data - block must be decompressed before accessing voxels.");
+		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
 		m_tData
 			[

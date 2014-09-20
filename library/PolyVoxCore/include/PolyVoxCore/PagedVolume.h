@@ -80,14 +80,14 @@ namespace PolyVox
 	/// 1 byte per voxel will require 1GB of memory if stored in an uncompressed form. Natuarally our PagedVolume class is much more efficient
 	/// than this and it is worth understanding (at least at a high level) the approach which is used.
 	///
-	/// Essentially, the PagedVolume class stores its data as a collection of blocks. Each of these block is much smaller than the whole volume,
+	/// Essentially, the PagedVolume class stores its data as a collection of chunks. Each of these chunk is much smaller than the whole volume,
 	/// for example a typical size might be 32x32x32 voxels (though is is configurable by the user). In this case, a 256x512x1024 volume
-	/// would contain 8x16x32 = 4096 blocks. The data for each block is stored in a compressed form, which uses only a small amout of
-	/// memory but it is hard to modify the data. Therefore, before any given voxel can be modified, its corresponding block must be uncompressed.
+	/// would contain 8x16x32 = 4096 chunks. The data for each chunk is stored in a compressed form, which uses only a small amout of
+	/// memory but it is hard to modify the data. Therefore, before any given voxel can be modified, its corresponding chunk must be uncompressed.
 	///
-	/// The compression and decompression of block is a relatively slow process and so we aim to do this as rarely as possible. In order
-	/// to achive this, the volume class stores a cache of recently used blocks and their associated uncompressed data. Each time a voxel
-	/// is touched a timestamp is updated on the corresponding block. When the cache becomes full the block with the oldest timestamp is
+	/// The compression and decompression of chunk is a relatively slow process and so we aim to do this as rarely as possible. In order
+	/// to achive this, the volume class stores a cache of recently used chunks and their associated uncompressed data. Each time a voxel
+	/// is touched a timestamp is updated on the corresponding chunk. When the cache becomes full the chunk with the oldest timestamp is
 	/// recompressed and moved out of the cache.
 	///
 	/// Achieving high compression rates
@@ -136,11 +136,11 @@ namespace PolyVox
 	/// Cache-aware traversal
 	/// ---------------------
 	/// You might be suprised at just how many cache misses can occur when you traverse the volume in a naive manner. Consider a 1024x1024x1024 volume
-	/// with blocks of size 32x32x32. And imagine you iterate over this volume with a simple three-level for loop which iterates over x, the y, then z.
+	/// with chunks of size 32x32x32. And imagine you iterate over this volume with a simple three-level for loop which iterates over x, the y, then z.
 	/// If you start at position (0,0,0) then ny the time you reach position (1023,0,0) you have touched 1024 voxels along one edge of the volume and
-	/// have pulled 32 blocks into the cache. By the time you reach (1023,1023,0) you have hit 1024x1024 voxels and pulled 32x32 blocks into the cache.
-	/// You are now ready to touch voxel (0,0,1) which is right nect to where you started, but unless your cache is at least 32x32 blocks large then this
-	/// initial block has already been cleared from the cache.
+	/// have pulled 32 chunks into the cache. By the time you reach (1023,1023,0) you have hit 1024x1024 voxels and pulled 32x32 chunks into the cache.
+	/// You are now ready to touch voxel (0,0,1) which is right nect to where you started, but unless your cache is at least 32x32 chunks large then this
+	/// initial chunk has already been cleared from the cache.
 	///
 	/// Ensuring you have a large enough cache size can obviously help the above situation, but you might also consider iterating over the voxels in a
 	/// different order. For example, if you replace your three-level loop with a six-level loop then you can first process all the voxels between (0,0,0)
@@ -151,7 +151,7 @@ namespace PolyVox
 	/// ---------
 	/// The PagedVolume class does not make any guarentees about thread safety. You should ensure that all accesses are performed from the same thread.
 	/// This is true even if you are only reading data from the volume, as concurrently reading from different threads can invalidate the contents
-	/// of the block cache (amoung other problems).
+	/// of the chunk cache (amoung other problems).
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	class PagedVolume : public BaseVolume<VoxelType>
@@ -256,7 +256,7 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
 
-		/// Sets the number of blocks for which uncompressed data is stored
+		/// Sets the number of chunks for which uncompressed data is stored
 		void setMemoryUsageLimit(uint32_t uMemoryUsageInBytes);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
@@ -302,7 +302,7 @@ namespace PolyVox
 
 		void purgeNullPtrsFromAllChunks(void) const;
 
-		// The block data
+		// The chunk data
 		mutable WeakPtrChunkMap m_pAllChunks;
 		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;
 
@@ -314,15 +314,15 @@ namespace PolyVox
 		// The size of the volume
 		Region m_regValidRegionInBlocks;
 
-		// The size of the blocks
+		// The size of the chunks
 		uint16_t m_uChunkSideLength;
 		uint8_t m_uChunkSideLengthPower;
 
 		Pager<VoxelType>* m_pPager;
 
-		// Enough to make sure a blocks and it's neighbours can be loaded, with a few to spare.
+		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
 		static const uint32_t uMinPracticalNoOfBlocks = 32;
-		// Should preent multi-gigabyte volumes with reasonable block sizes.
+		// Should preent multi-gigabyte volumes with reasonable chunk sizes.
 		static const uint32_t uMaxPracticalNoOfBlocks = 32768;
 	};
 }

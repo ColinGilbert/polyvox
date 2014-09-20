@@ -162,7 +162,7 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 
-		//The block data
+		//The voxel data
 		VoxelType* m_pData;
 	};
 }
