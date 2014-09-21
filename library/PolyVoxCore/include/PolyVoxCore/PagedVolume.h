@@ -25,7 +25,6 @@ freely, subject to the following restrictions:
 #define __PolyVox_PagedVolume_H__
 
 #include "PolyVoxCore/BaseVolume.h"
-#include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
 #include "PolyVoxCore/Vector.h"
 
@@ -156,11 +155,13 @@ namespace PolyVox
 	class PagedVolume : public BaseVolume<VoxelType>
 	{
 	public:
+		class Chunk;
+		class Pager;
 
 		class Chunk
 		{
 		public:
-			Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager = nullptr);
+			Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, typename PagedVolume<VoxelType>::Pager* pPager = nullptr);
 			~Chunk();
 
 			VoxelType* getData(void) const;
@@ -192,8 +193,23 @@ namespace PolyVox
 			VoxelType* m_tData;
 			uint16_t m_uSideLength;
 			uint8_t m_uSideLengthPower;
-			Pager<VoxelType>* m_pPager;
+			typename PagedVolume<VoxelType>::Pager* m_pPager;
 			Vector3DInt32 m_v3dChunkSpacePosition;
+		};
+
+		/**
+		* Provides an interface for performing paging of data.
+		*/
+		class Pager
+		{
+		public:
+			/// Constructor
+			Pager() {};
+			/// Destructor
+			virtual ~Pager() {};
+
+			virtual void pageIn(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk) = 0;
+			virtual void pageOut(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk) = 0;
 		};
 
 		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
@@ -272,7 +288,7 @@ namespace PolyVox
 		PagedVolume
 		(
 			const Region& regValid,	
-			Pager<VoxelType>* pPager = nullptr,	
+			typename PagedVolume<VoxelType>::Pager* pPager = nullptr,	
 			uint16_t uChunkSideLength = 32
 		);
 		/// Destructor
@@ -357,11 +373,11 @@ namespace PolyVox
 		uint16_t m_uChunkSideLength;
 		uint8_t m_uChunkSideLengthPower;
 
-		Pager<VoxelType>* m_pPager;
+		typename PagedVolume<VoxelType>::Pager* m_pPager;
 
 		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
 		static const uint32_t uMinPracticalNoOfChunks = 32;
-		// Should preent multi-gigabyte volumes with reasonable chunk sizes.
+		// Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
 		static const uint32_t uMaxPracticalNoOfChunks = 32768;
 	};
 }

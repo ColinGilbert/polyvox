@@ -40,7 +40,7 @@ namespace PolyVox
 	PagedVolume<VoxelType>::PagedVolume
 	(
 		const Region& regValid,
-		Pager<VoxelType>* pPager,
+		typename PagedVolume<VoxelType>::Pager* pPager,
 		uint16_t uChunkSideLength
 	)
 	:BaseVolume<VoxelType>(regValid)

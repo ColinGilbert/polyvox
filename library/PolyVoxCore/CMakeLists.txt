@@ -62,7 +62,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/PagedVolume.inl
 	include/PolyVoxCore/PagedVolumeChunk.inl
 	include/PolyVoxCore/PagedVolumeSampler.inl
-	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Picking.h
 	include/PolyVoxCore/Picking.inl

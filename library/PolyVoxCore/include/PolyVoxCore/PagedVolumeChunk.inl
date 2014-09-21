@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	PagedVolume<VoxelType>::Chunk::Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager)
+	PagedVolume<VoxelType>::Chunk::Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, typename PagedVolume<VoxelType>::Pager* pPager)
 		:m_uChunkLastAccessed(0)
 		,m_bDataModified(true)
 		,m_tData(0)

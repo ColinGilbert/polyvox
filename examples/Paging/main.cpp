@@ -27,9 +27,8 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/MaterialDensityPair.h"
 #include "PolyVoxCore/CubicSurfaceExtractor.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Mesh.h"
-#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/PagedVolume.h"
 
 #include <QApplication>
 
@@ -78,12 +77,12 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DF
 /**
  * Generates data using Perlin noise.
  */
-class PerlinNoisePager : public PolyVox::Pager<MaterialDensityPair44>
+class PerlinNoisePager : public PolyVox::PagedVolume<MaterialDensityPair44>::Pager
 {
 public:
 	/// Constructor
 	PerlinNoisePager()
-		:Pager<MaterialDensityPair44>()
+		:PagedVolume<MaterialDensityPair44>::Pager()
 	{
 	}
 

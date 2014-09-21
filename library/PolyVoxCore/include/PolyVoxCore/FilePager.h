@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
-#include "PolyVoxCore/Pager.h"
+#include "PolyVoxCore/PagedVolume.h"
 #include "PolyVoxCore/Region.h"
 
 #include <cstdlib>
@@ -42,12 +42,12 @@ namespace PolyVox
 	 * Provides an interface for performing paging of data.
 	 */
 	template <typename VoxelType>
-	class FilePager : public Pager<VoxelType>
+	class FilePager : public PagedVolume<VoxelType>::Pager
 	{
 	public:
 		/// Constructor
 		FilePager(const std::string& strFolderName = ".")
-			:Pager<VoxelType>()
+			:PagedVolume<VoxelType>::Pager()
 			,m_strFolderName(strFolderName)
 		{
 			// Add the trailing slash, assuming the user dind't already do it.
