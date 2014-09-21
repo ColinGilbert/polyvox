@@ -163,7 +163,7 @@ namespace PolyVox
 		class Chunk
 		{
 		public:
-			Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, typename PagedVolume<VoxelType>::Pager* pPager = nullptr);
+			Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager* pPager = nullptr);
 			~Chunk();
 
 			VoxelType* getData(void) const;
@@ -195,12 +195,14 @@ namespace PolyVox
 			VoxelType* m_tData;
 			uint16_t m_uSideLength;
 			uint8_t m_uSideLengthPower;
-			typename PagedVolume<VoxelType>::Pager* m_pPager;
+			Pager* m_pPager;
 			Vector3DInt32 m_v3dChunkSpacePosition;
 		};
 
 		/**
-		* Provides an interface for performing paging of data.
+		* Users can override this class and provide an instance of the derived class to the PagedVolume constructor. This derived class
+		* could then perform tasks such as compression and decompression of the data, and read/writing it to a file, database, network,
+		* or other storage as appropriate. See FilePager for a simple example of such a derived class.
 		*/
 		class Pager
 		{
@@ -210,8 +212,8 @@ namespace PolyVox
 			/// Destructor
 			virtual ~Pager() {};
 
-			virtual void pageIn(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk) = 0;
-			virtual void pageOut(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk) = 0;
+			virtual void pageIn(const Region& region, Chunk* pChunk) = 0;
+			virtual void pageOut(const Region& region, Chunk* pChunk) = 0;
 		};
 
 		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
@@ -290,7 +292,7 @@ namespace PolyVox
 		PagedVolume
 		(
 			const Region& regValid,	
-			typename PagedVolume<VoxelType>::Pager* pPager = nullptr,	
+			Pager* pPager = nullptr,	
 			uint16_t uChunkSideLength = 32
 		);
 		/// Destructor
@@ -308,21 +310,13 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
 
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-		/// Gets a voxel at the position given by a 3D vector
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
-
 		/// Sets the number of chunks for which uncompressed data is stored
 		void setMemoryUsageLimit(uint32_t uMemoryUsageInBytes);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by a 3D vector
 		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
-		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
-		/// Sets the voxel at the position given by a 3D vector
-		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
+
 		/// Tries to ensure that the voxels within the specified Region are loaded into memory.
 		void prefetch(Region regPrefetch);
 		/// Ensures that any voxels within the specified Region are removed from memory.
@@ -359,8 +353,20 @@ namespace PolyVox
 
 		void purgeNullPtrsFromAllChunks(void) const;
 
-		// The chunk data
+		// The chunk data is stored in the pair of maps below. This will often hold the same set of chunks but there are occasions
+		// when they can differ (more on that in a moment). The main store is the set of 'recently used chunks' which holds shared_ptr's
+		// to the chunk data. When memory is low chunks can be removed from this list and, assuming there are no more references to
+		// them, they will be deleted. However, it is also possible that a Sampler is pointing at a given chunk, and in this case the
+		// reference counting will ensure that the chunk survives until the sampler has finished with it.
+		//
+		// However, this leaves us open to a subtle bug. If a chunk is removed from the recently used set, continues to exist due to a
+		// sampler using it, and then the user tries to access it through the volume interface, then the volume will page the chunk
+		// back in (not knowing the sampler still has it). This would result in two chunks in memory with the same position is space.
+		// To avoid this, the 'all chunks' set tracks chunks with are used by the volume *and/or* the samplers. It holds weak pointers
+		// so does not cause chunks to persist.
+		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
 		mutable WeakPtrChunkMap m_pAllChunks;
+		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
 		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;
 
 		mutable uint32_t m_uTimestamper;
@@ -375,7 +381,7 @@ namespace PolyVox
 		uint16_t m_uChunkSideLength;
 		uint8_t m_uChunkSideLengthPower;
 
-		typename PagedVolume<VoxelType>::Pager* m_pPager;
+		Pager* m_pPager;
 
 		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
 		static const uint32_t uMinPracticalNoOfChunks = 32;
