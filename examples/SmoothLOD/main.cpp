@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/Mesh.h"
 #include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/SimpleVolume.h"
+#include "PolyVoxCore/PagedVolume.h"
 #include "PolyVoxCore/VolumeResampler.h"
 
 #include <QApplication>
@@ -35,7 +35,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
+void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -76,17 +76,17 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 28);
 
 	//Smooth the data - should reimplement this using LowPassFilter
-	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
-	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
-	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
 
 	RawVolume<uint8_t> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
 
-	VolumeResampler< SimpleVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+	VolumeResampler< PagedVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 	volumeResampler.execute();
 
 	//Extract the surface

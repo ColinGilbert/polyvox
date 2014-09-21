@@ -24,7 +24,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/FilePager.h"
 #include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/LargeVolume.h"
 #include "PolyVoxCore/LowPassFilter.h"
 #include "PolyVoxCore/RawVolume.h"
 #include "PolyVoxCore/Mesh.h"
@@ -51,7 +50,7 @@ const int32_t g_uVolumeSideLength = 128;
 int main(int argc, char *argv[])
 {
 	FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>(".");
-	LargeVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);
+	PagedVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);
 
 	//Make our volume contain a sphere in the center.
 	int32_t minPos = 0;

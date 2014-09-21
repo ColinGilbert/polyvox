@@ -110,7 +110,7 @@ int32_t testSamplersWithWrappingForwards(VolumeType* volume, int lowXOffset, int
 			xSampler = ySampler;
 			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
-				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the PagedVolume.
 
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
@@ -223,7 +223,7 @@ int32_t testSamplersWithWrappingBackwards(VolumeType* volume, int lowXOffset, in
 			xSampler = ySampler;
 			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
 			{
-				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the PagedVolume.
 
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
@@ -273,7 +273,7 @@ TestVolume::TestVolume()
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
-	m_pPagedVolume = new LargeVolume<int32_t>(region, m_pFilePager, 32);
+	m_pPagedVolume = new PagedVolume<int32_t>(region, m_pFilePager, 32);
 
 	m_pPagedVolume->setMemoryUsageLimit(1 * 1024 * 1024);
 

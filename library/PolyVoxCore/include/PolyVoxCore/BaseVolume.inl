@@ -26,7 +26,7 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// This is protected because you should never create a BaseVolume directly, you should instead use one of the derived classes.
 	///
-	/// \sa RawVolume, SimpleVolume, PagedVolume
+	/// \sa RawVolume, PagedVolume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::BaseVolume(const Region& regValid)

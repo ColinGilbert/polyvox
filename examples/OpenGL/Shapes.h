@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __OpenGLExample_Shapes_H__
 #define __OpenGLExample_Shapes_H__
 
-#include "PolyVoxCore/LargeVolume.h"
+#include "PolyVoxCore/PagedVolume.h"
 #include "PolyVoxCore/MaterialDensityPair.h"
 
 void createSphereInVolume(PolyVox::LargeVolume<PolyVox::MaterialDensityPair88>& volData, float fRadius, uint8_t uValue);

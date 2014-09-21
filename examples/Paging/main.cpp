@@ -35,7 +35,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(LargeVolume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
+void createSphereInVolume(PagedVolume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	//Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	PerlinNoisePager* pager = new PerlinNoisePager();
-	LargeVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, pager, 64);
+	PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, pager, 64);
 	volData.setMemoryUsageLimit(8 * 1024 * 1024); // 8Mb
 
 	//createSphereInVolume(volData, 30);

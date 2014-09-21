@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 
 //These two should not be here!
 #include "PolyVoxCore/Material.h"
-#include "PolyVoxCore/SimpleVolume.h"
+#include "PolyVoxCore/PagedVolume.h"
 
 #include <algorithm>
 
@@ -53,7 +53,7 @@ namespace PolyVox
 		{
 		}
 
-		bool operator()(const SimpleVolume<uint8_t>::Sampler& sampler)
+		bool operator()(const PagedVolume<uint8_t>::Sampler& sampler)
 		{
 			uint8_t sample = sampler.getVoxel();
 			bool func = mIsVoxelTransparentCallback(sample);
