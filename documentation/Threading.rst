@@ -27,8 +27,10 @@ C++ does provide the 'volatile' keyword which can be used to ensure a variable i
 
 Lastly, note that PolyVox volumes are templatised which means the voxel type might be something other than a simple int. However we don't think this actually makes a difference given that so few guarantees are made anyway, and it should still be safe to perform multiple concurrent reads for more complex types. 
 
-LargeVolume
+PagedVolume
 -----------
+NOTE: The info below is based on LargeVolume, which PagedVolume has replaced. It is likely that the same limitations apply but this has not been well tested. We do intend to improve the thread safty of PagedVolume in the future.
+
 The LargeVolume provides even less thread safety than the RawVolume, in that even concurrent read operations can cause problems. The reason for this is the more complex memory management which is performed behind the scenes, and which allows pieces of volume data to be moved around and deleted. For example, a read of a single voxel may mean that the block of data associated with that voxel has to be paged in to memory, which in turn may mean that another block of data has to be paged out of memory. If second thread was halfway through reading a voxel in this second block of data then a problem will occur.
 
 In the future we may do a more comprehensive analysis of thread safety in the LargeVolume, but for now you should assume that any multithreaded access can cause problems.

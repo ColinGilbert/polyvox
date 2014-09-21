@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 
 using namespace PolyVox;
 
-void createSphereInVolume(LargeVolume<MaterialDensityPair88>& volData, float fRadius, uint8_t uValue)
+void createSphereInVolume(PagedVolume<MaterialDensityPair88>& volData, float fRadius, uint8_t uValue)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DInt32 v3dVolCenter = (volData.getEnclosingRegion().getUpperCorner() - volData.getEnclosingRegion().getLowerCorner()) / static_cast<int32_t>(2);
@@ -55,7 +55,7 @@ void createSphereInVolume(LargeVolume<MaterialDensityPair88>& volData, float fRa
 	}
 }
 
-void createCubeInVolume(LargeVolume<MaterialDensityPair88>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
+void createCubeInVolume(PagedVolume<MaterialDensityPair88>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
 	uint8_t maxDen = MaterialDensityPair88::getMaxDensity();
 	uint8_t minDen = MaterialDensityPair88::getMinDensity();

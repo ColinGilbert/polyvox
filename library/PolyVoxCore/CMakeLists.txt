@@ -38,10 +38,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.h
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
-	include/PolyVoxCore/Block.h
-	include/PolyVoxCore/BlockCompressor.h
-	include/PolyVoxCore/CompressedBlock.h
-	include/PolyVoxCore/CompressedBlock.inl
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/DefaultIsQuadNeeded.h
@@ -54,8 +50,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/IteratorController.h
 	include/PolyVoxCore/IteratorController.inl
 	include/PolyVoxCore/LargeVolume.h
-	include/PolyVoxCore/LargeVolume.inl
-	include/PolyVoxCore/LargeVolumeSampler.inl
 	include/PolyVoxCore/LowPassFilter.h
 	include/PolyVoxCore/LowPassFilter.inl
 	include/PolyVoxCore/MarchingCubesSurfaceExtractor.h
@@ -64,9 +58,10 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/MaterialDensityPair.h
 	include/PolyVoxCore/Mesh.h
 	include/PolyVoxCore/Mesh.inl
-	include/PolyVoxCore/MinizBlockCompressor.h
-	include/PolyVoxCore/MinizBlockCompressor.inl
-	include/PolyVoxCore/Pager.h
+	include/PolyVoxCore/PagedVolume.h
+	include/PolyVoxCore/PagedVolume.inl
+	include/PolyVoxCore/PagedVolumeChunk.inl
+	include/PolyVoxCore/PagedVolumeSampler.inl
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h
 	include/PolyVoxCore/Picking.h
 	include/PolyVoxCore/Picking.inl
@@ -76,14 +71,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
-	include/PolyVoxCore/RLEBlockCompressor.h
-	include/PolyVoxCore/RLEBlockCompressor.inl
 	include/PolyVoxCore/SimpleVolume.h
-	include/PolyVoxCore/SimpleVolume.inl
-	include/PolyVoxCore/SimpleVolumeBlock.inl
-	include/PolyVoxCore/SimpleVolumeSampler.inl
-	include/PolyVoxCore/UncompressedBlock.h
-	include/PolyVoxCore/UncompressedBlock.inl
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl
 	include/PolyVoxCore/Vertex.h
@@ -97,7 +85,6 @@ SET(IMPL_SRC_FILES
 	source/Impl/ErrorHandling.cpp
 	source/Impl/Logging.cpp
 	source/Impl/MarchingCubesTables.cpp
-	source/Impl/MinizWrapper.cpp
 	source/Impl/RandomUnitVectors.cpp
 	source/Impl/RandomVectors.cpp
 	source/Impl/Timer.cpp
@@ -110,7 +97,6 @@ SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/ErrorHandling.h
 	include/PolyVoxCore/Impl/Logging.h
 	include/PolyVoxCore/Impl/MarchingCubesTables.h
-	include/PolyVoxCore/Impl/MinizWrapper.h
 	include/PolyVoxCore/Impl/RandomUnitVectors.h
 	include/PolyVoxCore/Impl/RandomVectors.h
 	include/PolyVoxCore/Impl/Timer.h

@@ -24,10 +24,8 @@ freely, subject to the following restrictions:
 #include "testvolume.h"
 
 #include "PolyVoxCore/FilePager.h"
-#include "PolyVoxCore/LargeVolume.h"
-#include "PolyVoxCore/MinizBlockCompressor.h"
+#include "PolyVoxCore/PagedVolume.h"
 #include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/SimpleVolume.h"
 
 #include <QtGlobal>
 #include <QtTest>
@@ -112,7 +110,7 @@ int32_t testSamplersWithWrappingForwards(VolumeType* volume, int lowXOffset, int
 			xSampler = ySampler;
 			for(int x = volume->getEnclosingRegion().getLowerX() + lowXOffset; x <= volume->getEnclosingRegion().getUpperX() + highXOffset; x++)
 			{
-				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the PagedVolume.
 
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
@@ -225,7 +223,7 @@ int32_t testSamplersWithWrappingBackwards(VolumeType* volume, int lowXOffset, in
 			xSampler = ySampler;
 			for(int x = volume->getEnclosingRegion().getUpperX() + highXOffset; x >= volume->getEnclosingRegion().getLowerX() + lowXOffset; x--)
 			{
-				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the LargeVolume.
+				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the PagedVolume.
 
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
@@ -271,17 +269,13 @@ TestVolume::TestVolume()
 {
 	Region region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
 
-	//m_pCompressor = new RLECompressor<int32_t, uint16_t>;
-	m_pBlockCompressor = new MinizBlockCompressor<int32_t>;
-	m_pFilePager = new FilePager<int32_t>("./");
+	m_pFilePager = new FilePager<int32_t>(".");
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
-	m_pSimpleVolume = new SimpleVolume<int32_t>(region);
-	m_pLargeVolume = new LargeVolume<int32_t>(region, m_pBlockCompressor, m_pFilePager, 32);
+	m_pPagedVolume = new PagedVolume<int32_t>(region, m_pFilePager, 32);
 
-	m_pLargeVolume->setMaxNumberOfBlocksInMemory(32);
-	m_pLargeVolume->setMaxNumberOfUncompressedBlocks(16);
+	m_pPagedVolume->setMemoryUsageLimit(1 * 1024 * 1024);
 
 	//Fill the volume with some data
 	for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
@@ -292,8 +286,7 @@ TestVolume::TestVolume()
 			{
 				int32_t value = x + y + z;
 				m_pRawVolume->setVoxelAt(x, y, z, value);
-				m_pSimpleVolume->setVoxelAt(x, y, z, value);
-				m_pLargeVolume->setVoxelAt(x, y, z, value);
+				m_pPagedVolume->setVoxelAt(x, y, z, value);
 			}
 		}
 	}
@@ -302,11 +295,9 @@ TestVolume::TestVolume()
 TestVolume::~TestVolume()
 {
 	delete m_pRawVolume;
-	delete m_pSimpleVolume;
-	delete m_pLargeVolume;
+	delete m_pPagedVolume;
 
 	delete m_pFilePager;
-	delete m_pBlockCompressor;
 }
 
 /*
@@ -402,173 +393,85 @@ void TestVolume::testRawVolumeSamplersWithExternalBackwards()
 }
 
 /*
- * SimpleVolume Tests
+ * PagedVolume Tests
  */
 
-void TestVolume::testSimpleVolumeDirectAccessAllInternalForwards()
+void TestVolume::testPagedVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrappingForwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+		result = testDirectAccessWithWrappingForwards(m_pPagedVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testSimpleVolumeSamplersAllInternalForwards()
+void TestVolume::testPagedVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrappingForwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+		result = testSamplersWithWrappingForwards(m_pPagedVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(1004598054));
 }
 
-void TestVolume::testSimpleVolumeDirectAccessWithExternalForwards()
+void TestVolume::testPagedVolumeDirectAccessWithExternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrappingForwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+		result = testDirectAccessWithWrappingForwards(m_pPagedVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testSimpleVolumeSamplersWithExternalForwards()
+void TestVolume::testPagedVolumeSamplersWithExternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrappingForwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+		result = testSamplersWithWrappingForwards(m_pPagedVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-928601007));
 }
 
-void TestVolume::testSimpleVolumeDirectAccessAllInternalBackwards()
+void TestVolume::testPagedVolumeDirectAccessAllInternalBackwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrappingBackwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+		result = testDirectAccessWithWrappingBackwards(m_pPagedVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-269366578));
 }
 
-void TestVolume::testSimpleVolumeSamplersAllInternalBackwards()
+void TestVolume::testPagedVolumeSamplersAllInternalBackwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, 4, 2, 2, -3, -1, -2);
+		result = testSamplersWithWrappingBackwards(m_pPagedVolume, 4, 2, 2, -3, -1, -2);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-269366578));
 }
 
-void TestVolume::testSimpleVolumeDirectAccessWithExternalBackwards()
+void TestVolume::testPagedVolumeDirectAccessWithExternalBackwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectAccessWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
+		result = testDirectAccessWithWrappingBackwards(m_pPagedVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-769775893));
 }
 
-void TestVolume::testSimpleVolumeSamplersWithExternalBackwards()
+void TestVolume::testPagedVolumeSamplersWithExternalBackwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testSamplersWithWrappingBackwards(m_pSimpleVolume, -1, -3, -2, 2, 5, 4);
-	}
-	QCOMPARE(result, static_cast<int32_t>(-769775893));
-}
-
-/*
- * LargeVolume Tests
- */
-
-void TestVolume::testLargeVolumeDirectAccessAllInternalForwards()
-{
-	int32_t result = 0;
-	QBENCHMARK
-	{
-		result = testDirectAccessWithWrappingForwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
-	}
-	QCOMPARE(result, static_cast<int32_t>(1004598054));
-}
-
-void TestVolume::testLargeVolumeSamplersAllInternalForwards()
-{
-	int32_t result = 0;
-	
-	QBENCHMARK
-	{
-		result = testSamplersWithWrappingForwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
-	}
-	QCOMPARE(result, static_cast<int32_t>(1004598054));
-}
-
-void TestVolume::testLargeVolumeDirectAccessWithExternalForwards()
-{
-	int32_t result = 0;
-	QBENCHMARK
-	{
-		result = testDirectAccessWithWrappingForwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
-	}
-	QCOMPARE(result, static_cast<int32_t>(-928601007));
-}
-
-void TestVolume::testLargeVolumeSamplersWithExternalForwards()
-{
-	int32_t result = 0;
-	
-	QBENCHMARK
-	{
-		result = testSamplersWithWrappingForwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
-	}
-	QCOMPARE(result, static_cast<int32_t>(-928601007));
-}
-
-void TestVolume::testLargeVolumeDirectAccessAllInternalBackwards()
-{
-	int32_t result = 0;
-	QBENCHMARK
-	{
-		result = testDirectAccessWithWrappingBackwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
-	}
-	QCOMPARE(result, static_cast<int32_t>(-269366578));
-}
-
-void TestVolume::testLargeVolumeSamplersAllInternalBackwards()
-{
-	int32_t result = 0;
-	
-	QBENCHMARK
-	{
-		result = testSamplersWithWrappingBackwards(m_pLargeVolume, 4, 2, 2, -3, -1, -2);
-	}
-	QCOMPARE(result, static_cast<int32_t>(-269366578));
-}
-
-void TestVolume::testLargeVolumeDirectAccessWithExternalBackwards()
-{
-	int32_t result = 0;
-	QBENCHMARK
-	{
-		result = testDirectAccessWithWrappingBackwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
-	}
-	QCOMPARE(result, static_cast<int32_t>(-769775893));
-}
-
-void TestVolume::testLargeVolumeSamplersWithExternalBackwards()
-{
-	int32_t result = 0;
-	
-	QBENCHMARK
-	{
-		result = testSamplersWithWrappingBackwards(m_pLargeVolume, -1, -3, -2, 2, 5, 4);
+		result = testSamplersWithWrappingBackwards(m_pPagedVolume, -1, -3, -2, 2, 5, 4);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-769775893));
 }

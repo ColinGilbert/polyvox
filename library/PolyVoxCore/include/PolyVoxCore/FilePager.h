@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxCore/Impl/TypeDef.h"
 
-#include "PolyVoxCore/Pager.h"
+#include "PolyVoxCore/PagedVolume.h"
 #include "PolyVoxCore/Region.h"
 
 #include <cstdlib>
@@ -34,6 +34,7 @@ freely, subject to the following restrictions:
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace PolyVox
 {
@@ -41,14 +42,21 @@ namespace PolyVox
 	 * Provides an interface for performing paging of data.
 	 */
 	template <typename VoxelType>
-	class FilePager : public Pager<VoxelType>
+	class FilePager : public PagedVolume<VoxelType>::Pager
 	{
 	public:
 		/// Constructor
-		FilePager(const std::string& strFolderName)
-			:Pager<VoxelType>()
+		FilePager(const std::string& strFolderName = ".")
+			:PagedVolume<VoxelType>::Pager()
 			,m_strFolderName(strFolderName)
 		{
+			// Add the trailing slash, assuming the user dind't already do it.
+				if ((m_strFolderName.back() != '/') && (m_strFolderName.back() != '\\'))
+			{
+					m_strFolderName.append("/");
+			}
+
+			// Build a unique prefix to avoid multiple pagers using the same filenames.
 			srand(static_cast<unsigned int>(time(0)));
 			int iRandomValue = rand();
 
@@ -62,16 +70,16 @@ namespace PolyVox
 		{
 			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
 			{
-				POLYVOX_LOG_WARNING_IF(!std::remove(iter->c_str()), "Failed to delete '" << *iter << "' when destroying FilePager");
+				POLYVOX_LOG_WARNING_IF(std::remove(iter->c_str()) != 0, "Failed to delete '" << *iter << "' when destroying FilePager");
 			}
 
 			m_vecCreatedFiles.clear();
 		}
 
-		virtual void pageIn(const Region& region, CompressedBlock<VoxelType>* pBlockData)
+		virtual void pageIn(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk)
 		{
-			POLYVOX_ASSERT(pBlockData, "Attempting to page in NULL block");
-			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
+			POLYVOX_ASSERT(pChunk, "Attempting to page in NULL chunk");
+			POLYVOX_ASSERT(pChunk->getData(), "Chunk must have valid data");
 
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
@@ -88,18 +96,20 @@ namespace PolyVox
 			{
 				POLYVOX_LOG_TRACE("Paging in data for " << region);
 
-				fseek(pFile, 0L, SEEK_END);
+				/*fseek(pFile, 0L, SEEK_END);
 				size_t fileSizeInBytes = ftell(pFile);
 				fseek(pFile, 0L, SEEK_SET);
 				
 				uint8_t* buffer = new uint8_t[fileSizeInBytes];
 				fread(buffer, sizeof(uint8_t), fileSizeInBytes, pFile);
-				pBlockData->setData(buffer, fileSizeInBytes);
-				delete[] buffer;
+				pChunk->setData(buffer, fileSizeInBytes);
+				delete[] buffer;*/
+
+				fread(pChunk->getData(), sizeof(uint8_t), pChunk->getDataSizeInBytes(), pFile);
 
 				if(ferror(pFile))
 				{
-					POLYVOX_THROW(std::runtime_error, "Error reading in block data, even though a file exists.");
+					POLYVOX_THROW(std::runtime_error, "Error reading in chunk data, even though a file exists.");
 				}
 
 				fclose(pFile);
@@ -110,10 +120,10 @@ namespace PolyVox
 			}
 		}
 
-		virtual void pageOut(const Region& region, CompressedBlock<VoxelType>* pBlockData)
+		virtual void pageOut(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk)
 		{
-			POLYVOX_ASSERT(pBlockData, "Attempting to page out NULL block");
-			//POLYVOX_ASSERT(pBlockData->hasUncompressedData() == false, "Block should not have uncompressed data");
+			POLYVOX_ASSERT(pChunk, "Attempting to page out NULL chunk");
+			POLYVOX_ASSERT(pChunk->getData(), "Chunk must have valid data");
 
 			POLYVOX_LOG_TRACE("Paging out data for " << region);
 
@@ -130,17 +140,17 @@ namespace PolyVox
 			FILE* pFile = fopen(filename.c_str(), "wb");
 			if(!pFile)
 			{
-				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out block data.");
+				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out chunk data.");
 			}
 
 			//The file has been created, so add it to the list to delete on shutdown.
 			m_vecCreatedFiles.push_back(filename);
 
-			fwrite(pBlockData->getData(), sizeof(uint8_t), pBlockData->getDataSizeInBytes(), pFile);
+			fwrite(pChunk->getData(), sizeof(uint8_t), pChunk->getDataSizeInBytes(), pFile);
 
 			if(ferror(pFile))
 			{
-				POLYVOX_THROW(std::runtime_error, "Error writing out block data.");
+				POLYVOX_THROW(std::runtime_error, "Error writing out chunk data.");
 			}
 
 			fclose(pFile);
