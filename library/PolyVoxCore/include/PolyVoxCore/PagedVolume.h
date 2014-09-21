@@ -155,7 +155,9 @@ namespace PolyVox
 	class PagedVolume : public BaseVolume<VoxelType>
 	{
 	public:
+		/// The PagedVolume stores it data as a set of Chunk instances which can be loaded and unloaded as memory requirements dictate.
 		class Chunk;
+		/// The Pager class is responsible for the loading and unloading of Chunks, and can be overridden by the user.
 		class Pager;
 
 		class Chunk
