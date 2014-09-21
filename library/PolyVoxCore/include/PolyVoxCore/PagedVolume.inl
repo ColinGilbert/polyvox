@@ -81,7 +81,7 @@ namespace PolyVox
 		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
 		m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
 
-		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uChunkSideLength);
+		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
 		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
 			<< "Mb (" << m_uChunkCountLimit << " chunks of " << uChunkSizeInBytes / 1024 << "Kb each).");
 
@@ -254,7 +254,7 @@ namespace PolyVox
 		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
 
 		// Calculate the number of chunks based on the memory limit and the size of each chunk.
-		uint32_t uChunkSizeInBytes = Chunk<VoxelType>::calculateSizeInBytes(m_uChunkSideLength);
+		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
 		m_uChunkCountLimit = uMemoryUsageInBytes / uChunkSizeInBytes;
 
 		// We need at least a few chunks available to avoid thrashing, and in pratice there will probably be hundreds.
@@ -506,7 +506,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	std::shared_ptr< Chunk<VoxelType> > PagedVolume<VoxelType>::getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const
+	std::shared_ptr<typename PagedVolume<VoxelType>::Chunk> PagedVolume<VoxelType>::getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const
 	{
 		Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 
@@ -520,7 +520,7 @@ namespace PolyVox
 		}
 
 		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
-		std::shared_ptr< Chunk<VoxelType> > pChunk = nullptr;
+		std::shared_ptr<typename PagedVolume<VoxelType>::Chunk> pChunk = nullptr;
 		typename SharedPtrChunkMap::iterator itChunk = m_pRecentlyUsedChunks.find(v3dChunkPos);
 
 		// Check whether the chunk was found.
@@ -548,7 +548,7 @@ namespace PolyVox
 				else
 				{
 					// The chunk is valid. We know it's not in the recently used list (we checked earlier) so it should be added.
-					pChunk = std::shared_ptr< Chunk<VoxelType> >(itWeakChunk->second);
+					pChunk = std::shared_ptr< PagedVolume<VoxelType>::Chunk >(itWeakChunk->second);
 					m_pRecentlyUsedChunks.insert(std::make_pair(v3dChunkPos, pChunk));
 				}
 			}
@@ -558,7 +558,7 @@ namespace PolyVox
 		if (!pChunk)
 		{
 			// The chunk was not found so we will create a new one.
-			pChunk = std::make_shared< Chunk<VoxelType> >(v3dChunkPos, m_uChunkSideLength, m_pPager);
+			pChunk = std::make_shared< PagedVolume<VoxelType>::Chunk >(v3dChunkPos, m_uChunkSideLength, m_pPager);
 
 			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
 			bool erasedChunk = false;
@@ -613,7 +613,7 @@ namespace PolyVox
 
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
-		return Chunk<VoxelType>::calculateSizeInBytes(m_uChunkSideLength) * m_pAllChunks.size();
+		return PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) * m_pAllChunks.size();
 	}
 
 	template <typename VoxelType>

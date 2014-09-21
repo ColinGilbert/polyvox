@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Pager_H__
 #define __PolyVox_Pager_H__
 
-#include "PolyVoxCore/Chunk.h"
+#include "PolyVoxCore/PagedVolume.h"
 #include "PolyVoxCore/Impl/TypeDef.h"
 
 #include <memory>
@@ -43,8 +43,8 @@ namespace PolyVox
 		/// Destructor
 		virtual ~Pager() {};
 
-		virtual void pageIn(const Region& region, Chunk<VoxelType>* pChunk) = 0;
-		virtual void pageOut(const Region& region, Chunk<VoxelType>* pChunk) = 0;
+		virtual void pageIn(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk) = 0;
+		virtual void pageOut(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk) = 0;
 	};
 }
 

@@ -38,8 +38,6 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/BaseVolume.h
 	include/PolyVoxCore/BaseVolume.inl
 	include/PolyVoxCore/BaseVolumeSampler.inl
-	include/PolyVoxCore/Chunk.h
-	include/PolyVoxCore/Chunk.inl
 	include/PolyVoxCore/CubicSurfaceExtractor.h
 	include/PolyVoxCore/CubicSurfaceExtractor.inl
 	include/PolyVoxCore/DefaultIsQuadNeeded.h
@@ -62,6 +60,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Mesh.inl
 	include/PolyVoxCore/PagedVolume.h
 	include/PolyVoxCore/PagedVolume.inl
+	include/PolyVoxCore/PagedVolumeChunk.inl
 	include/PolyVoxCore/PagedVolumeSampler.inl
 	include/PolyVoxCore/Pager.h
 	include/PolyVoxCore/PolyVoxForwardDeclarations.h

@@ -76,10 +76,10 @@ namespace PolyVox
 			m_vecCreatedFiles.clear();
 		}
 
-		virtual void pageIn(const Region& region, Chunk<VoxelType>* pChunk)
+		virtual void pageIn(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk)
 		{
 			POLYVOX_ASSERT(pChunk, "Attempting to page in NULL chunk");
-			POLYVOX_ASSERT(pChunk->getData() == false, "Chunk must have valid data");
+			POLYVOX_ASSERT(pChunk->getData(), "Chunk must have valid data");
 
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
@@ -120,10 +120,10 @@ namespace PolyVox
 			}
 		}
 
-		virtual void pageOut(const Region& region, Chunk<VoxelType>* pChunk)
+		virtual void pageOut(const Region& region, typename PagedVolume<VoxelType>::Chunk* pChunk)
 		{
 			POLYVOX_ASSERT(pChunk, "Attempting to page out NULL chunk");
-			POLYVOX_ASSERT(pChunk->getData() == false, "Chunk must have valid data");
+			POLYVOX_ASSERT(pChunk->getData(), "Chunk must have valid data");
 
 			POLYVOX_LOG_TRACE("Paging out data for " << region);
 

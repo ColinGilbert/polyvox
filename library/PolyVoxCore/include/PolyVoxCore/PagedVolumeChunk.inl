@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 namespace PolyVox
 {
 	template <typename VoxelType>
-	Chunk<VoxelType>::Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager)
+	PagedVolume<VoxelType>::Chunk::Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager)
 		:m_uChunkLastAccessed(0)
 		,m_bDataModified(true)
 		,m_tData(0)
@@ -65,7 +65,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	Chunk<VoxelType>::~Chunk()
+	PagedVolume<VoxelType>::Chunk::~Chunk()
 	{
 		if (m_pPager && m_bDataModified)
 		{
@@ -82,19 +82,19 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType* Chunk<VoxelType>::getData(void) const
+	VoxelType* PagedVolume<VoxelType>::Chunk::getData(void) const
 	{
 		return m_tData;
 	}
 
 	template <typename VoxelType>
-	uint32_t Chunk<VoxelType>::getDataSizeInBytes(void) const
+	uint32_t PagedVolume<VoxelType>::Chunk::getDataSizeInBytes(void) const
 	{
 		return m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 	}
 
 	template <typename VoxelType>
-	VoxelType Chunk<VoxelType>::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
@@ -112,13 +112,13 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType Chunk<VoxelType>::getVoxel(const Vector3DUint16& v3dPos) const
+	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(const Vector3DUint16& v3dPos) const
 	{
 		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
 	template <typename VoxelType>
-	void Chunk<VoxelType>::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
@@ -138,20 +138,20 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-    void Chunk<VoxelType>::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
     {
 		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
     }
 
 	template <typename VoxelType>
-	uint32_t Chunk<VoxelType>::calculateSizeInBytes(void)
+	uint32_t PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(void)
 	{
 		// Call through to the static version
 		return calculateSizeInBytes(m_uSideLength);
 	}
 
 	template <typename VoxelType>
-	uint32_t Chunk<VoxelType>::calculateSizeInBytes(uint32_t uSideLength)
+	uint32_t PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(uint32_t uSideLength)
 	{
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.

@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVoxCore/BaseVolume.h"
 #include "PolyVoxCore/Pager.h"
 #include "PolyVoxCore/Region.h"
-#include "PolyVoxCore/Chunk.h"
 #include "PolyVoxCore/Vector.h"
 
 #include <limits>
@@ -157,6 +156,46 @@ namespace PolyVox
 	class PagedVolume : public BaseVolume<VoxelType>
 	{
 	public:
+
+		class Chunk
+		{
+		public:
+			Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager<VoxelType>* pPager = nullptr);
+			~Chunk();
+
+			VoxelType* getData(void) const;
+			uint32_t getDataSizeInBytes(void) const;
+
+			VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+			VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
+
+			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+
+		public:
+			/// Private copy constructor to prevent accisdental copying
+			Chunk(const Chunk& /*rhs*/) {};
+
+			/// Private assignment operator to prevent accisdental copying
+			Chunk& operator=(const Chunk& /*rhs*/) {};
+
+			// This is updated by the PagedVolume and used to discard the least recently used chunks.
+			uint32_t m_uChunkLastAccessed;
+
+			// This is so we can tell whether a uncompressed chunk has to be recompressed and whether
+			// a compressed chunk has to be paged back to disk, or whether they can just be discarded.
+			bool m_bDataModified;
+
+			uint32_t calculateSizeInBytes(void);
+			static uint32_t calculateSizeInBytes(uint32_t uSideLength);
+
+			VoxelType* m_tData;
+			uint16_t m_uSideLength;
+			uint8_t m_uSideLengthPower;
+			Pager<VoxelType>* m_pPager;
+			Vector3DInt32 m_v3dChunkSpacePosition;
+		};
+
 		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
 		//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
 		//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
@@ -285,8 +324,8 @@ namespace PolyVox
 
 	private:
 
-		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk<VoxelType> > > SharedPtrChunkMap;
-		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk<VoxelType> > > WeakPtrChunkMap;
+		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
+		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
 
 		void initialise();
 
@@ -298,7 +337,7 @@ namespace PolyVox
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
 		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 	
-		std::shared_ptr< Chunk<VoxelType> > getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
+		std::shared_ptr<Chunk> getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
 		void purgeNullPtrsFromAllChunks(void) const;
 
@@ -308,7 +347,7 @@ namespace PolyVox
 
 		mutable uint32_t m_uTimestamper;
 		mutable Vector3DInt32 m_v3dLastAccessedChunkPos;
-		mutable std::shared_ptr< Chunk<VoxelType> > m_pLastAccessedChunk;
+		mutable std::shared_ptr<Chunk> m_pLastAccessedChunk;
 		uint32_t m_uChunkCountLimit;
 
 		// The size of the volume
@@ -328,6 +367,7 @@ namespace PolyVox
 }
 
 #include "PolyVoxCore/PagedVolume.inl"
+#include "PolyVoxCore/PagedVolumeChunk.inl"
 #include "PolyVoxCore/PagedVolumeSampler.inl"
 
 #endif //__PolyVox_PagedVolume_H__

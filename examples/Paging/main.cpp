@@ -90,7 +90,7 @@ public:
 	/// Destructor
 	virtual ~PerlinNoisePager() {};
 
-	virtual void pageIn(const PolyVox::Region& region, Chunk<MaterialDensityPair44>* pChunk)
+	virtual void pageIn(const PolyVox::Region& region, PagedVolume<MaterialDensityPair44>::Chunk* pChunk)
 	{
 		Perlin perlin(2,2,1,234);
 
@@ -134,7 +134,7 @@ public:
 		}
 	}
 
-	virtual void pageOut(const PolyVox::Region& region, Chunk<MaterialDensityPair44>* /*pChunk*/)
+	virtual void pageOut(const PolyVox::Region& region, PagedVolume<MaterialDensityPair44>::Chunk* /*pChunk*/)
 	{
 		std::cout << "warning unloading region: " << region.getLowerCorner() << " -> " << region.getUpperCorner() << std::endl;
 	}
