@@ -118,6 +118,8 @@ namespace PolyVox
 
 		class Chunk
 		{
+			friend class PagedVolume;
+
 		public:
 			Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager* pPager = nullptr);
 			~Chunk();
@@ -131,7 +133,7 @@ namespace PolyVox
 			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
 			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
 
-		public:
+		private:
 			/// Private copy constructor to prevent accisdental copying
 			Chunk(const Chunk& /*rhs*/) {};
 
@@ -152,6 +154,8 @@ namespace PolyVox
 			uint16_t m_uSideLength;
 			uint8_t m_uSideLengthPower;
 			Pager* m_pPager;
+
+			// Note: Do we really need to store this position here as well as in the block maps?
 			Vector3DInt32 m_v3dChunkSpacePosition;
 		};
 
@@ -300,9 +304,7 @@ namespace PolyVox
 
 	private:
 
-		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
-		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
-
+		// FIXME - We can probably ove this into the constructor
 		void initialise();
 
 		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
@@ -328,6 +330,9 @@ namespace PolyVox
 		// back in (not knowing the sampler still has it). This would result in two chunks in memory with the same position is space.
 		// To avoid this, the 'all chunks' set tracks chunks with are used by the volume *and/or* the samplers. It holds weak pointers
 		// so does not cause chunks to persist.
+		//
+		// TODO: Do we really need maps here? It means we are storing the chunk positions in the map, but they are also stored in the
+		// chunks themselves (so they can be passed to the pager from the chunks destructor). Can we use a set here? What is a better approach?
 		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
 		mutable WeakPtrChunkMap m_pAllChunks;
 		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
