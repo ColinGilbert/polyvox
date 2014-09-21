@@ -101,7 +101,7 @@ VolumeType* createAndFillVolume(void)
 {
 	const int32_t uVolumeSideLength = 64;
 
-	FilePager<VolumeType::VoxelType>* pager = new FilePager<VolumeType::VoxelType>(".");
+	FilePager<typename VolumeType::VoxelType>* pager = new FilePager<typename VolumeType::VoxelType>(".");
 
 	//Create empty volume
 	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), pager);
@@ -115,9 +115,9 @@ VolumeType* createAndFillVolume(void)
 			{
 				// Create a density field which changes throughout the volume. It's
 				// zero in the lower corner and increasing as the coordinates increase.
-				VolumeType::VoxelType voxelValue;
-				writeDensityValueToVoxel<VolumeType::VoxelType>(x + y + z, voxelValue);
-				writeMaterialValueToVoxel<VolumeType::VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
+				typename VolumeType::VoxelType voxelValue;
+				writeDensityValueToVoxel<typename VolumeType::VoxelType>(x + y + z, voxelValue);
+				writeMaterialValueToVoxel<typename VolumeType::VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
 				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}

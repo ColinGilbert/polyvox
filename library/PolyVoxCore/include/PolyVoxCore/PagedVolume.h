@@ -353,9 +353,9 @@ namespace PolyVox
 		Pager* m_pPager;
 
 		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		static const uint32_t uMinPracticalNoOfChunks = 32;
+		const uint32_t uMinPracticalNoOfChunks = 32;
 		// Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
-		static const uint32_t uMaxPracticalNoOfChunks = 32768;
+		const uint32_t uMaxPracticalNoOfChunks = 32768;
 	};
 }
 
