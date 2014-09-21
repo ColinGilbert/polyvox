@@ -52,22 +52,18 @@ namespace PolyVox
 	/// The following code snippet shows how to construct a volume and demonstrates basic usage:
 	///
 	/// \code
-	/// PagedVolume<Material8> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
-	/// volume.setVoxelAt(15, 90, 42, Material8(5));
-	/// std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxelAt(15, 90, 42).getMaterial() << std::endl;
+	/// PagedVolume<int> volume(Region(Vector3DInt32(0,0,0), Vector3DInt32(63,127,255)));
+	/// volume.setVoxel(15, 90, 42, int(5));
+	/// std::cout << "Voxel at (15, 90, 42) has value: " << volume.getVoxel(15, 90, 42) << std::endl;
 	/// std::cout << "Width = " << volume.getWidth() << ", Height = " << volume.getHeight() << ", Depth = " << volume.getDepth() << std::endl;
 	/// \endcode
-	///
-	/// In this particular example each voxel in the PagedVolume is of type 'Material8', as specified by the template parameter. This is one of several
-	/// predefined voxel types, and it is also possible to define your own. The Material8 type simply holds an integer value where zero represents
-	/// empty space and any other value represents a solid material.
 	/// 
 	/// The PagedVolume constructor takes a Region as a parameter. This specifies the valid range of voxels which can be held in the volume, so in this
-	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). Attempts to access voxels outside this range will result is accessing the
-	/// border value (see getBorderValue() and setBorderValue()). PolyVox also has support for near infinite volumes which will be discussed later.
+	/// particular case the valid voxel positions are (0,0,0) to (63, 127, 255). The result of attempts to access voxels outside this range will result
+	/// are defined by the WrapMode). PolyVox also has support for near infinite volumes which will be discussed later.
 	/// 
-	/// Access to individual voxels is provided via the setVoxelAt() and getVoxelAt() member functions. Advanced users may also be interested in
-	/// the Sampler class for faster read-only access to a large number of voxels.
+	/// Access to individual voxels is provided via the setVoxel() and getVoxel() member functions. Advanced users may also be interested in
+	/// the Sampler nested class for faster read-only access to a large number of voxels.
 	/// 
 	/// Lastly the example prints out some properties of the PagedVolume. Note that the dimentsions getWidth(), getHeight(), and getDepth() are inclusive, such
 	/// that the width is 64 when the range of valid x coordinates goes from 0 to 63.
@@ -80,70 +76,30 @@ namespace PolyVox
 	///
 	/// Essentially, the PagedVolume class stores its data as a collection of chunks. Each of these chunk is much smaller than the whole volume,
 	/// for example a typical size might be 32x32x32 voxels (though is is configurable by the user). In this case, a 256x512x1024 volume
-	/// would contain 8x16x32 = 4096 chunks. The data for each chunk is stored in a compressed form, which uses only a small amout of
-	/// memory but it is hard to modify the data. Therefore, before any given voxel can be modified, its corresponding chunk must be uncompressed.
-	///
-	/// The compression and decompression of chunk is a relatively slow process and so we aim to do this as rarely as possible. In order
-	/// to achive this, the volume class stores a cache of recently used chunks and their associated uncompressed data. Each time a voxel
-	/// is touched a timestamp is updated on the corresponding chunk. When the cache becomes full the chunk with the oldest timestamp is
-	/// recompressed and moved out of the cache.
-	///
-	/// Achieving high compression rates
-	/// --------------------------------
-	/// The compression rates which can be achieved can vary significantly depending the nature of the data you are storing, but you can
-	/// encourage high compression rates by making your data as homogenous as possible. If you are simply storing a material with each
-	/// voxel then this will probably happen naturally. Games such as Minecraft which use this approach will typically involve large areas
-	/// of the same material which will compress down well.
-	///
-	/// However, if you are storing density values then you may want to take some care. The advantage of storing smoothly changing values
-	/// is that you can get smooth surfaces extracted, but storing smoothly changing values inside or outside objects (rather than just
-	/// on the boundary) does not benefit the surface and is very hard to compress effectively. You may wish to apply some thresholding to 
-	/// your density values to reduce this problem (this threasholding should only be applied to voxels who don't contribute to the surface).
-	///
-	/// Paging large volumes
-	/// --------------------
-	/// The compression scheme described previously will typically allow you to load several billion voxels into a few hundred megabytes of memory, 
-	/// though as explained the exact compression rate is highly dependant on your data. If you have more data than this then PolyVox provides a
-	/// mechanism by which parts of the volume can be paged out of memory by calling user supplied callback functions. This mechanism allows a
+	/// would contain 8x16x32 = 4096 chunks. Typically these chunks do not need to all be in memory all the time, and the Pager class can 
+	/// be used to control how they are loaded and unloaded. This mechanism allows a
 	/// potentially unlimited amount of data to be loaded, provided the user is able to take responsibility for storing any data which PolyVox
 	/// cannot fit in memory, and then returning it back to PolyVox on demand. For example, the user might choose to temporarily store this data
 	/// on disk or stream it to a remote database.
 	///
-	/// You can construct such a PagedVolume as follows:
-	///
-	/// \code
-	/// void myDataRequiredHandler(const ConstVolumeProxy<MaterialDensityPair44>& volume, const PolyVox::Region& reg)
-	/// {
-	///		//This function is being called because part of the data is missing from memory and needs to be supplied. The parameter
-	///		//'volume' provides access to the volume data, and the parameter 'reg' indicates which region of the volume you need fill.	
-	/// }
-	///
-	/// void myDataOverflowHandler(const ConstVolumeProxy<MaterialDensityPair44>& vol, const PolyVox::Region& reg)
-	/// {
-	///		//This function is being called because part of the data is about to be removed from memory. The parameter 'volume' 
-	///		//provides access to the volume data, and the parameter 'reg' indicates which region of the volume you need to store.
-	/// }
-	///
-	///	PagedVolume<Density>volData(&myDataRequiredHandler, &myDataOverflowHandler);
-	/// \endcode
-	///
 	/// Essentially you are providing an extension to the PagedVolume class - a way for data to be stored once PolyVox has run out of memory for it. Note
 	/// that you don't actually have to do anything with the data - you could simply decide that once it gets removed from memory it doesn't matter
-	/// anymore. But you still need to be ready to then provide something to PolyVox (even if it's just default data) in the event that it is requested.
+	/// anymore.
 	///
 	/// Cache-aware traversal
 	/// ---------------------
+	/// *NOTE: This needs updating for PagedVolume rather than the old LargeVolume*
 	/// You might be suprised at just how many cache misses can occur when you traverse the volume in a naive manner. Consider a 1024x1024x1024 volume
 	/// with chunks of size 32x32x32. And imagine you iterate over this volume with a simple three-level for loop which iterates over x, the y, then z.
 	/// If you start at position (0,0,0) then ny the time you reach position (1023,0,0) you have touched 1024 voxels along one edge of the volume and
 	/// have pulled 32 chunks into the cache. By the time you reach (1023,1023,0) you have hit 1024x1024 voxels and pulled 32x32 chunks into the cache.
-	/// You are now ready to touch voxel (0,0,1) which is right nect to where you started, but unless your cache is at least 32x32 chunks large then this
+	/// You are now ready to touch voxel (0,0,1) which is right next to where you started, but unless your cache is at least 32x32 chunks large then this
 	/// initial chunk has already been cleared from the cache.
 	///
 	/// Ensuring you have a large enough cache size can obviously help the above situation, but you might also consider iterating over the voxels in a
 	/// different order. For example, if you replace your three-level loop with a six-level loop then you can first process all the voxels between (0,0,0)
 	/// and (31,31,31), then process all the voxels between (32,0,0) and (63,0,0), and so forth. Using this approach you will have no cache misses even
-	/// is your cache sise is only one. Of course the logic is more complex, but writing code in such a cache-aware manner may be beneficial in some situations.
+	/// is your cache size is only one. Of course the logic is more complex, but writing code in such a cache-aware manner may be beneficial in some situations.
 	///
 	/// Threading
 	/// ---------
