@@ -2,6 +2,21 @@ Changes for PolyVox version 0.3
 ===============================
 This release has focused on... (some introduction here).
 
+*** Quick braindump of some changes ***
+
+ * SimpleVolume is now PagedVolume (slightly slower but can go larger).
+ * MarchingCubesSurfaceExtractor class is now a free function extractMarchingCubesSurface()
+ * Meshes are more templatized (e.g. on IndexType) and extracted meshes are encoded to save space. A 'decode' function is provided for these (or you can do it on the GPU).
+ * Generally more templatization - you will want to use a lot of the 'auto' keyword to stay sane.
+ * MarchingCubesController class gives more control over extraction process, but defaults should be fine for primative voxel types.
+ * Requires VS2013 on Windows (GCC 4.7/Clang should be ok).
+ * Support for 'WrapModes' when accessing outside volumes but I think these have bought a performance impact.
+ * Documentation is as poor (or wrong) as ever but all tests and examples work.
+ * New Array class is much faster
+
+*** End of braindump ***
+
+
 This line was added just for testing.
 
 Voxel access
