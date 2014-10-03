@@ -454,10 +454,12 @@ namespace PolyVox
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
-					m_pRecentlyUsedChunks.erase(Vector3DInt32(x, y, z)); m_pLastAccessedChunk = 0;
+					m_pRecentlyUsedChunks.erase(Vector3DInt32(x, y, z));
 				}
 			}
 		}
+
+		m_pLastAccessedChunk = nullptr;
 
 		// We might now have so null pointers in the 'all chunks' list so clean them up.
 		purgeNullPtrsFromAllChunks();
@@ -482,7 +484,7 @@ namespace PolyVox
 
 		m_uTimestamper = 0;
 		m_v3dLastAccessedChunkPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null;
-		m_pLastAccessedChunk = 0;
+		m_pLastAccessedChunk = nullptr;
 
 		//Compute the chunk side length
 		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
