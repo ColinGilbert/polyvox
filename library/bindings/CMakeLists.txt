@@ -19,7 +19,7 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-option(ENABLE_BINDINGS "Build bindings" ON)
+option(ENABLE_BINDINGS "Build bindings" OFF) #Off by default
 if(ENABLE_BINDINGS)
 	find_package(SWIG)
 	mark_as_advanced(SWIG_DIR SWIG_VERSION)
