@@ -40,11 +40,11 @@ namespace PolyVox
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
+		,m_previousSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
+		,m_currentSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
 		,m_bMergeQuads(bMergeQuads)
 		,m_eWrapMode(eWrapMode)
 		,m_tBorderValue(tBorderValue)
-		,m_previousSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
-		,m_currentSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
 	{
 		m_funcIsQuadNeededCallback = isQuadNeeded;
 
