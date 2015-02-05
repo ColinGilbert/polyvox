@@ -58,9 +58,9 @@ namespace PolyVox
 	public:
 
 		/// A Region with the lower corner set as low as possible and the upper corner set as high as possible.
-		static const Region MaxRegion;
+		static Region MaxRegion();
 		/// A Region with the lower corner set as high as possible and the upper corner set as low as possible.
-		static const Region InvertedRegion;
+		static Region InvertedRegion();
 
 		/// Constructor
 		Region();
@@ -457,5 +457,7 @@ namespace PolyVox
 		m_iUpperZ = v3dUpperCorner.getZ();
 	}
 }
+
+#include "PolyVoxCore/Region.inl"
 
 #endif

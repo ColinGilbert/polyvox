@@ -25,7 +25,6 @@ PROJECT(PolyVoxCore)
 #Projects source files
 SET(CORE_SRC_FILES
 	source/AStarPathfinder.cpp
-	source/Region.cpp
 )
 
 #Projects headers files
@@ -71,6 +70,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/Raycast.h
 	include/PolyVoxCore/Raycast.inl
 	include/PolyVoxCore/Region.h
+	include/PolyVoxCore/Region.inl
 	include/PolyVoxCore/SimpleVolume.h
 	include/PolyVoxCore/Vector.h
 	include/PolyVoxCore/Vector.inl

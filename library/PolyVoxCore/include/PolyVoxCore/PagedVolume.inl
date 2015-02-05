@@ -52,7 +52,7 @@ namespace PolyVox
 		{
 			// If the user is creating a vast (almost infinite) volume then we can bet they will be
 			// expecting a high memory usage and will want a fair number of chunks to play around with.
-			if (regValid == Region::MaxRegion)
+			if (regValid == Region::MaxRegion())
 			{
 				m_uChunkCountLimit = 1024;
 			}

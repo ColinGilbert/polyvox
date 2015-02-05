@@ -21,8 +21,6 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/Region.h"
-
 #include <algorithm>
 #include <limits>
 
@@ -30,29 +28,31 @@ namespace PolyVox
 {
 	/**
 	 */
-	const Region Region::MaxRegion
-	(
-		Vector3DInt32((std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)()),
-		Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)())
-	);
+	inline Region Region::MaxRegion()
+	{
+		return Region(
+			(std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(),
+			(std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)());
+	}
 
 	/**
 	 * This Region is not considered valid as defined by isValid(). It's main application
 	 * is to initialise a Region to this value and then() accumulate positions. The result
 	 * of this will be a Region which encompasses all positions specified.
 	 */
-	const Region Region::InvertedRegion
-	(
-		Vector3DInt32((std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)()),
-		Vector3DInt32((std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)())
-	);
+	inline Region Region::InvertedRegion()
+	{
+		return Region(
+			(std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(), (std::numeric_limits<int32_t>::max)(),
+			(std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)(), (std::numeric_limits<int32_t>::min)());
+	}
 
 	/**
 	 * \param iX The 'x' component of the position to accumulate.
 	 * \param iY The 'y' component of the position to accumulate.
 	 * \param iZ The 'z' component of the position to accumulate.
 	 */
-	void Region::accumulate(int32_t iX, int32_t iY, int32_t iZ)
+	inline void Region::accumulate(int32_t iX, int32_t iY, int32_t iZ)
 	{
 		m_iLowerX = ((std::min)(m_iLowerX, iX));
 		m_iLowerY = ((std::min)(m_iLowerY, iY));
@@ -65,7 +65,7 @@ namespace PolyVox
 	/**
 	 * \param v3dPos The position to accumulate.
 	 */
-	void Region::accumulate(const Vector3DInt32& v3dPos)
+	inline void Region::accumulate(const Vector3DInt32& v3dPos)
 	{
 		accumulate(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
@@ -77,7 +77,7 @@ namespace PolyVox
 	 * \param reg The Region to accumulate. This must be valid as defined by the isValid() function.
 	 * \sa isValid()
 	 */
-	void Region::accumulate(const Region& reg)
+	inline void Region::accumulate(const Region& reg)
 	{
 		if(!reg.isValid())
 		{
@@ -95,7 +95,7 @@ namespace PolyVox
 	/**
 	 * Constructs a Region and clears all extents to zero.
 	 */
-	Region::Region()
+	inline Region::Region()
 		:m_iLowerX(0)
 		,m_iLowerY(0)
 		,m_iLowerZ(0)
@@ -110,7 +110,7 @@ namespace PolyVox
 	 * \param v3dLowerCorner The desired lower corner of the Region.
 	 * \param v3dUpperCorner The desired upper corner of the Region.
 	 */
-	Region::Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner)
+	inline Region::Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner)
 		:m_iLowerX(v3dLowerCorner.getX())
 		,m_iLowerY(v3dLowerCorner.getY())
 		,m_iLowerZ(v3dLowerCorner.getZ())
@@ -129,7 +129,7 @@ namespace PolyVox
 	 * \param iUpperY The desired upper 'y' extent of the Region.
 	 * \param iUpperZ The desired upper 'z' extent of the Region.
 	 */
-	Region::Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ)
+	inline Region::Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ)
 		:m_iLowerX(iLowerX)
 		,m_iLowerY(iLowerY)
 		,m_iLowerZ(iLowerZ)
@@ -145,7 +145,7 @@ namespace PolyVox
 	 * \return true if the Regions match.
 	 * \sa operator!=
 	 */
-    bool Region::operator==(const Region& rhs) const
+	inline bool Region::operator==(const Region& rhs) const
     {
 		return ((m_iLowerX == rhs.m_iLowerX) && (m_iLowerY == rhs.m_iLowerY) && (m_iLowerZ == rhs.m_iLowerZ)
 			&&  (m_iUpperX == rhs.m_iUpperX) && (m_iUpperY == rhs.m_iUpperY) && (m_iUpperZ == rhs.m_iUpperZ));
@@ -157,7 +157,7 @@ namespace PolyVox
      *  \return true if the Regions are different.
      *  \sa operator==
 	 */
-    bool Region::operator!=(const Region& rhs) const
+	inline bool Region::operator!=(const Region& rhs) const
     {
 		return !(*this == rhs);
     }
@@ -171,7 +171,7 @@ namespace PolyVox
 	 *  \param fZ The 'z' position of the point to test.
 	 *  \param boundary The desired boundary value.
 	 */
-	bool Region::containsPoint(float fX, float fY, float fZ, float boundary) const
+	inline bool Region::containsPoint(float fX, float fY, float fZ, float boundary) const
 	{
 		return (fX <= m_iUpperX - boundary)
 			&& (fY <= m_iUpperY - boundary)
@@ -188,7 +188,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
+	inline bool Region::containsPoint(const Vector3DFloat& pos, float boundary) const
 	{
 		return containsPoint(pos.getX(), pos.getY(), pos.getZ(), boundary);
 	}
@@ -202,7 +202,7 @@ namespace PolyVox
 	 *  \param iZ The 'z' position of the point to test.
 	 *  \param boundary The desired boundary value.
 	 */
-	bool Region::containsPoint(int32_t iX, int32_t iY, int32_t iZ, uint8_t boundary) const
+	inline bool Region::containsPoint(int32_t iX, int32_t iY, int32_t iZ, uint8_t boundary) const
 	{
 		return (iX <= m_iUpperX - boundary)
 			&& (iY <= m_iUpperY - boundary) 
@@ -219,7 +219,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPoint(const Vector3DInt32& pos, uint8_t boundary) const
+	inline bool Region::containsPoint(const Vector3DInt32& pos, uint8_t boundary) const
 	{
 		return containsPoint(pos.getX(), pos.getY(), pos.getZ(), boundary);
 	}
@@ -231,7 +231,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInX(float pos, float boundary) const
+	inline bool Region::containsPointInX(float pos, float boundary) const
 	{
 		return (pos <= m_iUpperX - boundary)
 			&& (pos >= m_iLowerX + boundary);
@@ -244,7 +244,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInX(int32_t pos, uint8_t boundary) const
+	inline bool Region::containsPointInX(int32_t pos, uint8_t boundary) const
 	{
 		return (pos <= m_iUpperX - boundary)
 			&& (pos >= m_iLowerX + boundary);
@@ -257,7 +257,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInY(float pos, float boundary) const
+	inline bool Region::containsPointInY(float pos, float boundary) const
 	{
 		return (pos <= m_iUpperY - boundary)
 			&& (pos >= m_iLowerY + boundary);
@@ -270,7 +270,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInY(int32_t pos, uint8_t boundary) const
+	inline bool Region::containsPointInY(int32_t pos, uint8_t boundary) const
 	{
 		return (pos <= m_iUpperY - boundary) 
 			&& (pos >= m_iLowerY + boundary);
@@ -283,7 +283,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInZ(float pos, float boundary) const
+	inline bool Region::containsPointInZ(float pos, float boundary) const
 	{
 		return (pos <= m_iUpperZ - boundary)
 			&& (pos >= m_iLowerZ + boundary);
@@ -296,7 +296,7 @@ namespace PolyVox
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
-	bool Region::containsPointInZ(int32_t pos, uint8_t boundary) const
+	inline bool Region::containsPointInZ(int32_t pos, uint8_t boundary) const
 	{
 		return (pos <= m_iUpperZ - boundary)
 			&& (pos >= m_iLowerZ + boundary);
@@ -309,7 +309,7 @@ namespace PolyVox
 	 *  \param reg The region to test.
 	 *  \param boundary The desired boundary value.
 	 */
-	bool Region::containsRegion(const Region& reg, uint8_t boundary) const
+	inline bool Region::containsRegion(const Region& reg, uint8_t boundary) const
 	{
 		return (reg.m_iUpperX <= m_iUpperX - boundary)
 			&& (reg.m_iUpperY <= m_iUpperY - boundary) 
@@ -324,7 +324,7 @@ namespace PolyVox
 	 * of this Region and the one it was cropped to.
 	 * \param other The Region to crop to.
 	 */
-	void Region::cropTo(const Region& other)
+	inline void Region::cropTo(const Region& other)
 	{
 		m_iLowerX = ((std::max)(m_iLowerX, other.m_iLowerX));
 		m_iLowerY = ((std::max)(m_iLowerY, other.m_iLowerY));
@@ -339,7 +339,7 @@ namespace PolyVox
 	 * is possible but you should prefer the shrink() function for clarity.
 	 * \param iAmount The amount to grow by.
 	 */
-	void Region::grow(int32_t iAmount)
+	inline void Region::grow(int32_t iAmount)
 	{
 		m_iLowerX -= iAmount;
 		m_iLowerY -= iAmount;
@@ -357,7 +357,7 @@ namespace PolyVox
 	 * \param iAmountY The amount to grow by in 'y'.
 	 * \param iAmountZ The amount to grow by in 'z'.
 	 */
-	void Region::grow(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	inline void Region::grow(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX -= iAmountX;
 		m_iLowerY -= iAmountY;
@@ -373,14 +373,14 @@ namespace PolyVox
 	 * is possible but you should prefer the shrink() function for clarity.
 	 * \param v3dAmount The amount to grow by (one component for each direction).
 	 */
-	void Region::grow(const Vector3DInt32& v3dAmount)
+	inline void Region::grow(const Vector3DInt32& v3dAmount)
 	{
 		grow(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
 
 	/**
 	 */
-	bool Region::isValid(void) const
+	inline bool Region::isValid(void) const
 	{
 		return (m_iUpperX >= m_iLowerX) && (m_iUpperY >= m_iLowerY) && (m_iUpperZ >= m_iLowerZ);
 	}
@@ -390,7 +390,7 @@ namespace PolyVox
 	 * \param iAmountY The amount to move the Region by in 'y'.
 	 * \param iAmountZ The amount to move the Region by in 'z'.
 	 */
-	void Region::shift(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	inline void Region::shift(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		shiftLowerCorner(iAmountX, iAmountY, iAmountZ);
 		shiftUpperCorner(iAmountX, iAmountY, iAmountZ);
@@ -399,7 +399,7 @@ namespace PolyVox
 	/**
 	 * \param v3dAmount The amount to move the Region by.
 	 */
-	void Region::shift(const Vector3DInt32& v3dAmount)
+	inline void Region::shift(const Vector3DInt32& v3dAmount)
 	{
 		shiftLowerCorner(v3dAmount);
 		shiftUpperCorner(v3dAmount);
@@ -410,7 +410,7 @@ namespace PolyVox
 	 * \param iAmountY The amount to move the lower corner by in 'y'.
 	 * \param iAmountZ The amount to move the lower corner by in 'z'.
 	 */
-	void Region::shiftLowerCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	inline void Region::shiftLowerCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX += iAmountX;
 		m_iLowerY += iAmountY;
@@ -420,7 +420,7 @@ namespace PolyVox
 	/**
 	 * \param v3dAmount The amount to move the lower corner by.
 	 */
-	void Region::shiftLowerCorner(const Vector3DInt32& v3dAmount)
+	inline void Region::shiftLowerCorner(const Vector3DInt32& v3dAmount)
 	{
 		shiftLowerCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
@@ -430,7 +430,7 @@ namespace PolyVox
 	 * \param iAmountY The amount to move the upper corner by in 'y'.
 	 * \param iAmountZ The amount to move the upper corner by in 'z'.
 	 */
-	void Region::shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	inline void Region::shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iUpperX += iAmountX;
 		m_iUpperY += iAmountY;
@@ -440,7 +440,7 @@ namespace PolyVox
 	/**
 	 * \param v3dAmount The amount to move the upper corner by.
 	 */
-	void Region::shiftUpperCorner(const Vector3DInt32& v3dAmount)
+	inline void Region::shiftUpperCorner(const Vector3DInt32& v3dAmount)
 	{
 		shiftUpperCorner(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
@@ -450,7 +450,7 @@ namespace PolyVox
 	 * is possible but you should prefer the grow() function for clarity.
 	 * \param iAmount The amount to shrink by.
 	 */
-	void Region::shrink(int32_t iAmount)
+	inline void Region::shrink(int32_t iAmount)
 	{
 		m_iLowerX += iAmount;
 		m_iLowerY += iAmount;
@@ -468,7 +468,7 @@ namespace PolyVox
 	 * \param iAmountY The amount to shrink by in 'y'.
 	 * \param iAmountZ The amount to shrink by in 'z'.
 	 */
-	void Region::shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
+	inline void Region::shrink(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ)
 	{
 		m_iLowerX += iAmountX;
 		m_iLowerY += iAmountY;
@@ -484,7 +484,7 @@ namespace PolyVox
 	 * is possible but you should prefer the grow() function for clarity.
 	 * \param v3dAmount The amount to shrink by (one component for each direction).
 	 */
-	void Region::shrink(const Vector3DInt32& v3dAmount)
+	inline void Region::shrink(const Vector3DInt32& v3dAmount)
 	{
 		shrink(v3dAmount.getX(), v3dAmount.getY(), v3dAmount.getZ());
 	}
@@ -492,8 +492,7 @@ namespace PolyVox
 	/**
 	 * This function only returns true if the regions are really intersecting and not simply touching.
 	 */
-
-	bool intersects(const Region& a, const Region& b)
+	inline bool intersects(const Region& a, const Region& b)
 	{
 		// No intersection if seperated along an axis.
 		if(a.getUpperX() < b.getLowerX() || a.getLowerX() > b.getUpperX()) return false;
@@ -510,7 +509,7 @@ namespace PolyVox
      * \param region The Region to write to the stream.
      * \return A reference to the output stream to allow chaining.
      */
-	std::ostream& operator<<(std::ostream& os, const Region& region)
+	inline std::ostream& operator<<(std::ostream& os, const Region& region)
     {
 		os << "(" << region.getLowerX() << "," << region.getLowerY() << "," << region.getLowerZ() <<
 			") to (" << region.getUpperX() << "," << region.getUpperY() << "," << region.getUpperZ() << ")";

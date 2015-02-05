@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	PerlinNoisePager* pager = new PerlinNoisePager();
-	PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion, pager, 64);
+	PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion(), pager, 64);
 	volData.setMemoryUsageLimit(8 * 1024 * 1024); // 8Mb
 
 	//createSphereInVolume(volData, 30);
