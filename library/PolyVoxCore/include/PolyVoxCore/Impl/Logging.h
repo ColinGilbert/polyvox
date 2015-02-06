@@ -70,10 +70,17 @@ namespace PolyVox
 
 	namespace Impl
 	{
-		Logger*& getLoggerInstance();
+		inline Logger*& getLoggerInstance()
+		{
+			static Logger* s_pLogger = new DefaultLogger;
+			return s_pLogger;
+		}
 	}
 
-	void setLogger(Logger* pLogger);
+	inline void setLogger(Logger* pLogger)
+	{
+		Impl::getLoggerInstance() = pLogger;
+	}
 }
 
 #ifdef POLYVOX_LOG_TRACE_ENABLED

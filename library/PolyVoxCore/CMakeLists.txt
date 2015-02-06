@@ -83,7 +83,7 @@ SET(CORE_INC_FILES
 
 SET(IMPL_SRC_FILES
 	#source/Impl/ErrorHandling.cpp
-	source/Impl/Logging.cpp
+	#source/Impl/Logging.cpp
 	#source/Impl/MarchingCubesTables.cpp
 	#source/Impl/RandomUnitVectors.cpp
 	#source/Impl/RandomVectors.cpp
