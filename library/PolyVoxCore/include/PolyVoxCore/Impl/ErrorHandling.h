@@ -155,8 +155,49 @@ freely, subject to the following restrictions:
 	{
 		typedef void (*ThrowHandler)(std::exception& e, const char* file, int line);
 
-		ThrowHandler getThrowHandler();
-		void setThrowHandler(ThrowHandler newHandler);
+		inline void defaultThrowHandler(std::exception& e, const char* file, int line)
+		{
+			std::stringstream ss; \
+				ss << "\n"; \
+				ss << "    PolyVox exception thrown!"; \
+				ss << "    ========================="; \
+				ss << "    PolyVox has tried to throw an exception but it was built without support"; \
+				ss << "    for exceptions. In this scenario PolyVox will call a 'throw handler'"; \
+				ss << "    and this message is being printed by the default throw handler."; \
+				ss << "\n"; \
+				ss << "    If you don't want to enable exceptions then you should try to determine why"; \
+				ss << "    this exception was thrown and make sure it doesn't happen again. If it was"; \
+				ss << "    due to something like an invalid argument to a function then you should be"; \
+				ss << "    able to fix it quite easily by validating parameters as appropriate. More"; \
+				ss << "    complex exception scenarios (out of memory, etc) might be harder to fix and"; \
+				ss << "    you should replace this default handler with something which is more"; \
+				ss << "    meaningful to your users."; \
+				ss << "\n"; \
+				ss << "    Exception details"; \
+				ss << "    -----------------"; \
+				ss << "    Line:    " << line; \
+				ss << "    File:    " << file; \
+				ss << "    Message: " << e.what(); \
+				ss << "\n"; \
+				PolyVox::Impl::getLoggerInstance()->logFatalMessage(ss.str()); \
+				POLYVOX_HALT(); \
+		}
+
+		inline ThrowHandler& getThrowHandlerInstance()
+		{
+			static ThrowHandler s_fThrowHandler = &defaultThrowHandler;
+			return s_fThrowHandler;
+		}
+
+		inline ThrowHandler getThrowHandler()
+		{
+			return getThrowHandlerInstance();
+		}
+
+		inline void setThrowHandler(ThrowHandler fNewHandler)
+		{
+			getThrowHandlerInstance() = fNewHandler;
+		}
 	}
 
 	#define POLYVOX_THROW_IF(condition, type, message) \
