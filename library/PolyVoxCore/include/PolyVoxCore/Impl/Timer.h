@@ -26,33 +26,47 @@ freely, subject to the following restrictions:
 
 #include <cstdint>
 
-#ifdef _MSC_VER // Don't worry about the exact version, as long as this is defied.
-#include <Windows.h>
-#else
 #include <chrono>
-#endif //_MSC_VER
 
 namespace PolyVox
 {
 	class Timer
 	{
 	public:
-		Timer(bool bAutoStart = true);
+		Timer(bool bAutoStart = true)
+		{
+			if (bAutoStart)
+			{
+				start();
+			}
+		}
 		
-		void start(void);
+		void start(void)
+		{
+			m_start = clock::now();
+		}
 		
-		float elapsedTimeInSeconds(void);
-		uint32_t elapsedTimeInMilliSeconds(void);
-		uint32_t elapsedTimeInMicroSeconds(void);
+		float elapsedTimeInSeconds(void)
+		{
+			std::chrono::duration<float> elapsed_seconds = clock::now() - m_start;
+			return elapsed_seconds.count();
+		}
+
+		uint32_t elapsedTimeInMilliSeconds(void)
+		{
+			std::chrono::duration<float, std::milli> elapsed_milliseconds = clock::now() - m_start;
+			return elapsed_milliseconds.count();
+		}
+
+		uint32_t elapsedTimeInMicroSeconds(void)
+		{
+			std::chrono::duration<float, std::micro> elapsed_microseconds = clock::now() - m_start;
+			return elapsed_microseconds.count();
+		}
 		
 	private:
-#if defined(_MSC_VER)
-		double m_fPCFreq;
-		__int64 m_iStartTime;
-#else //_MSC_VER
 		typedef std::chrono::system_clock clock;
 		std::chrono::time_point<clock> m_start;
-#endif //_MSC_VER
 	};
 }
 

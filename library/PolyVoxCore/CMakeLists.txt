@@ -87,7 +87,7 @@ SET(IMPL_SRC_FILES
 	#source/Impl/MarchingCubesTables.cpp
 	#source/Impl/RandomUnitVectors.cpp
 	#source/Impl/RandomVectors.cpp
-	source/Impl/Timer.cpp
+	#source/Impl/Timer.cpp
 	source/Impl/Utility.cpp
 )
 
