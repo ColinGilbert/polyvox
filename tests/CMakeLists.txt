@@ -29,7 +29,7 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	QT4_WRAP_CPP(test_moc_SRCS ${headerfile})
 	LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR} ${PolyVoxUtil_BINARY_DIR})
 	ADD_EXECUTABLE(${executablename} ${sourcefile} ${test_moc_SRCS})
-	TARGET_LINK_LIBRARIES(${executablename} PolyVoxCore PolyVoxUtil ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
+	TARGET_LINK_LIBRARIES(${executablename} PolyVoxUtil ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 	#HACK. This is needed since everything is built in the base dir in Windows. As of 2.8 we should change this.
 	IF(WIN32)
 		SET(LATEST_TEST ${EXECUTABLE_OUTPUT_PATH}/${executablename})

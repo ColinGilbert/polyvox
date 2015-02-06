@@ -23,9 +23,9 @@
 PROJECT(PolyVoxCore)
 
 #Projects source files
-SET(CORE_SRC_FILES
+#SET(CORE_SRC_FILES
 	#source/AStarPathfinder.cpp
-)
+#)
 
 #Projects headers files
 SET(CORE_INC_FILES
@@ -81,7 +81,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/VoxelFilters.inl
 )
 
-SET(IMPL_SRC_FILES
+#SET(IMPL_SRC_FILES
 	#source/Impl/ErrorHandling.cpp
 	#source/Impl/Logging.cpp
 	#source/Impl/MarchingCubesTables.cpp
@@ -89,7 +89,7 @@ SET(IMPL_SRC_FILES
 	#source/Impl/RandomVectors.cpp
 	#source/Impl/Timer.cpp
 	#source/Impl/Utility.cpp
-)
+#)
 
 SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
@@ -108,57 +108,8 @@ SET(IMPL_INC_FILES
 
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
-SOURCE_GROUP("Source Files" FILES ${CORE_SRC_FILES})
+#SOURCE_GROUP("Source Files" FILES ${CORE_SRC_FILES})
 SOURCE_GROUP("Header Files" FILES ${CORE_INC_FILES})
 
-SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
+#SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
 SOURCE_GROUP("Header Files\\Impl" FILES ${IMPL_INC_FILES})
-
-#Tell CMake the paths
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-#Core
-#Build
-IF(LIBRARY_TYPE STREQUAL "STATIC")
-	ADD_LIBRARY(PolyVoxCore STATIC ${CORE_SRC_FILES} ${CORE_INC_FILES} ${IMPL_SRC_FILES} ${IMPL_INC_FILES})
-	IF(UNIX)
-		SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES COMPILE_FLAGS -fPIC)
-	ENDIF()
-ENDIF()
-IF(LIBRARY_TYPE STREQUAL "DYNAMIC")
-	ADD_LIBRARY(PolyVoxCore SHARED ${CORE_SRC_FILES} ${CORE_INC_FILES} ${IMPL_SRC_FILES} ${IMPL_INC_FILES})
-	SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES COMPILE_FLAGS "-DPOLYVOX_SHARED_EXPORTS")
-ENDIF()
-SET_PROPERTY(TARGET PolyVoxCore PROPERTY FOLDER "Library")
-
-SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES VERSION ${POLYVOX_VERSION} SOVERSION ${POLYVOX_VERSION_MAJOR})
-IF(MSVC)
-		SET_TARGET_PROPERTIES(PolyVoxCore PROPERTIES COMPILE_FLAGS "/W4 /wd4251") #Disable warning on STL exports
-ENDIF(MSVC)
-
-#Install
-IF(WIN32)
-	INSTALL(TARGETS PolyVoxCore
-		RUNTIME DESTINATION PolyVoxCore/bin COMPONENT library
-		LIBRARY DESTINATION PolyVoxCore/lib COMPONENT library
-		ARCHIVE DESTINATION PolyVoxCore/lib COMPONENT library
-	)
-
-	#Install the core header files, including the ones in the Impl subfolder.
-	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
-	
-	#On windows, we also install the debug information. It's unfortunate that we have to hard-code
-	#the 'Debug' part of the path, but CMake doesn't seem to provide a way around this. The best I
-	#found was: http://www.cmake.org/pipermail/cmake/2007-October/016924.html (and it is a bit ugly).
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/Debug/PolyVoxCore.pdb DESTINATION PolyVoxCore/lib CONFIGURATIONS Debug)
-	INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo/PolyVoxCore.pdb DESTINATION PolyVoxCore/lib CONFIGURATIONS RelWithDebInfo)
-ELSE(WIN32)
-	INSTALL(TARGETS PolyVoxCore
-		RUNTIME DESTINATION bin COMPONENT library
-		LIBRARY DESTINATION lib COMPONENT library
-		ARCHIVE DESTINATION lib COMPONENT library
-	)
-
-	#Install the core header files, including the ones in the Impl subfolder.
-	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
-ENDIF(WIN32)
