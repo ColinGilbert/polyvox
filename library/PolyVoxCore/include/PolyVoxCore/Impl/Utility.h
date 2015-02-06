@@ -30,14 +30,48 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	POLYVOX_API uint8_t logBase2(uint32_t uInput);
-	POLYVOX_API bool isPowerOf2(uint32_t uInput);
+	inline bool isPowerOf2(uint32_t uInput)
+	{
+		if (uInput == 0)
+			return false;
+		else
+			return ((uInput & (uInput - 1)) == 0);
+	}
 
-	int32_t roundTowardsNegInf(float r);
-	int32_t roundToInteger(float r);
-	template <typename Type>
-	Type clamp(const Type& value, const Type& low, const Type& high);
-	uint32_t upperPowerOfTwo(uint32_t v);
+	//Note: this function only works for inputs which are a power of two and not zero
+	//If this is not the case then the output is undefined.
+	inline uint8_t logBase2(uint32_t uInput)
+	{
+		//Release mode validation
+		if (uInput == 0)
+		{
+			POLYVOX_THROW(std::invalid_argument, "Cannot compute the log of zero.");
+		}
+		if (!isPowerOf2(uInput))
+		{
+			POLYVOX_THROW(std::invalid_argument, "Input must be a power of two in order to compute the log.");
+		}
+
+		uint32_t uResult = 0;
+		while ((uInput >> uResult) != 0)
+		{
+			++uResult;
+		}
+		return static_cast<uint8_t>(uResult - 1);
+	}
+
+	// http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
+	inline uint32_t upperPowerOfTwo(uint32_t v)
+	{
+		v--;
+		v |= v >> 1;
+		v |= v >> 2;
+		v |= v >> 4;
+		v |= v >> 8;
+		v |= v >> 16;
+		v++;
+		return v;
+	}
 
 	inline int32_t roundTowardsNegInf(float r)
 	{
