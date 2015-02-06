@@ -37,9 +37,43 @@ namespace PolyVox
 	const float sqrt_2 = 1.4143f;
 	const float sqrt_3 = 1.7321f;
 
-	extern const POLYVOX_API Vector3DInt32 arrayPathfinderFaces[6];
-	extern const POLYVOX_API Vector3DInt32 arrayPathfinderEdges[12];
-	extern const POLYVOX_API Vector3DInt32 arrayPathfinderCorners[8];
+	const Vector3DInt32 arrayPathfinderFaces[6] =
+	{
+		Vector3DInt32(0, 0, -1),
+		Vector3DInt32(0, 0, +1),
+		Vector3DInt32(0, -1, 0),
+		Vector3DInt32(0, +1, 0),
+		Vector3DInt32(-1, 0, 0),
+		Vector3DInt32(+1, 0, 0)
+	};
+
+	const Vector3DInt32 arrayPathfinderEdges[12] =
+	{
+		Vector3DInt32(0, -1, -1),
+		Vector3DInt32(0, -1, +1),
+		Vector3DInt32(0, +1, -1),
+		Vector3DInt32(0, +1, +1),
+		Vector3DInt32(-1, 0, -1),
+		Vector3DInt32(-1, 0, +1),
+		Vector3DInt32(+1, 0, -1),
+		Vector3DInt32(+1, 0, +1),
+		Vector3DInt32(-1, -1, 0),
+		Vector3DInt32(-1, +1, 0),
+		Vector3DInt32(+1, -1, 0),
+		Vector3DInt32(+1, +1, 0)
+	};
+
+	const Vector3DInt32 arrayPathfinderCorners[8] =
+	{
+		Vector3DInt32(-1, -1, -1),
+		Vector3DInt32(-1, -1, +1),
+		Vector3DInt32(-1, +1, -1),
+		Vector3DInt32(-1, +1, +1),
+		Vector3DInt32(+1, -1, -1),
+		Vector3DInt32(+1, -1, +1),
+		Vector3DInt32(+1, +1, -1),
+		Vector3DInt32(+1, +1, +1)
+	};
 
 	/// This function provides the default method for checking whether a given voxel
 	/// is valid for the path computed by the AStarPathfinder.

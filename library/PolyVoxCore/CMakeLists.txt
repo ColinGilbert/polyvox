@@ -24,7 +24,7 @@ PROJECT(PolyVoxCore)
 
 #Projects source files
 SET(CORE_SRC_FILES
-	source/AStarPathfinder.cpp
+	#source/AStarPathfinder.cpp
 )
 
 #Projects headers files
