@@ -23,12 +23,12 @@ freely, subject to the following restrictions:
 
 #include "TestCubicSurfaceExtractor.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/Material.h"
-#include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/PagedVolume.h"
-#include "PolyVoxCore/CubicSurfaceExtractor.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/Material.h"
+#include "PolyVox/MaterialDensityPair.h"
+#include "PolyVox/RawVolume.h"
+#include "PolyVox/PagedVolume.h"
+#include "PolyVox/CubicSurfaceExtractor.h"
 
 #include <QtTest>
 

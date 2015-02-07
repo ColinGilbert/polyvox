@@ -23,9 +23,9 @@ freely, subject to the following restrictions:
 
 #include "testvolume.h"
 
-#include "PolyVoxCore/FilePager.h"
-#include "PolyVoxCore/PagedVolume.h"
-#include "PolyVoxCore/RawVolume.h"
+#include "PolyVox/FilePager.h"
+#include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 
 #include <QtGlobal>
 #include <QtTest>

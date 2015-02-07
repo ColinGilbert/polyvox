@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 #include "TestPicking.h"
 
-#include "PolyVoxCore/Picking.h"
-#include "PolyVoxCore/PagedVolume.h"
+#include "PolyVox/Picking.h"
+#include "PolyVox/PagedVolume.h"
 
 #include <QtTest>
 

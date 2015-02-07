@@ -39,8 +39,7 @@ add_definitions(-DGLEW_STATIC)
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${GLEW_SOURCE_DIR})
-LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ${GLEW_SOURCE_DIR})
 
 #This will include the shader files inside the compiled binary
 QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
@@ -53,7 +52,7 @@ ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(SmoothLODExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(SmoothLODExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY} PolyVoxCore)
+TARGET_LINK_LIBRARIES(SmoothLODExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 SET_PROPERTY(TARGET SmoothLODExample PROPERTY FOLDER "Examples")
 
 configure_file(../common/example.vert example.vert COPYONLY)
@@ -67,11 +66,4 @@ IF(WIN32)
 		ARCHIVE DESTINATION Examples/OpenGL/lib
 		COMPONENT example
 	)
-
-	#.dlls should be installed in shared builds.
-	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../release/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
-	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../release/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
-	
-	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
-	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
 ENDIF(WIN32)

@@ -23,8 +23,8 @@ freely, subject to the following restrictions:
 
 #include "TestAmbientOcclusionGenerator.h"
 
-#include "PolyVoxCore/AmbientOcclusionCalculator.h"
-#include "PolyVoxCore/PagedVolume.h"
+#include "PolyVox/AmbientOcclusionCalculator.h"
+#include "PolyVox/PagedVolume.h"
 
 #include <QtTest>
 

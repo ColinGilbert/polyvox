@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "TestRegion.h"
 
-#include "PolyVoxCore/Region.h"
+#include "PolyVox/Region.h"
 
 #include <QtTest>
 

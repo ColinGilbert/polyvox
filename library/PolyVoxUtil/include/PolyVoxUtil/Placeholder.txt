@@ -1,1 +1,0 @@
-I don't think Git allows empty directories, so this is just a placeholder until we decide what to do with PolyVoxUtil.

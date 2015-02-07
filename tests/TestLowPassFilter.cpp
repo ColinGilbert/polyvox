@@ -23,9 +23,9 @@ freely, subject to the following restrictions:
 
 #include "TestLowPassFilter.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/LowPassFilter.h"
-#include "PolyVoxCore/RawVolume.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/LowPassFilter.h"
+#include "PolyVox/RawVolume.h"
 
 #include <QtTest>
 

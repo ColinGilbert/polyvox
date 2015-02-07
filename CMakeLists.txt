@@ -50,7 +50,7 @@ endif()
 FIND_PACKAGE(Doxygen)
 
 
-ADD_SUBDIRECTORY(library)
+ADD_SUBDIRECTORY(include)
 
 
 
@@ -90,6 +90,7 @@ ENDIF()
 
 ADD_SUBDIRECTORY(documentation)
 
+ADD_SUBDIRECTORY(bindings)
 
 set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
 set_package_properties(Qt4 PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)

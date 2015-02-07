@@ -23,11 +23,11 @@ freely, subject to the following restrictions:
 
 #include "TestRaycast.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/Raycast.h"
-#include "PolyVoxCore/PagedVolume.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/Raycast.h"
+#include "PolyVox/PagedVolume.h"
 
-#include "PolyVoxCore/Impl/RandomUnitVectors.h"
+#include "PolyVox/Impl/RandomUnitVectors.h"
 
 #include <QtTest>
 

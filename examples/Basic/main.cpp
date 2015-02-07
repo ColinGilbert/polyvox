@@ -23,10 +23,10 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/CubicSurfaceExtractor.h"
-#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/Mesh.h"
-#include "PolyVoxCore/PagedVolume.h"
+#include "PolyVox/CubicSurfaceExtractor.h"
+#include "PolyVox/MarchingCubesSurfaceExtractor.h"
+#include "PolyVox/Mesh.h"
+#include "PolyVox/PagedVolume.h"
 
 #include <QApplication>
 

@@ -23,12 +23,12 @@ freely, subject to the following restrictions:
 
 #include "TestVolumeSubclass.h"
 
-#include "PolyVoxCore/Array.h"
+#include "PolyVox/Array.h"
 
-#include "PolyVoxCore/BaseVolume.h"
-#include "PolyVoxCore/CubicSurfaceExtractor.h"
-#include "PolyVoxCore/Material.h"
-#include "PolyVoxCore/Vector.h"
+#include "PolyVox/BaseVolume.h"
+#include "PolyVox/CubicSurfaceExtractor.h"
+#include "PolyVox/Material.h"
+#include "PolyVox/Vector.h"
 
 #include <QtTest>
 

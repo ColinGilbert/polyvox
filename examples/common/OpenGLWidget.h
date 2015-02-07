@@ -24,7 +24,7 @@ distribution.
 #ifndef __BasicExample_OpenGLWidget_H__
 #define __BasicExample_OpenGLWidget_H__
 
-#include "PolyVoxCore/Mesh.h"
+#include "PolyVox/Mesh.h"
 
 #include "glew/glew.h"
 

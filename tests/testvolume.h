@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TestVolume_H__
 #define __PolyVox_TestVolume_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVox/PolyVoxForwardDeclarations.h"
 
 #include <QObject>
 

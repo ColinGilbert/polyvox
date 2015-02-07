@@ -27,9 +27,8 @@
 MACRO(CREATE_TEST headerfile sourcefile executablename)
 	UNSET(test_moc_SRCS) #clear out the MOCs from previous tests
 	QT4_WRAP_CPP(test_moc_SRCS ${headerfile})
-	LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR} ${PolyVoxUtil_BINARY_DIR})
 	ADD_EXECUTABLE(${executablename} ${sourcefile} ${test_moc_SRCS})
-	TARGET_LINK_LIBRARIES(${executablename} PolyVoxCore PolyVoxUtil ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
+	TARGET_LINK_LIBRARIES(${executablename} ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
 	#HACK. This is needed since everything is built in the base dir in Windows. As of 2.8 we should change this.
 	IF(WIN32)
 		SET(LATEST_TEST ${EXECUTABLE_OUTPUT_PATH}/${executablename})
@@ -45,7 +44,7 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	ENDIF()
 ENDMACRO(CREATE_TEST)
 
-INCLUDE_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/include ${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${PolyVoxHeaders_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 
 # Test Template. Copy and paste this template for consistant naming.
