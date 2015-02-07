@@ -50,7 +50,7 @@ endif()
 FIND_PACKAGE(Doxygen)
 
 
-ADD_SUBDIRECTORY(library)
+ADD_SUBDIRECTORY(include)
 
 
 
