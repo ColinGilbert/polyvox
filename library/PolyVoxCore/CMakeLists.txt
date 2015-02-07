@@ -113,3 +113,8 @@ SOURCE_GROUP("Header Files" FILES ${CORE_INC_FILES})
 
 #SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
 SOURCE_GROUP("Header Files\\Impl" FILES ${IMPL_INC_FILES})
+
+# Although we don't build anything for PolyVox, we still add this custom target (which
+# doesn't do anything) so that we can browse the source code from within Visual Studio.
+ADD_CUSTOM_TARGET(PolyVoxCore SOURCES ${CORE_INC_FILES})
+SET_PROPERTY(TARGET PolyVoxCore PROPERTY FOLDER "Library")
