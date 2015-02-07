@@ -116,7 +116,7 @@ IF(WIN32)
 	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
 ELSE(WIN32)
 
-	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+	INSTALL(DIRECTORY PolyVox/ DESTINATION include/PolyVox COMPONENT development PATTERN "*.git*" EXCLUDE)
 ENDIF(WIN32)
 
 #Set up install paths e.g. for PolyVoxConfig.cmake
