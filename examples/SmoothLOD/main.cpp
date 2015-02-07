@@ -23,12 +23,12 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/Mesh.h"
-#include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/PagedVolume.h"
-#include "PolyVoxCore/VolumeResampler.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/MarchingCubesSurfaceExtractor.h"
+#include "PolyVox/Mesh.h"
+#include "PolyVox/RawVolume.h"
+#include "PolyVox/PagedVolume.h"
+#include "PolyVox/VolumeResampler.h"
 
 #include <QApplication>
 

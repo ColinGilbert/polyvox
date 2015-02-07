@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "Shapes.h"
 
-#include "PolyVoxCore/MaterialDensityPair.h"
+#include "PolyVox/MaterialDensityPair.h"
 
 using namespace PolyVox;
 

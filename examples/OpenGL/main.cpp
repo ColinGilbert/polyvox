@@ -21,13 +21,13 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVoxCore/FilePager.h"
-#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/LowPassFilter.h"
-#include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/Mesh.h"
-#include "PolyVoxCore/Impl/Utility.h"
+#include "PolyVox/FilePager.h"
+#include "PolyVox/MarchingCubesSurfaceExtractor.h"
+#include "PolyVox/MaterialDensityPair.h"
+#include "PolyVox/LowPassFilter.h"
+#include "PolyVox/RawVolume.h"
+#include "PolyVox/Mesh.h"
+#include "PolyVox/Impl/Utility.h"
 
 #include "Shapes.h"
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2010 Matt Williams
+Copyright (c) 2005-2009 David Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -18,25 +18,35 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution.
+    distribution. 	
 *******************************************************************************/
 
-#include "TestRegion.h"
+#ifndef __PolyVox_DefaultIsQuadNeeded_H__
+#define __PolyVox_DefaultIsQuadNeeded_H__
 
-#include "PolyVox/Region.h"
+#include "PolyVox/Impl/TypeDef.h"
 
-#include <QtTest>
+#include <cstdint>
 
-using namespace PolyVox;
-
-void TestRegion::testEquality()
+namespace PolyVox
 {
-	Region reg1(1,2,3,4,5,6);
-	Region reg2(0,0,0,10,20,30);
-	Region reg3(Vector3DInt32(1,2,3), Vector3DInt32(4,5,6));
-
-	QCOMPARE(reg1 != reg2, true);
-	QCOMPARE(reg1 == reg3, true);
+	template<typename VoxelType>
+	class DefaultIsQuadNeeded
+	{
+	public:
+		bool operator()(VoxelType back, VoxelType front, VoxelType& materialToUse)
+		{
+			if((back > 0) && (front == 0))
+			{
+				materialToUse = static_cast<VoxelType>(back);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	};
 }
 
-QTEST_MAIN(TestRegion)
+#endif //__PolyVox_DefaultIsQuadNeeded_H__

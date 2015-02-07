@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2010 Matt Williams
+Copyright (c) 2005-2009 David Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -18,25 +18,34 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution.
+    distribution. 	
 *******************************************************************************/
 
-#include "TestRegion.h"
+#ifndef __PolyVox_Vertex_H__
+#define __PolyVox_Vertex_H__
 
-#include "PolyVox/Region.h"
+#include "Impl/TypeDef.h"
 
-#include <QtTest>
+#include "PolyVox/Vector.h"
 
-using namespace PolyVox;
+#include <bitset>
+#include <vector>
 
-void TestRegion::testEquality()
+namespace PolyVox
 {
-	Region reg1(1,2,3,4,5,6);
-	Region reg2(0,0,0,10,20,30);
-	Region reg3(Vector3DInt32(1,2,3), Vector3DInt32(4,5,6));
+	#ifdef SWIG
+	struct Vertex
+#else
+	template<typename _DataType>
+	struct POLYVOX_API Vertex
+#endif
+	{
+		typedef _DataType DataType;
 
-	QCOMPARE(reg1 != reg2, true);
-	QCOMPARE(reg1 == reg3, true);
+		Vector3DFloat position;
+		Vector3DFloat normal;
+		DataType data;
+	};
 }
 
-QTEST_MAIN(TestRegion)
+#endif // __PolyVox_Vertex_H__

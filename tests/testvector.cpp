@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "testvector.h"
 
-#include "PolyVoxCore/Vector.h"
+#include "PolyVox/Vector.h"
 
 #include <QtTest>
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2010 Matt Williams
+Copyright (c) 2013 Matt Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -21,22 +21,29 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "TestRegion.h"
+#ifndef __PolyVox_Picking_H__
+#define __PolyVox_Picking_H__
 
-#include "PolyVox/Region.h"
+#include "PolyVox/Vector.h"
 
-#include <QtTest>
-
-using namespace PolyVox;
-
-void TestRegion::testEquality()
+namespace PolyVox
 {
-	Region reg1(1,2,3,4,5,6);
-	Region reg2(0,0,0,10,20,30);
-	Region reg3(Vector3DInt32(1,2,3), Vector3DInt32(4,5,6));
-
-	QCOMPARE(reg1 != reg2, true);
-	QCOMPARE(reg1 == reg3, true);
+	/**
+	 * A structure containing the information about a picking operation
+	 */
+	struct PickResult
+	{
+		PickResult() : didHit(false) {}
+		bool didHit; ///< Did the picking operation hit anything
+		Vector3DInt32 hitVoxel; ///< The location of the solid voxel it hit
+		Vector3DInt32 previousVoxel; ///< The location of the voxel before the one it hit
+	};
+	
+	/// Pick the first solid voxel along a vector
+	template<typename VolumeType>
+	PickResult pickVoxel(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, const typename VolumeType::VoxelType& emptyVoxelExample);
 }
 
-QTEST_MAIN(TestRegion)
+#include "PolyVox/Picking.inl"
+
+#endif //__PolyVox_Picking_H__

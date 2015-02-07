@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright (c) 2010 Matt Williams
+Copyright (c) 2005-2009 David Williams
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
@@ -18,25 +18,40 @@ freely, subject to the following restrictions:
     misrepresented as being the original software.
 
     3. This notice may not be removed or altered from any source
-    distribution.
+    distribution. 	
 *******************************************************************************/
 
-#include "TestRegion.h"
+#ifndef __PolyVox_VolumeResampler_H__
+#define __PolyVox_VolumeResampler_H__
 
 #include "PolyVox/Region.h"
 
-#include <QtTest>
-
-using namespace PolyVox;
-
-void TestRegion::testEquality()
+namespace PolyVox
 {
-	Region reg1(1,2,3,4,5,6);
-	Region reg2(0,0,0,10,20,30);
-	Region reg3(Vector3DInt32(1,2,3), Vector3DInt32(4,5,6));
+	template< typename SrcVolumeType, typename DstVolumeType>
+	class VolumeResampler
+	{
+	public:
+		VolumeResampler(SrcVolumeType* pVolSrc, const Region& regSrc, DstVolumeType* pVolDst, const Region& regDst);
 
-	QCOMPARE(reg1 != reg2, true);
-	QCOMPARE(reg1 == reg3, true);
-}
+		void execute();
 
-QTEST_MAIN(TestRegion)
+	private:
+		void resampleSameSize();
+		void resampleArbitrary();
+
+		//Source data
+		SrcVolumeType* m_pVolSrc;
+		Region m_regSrc;
+
+		//Destination data
+		DstVolumeType* m_pVolDst;
+		Region m_regDst;
+	};
+
+}//namespace PolyVox
+
+#include "PolyVox/VolumeResampler.inl"
+
+#endif
+

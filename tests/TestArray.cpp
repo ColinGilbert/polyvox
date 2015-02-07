@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 
 #include "TestArray.h"
 
-#include "PolyVoxCore/Array.h"
+#include "PolyVox/Array.h"
 
 #include <QtTest>
 
