@@ -112,12 +112,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_D
 ADD_CUSTOM_TARGET(PolyVoxCore SOURCES ${CORE_INC_FILES})
 
 #Install the core header files, including the ones in the Impl subfolder.
-IF(WIN32)
-	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
-ELSE(WIN32)
-
-	INSTALL(DIRECTORY PolyVox/ DESTINATION include/PolyVox COMPONENT development PATTERN "*.git*" EXCLUDE)
-ENDIF(WIN32)
+INSTALL(DIRECTORY PolyVox/ DESTINATION include/PolyVox COMPONENT development PATTERN "*.git*" EXCLUDE)
 
 #Set up install paths e.g. for PolyVoxConfig.cmake
 if(WIN32)
