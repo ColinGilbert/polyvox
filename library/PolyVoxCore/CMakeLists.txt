@@ -23,9 +23,9 @@
 PROJECT(PolyVoxCore)
 
 #Projects source files
-#SET(CORE_SRC_FILES
+SET(CORE_SRC_FILES
 	#source/AStarPathfinder.cpp
-#)
+)
 
 #Projects headers files
 SET(CORE_INC_FILES
@@ -81,7 +81,7 @@ SET(CORE_INC_FILES
 	include/PolyVoxCore/VoxelFilters.inl
 )
 
-#SET(IMPL_SRC_FILES
+SET(IMPL_SRC_FILES
 	#source/Impl/ErrorHandling.cpp
 	#source/Impl/Logging.cpp
 	#source/Impl/MarchingCubesTables.cpp
@@ -89,7 +89,7 @@ SET(CORE_INC_FILES
 	#source/Impl/RandomVectors.cpp
 	#source/Impl/Timer.cpp
 	#source/Impl/Utility.cpp
-#)
+)
 
 SET(IMPL_INC_FILES
 	include/PolyVoxCore/Impl/AStarPathfinderImpl.h
@@ -114,7 +114,21 @@ SOURCE_GROUP("Header Files" FILES ${CORE_INC_FILES})
 #SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
 SOURCE_GROUP("Header Files\\Impl" FILES ${IMPL_INC_FILES})
 
+#Tell CMake the paths
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#Core
+
+#Build
 # Although we don't build anything for PolyVox, we still add this custom target (which
 # doesn't do anything) so that we can browse the source code from within Visual Studio.
 ADD_CUSTOM_TARGET(PolyVoxCore SOURCES ${CORE_INC_FILES})
 SET_PROPERTY(TARGET PolyVoxCore PROPERTY FOLDER "Library")
+
+#Install the core header files, including the ones in the Impl subfolder.
+IF(WIN32)
+	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+ELSE(WIN32)
+
+	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+ENDIF(WIN32)
