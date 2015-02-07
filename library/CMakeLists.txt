@@ -25,22 +25,17 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(PolyVox)
 
 add_subdirectory(PolyVoxCore)
-add_subdirectory(PolyVoxUtil)
 
 #Set up install paths e.g. for PolyVoxConfig.cmake
 if(WIN32)
 	set(CONFIG_FILE_DIR "CMake")
 	set(PolyVoxCore_LIBRARY_INSTALL_DIRS "PolyVoxCore/lib")
-	set(PolyVoxUtil_LIBRARY_INSTALL_DIRS "PolyVoxUtil/lib")
 	set(PolyVoxCore_INCLUDE_INSTALL_DIRS "PolyVoxCore/include")
-	set(PolyVoxUtil_INCLUDE_INSTALL_DIRS "PolyVoxUtil/include")
 	set(PolyVox_DOC_INSTALL_DIR "PolyVox/doc")
 else(WIN32)
 	set(CONFIG_FILE_DIR "share/PolyVox/cmake")
 	set(PolyVoxCore_LIBRARY_INSTALL_DIRS "lib")
-	set(PolyVoxUtil_LIBRARY_INSTALL_DIRS "lib")
 	set(PolyVoxCore_INCLUDE_INSTALL_DIRS "include/PolyVoxCore")
-	set(PolyVoxUtil_INCLUDE_INSTALL_DIRS "include/PolyVoxUtil")
 	set(PolyVox_DOC_INSTALL_DIR "share/doc/packages/polyvox")
 endif(WIN32)
 
