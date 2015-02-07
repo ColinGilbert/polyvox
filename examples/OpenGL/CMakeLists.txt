@@ -41,8 +41,7 @@ add_definitions(-DGLEW_STATIC)
 FIND_PACKAGE(OpenGL REQUIRED)
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include ${GLEW_SOURCE_DIR})
-LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ${GLEW_SOURCE_DIR})
 
 #This will include the shader files inside the compiled binary
 QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)

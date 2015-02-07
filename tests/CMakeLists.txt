@@ -44,7 +44,7 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 	ENDIF()
 ENDMACRO(CREATE_TEST)
 
-INCLUDE_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/include ${PolyVox_SOURCE_DIR}/PolyVoxCore/include ${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${PolyVoxHeaders_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 
 # Test Template. Copy and paste this template for consistant naming.

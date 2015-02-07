@@ -22,9 +22,102 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-PROJECT(PolyVox)
+PROJECT(PolyVoxHeaders)
 
-add_subdirectory(PolyVoxCore)
+#Projects headers files
+SET(CORE_INC_FILES
+	PolyVoxCore/AmbientOcclusionCalculator.h
+	PolyVoxCore/AmbientOcclusionCalculator.inl
+	PolyVoxCore/Array.h
+	PolyVoxCore/AStarPathfinder.h
+	PolyVoxCore/AStarPathfinder.inl
+	PolyVoxCore/BaseVolume.h
+	PolyVoxCore/BaseVolume.inl
+	PolyVoxCore/BaseVolumeSampler.inl
+	PolyVoxCore/CubicSurfaceExtractor.h
+	PolyVoxCore/CubicSurfaceExtractor.inl
+	PolyVoxCore/DefaultIsQuadNeeded.h
+	PolyVoxCore/DefaultMarchingCubesController.h
+	PolyVoxCore/Density.h
+	PolyVoxCore/FilePager.h
+	PolyVoxCore/GradientEstimators.h
+	PolyVoxCore/GradientEstimators.inl
+	PolyVoxCore/Interpolation.h
+	PolyVoxCore/IteratorController.h
+	PolyVoxCore/IteratorController.inl
+	PolyVoxCore/LargeVolume.h
+	PolyVoxCore/LowPassFilter.h
+	PolyVoxCore/LowPassFilter.inl
+	PolyVoxCore/MarchingCubesSurfaceExtractor.h
+	PolyVoxCore/MarchingCubesSurfaceExtractor.inl
+	PolyVoxCore/Material.h
+	PolyVoxCore/MaterialDensityPair.h
+	PolyVoxCore/Mesh.h
+	PolyVoxCore/Mesh.inl
+	PolyVoxCore/PagedVolume.h
+	PolyVoxCore/PagedVolume.inl
+	PolyVoxCore/PagedVolumeChunk.inl
+	PolyVoxCore/PagedVolumeSampler.inl
+	PolyVoxCore/PolyVoxForwardDeclarations.h
+	PolyVoxCore/Picking.h
+	PolyVoxCore/Picking.inl
+	PolyVoxCore/RawVolume.h
+	PolyVoxCore/RawVolume.inl
+	PolyVoxCore/RawVolumeSampler.inl
+	PolyVoxCore/Raycast.h
+	PolyVoxCore/Raycast.inl
+	PolyVoxCore/Region.h
+	PolyVoxCore/Region.inl
+	PolyVoxCore/SimpleVolume.h
+	PolyVoxCore/Vector.h
+	PolyVoxCore/Vector.inl
+	PolyVoxCore/Vertex.h
+	PolyVoxCore/VolumeResampler.h
+	PolyVoxCore/VolumeResampler.inl
+	PolyVoxCore/VoxelFilters.h
+	PolyVoxCore/VoxelFilters.inl
+)
+
+SET(IMPL_INC_FILES
+	PolyVoxCore/Impl/AStarPathfinderImpl.h
+    PolyVoxCore/Impl/Config.h
+	PolyVoxCore/Impl/ErrorHandling.h
+	PolyVoxCore/Impl/Logging.h
+	PolyVoxCore/Impl/MarchingCubesTables.h
+	PolyVoxCore/Impl/RandomUnitVectors.h
+	PolyVoxCore/Impl/RandomVectors.h
+	PolyVoxCore/Impl/Timer.h
+	PolyVoxCore/Impl/TypeDef.h
+	PolyVoxCore/Impl/Utility.h
+)
+
+#NOTE: The following line should be uncommented when building shared libs.
+
+#"Sources" and "Headers" are the group names in Visual Studio.
+#They may have other uses too...
+#SOURCE_GROUP("Source Files" FILES ${CORE_SRC_FILES})
+SOURCE_GROUP("Header Files" FILES ${CORE_INC_FILES})
+
+#SOURCE_GROUP("Source Files\\Impl" FILES ${IMPL_SRC_FILES})
+SOURCE_GROUP("Header Files\\Impl" FILES ${IMPL_INC_FILES})
+
+#Tell CMake the paths
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+#Core
+
+#Build
+# Although we don't build anything for PolyVox, we still add this custom target (which
+# doesn't do anything) so that we can browse the source code from within Visual Studio.
+ADD_CUSTOM_TARGET(PolyVoxCore SOURCES ${CORE_INC_FILES})
+
+#Install the core header files, including the ones in the Impl subfolder.
+IF(WIN32)
+	INSTALL(DIRECTORY include DESTINATION PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+ELSE(WIN32)
+
+	INSTALL(DIRECTORY include/ DESTINATION include/PolyVoxCore COMPONENT development PATTERN "*.svn*" EXCLUDE)
+ENDIF(WIN32)
 
 #Set up install paths e.g. for PolyVoxConfig.cmake
 if(WIN32)
