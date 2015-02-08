@@ -23,11 +23,11 @@ freely, subject to the following restrictions:
 
 #include "TestRaycast.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/Raycast.h"
-#include "PolyVoxCore/SimpleVolume.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/Raycast.h"
+#include "PolyVox/PagedVolume.h"
 
-#include "PolyVoxCore/Impl/RandomUnitVectors.h"
+#include "PolyVox/Impl/RandomUnitVectors.h"
 
 #include <QtTest>
 
@@ -47,7 +47,7 @@ public:
 	{
 	}
 
-	bool operator()(const SimpleVolume<int8_t>::Sampler& sampler)
+	bool operator()(const PagedVolume<int8_t>::Sampler& sampler)
 	{
 		m_uVoxelsTouched++;
 
@@ -73,7 +73,7 @@ void TestRaycast::testExecute()
 	const int32_t uVolumeSideLength = 32;
 
 	//Create a hollow volume, with solid sides on x and y but with open ends in z.
-	SimpleVolume<int8_t> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+	PagedVolume<int8_t> volData(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)));
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
 		for (int32_t y = 0; y < uVolumeSideLength; y++)

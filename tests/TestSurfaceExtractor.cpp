@@ -23,10 +23,12 @@ freely, subject to the following restrictions:
 
 #include "TestSurfaceExtractor.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/MaterialDensityPair.h"
-#include "PolyVoxCore/SimpleVolume.h"
-#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/FilePager.h"
+#include "PolyVox/MaterialDensityPair.h"
+#include "PolyVox/RawVolume.h"
+#include "PolyVox/PagedVolume.h"
+#include "PolyVox/MarchingCubesSurfaceExtractor.h"
 
 #include <QtTest>
 
@@ -52,12 +54,12 @@ public:
 
 	float convertToMaterial(float /*voxel*/)
 	{
-		return 1;
+		return 1.0f;
 	}
 
 	float blendMaterials(float /*a*/, float /*b*/, float /*weight*/)
 	{
-		return 1;
+		return 1.0f;
 	}
 
 	float getThreshold(void)
@@ -73,12 +75,6 @@ template<typename VoxelType>
 void writeDensityValueToVoxel(int valueToWrite, VoxelType& voxel)
 {
 	voxel = valueToWrite;
-}
-
-template<>
-void writeDensityValueToVoxel(int valueToWrite, Density8& voxel)
-{
-	voxel.setDensity(valueToWrite);
 }
 
 template<>
@@ -100,129 +96,141 @@ void writeMaterialValueToVoxel(int valueToWrite, MaterialDensityPair88& voxel)
 	voxel.setMaterial(valueToWrite);
 }
 
-// Runs the surface extractor for a given type. 
-template <typename VoxelType>
-void testForType(SurfaceMesh<PositionMaterialNormal>& result)
+template <typename VolumeType>
+VolumeType* createAndFillVolume(void)
 {
-	const int32_t uVolumeSideLength = 32;
+	const int32_t uVolumeSideLength = 64;
+
+	FilePager<typename VolumeType::VoxelType>* pager = new FilePager<typename VolumeType::VoxelType>(".");
 
 	//Create empty volume
-	SimpleVolume<VoxelType> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), pager);
 
+	// Fill
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
 		for (int32_t y = 0; y < uVolumeSideLength; y++)
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				VoxelType voxelValue;
-				//Create a density field which changes throughout the volume.
-				writeDensityValueToVoxel<VoxelType>(x + y + z, voxelValue);
-				//Two different materials in two halves of the volume
-				writeMaterialValueToVoxel<VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
-				volData.setVoxelAt(x, y, z, voxelValue);
+				// Create a density field which changes throughout the volume. It's
+				// zero in the lower corner and increasing as the coordinates increase.
+				typename VolumeType::VoxelType voxelValue;
+				writeDensityValueToVoxel<typename VolumeType::VoxelType>(x + y + z, voxelValue);
+				writeMaterialValueToVoxel<typename VolumeType::VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
+				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}
 	}
 
-	DefaultMarchingCubesController<VoxelType> controller;
-	controller.setThreshold(50);
-	MarchingCubesSurfaceExtractor< SimpleVolume<VoxelType> > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, VoxelType(), controller);
-	extractor.execute();
+	return volData;
 }
 
-void testCustomController(SurfaceMesh<PositionMaterialNormal>& result)
+// From http://stackoverflow.com/a/5289624
+float randomFloat(float a, float b)
 {
-	const int32_t uVolumeSideLength = 32;
+	float random = ((float)rand()) / (float)RAND_MAX;
+	float diff = b - a;
+	float r = random * diff;
+	return a + r;
+}
+
+template <typename VolumeType>
+VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minValue, float maxValue)
+{
+	FilePager<float>* pager = new FilePager<float>(".");
 
 	//Create empty volume
-	SimpleVolume<float> volData(Region(Vector3DInt32(0,0,0), Vector3DInt32(uVolumeSideLength-1, uVolumeSideLength-1, uVolumeSideLength-1)));
+	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), pager);
 
-	for (int32_t z = 0; z < uVolumeSideLength; z++)
+	// Seed generator for consistency between runs.
+	srand(12345);
+
+	// Fill
+	for (int32_t z = 0; z < iVolumeSideLength; z++)
 	{
-		for (int32_t y = 0; y < uVolumeSideLength; y++)
+		for (int32_t y = 0; y < iVolumeSideLength; y++)
 		{
-			for (int32_t x = 0; x < uVolumeSideLength; x++)
+			for (int32_t x = 0; x < iVolumeSideLength; x++)
 			{
-				float voxelValue = x + y + z;
-				volData.setVoxelAt(x, y, z, voxelValue);
+				float voxelValue = randomFloat(minValue, maxValue);
+				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}
 	}
 
-	CustomMarchingCubesController controller;
-	MarchingCubesSurfaceExtractor< SimpleVolume<float>, CustomMarchingCubesController > extractor(&volData, volData.getEnclosingRegion(), &result, WrapModes::Border, 0, controller);
-	extractor.execute();
+	return volData;
 }
 
-void TestSurfaceExtractor::testExecute()
+void TestSurfaceExtractor::testBehaviour()
 {
-	const static uint32_t uExpectedVertices = 4731;
-	const static uint32_t uExpectedIndices = 12810;
-	const static uint32_t uMaterialToCheck = 3000;
-	const static float fExpectedMaterial = 42.0f;
-	const static float fNoMaterial = 1.0f;
+	// These tests apply the Marching Cubes surface extractor to volumes of various voxel types. In addition we sometimes make use of custom controllers
+	// and user-provided meshes to make sure these various combinations work as expected.
+	//
+	// It is also noted that the number of indices and vertices is varying quite significantly based on the voxel type. This seems unexpected, but could
+	// be explained if some overflow is occuring when writing data into the volume, causing volumes of different voxel types to have different distributions.
+	// Of course, the use of a custom controller will also make a significant diference, but this probably does need investigating further in the future.
 
-	SurfaceMesh<PositionMaterialNormal> mesh;
+	// This basic test just uses the default controller and automatically generates a mesh of the appropriate type.
+	auto uintVol = createAndFillVolume< PagedVolume<uint8_t> >();
+	auto uintMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion());
+	QCOMPARE(uintMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(uintMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
+	QCOMPARE(uintMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
+	QCOMPARE(uintMesh.getVertex(100).data, uint8_t(1)); // Not really meaningful for a primative type
 
-	//Run the test for various voxel types.
-	QBENCHMARK {
-		testForType<int8_t>(mesh);
-	}
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
+	// This test makes use of a custom controller
+	auto floatVol = createAndFillVolume< PagedVolume<float> >();
+	CustomMarchingCubesController floatCustomController;
+	auto floatMesh = extractMarchingCubesMesh(floatVol, floatVol->getEnclosingRegion(), floatCustomController);
+	QCOMPARE(floatMesh.getNoOfVertices(), uint32_t(16113)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(floatMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
+	QCOMPARE(floatMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit indices
+	QCOMPARE(floatMesh.getVertex(100).data, float(1.0f)); // Not really meaningful for a primative type
 
-	testForType<uint8_t>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
+	// This test makes use of a user provided mesh. It uses the default controller, but we have to explicitly provide this because C++ won't let us
+	// use a default for the second-to-last parameter but noot use a default for the last parameter.
+	auto intVol = createAndFillVolume< PagedVolume<int8_t> >();
+	Mesh< MarchingCubesVertex< int8_t >, uint16_t > intMesh;
+	extractMarchingCubesMeshCustom(intVol, intVol->getEnclosingRegion(), &intMesh);
+	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
+	QCOMPARE(intMesh.getNoOfIndices(), uint32_t(34041)); // Verifies size of mesh
+	QCOMPARE(intMesh.getIndex(100), uint16_t(29)); // Verifies that we have 16-bit indices
+	QCOMPARE(intMesh.getVertex(100).data, int8_t(1)); // Not really meaningful for a primative type
 
-	testForType<int16_t>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
+	// This test makes use of a user-provided mesh and also a custom controller.
+	auto doubleVol = createAndFillVolume< PagedVolume<double> >();
+	CustomMarchingCubesController doubleCustomController;
+	Mesh< MarchingCubesVertex< double >, uint16_t > doubleMesh;
+	extractMarchingCubesMeshCustom(doubleVol, doubleVol->getEnclosingRegion(), &doubleMesh, doubleCustomController);
+	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(16113)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(doubleMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
+	QCOMPARE(doubleMesh.getIndex(100), uint16_t(26)); // Verifies that we have 32-bit indices
+	QCOMPARE(doubleMesh.getVertex(100).data, double(1.0f)); // Not really meaningful for a primative type
 
-	testForType<uint16_t>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
+	// This test ensures the extractor works on a non-primitive voxel type.
+	auto materialVol = createAndFillVolume< PagedVolume<MaterialDensityPair88> >();
+	auto materialMesh = extractMarchingCubesMesh(materialVol, materialVol->getEnclosingRegion());
+	QCOMPARE(materialMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(materialMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
+	QCOMPARE(materialMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
+	QCOMPARE(materialMesh.getVertex(100).data.getMaterial(), uint16_t(79)); // Verify the data attached to the vertex
+}
 
-	testForType<int32_t>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
+void TestSurfaceExtractor::testEmptyVolumePerformance()
+{
+	auto emptyVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, -2.0f, -1.0f);
+	Mesh< MarchingCubesVertex< float >, uint16_t > emptyMesh;
+	QBENCHMARK{ extractMarchingCubesMeshCustom(emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
+	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
+}
 
-	testForType<uint32_t>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
-
-	testForType<float>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
-
-	testForType<double>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
-
-	testForType<Density8>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
-
-	testForType<MaterialDensityPair88>(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fExpectedMaterial);
-
-	//Test whether the CustomSurfaceExtractor works.
-	testCustomController(mesh);
-	QCOMPARE(mesh.getNoOfVertices(), uExpectedVertices);
-	QCOMPARE(mesh.getNoOfIndices(), uExpectedIndices);
-	QCOMPARE(mesh.getVertices()[uMaterialToCheck].getMaterial(), fNoMaterial);
+void TestSurfaceExtractor::testNoiseVolumePerformance()
+{
+	auto noiseVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, -1.0f, 1.0f);
+	Mesh< MarchingCubesVertex< float >, uint16_t > noiseMesh;
+	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(48967));
 }
 
 QTEST_MAIN(TestSurfaceExtractor)

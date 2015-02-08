@@ -34,6 +34,7 @@ class TestVector: public QObject
 		void testLength();
 		void testDotProduct();
 		void testEquality();
+		void testPerformance();
 };
 
 #endif

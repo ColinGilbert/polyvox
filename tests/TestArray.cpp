@@ -23,11 +23,65 @@ freely, subject to the following restrictions:
 
 #include "TestArray.h"
 
-#include "PolyVoxCore/Array.h"
+#include "PolyVox/Array.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
+
+void TestArray::testCArraySpeed()
+{
+	const int width = 64;
+	const int height = 32;
+	const int depth = 16;
+
+	int cArray[width][height][depth];
+
+	QBENCHMARK
+	{
+		int ct = 1;
+		int expectedTotal = 0;
+		for (int z = 0; z < depth; z++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					cArray[x][y][z] = ct;
+					expectedTotal += cArray[x][y][z];
+					ct++;
+				}
+			}
+		}
+	}
+}
+
+void TestArray::testPolyVoxArraySpeed()
+{
+	const int width = 64;
+	const int height = 32;
+	const int depth = 16;
+
+	Array<3, int> polyvoxArray(width, height, depth);
+
+	QBENCHMARK
+	{
+		int ct = 1;
+		int expectedTotal = 0;
+		for (int z = 0; z < depth; z++)
+		{
+			for (int y = 0; y < height; y++)
+			{
+				for (int x = 0; x < width; x++)
+				{
+					polyvoxArray(x, y, z) = ct;
+					expectedTotal += polyvoxArray(x, y, z);
+					ct++;
+				}
+			}
+		}
+	}
+}
 
 void TestArray::testReadWrite()
 {
@@ -35,7 +89,7 @@ void TestArray::testReadWrite()
 	int height = 10;
 	int depth = 20;
 
-	Array<3, int> myArray(ArraySizes(width)(height)(depth));
+	Array<3, int> myArray(width, height, depth);
 
 	int ct = 1;
 	int expectedTotal = 0;
@@ -45,8 +99,8 @@ void TestArray::testReadWrite()
 		{
 			for(int x = 0; x < width; x++)
 			{
-				myArray[x][y][z] = ct;
-				expectedTotal += myArray[x][y][z];
+				myArray(x, y, z) = ct;
+				expectedTotal += myArray(x, y, z);
 				ct++;
 			}
 		}
@@ -60,8 +114,8 @@ void TestArray::testReadWrite()
 		{
 			for(int x = 0; x < width; x++)
 			{
-				QCOMPARE(myArray[x][y][z], ct);
-				total += myArray[x][y][z];
+				QCOMPARE(myArray(x, y, z), ct);
+				total += myArray(x, y, z);
 				ct++;
 			}
 		}

@@ -23,11 +23,17 @@ freely, subject to the following restrictions:
 
 #include "testvector.h"
 
-#include "PolyVoxCore/Vector.h"
+#include "PolyVox/Vector.h"
 
 #include <QtTest>
 
 using namespace PolyVox;
+
+Vector3DFloat incrementVector(Vector3DFloat input)
+{
+	Vector3DFloat result = input += 1.0f;
+	return result;
+}
 
 void TestVector::testLength()
 {
@@ -49,6 +55,22 @@ void TestVector::testEquality()
 	Vector3DInt8 vecz(0, 0, 1);
 	
 	QCOMPARE(vecxy != vecz, true);
+}
+
+void TestVector::testPerformance()
+{
+	Vector3DFloat vec(1.0, 1.0, 1.0);
+
+	QBENCHMARK
+	{
+		for(uint32_t ct = 0; ct < 10000000; ct++)
+		{
+			vec = incrementVector(vec);
+		}
+	}
+
+	// Use the result so the calls don't get optimized away.
+	QCOMPARE(vec.lengthSquared() > 0.0f, true);
 }
 
 QTEST_MAIN(TestVector)

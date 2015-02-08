@@ -21,6 +21,4 @@
 
 PROJECT(PythonExample)
 
-SOURCE_GROUP("Sources" FILES PythonExample.py)
-
 configure_file(PythonExample.py PythonExample.py COPYONLY)

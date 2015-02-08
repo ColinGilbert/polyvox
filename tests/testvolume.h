@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TestVolume_H__
 #define __PolyVox_TestVolume_H__
 
-#include "PolyVoxCore/PolyVoxForwardDeclarations.h"
+#include "PolyVox/PolyVoxForwardDeclarations.h"
 
 #include <QObject>
 
@@ -46,31 +46,20 @@ private slots:
 	void testRawVolumeDirectAccessWithExternalBackwards();
 	void testRawVolumeSamplersWithExternalBackwards();
 
-	void testSimpleVolumeDirectAccessAllInternalForwards();
-	void testSimpleVolumeSamplersAllInternalForwards();
-	void testSimpleVolumeDirectAccessWithExternalForwards();
-	void testSimpleVolumeSamplersWithExternalForwards();
-	void testSimpleVolumeDirectAccessAllInternalBackwards();
-	void testSimpleVolumeSamplersAllInternalBackwards();
-	void testSimpleVolumeDirectAccessWithExternalBackwards();
-	void testSimpleVolumeSamplersWithExternalBackwards();
-
-	void testLargeVolumeDirectAccessAllInternalForwards();
-	void testLargeVolumeSamplersAllInternalForwards();
-	void testLargeVolumeDirectAccessWithExternalForwards();
-	void testLargeVolumeSamplersWithExternalForwards();
-	void testLargeVolumeDirectAccessAllInternalBackwards();
-	void testLargeVolumeSamplersAllInternalBackwards();
-	void testLargeVolumeDirectAccessWithExternalBackwards();
-	void testLargeVolumeSamplersWithExternalBackwards();
+	void testPagedVolumeDirectAccessAllInternalForwards();
+	void testPagedVolumeSamplersAllInternalForwards();
+	void testPagedVolumeDirectAccessWithExternalForwards();
+	void testPagedVolumeSamplersWithExternalForwards();
+	void testPagedVolumeDirectAccessAllInternalBackwards();
+	void testPagedVolumeSamplersAllInternalBackwards();
+	void testPagedVolumeDirectAccessWithExternalBackwards();
+	void testPagedVolumeSamplersWithExternalBackwards();
 
 private:
-	PolyVox::BlockCompressor<int32_t>* m_pBlockCompressor;
 	PolyVox::FilePager<int32_t>* m_pFilePager;
 
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
-	PolyVox::SimpleVolume<int32_t>* m_pSimpleVolume;
-	PolyVox::LargeVolume<int32_t>* m_pLargeVolume;
+	PolyVox::PagedVolume<int32_t>* m_pPagedVolume;
 };
 
 #endif

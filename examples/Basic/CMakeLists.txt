@@ -38,7 +38,7 @@ SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${PolyVoxCore_BINARY_DIR}/include ${PolyVoxCore_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(${PolyVoxHeaders_SOURCE_DIR})
 LINK_DIRECTORIES(${PolyVoxCore_BINARY_DIR})
 
 #Build

@@ -23,11 +23,12 @@ freely, subject to the following restrictions:
 
 #include "TestVolumeSubclass.h"
 
-#include "PolyVoxCore/Array.h"
-#include "PolyVoxCore/BaseVolume.h"
-#include "PolyVoxCore/CubicSurfaceExtractor.h"
-#include "PolyVoxCore/Material.h"
-#include "PolyVoxCore/Vector.h"
+#include "PolyVox/Array.h"
+
+#include "PolyVox/BaseVolume.h"
+#include "PolyVox/CubicSurfaceExtractor.h"
+#include "PolyVox/Material.h"
+#include "PolyVox/Vector.h"
 
 #include <QtTest>
 
@@ -62,8 +63,9 @@ public:
 	/// Constructor for creating a fixed size volume.
 	VolumeSubclass(const Region& regValid)
 		:BaseVolume<VoxelType>(regValid)
+		, mVolumeData(this->getWidth(), this->getHeight(), this->getDepth())
 	{
-		mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
+		//mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
 	}
 	/// Destructor
 	~VolumeSubclass() {};
@@ -97,7 +99,7 @@ public:
 					POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
 				}
 
-				return mVolumeData[uXPos][uYPos][uZPos];
+				return mVolumeData(uXPos, uYPos, uZPos);
 			}
 		case WrapModes::Clamp:
 			{
@@ -108,13 +110,13 @@ public:
 				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
 				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
 				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
-				return mVolumeData[uXPos][uYPos][uZPos];
+				return mVolumeData(uXPos, uYPos, uZPos);
 			}
 		case WrapModes::Border:
 			{
 				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 				{
-					return mVolumeData[uXPos][uYPos][uZPos];
+					return mVolumeData(uXPos, uYPos, uZPos);
 				}
 				else
 				{
@@ -123,7 +125,7 @@ public:
 			}
 		case WrapModes::AssumeValid:
 			{
-				return mVolumeData[uXPos][uYPos][uZPos];
+				return mVolumeData(uXPos, uYPos, uZPos);
 			}
 		default:
 			{
@@ -147,7 +149,7 @@ public:
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
-			mVolumeData[uXPos][uYPos][uZPos] = tValue;
+			mVolumeData(uXPos, uYPos, uZPos) = tValue;
 			return true;
 		}
 		else
@@ -184,9 +186,7 @@ void TestVolumeSubclass::testExtractSurface()
 		}
 	}
 
-	SurfaceMesh<PositionMaterial> result;
-	CubicSurfaceExtractor< VolumeSubclass<Material8> > cubicSurfaceExtractor(&volumeSubclass, volumeSubclass.getEnclosingRegion(), &result);
-	cubicSurfaceExtractor.execute();
+	auto result = extractCubicMesh(&volumeSubclass, volumeSubclass.getEnclosingRegion());
 
 	QCOMPARE(result.getNoOfVertices(), static_cast<uint32_t>(8));
 }

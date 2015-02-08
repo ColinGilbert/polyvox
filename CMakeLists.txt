@@ -1,5 +1,5 @@
-# Copyright (c) 2007-2012 Matt Williams
-# Copyright (c) 2007-2012 David Williams
+# Copyright (c) 2007-2014 Matt Williams
+# Copyright (c) 2007-2014 David Williams
 # 
 # This software is provided 'as-is', without any express or implied
 # warranty. In no event will the authors be held liable for any damages
@@ -24,17 +24,17 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6)
 
 PROJECT(PolyVox)
 
+include(FeatureSummary)
+
+SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
+
+#Set up for building the library itself
+
 SET(POLYVOX_VERSION_MAJOR "0")
 SET(POLYVOX_VERSION_MINOR "2")
 SET(POLYVOX_VERSION_PATCH "1")
 SET(POLYVOX_VERSION "${POLYVOX_VERSION_MAJOR}.${POLYVOX_VERSION_MINOR}.${POLYVOX_VERSION_PATCH}" CACHE STRING "PolyVox version")
 MARK_AS_ADVANCED(FORCE POLYVOX_VERSION)
-
-SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
-include(FeatureSummary)
-
-FIND_PACKAGE(Doxygen)
-OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 
 SET(LIBRARY_TYPE "DYNAMIC" CACHE STRING "Should the library be STATIC or DYNAMIC")
 SET_PROPERTY(CACHE LIBRARY_TYPE PROPERTY STRINGS DYNAMIC STATIC)
@@ -42,50 +42,45 @@ IF(WIN32)
 	SET(LIBRARY_TYPE "STATIC")
 ENDIF()
 
-# Qt is required for building the tests, the example and optionally for bundling the documentation
-find_package(Qt5Test 5.2 REQUIRED)
-find_package(Qt5OpenGL 5.2 REQUIRED)
-
-set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
-set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
-set_package_properties(Qt5Test PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
-set_package_properties(Qt5OpenGL PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
-set_package_properties(Qt5OpenGL PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
-
-IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
-	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
-ENDIF()
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 endif()
 
-ADD_SUBDIRECTORY(library)
+#We need to find doxygen before building the library
+FIND_PACKAGE(Doxygen)
 
+
+ADD_SUBDIRECTORY(include)
+
+
+
+# Qt is required for building the tests, the example and optionally for bundling the documentation
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtOpenGL QtTest)
+INCLUDE(${QT_USE_FILE})
+
+#Examples
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
-IF(ENABLE_EXAMPLES AND Qt5OpenGL_FOUND)
-	ADD_SUBDIRECTORY(examples/common)
-	ADD_SUBDIRECTORY(examples/Basic)
-	ADD_SUBDIRECTORY(examples/Paging)
-	ADD_SUBDIRECTORY(examples/OpenGL)
-	ADD_SUBDIRECTORY(examples/SmoothLOD)
-	ADD_SUBDIRECTORY(examples/Python)
+IF(ENABLE_EXAMPLES AND QT_QTOPENGL_FOUND)
 	SET(BUILD_EXAMPLES ON)
+	add_subdirectory(examples)
 ELSE()
 	SET(BUILD_EXAMPLES OFF)
 ENDIF()
 
 INCLUDE(Packaging.cmake)
 
+#Tests
 OPTION(ENABLE_TESTS "Should the tests be built" ON)
-IF(ENABLE_TESTS AND Qt5Test_FOUND)
+IF(ENABLE_TESTS AND QT_QTTEST_FOUND)
+	SET(BUILD_TESTS ON)
 	INCLUDE(CTest)
 	MARK_AS_ADVANCED(FORCE BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
-	SET(BUILD_TESTS ON)
 ELSE()
 	SET(BUILD_TESTS OFF)
 ENDIF()
 
+#Manual
 #Check if we will building _and_ bundling the docs
 IF(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
 	SET(BUILD_AND_BUNDLE_DOCS ON)
@@ -94,6 +89,13 @@ ELSE()
 ENDIF()
 
 ADD_SUBDIRECTORY(documentation)
+
+ADD_SUBDIRECTORY(bindings)
+
+set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
+set_package_properties(Qt4 PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
+set_package_properties(Qt4 PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
+set_package_properties(Qt4 PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
 
 add_feature_info("Examples" BUILD_EXAMPLES "Examples of PolyVox usage")
 add_feature_info("Tests" BUILD_TESTS "Unit tests")

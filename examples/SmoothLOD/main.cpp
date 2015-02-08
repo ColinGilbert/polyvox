@@ -23,19 +23,19 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/Density.h"
-#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxCore/RawVolume.h"
-#include "PolyVoxCore/SimpleVolume.h"
-#include "PolyVoxCore/VolumeResampler.h"
+#include "PolyVox/Density.h"
+#include "PolyVox/MarchingCubesSurfaceExtractor.h"
+#include "PolyVox/Mesh.h"
+#include "PolyVox/RawVolume.h"
+#include "PolyVox/PagedVolume.h"
+#include "PolyVox/VolumeResampler.h"
 
 #include <QApplication>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
+void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -76,34 +76,34 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 28);
 
 	//Smooth the data - should reimplement this using LowPassFilter
-	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
-	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
-	//smoothRegion<SimpleVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
 
 	RawVolume<uint8_t> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
 
-	VolumeResampler< SimpleVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+	VolumeResampler< PagedVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 	volumeResampler.execute();
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> meshLowLOD;
-	MarchingCubesSurfaceExtractor< RawVolume<uint8_t> > surfaceExtractor(&volDataLowLOD, volDataLowLOD.getEnclosingRegion(), &meshLowLOD);
-	surfaceExtractor.execute();
-	meshLowLOD.scaleVertices(/*2.0f*/63.0f / 31.0f);
+	auto meshLowLOD = extractMarchingCubesMesh(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+	auto decodedMeshLowLOD = decodeMesh(meshLowLOD);
 
 	//Extract the surface
-	SurfaceMesh<PositionMaterialNormal> meshHighLOD;
-	MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractorHigh(&volData, PolyVox::Region(Vector3DInt32(30,0,0), Vector3DInt32(63, 63, 63)), &meshHighLOD);
-	surfaceExtractorHigh.execute();
-	meshHighLOD.translateVertices(Vector3DFloat(30, 0, 0));
+	auto meshHighLOD = extractMarchingCubesMesh(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
+	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+	auto decodedMeshHighLOD = decodeMesh(meshHighLOD);
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(meshHighLOD);
-	openGLWidget.setSurfaceMeshToRenderLowLOD(meshLowLOD);
+	openGLWidget.addMesh(decodedMeshHighLOD, Vector3DInt32(30, 0, 0));
+	openGLWidget.addMesh(decodedMeshLowLOD, Vector3DInt32(0, 0, 0), 63.0f / 31.0f);
+
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();

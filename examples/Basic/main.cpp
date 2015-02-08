@@ -23,17 +23,17 @@ freely, subject to the following restrictions:
 
 #include "OpenGLWidget.h"
 
-#include "PolyVoxCore/CubicSurfaceExtractor.h"
-#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-#include "PolyVoxCore/SurfaceMesh.h"
-#include "PolyVoxCore/SimpleVolume.h"
+#include "PolyVox/CubicSurfaceExtractor.h"
+#include "PolyVox/MarchingCubesSurfaceExtractor.h"
+#include "PolyVox/Mesh.h"
+#include "PolyVox/PagedVolume.h"
 
 #include <QApplication>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
+void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -74,21 +74,21 @@ int main(int argc, char *argv[])
 	openGLWidget.show();
 
 	//Create an empty volume and then place a sphere in it
-	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
 
-	//A mesh object to hold the result of surface extraction
-	SurfaceMesh<PositionMaterial> mesh;
+	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
+	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
 
-	//Create a surface extractor. Comment out one of the following two lines to decide which type gets created.
-	CubicSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-	//MarchingCubesSurfaceExtractor< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
-
-	//Execute the surface extractor.
-	surfaceExtractor.execute();
+	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
+	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
+	auto decodedMesh = decodeMesh(mesh);
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.setSurfaceMeshToRender(mesh);
+	openGLWidget.addMesh(decodedMesh);
+	//openGLWidget.addMesh(mesh2);
+	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();
