@@ -27,6 +27,7 @@ freely, subject to the following restrictions:
 #include <cstdint>
 
 #ifdef _MSC_VER // Don't worry about the exact version, as long as this is defied.
+#define NOMINMAX
 #include <Windows.h>
 #else
 #include <chrono>
