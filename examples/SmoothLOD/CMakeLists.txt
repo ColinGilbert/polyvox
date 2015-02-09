@@ -19,8 +19,6 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(SmoothLODExample)
 
 #Projects source files
@@ -31,10 +29,15 @@ SET(SRC_FILES
 
 #Projects headers files	
 SET(INC_FILES	
-	OpenGLWidget.h
+	../common/OpenGLWidget.h
 )
 
 add_definitions(-DGLEW_STATIC)
+
+#"Sources" and "Headers" are the group names in Visual Studio.
+#They may have other uses too...
+SOURCE_GROUP("Sources" FILES ${SRC_FILES})
+SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
 FIND_PACKAGE(OpenGL REQUIRED)
 
@@ -42,21 +45,18 @@ FIND_PACKAGE(OpenGL REQUIRED)
 INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ${GLEW_SOURCE_DIR})
 
 #This will include the shader files inside the compiled binary
-QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
+QT5_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
 
 # Put the resources in a seperate folder in Visual Studio
 SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC})
 
 #Build
-ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
+ADD_EXECUTABLE(SmoothLODExample ${SRC_FILES})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(SmoothLODExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(SmoothLODExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+TARGET_LINK_LIBRARIES(SmoothLODExample glew Qt5::OpenGL ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 SET_PROPERTY(TARGET SmoothLODExample PROPERTY FOLDER "Examples")
-
-configure_file(../common/example.vert example.vert COPYONLY)
-configure_file(../common/example.frag example.frag COPYONLY)
 
 #Install - Only install the example in Windows
 IF(WIN32)
@@ -66,4 +66,11 @@ IF(WIN32)
 		ARCHIVE DESTINATION Examples/OpenGL/lib
 		COMPONENT example
 	)
+
+	#.dlls should be installed in shared builds.
+	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../release/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
+	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../release/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Release)
+	
+	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxCore.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
+	#INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/../../debug/PolyVoxUtil.dll DESTINATION Examples/OpenGL/bin CONFIGURATIONS Debug)
 ENDIF(WIN32)
