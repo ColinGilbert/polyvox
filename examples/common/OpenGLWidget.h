@@ -26,10 +26,12 @@ distribution.
 
 #include "PolyVox/Mesh.h"
 
-#include "glew/glew.h"
+#include <QOpenGLFunctions_3_1>
 
 #include <QGLWidget>
 #include <QGLShaderProgram>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 
 // This structure holds all the data required
 // to render one of our meshes through OpenGL. 
@@ -47,7 +49,7 @@ struct OpenGLMeshData
 // Our OpenGLWidget is used by all the examples to render the extracted meshes. It is
 // fairly specific to our needs (you probably won't want to use it in your own project)
 // but should provide a useful illustration of how PolyVox meshes can be rendered.
-class OpenGLWidget : public QGLWidget
+class OpenGLWidget : public QGLWidget, protected QOpenGLFunctions_3_1
 {
 public:
 	// Constructor

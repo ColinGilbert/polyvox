@@ -34,12 +34,8 @@ SET(INC_FILES
 	OpenGLWidget.h
 )
 
-add_definitions(-DGLEW_STATIC)
-
-FIND_PACKAGE(OpenGL REQUIRED)
-
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ${GLEW_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR})
 
 #This will include the shader files inside the compiled binary
 QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
@@ -53,7 +49,7 @@ ADD_EXECUTABLE(DecodeOnGPUExample ${SRC_FILES} ${COMMON_RESOURCES_RCC} ${DECODE_
 IF(MSVC)
 	SET_TARGET_PROPERTIES(DecodeOnGPUExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(DecodeOnGPUExample glew ${QT_LIBRARIES} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+TARGET_LINK_LIBRARIES(DecodeOnGPUExample ${QT_LIBRARIES})
 SET_PROPERTY(TARGET DecodeOnGPUExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows

@@ -32,17 +32,13 @@ SET(INC_FILES
 	../common/OpenGLWidget.h
 )
 
-add_definitions(-DGLEW_STATIC)
-
 #"Sources" and "Headers" are the group names in Visual Studio.
 #They may have other uses too...
 SOURCE_GROUP("Sources" FILES ${SRC_FILES})
 SOURCE_GROUP("Headers" FILES ${INC_FILES})
 
-FIND_PACKAGE(OpenGL REQUIRED)
-
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ${GLEW_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ../common)
 
 #This will include the shader files inside the compiled binary
 QT5_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
@@ -55,7 +51,7 @@ ADD_EXECUTABLE(BasicExample ${SRC_FILES} ${COMMON_RESOURCES_RCC})
 IF(MSVC)
 	SET_TARGET_PROPERTIES(BasicExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127") #All warnings
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(BasicExample glew Qt5::OpenGL ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+TARGET_LINK_LIBRARIES(BasicExample Qt5::OpenGL)
 SET_PROPERTY(TARGET BasicExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows

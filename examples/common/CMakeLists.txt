@@ -19,13 +19,11 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-project(GLEW)
+#project(GLEW)
 
-set(SRC_FILES ../common/glew/glew.cpp)
-
-add_definitions(-DGLEW_STATIC)
+#set(SRC_FILES ../common/glew/glew.cpp)
 
 #find_package(OpenGL REQUIRED)
 #include_directories(${OPENGL_INCLUDE_DIR})
-add_library(glew STATIC ${SRC_FILES})
-SET_PROPERTY(TARGET glew PROPERTY FOLDER "Examples/Common")
+#add_library(glew STATIC ${SRC_FILES})
+#SET_PROPERTY(TARGET glew PROPERTY FOLDER "Examples/Common")
