@@ -63,7 +63,6 @@ ADD_SUBDIRECTORY(include)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 IF(ENABLE_EXAMPLES AND Qt5OpenGL_FOUND)
-	ADD_SUBDIRECTORY(examples/common)
 	ADD_SUBDIRECTORY(examples/Basic)
 	ADD_SUBDIRECTORY(examples/Paging)
 	ADD_SUBDIRECTORY(examples/OpenGL)
