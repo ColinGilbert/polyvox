@@ -61,11 +61,10 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 ////////////////////////////////////////////////////////////////////////////////
 void OpenGLWidget::initializeGL()
 {
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
+	if (!initializeOpenGLFunctions())
 	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		std::cout << "GLEW Error: " << glewGetErrorString(err) << std::endl;
+		std::cerr << "Could not initialize OpenGL functions" << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	
 	//Print out some information about the OpenGL implementation.

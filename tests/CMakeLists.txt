@@ -24,11 +24,14 @@
 #
 # Also sets LATEST_TEST to point to the output executable of the test for easy
 # ADD_TEST()ing
-MACRO(CREATE_TEST headerfile sourcefile executablename)
+
+set(CMAKE_AUTOMOC TRUE)
+
+MACRO(CREATE_TEST sourcefile executablename)
 	UNSET(test_moc_SRCS) #clear out the MOCs from previous tests
-	QT4_WRAP_CPP(test_moc_SRCS ${headerfile})
+
 	ADD_EXECUTABLE(${executablename} ${sourcefile} ${test_moc_SRCS})
-	TARGET_LINK_LIBRARIES(${executablename} ${QT_QTTEST_LIBRARY} ${QT_QTCORE_LIBRARY})
+	TARGET_LINK_LIBRARIES(${executablename} Qt5::Test)
 	#HACK. This is needed since everything is built in the base dir in Windows. As of 2.8 we should change this.
 	IF(WIN32)
 		SET(LATEST_TEST ${EXECUTABLE_OUTPUT_PATH}/${executablename})
@@ -45,22 +48,18 @@ MACRO(CREATE_TEST headerfile sourcefile executablename)
 ENDMACRO(CREATE_TEST)
 
 INCLUDE_DIRECTORIES(${PolyVoxHeaders_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
+#REMOVE_DEFINITIONS(-DQT_GUI_LIB) #Make sure the tests don't link to the QtGui
 
 # Test Template. Copy and paste this template for consistant naming.
 # # ClassName tests
-# CREATE_TEST(TestClassName.h TestClassName.cpp TestClassName)
+# CREATE_TEST(TestClassName.cpp TestClassName)
 # ADD_TEST(ClassNameFeature1Test ${LATEST_TEST} testFeature1)
 # ADD_TEST(ClassNameFeature2Test ${LATEST_TEST} testFeature2)
 
 # Python tests
 IF(BUILD_BINDINGS)
 	FIND_PACKAGE(PythonInterp 3)
-	IF(CMAKE_VERSION VERSION_LESS "2.8.6")
-		set_package_info(PythonInterp "Python Interpereter" http://www.python.org "Running the Python tests")
-	ELSE()
-		set_package_properties(PythonInterp PROPERTIES URL http://www.python.org DESCRIPTION "Python Interpereter" TYPE OPTIONAL PURPOSE "Running the Python tests")
-	ENDIF()
+	set_package_properties(PythonInterp PROPERTIES URL http://www.python.org DESCRIPTION "Python Interpereter" TYPE OPTIONAL PURPOSE "Running the Python tests")
 	IF(PYTHONINTERP_FOUND)
 		ADD_TEST(PythonSurfaceExtractorTest ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TestSurfaceExtractor.py)
 		ADD_TEST(PythonRaycastTest ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/TestRaycast.py)
@@ -68,38 +67,38 @@ IF(BUILD_BINDINGS)
 ENDIF()
 
 # AmbientOcclusionGenerator tests
-CREATE_TEST(TestAmbientOcclusionGenerator.h TestAmbientOcclusionGenerator.cpp TestAmbientOcclusionGenerator)
+CREATE_TEST(TestAmbientOcclusionGenerator.cpp TestAmbientOcclusionGenerator)
 
 # Array tests
-CREATE_TEST(TestArray.h TestArray.cpp TestArray)
+CREATE_TEST(TestArray.cpp TestArray)
 
 # AStarPathfinder tests
-CREATE_TEST(TestAStarPathfinder.h TestAStarPathfinder.cpp TestAStarPathfinder)
+CREATE_TEST(TestAStarPathfinder.cpp TestAStarPathfinder)
 
-CREATE_TEST(TestCubicSurfaceExtractor.h TestCubicSurfaceExtractor.cpp TestCubicSurfaceExtractor)
+CREATE_TEST(TestCubicSurfaceExtractor.cpp TestCubicSurfaceExtractor)
 
 # Low pass filter tests
-CREATE_TEST(TestLowPassFilter.h TestLowPassFilter.cpp TestLowPassFilter)
+CREATE_TEST(TestLowPassFilter.cpp TestLowPassFilter)
 
 # Material tests
-CREATE_TEST(testmaterial.h testmaterial.cpp testmaterial)
+CREATE_TEST(testmaterial.cpp testmaterial)
 
 # Raycast tests
-CREATE_TEST(TestRaycast.h TestRaycast.cpp TestRaycast)
+CREATE_TEST(TestRaycast.cpp TestRaycast)
 
 # Picking tests
-CREATE_TEST(TestPicking.h TestPicking.cpp TestPicking)
+CREATE_TEST(TestPicking.cpp TestPicking)
 
 # Region tests
-CREATE_TEST(TestRegion.h TestRegion.cpp TestRegion)
+CREATE_TEST(TestRegion.cpp TestRegion)
 
-CREATE_TEST(TestSurfaceExtractor.h TestSurfaceExtractor.cpp TestSurfaceExtractor)
+CREATE_TEST(TestSurfaceExtractor.cpp TestSurfaceExtractor)
 
 #Vector tests
-CREATE_TEST(testvector.h testvector.cpp testvector)
+CREATE_TEST(testvector.cpp testvector)
 
 # Volume tests
-CREATE_TEST(testvolume.h testvolume.cpp testvolume)
+CREATE_TEST(testvolume.cpp testvolume)
 
 # Volume subclass tests
-CREATE_TEST(TestVolumeSubclass.h TestVolumeSubclass.cpp TestVolumeSubclass)
+CREATE_TEST(TestVolumeSubclass.cpp TestVolumeSubclass)

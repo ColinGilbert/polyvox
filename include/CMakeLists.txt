@@ -109,7 +109,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}/include ${CMAKE_CURRENT_SOURCE_D
 #Build
 # Although we don't build anything for PolyVox, we still add this custom target (which
 # doesn't do anything) so that we can browse the source code from within Visual Studio.
-ADD_CUSTOM_TARGET(PolyVoxCore SOURCES ${CORE_INC_FILES})
+ADD_CUSTOM_TARGET(PolyVoxHeaders SOURCES ${CORE_INC_FILES})
 
 #Install the core header files, including the ones in the Impl subfolder.
 INSTALL(DIRECTORY PolyVox/ DESTINATION include/PolyVox COMPONENT development PATTERN "*.git*" EXCLUDE)
