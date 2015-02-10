@@ -84,7 +84,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 				else
 				{
 					// Otherwise we write random voxel values between zero and the requested maximum
-					VolumeType::VoxelType voxelValue = static_cast<typename VolumeType::VoxelType>(dist(rng));
+					typename VolumeType::VoxelType voxelValue = static_cast<typename VolumeType::VoxelType>(dist(rng));
 					volData->setVoxelAt(x, y, z, static_cast<typename VolumeType::VoxelType>(voxelValue));
 				}
 			}
