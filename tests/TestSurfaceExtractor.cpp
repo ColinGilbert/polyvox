@@ -32,6 +32,8 @@ freely, subject to the following restrictions:
 
 #include <QtTest>
 
+#include <random>
+
 using namespace PolyVox;
 
 // Test our ability to modify the behaviour of the MarchingCubesSurfaceExtractor. This simple example only modifies
@@ -143,8 +145,9 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 	//Create empty volume
 	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), pager);
 
-	// Seed generator for consistency between runs.
-	srand(12345);
+	// Set up a random number generator
+	std::mt19937 rng;
+	std::uniform_real_distribution<float> dist(minValue, maxValue);
 
 	// Fill
 	for (int32_t z = 0; z < iVolumeSideLength; z++)
@@ -153,7 +156,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 		{
 			for (int32_t x = 0; x < iVolumeSideLength; x++)
 			{
-				float voxelValue = randomFloat(minValue, maxValue);
+				float voxelValue = dist(rng);
 				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}
@@ -230,7 +233,7 @@ void TestSurfaceExtractor::testNoiseVolumePerformance()
 	auto noiseVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, -1.0f, 1.0f);
 	Mesh< MarchingCubesVertex< float >, uint16_t > noiseMesh;
 	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
-	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(48967));
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(48704));
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
