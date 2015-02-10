@@ -128,15 +128,6 @@ VolumeType* createAndFillVolume(void)
 	return volData;
 }
 
-// From http://stackoverflow.com/a/5289624
-float randomFloat(float a, float b)
-{
-	float random = ((float)rand()) / (float)RAND_MAX;
-	float diff = b - a;
-	float r = random * diff;
-	return a + r;
-}
-
 template <typename VolumeType>
 VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minValue, float maxValue)
 {
@@ -147,7 +138,6 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 
 	// Set up a random number generator
 	std::mt19937 rng;
-	std::uniform_real_distribution<float> dist(minValue, maxValue);
 
 	// Fill
 	for (int32_t z = 0; z < iVolumeSideLength; z++)
@@ -156,7 +146,10 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 		{
 			for (int32_t x = 0; x < iVolumeSideLength; x++)
 			{
-				float voxelValue = dist(rng);
+				// We can't use std distributions because they vary between platforms (breaking tests)
+				float voxelValue = static_cast<float>(rng()) / static_cast<float>(std::numeric_limits<int32_t>::max()); // Float in range 0.0 to 1.0
+				voxelValue = voxelValue	* (maxValue - minValue) + minValue; // Float in range minValue to maxValue
+
 				volData->setVoxelAt(x, y, z, voxelValue);
 			}
 		}
@@ -233,7 +226,7 @@ void TestSurfaceExtractor::testNoiseVolumePerformance()
 	auto noiseVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, -1.0f, 1.0f);
 	Mesh< MarchingCubesVertex< float >, uint16_t > noiseMesh;
 	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
-	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(48704));
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(36755));
 }
 
 QTEST_MAIN(TestSurfaceExtractor)

@@ -67,7 +67,6 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 
 	// Set up a random number generator
 	std::mt19937 rng;
-	std::uniform_int_distribution<int32_t> dist(minValue, maxValue);
 
 	//Fill the volume with data
 	for (int32_t z = 0; z < iVolumeSideLength; z++)
@@ -84,7 +83,9 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 				else
 				{
 					// Otherwise we write random voxel values between zero and the requested maximum
-					typename VolumeType::VoxelType voxelValue = static_cast<typename VolumeType::VoxelType>(dist(rng));
+					// We can't use std distributions because they vary between platforms (breaking tests).
+					int voxelValue = (rng() % (maxValue - minValue + 1)) + minValue; // +1 for inclusive bounds
+
 					volData->setVoxelAt(x, y, z, static_cast<typename VolumeType::VoxelType>(voxelValue));
 				}
 			}
