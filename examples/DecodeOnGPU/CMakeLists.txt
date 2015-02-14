@@ -19,8 +19,6 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-
 PROJECT(DecodeOnGPUExample)
 
 #Projects source files
@@ -31,15 +29,20 @@ SET(SRC_FILES
 
 #Projects headers files	
 SET(INC_FILES	
-	OpenGLWidget.h
+	../common/OpenGLWidget.h
 )
 
+#"Sources" and "Headers" are the group names in Visual Studio.
+#They may have other uses too...
+SOURCE_GROUP("Sources" FILES ${SRC_FILES})
+SOURCE_GROUP("Headers" FILES ${INC_FILES})
+
 #Tell CMake the paths for OpenGL and for PolyVox (which is just relative to our current location)
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR} ${PolyVoxHeaders_SOURCE_DIR} ../common)
 
 #This will include the shader files inside the compiled binary
-QT4_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
-QT4_ADD_RESOURCES(DECODE_RESOURCES_RCC decode.qrc)
+QT5_ADD_RESOURCES(COMMON_RESOURCES_RCC ../common/example.qrc)
+QT5_ADD_RESOURCES(DECODE_RESOURCES_RCC decode.qrc)
 
 # Put the resources in a seperate folder in Visual Studio
 SOURCE_GROUP("Resource Files" FILES ../common/example.qrc ${COMMON_RESOURCES_RCC} decode.qrc ${DECODE_RESOURCES_RCC})
@@ -49,7 +52,7 @@ ADD_EXECUTABLE(DecodeOnGPUExample ${SRC_FILES} ${COMMON_RESOURCES_RCC} ${DECODE_
 IF(MSVC)
 	SET_TARGET_PROPERTIES(DecodeOnGPUExample PROPERTIES COMPILE_FLAGS "/W4 /wd4127")
 ENDIF(MSVC)
-TARGET_LINK_LIBRARIES(DecodeOnGPUExample ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(DecodeOnGPUExample Qt5::OpenGL)
 SET_PROPERTY(TARGET DecodeOnGPUExample PROPERTY FOLDER "Examples")
 
 #Install - Only install the example in Windows
