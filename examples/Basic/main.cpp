@@ -66,13 +66,18 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 	}
 }
 
-int main(int argc, char *argv[])
+class BasicExample : public OpenGLWidget
 {
-	//Create and show the Qt OpenGL window
-	QApplication app(argc, argv);
-	OpenGLWidget openGLWidget(0);
-	openGLWidget.show();
+public:
+	BasicExample(QWidget *parent)
+		:OpenGLWidget(parent)
+	{
 
+	}
+
+protected:
+	void initialize() override
+	{
 	//Create an empty volume and then place a sphere in it
 	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 	createSphereInVolume(volData, 30);
@@ -86,9 +91,18 @@ int main(int argc, char *argv[])
 	auto decodedMesh = decodeMesh(mesh);
 
 	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(decodedMesh);
+		addMesh(decodedMesh);
 	//openGLWidget.addMesh(mesh2);
-	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
+		setViewableRegion(volData.getEnclosingRegion());
+	}
+};
+
+int main(int argc, char *argv[])
+{
+	//Create and show the Qt OpenGL window
+	QApplication app(argc, argv);
+	BasicExample openGLWidget(0);
+	openGLWidget.show();
 
 	//Run the message pump.
 	return app.exec();

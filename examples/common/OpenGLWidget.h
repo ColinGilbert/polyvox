@@ -136,6 +136,10 @@ protected:
 	void resizeGL(int w, int h);
 	void paintGL();
 
+	virtual void initialize()
+	{
+	}
+
 private:
 
 	void setupWorldToCameraMatrix();

@@ -121,6 +121,8 @@ void OpenGLWidget::initializeGL()
 
 	// Initial setup of camera.
 	setupWorldToCameraMatrix();
+
+	initialize();
 }
 
 void OpenGLWidget::resizeGL(int w, int h)

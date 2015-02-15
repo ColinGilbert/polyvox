@@ -66,6 +66,54 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 	}
 }
 
+class DecodeOnGPUExample : public OpenGLWidget
+{
+public:
+	DecodeOnGPUExample(QWidget *parent)
+		:OpenGLWidget(parent)
+	{
+
+	}
+
+protected:
+	void initialize() override
+	{
+		QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
+
+		if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/decode.vert"))
+		{
+			std::cerr << shader->log().toStdString() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/decode.frag"))
+		{
+			std::cerr << shader->log().toStdString() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		setShader(shader);
+
+		//Create an empty volume and then place a sphere in it
+		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
+		createSphereInVolume(volData, 30);
+
+		// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
+		//auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+		auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+
+		// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
+		// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
+		//auto decodedMesh = decodeMesh(mesh);
+
+		//Pass the surface to the OpenGL window
+		OpenGLMeshData meshData = buildOpenGLMeshData(mesh);
+		addMeshData(meshData);
+
+		setViewableRegion(volData.getEnclosingRegion());
+	}
+
+private:
 OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVertex< uint8_t > >& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 {
 	// Convienient access to the vertices and indices
@@ -120,47 +168,14 @@ OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVe
 
 	return meshData;
 }
+};
 
 int main(int argc, char *argv[])
 {
 	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
-	OpenGLWidget openGLWidget(0);
+	DecodeOnGPUExample openGLWidget(0);
 	openGLWidget.show();
-
-	QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
-
-	if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/decode.vert"))
-	{
-		std::cerr << shader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/decode.frag"))
-	{
-		std::cerr << shader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
-	openGLWidget.setShader(shader);
-
-	//Create an empty volume and then place a sphere in it
-	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
-	createSphereInVolume(volData, 30);
-
-	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	//auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
-	auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
-
-	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
-	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
-	//auto decodedMesh = decodeMesh(mesh);
-
-	//Pass the surface to the OpenGL window
-	OpenGLMeshData meshData = buildOpenGLMeshData(mesh);
-	openGLWidget.addMeshData(meshData);
-
-	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();
