@@ -28,6 +28,7 @@ distribution.
 
 #include <QOpenGLFunctions_3_1>
 
+#include <QElapsedTimer>
 #include <QGLWidget>
 #include <QGLShaderProgram>
 #include <QOpenGLVertexArrayObject>
@@ -122,14 +123,19 @@ public:
 	// this example framework is only meant to show a single volume at a time
 	void setShader(QSharedPointer<QGLShaderProgram> shader);
 
-	// The viewable region can be adjusted so that this example framework can be used for different volume sizes.
-	void setViewableRegion(PolyVox::Region viewableRegion);
+	void setCameraTransform(QVector3D position, float pitch, float yaw);
 
 	// Mouse handling
 	void mouseMoveEvent(QMouseEvent* event);
 	void mousePressEvent(QMouseEvent* event);
 
+	// Keyboard handling
+	void keyPressEvent(QKeyEvent* event);
+	void keyReleaseEvent(QKeyEvent* event);
+
 protected:
+
+	const float PI = 3.14159265358979f;
 
 	// Qt OpenGL functions
 	void initializeGL();
@@ -141,9 +147,6 @@ protected:
 	}
 
 private:
-
-	void setupWorldToCameraMatrix();
-
 	// Index/vertex buffer data
 	std::vector<OpenGLMeshData> mMeshData;
 	
@@ -157,10 +160,20 @@ private:
 	QPoint m_LastFrameMousePos;
 	QPoint m_CurrentMousePos;
 
-	// Camera setup
-	PolyVox::Region m_viewableRegion;
-	int m_xRotation;
-	int m_yRotation;
+	// Keyboard data
+	QList<int> mPressedKeys;
+
+	// For input handling and movement
+	float mCameraMoveSpeed = 50.0f;
+	float mCameraRotateSpeed = 0.005f;
+
+	// Camera properties
+	QVector3D mCameraPosition = QVector3D(0, 0, -100);
+	float mCameraYaw = 0.0f;
+	float mCameraPitch = 0.0f;
+	float mCameraFOV = 60.0f;
+
+	QElapsedTimer mElapsedTimer;
 };
 
 #endif //__BasicExample_OpenGLWidget_H__

@@ -91,8 +91,8 @@ protected:
 
 		//Pass the surface to the OpenGL window
 		addMesh(decodedMesh);
-		//openGLWidget.addMesh(mesh2);
-		setViewableRegion(volData.getEnclosingRegion());
+
+		setCameraTransform(QVector3D(100.0f, 100.0f, 100.0f), -(PI / 4.0f), PI + (PI / 4.0f));
 	}
 };
 

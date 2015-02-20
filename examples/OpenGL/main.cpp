@@ -78,10 +78,10 @@ protected:
 		createSphereInVolume(volData, 20.0f, 1);
 
 		cout << "Creating cubes" << std::endl;
-		createCubeInVolume(volData, Vector3DInt32(minPos, minPos, minPos), Vector3DInt32(midPos - 1, midPos - 1, midPos - 1), 0);
-		createCubeInVolume(volData, Vector3DInt32(midPos + 1, midPos + 1, minPos), Vector3DInt32(maxPos, maxPos, midPos - 1), 0);
-		createCubeInVolume(volData, Vector3DInt32(midPos + 1, minPos, midPos + 1), Vector3DInt32(maxPos, midPos - 1, maxPos), 0);
-		createCubeInVolume(volData, Vector3DInt32(minPos, midPos + 1, midPos + 1), Vector3DInt32(midPos - 1, maxPos, maxPos), 0);
+		createCubeInVolume(volData, Vector3DInt32(minPos, minPos, midPos + 1), Vector3DInt32(midPos - 1, midPos - 1, maxPos), 0);
+		createCubeInVolume(volData, Vector3DInt32(midPos + 1, midPos + 1, midPos + 1), Vector3DInt32(maxPos, maxPos, maxPos), 0);
+		createCubeInVolume(volData, Vector3DInt32(minPos, midPos + 1, minPos), Vector3DInt32(midPos - 1, maxPos, midPos - 1), 0);
+		createCubeInVolume(volData, Vector3DInt32(midPos + 1, minPos, minPos), Vector3DInt32(maxPos, midPos - 1, midPos - 1), 0);
 
 		createCubeInVolume(volData, Vector3DInt32(1, midPos - 10, midPos - 10), Vector3DInt32(maxPos - 1, midPos + 10, midPos + 10), MaterialDensityPair44::getMaxDensity());
 		createCubeInVolume(volData, Vector3DInt32(midPos - 10, 1, midPos - 10), Vector3DInt32(midPos + 10, maxPos - 1, midPos + 10), MaterialDensityPair44::getMaxDensity());
@@ -140,7 +140,7 @@ protected:
 
 		cout << "Rendering volume as " << meshCounter << " seperate meshes" << endl;
 
-		setViewableRegion(volData.getEnclosingRegion());
+		setCameraTransform(QVector3D(150.0f, 150.0f, 150.0f), -(PI / 4.0f), PI + (PI / 4.0f));
 	}
 };
 

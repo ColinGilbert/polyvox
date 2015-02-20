@@ -3,6 +3,7 @@
 #include <QMouseEvent>
 #include <QMatrix4x4>
 #include <QCoreApplication>
+#include <QTimer>
 //#include <QtMath>
 
 using namespace PolyVox;
@@ -13,9 +14,6 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
-	,m_viewableRegion(PolyVox::Region(0, 0, 0, 255, 255, 255))
-	,m_xRotation(0)
-	,m_yRotation(0)
 {
 }
 
@@ -24,13 +22,11 @@ void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
 	mShader = shader;
 }
 
-void OpenGLWidget::setViewableRegion(PolyVox::Region viewableRegion)
+void OpenGLWidget::setCameraTransform(QVector3D position, float pitch, float yaw)
 {
-	m_viewableRegion = viewableRegion;
-
-	// The user has specifed a new viewable region
-	// so we need to regenerate our camera matrix.
-	setupWorldToCameraMatrix();
+	mCameraPosition = position;
+	mCameraYaw = yaw;
+	mCameraPitch = pitch;
 }
 
 void OpenGLWidget::mousePressEvent(QMouseEvent* event)
@@ -45,15 +41,24 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 	// Update the x and y rotations based on the mouse movement.
 	m_CurrentMousePos = event->pos();
 	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
-	m_xRotation += diff.x();
-	m_yRotation += diff.y();
+	mCameraYaw -= diff.x() * mCameraRotateSpeed;
+	mCameraPitch -= diff.y() * mCameraRotateSpeed;
 	m_LastFrameMousePos = m_CurrentMousePos;
+}
 
-	// The camera rotation has changed so we need to regenerate the matrix.
-	setupWorldToCameraMatrix();
+void OpenGLWidget::keyPressEvent(QKeyEvent* event)
+{
+	if (event->key() == Qt::Key_Escape)
+	{
+		close();
+	}
 
-	// Re-render.
-	update();
+	mPressedKeys.append(event->key());
+}
+
+void OpenGLWidget::keyReleaseEvent(QKeyEvent* event)
+{
+	mPressedKeys.removeAll(event->key());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,10 +124,14 @@ void OpenGLWidget::initializeGL()
 		exit(EXIT_FAILURE);
 	}
 
-	// Initial setup of camera.
-	setupWorldToCameraMatrix();
-
 	initialize();
+
+	// Start a timer to drive the main rendering loop.
+	QTimer* timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
+	timer->start(0);
+
+	mElapsedTimer.start();
 }
 
 void OpenGLWidget::resizeGL(int w, int h)
@@ -135,11 +144,75 @@ void OpenGLWidget::resizeGL(int w, int h)
 	float zFar = 1000.0;
 	
 	cameraToClipMatrix.setToIdentity();
-	cameraToClipMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
+	//cameraToClipMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
+	cameraToClipMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
 }
 
 void OpenGLWidget::paintGL()
 {
+	// Direction : Spherical coordinates to Cartesian coordinates conversion
+	QVector3D cameraForward(
+		cos(mCameraPitch) * sin(mCameraYaw),
+		sin(mCameraPitch),
+		cos(mCameraPitch) * cos(mCameraYaw)
+		);
+
+	// Right vector
+	QVector3D cameraRight(
+		sin(mCameraYaw - 3.14f / 2.0f),
+		0,
+		cos(mCameraYaw - 3.14f / 2.0f)
+		);
+
+	// Up vector
+	QVector3D cameraUp = QVector3D::crossProduct(cameraRight, cameraForward);
+
+	// Get the elapsed time since last frame and convert to seconds.
+	float deltaTime = mElapsedTimer.restart() / 1000.0f;
+
+	// Move forward
+	if ((mPressedKeys.contains(Qt::Key_Up)) || (mPressedKeys.contains(Qt::Key_W)))
+	{
+		mCameraPosition += cameraForward * deltaTime * mCameraMoveSpeed;
+	}
+	// Move backward
+	if ((mPressedKeys.contains(Qt::Key_Down)) || (mPressedKeys.contains(Qt::Key_S)))
+	{
+		mCameraPosition -= cameraForward * deltaTime * mCameraMoveSpeed;
+	}
+	// Strafe right
+	if ((mPressedKeys.contains(Qt::Key_Right)) || (mPressedKeys.contains(Qt::Key_D)))
+	{
+		mCameraPosition += cameraRight * deltaTime * mCameraMoveSpeed;
+	}
+	// Strafe left
+	if ((mPressedKeys.contains(Qt::Key_Left)) || (mPressedKeys.contains(Qt::Key_A)))
+	{
+		mCameraPosition -= cameraRight * deltaTime * mCameraMoveSpeed;
+	}
+	// Move backward
+	/*if ((glfwGetKey(mWindow, GLFW_KEY_DOWN) == GLFW_PRESS) || (glfwGetKey(mWindow, GLFW_KEY_S) == GLFW_PRESS))
+	{
+		mCameraPosition -= cameraForward * deltaTime * mCameraMoveSpeed;
+	}
+	// Strafe right
+	if ((glfwGetKey(mWindow, GLFW_KEY_RIGHT) == GLFW_PRESS) || (glfwGetKey(mWindow, GLFW_KEY_D) == GLFW_PRESS))
+	{
+		mCameraPosition += cameraRight * deltaTime * mCameraMoveSpeed;
+	}
+	// Strafe left
+	if ((glfwGetKey(mWindow, GLFW_KEY_LEFT) == GLFW_PRESS) || (glfwGetKey(mWindow, GLFW_KEY_A) == GLFW_PRESS))
+	{
+		mCameraPosition -= cameraRight * deltaTime * mCameraMoveSpeed;
+	}*/
+
+	worldToCameraMatrix.setToIdentity();
+	worldToCameraMatrix.lookAt(
+		mCameraPosition,           // Camera is here
+		mCameraPosition + cameraForward, // and looks here : at the same position, plus "direction"
+		cameraUp                  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -176,22 +249,4 @@ void OpenGLWidget::paintGL()
 	{
 	  std::cerr << "OpenGL Error: " << errCode << std::endl;
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Private functions
-////////////////////////////////////////////////////////////////////////////////
-void OpenGLWidget::setupWorldToCameraMatrix()
-{
-	QVector3D lowerCorner(m_viewableRegion.getLowerX(), m_viewableRegion.getLowerY(), m_viewableRegion.getLowerZ());
-	QVector3D upperCorner(m_viewableRegion.getUpperX(), m_viewableRegion.getUpperY(), m_viewableRegion.getUpperZ());
-
-	QVector3D centerPoint = (lowerCorner + upperCorner) * 0.5;
-	float fDiagonalLength = (upperCorner - lowerCorner).length();
-
-	worldToCameraMatrix.setToIdentity();
-	worldToCameraMatrix.translate(0, 0, -fDiagonalLength / 2.0f); //Move the camera back by the required amount
-	worldToCameraMatrix.rotate(m_xRotation, 0, 1, 0); //rotate around y-axis
-	worldToCameraMatrix.rotate(m_yRotation, 1, 0, 0); //rotate around x-axis
-	worldToCameraMatrix.translate(-centerPoint); //centre the model on the origin
 }

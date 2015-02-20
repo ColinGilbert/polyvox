@@ -183,7 +183,7 @@ protected:
 		//Pass the surface to the OpenGL window
 		addMesh(decodedMesh);
 
-		setViewableRegion(reg2);
+		setCameraTransform(QVector3D(300.0f, 300.0f, 300.0f), -(PI / 4.0f), PI + (PI / 4.0f));
 	}
 };
 

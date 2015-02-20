@@ -109,7 +109,7 @@ protected:
 		OpenGLMeshData meshData = buildOpenGLMeshData(mesh);
 		addMeshData(meshData);
 
-		setViewableRegion(volData.getEnclosingRegion());
+		setCameraTransform(QVector3D(100.0f, 100.0f, 100.0f), -(PI / 4.0f), PI + (PI / 4.0f));
 	}
 
 private:

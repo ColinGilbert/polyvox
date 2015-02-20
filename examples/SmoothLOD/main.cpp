@@ -107,7 +107,7 @@ protected:
 		addMesh(decodedMeshHighLOD, Vector3DInt32(30, 0, 0));
 		addMesh(decodedMeshLowLOD, Vector3DInt32(0, 0, 0), 63.0f / 31.0f);
 
-		setViewableRegion(volData.getEnclosingRegion());
+		setCameraTransform(QVector3D(100.0f, 100.0f, 100.0f), -(PI / 4.0f), PI + (PI / 4.0f));
 	}
 };
 
