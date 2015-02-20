@@ -25,11 +25,13 @@ PROJECT(BasicExample)
 SET(SRC_FILES
 	main.cpp
 	../common/OpenGLWidget.cpp
+	../common/PolyVoxExample.cpp
 )
 
 #Projects headers files	
 SET(INC_FILES	
 	../common/OpenGLWidget.h
+	../common/PolyVoxExample.h
 )
 
 #"Sources" and "Headers" are the group names in Visual Studio.

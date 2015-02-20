@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "OpenGLWidget.h"
+#include "PolyVoxExample.h"
 #include "Perlin.h"
 
 #include "PolyVox/MaterialDensityPair.h"
@@ -139,11 +139,11 @@ public:
 	}
 };
 
-class PagingExample : public OpenGLWidget
+class PagingExample : public PolyVoxExample
 {
 public:
 	PagingExample(QWidget *parent)
-		:OpenGLWidget(parent)
+		:PolyVoxExample(parent)
 	{
 	}
 

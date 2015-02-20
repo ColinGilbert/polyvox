@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "OpenGLWidget.h"
+#include "PolyVoxExample.h"
 
 #include "PolyVox/Density.h"
 #include "PolyVox/MarchingCubesSurfaceExtractor.h"
@@ -68,11 +68,11 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 	}
 }
 
-class SmoothLODExample : public OpenGLWidget
+class SmoothLODExample : public PolyVoxExample
 {
 public:
 	SmoothLODExample(QWidget *parent)
-		:OpenGLWidget(parent)
+		:PolyVoxExample(parent)
 	{
 	}
 

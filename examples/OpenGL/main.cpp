@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 
 #include "Shapes.h"
 
-#include "OpenGLWidget.h"
+#include "PolyVoxExample.h"
 
 #ifdef WIN32
 #include <windows.h>   // Standard Header For Most Programs
@@ -47,11 +47,11 @@ using namespace std;
 
 const int32_t g_uVolumeSideLength = 128;
 
-class OpenGLExample : public OpenGLWidget
+class OpenGLExample : public PolyVoxExample
 {
 public:
 	OpenGLExample(QWidget *parent)
-		:OpenGLWidget(parent)
+		:PolyVoxExample(parent)
 	{
 	}
 
