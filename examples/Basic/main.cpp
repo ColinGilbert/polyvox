@@ -72,27 +72,26 @@ public:
 	BasicExample(QWidget *parent)
 		:OpenGLWidget(parent)
 	{
-
 	}
 
 protected:
 	void initialize() override
 	{
-	//Create an empty volume and then place a sphere in it
-	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
-	createSphereInVolume(volData, 30);
+		//Create an empty volume and then place a sphere in it
+		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
+		createSphereInVolume(volData, 30);
 
-	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
-	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+		// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
+		auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+		//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
 
-	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
-	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
-	auto decodedMesh = decodeMesh(mesh);
+		// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
+		// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
+		auto decodedMesh = decodeMesh(mesh);
 
-	//Pass the surface to the OpenGL window
+		//Pass the surface to the OpenGL window
 		addMesh(decodedMesh);
-	//openGLWidget.addMesh(mesh2);
+		//openGLWidget.addMesh(mesh2);
 		setViewableRegion(volData.getEnclosingRegion());
 	}
 };

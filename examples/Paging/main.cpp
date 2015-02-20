@@ -139,47 +139,60 @@ public:
 	}
 };
 
+class PagingExample : public OpenGLWidget
+{
+public:
+	PagingExample(QWidget *parent)
+		:OpenGLWidget(parent)
+	{
+	}
+
+protected:
+	void initialize() override
+	{
+		PerlinNoisePager* pager = new PerlinNoisePager();
+		PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion(), pager, 64);
+		volData.setMemoryUsageLimit(8 * 1024 * 1024); // 8Mb
+
+		//createSphereInVolume(volData, 30);
+		//createPerlinTerrain(volData);
+		//createPerlinVolumeSlow(volData);
+		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
+		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+		PolyVox::Region reg(Vector3DInt32(-255, 0, 0), Vector3DInt32(255, 255, 255));
+		std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
+		volData.prefetch(reg);
+		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
+		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+		PolyVox::Region reg2(Vector3DInt32(0, 0, 0), Vector3DInt32(255, 255, 255));
+		std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
+		volData.flush(reg2);
+		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
+		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+		std::cout << "Flushing entire volume" << std::endl;
+		volData.flushAll();
+		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
+		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
+
+		//Extract the surface
+		auto mesh = extractCubicMesh(&volData, reg2);
+		std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
+
+		auto decodedMesh = decodeMesh(mesh);
+
+		//Pass the surface to the OpenGL window
+		addMesh(decodedMesh);
+
+		setViewableRegion(reg2);
+	}
+};
+
 int main(int argc, char *argv[])
 {
 	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
-	OpenGLWidget openGLWidget(0);
+	PagingExample openGLWidget(0);
 	openGLWidget.show();
-
-	PerlinNoisePager* pager = new PerlinNoisePager();
-	PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion(), pager, 64);
-	volData.setMemoryUsageLimit(8 * 1024 * 1024); // 8Mb
-
-	//createSphereInVolume(volData, 30);
-	//createPerlinTerrain(volData);
-	//createPerlinVolumeSlow(volData);
-	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-	PolyVox::Region reg(Vector3DInt32(-255,0,0), Vector3DInt32(255,255,255));
-	std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
-	volData.prefetch(reg);
-	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-	PolyVox::Region reg2(Vector3DInt32(0,0,0), Vector3DInt32(255,255,255));
-	std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
-	volData.flush(reg2);
-	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-	std::cout << "Flushing entire volume" << std::endl;
-	volData.flushAll();
-	std::cout << "Memory usage: " << (volData.calculateSizeInBytes()/1024.0/1024.0) << "MB" << std::endl;
-	//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-
-	//Extract the surface
-	auto mesh = extractCubicMesh(&volData, reg2);
-	std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
-
-	auto decodedMesh = decodeMesh(mesh);
-
-	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(decodedMesh);
-
-	openGLWidget.setViewableRegion(reg2);
 
 	//Run the message pump.
 	return app.exec();

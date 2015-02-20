@@ -68,42 +68,55 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 	}
 }
 
+class SmoothLODExample : public OpenGLWidget
+{
+public:
+	SmoothLODExample(QWidget *parent)
+		:OpenGLWidget(parent)
+	{
+	}
+
+protected:
+	void initialize() override
+	{
+		//Create an empty volume and then place a sphere in it
+		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
+		createSphereInVolume(volData, 28);
+
+		//Smooth the data - should reimplement this using LowPassFilter
+		//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+		//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+		//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
+
+		RawVolume<uint8_t> volDataLowLOD(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(15, 31, 31)));
+
+		VolumeResampler< PagedVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+		volumeResampler.execute();
+
+		//Extract the surface
+		auto meshLowLOD = extractMarchingCubesMesh(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+		// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+		auto decodedMeshLowLOD = decodeMesh(meshLowLOD);
+
+		//Extract the surface
+		auto meshHighLOD = extractMarchingCubesMesh(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
+		// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+		auto decodedMeshHighLOD = decodeMesh(meshHighLOD);
+
+		//Pass the surface to the OpenGL window
+		addMesh(decodedMeshHighLOD, Vector3DInt32(30, 0, 0));
+		addMesh(decodedMeshLowLOD, Vector3DInt32(0, 0, 0), 63.0f / 31.0f);
+
+		setViewableRegion(volData.getEnclosingRegion());
+	}
+};
+
 int main(int argc, char *argv[])
 {
 	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
-	OpenGLWidget openGLWidget(0);
+	SmoothLODExample openGLWidget(0);
 	openGLWidget.show();
-
-	//Create an empty volume and then place a sphere in it
-	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
-	createSphereInVolume(volData, 28);
-
-	//Smooth the data - should reimplement this using LowPassFilter
-	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
-	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
-	//smoothRegion<PagedVolume, Density8>(volData, volData.getEnclosingRegion());
-
-	RawVolume<uint8_t> volDataLowLOD(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(15, 31, 31)));
-
-	VolumeResampler< PagedVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
-	volumeResampler.execute();
-
-	//Extract the surface
-	auto meshLowLOD = extractMarchingCubesMesh(&volDataLowLOD, volDataLowLOD.getEnclosingRegion());
-	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
-	auto decodedMeshLowLOD = decodeMesh(meshLowLOD);
-
-	//Extract the surface
-	auto meshHighLOD = extractMarchingCubesMesh(&volData, PolyVox::Region(Vector3DInt32(30, 0, 0), Vector3DInt32(63, 63, 63)));
-	// The returned mesh needs to be decoded to be appropriate for GPU rendering.
-	auto decodedMeshHighLOD = decodeMesh(meshHighLOD);
-
-	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(decodedMeshHighLOD, Vector3DInt32(30, 0, 0));
-	openGLWidget.addMesh(decodedMeshLowLOD, Vector3DInt32(0, 0, 0), 63.0f / 31.0f);
-
-	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();
