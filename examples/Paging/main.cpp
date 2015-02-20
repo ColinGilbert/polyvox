@@ -148,7 +148,7 @@ public:
 	}
 
 protected:
-	void initialize() override
+	void initializeExample() override
 	{
 		PerlinNoisePager* pager = new PerlinNoisePager();
 		PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion(), pager, 64);

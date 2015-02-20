@@ -17,11 +17,6 @@ OpenGLWidget::OpenGLWidget(QWidget *parent)
 {
 }
 
-void OpenGLWidget::setShader(QSharedPointer<QGLShaderProgram> shader)
-{
-	mShader = shader;
-}
-
 void OpenGLWidget::setCameraTransform(QVector3D position, float pitch, float yaw)
 {
 	mCameraPosition = position;
@@ -92,38 +87,6 @@ void OpenGLWidget::initializeGL()
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0, 1.0);
 
-	mShader = QSharedPointer<QGLShaderProgram>(new QGLShaderProgram);
-	
-	// This is basically a simple fallback vertex shader which does the most basic rendering possible.  
-	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
-	if (!mShader->addShaderFromSourceFile(QGLShader::Vertex, ":/example.vert"))
-	{
-		std::cerr << mShader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	
-	// This is basically a simple fallback fragment shader which does the most basic rendering possible.  
-	// PolyVox examples are able to provide their own shaders to demonstrate certain effects if desired. 
-	if (!mShader->addShaderFromSourceFile(QGLShader::Fragment, ":/example.frag"))
-	{
-		std::cerr << mShader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	
-	// Bind the position semantic - this is defined in the vertex shader above.
-	mShader->bindAttributeLocation("position", 0);
-
-	// Bind the other semantics. Note that these don't actually exist in our example shader above! However, other
-	// example shaders may choose to provide them and having the binding code here does not seem to cause any problems.
-	mShader->bindAttributeLocation("normal", 1);
-	mShader->bindAttributeLocation("material", 2);
-	
-	if (!mShader->link())
-	{
-		std::cerr << mShader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-
 	initialize();
 
 	// Start a timer to drive the main rendering loop.
@@ -190,21 +153,6 @@ void OpenGLWidget::paintGL()
 	{
 		mCameraPosition -= cameraRight * deltaTime * mCameraMoveSpeed;
 	}
-	// Move backward
-	/*if ((glfwGetKey(mWindow, GLFW_KEY_DOWN) == GLFW_PRESS) || (glfwGetKey(mWindow, GLFW_KEY_S) == GLFW_PRESS))
-	{
-		mCameraPosition -= cameraForward * deltaTime * mCameraMoveSpeed;
-	}
-	// Strafe right
-	if ((glfwGetKey(mWindow, GLFW_KEY_RIGHT) == GLFW_PRESS) || (glfwGetKey(mWindow, GLFW_KEY_D) == GLFW_PRESS))
-	{
-		mCameraPosition += cameraRight * deltaTime * mCameraMoveSpeed;
-	}
-	// Strafe left
-	if ((glfwGetKey(mWindow, GLFW_KEY_LEFT) == GLFW_PRESS) || (glfwGetKey(mWindow, GLFW_KEY_A) == GLFW_PRESS))
-	{
-		mCameraPosition -= cameraRight * deltaTime * mCameraMoveSpeed;
-	}*/
 
 	worldToCameraMatrix.setToIdentity();
 	worldToCameraMatrix.lookAt(
@@ -216,32 +164,7 @@ void OpenGLWidget::paintGL()
 	//Clear the screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// Our example framework only uses a single shader for the scene (for all meshes).
-	mShader->bind();
-
-	// These two matrices are constant for all meshes.
-	mShader->setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
-	mShader->setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
-
-	// Iterate over each mesh which the user added to our list, and render it.
-	for (OpenGLMeshData meshData : mMeshData)
-	{
-		//Set up the model matrrix based on provided translation and scale.
-		QMatrix4x4 modelToWorldMatrix;
-		modelToWorldMatrix.translate(meshData.translation); 
-		modelToWorldMatrix.scale(meshData.scale);
-		mShader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
-
-		// Bind the vertex array for the current mesh
-		glBindVertexArray(meshData.vertexArrayObject);
-		// Draw the mesh
-		glDrawElements(GL_TRIANGLES, meshData.noOfIndices, meshData.indexType, 0);
-		// Unbind the vertex array.
-		glBindVertexArray(0);
-	}
-	
-	 // We're done with the shader for this frame.
-	mShader->release();
+	renderOneFrame();
 	
 	// Check for errors.
 	GLenum errCode = glGetError();

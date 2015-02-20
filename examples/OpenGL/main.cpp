@@ -56,7 +56,7 @@ public:
 	}
 
 protected:
-	void initialize() override
+	void initializeExample() override
 	{
 		FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>(".");
 		PagedVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);

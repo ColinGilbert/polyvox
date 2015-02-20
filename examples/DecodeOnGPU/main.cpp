@@ -75,7 +75,7 @@ public:
 	}
 
 protected:
-	void initialize() override
+	void initializeExample() override
 	{
 		QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
 

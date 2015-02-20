@@ -77,7 +77,7 @@ public:
 	}
 
 protected:
-	void initialize() override
+	void initializeExample() override
 	{
 		//Create an empty volume and then place a sphere in it
 		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
