@@ -163,8 +163,8 @@ protected:
 		mShader->bind();
 
 		// These two matrices are constant for all meshes.
-		mShader->setUniformValue("viewMatrix", viewMatrix);
-		mShader->setUniformValue("projectionMatrix", projectionMatrix);
+		mShader->setUniformValue("viewMatrix", viewMatrix());
+		mShader->setUniformValue("projectionMatrix", projectionMatrix());
 
 		// Iterate over each mesh which the user added to our list, and render it.
 		for (OpenGLMeshData meshData : mMeshData)

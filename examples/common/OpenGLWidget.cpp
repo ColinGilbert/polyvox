@@ -4,17 +4,26 @@
 #include <QMatrix4x4>
 #include <QCoreApplication>
 #include <QTimer>
-//#include <QtMath>
 
 using namespace PolyVox;
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////
-// Public functions
+// Protected functions
 ////////////////////////////////////////////////////////////////////////////////
 OpenGLWidget::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
 {
+}
+
+const QMatrix4x4& OpenGLWidget::viewMatrix()
+{ 
+	return mViewMatrix;
+}
+
+const QMatrix4x4& OpenGLWidget::projectionMatrix()
+{
+	return mProjectionMatrix;
 }
 
 void OpenGLWidget::setCameraTransform(QVector3D position, float pitch, float yaw)
@@ -24,40 +33,8 @@ void OpenGLWidget::setCameraTransform(QVector3D position, float pitch, float yaw
 	mCameraPitch = pitch;
 }
 
-void OpenGLWidget::mousePressEvent(QMouseEvent* event)
-{
-	// Initialise these variables which will be used when the mouse actually moves.
-	m_CurrentMousePos = event->pos();
-	m_LastFrameMousePos = m_CurrentMousePos;
-}
-
-void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
-{
-	// Update the x and y rotations based on the mouse movement.
-	m_CurrentMousePos = event->pos();
-	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
-	mCameraYaw -= diff.x() * mCameraRotateSpeed;
-	mCameraPitch -= diff.y() * mCameraRotateSpeed;
-	m_LastFrameMousePos = m_CurrentMousePos;
-}
-
-void OpenGLWidget::keyPressEvent(QKeyEvent* event)
-{
-	if (event->key() == Qt::Key_Escape)
-	{
-		close();
-	}
-
-	mPressedKeys.append(event->key());
-}
-
-void OpenGLWidget::keyReleaseEvent(QKeyEvent* event)
-{
-	mPressedKeys.removeAll(event->key());
-}
-
 ////////////////////////////////////////////////////////////////////////////////
-// Protected functions
+// Private functions
 ////////////////////////////////////////////////////////////////////////////////
 void OpenGLWidget::initializeGL()
 {
@@ -106,9 +83,8 @@ void OpenGLWidget::resizeGL(int w, int h)
 	float zNear = 1.0;
 	float zFar = 1000.0;
 	
-	projectionMatrix.setToIdentity();
-	//projectionMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
-	projectionMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
+	mProjectionMatrix.setToIdentity();
+	mProjectionMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
 }
 
 void OpenGLWidget::paintGL()
@@ -154,8 +130,8 @@ void OpenGLWidget::paintGL()
 		mCameraPosition -= cameraRight * deltaTime * mCameraMoveSpeed;
 	}
 
-	viewMatrix.setToIdentity();
-	viewMatrix.lookAt(
+	mViewMatrix.setToIdentity();
+	mViewMatrix.lookAt(
 		mCameraPosition,           // Camera is here
 		mCameraPosition + cameraForward, // and looks here : at the same position, plus "direction"
 		cameraUp                  // Head is up (set to 0,-1,0 to look upside-down)
@@ -172,4 +148,36 @@ void OpenGLWidget::paintGL()
 	{
 	  std::cerr << "OpenGL Error: " << errCode << std::endl;
 	}
+}
+
+void OpenGLWidget::mousePressEvent(QMouseEvent* event)
+{
+	// Initialise these variables which will be used when the mouse actually moves.
+	m_CurrentMousePos = event->pos();
+	m_LastFrameMousePos = m_CurrentMousePos;
+}
+
+void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
+{
+	// Update the x and y rotations based on the mouse movement.
+	m_CurrentMousePos = event->pos();
+	QPoint diff = m_CurrentMousePos - m_LastFrameMousePos;
+	mCameraYaw -= diff.x() * mCameraRotateSpeed;
+	mCameraPitch -= diff.y() * mCameraRotateSpeed;
+	m_LastFrameMousePos = m_CurrentMousePos;
+}
+
+void OpenGLWidget::keyPressEvent(QKeyEvent* event)
+{
+	if (event->key() == Qt::Key_Escape)
+	{
+		close();
+	}
+
+	mPressedKeys.append(event->key());
+}
+
+void OpenGLWidget::keyReleaseEvent(QKeyEvent* event)
+{
+	mPressedKeys.removeAll(event->key());
 }

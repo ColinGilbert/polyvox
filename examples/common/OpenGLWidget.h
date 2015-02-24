@@ -34,16 +34,32 @@ distribution.
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 
-// Our OpenGLWidget is used by all the examples to render the extracted meshes. It is
-// fairly specific to our needs (you probably won't want to use it in your own project)
-// but should provide a useful illustration of how PolyVox meshes can be rendered.
+// This is a very basic class for getting an OpenGL example up and running with Qt5. It simply displays
+// an OpenGL widget and implements an FPS-style camera as well as other very basic functionality. User
+// code can derive from this and override the provided virtual functions to implement functionality.
 class OpenGLWidget : public QGLWidget, protected QOpenGLFunctions_3_1
 {
-public:
-	// Constructor
+protected:
+	// Protected constructor because this widget should not be created directly - it should only be subclassed.
 	OpenGLWidget(QWidget *parent);
 
+	// Derived classes should override these to provide functionality.
+	virtual void initialize() {}
+	virtual void renderOneFrame() {}
+
+	// Getters for properties defined by this widget.
+	const QMatrix4x4& viewMatrix();
+	const QMatrix4x4& projectionMatrix();
+
+	// Setters for properties defined by this widget.
 	void setCameraTransform(QVector3D position, float pitch, float yaw);
+
+private:
+
+	// Qt OpenGL functions
+	void initializeGL();
+	void resizeGL(int w, int h);
+	void paintGL();
 
 	// Mouse handling
 	void mouseMoveEvent(QMouseEvent* event);
@@ -53,21 +69,9 @@ public:
 	void keyPressEvent(QKeyEvent* event);
 	void keyReleaseEvent(QKeyEvent* event);
 
-protected:
-
-	// Qt OpenGL functions
-	void initializeGL();
-	void resizeGL(int w, int h);
-	void paintGL();
-
-	virtual void initialize() {}
-	virtual void renderOneFrame() {}
-
-protected:
-
 	// Matrices
-	QMatrix4x4 viewMatrix;
-	QMatrix4x4 projectionMatrix;
+	QMatrix4x4 mViewMatrix;
+	QMatrix4x4 mProjectionMatrix;
 
 	// Mouse data
 	QPoint m_LastFrameMousePos;
