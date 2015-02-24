@@ -26,6 +26,7 @@ distribution.
 
 #include <QElapsedTimer>
 #include <QGLWidget>
+#include <QMatrix4x4>
 
 // This is a very basic class for getting an OpenGL example up and running with Qt5. It simply displays
 // an OpenGL widget and implements an FPS-style camera as well as other very basic functionality. User
