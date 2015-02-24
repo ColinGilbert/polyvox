@@ -26,6 +26,13 @@ distribution.
 
 #include "OpenGLWidget.h"
 
+#include "PolyVox/Mesh.h"
+
+#include <QGLShaderProgram>
+#include <QOpenGLBuffer>
+#include <QOpenGLFunctions_3_1>
+#include <QOpenGLVertexArrayObject>
+
 // This structure holds all the data required
 // to render one of our meshes through OpenGL. 
 struct OpenGLMeshData

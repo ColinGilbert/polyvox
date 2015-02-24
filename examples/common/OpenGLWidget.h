@@ -21,18 +21,11 @@ misrepresented as being the original software.
 distribution. 	
 *******************************************************************************/
 
-#ifndef __BasicExample_OpenGLWidget_H__
-#define __BasicExample_OpenGLWidget_H__
-
-#include "PolyVox/Mesh.h"
-
-#include <QOpenGLFunctions_3_1>
+#ifndef __OpenGLWidget_H_A72D4D2F8E__ // Random junk as 'OpenGLWidget seems like it could be a common name.
+#define __OpenGLWidget_H_A72D4D2F8E__
 
 #include <QElapsedTimer>
 #include <QGLWidget>
-#include <QGLShaderProgram>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLBuffer>
 
 // This is a very basic class for getting an OpenGL example up and running with Qt5. It simply displays
 // an OpenGL widget and implements an FPS-style camera as well as other very basic functionality. User
@@ -97,4 +90,4 @@ private:
 
 #include "OpenGLWidget.inl"
 
-#endif //__BasicExample_OpenGLWidget_H__
+#endif //__OpenGLWidget_H_A72D4D2F8E__

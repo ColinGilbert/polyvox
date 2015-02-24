@@ -1,12 +1,9 @@
 #include "OpenGLWidget.h"
 
 #include <QMouseEvent>
-#include <QMatrix4x4>
-#include <QCoreApplication>
 #include <QTimer>
 
-using namespace PolyVox;
-using namespace std;
+#include <iostream>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Protected functions
