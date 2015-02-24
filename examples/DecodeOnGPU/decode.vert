@@ -4,9 +4,9 @@ in uvec4 position; // This will be the position of the vertex in model-space
 in uint normal;
 
 // The usual matrices are provided
-uniform mat4 cameraToClipMatrix;
-uniform mat4 worldToCameraMatrix;
-uniform mat4 modelToWorldMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 modelMatrix;
 
 // This will be used by the fragment shader to calculate flat-shaded normals. This is an unconventional approach
 // but we use it in this example framework because not all surface extractor generate surface normals.
@@ -40,7 +40,7 @@ void main()
 	worldNormal.w = 1.0;
 	
 	// Standard sequence of OpenGL transformations.
-	worldPosition = modelToWorldMatrix * decodedPosition;
-	vec4 cameraPosition = worldToCameraMatrix * worldPosition;
-	gl_Position = cameraToClipMatrix * cameraPosition;
+	worldPosition = modelMatrix * decodedPosition;
+	vec4 cameraPosition = viewMatrix * worldPosition;
+	gl_Position = projectionMatrix * cameraPosition;
 }

@@ -106,9 +106,9 @@ void OpenGLWidget::resizeGL(int w, int h)
 	float zNear = 1.0;
 	float zFar = 1000.0;
 	
-	cameraToClipMatrix.setToIdentity();
-	//cameraToClipMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
-	cameraToClipMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
+	projectionMatrix.setToIdentity();
+	//projectionMatrix.frustum(-aspectRatio, aspectRatio, -1, 1, zNear, zFar);
+	projectionMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
 }
 
 void OpenGLWidget::paintGL()
@@ -154,8 +154,8 @@ void OpenGLWidget::paintGL()
 		mCameraPosition -= cameraRight * deltaTime * mCameraMoveSpeed;
 	}
 
-	worldToCameraMatrix.setToIdentity();
-	worldToCameraMatrix.lookAt(
+	viewMatrix.setToIdentity();
+	viewMatrix.lookAt(
 		mCameraPosition,           // Camera is here
 		mCameraPosition + cameraForward, // and looks here : at the same position, plus "direction"
 		cameraUp                  // Head is up (set to 0,-1,0 to look upside-down)

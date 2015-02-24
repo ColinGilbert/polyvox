@@ -163,17 +163,17 @@ protected:
 		mShader->bind();
 
 		// These two matrices are constant for all meshes.
-		mShader->setUniformValue("worldToCameraMatrix", worldToCameraMatrix);
-		mShader->setUniformValue("cameraToClipMatrix", cameraToClipMatrix);
+		mShader->setUniformValue("viewMatrix", viewMatrix);
+		mShader->setUniformValue("projectionMatrix", projectionMatrix);
 
 		// Iterate over each mesh which the user added to our list, and render it.
 		for (OpenGLMeshData meshData : mMeshData)
 		{
 			//Set up the model matrrix based on provided translation and scale.
-			QMatrix4x4 modelToWorldMatrix;
-			modelToWorldMatrix.translate(meshData.translation);
-			modelToWorldMatrix.scale(meshData.scale);
-			mShader->setUniformValue("modelToWorldMatrix", modelToWorldMatrix);
+			QMatrix4x4 modelMatrix;
+			modelMatrix.translate(meshData.translation);
+			modelMatrix.scale(meshData.scale);
+			mShader->setUniformValue("modelMatrix", modelMatrix);
 
 			// Bind the vertex array for the current mesh
 			glBindVertexArray(meshData.vertexArrayObject);

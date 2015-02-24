@@ -66,8 +66,8 @@ protected:
 protected:
 
 	// Matrices
-	QMatrix4x4 worldToCameraMatrix;
-	QMatrix4x4 cameraToClipMatrix;
+	QMatrix4x4 viewMatrix;
+	QMatrix4x4 projectionMatrix;
 
 	// Mouse data
 	QPoint m_LastFrameMousePos;

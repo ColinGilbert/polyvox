@@ -127,17 +127,17 @@ def run():
 	in vec4 position;
 	in vec4 normal;
 	
-	uniform mat4 cameraToClipMatrix;
-	uniform mat4 worldToCameraMatrix;
-	uniform mat4 modelToWorldMatrix;
+	uniform mat4 projectionMatrix;
+	uniform mat4 viewMatrix;
+	uniform mat4 modelMatrix;
 	
 	flat out float theColor;
 	
 	void main()
 	{
-		vec4 temp = modelToWorldMatrix * position;
-		temp = worldToCameraMatrix * temp;
-		gl_Position = cameraToClipMatrix * temp;
+		vec4 temp = modelMatrix * position;
+		temp = viewMatrix * temp;
+		gl_Position = projectionMatrix * temp;
 		
 		theColor = clamp(abs(dot(normalize(normal.xyz), normalize(vec3(0.9,0.1,0.5)))), 0, 1);
 	}
@@ -183,13 +183,13 @@ def run():
 		glDisableVertexAttribArray(0)
 	
 	#Now grab out transformation martix locations
-	modelToWorldMatrixUnif = glGetUniformLocation(shader, b"modelToWorldMatrix")
-	worldToCameraMatrixUnif = glGetUniformLocation(shader, b"worldToCameraMatrix")
-	cameraToClipMatrixUnif = glGetUniformLocation(shader, b"cameraToClipMatrix")
+	modelMatrixUnif = glGetUniformLocation(shader, b"modelMatrix")
+	viewMatrixUnif = glGetUniformLocation(shader, b"viewMatrix")
+	projectionMatrixUnif = glGetUniformLocation(shader, b"projectionMatrix")
 	
-	modelToWorldMatrix = np.array([[1.0,0.0,0.0,-32.0],[0.0,1.0,0.0,-32.0],[0.0,0.0,1.0,-32.0],[0.0,0.0,0.0,1.0]], dtype='f')
-	worldToCameraMatrix = np.array([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,-50.0],[0.0,0.0,0.0,1.0]], dtype='f')
-	cameraToClipMatrix = np.array([[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0]], dtype='f')
+	modelMatrix = np.array([[1.0,0.0,0.0,-32.0],[0.0,1.0,0.0,-32.0],[0.0,0.0,1.0,-32.0],[0.0,0.0,0.0,1.0]], dtype='f')
+	viewMatrix = np.array([[1.0,0.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,0.0,1.0,-50.0],[0.0,0.0,0.0,1.0]], dtype='f')
+	projectionMatrix = np.array([[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0]], dtype='f')
 	
 	#These next few lines just set up our camera frustum
 	fovDeg = 45.0
@@ -198,16 +198,16 @@ def run():
 	zNear = 1.0
 	zFar = 1000.0
 	
-	cameraToClipMatrix[0][0] = frustumScale
-	cameraToClipMatrix[1][1] = frustumScale
-	cameraToClipMatrix[2][2] = (zFar + zNear) / (zNear - zFar)
-	cameraToClipMatrix[2][3] = -1.0
-	cameraToClipMatrix[3][2] = (2 * zFar * zNear) / (zNear - zFar)
+	projectionMatrix[0][0] = frustumScale
+	projectionMatrix[1][1] = frustumScale
+	projectionMatrix[2][2] = (zFar + zNear) / (zNear - zFar)
+	projectionMatrix[2][3] = -1.0
+	projectionMatrix[3][2] = (2 * zFar * zNear) / (zNear - zFar)
 	
-	#worldToCameraMatrix and cameraToClipMatrix don't change ever so just set them once here
+	#viewMatrix and projectionMatrix don't change ever so just set them once here
 	with shader:
-		glUniformMatrix4fv(cameraToClipMatrixUnif, 1, GL_TRUE, cameraToClipMatrix)
-		glUniformMatrix4fv(worldToCameraMatrixUnif, 1, GL_TRUE, worldToCameraMatrix)
+		glUniformMatrix4fv(projectionMatrixUnif, 1, GL_TRUE, projectionMatrix)
+		glUniformMatrix4fv(viewMatrixUnif, 1, GL_TRUE, viewMatrix)
 	
 	#These are used to track the rotation of the volume
 	LastFrameMousePos = (0,0)
@@ -240,10 +240,10 @@ def run():
 		rotateAroundX = np.array([[1.0,0.0,0.0,0.0],[0.0,cos(radians(yRotation)),-sin(radians(yRotation)),0.0],[0.0,sin(radians(yRotation)),cos(radians(yRotation)),0.0],[0.0,0.0,0.0,1.0]], dtype='f')
 		rotateAroundY = np.array([[cos(radians(xRotation)),0.0,sin(radians(xRotation)),0.0],[0.0,1.0,0.0,0.0],[-sin(radians(xRotation)),0.0,cos(radians(xRotation)),0.0],[0.0,0.0,0.0,1.0]], dtype='f')
 		
-		modelToWorldMatrix = rotateAroundY.dot(rotateAroundX.dot(moveToOrigin))
+		modelMatrix = rotateAroundY.dot(rotateAroundX.dot(moveToOrigin))
 		
 		with shader:
-			glUniformMatrix4fv(modelToWorldMatrixUnif, 1, GL_TRUE, modelToWorldMatrix)
+			glUniformMatrix4fv(modelMatrixUnif, 1, GL_TRUE, modelMatrix)
 			glBindVertexArray(vertexArrayObject)
 			
 			glDrawElements(GL_TRIANGLES, len(indices), GL_UNSIGNED_INT, None)
