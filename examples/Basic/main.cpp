@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "OpenGLWidget.h"
+#include "PolyVoxExample.h"
 
 #include "PolyVox/CubicSurfaceExtractor.h"
 #include "PolyVox/MarchingCubesSurfaceExtractor.h"
@@ -66,29 +66,42 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 	}
 }
 
+class BasicExample : public PolyVoxExample
+{
+public:
+	BasicExample(QWidget *parent)
+		:PolyVoxExample(parent)
+	{
+	}
+
+protected:
+	void initializeExample() override
+	{
+		// Create an empty volume and then place a sphere in it
+		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
+		createSphereInVolume(volData, 30);
+
+		// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
+		auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
+		//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
+
+		// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
+		// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
+		auto decodedMesh = decodeMesh(mesh);
+
+		//Pass the surface to the OpenGL window
+		addMesh(decodedMesh);
+
+		setCameraTransform(QVector3D(100.0f, 100.0f, 100.0f), -(PI / 4.0f), PI + (PI / 4.0f));
+	}
+};
+
 int main(int argc, char *argv[])
 {
 	//Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
-	OpenGLWidget openGLWidget(0);
+	BasicExample openGLWidget(0);
 	openGLWidget.show();
-
-	//Create an empty volume and then place a sphere in it
-	PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
-	createSphereInVolume(volData, 30);
-
-	// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.
-	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
-	//auto mesh = extractMarchingCubesMesh(&volData, volData.getEnclosingRegion());
-
-	// The surface extractor outputs the mesh in an efficient compressed format which is not directly suitable for rendering. The easiest approach is to 
-	// decode this on the CPU as shown below, though more advanced applications can upload the compressed mesh to the GPU and decompress in shader code.
-	auto decodedMesh = decodeMesh(mesh);
-
-	//Pass the surface to the OpenGL window
-	openGLWidget.addMesh(decodedMesh);
-	//openGLWidget.addMesh(mesh2);
-	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
 
 	//Run the message pump.
 	return app.exec();

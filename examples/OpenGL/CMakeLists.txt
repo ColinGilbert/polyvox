@@ -29,7 +29,7 @@ SET(SRC_FILES
 	#OpenGLImmediateModeSupport.cpp
 	#OpenGLSupport.cpp
 	#OpenGLVertexBufferObjectSupport.cpp
-	../common/OpenGLWidget.cpp
+	../common/PolyVoxExample.cpp
 	Shapes.cpp
 	)
 
@@ -39,6 +39,8 @@ SET(INC_FILES
 	#OpenGLSupport.h
 	#OpenGLVertexBufferObjectSupport.h
 	../common/OpenGLWidget.h
+	../common/OpenGLWidget.inl
+	../common/PolyVoxExample.h
 	Shapes.h
 )
 

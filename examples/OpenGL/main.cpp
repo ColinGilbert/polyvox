@@ -31,7 +31,7 @@ freely, subject to the following restrictions:
 
 #include "Shapes.h"
 
-#include "OpenGLWidget.h"
+#include "PolyVoxExample.h"
 
 #ifdef WIN32
 #include <windows.h>   // Standard Header For Most Programs
@@ -47,100 +47,110 @@ using namespace std;
 
 const int32_t g_uVolumeSideLength = 128;
 
-int main(int argc, char *argv[])
+class OpenGLExample : public PolyVoxExample
 {
-	FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>(".");
-	PagedVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);
-
-	//Make our volume contain a sphere in the center.
-	int32_t minPos = 0;
-	int32_t midPos = g_uVolumeSideLength / 2;
-	int32_t maxPos = g_uVolumeSideLength - 1;
-
-	cout << "Creating sphere 1" << std::endl;
-	createSphereInVolume(volData, 60.0f, 5);
-	cout << "Creating sphere 2" << std::endl;
-	createSphereInVolume(volData, 50.0f, 4);
-	cout << "Creating sphere 3" << std::endl;
-	createSphereInVolume(volData, 40.0f, 3);
-	cout << "Creating sphere 4" << std::endl;
-	createSphereInVolume(volData, 30.0f, 2);
-	cout << "Creating sphere 5" << std::endl;
-	createSphereInVolume(volData, 20.0f, 1);
-
-	cout << "Creating cubes" << std::endl;
-	createCubeInVolume(volData, Vector3DInt32(minPos, minPos, minPos), Vector3DInt32(midPos-1, midPos-1, midPos-1), 0);
-	createCubeInVolume(volData, Vector3DInt32(midPos+1, midPos+1, minPos), Vector3DInt32(maxPos, maxPos, midPos-1), 0);
-	createCubeInVolume(volData, Vector3DInt32(midPos+1, minPos, midPos+1), Vector3DInt32(maxPos, midPos-1, maxPos), 0);
-	createCubeInVolume(volData, Vector3DInt32(minPos, midPos+1, midPos+1), Vector3DInt32(midPos-1, maxPos, maxPos), 0);
-
-	createCubeInVolume(volData, Vector3DInt32(1, midPos-10, midPos-10), Vector3DInt32(maxPos-1, midPos+10, midPos+10), MaterialDensityPair44::getMaxDensity());
-	createCubeInVolume(volData, Vector3DInt32(midPos-10, 1, midPos-10), Vector3DInt32(midPos+10, maxPos-1, midPos+10), MaterialDensityPair44::getMaxDensity());
-	createCubeInVolume(volData, Vector3DInt32(midPos-10, midPos-10 ,1), Vector3DInt32(midPos+10, midPos+10, maxPos-1), MaterialDensityPair44::getMaxDensity());
-
-	QApplication app(argc, argv);
-
-	OpenGLWidget openGLWidget(0);
-
-
-	openGLWidget.show();
-
-	QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
-
-	if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/openglexample.vert"))
+public:
+	OpenGLExample(QWidget *parent)
+		:PolyVoxExample(parent)
 	{
-		std::cerr << shader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
 	}
 
-	if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/openglexample.frag"))
+protected:
+	void initializeExample() override
 	{
-		std::cerr << shader->log().toStdString() << std::endl;
-		exit(EXIT_FAILURE);
-	}
+		FilePager<MaterialDensityPair88>* pager = new FilePager<MaterialDensityPair88>(".");
+		PagedVolume<MaterialDensityPair88> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)), pager);
 
-	openGLWidget.setShader(shader);
+		//Make our volume contain a sphere in the center.
+		int32_t minPos = 0;
+		int32_t midPos = g_uVolumeSideLength / 2;
+		int32_t maxPos = g_uVolumeSideLength - 1;
 
-	QTime time;
-	time.start();
-	//openGLWidget.setVolume(&volData);
-	cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
+		cout << "Creating sphere 1" << std::endl;
+		createSphereInVolume(volData, 60.0f, 5);
+		cout << "Creating sphere 2" << std::endl;
+		createSphereInVolume(volData, 50.0f, 4);
+		cout << "Creating sphere 3" << std::endl;
+		createSphereInVolume(volData, 40.0f, 3);
+		cout << "Creating sphere 4" << std::endl;
+		createSphereInVolume(volData, 30.0f, 2);
+		cout << "Creating sphere 5" << std::endl;
+		createSphereInVolume(volData, 20.0f, 1);
 
-	const int32_t extractedRegionSize = 32;
-	int meshCounter = 0;
+		cout << "Creating cubes" << std::endl;
+		createCubeInVolume(volData, Vector3DInt32(minPos, minPos, midPos + 1), Vector3DInt32(midPos - 1, midPos - 1, maxPos), 0);
+		createCubeInVolume(volData, Vector3DInt32(midPos + 1, midPos + 1, midPos + 1), Vector3DInt32(maxPos, maxPos, maxPos), 0);
+		createCubeInVolume(volData, Vector3DInt32(minPos, midPos + 1, minPos), Vector3DInt32(midPos - 1, maxPos, midPos - 1), 0);
+		createCubeInVolume(volData, Vector3DInt32(midPos + 1, minPos, minPos), Vector3DInt32(maxPos, midPos - 1, midPos - 1), 0);
 
-	for (int32_t z = 0; z < volData.getDepth(); z += extractedRegionSize)
-	{
-		for (int32_t y = 0; y < volData.getHeight(); y += extractedRegionSize)
+		createCubeInVolume(volData, Vector3DInt32(1, midPos - 10, midPos - 10), Vector3DInt32(maxPos - 1, midPos + 10, midPos + 10), MaterialDensityPair44::getMaxDensity());
+		createCubeInVolume(volData, Vector3DInt32(midPos - 10, 1, midPos - 10), Vector3DInt32(midPos + 10, maxPos - 1, midPos + 10), MaterialDensityPair44::getMaxDensity());
+		createCubeInVolume(volData, Vector3DInt32(midPos - 10, midPos - 10, 1), Vector3DInt32(midPos + 10, midPos + 10, maxPos - 1), MaterialDensityPair44::getMaxDensity());
+
+		QSharedPointer<QGLShaderProgram> shader(new QGLShaderProgram);
+
+		if (!shader->addShaderFromSourceFile(QGLShader::Vertex, ":/openglexample.vert"))
 		{
-			for (int32_t x = 0; x < volData.getWidth(); x += extractedRegionSize)
+			std::cerr << shader->log().toStdString() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		if (!shader->addShaderFromSourceFile(QGLShader::Fragment, ":/openglexample.frag"))
+		{
+			std::cerr << shader->log().toStdString() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+
+		setShader(shader);
+
+		QTime time;
+		time.start();
+		//openGLWidget.setVolume(&volData);
+		cout << endl << "Time taken = " << time.elapsed() / 1000.0f << "s" << endl << endl;
+
+		const int32_t extractedRegionSize = 32;
+		int meshCounter = 0;
+
+		for (int32_t z = 0; z < volData.getDepth(); z += extractedRegionSize)
+		{
+			for (int32_t y = 0; y < volData.getHeight(); y += extractedRegionSize)
 			{
-				// Specify the region to extract based on a starting position and the desired region sze.
-				PolyVox::Region regToExtract(x, y, z, x + extractedRegionSize, y + extractedRegionSize, z + extractedRegionSize);
+				for (int32_t x = 0; x < volData.getWidth(); x += extractedRegionSize)
+				{
+					// Specify the region to extract based on a starting position and the desired region sze.
+					PolyVox::Region regToExtract(x, y, z, x + extractedRegionSize, y + extractedRegionSize, z + extractedRegionSize);
 
-				// If you uncomment this line you will be able to see that the volume is rendered as multiple seperate meshes.
-				//regToExtract.shrink(1);
+					// If you uncomment this line you will be able to see that the volume is rendered as multiple seperate meshes.
+					//regToExtract.shrink(1);
 
-				// Perform the extraction for this region of the volume
-				auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
+					// Perform the extraction for this region of the volume
+					auto mesh = extractMarchingCubesMesh(&volData, regToExtract);
 
-				// The returned mesh needs to be decoded to be appropriate for GPU rendering.
-				auto decodedMesh = decodeMesh(mesh);
+					// The returned mesh needs to be decoded to be appropriate for GPU rendering.
+					auto decodedMesh = decodeMesh(mesh);
 
-				// Pass the surface to the OpenGL window. Note that we are also passing an offset in this multi-mesh example. This is because
-				// the surface extractors return a mesh with 'local space' positions to reduce storage requirements and precision problems.
-				openGLWidget.addMesh(decodedMesh, decodedMesh.getOffset());
+					// Pass the surface to the OpenGL window. Note that we are also passing an offset in this multi-mesh example. This is because
+					// the surface extractors return a mesh with 'local space' positions to reduce storage requirements and precision problems.
+					addMesh(decodedMesh, decodedMesh.getOffset());
 
-				meshCounter++;
+					meshCounter++;
+				}
 			}
 		}
+
+		cout << "Rendering volume as " << meshCounter << " seperate meshes" << endl;
+
+		setCameraTransform(QVector3D(150.0f, 150.0f, 150.0f), -(PI / 4.0f), PI + (PI / 4.0f));
 	}
+};
 
-	cout << "Rendering volume as " << meshCounter << " seperate meshes" << endl;
+int main(int argc, char *argv[])
+{
+	//Create and show the Qt OpenGL window
+	QApplication app(argc, argv);
+	OpenGLExample openGLWidget(0);
+	openGLWidget.show();
 
-
-	openGLWidget.setViewableRegion(volData.getEnclosingRegion());
-
-
+	//Run the message pump.
 	return app.exec();
-} 
+}
