@@ -39,7 +39,7 @@ struct OpenGLMeshData
 	float scale;
 };
 
-class PolyVoxExample : public OpenGLWidget
+class PolyVoxExample : public OpenGLWidget<QOpenGLFunctions_3_1>
 {
 public:
 	PolyVoxExample(QWidget *parent)

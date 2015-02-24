@@ -37,7 +37,9 @@ distribution.
 // This is a very basic class for getting an OpenGL example up and running with Qt5. It simply displays
 // an OpenGL widget and implements an FPS-style camera as well as other very basic functionality. User
 // code can derive from this and override the provided virtual functions to implement functionality.
-class OpenGLWidget : public QGLWidget, protected QOpenGLFunctions_3_1
+// The class is templatized so users can specify the OpenGL version via the appropriate QOpenGLFunctions.
+template <typename QOpenGLFunctionsType>
+class OpenGLWidget : public QGLWidget, protected QOpenGLFunctionsType
 {
 protected:
 	// Protected constructor because this widget should not be created directly - it should only be subclassed.
@@ -92,5 +94,7 @@ private:
 
 	QElapsedTimer mElapsedTimer;
 };
+
+#include "OpenGLWidget.inl"
 
 #endif //__BasicExample_OpenGLWidget_H__

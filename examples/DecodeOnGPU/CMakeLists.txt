@@ -24,13 +24,13 @@ PROJECT(DecodeOnGPUExample)
 #Projects source files
 SET(SRC_FILES
 	main.cpp
-	../common/OpenGLWidget.cpp
 	../common/PolyVoxExample.cpp
 )
 
 #Projects headers files	
 SET(INC_FILES	
 	../common/OpenGLWidget.h
+	../common/OpenGLWidget.inl
 	../common/PolyVoxExample.h
 )
 

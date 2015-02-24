@@ -11,22 +11,26 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 // Protected functions
 ////////////////////////////////////////////////////////////////////////////////
-OpenGLWidget::OpenGLWidget(QWidget *parent)
+template <typename QOpenGLFunctionsType>
+OpenGLWidget<QOpenGLFunctionsType>::OpenGLWidget(QWidget *parent)
 	:QGLWidget(parent)
 {
 }
 
-const QMatrix4x4& OpenGLWidget::viewMatrix()
+template <typename QOpenGLFunctionsType>
+const QMatrix4x4& OpenGLWidget<QOpenGLFunctionsType>::viewMatrix()
 { 
 	return mViewMatrix;
 }
 
-const QMatrix4x4& OpenGLWidget::projectionMatrix()
+template <typename QOpenGLFunctionsType>
+const QMatrix4x4& OpenGLWidget<QOpenGLFunctionsType>::projectionMatrix()
 {
 	return mProjectionMatrix;
 }
 
-void OpenGLWidget::setCameraTransform(QVector3D position, float pitch, float yaw)
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::setCameraTransform(QVector3D position, float pitch, float yaw)
 {
 	mCameraPosition = position;
 	mCameraYaw = yaw;
@@ -36,7 +40,8 @@ void OpenGLWidget::setCameraTransform(QVector3D position, float pitch, float yaw
 ////////////////////////////////////////////////////////////////////////////////
 // Private functions
 ////////////////////////////////////////////////////////////////////////////////
-void OpenGLWidget::initializeGL()
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::initializeGL()
 {
 	if (!initializeOpenGLFunctions())
 	{
@@ -74,7 +79,8 @@ void OpenGLWidget::initializeGL()
 	mElapsedTimer.start();
 }
 
-void OpenGLWidget::resizeGL(int w, int h)
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::resizeGL(int w, int h)
 {
 	//Setup the viewport
 	glViewport(0, 0, w, h);
@@ -87,7 +93,8 @@ void OpenGLWidget::resizeGL(int w, int h)
 	mProjectionMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
 }
 
-void OpenGLWidget::paintGL()
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::paintGL()
 {
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	QVector3D cameraForward(
@@ -150,14 +157,16 @@ void OpenGLWidget::paintGL()
 	}
 }
 
-void OpenGLWidget::mousePressEvent(QMouseEvent* event)
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::mousePressEvent(QMouseEvent* event)
 {
 	// Initialise these variables which will be used when the mouse actually moves.
 	m_CurrentMousePos = event->pos();
 	m_LastFrameMousePos = m_CurrentMousePos;
 }
 
-void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::mouseMoveEvent(QMouseEvent* event)
 {
 	// Update the x and y rotations based on the mouse movement.
 	m_CurrentMousePos = event->pos();
@@ -167,7 +176,8 @@ void OpenGLWidget::mouseMoveEvent(QMouseEvent* event)
 	m_LastFrameMousePos = m_CurrentMousePos;
 }
 
-void OpenGLWidget::keyPressEvent(QKeyEvent* event)
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Escape)
 	{
@@ -177,7 +187,8 @@ void OpenGLWidget::keyPressEvent(QKeyEvent* event)
 	mPressedKeys.append(event->key());
 }
 
-void OpenGLWidget::keyReleaseEvent(QKeyEvent* event)
+template <typename QOpenGLFunctionsType>
+void OpenGLWidget<QOpenGLFunctionsType>::keyReleaseEvent(QKeyEvent* event)
 {
 	mPressedKeys.removeAll(event->key());
 }

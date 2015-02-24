@@ -24,7 +24,6 @@ PROJECT(PagingExample)
 #Projects source files
 SET(SRC_FILES
 	main.cpp
-	../common/OpenGLWidget.cpp
 	Perlin.cpp
 	../common/PolyVoxExample.cpp
 )
@@ -32,6 +31,7 @@ SET(SRC_FILES
 #Projects headers files	
 SET(INC_FILES	
 	../common/OpenGLWidget.h
+	../common/OpenGLWidget.inl
 	Perlin.h
 	../common/PolyVoxExample.h
 )
