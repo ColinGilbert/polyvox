@@ -40,7 +40,7 @@ void OpenGLWidget<QOpenGLFunctionsType>::setCameraTransform(QVector3D position, 
 template <typename QOpenGLFunctionsType>
 void OpenGLWidget<QOpenGLFunctionsType>::initializeGL()
 {
-	if (!initializeOpenGLFunctions())
+	if (!this->initializeOpenGLFunctions())
 	{
 		std::cerr << "Could not initialize OpenGL functions" << std::endl;
 		exit(EXIT_FAILURE);
