@@ -48,23 +48,23 @@ void OpenGLWidget<QOpenGLFunctionsType>::initializeGL()
 	
 	//Print out some information about the OpenGL implementation.
 	std::cout << "OpenGL Implementation Details:" << std::endl;
-	if(glGetString(GL_VENDOR))
-	  std::cout << "\tGL_VENDOR: " << glGetString(GL_VENDOR) << std::endl;
-	if(glGetString(GL_RENDERER))
-	  std::cout << "\tGL_RENDERER: " << glGetString(GL_RENDERER) << std::endl;
-	if(glGetString(GL_VERSION))
-	  std::cout << "\tGL_VERSION: " << glGetString(GL_VERSION) << std::endl;
-	if(glGetString(GL_SHADING_LANGUAGE_VERSION))
-	  std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	if(this->glGetString(GL_VENDOR))
+	  std::cout << "\tGL_VENDOR: " << this->glGetString(GL_VENDOR) << std::endl;
+	if(this->glGetString(GL_RENDERER))
+	  std::cout << "\tGL_RENDERER: " << this->glGetString(GL_RENDERER) << std::endl;
+	if(this->glGetString(GL_VERSION))
+	  std::cout << "\tGL_VERSION: " << this->glGetString(GL_VERSION) << std::endl;
+	if(this->glGetString(GL_SHADING_LANGUAGE_VERSION))
+	  std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << this->glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	//Set up the clear colour
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth(1.0f);
+	this->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	this->glClearDepth(1.0f);
 	
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glDepthFunc(GL_LEQUAL);
-	glDepthRange(0.0, 1.0);
+	this->glEnable(GL_DEPTH_TEST);
+	this->glDepthMask(GL_TRUE);
+	this->glDepthFunc(GL_LEQUAL);
+	this->glDepthRange(0.0, 1.0);
 
 	initialize();
 
@@ -80,7 +80,7 @@ template <typename QOpenGLFunctionsType>
 void OpenGLWidget<QOpenGLFunctionsType>::resizeGL(int w, int h)
 {
 	//Setup the viewport
-	glViewport(0, 0, w, h);
+	this->glViewport(0, 0, w, h);
 	
 	auto aspectRatio = w / (float)h;
 	float zNear = 1.0;
@@ -142,12 +142,12 @@ void OpenGLWidget<QOpenGLFunctionsType>::paintGL()
 		);
 
 	//Clear the screen
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	this->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	renderOneFrame();
 	
 	// Check for errors.
-	GLenum errCode = glGetError();
+	GLenum errCode = this->glGetError();
 	if(errCode != GL_NO_ERROR)
 	{
 	  std::cerr << "OpenGL Error: " << errCode << std::endl;
