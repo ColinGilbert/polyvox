@@ -67,7 +67,7 @@ void createSphereInVolume(PagedVolume<MaterialDensityPair44>& volData, Vector3DF
 					voxel.setDensity(uDensity);
 
 					//Wrte the voxel value into the volume	
-					volData.setVoxelAt(x, y, z, voxel);
+					volData.setVoxel(x, y, z, voxel);
 				}
 			}
 		}
@@ -127,7 +127,7 @@ public:
 					// Voxel position within a chunk always start from zero. So if a chunk represents region (4, 8, 12) to (11, 19, 15)
 					// then the valid chunk voxels are from (0, 0, 0) to (7, 11, 3). Hence we subtract the lower corner position of the
 					// region from the volume space position in order to get the chunk space position.
-					pChunk->setVoxelAt(x - region.getLowerX(), y - region.getLowerY(), z - region.getLowerZ(), voxel);
+					pChunk->setVoxel(x - region.getLowerX(), y - region.getLowerY(), z - region.getLowerZ(), voxel);
 				}
 			}
 		}

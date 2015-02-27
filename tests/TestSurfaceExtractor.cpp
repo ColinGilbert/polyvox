@@ -120,7 +120,7 @@ VolumeType* createAndFillVolume(void)
 				typename VolumeType::VoxelType voxelValue;
 				writeDensityValueToVoxel<typename VolumeType::VoxelType>(x + y + z, voxelValue);
 				writeMaterialValueToVoxel<typename VolumeType::VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
-				volData->setVoxelAt(x, y, z, voxelValue);
+				volData->setVoxel(x, y, z, voxelValue);
 			}
 		}
 	}
@@ -150,7 +150,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 				float voxelValue = static_cast<float>(rng()) / static_cast<float>(std::numeric_limits<int32_t>::max()); // Float in range 0.0 to 1.0
 				voxelValue = voxelValue	* (maxValue - minValue) + minValue; // Float in range minValue to maxValue
 
-				volData->setVoxelAt(x, y, z, voxelValue);
+				volData->setVoxel(x, y, z, voxelValue);
 			}
 		}
 	}

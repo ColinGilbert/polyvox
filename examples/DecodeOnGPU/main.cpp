@@ -60,7 +60,7 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 				}
 
 				//Wrte the voxel value into the volume	
-				volData.setVoxelAt(x, y, z, uVoxelValue);
+				volData.setVoxel(x, y, z, uVoxelValue);
 			}
 		}
 	}

@@ -50,7 +50,7 @@ void TestLowPassFilter::testExecute()
 				if(x % 2 == 0)
 				{
 					Density8 voxel(32);
-					volData.setVoxelAt(x, y, z, voxel);
+					volData.setVoxel(x, y, z, voxel);
 				}
 			}
 		}

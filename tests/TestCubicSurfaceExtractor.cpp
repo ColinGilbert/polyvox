@@ -78,7 +78,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 				if (minValue == maxValue)
 				{
 					// In this case we are filling the whole volume with a single value.
-					volData->setVoxelAt(x, y, z, minValue);
+					volData->setVoxel(x, y, z, minValue);
 				}
 				else
 				{
@@ -86,7 +86,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, typename Vol
 					// We can't use std distributions because they vary between platforms (breaking tests).
 					int voxelValue = (rng() % (maxValue - minValue + 1)) + minValue; // +1 for inclusive bounds
 
-					volData->setVoxelAt(x, y, z, static_cast<typename VolumeType::VoxelType>(voxelValue));
+					volData->setVoxel(x, y, z, static_cast<typename VolumeType::VoxelType>(voxelValue));
 				}
 			}
 		}
@@ -113,11 +113,11 @@ VolumeType* createAndFillVolumeRealistic(int32_t iVolumeSideLength)
 				// that it's not empty/random data, and should allow significant decimation to be performed.
 				if ((x ^ y) & 0x01)
 				{
-					volData->setVoxelAt(x, y, z, 0);
+					volData->setVoxel(x, y, z, 0);
 				}
 				else
 				{
-					volData->setVoxelAt(x, y, z, 1);
+					volData->setVoxel(x, y, z, 1);
 				}
 			}
 		}

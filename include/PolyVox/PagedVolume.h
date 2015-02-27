@@ -130,8 +130,8 @@ namespace PolyVox
 			VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 			VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
-			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
-			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+			void setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+			void setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		private:
 			/// Private copy constructor to prevent accisdental copying
@@ -270,21 +270,13 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
 
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-		/// Gets a voxel at the position given by a 3D vector
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
-
 		/// Sets the number of chunks for which uncompressed data is stored
 		void setMemoryUsageLimit(uint32_t uMemoryUsageInBytes);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
 		/// Sets the voxel at the position given by a 3D vector
 		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
-		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
-		/// Sets the voxel at the position given by a 3D vector
-		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
+
 		/// Tries to ensure that the voxels within the specified Region are loaded into memory.
 		void prefetch(Region regPrefetch);
 		/// Ensures that any voxels within the specified Region are removed from memory.

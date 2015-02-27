@@ -154,45 +154,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
-	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
-		{
-			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
-			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
-			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
-			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
-
-			return m_pData
-			[
-				iLocalXPos + 
-				iLocalYPos * this->getWidth() + 
-				iLocalZPos * this->getWidth() * this->getHeight()
-			];
-		}
-		else
-		{
-			return this->getBorderValue();
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
-	{
-		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// \param uXPos the \c x position of the voxel
 	/// \param uYPos the \c y position of the voxel
 	/// \param uZPos the \c z position of the voxel
@@ -240,50 +201,6 @@ namespace PolyVox
 	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode)
 	{
 		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eWrapMode);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos the \c x position of the voxel
-	/// \param uYPos the \c y position of the voxel
-	/// \param uZPos the \c z position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool RawVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
-	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
-		{
-			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
-			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
-			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
-			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
-
-			m_pData
-			[
-				iLocalXPos + 
-				iLocalYPos * this->getWidth() + 
-				iLocalZPos * this->getWidth() * this->getHeight()
-			] = tValue;
-
-			//Return true to indicate that we modified a voxel.
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos the 3D position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool RawVolume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
-	{
-		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

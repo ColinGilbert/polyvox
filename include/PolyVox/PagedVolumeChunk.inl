@@ -118,7 +118,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::Chunk::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
@@ -138,9 +138,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::Chunk::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue)
     {
-		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
+		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
     }
 
 	template <typename VoxelType>

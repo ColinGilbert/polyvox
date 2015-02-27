@@ -145,7 +145,7 @@ public:
 	/// Sets the value used for voxels which are outside the volume
 	void setBorderValue(const VoxelType& tBorder) { }
 	/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-	bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
+	bool setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
 		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
 		{
@@ -158,7 +158,7 @@ public:
 		}
 	}
 	/// Sets the voxel at the position given by a 3D vector
-	bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue) { return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue); }
+	bool setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue) { return setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue); }
 
 	/// Calculates approximatly how many bytes of memory the volume is currently using.
 	uint32_t calculateSizeInBytes(void) { return 0; }
@@ -181,7 +181,7 @@ void TestVolumeSubclass::testExtractSurface()
 			for(int32_t x = 0; x < volumeSubclass.getWidth(); x++)
 			{
 				Material8 mat(1);
-				volumeSubclass.setVoxelAt(Vector3DInt32(x,y,z),mat);
+				volumeSubclass.setVoxel(Vector3DInt32(x,y,z),mat);
 			}
 		}
 	}

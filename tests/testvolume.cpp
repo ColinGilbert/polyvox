@@ -255,8 +255,8 @@ TestVolume::TestVolume()
 			for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
 			{
 				int32_t value = x + y + z;
-				m_pRawVolume->setVoxelAt(x, y, z, value);
-				m_pPagedVolume->setVoxelAt(x, y, z, value);
+				m_pRawVolume->setVoxel(x, y, z, value);
+				m_pPagedVolume->setVoxel(x, y, z, value);
 			}
 		}
 	}

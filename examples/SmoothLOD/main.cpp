@@ -58,11 +58,11 @@ void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
 					uint8_t uDensity = std::numeric_limits<uint8_t>::max();
 
 					//Wrte the voxel value into the volume	
-					volData.setVoxelAt(x, y, z, uDensity);
+					volData.setVoxel(x, y, z, uDensity);
 				}
 
 				//144 in the middle, (144 - 32) at the edges. Threshold of 128 is between these
-				//volData.setVoxelAt(x, y, z, 144 - fDistToCenter);
+				//volData.setVoxel(x, y, z, 144 - fDistToCenter);
 			}
 		}
 	}

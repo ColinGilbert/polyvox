@@ -204,45 +204,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType PagedVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
-	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
-		{
-			const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
-			const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
-			const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
-
-			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
-			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
-			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
-
-			auto pChunk = getChunk(chunkX, chunkY, chunkZ);
-
-			return pChunk->getVoxel(xOffset, yOffset, zOffset);
-		}
-		else
-		{
-			return this->getBorderValue();
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType PagedVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
-	{
-		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// Increasing the size of the chunk cache will increase memory but may improve performance.
 	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
 	/// volume data and then set it to a smaller value (e.g.64) for general processing.
@@ -307,7 +268,7 @@ namespace PolyVox
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
 		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
-		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
+		pChunk->setVoxel(xOffset, yOffset, zOffset, tValue);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -321,47 +282,6 @@ namespace PolyVox
 	{
 		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eWrapMode);
 	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos the \c x position of the voxel
-	/// \param uYPos the \c y position of the voxel
-	/// \param uZPos the \c z position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool PagedVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
-	{
-		// PolyVox does not throw an exception when a voxel is out of range. Please see 'Error Handling' in the User Manual.
-		POLYVOX_ASSERT(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)), "Position is outside valid region");
-
-		const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
-		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
-		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
-
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
-
-		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
-
-		pChunk->setVoxelAt(xOffset, yOffset, zOffset, tValue);
-
-		//Return true to indicate that we modified a voxel.
-		return true;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos the 3D position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool PagedVolume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
-	{
-		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
-	}
-
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Note that if the memory usage limit is not large enough to support the region this function will only load part of the region. In this case it is undefined which parts will actually be loaded. If all the voxels in the given region are already loaded, this function will not do anything. Other voxels might be unloaded to make space for the new voxels.

@@ -91,7 +91,7 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	bool BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::setVoxel(VoxelType tValue)
 	{
-		return mVolume->setVoxelAt(mXPosInVolume, mYPosInVolume, mZPosInVolume, tValue);
+		return mVolume->setVoxel(mXPosInVolume, mYPosInVolume, mZPosInVolume, tValue);
 	}
 
 	template <typename VoxelType>

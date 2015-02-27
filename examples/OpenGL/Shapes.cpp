@@ -48,7 +48,7 @@ void createSphereInVolume(PagedVolume<MaterialDensityPair88>& volData, float fRa
 				//then we make it solid, otherwise we make it empty space.
 				if(fDistToCenter <= fRadius)
 				{
-					volData.setVoxelAt(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? MaterialDensityPair88::getMaxDensity() : MaterialDensityPair88::getMinDensity()));
+					volData.setVoxel(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? MaterialDensityPair88::getMaxDensity() : MaterialDensityPair88::getMinDensity()));
 				}
 			}
 		}
@@ -66,7 +66,7 @@ void createCubeInVolume(PagedVolume<MaterialDensityPair88>& volData, Vector3DInt
 		{
 			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
 			{
-				volData.setVoxelAt(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? maxDen : minDen));
+				volData.setVoxel(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? maxDen : minDen));
 			}
 		}
 	}

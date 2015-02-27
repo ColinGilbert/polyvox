@@ -71,7 +71,7 @@ namespace PolyVox
 				{
 					for(uint8_t x = 0; x < uSize; ++x)
 					{
-						tValue = (std::min)(tValue, this->mVolume->getVoxelAt(this->mXPosInVolume + x, this->mYPosInVolume + y, this->mZPosInVolume + z));
+						tValue = (std::min)(tValue, this->mVolume->getVoxel(this->mXPosInVolume + x, this->mYPosInVolume + y, this->mZPosInVolume + z));
 					}
 				}
 			}

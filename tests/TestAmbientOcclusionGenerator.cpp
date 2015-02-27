@@ -60,7 +60,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 			{
 				for (int32_t x = 0; x < g_uVolumeSideLength; x++)
 				{
-					volData.setVoxelAt(x, y, z, 1);
+					volData.setVoxel(x, y, z, 1);
 				}
 			}
 		}

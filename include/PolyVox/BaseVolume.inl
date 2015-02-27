@@ -222,30 +222,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/) const
-	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return VoxelType();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos The 3D position of the voxel
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType BaseVolume<VoxelType>::getVoxelAt(const Vector3DInt32& /*v3dPos*/) const
-	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return VoxelType();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// \param tBorder The value to use for voxels outside the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -274,32 +250,6 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::setVoxel(const Vector3DInt32& /*v3dPos*/, VoxelType /*tValue*/, WrapMode /*eWrapMode*/)
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos the \c x position of the voxel
-	/// \param uYPos the \c y position of the voxel
-	/// \param uZPos the \c z position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool BaseVolume<VoxelType>::setVoxelAt(int32_t /*uXPos*/, int32_t /*uYPos*/, int32_t /*uZPos*/, VoxelType /*tValue*/)
-	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return false;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos the 3D position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool BaseVolume<VoxelType>::setVoxelAt(const Vector3DInt32& /*v3dPos*/, VoxelType /*tValue*/)
-	{
-		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
-		return false;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

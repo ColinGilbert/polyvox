@@ -82,11 +82,11 @@ void TestRaycast::testExecute()
 			{
 				if((x == 0) || (x == uVolumeSideLength-1) || (y == 0) || (y == uVolumeSideLength-1))
 				{
-					volData.setVoxelAt(x, y, z, 100);
+					volData.setVoxel(x, y, z, 100);
 				}
 				else
 				{
-					volData.setVoxelAt(x, y, z, -100);
+					volData.setVoxel(x, y, z, -100);
 				}				
 			}
 		}

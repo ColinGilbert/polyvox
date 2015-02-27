@@ -43,11 +43,11 @@ void TestPicking::testExecute()
 			{
 				if((x > uVolumeSideLength/2)) //x > 16 is filled
 				{
-					volData.setVoxelAt(x, y, z, 100);
+					volData.setVoxel(x, y, z, 100);
 				}
 				else
 				{
-					volData.setVoxelAt(x, y, z, 0);
+					volData.setVoxel(x, y, z, 0);
 				}
 			}
 		}
