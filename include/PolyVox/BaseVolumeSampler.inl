@@ -57,7 +57,7 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getVoxel(void) const
 	{
-		return mVolume->getVoxel(mXPosInVolume, mYPosInVolume, mZPosInVolume, WrapModes::Validate); // FIXME - Use templatised version instead but watch for Linux compile errors.
+		return mVolume->getVoxel(mXPosInVolume, mYPosInVolume, mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -347,7 +347,9 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	VoxelType BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		switch(m_eWrapMode)
+		return mVolume->getVoxel(uXPos, uYPos, uZPos);
+
+		/*switch(m_eWrapMode)
 		{
 		case WrapModes::Validate:
 			return mVolume->getVoxel(uXPos, uYPos, uZPos, WrapModes::Validate, m_tBorder);
@@ -361,6 +363,6 @@ namespace PolyVox
 			// Should never happen
 			POLYVOX_ASSERT(false, "Invalid wrap mode");
 			return VoxelType();
-		}
+		}*/
 	}
 }

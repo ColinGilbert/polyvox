@@ -72,7 +72,7 @@ namespace PolyVox
 			{
 				for(int32_t sx = m_regSrc.getLowerX(), dx = m_regDst.getLowerX(); dx <= m_regDst.getUpperX(); sx++,dx++)
 				{
-					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxel(sx,sy,sz, WrapModes::AssumeValid); // FIXME use templatised version of getVoxel(), but watch out for Linux compile issues.
+					const typename SrcVolumeType::VoxelType& tSrcVoxel = m_pVolSrc->getVoxel(sx,sy,sz);
 					const typename DstVolumeType::VoxelType& tDstVoxel = static_cast<typename DstVolumeType::VoxelType>(tSrcVoxel);
 					m_pVolDst->setVoxel(dx,dy,dz,tDstVoxel);
 				}

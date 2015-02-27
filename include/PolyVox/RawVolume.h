@@ -116,21 +116,14 @@ namespace PolyVox
 		~RawVolume();
 
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		template <WrapMode eWrapMode>
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
-		template <WrapMode eWrapMode>
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const;
-
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
-		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
-		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue);
 
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
@@ -144,14 +137,6 @@ namespace PolyVox
 
 	private:
 		void initialise(const Region& regValidRegion);
-
-		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
-		template <WrapMode eWrapMode>
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Validate>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
 
 		//The voxel data
 		VoxelType* m_pData;
