@@ -51,9 +51,6 @@ The other available settings for PolyVox are:
 ``ENABLE_BINDINGS`` (``ON`` or ``OFF``)
 	Should the Python bindings to PolyVox be built. This requires the Python development libraries and SWIG to be installed. Defaults to ``ON``.
 
-``LIBRARY_TYPE`` (``DYNAMIC`` or ``STATIC``)
-	Choose whether static (``.a``) or dynamic libraries (``.so``) should be built. On Linux ``DYNAMIC`` is the default and on Windows ``STATIC`` is the default.
-
 ``CMAKE_BUILD_TYPE`` (``Debug``, ``Release``, ``RelWithDebInfo`` or ``MinSizeRel``)
 	String option to set the type of build. This will automatically set some compilation flags such as the optimisation level or define ``NDEBUG``.
 	
