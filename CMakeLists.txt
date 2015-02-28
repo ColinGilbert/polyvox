@@ -33,16 +33,10 @@ MARK_AS_ADVANCED(FORCE POLYVOX_VERSION)
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 include(FeatureSummary)
 
-OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
-
-# Qt is required for building the tests, the example and optionally for bundling the documentation
 find_package(Qt5Test 5.2)
-find_package(Qt5OpenGL 5.2)
 
 set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
 set_package_properties(Qt5Test PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
-set_package_properties(Qt5OpenGL PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
-set_package_properties(Qt5OpenGL PROPERTIES TYPE RECOMMENDED PURPOSE "Building the examples")
 
 IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
@@ -54,16 +48,9 @@ endif()
 ADD_SUBDIRECTORY(include)
 
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
-IF(ENABLE_EXAMPLES AND Qt5OpenGL_FOUND)
-	ADD_SUBDIRECTORY(examples/Basic)
-	ADD_SUBDIRECTORY(examples/Paging)
-	ADD_SUBDIRECTORY(examples/OpenGL)
-	ADD_SUBDIRECTORY(examples/SmoothLOD)
-	ADD_SUBDIRECTORY(examples/DecodeOnGPU)
-	ADD_SUBDIRECTORY(examples/Python)
-	SET(BUILD_EXAMPLES ON)
-ELSE()
-	SET(BUILD_EXAMPLES OFF)
+SET(BUILD_EXAMPLES OFF)
+IF(ENABLE_EXAMPLES)
+	ADD_SUBDIRECTORY(examples)
 ENDIF()
 
 INCLUDE(Packaging.cmake)
