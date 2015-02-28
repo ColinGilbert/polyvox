@@ -20,6 +20,11 @@
 # 3. This notice may not be removed or altered from any source
 # distribution.
 
+find_package(Qt5Test 5.2)
+
+set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
+set_package_properties(Qt5Test PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
+
 # Creates a test from the inputs
 #
 # Also sets LATEST_TEST to point to the output executable of the test for easy
@@ -66,39 +71,45 @@ IF(BUILD_BINDINGS)
 	ENDIF()
 ENDIF()
 
-# AmbientOcclusionGenerator tests
-CREATE_TEST(TestAmbientOcclusionGenerator.cpp TestAmbientOcclusionGenerator)
-
-# Array tests
-CREATE_TEST(TestArray.cpp TestArray)
-
-# AStarPathfinder tests
-CREATE_TEST(TestAStarPathfinder.cpp TestAStarPathfinder)
-
-CREATE_TEST(TestCubicSurfaceExtractor.cpp TestCubicSurfaceExtractor)
-
-# Low pass filter tests
-CREATE_TEST(TestLowPassFilter.cpp TestLowPassFilter)
-
-# Material tests
-CREATE_TEST(testmaterial.cpp testmaterial)
-
-# Raycast tests
-CREATE_TEST(TestRaycast.cpp TestRaycast)
-
-# Picking tests
-CREATE_TEST(TestPicking.cpp TestPicking)
-
-# Region tests
-CREATE_TEST(TestRegion.cpp TestRegion)
-
-CREATE_TEST(TestSurfaceExtractor.cpp TestSurfaceExtractor)
-
-#Vector tests
-CREATE_TEST(testvector.cpp testvector)
-
-# Volume tests
-CREATE_TEST(testvolume.cpp testvolume)
-
-# Volume subclass tests
-CREATE_TEST(TestVolumeSubclass.cpp TestVolumeSubclass)
+if(Qt5Test_FOUND)
+	SET(BUILD_TESTS ON PARENT_SCOPE)
+	
+	# AmbientOcclusionGenerator tests
+	CREATE_TEST(TestAmbientOcclusionGenerator.cpp TestAmbientOcclusionGenerator)
+	
+	# Array tests
+	CREATE_TEST(TestArray.cpp TestArray)
+	
+	# AStarPathfinder tests
+	CREATE_TEST(TestAStarPathfinder.cpp TestAStarPathfinder)
+	
+	CREATE_TEST(TestCubicSurfaceExtractor.cpp TestCubicSurfaceExtractor)
+	
+	# Low pass filter tests
+	CREATE_TEST(TestLowPassFilter.cpp TestLowPassFilter)
+	
+	# Material tests
+	CREATE_TEST(testmaterial.cpp testmaterial)
+	
+	# Raycast tests
+	CREATE_TEST(TestRaycast.cpp TestRaycast)
+	
+	# Picking tests
+	CREATE_TEST(TestPicking.cpp TestPicking)
+	
+	# Region tests
+	CREATE_TEST(TestRegion.cpp TestRegion)
+	
+	CREATE_TEST(TestSurfaceExtractor.cpp TestSurfaceExtractor)
+	
+	#Vector tests
+	CREATE_TEST(testvector.cpp testvector)
+	
+	# Volume tests
+	CREATE_TEST(testvolume.cpp testvolume)
+	
+	# Volume subclass tests
+	CREATE_TEST(TestVolumeSubclass.cpp TestVolumeSubclass)
+else()
+	SET(BUILD_TESTS OFF PARENT_SCOPE)
+endif()

@@ -33,11 +33,6 @@ MARK_AS_ADVANCED(FORCE POLYVOX_VERSION)
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 include(FeatureSummary)
 
-find_package(Qt5Test 5.2)
-
-set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
-set_package_properties(Qt5Test PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
-
 IF(CMAKE_COMPILER_IS_GNUCXX) #Maybe "OR MINGW"
 	ADD_DEFINITIONS(-std=c++0x) #Enable C++0x mode
 ENDIF()
@@ -57,11 +52,10 @@ ENDIF()
 INCLUDE(Packaging.cmake)
 
 OPTION(ENABLE_TESTS "Should the tests be built" ON)
-IF(ENABLE_TESTS AND Qt5Test_FOUND)
+IF(ENABLE_TESTS)
 	INCLUDE(CTest)
 	MARK_AS_ADVANCED(FORCE BUILD_TESTING)
 	ADD_SUBDIRECTORY(tests)
-	SET(BUILD_TESTS ON)
 ELSE()
 	SET(BUILD_TESTS OFF)
 ENDIF()
