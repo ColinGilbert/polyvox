@@ -37,15 +37,15 @@ public:
 	~TestVolume();
 	
 private slots:
-	void testRawVolumeDirectAccessForwards();
-	void testRawVolumeSamplersForwards();
-	void testRawVolumeDirectAccessBackwards();
-	void testRawVolumeSamplersBackwards();
+	void testRawVolumeDirectAccessAllInternalForwards();
+	void testRawVolumeSamplersAllInternalForwards();
+	void testRawVolumeDirectAccessAllInternalBackwards();
+	void testRawVolumeSamplersAllInternalBackwards();
 
-	void testPagedVolumeDirectAccessForwards();
-	void testPagedVolumeSamplersForwards();
-	void testPagedVolumeDirectAccessBackwards();
-	void testPagedVolumeSamplersBackwards();
+	void testPagedVolumeDirectAccessAllInternalForwards();
+	void testPagedVolumeSamplersAllInternalForwards();
+	void testPagedVolumeDirectAccessAllInternalBackwards();
+	void testPagedVolumeSamplersAllInternalBackwards();
 
 private:
 	PolyVox::FilePager<int32_t>* m_pFilePager;

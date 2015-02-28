@@ -274,7 +274,7 @@ TestVolume::~TestVolume()
  * RawVolume Tests
  */
 
-void TestVolume::testRawVolumeDirectAccessForwards()
+void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 
@@ -285,7 +285,7 @@ void TestVolume::testRawVolumeDirectAccessForwards()
 	QCOMPARE(result, static_cast<int32_t>(199594219));
 }
 
-void TestVolume::testRawVolumeSamplersForwards()
+void TestVolume::testRawVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 
@@ -296,7 +296,7 @@ void TestVolume::testRawVolumeSamplersForwards()
 	QCOMPARE(result, static_cast<int32_t>(199594219));
 }
 
-void TestVolume::testRawVolumeDirectAccessBackwards()
+void TestVolume::testRawVolumeDirectAccessAllInternalBackwards()
 {
 	int32_t result = 0;
 
@@ -307,7 +307,7 @@ void TestVolume::testRawVolumeDirectAccessBackwards()
 	QCOMPARE(result, static_cast<int32_t>(-960618300));
 }
 
-void TestVolume::testRawVolumeSamplersBackwards()
+void TestVolume::testRawVolumeSamplersAllInternalBackwards()
 {
 	int32_t result = 0;
 
@@ -322,7 +322,7 @@ void TestVolume::testRawVolumeSamplersBackwards()
  * PagedVolume Tests
  */
 
-void TestVolume::testPagedVolumeDirectAccessForwards()
+void TestVolume::testPagedVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
@@ -332,7 +332,7 @@ void TestVolume::testPagedVolumeDirectAccessForwards()
 	QCOMPARE(result, static_cast<int32_t>(199594219));
 }
 
-void TestVolume::testPagedVolumeSamplersForwards()
+void TestVolume::testPagedVolumeSamplersAllInternalForwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
@@ -342,7 +342,7 @@ void TestVolume::testPagedVolumeSamplersForwards()
 	QCOMPARE(result, static_cast<int32_t>(199594219));
 }
 
-void TestVolume::testPagedVolumeDirectAccessBackwards()
+void TestVolume::testPagedVolumeDirectAccessAllInternalBackwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
@@ -352,7 +352,7 @@ void TestVolume::testPagedVolumeDirectAccessBackwards()
 	QCOMPARE(result, static_cast<int32_t>(-960618300));
 }
 
-void TestVolume::testPagedVolumeSamplersBackwards()
+void TestVolume::testPagedVolumeSamplersAllInternalBackwards()
 {
 	int32_t result = 0;
 	QBENCHMARK
