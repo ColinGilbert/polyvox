@@ -27,7 +27,6 @@ freely, subject to the following restrictions:
 #include "PolyVox/MarchingCubesSurfaceExtractor.h"
 #include "PolyVox/Mesh.h"
 #include "PolyVox/RawVolume.h"
-#include "PolyVox/PagedVolume.h"
 #include "PolyVox/VolumeResampler.h"
 
 #include <QApplication>
@@ -35,7 +34,7 @@ freely, subject to the following restrictions:
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
+void createSphereInVolume(RawVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -80,7 +79,7 @@ protected:
 	void initializeExample() override
 	{
 		//Create an empty volume and then place a sphere in it
-		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
+		RawVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 		createSphereInVolume(volData, 28);
 
 		//Smooth the data - should reimplement this using LowPassFilter
@@ -90,7 +89,7 @@ protected:
 
 		RawVolume<uint8_t> volDataLowLOD(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(15, 31, 31)));
 
-		VolumeResampler< PagedVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
+		VolumeResampler< RawVolume<uint8_t>, RawVolume<uint8_t> > volumeResampler(&volData, PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(31, 63, 63)), &volDataLowLOD, volDataLowLOD.getEnclosingRegion());
 		volumeResampler.execute();
 
 		//Extract the surface

@@ -26,14 +26,14 @@ freely, subject to the following restrictions:
 #include "PolyVox/CubicSurfaceExtractor.h"
 #include "PolyVox/MarchingCubesSurfaceExtractor.h"
 #include "PolyVox/Mesh.h"
-#include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 
 #include <QApplication>
 
 //Use the PolyVox namespace
 using namespace PolyVox;
 
-void createSphereInVolume(PagedVolume<uint8_t>& volData, float fRadius)
+void createSphereInVolume(RawVolume<uint8_t>& volData, float fRadius)
 {
 	//This vector hold the position of the center of the volume
 	Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -94,7 +94,7 @@ protected:
 		setShader(shader);
 
 		//Create an empty volume and then place a sphere in it
-		PagedVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
+		RawVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 		createSphereInVolume(volData, 30);
 
 		// Extract the surface for the specified region of the volume. Uncomment the line for the kind of surface extraction you want to see.

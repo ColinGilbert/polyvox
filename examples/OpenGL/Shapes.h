@@ -24,10 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __OpenGLExample_Shapes_H__
 #define __OpenGLExample_Shapes_H__
 
-#include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 #include "PolyVox/MaterialDensityPair.h"
 
-void createSphereInVolume(PolyVox::LargeVolume<PolyVox::MaterialDensityPair88>& volData, float fRadius, uint8_t uValue);
-void createCubeInVolume(PolyVox::LargeVolume<PolyVox::MaterialDensityPair88>& volData, PolyVox::Vector3DInt32 lowerCorner, PolyVox::Vector3DInt32 upperCorner, uint8_t uValue);
+void createSphereInVolume(PolyVox::RawVolume<PolyVox::MaterialDensityPair88>& volData, float fRadius, uint8_t uValue);
+void createCubeInVolume(PolyVox::RawVolume<PolyVox::MaterialDensityPair88>& volData, PolyVox::Vector3DInt32 lowerCorner, PolyVox::Vector3DInt32 upperCorner, uint8_t uValue);
 
 #endif //__OpenGLExample_Shapes_H__

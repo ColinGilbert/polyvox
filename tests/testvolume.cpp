@@ -265,7 +265,7 @@ TestVolume::TestVolume()
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(region);
-	m_pPagedVolume = new PagedVolume<int32_t>(region, m_pFilePager, 32);
+	m_pPagedVolume = new PagedVolume<int32_t>(m_pFilePager, 32);
 
 	m_pPagedVolume->setMemoryUsageLimit(1 * 1024 * 1024);
 

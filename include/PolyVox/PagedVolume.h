@@ -251,7 +251,6 @@ namespace PolyVox
 		/// Constructor for creating a fixed size volume.
 		PagedVolume
 		(
-			const Region& regValid,	
 			Pager* pPager = nullptr,	
 			uint16_t uChunkSideLength = 32
 		);

@@ -151,7 +151,7 @@ protected:
 	void initializeExample() override
 	{
 		PerlinNoisePager* pager = new PerlinNoisePager();
-		PagedVolume<MaterialDensityPair44> volData(PolyVox::Region::MaxRegion(), pager, 64);
+		PagedVolume<MaterialDensityPair44> volData(pager, 64);
 		volData.setMemoryUsageLimit(8 * 1024 * 1024); // 8Mb
 
 		//createSphereInVolume(volData, 30);

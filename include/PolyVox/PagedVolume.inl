@@ -39,11 +39,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::PagedVolume
 	(
-		const Region& regValid,
 		Pager* pPager,
 		uint16_t uChunkSideLength
 	)
-	:BaseVolume<VoxelType>(regValid)
+	:BaseVolume<VoxelType>(Region::MaxRegion())
 	{
 		m_uChunkSideLength = uChunkSideLength;
 		m_pPager = pPager;
@@ -52,10 +51,10 @@ namespace PolyVox
 		{
 			// If the user is creating a vast (almost infinite) volume then we can bet they will be
 			// expecting a high memory usage and will want a fair number of chunks to play around with.
-			if (regValid == Region::MaxRegion())
-			{
+			/*if (regValid == Region::MaxRegion())
+			{*/
 				m_uChunkCountLimit = 1024;
-			}
+			/*}
 			else
 			{
 				// Otherwise we try to choose a chunk count to avoid too much thrashing, particularly when iterating
@@ -68,7 +67,7 @@ namespace PolyVox
 				shortestSide /= m_uChunkSideLength;
 
 				m_uChunkCountLimit = longestSide * shortestSide;
-			}
+			}*/
 		}
 		else
 		{
