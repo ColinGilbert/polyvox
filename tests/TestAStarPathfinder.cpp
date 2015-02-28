@@ -40,7 +40,7 @@ bool testVoxelValidator(const VolumeType* volData, const Vector3DInt32& v3dPos)
 		return false;
 	}
 
-	typename VolumeType::VoxelType voxel = volData->getVoxel(v3dPos);
+	typename VolumeType::VoxelType voxel = volData->getVoxel(v3dPos, WrapModes::Validate);  // FIXME use templatised version of getVoxel(), but watch out for Linux compile issues.
 	if(voxel != 0)
 	{
 		return false;
