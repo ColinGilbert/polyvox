@@ -33,14 +33,12 @@ MARK_AS_ADVANCED(FORCE POLYVOX_VERSION)
 SET_PROPERTY(GLOBAL PROPERTY USE_FOLDERS ON)
 include(FeatureSummary)
 
-FIND_PACKAGE(Doxygen)
 OPTION(ENABLE_EXAMPLES "Should the examples be built" ON)
 
 # Qt is required for building the tests, the example and optionally for bundling the documentation
 find_package(Qt5Test 5.2)
 find_package(Qt5OpenGL 5.2)
 
-set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION "API documentation generator" TYPE OPTIONAL PURPOSE "Building the API documentation")
 set_package_properties(Qt5Test PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
 set_package_properties(Qt5Test PROPERTIES TYPE OPTIONAL PURPOSE "Building the tests")
 set_package_properties(Qt5OpenGL PROPERTIES DESCRIPTION "C++ framework" URL http://qt-project.org)
@@ -80,13 +78,6 @@ ELSE()
 	SET(BUILD_TESTS OFF)
 ENDIF()
 
-#Check if we will building _and_ bundling the docs
-IF(DOXYGEN_FOUND AND QT_QCOLLECTIONGENERATOR_EXECUTABLE)
-	SET(BUILD_AND_BUNDLE_DOCS ON)
-ELSE()
-	SET(BUILD_AND_BUNDLE_DOCS OFF)
-ENDIF()
-
 ADD_SUBDIRECTORY(documentation)
 
 ADD_SUBDIRECTORY(bindings)
@@ -95,7 +86,6 @@ add_feature_info("Examples" BUILD_EXAMPLES "Examples of PolyVox usage")
 add_feature_info("Tests" BUILD_TESTS "Unit tests")
 add_feature_info("Bindings" BUILD_BINDINGS "SWIG bindings")
 add_feature_info("API docs" DOXYGEN_FOUND "HTML documentation of the API")
-add_feature_info("Qt Help" BUILD_AND_BUNDLE_DOCS "API docs in Qt Help format")
 add_feature_info("Manual" BUILD_MANUAL "HTML user's manual")
 
 feature_summary(WHAT ALL)
@@ -108,6 +98,5 @@ MESSAGE(STATUS "Build examples:      " ${BUILD_EXAMPLES})
 MESSAGE(STATUS "Build tests:         " ${BUILD_TESTS})
 MESSAGE(STATUS "Build bindings:      " ${BUILD_BINDINGS})
 MESSAGE(STATUS "API Docs available:  " ${DOXYGEN_FOUND})
-MESSAGE(STATUS " - Qt Help bundling: " ${BUILD_AND_BUNDLE_DOCS})
 MESSAGE(STATUS "Build manual:        " ${BUILD_MANUAL})
 MESSAGE(STATUS "")
