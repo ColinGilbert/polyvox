@@ -34,6 +34,9 @@ namespace PolyVox
 		,mZPosInVolume(0)
 		,m_eWrapMode(WrapModes::Border)
 		,m_tBorder()
+		,m_bIsCurrentPositionValidInX(false)
+		,m_bIsCurrentPositionValidInY(false)
+		,m_bIsCurrentPositionValidInZ(false)
 	{
 	}
 
@@ -61,8 +64,7 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	bool inline BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::isCurrentPositionValid(void) const
 	{
-		//return m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ;
-		return mVolume->getEnclosingRegion().containsPoint(mXPosInVolume, mYPosInVolume, mZPosInVolume);
+		return m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ;
 	}
 
 	template <typename VoxelType>
@@ -79,6 +81,10 @@ namespace PolyVox
 		mXPosInVolume = xPos;
 		mYPosInVolume = yPos;
 		mZPosInVolume = zPos;
+
+		m_bIsCurrentPositionValidInX = mVolume->getEnclosingRegion().containsPointInX(xPos);
+		m_bIsCurrentPositionValidInY = mVolume->getEnclosingRegion().containsPointInY(yPos);
+		m_bIsCurrentPositionValidInZ = mVolume->getEnclosingRegion().containsPointInZ(zPos);
 	}
 
 	template <typename VoxelType>
@@ -101,6 +107,7 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveX(void)
 	{
 		mXPosInVolume++;
+		m_bIsCurrentPositionValidInX = mVolume->getEnclosingRegion().containsPointInX(mXPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -108,6 +115,7 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveY(void)
 	{
 		mYPosInVolume++;
+		m_bIsCurrentPositionValidInY = mVolume->getEnclosingRegion().containsPointInY(mYPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -115,6 +123,7 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::movePositiveZ(void)
 	{
 		mZPosInVolume++;
+		m_bIsCurrentPositionValidInZ = mVolume->getEnclosingRegion().containsPointInZ(mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -122,6 +131,7 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::moveNegativeX(void)
 	{
 		mXPosInVolume--;
+		m_bIsCurrentPositionValidInX = mVolume->getEnclosingRegion().containsPointInX(mXPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -129,6 +139,7 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::moveNegativeY(void)
 	{
 		mYPosInVolume--;
+		m_bIsCurrentPositionValidInY = mVolume->getEnclosingRegion().containsPointInY(mYPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -136,6 +147,7 @@ namespace PolyVox
 	void BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::moveNegativeZ(void)
 	{
 		mZPosInVolume--;
+		m_bIsCurrentPositionValidInZ = mVolume->getEnclosingRegion().containsPointInZ(mZPosInVolume);
 	}
 
 	template <typename VoxelType>

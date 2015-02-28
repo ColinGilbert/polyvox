@@ -146,7 +146,7 @@ namespace PolyVox
 			}
 		}
 
-		/*typename RawVolume<AccumulationType>::Sampler satVolumeIter(&satVolume);
+		typename RawVolume<AccumulationType>::Sampler satVolumeIter(&satVolume);
 
 		IteratorController<typename RawVolume<AccumulationType>::Sampler> satIterCont;
 		satIterCont.m_regValid = Region(satLowerCorner, satUpperCorner);
@@ -169,27 +169,7 @@ namespace PolyVox
 
 			srcIterCont.moveForward();
 
-		}while(satIterCont.moveForward());*/
-
-
-
-
-		for (int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
-		{
-			for (int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
-			{
-				for (int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
-				{
-					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x - 1, y, z));
-					AccumulationType currentVal = static_cast<AccumulationType>(m_pVolSrc->getVoxel(x, y, z));
-
-					satVolume.setVoxel(x, y, z, previousSum + currentVal);
-				}
-			}
-		}
-
-
-
+		}while(satIterCont.moveForward());
 
 		//Build SAT in three passes
 		/*for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)

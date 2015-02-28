@@ -127,6 +127,12 @@ namespace PolyVox
 
 			WrapMode m_eWrapMode;
 			VoxelType m_tBorder;
+
+			//Whether the current position is inside the volume
+			//FIXME - Replace these with flags
+			bool m_bIsCurrentPositionValidInX;
+			bool m_bIsCurrentPositionValidInY;
+			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 
