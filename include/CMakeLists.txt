@@ -135,6 +135,7 @@ set_package_properties(Doxygen PROPERTIES URL http://www.doxygen.org DESCRIPTION
 
 #Documentation
 if(DOXYGEN_FOUND)
+	SET(BUILD_DOCS ON PARENT_SCOPE)
 	#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/polyvox.css ${CMAKE_CURRENT_BINARY_DIR}/polyvox.css)
 	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 	#This is just the default doc target which only runs Doxygen
@@ -167,4 +168,6 @@ if(DOXYGEN_FOUND)
 			OPTIONAL
 		)
 	endif()
+else()
+	SET(BUILD_DOCS OFF PARENT_SCOPE)
 endif()
