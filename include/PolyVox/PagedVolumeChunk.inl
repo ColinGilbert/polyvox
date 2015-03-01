@@ -41,7 +41,7 @@ namespace PolyVox
 
 		// Allocate the data
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		m_tData = new VoxelType[uNoOfVoxels];    
+		m_tData = new VoxelType[uNoOfVoxels];  
 
 		// Pass the chunk to the Pager to give it a chance to initialise it with any data
 		if (m_pPager)
