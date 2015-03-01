@@ -135,23 +135,16 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if (this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
-		{
-			const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
-			const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
-			const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
+		const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
+		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
+		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
 
-			const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
-			const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
-			const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
-			auto pChunk = getChunk(chunkX, chunkY, chunkZ);
-			return pChunk->getVoxel(xOffset, yOffset, zOffset);
-		}
-		else
-		{
-			return VoxelType();
-		}
+		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
+		return pChunk->getVoxel(xOffset, yOffset, zOffset);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
