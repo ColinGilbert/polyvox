@@ -42,7 +42,7 @@ namespace PolyVox
 		Pager* pPager,
 		uint16_t uChunkSideLength
 	)
-	:BaseVolume<VoxelType>(Region::MaxRegion())
+	:BaseVolume<VoxelType>()
 	{
 		m_uChunkSideLength = uChunkSideLength;
 		m_pPager = pPager;
@@ -203,11 +203,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
-		{
-			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
-		}
-
 		const int32_t chunkX = uXPos >> m_uChunkSideLengthPower;
 		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
 		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
@@ -358,12 +353,12 @@ namespace PolyVox
 		//Compute the chunk side length
 		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
 
-		m_regValidRegionInChunks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uChunkSideLengthPower);
+		/*m_regValidRegionInChunks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uChunkSideLengthPower);
 		m_regValidRegionInChunks.setLowerY(this->m_regValidRegion.getLowerY() >> m_uChunkSideLengthPower);
 		m_regValidRegionInChunks.setLowerZ(this->m_regValidRegion.getLowerZ() >> m_uChunkSideLengthPower);
 		m_regValidRegionInChunks.setUpperX(this->m_regValidRegion.getUpperX() >> m_uChunkSideLengthPower);
 		m_regValidRegionInChunks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uChunkSideLengthPower);
-		m_regValidRegionInChunks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uChunkSideLengthPower);
+		m_regValidRegionInChunks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uChunkSideLengthPower);*/
 
 		//setMaxNumberOfChunks(m_uChunkCountLimit);
 
@@ -371,9 +366,9 @@ namespace PolyVox
 		m_pRecentlyUsedChunks.clear();
 
 		//Other properties we might find useful later
-		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
-		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
-		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
+		//this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
+		//this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
+		//this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
 	}
 
 	template <typename VoxelType>

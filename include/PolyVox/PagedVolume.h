@@ -320,7 +320,7 @@ namespace PolyVox
 		uint32_t m_uChunkCountLimit;
 
 		// The size of the volume
-		Region m_regValidRegionInChunks;
+		//Region m_regValidRegionInChunks;
 
 		// The size of the chunks
 		uint16_t m_uChunkSideLength;

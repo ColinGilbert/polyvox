@@ -57,7 +57,9 @@ namespace PolyVox
 			Sampler(RawVolume<VoxelType>* volume);
 			~Sampler();
 
-			inline VoxelType getVoxel(void) const;			
+			inline VoxelType getVoxel(void) const;
+
+			bool isCurrentPositionValid(void) const;
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
@@ -105,6 +107,12 @@ namespace PolyVox
 
 			//Other current position information
 			VoxelType* mCurrentVoxel;
+
+			//Whether the current position is inside the volume
+			//FIXME - Replace these with flags
+			bool m_bIsCurrentPositionValidInX;
+			bool m_bIsCurrentPositionValidInY;
+			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 
@@ -115,11 +123,31 @@ namespace PolyVox
 		/// Destructor
 		~RawVolume();
 
+		/// Gets the value used for voxels which are outside the volume
+		VoxelType getBorderValue(void) const;
+		/// Gets a Region representing the extents of the Volume.
+		const Region& getEnclosingRegion(void) const;
+
+		/// Gets the width of the volume in voxels.
+		int32_t getWidth(void) const;
+		/// Gets the height of the volume in voxels.
+		int32_t getHeight(void) const;
+		/// Gets the depth of the volume in voxels.
+		int32_t getDepth(void) const;
+		/// Gets the length of the longest side in voxels
+		int32_t getLongestSideLength(void) const;
+		/// Gets the length of the shortest side in voxels
+		int32_t getShortestSideLength(void) const;
+		/// Gets the length of the diagonal in voxels
+		float getDiagonalLength(void) const;
+
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 
+		/// Sets the value used for voxels which are outside the volume
+		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
@@ -137,6 +165,17 @@ namespace PolyVox
 
 	private:
 		void initialise(const Region& regValidRegion);
+
+		//The size of the volume
+		Region m_regValidRegion;
+
+		//Some useful sizes
+		int32_t m_uLongestSideLength;
+		int32_t m_uShortestSideLength;
+		float m_fDiagonalLength;
+
+		//The border value
+		VoxelType m_tBorderValue;
 
 		//The voxel data
 		VoxelType* m_pData;

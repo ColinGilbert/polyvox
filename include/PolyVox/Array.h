@@ -98,7 +98,7 @@ namespace PolyVox
 			return m_pElements[z * m_uDimensions[0] * m_uDimensions[1] + y * m_uDimensions[0] + x];
 		}
 
-		uint32_t getDimension(uint32_t dimension)
+		uint32_t getDimension(uint32_t dimension) const
 		{
 			return m_uDimensions[dimension];
 		}

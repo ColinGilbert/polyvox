@@ -62,8 +62,8 @@ public:
 
 	/// Constructor for creating a fixed size volume.
 	VolumeSubclass(const Region& regValid)
-		:BaseVolume<VoxelType>(regValid)
-		, mVolumeData(this->getWidth(), this->getHeight(), this->getDepth())
+		:BaseVolume<VoxelType>()
+		, mVolumeData(regValid.getWidthInVoxels(), regValid.getHeightInVoxels(), regValid.getDepthInVoxels())
 	{
 		//mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
 	}
@@ -73,7 +73,7 @@ public:
 	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
+		if ((uXPos < mVolumeData.getDimension(0)) && (uYPos < mVolumeData.getDimension(1)) && (uZPos < mVolumeData.getDimension(2)))
 		{
 			return mVolumeData(uXPos, uYPos, uZPos);
 		}
@@ -94,7 +94,7 @@ public:
 	/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 	bool setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		if ((uXPos < mVolumeData.getDimension(0)) && (uYPos < mVolumeData.getDimension(1)) && (uZPos < mVolumeData.getDimension(2)))
 		{
 			mVolumeData(uXPos, uYPos, uZPos) = tValue;
 			return true;
@@ -119,13 +119,14 @@ private:
 
 void TestVolumeSubclass::testExtractSurface()
 {
-	VolumeSubclass<Material8> volumeSubclass(Region(0,0,0,16,16,16));
+	Region region(0, 0, 0, 16, 16, 16);
+	VolumeSubclass<Material8> volumeSubclass(region);
 
-	for(int32_t z = 0; z < volumeSubclass.getDepth() / 2; z++)
+	for (int32_t z = 0; z < region.getDepthInVoxels() / 2; z++)
 	{
-		for(int32_t y = 0; y < volumeSubclass.getHeight(); y++)
+		for (int32_t y = 0; y < region.getHeightInVoxels(); y++)
 		{
-			for(int32_t x = 0; x < volumeSubclass.getWidth(); x++)
+			for (int32_t x = 0; x < region.getWidthInVoxels(); x++)
 			{
 				Material8 mat(1);
 				volumeSubclass.setVoxel(Vector3DInt32(x,y,z),mat);
@@ -133,7 +134,7 @@ void TestVolumeSubclass::testExtractSurface()
 		}
 	}
 
-	auto result = extractCubicMesh(&volumeSubclass, volumeSubclass.getEnclosingRegion());
+	auto result = extractCubicMesh(&volumeSubclass, region);
 
 	QCOMPARE(result.getNoOfVertices(), static_cast<uint32_t>(8));
 }

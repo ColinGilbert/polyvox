@@ -118,16 +118,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	bool PagedVolume<VoxelType>::Sampler::setVoxel(VoxelType tValue)
 	{
-		/*if(m_bIsCurrentPositionValidInX && m_bIsCurrentPositionValidInY && m_bIsCurrentPositionValidInZ)
-		{
-			*mCurrentVoxel = tValue;
-			return true;
-		}
-		else
-		{
-			return false;
-		}*/
-
 		//Need to think what effect this has on any existing iterators.
 		POLYVOX_THROW(not_implemented, "This function cannot be used on PagedVolume samplers.");
 		return false;
