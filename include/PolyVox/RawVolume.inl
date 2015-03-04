@@ -165,8 +165,6 @@ namespace PolyVox
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel
 	/// \param uZPos The \c z position of the voxel
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -196,8 +194,6 @@ namespace PolyVox
 	/// This version of the function is provided so that the wrap mode does not need
 	/// to be specified as a template parameter, as it may be confusing to some users.
 	/// \param v3dPos The 3D position of the voxel
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
@@ -220,8 +216,6 @@ namespace PolyVox
 	/// \param uYPos the \c y position of the voxel
 	/// \param uZPos the \c z position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
@@ -247,8 +241,6 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dPos the 3D position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue)

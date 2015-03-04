@@ -54,7 +54,7 @@ namespace PolyVox
 		}
 		else
 		{
-			return this->getVoxelImpl(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+			return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 		}
 	}
 

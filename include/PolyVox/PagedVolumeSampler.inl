@@ -82,7 +82,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
-		return this->getVoxelImpl(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>

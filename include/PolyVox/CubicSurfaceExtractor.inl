@@ -36,15 +36,13 @@ namespace PolyVox
 	const uint32_t CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::MaxVerticesPerPosition = 8;
 
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
-	CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded, WrapMode eWrapMode, typename VolumeType::VoxelType tBorderValue, bool bMergeQuads)
+	CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded, bool bMergeQuads)
 		:m_volData(volData)
 		,m_regSizeInVoxels(region)
 		,m_meshCurrent(result)
 		,m_previousSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
 		,m_currentSliceVertices(m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2, m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2, MaxVerticesPerPosition)
 		,m_bMergeQuads(bMergeQuads)
-		,m_eWrapMode(eWrapMode)
-		,m_tBorderValue(tBorderValue)
 	{
 		m_funcIsQuadNeededCallback = isQuadNeeded;
 
@@ -80,7 +78,6 @@ namespace PolyVox
 		m_vecQuads[PositiveZ].resize(m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 2);
 
 		typename VolumeType::Sampler volumeSampler(m_volData);	
-		volumeSampler.setWrapMode(m_eWrapMode, m_tBorderValue);
 		
 		for(int32_t z = m_regSizeInVoxels.getLowerZ(); z <= m_regSizeInVoxels.getUpperZ(); z++)
 		{
