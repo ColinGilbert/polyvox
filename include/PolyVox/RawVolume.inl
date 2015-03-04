@@ -126,40 +126,6 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// \return The length of the shortest side in voxels. For example, if a volume has
-	/// dimensions 256x512x1024 this function will return 256.
-	/// \sa getLongestSideLength(), getDiagonalLength()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getShortestSideLength(void) const
-	{
-		return m_uShortestSideLength;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The length of the longest side in voxels. For example, if a volume has
-	/// dimensions 256x512x1024 this function will return 1024.
-	/// \sa getShortestSideLength(), getDiagonalLength()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	int32_t RawVolume<VoxelType>::getLongestSideLength(void) const
-	{
-		return m_uLongestSideLength;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \return The length of the diagonal in voxels. For example, if a volume has
-	/// dimensions 256x512x1024 this function will return sqrt(256*256+512*512+1024*1024)
-	/// = 1173.139. This value is computed on volume creation so retrieving it is fast.
-	/// \sa getShortestSideLength(), getLongestSideLength()
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	float RawVolume<VoxelType>::getDiagonalLength(void) const
-	{
-		return m_fDiagonalLength;
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// This version of the function is provided so that the wrap mode does not need
 	/// to be specified as a template parameter, as it may be confusing to some users.
 	/// \param uXPos The \c x position of the voxel
@@ -186,7 +152,7 @@ namespace PolyVox
 		}
 		else
 		{
-			return VoxelType();
+			return m_tBorderValue;
 		}
 	}
 
@@ -274,11 +240,6 @@ namespace PolyVox
 
 		// Clear to zeros
 		std::fill(m_pData, m_pData + this->getWidth() * this->getHeight()* this->getDepth(), VoxelType());
-
-		//Other properties we might find useful later
-		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
-		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
-		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

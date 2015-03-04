@@ -355,11 +355,6 @@ namespace PolyVox
 
 		//Clear the previous data
 		m_pRecentlyUsedChunks.clear();
-
-		//Other properties we might find useful later
-		//this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
-		//this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
-		//this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
 	}
 
 	template <typename VoxelType>

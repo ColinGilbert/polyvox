@@ -43,7 +43,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>::BaseVolume(const BaseVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented for performance reasons.");
+		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented to prevent accidental copying.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	BaseVolume<VoxelType>& BaseVolume<VoxelType>::operator=(const BaseVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_THROW(not_implemented, "Volume assignment operator not implemented for performance reasons.");
+		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented to prevent accidental copying.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
