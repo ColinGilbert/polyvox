@@ -80,9 +80,9 @@ namespace PolyVox
 		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
 		m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
 
-		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
+
 		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
-			<< "Mb (" << m_uChunkCountLimit << " chunks of " << uChunkSizeInBytes / 1024 << "Kb each).");
+			<< "Mb (" << m_uChunkCountLimit << " chunks of " << PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) / 1024 << "Kb each).");
 
 		initialise();
 	}
