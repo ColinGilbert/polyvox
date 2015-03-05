@@ -42,7 +42,12 @@ namespace PolyVox
 	{
 		// Validation of parameters
 		POLYVOX_THROW_IF(uTargetMemoryUsageInBytes < 1 * 1024 * 1024, std::invalid_argument, "Target memory usage is too small to be practical");
-		POLYVOX_THROW_IF(uChunkSideLength > 256, std::invalid_argument, "Chunk size is too large to be practical");
+		POLYVOX_THROW_IF(m_uChunkSideLength == 0, std::invalid_argument, "Chunk side length cannot be zero.");
+		POLYVOX_THROW_IF(m_uChunkSideLength > 256, std::invalid_argument, "Chunk size is too large to be practical.");
+		POLYVOX_THROW_IF(!isPowerOf2(m_uChunkSideLength), std::invalid_argument, "Chunk side length must be a power of two.");
+
+		// Used to perform multiplications and divisions by bit shifting.
+		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
 
 		// Calculate the number of chunks based on the memory limit and the size of each chunk.
 		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
@@ -59,8 +64,6 @@ namespace PolyVox
 		// Inform the user about the chosen memory configuration.
 		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
 			<< "Mb (" << m_uChunkCountLimit << " chunks of " << uChunkSizeInBytes / 1024 << "Kb each).");
-
-		initialise();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +76,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::PagedVolume(const PagedVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented for performance reasons.");
+		POLYVOX_THROW(not_implemented, "Volume copy constructor not implemented to prevent accidental copying.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -263,43 +266,6 @@ namespace PolyVox
 
 		// We might now have so null pointers in the 'all chunks' list so clean them up.
 		purgeNullPtrsFromAllChunks();
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// This function should probably be made internal...
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void PagedVolume<VoxelType>::initialise()
-	{		
-		//Validate parameters
-		if(m_uChunkSideLength == 0)
-		{
-			POLYVOX_THROW(std::invalid_argument, "Chunk side length cannot be zero.");
-		}
-
-		if(!isPowerOf2(m_uChunkSideLength))
-		{
-			POLYVOX_THROW(std::invalid_argument, "Chunk side length must be a power of two.");
-		}
-
-		m_uTimestamper = 0;
-		m_v3dLastAccessedChunkPos = Vector3DInt32(0,0,0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null;
-		m_pLastAccessedChunk = nullptr;
-
-		//Compute the chunk side length
-		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
-
-		/*m_regValidRegionInChunks.setLowerX(this->m_regValidRegion.getLowerX() >> m_uChunkSideLengthPower);
-		m_regValidRegionInChunks.setLowerY(this->m_regValidRegion.getLowerY() >> m_uChunkSideLengthPower);
-		m_regValidRegionInChunks.setLowerZ(this->m_regValidRegion.getLowerZ() >> m_uChunkSideLengthPower);
-		m_regValidRegionInChunks.setUpperX(this->m_regValidRegion.getUpperX() >> m_uChunkSideLengthPower);
-		m_regValidRegionInChunks.setUpperY(this->m_regValidRegion.getUpperY() >> m_uChunkSideLengthPower);
-		m_regValidRegionInChunks.setUpperZ(this->m_regValidRegion.getUpperZ() >> m_uChunkSideLengthPower);*/
-
-		//setMaxNumberOfChunks(m_uChunkCountLimit);
-
-		//Clear the previous data
-		m_pRecentlyUsedChunks.clear();
 	}
 
 	template <typename VoxelType>

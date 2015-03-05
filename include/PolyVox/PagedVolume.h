@@ -282,11 +282,7 @@ namespace PolyVox
 		/// Assignment operator
 		PagedVolume& operator=(const PagedVolume& rhs);
 
-	private:
-
-		// FIXME - We can probably ove this into the constructor
-		void initialise();
-	
+	private:	
 		std::shared_ptr<Chunk> getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
 		void purgeNullPtrsFromAllChunks(void) const;
@@ -310,10 +306,10 @@ namespace PolyVox
 		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
 		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;
 
-		mutable uint32_t m_uTimestamper;
-		mutable Vector3DInt32 m_v3dLastAccessedChunkPos;
-		mutable std::shared_ptr<Chunk> m_pLastAccessedChunk;
-		uint32_t m_uChunkCountLimit;
+		mutable uint32_t m_uTimestamper = 0;
+		mutable Vector3DInt32 m_v3dLastAccessedChunkPos = Vector3DInt32(0, 0, 0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null
+		mutable std::shared_ptr<Chunk> m_pLastAccessedChunk = nullptr;
+		uint32_t m_uChunkCountLimit = 0;
 
 		// The size of the volume
 		//Region m_regValidRegionInChunks;
