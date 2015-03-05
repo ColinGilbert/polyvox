@@ -249,9 +249,7 @@ TestVolume::TestVolume()
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(m_regVolume);
-	m_pPagedVolume = new PagedVolume<int32_t>(m_pFilePager, 32);
-
-	m_pPagedVolume->setMemoryUsageLimit(1 * 1024 * 1024);
+	m_pPagedVolume = new PagedVolume<int32_t>(m_pFilePager, 1 * 1024 * 1024, 32);
 
 	//Fill the volume with some data
 	for (int z = m_regVolume.getLowerZ(); z <= m_regVolume.getUpperZ(); z++)

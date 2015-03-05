@@ -249,11 +249,7 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		PagedVolume
-		(
-			Pager* pPager = nullptr,	
-			uint16_t uChunkSideLength = 32
-		);
+		PagedVolume(Pager* pPager = nullptr, uint32_t uTargetMemoryUsageInBytes = 256 * 1024 * 1024, uint16_t uChunkSideLength = 32);
 		/// Destructor
 		~PagedVolume();
 
@@ -327,11 +323,6 @@ namespace PolyVox
 		uint8_t m_uChunkSideLengthPower;
 
 		Pager* m_pPager;
-
-		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		const uint32_t uMinPracticalNoOfChunks = 32;
-		// Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
-		const uint32_t uMaxPracticalNoOfChunks = 32768;
 	};
 }
 

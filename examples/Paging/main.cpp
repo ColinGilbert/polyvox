@@ -151,8 +151,7 @@ protected:
 	void initializeExample() override
 	{
 		PerlinNoisePager* pager = new PerlinNoisePager();
-		PagedVolume<MaterialDensityPair44> volData(pager, 64);
-		volData.setMemoryUsageLimit(8 * 1024 * 1024); // 8Mb
+		PagedVolume<MaterialDensityPair44> volData(pager, 8 * 1024 * 1024, 64);
 
 		//createSphereInVolume(volData, 30);
 		//createPerlinTerrain(volData);

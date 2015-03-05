@@ -30,59 +30,35 @@ namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
 	/// This constructor creates a volume with a fixed size which is specified as a parameter. By default this constructor will not enable paging but you can override this if desired. If you do wish to enable paging then you are required to provide the call back function (see the other PagedVolume constructor).
-	/// \param regValid Specifies the minimum and maximum valid voxel positions.
-	/// \param dataRequiredHandler The callback function which will be called when PolyVox tries to use data which is not currently in momory.
-	/// \param dataOverflowHandler The callback function which will be called when PolyVox has too much data and needs to remove some from memory.
-	/// \param bPagingEnabled Controls whether or not paging is enabled for this PagedVolume.
+	/// \param pPager Called by PolyVox to load and unload data on demand.
+	/// \param uTargetMemoryUsageInBytes The upper limit to how much memory this PagedVolume should aim to use.
 	/// \param uChunkSideLength The size of the chunks making up the volume. Small chunks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	PagedVolume<VoxelType>::PagedVolume
-	(
-		Pager* pPager,
-		uint16_t uChunkSideLength
-	)
-	:BaseVolume<VoxelType>()
+	PagedVolume<VoxelType>::PagedVolume(Pager* pPager,	uint32_t uTargetMemoryUsageInBytes,	uint16_t uChunkSideLength)
+		:BaseVolume<VoxelType>()
+		, m_pPager(pPager)
+		, m_uChunkSideLength(uChunkSideLength)
 	{
-		m_uChunkSideLength = uChunkSideLength;
-		m_pPager = pPager;
+		// Validation of parameters
+		POLYVOX_THROW_IF(uTargetMemoryUsageInBytes < 1 * 1024 * 1024, std::invalid_argument, "Target memory usage is too small to be practical");
+		POLYVOX_THROW_IF(uChunkSideLength > 256, std::invalid_argument, "Chunk size is too large to be practical");
 
-		if (m_pPager)
-		{
-			// If the user is creating a vast (almost infinite) volume then we can bet they will be
-			// expecting a high memory usage and will want a fair number of chunks to play around with.
-			/*if (regValid == Region::MaxRegion())
-			{*/
-				m_uChunkCountLimit = 1024;
-			/*}
-			else
-			{
-				// Otherwise we try to choose a chunk count to avoid too much thrashing, particularly when iterating
-				// over the whole volume. This means at least enough chunks to cover one edge of the volume, and ideally 
-				// enough for a whole face. Which face? Longest edge by shortest edge seems like a reasonable guess.
-				uint32_t longestSide = (std::max)(regValid.getWidthInVoxels(), (std::max)(regValid.getHeightInVoxels(), regValid.getDepthInVoxels()));
-				uint32_t shortestSide = (std::min)(regValid.getWidthInVoxels(), (std::min)(regValid.getHeightInVoxels(), regValid.getDepthInVoxels()));
+		// Calculate the number of chunks based on the memory limit and the size of each chunk.
+		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
+		m_uChunkCountLimit = uTargetMemoryUsageInBytes / uChunkSizeInBytes;
 
-				longestSide /= m_uChunkSideLength;
-				shortestSide /= m_uChunkSideLength;
-
-				m_uChunkCountLimit = longestSide * shortestSide;
-			}*/
-		}
-		else
-		{
-			// If there is no pager provided then we set the chunk limit to the maximum
-			// value to ensure the system never attempts to page chunks out of memory.
-			m_uChunkCountLimit = (std::numeric_limits<uint32_t>::max)();
-		}
-
-		// Make sure the calculated chunk limit is within practical bounds
+		// Enforce sensible limits on the number of chunks.
+		const uint32_t uMinPracticalNoOfChunks = 32; // Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
+		const uint32_t uMaxPracticalNoOfChunks = 32768; // Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
+		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of "
+			<< uTargetMemoryUsageInBytes / (1024 * 1024) << "Mb is too low and cannot be adhered to.");
 		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
 		m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
 
-
-		POLYVOX_LOG_DEBUG("Memory usage limit for volume initially set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
-			<< "Mb (" << m_uChunkCountLimit << " chunks of " << PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) / 1024 << "Kb each).");
+		// Inform the user about the chosen memory configuration.
+		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
+			<< "Mb (" << m_uChunkCountLimit << " chunks of " << uChunkSizeInBytes / 1024 << "Kb each).");
 
 		initialise();
 	}
@@ -155,37 +131,6 @@ namespace PolyVox
 	VoxelType PagedVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos) const
 	{
 		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// Increasing the size of the chunk cache will increase memory but may improve performance.
-	/// You may want to set this to a large value (e.g. 1024) when you are first loading your
-	/// volume data and then set it to a smaller value (e.g.64) for general processing.
-	/// \param uMaxNumberOfChunks The number of chunks for which uncompressed data can be cached.
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	void PagedVolume<VoxelType>::setMemoryUsageLimit(uint32_t uMemoryUsageInBytes)
-	{
-		POLYVOX_THROW_IF(!m_pPager, invalid_operation, "You cannot limit the memory usage of the volume because it was created without a pager attached.");
-
-		// Calculate the number of chunks based on the memory limit and the size of each chunk.
-		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
-		m_uChunkCountLimit = uMemoryUsageInBytes / uChunkSizeInBytes;
-
-		// We need at least a few chunks available to avoid thrashing, and in pratice there will probably be hundreds.
-		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of " 
-			<< uMemoryUsageInBytes / (1024 * 1024) << "Mb is too low and cannot be adhered to.");
-		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
-		m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
-
-		// If the new limit is less than the number of chunks already loaded then the easiest solution is to flush and start loading again.
-		if (m_pRecentlyUsedChunks.size() > m_uChunkCountLimit)
-		{
-			flushAll();
-		}
-
-		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
-			<< "Mb (" << m_uChunkCountLimit << " chunks of " << uChunkSizeInBytes / 1024 << "Kb each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
