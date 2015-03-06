@@ -317,6 +317,7 @@ namespace PolyVox
 		// The size of the chunks
 		uint16_t m_uChunkSideLength;
 		uint8_t m_uChunkSideLengthPower;
+		int32_t m_iChunkMask;
 
 		Pager* m_pPager;
 	};

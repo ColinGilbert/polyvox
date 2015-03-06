@@ -48,6 +48,8 @@ namespace PolyVox
 
 		// Used to perform multiplications and divisions by bit shifting.
 		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
+		// Use to perform modulo by bit operations
+		m_iChunkMask = m_uChunkSideLength - 1;
 
 		// Calculate the number of chunks based on the memory limit and the size of each chunk.
 		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
@@ -98,7 +100,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>& PagedVolume<VoxelType>::operator=(const PagedVolume<VoxelType>& /*rhs*/)
 	{
-		POLYVOX_THROW(not_implemented, "Volume assignment operator not implemented for performance reasons.");
+		POLYVOX_THROW(not_implemented, "Volume assignment operator not implemented to prevent accidental copying.");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -116,9 +118,9 @@ namespace PolyVox
 		const int32_t chunkY = uYPos >> m_uChunkSideLengthPower;
 		const int32_t chunkZ = uZPos >> m_uChunkSideLengthPower;
 
-		const uint16_t xOffset = static_cast<uint16_t>(uXPos - (chunkX << m_uChunkSideLengthPower));
-		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
-		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
+		const uint16_t xOffset = static_cast<uint16_t>(uXPos & m_iChunkMask);
+		const uint16_t yOffset = static_cast<uint16_t>(uYPos & m_iChunkMask);
+		const uint16_t zOffset = static_cast<uint16_t>(uZPos & m_iChunkMask);
 
 		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
 		return pChunk->getVoxel(xOffset, yOffset, zOffset);
