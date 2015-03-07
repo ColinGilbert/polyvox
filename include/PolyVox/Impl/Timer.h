@@ -52,13 +52,13 @@ namespace PolyVox
 			return elapsed_seconds.count();
 		}
 
-		uint32_t elapsedTimeInMilliSeconds(void)
+		float elapsedTimeInMilliSeconds(void)
 		{
 			std::chrono::duration<float, std::milli> elapsed_milliseconds = clock::now() - m_start;
 			return elapsed_milliseconds.count();
 		}
 
-		uint32_t elapsedTimeInMicroSeconds(void)
+		float elapsedTimeInMicroSeconds(void)
 		{
 			std::chrono::duration<float, std::micro> elapsed_microseconds = clock::now() - m_start;
 			return elapsed_microseconds.count();

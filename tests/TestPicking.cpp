@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #include "TestPicking.h"
 
 #include "PolyVox/Picking.h"
-#include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 
 #include <QtTest>
 
@@ -34,7 +34,7 @@ void TestPicking::testExecute()
 {
 	const int32_t uVolumeSideLength = 32;
 
-	PagedVolume<int8_t> volData(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)));
+	RawVolume<int8_t> volData(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)));
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
 	{
 		for (int32_t y = 0; y < uVolumeSideLength; y++)
@@ -43,11 +43,11 @@ void TestPicking::testExecute()
 			{
 				if((x > uVolumeSideLength/2)) //x > 16 is filled
 				{
-					volData.setVoxelAt(x, y, z, 100);
+					volData.setVoxel(x, y, z, 100);
 				}
 				else
 				{
-					volData.setVoxelAt(x, y, z, 0);
+					volData.setVoxel(x, y, z, 0);
 				}
 			}
 		}

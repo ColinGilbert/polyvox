@@ -117,6 +117,11 @@ namespace PolyVox
 			else
 			{
 				POLYVOX_LOG_TRACE("No data found for " << region << " during paging in.");
+
+				// Just fill with zeros. This feels hacky... perhaps we should just throw
+				// an exception and let the calling code handle it and fill with zeros.
+				uint32_t noOfVoxels = region.getWidthInVoxels() * region.getHeightInVoxels() * region.getDepthInVoxels();
+				std::fill(pChunk->getData(), pChunk->getData() + noOfVoxels, VoxelType());
 			}
 		}
 

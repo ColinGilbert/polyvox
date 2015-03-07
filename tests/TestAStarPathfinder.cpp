@@ -40,7 +40,7 @@ bool testVoxelValidator(const VolumeType* volData, const Vector3DInt32& v3dPos)
 		return false;
 	}
 
-	typename VolumeType::VoxelType voxel = volData->getVoxel(v3dPos, WrapModes::Validate);  // FIXME use templatised version of getVoxel(), but watch out for Linux compile issues.
+	typename VolumeType::VoxelType voxel = volData->getVoxel(v3dPos);
 	if(voxel != 0)
 	{
 		return false;
@@ -92,7 +92,7 @@ void TestAStarPathfinder::testExecute()
 			for(int x = 0; x < uVolumeSideLength; x++)
 			{
 				uint8_t solidVoxel(0);
-				volData.setVoxelAt(x,y,z,solidVoxel);
+				volData.setVoxel(x,y,z,solidVoxel);
 			}
 		}
 	}
@@ -105,7 +105,7 @@ void TestAStarPathfinder::testExecute()
 			for(int x = 4; x < 12; x++)
 			{
 				uint8_t solidVoxel(1);
-				volData.setVoxelAt(x,y,z,solidVoxel);
+				volData.setVoxel(x,y,z,solidVoxel);
 			}
 		}
 	}

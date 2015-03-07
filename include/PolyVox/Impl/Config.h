@@ -25,13 +25,13 @@ freely, subject to the following restrictions:
 #define __PolyVox_Config_H__
 
 //#define POLYVOX_LOG_TRACE_ENABLED
-#define POLYVOX_LOG_DEBUG_ENABLED
+//#define POLYVOX_LOG_DEBUG_ENABLED
 #define POLYVOX_LOG_INFO_ENABLED
 #define POLYVOX_LOG_WARNING_ENABLED
 #define POLYVOX_LOG_ERROR_ENABLED
 #define POLYVOX_LOG_FATAL_ENABLED
 
-#define POLYVOX_ASSERTS_ENABLED
+//#define POLYVOX_ASSERTS_ENABLED
 #define POLYVOX_THROW_ENABLED
 
 #endif

@@ -36,23 +36,6 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// More details to come...
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	namespace WrapModes
-	{
-		enum WrapMode
-		{
-			Validate = 0,
-			Clamp = 1,
-			Border = 2,
-			AssumeValid = 3
-		};
-	}
-	typedef WrapModes::WrapMode WrapMode;
-
-	// Required for a trick to implement specialization of template member
-	// functions in template classes. See http://stackoverflow.com/a/4951057
-	template <WrapMode W> struct WrapModeType{};
-
 	template <typename _VoxelType>
 	class BaseVolume
 	{
@@ -70,12 +53,9 @@ namespace PolyVox
 			Vector3DInt32 getPosition(void) const;
 			inline VoxelType getVoxel(void) const;	
 
-			bool isCurrentPositionValid(void) const;
-
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
 			inline bool setVoxel(VoxelType tValue);
-			void setWrapMode(WrapMode eWrapMode, VoxelType tBorder = VoxelType());
 
 			void movePositiveX(void);
 			void movePositiveY(void);
@@ -116,7 +96,6 @@ namespace PolyVox
 			inline VoxelType peekVoxel1px1py1pz(void) const;
 
 		protected:
-			VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 
 			DerivedVolumeType* mVolume;
 
@@ -124,70 +103,26 @@ namespace PolyVox
 			int32_t mXPosInVolume;
 			int32_t mYPosInVolume;
 			int32_t mZPosInVolume;
-
-			WrapMode m_eWrapMode;
-			VoxelType m_tBorder;
-
-			//Whether the current position is inside the volume
-			//FIXME - Replace these with flags
-			bool m_bIsCurrentPositionValidInX;
-			bool m_bIsCurrentPositionValidInY;
-			bool m_bIsCurrentPositionValidInZ;
 		};
 		#endif
 
 	public:
-		/// Gets the value used for voxels which are outside the volume
-		VoxelType getBorderValue(void) const;
-		/// Gets a Region representing the extents of the Volume.
-		const Region& getEnclosingRegion(void) const;
-		/// Gets the width of the volume in voxels.
-		int32_t getWidth(void) const;
-		/// Gets the height of the volume in voxels.
-		int32_t getHeight(void) const;
-		/// Gets the depth of the volume in voxels.
-		int32_t getDepth(void) const;
-		/// Gets the length of the longest side in voxels
-		int32_t getLongestSideLength(void) const;
-		/// Gets the length of the shortest side in voxels
-		int32_t getShortestSideLength(void) const;
-		/// Gets the length of the diagonal in voxels
-		float getDiagonalLength(void) const;
-		
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		template <WrapMode eWrapMode>
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
-		template <WrapMode eWrapMode>
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
-		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
-		
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-		/// Gets a voxel at the position given by a 3D vector
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
-
-		/// Sets the value used for voxels which are outside the volume
-		void setBorderValue(const VoxelType& tBorder);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
-		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
-		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
-		/// Sets the voxel at the position given by a 3D vector
-		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue);
 
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
 	protected:	
-		/// Constructor for creating a fixed size volume.
-		BaseVolume(const Region& regValid);
+		/// Constructor for creating a volume.
+		BaseVolume();
 
 		/// Copy constructor
 		BaseVolume(const BaseVolume& rhs);
@@ -197,17 +132,6 @@ namespace PolyVox
 
 		/// Assignment operator
 		BaseVolume& operator=(const BaseVolume& rhs);
-
-		//The size of the volume
-		Region m_regValidRegion;
-
-		//Some useful sizes
-		int32_t m_uLongestSideLength;
-		int32_t m_uShortestSideLength;
-		float m_fDiagonalLength;
-
-		//The border value
-		VoxelType m_tBorderValue;
 	};
 }
 

@@ -29,7 +29,9 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	RawVolume<VoxelType>::RawVolume(const Region& regValid)
-		:BaseVolume<VoxelType>(regValid)
+		:BaseVolume<VoxelType>()
+		, m_regValidRegion(regValid)
+		, m_tBorderValue()
 	{
 		this->setBorderValue(VoxelType());
 
@@ -74,122 +76,105 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// This version of the function requires the wrap mode to be specified as a
-	/// template parameter, which can provide better performance.
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \tparam eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
-	/// \return The voxel value
+	/// The border value is returned whenever an attempt is made to read a voxel which
+	/// is outside the extents of the volume.
+	/// \return The value used for voxels outside of the volume
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	template <WrapMode eWrapMode>
-	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder) const
+	VoxelType RawVolume<VoxelType>::getBorderValue(void) const
 	{
-		// Simply call through to the real implementation
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<eWrapMode>(), tBorder);
+		return m_tBorderValue;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// This version of the function requires the wrap mode to be specified as a
-	/// template parameter, which can provide better performance.
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \tparam eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
-	/// \return The voxel value
+	/// \return A Region representing the extent of the volume.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	template <WrapMode eWrapMode>
-	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder) const
+	const Region& RawVolume<VoxelType>::getEnclosingRegion(void) const
 	{
-		// Simply call through to the real implementation
-		return getVoxel<eWrapMode>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tBorder);
+		return m_regValidRegion;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// This version of the function is provided so that the wrap mode does not need
-	/// to be specified as a template parameter, as it may be confusing to some users.
-	/// \param uXPos The \c x position of the voxel
-	/// \param uYPos The \c y position of the voxel
-	/// \param uZPos The \c z position of the voxel
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
-	/// \return The voxel value
+	/// \return The width of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the width is 64.
+	/// \sa getHeight(), getDepth()
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode, VoxelType tBorder) const
+	int32_t RawVolume<VoxelType>::getWidth(void) const
 	{
-		switch(eWrapMode)
-		{
-		case WrapModes::Validate:
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Validate>(), tBorder);
-		case WrapModes::Clamp:
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Clamp>(), tBorder);
-		case WrapModes::Border:
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::Border>(), tBorder);
-		case WrapModes::AssumeValid:
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder);
-		default:
-			// Should never happen
-			POLYVOX_ASSERT(false, "Invalid wrap mode");
-			return VoxelType();
-		}
+		return m_regValidRegion.getUpperX() - m_regValidRegion.getLowerX() + 1;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \return The height of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the height is 64.
+	/// \sa getWidth(), getDepth()
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	int32_t RawVolume<VoxelType>::getHeight(void) const
+	{
+		return m_regValidRegion.getUpperY() - m_regValidRegion.getLowerY() + 1;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \return The depth of the volume in voxels. Note that this value is inclusive, so that if the valid range is e.g. 0 to 63 then the depth is 64.
+	/// \sa getWidth(), getHeight()
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	int32_t RawVolume<VoxelType>::getDepth(void) const
+	{
+		return m_regValidRegion.getUpperZ() - m_regValidRegion.getLowerZ() + 1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// This version of the function is provided so that the wrap mode does not need
 	/// to be specified as a template parameter, as it may be confusing to some users.
-	/// \param v3dPos The 3D position of the voxel
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// \param tBorder The border value to use if the wrap mode is set to 'Border'.
-	/// \return The voxel value
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode, VoxelType tBorder) const
-	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
 	/// \param uXPos The \c x position of the voxel
 	/// \param uYPos The \c y position of the voxel
 	/// \param uZPos The \c z position of the voxel
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
+	VoxelType RawVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		if (this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
 		{
-			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
-			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
-			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
-			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
+			const Region& regValidRegion = this->m_regValidRegion;
+			int32_t iLocalXPos = uXPos - regValidRegion.getLowerX();
+			int32_t iLocalYPos = uYPos - regValidRegion.getLowerY();
+			int32_t iLocalZPos = uZPos - regValidRegion.getLowerZ();
 
 			return m_pData
 			[
-				iLocalXPos + 
-				iLocalYPos * this->getWidth() + 
+				iLocalXPos +
+				iLocalYPos * this->getWidth() +
 				iLocalZPos * this->getWidth() * this->getHeight()
 			];
 		}
 		else
 		{
-			return this->getBorderValue();
+			return m_tBorderValue;
 		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
+	/// This version of the function is provided so that the wrap mode does not need
+	/// to be specified as a template parameter, as it may be confusing to some users.
 	/// \param v3dPos The 3D position of the voxel
 	/// \return The voxel value
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelAt(const Vector3DInt32& v3dPos) const
+	VoxelType RawVolume<VoxelType>::getVoxel(const Vector3DInt32& v3dPos) const
 	{
-		return getVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	/// \param tBorder The value to use for voxels outside the volume.
+	////////////////////////////////////////////////////////////////////////////////
+	template <typename VoxelType>
+	void RawVolume<VoxelType>::setBorderValue(const VoxelType& tBorder)
+	{
+		m_tBorderValue = tBorder;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -197,24 +182,13 @@ namespace PolyVox
 	/// \param uYPos the \c y position of the voxel
 	/// \param uZPos the \c z position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode)
+	void RawVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		if((eWrapMode != WrapModes::Validate) && (eWrapMode != WrapModes::AssumeValid))
+		if (this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
 		{
-			POLYVOX_THROW(std::invalid_argument, "Invalid wrap mode in call to setVoxel(). It must be 'None' or 'DontCheck'.");
-		}
-
-		// This validation is skipped if the wrap mode is 'DontCheck'
-		if(eWrapMode == WrapModes::Validate)
-		{
-			if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
-			{
-				POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
-			}
+			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
 		}
 
 		const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
@@ -233,57 +207,11 @@ namespace PolyVox
 	////////////////////////////////////////////////////////////////////////////////
 	/// \param v3dPos the 3D position of the voxel
 	/// \param tValue the value to which the voxel will be set
-	/// \param eWrapMode Specifies the behaviour when the requested position is outside of the volume.
-	/// This must be set to 'None' or 'DontCheck'. Other wrap modes cannot be used when writing to volume data.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode)
+	void RawVolume<VoxelType>::setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue)
 	{
-		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue, eWrapMode);
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param uXPos the \c x position of the voxel
-	/// \param uYPos the \c y position of the voxel
-	/// \param uZPos the \c z position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool RawVolume<VoxelType>::setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
-	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
-		{
-			const Vector3DInt32& v3dLowerCorner = this->m_regValidRegion.getLowerCorner();
-			int32_t iLocalXPos = uXPos - v3dLowerCorner.getX();
-			int32_t iLocalYPos = uYPos - v3dLowerCorner.getY();
-			int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
-
-			m_pData
-			[
-				iLocalXPos + 
-				iLocalYPos * this->getWidth() + 
-				iLocalZPos * this->getWidth() * this->getHeight()
-			] = tValue;
-
-			//Return true to indicate that we modified a voxel.
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	/// \param v3dPos the 3D position of the voxel
-	/// \param tValue the value to which the voxel will be set
-	/// \return whether the requested position is inside the volume
-	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
-	bool RawVolume<VoxelType>::setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue)
-	{
-		return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
+		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -310,10 +238,8 @@ namespace PolyVox
 		//Create the data
 		m_pData = new VoxelType[this->getWidth() * this->getHeight()* this->getDepth()];
 
-		//Other properties we might find useful later
-		this->m_uLongestSideLength = (std::max)((std::max)(this->getWidth(),this->getHeight()),this->getDepth());
-		this->m_uShortestSideLength = (std::min)((std::min)(this->getWidth(),this->getHeight()),this->getDepth());
-		this->m_fDiagonalLength = sqrtf(static_cast<float>(this->getWidth() * this->getWidth() + this->getHeight() * this->getHeight() + this->getDepth() * this->getDepth()));
+		// Clear to zeros
+		std::fill(m_pData, m_pData + this->getWidth() * this->getHeight()* this->getDepth(), VoxelType());
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -323,68 +249,6 @@ namespace PolyVox
 	uint32_t RawVolume<VoxelType>::calculateSizeInBytes(void)
 	{
 		return this->getWidth() * this->getHeight() * this->getDepth() * sizeof(VoxelType);
-	}
-
-	template <typename VoxelType>
-	template <WrapMode eWrapMode>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const
-	{
-		// This function should never be called because one of the specialisations should always match.
-		POLYVOX_ASSERT(false, "This function is not implemented and should never be called!");
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Validate>, VoxelType tBorder) const
-	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
-		{
-			POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
-		}
-
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const
-	{
-		//Perform clamping
-		uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
-		uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
-		uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
-		uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
-		uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
-		uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
-
-		return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const
-	{
-		if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
-		{
-			return getVoxelImpl(uXPos, uYPos, uZPos, WrapModeType<WrapModes::AssumeValid>(), tBorder); // No wrapping as we've just validated the position.
-		}
-		else
-		{
-			return tBorder;
-		}
-	}
-
-	template <typename VoxelType>
-	VoxelType RawVolume<VoxelType>::getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType /*tBorder*/) const
-	{
-		const Region& regValidRegion = this->m_regValidRegion;
-		int32_t iLocalXPos = uXPos - regValidRegion.getLowerX();
-		int32_t iLocalYPos = uYPos - regValidRegion.getLowerY();
-		int32_t iLocalZPos = uZPos - regValidRegion.getLowerZ();
-
-		return m_pData
-		[
-			iLocalXPos + 
-			iLocalYPos * this->getWidth() + 
-			iLocalZPos * this->getWidth() * this->getHeight()
-		];
 	}
 }
 

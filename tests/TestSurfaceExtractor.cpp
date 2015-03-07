@@ -103,10 +103,8 @@ VolumeType* createAndFillVolume(void)
 {
 	const int32_t uVolumeSideLength = 64;
 
-	FilePager<typename VolumeType::VoxelType>* pager = new FilePager<typename VolumeType::VoxelType>(".");
-
 	//Create empty volume
-	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1)), pager);
+	VolumeType* volData = new VolumeType(Region(0, 0, 0, uVolumeSideLength - 1, uVolumeSideLength - 1, uVolumeSideLength - 1));
 
 	// Fill
 	for (int32_t z = 0; z < uVolumeSideLength; z++)
@@ -120,7 +118,7 @@ VolumeType* createAndFillVolume(void)
 				typename VolumeType::VoxelType voxelValue;
 				writeDensityValueToVoxel<typename VolumeType::VoxelType>(x + y + z, voxelValue);
 				writeMaterialValueToVoxel<typename VolumeType::VoxelType>(z > uVolumeSideLength / 2 ? 42 : 79, voxelValue);
-				volData->setVoxelAt(x, y, z, voxelValue);
+				volData->setVoxel(x, y, z, voxelValue);
 			}
 		}
 	}
@@ -134,7 +132,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 	FilePager<float>* pager = new FilePager<float>(".");
 
 	//Create empty volume
-	VolumeType* volData = new VolumeType(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(iVolumeSideLength - 1, iVolumeSideLength - 1, iVolumeSideLength - 1)), pager);
+	VolumeType* volData = new VolumeType(pager);
 
 	// Set up a random number generator
 	std::mt19937 rng;
@@ -150,7 +148,7 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 				float voxelValue = static_cast<float>(rng()) / static_cast<float>(std::numeric_limits<int32_t>::max()); // Float in range 0.0 to 1.0
 				voxelValue = voxelValue	* (maxValue - minValue) + minValue; // Float in range minValue to maxValue
 
-				volData->setVoxelAt(x, y, z, voxelValue);
+				volData->setVoxel(x, y, z, voxelValue);
 			}
 		}
 	}
@@ -168,7 +166,7 @@ void TestSurfaceExtractor::testBehaviour()
 	// Of course, the use of a custom controller will also make a significant diference, but this probably does need investigating further in the future.
 
 	// This basic test just uses the default controller and automatically generates a mesh of the appropriate type.
-	auto uintVol = createAndFillVolume< PagedVolume<uint8_t> >();
+	auto uintVol = createAndFillVolume< RawVolume<uint8_t> >();
 	auto uintMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion());
 	QCOMPARE(uintMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(uintMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
@@ -176,7 +174,7 @@ void TestSurfaceExtractor::testBehaviour()
 	QCOMPARE(uintMesh.getVertex(100).data, uint8_t(1)); // Not really meaningful for a primative type
 
 	// This test makes use of a custom controller
-	auto floatVol = createAndFillVolume< PagedVolume<float> >();
+	auto floatVol = createAndFillVolume< RawVolume<float> >();
 	CustomMarchingCubesController floatCustomController;
 	auto floatMesh = extractMarchingCubesMesh(floatVol, floatVol->getEnclosingRegion(), floatCustomController);
 	QCOMPARE(floatMesh.getNoOfVertices(), uint32_t(16113)); // Verifies size of mesh and that we have 32-bit indices
@@ -186,7 +184,7 @@ void TestSurfaceExtractor::testBehaviour()
 
 	// This test makes use of a user provided mesh. It uses the default controller, but we have to explicitly provide this because C++ won't let us
 	// use a default for the second-to-last parameter but noot use a default for the last parameter.
-	auto intVol = createAndFillVolume< PagedVolume<int8_t> >();
+	auto intVol = createAndFillVolume< RawVolume<int8_t> >();
 	Mesh< MarchingCubesVertex< int8_t >, uint16_t > intMesh;
 	extractMarchingCubesMeshCustom(intVol, intVol->getEnclosingRegion(), &intMesh);
 	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
@@ -195,7 +193,7 @@ void TestSurfaceExtractor::testBehaviour()
 	QCOMPARE(intMesh.getVertex(100).data, int8_t(1)); // Not really meaningful for a primative type
 
 	// This test makes use of a user-provided mesh and also a custom controller.
-	auto doubleVol = createAndFillVolume< PagedVolume<double> >();
+	auto doubleVol = createAndFillVolume< RawVolume<double> >();
 	CustomMarchingCubesController doubleCustomController;
 	Mesh< MarchingCubesVertex< double >, uint16_t > doubleMesh;
 	extractMarchingCubesMeshCustom(doubleVol, doubleVol->getEnclosingRegion(), &doubleMesh, doubleCustomController);
@@ -205,7 +203,7 @@ void TestSurfaceExtractor::testBehaviour()
 	QCOMPARE(doubleMesh.getVertex(100).data, double(1.0f)); // Not really meaningful for a primative type
 
 	// This test ensures the extractor works on a non-primitive voxel type.
-	auto materialVol = createAndFillVolume< PagedVolume<MaterialDensityPair88> >();
+	auto materialVol = createAndFillVolume< RawVolume<MaterialDensityPair88> >();
 	auto materialMesh = extractMarchingCubesMesh(materialVol, materialVol->getEnclosingRegion());
 	QCOMPARE(materialMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(materialMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh

@@ -62,8 +62,8 @@ public:
 
 	/// Constructor for creating a fixed size volume.
 	VolumeSubclass(const Region& regValid)
-		:BaseVolume<VoxelType>(regValid)
-		, mVolumeData(this->getWidth(), this->getHeight(), this->getDepth())
+		:BaseVolume<VoxelType>()
+		, mVolumeData(regValid.getWidthInVoxels(), regValid.getHeightInVoxels(), regValid.getDepthInVoxels())
 	{
 		//mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
 	}
@@ -71,83 +71,30 @@ public:
 	~VolumeSubclass() {};
 
 	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-	template <WrapMode eWrapMode>
-	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const
+	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		// FIXME: This templatised version is implemented in terms of the not template version. This is strange
-		// from a peformance point of view but it's just because we were encountering some compile issues on GCC.
-		return getVoxel(uXPos, uYPos, uZPos, eWrapMode, tBorder);
-	}
-
-	/// Gets a voxel at the position given by a 3D vector
-	template <WrapMode eWrapMode>
-	VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const
-	{
-		// Simply call through to the real implementation
-		return getVoxel<eWrapMode>(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tBorder);
-	}
-
-	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const
-	{
-		switch(eWrapMode)
+		if ((uXPos < mVolumeData.getDimension(0)) && (uYPos < mVolumeData.getDimension(1)) && (uZPos < mVolumeData.getDimension(2)))
 		{
-		case WrapModes::Validate:
-			{
-				if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)) == false)
-				{
-					POLYVOX_THROW(std::out_of_range, "Position is outside valid region");
-				}
-
-				return mVolumeData(uXPos, uYPos, uZPos);
-			}
-		case WrapModes::Clamp:
-			{
-				//Perform clamping
-				uXPos = (std::max)(uXPos, this->m_regValidRegion.getLowerX());
-				uYPos = (std::max)(uYPos, this->m_regValidRegion.getLowerY());
-				uZPos = (std::max)(uZPos, this->m_regValidRegion.getLowerZ());
-				uXPos = (std::min)(uXPos, this->m_regValidRegion.getUpperX());
-				uYPos = (std::min)(uYPos, this->m_regValidRegion.getUpperY());
-				uZPos = (std::min)(uZPos, this->m_regValidRegion.getUpperZ());
-				return mVolumeData(uXPos, uYPos, uZPos);
-			}
-		case WrapModes::Border:
-			{
-				if(this->m_regValidRegion.containsPoint(uXPos, uYPos, uZPos))
-				{
-					return mVolumeData(uXPos, uYPos, uZPos);
-				}
-				else
-				{
-					return tBorder;
-				}
-			}
-		case WrapModes::AssumeValid:
-			{
-				return mVolumeData(uXPos, uYPos, uZPos);
-			}
-		default:
-			{
-				// Should never happen
-				POLYVOX_ASSERT(false, "Invalid wrap mode");
-				return VoxelType();
-			}
+			return mVolumeData(uXPos, uYPos, uZPos);
+		}
+		else
+		{
+			return VoxelType();
 		}
 	}
 
 	/// Gets a voxel at the position given by a 3D vector
-	VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const
+	VoxelType getVoxel(const Vector3DInt32& v3dPos) const
 	{
-		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), eWrapMode, tBorder);
+		return getVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ());
 	}
 
 	/// Sets the value used for voxels which are outside the volume
 	void setBorderValue(const VoxelType& tBorder) { }
 	/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-	bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
+	bool setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		if(this->m_regValidRegion.containsPoint(Vector3DInt32(uXPos, uYPos, uZPos)))
+		if ((uXPos < mVolumeData.getDimension(0)) && (uYPos < mVolumeData.getDimension(1)) && (uZPos < mVolumeData.getDimension(2)))
 		{
 			mVolumeData(uXPos, uYPos, uZPos) = tValue;
 			return true;
@@ -158,7 +105,7 @@ public:
 		}
 	}
 	/// Sets the voxel at the position given by a 3D vector
-	bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue) { return setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue); }
+	bool setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue) { return setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue); }
 
 	/// Calculates approximatly how many bytes of memory the volume is currently using.
 	uint32_t calculateSizeInBytes(void) { return 0; }
@@ -172,21 +119,22 @@ private:
 
 void TestVolumeSubclass::testExtractSurface()
 {
-	VolumeSubclass<Material8> volumeSubclass(Region(0,0,0,16,16,16));
+	Region region(0, 0, 0, 16, 16, 16);
+	VolumeSubclass<Material8> volumeSubclass(region);
 
-	for(int32_t z = 0; z < volumeSubclass.getDepth() / 2; z++)
+	for (int32_t z = 0; z < region.getDepthInVoxels() / 2; z++)
 	{
-		for(int32_t y = 0; y < volumeSubclass.getHeight(); y++)
+		for (int32_t y = 0; y < region.getHeightInVoxels(); y++)
 		{
-			for(int32_t x = 0; x < volumeSubclass.getWidth(); x++)
+			for (int32_t x = 0; x < region.getWidthInVoxels(); x++)
 			{
 				Material8 mat(1);
-				volumeSubclass.setVoxelAt(Vector3DInt32(x,y,z),mat);
+				volumeSubclass.setVoxel(Vector3DInt32(x,y,z),mat);
 			}
 		}
 	}
 
-	auto result = extractCubicMesh(&volumeSubclass, volumeSubclass.getEnclosingRegion());
+	auto result = extractCubicMesh(&volumeSubclass, region);
 
 	QCOMPARE(result.getNoOfVertices(), static_cast<uint32_t>(8));
 }

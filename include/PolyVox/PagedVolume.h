@@ -130,8 +130,8 @@ namespace PolyVox
 			VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
 			VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
-			void setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
-			void setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue);
+			void setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+			void setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 		private:
 			/// Private copy constructor to prevent accisdental copying
@@ -187,7 +187,7 @@ namespace PolyVox
 #if defined(_MSC_VER)
 		class Sampler : public BaseVolume<VoxelType>::Sampler< PagedVolume<VoxelType> > //This line works on VS2010
 #else
-                class Sampler : public BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> > //This line works on GCC
+		class Sampler : public BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> > //This line works on GCC
 #endif
 		{
 		public:
@@ -249,42 +249,20 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		PagedVolume
-		(
-			const Region& regValid,	
-			Pager* pPager = nullptr,	
-			uint16_t uChunkSideLength = 32
-		);
+		PagedVolume(Pager* pPager, uint32_t uTargetMemoryUsageInBytes = 256 * 1024 * 1024, uint16_t uChunkSideLength = 32);
 		/// Destructor
 		~PagedVolume();
 
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		template <WrapMode eWrapMode>
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
 		/// Gets a voxel at the position given by a 3D vector
-		template <WrapMode eWrapMode>
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, VoxelType tBorder = VoxelType()) const;
+		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
-		/// Gets a voxel at the position given by a 3D vector
-		VoxelType getVoxel(const Vector3DInt32& v3dPos, WrapMode eWrapMode = WrapModes::Validate, VoxelType tBorder = VoxelType()) const;
-
-		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos) const;
-		/// Gets a voxel at the position given by a 3D vector
-		POLYVOX_DEPRECATED VoxelType getVoxelAt(const Vector3DInt32& v3dPos) const;
-
-		/// Sets the number of chunks for which uncompressed data is stored
-		void setMemoryUsageLimit(uint32_t uMemoryUsageInBytes);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
+		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
-		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue, WrapMode eWrapMode = WrapModes::Validate);
-		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
-		bool setVoxelAt(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
-		/// Sets the voxel at the position given by a 3D vector
-		bool setVoxelAt(const Vector3DInt32& v3dPos, VoxelType tValue);
+		void setVoxel(const Vector3DInt32& v3dPos, VoxelType tValue);
+
 		/// Tries to ensure that the voxels within the specified Region are loaded into memory.
 		void prefetch(Region regPrefetch);
 		/// Ensures that any voxels within the specified Region are removed from memory.
@@ -302,19 +280,7 @@ namespace PolyVox
 		/// Assignment operator
 		PagedVolume& operator=(const PagedVolume& rhs);
 
-	private:
-
-		// FIXME - We can probably ove this into the constructor
-		void initialise();
-
-		// A trick to implement specialization of template member functions in template classes. See http://stackoverflow.com/a/4951057
-		template <WrapMode eWrapMode>
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<eWrapMode>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Validate>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Clamp>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::Border>, VoxelType tBorder) const;
-		VoxelType getVoxelImpl(int32_t uXPos, int32_t uYPos, int32_t uZPos, WrapModeType<WrapModes::AssumeValid>, VoxelType tBorder) const;
-	
+	private:	
 		std::shared_ptr<Chunk> getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
 		void purgeNullPtrsFromAllChunks(void) const;
@@ -338,24 +304,20 @@ namespace PolyVox
 		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
 		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;
 
-		mutable uint32_t m_uTimestamper;
-		mutable Vector3DInt32 m_v3dLastAccessedChunkPos;
-		mutable std::shared_ptr<Chunk> m_pLastAccessedChunk;
-		uint32_t m_uChunkCountLimit;
+		mutable uint32_t m_uTimestamper = 0;
+		mutable Vector3DInt32 m_v3dLastAccessedChunkPos = Vector3DInt32(0, 0, 0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null
+		mutable std::shared_ptr<Chunk> m_pLastAccessedChunk = nullptr;
+		uint32_t m_uChunkCountLimit = 0;
 
 		// The size of the volume
-		Region m_regValidRegionInChunks;
+		//Region m_regValidRegionInChunks;
 
 		// The size of the chunks
 		uint16_t m_uChunkSideLength;
 		uint8_t m_uChunkSideLengthPower;
+		int32_t m_iChunkMask;
 
-		Pager* m_pPager;
-
-		// Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		const uint32_t uMinPracticalNoOfChunks = 32;
-		// Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
-		const uint32_t uMaxPracticalNoOfChunks = 32768;
+		Pager* m_pPager = nullptr;
 	};
 }
 

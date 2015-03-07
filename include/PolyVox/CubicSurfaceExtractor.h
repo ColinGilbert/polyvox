@@ -112,7 +112,7 @@ namespace PolyVox
 		};
 
 	public:
-		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true);
+		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
 
 		void execute();		
 
@@ -147,10 +147,6 @@ namespace PolyVox
 		//This constant defines the maximum number of quads which can share a
 		//vertex in a cubic style mesh. See the initialisation for more details.
 		static const uint32_t MaxVerticesPerPosition;
-
-		//The wrap mode
-		WrapMode m_eWrapMode;
-		typename VolumeType::VoxelType m_tBorderValue;
 	};
 
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
@@ -167,9 +163,9 @@ namespace PolyVox
 	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
 	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
-	void extractCubicMeshCustom(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+	void extractCubicMeshCustom(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true)
 	{
-		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
+		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, result, isQuadNeeded, bMergeQuads);
 		extractor.execute();
 	}
 
@@ -215,10 +211,10 @@ namespace PolyVox
 	/// Another scenario which sometimes results in confusion is when you wish to extract a region which corresponds to the whole volume, partcularly when solid voxels extend right to the edge of the volume.  
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
-	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), WrapMode eWrapMode = WrapModes::Border, typename VolumeType::VoxelType tBorderValue = typename VolumeType::VoxelType(), bool bMergeQuads = true)
+	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true)
 	{
 		Mesh< CubicVertex<typename VolumeType::VoxelType> > result;
-		extractCubicMeshCustom(volData, region, &result, isQuadNeeded, eWrapMode, tBorderValue, bMergeQuads);
+		extractCubicMeshCustom(volData, region, &result, isQuadNeeded, bMergeQuads);
 		return result;
 	}
 }

@@ -35,30 +35,24 @@ namespace PolyVox
 		,m_pPager(pPager)
 		,m_v3dChunkSpacePosition(v3dPosition)
 	{
+		POLYVOX_ASSERT(m_pPager, "No valid pager supplied to chunk constructor.");
+
 		// Compute the side length               
 		m_uSideLength = uSideLength;
 		m_uSideLengthPower = logBase2(uSideLength);
 
 		// Allocate the data
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		m_tData = new VoxelType[uNoOfVoxels];    
+		m_tData = new VoxelType[uNoOfVoxels];  
 
 		// Pass the chunk to the Pager to give it a chance to initialise it with any data
-		if (m_pPager)
-		{
-			// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
-			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
-			Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
-			Region reg(v3dLower, v3dUpper);
+		// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
+		Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
+		Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
+		Region reg(v3dLower, v3dUpper);
 
-			// Page the data in
-			m_pPager->pageIn(reg, this);
-		}
-		else
-		{
-			// Just fill with zeros
-			std::fill(m_tData, m_tData + uNoOfVoxels, VoxelType());
-		}
+		// Page the data in
+		m_pPager->pageIn(reg, this);
 
 		// We'll use this later to decide if data needs to be paged out again.
 		m_bDataModified = false;
@@ -67,7 +61,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::Chunk::~Chunk()
 	{
-		if (m_pPager && m_bDataModified)
+		if (m_bDataModified)
 		{
 			// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
 			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);
@@ -118,7 +112,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::Chunk::setVoxelAt(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
@@ -138,9 +132,9 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::Chunk::setVoxelAt(const Vector3DUint16& v3dPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue)
     {
-		setVoxelAt(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
+		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
     }
 
 	template <typename VoxelType>

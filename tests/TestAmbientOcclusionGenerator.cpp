@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #include "TestAmbientOcclusionGenerator.h"
 
 #include "PolyVox/AmbientOcclusionCalculator.h"
-#include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 
 #include <QtTest>
 
@@ -49,7 +49,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	const int32_t g_uVolumeSideLength = 64;
 
 	//Create empty volume
-	PagedVolume<uint8_t> volData(Region(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1)));
+	RawVolume<uint8_t> volData(Region(0, 0, 0, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1));
 
 	//Create two solid walls at opposite sides of the volume
 	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
@@ -60,7 +60,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 			{
 				for (int32_t x = 0; x < g_uVolumeSideLength; x++)
 				{
-					volData.setVoxelAt(x, y, z, 1);
+					volData.setVoxel(x, y, z, 1);
 				}
 			}
 		}
