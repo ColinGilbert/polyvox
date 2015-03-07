@@ -249,7 +249,7 @@ namespace PolyVox
 
 	public:
 		/// Constructor for creating a fixed size volume.
-		PagedVolume(Pager* pPager = nullptr, uint32_t uTargetMemoryUsageInBytes = 256 * 1024 * 1024, uint16_t uChunkSideLength = 32);
+		PagedVolume(Pager* pPager, uint32_t uTargetMemoryUsageInBytes = 256 * 1024 * 1024, uint16_t uChunkSideLength = 32);
 		/// Destructor
 		~PagedVolume();
 
@@ -319,7 +319,7 @@ namespace PolyVox
 		uint8_t m_uChunkSideLengthPower;
 		int32_t m_iChunkMask;
 
-		Pager* m_pPager;
+		Pager* m_pPager = nullptr;
 	};
 }
 

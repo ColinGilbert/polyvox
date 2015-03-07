@@ -24,6 +24,7 @@ freely, subject to the following restrictions:
 #include "TestCubicSurfaceExtractor.h"
 
 #include "PolyVox/Density.h"
+#include "PolyVox/FilePager.h"
 #include "PolyVox/Material.h"
 #include "PolyVox/MaterialDensityPair.h"
 #include "PolyVox/RawVolume.h"
@@ -95,7 +96,8 @@ template <typename VolumeType>
 VolumeType* createAndFillVolumeRealistic(int32_t iVolumeSideLength)
 {
 	//Create empty volume
-	VolumeType* volData = new VolumeType;
+	FilePager<uint32_t>* filePager = new FilePager<uint32_t>();
+	VolumeType* volData = new VolumeType(filePager);
 
 	//Fill the volume with data
 	for (int32_t z = 0; z < iVolumeSideLength; z++)
@@ -158,7 +160,8 @@ void TestCubicSurfaceExtractor::testBehaviour()
 
 void TestCubicSurfaceExtractor::testEmptyVolumePerformance()
 {
-	PagedVolume<uint32_t> emptyVol;
+	FilePager<uint32_t>* filePager = new FilePager<uint32_t>();
+	PagedVolume<uint32_t> emptyVol(filePager);
 	createAndFillVolumeWithNoise(emptyVol, 128, 0, 0);
 	Mesh< CubicVertex< uint32_t >, uint16_t > emptyMesh;
 	QBENCHMARK{ extractCubicMeshCustom(&emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
@@ -175,7 +178,8 @@ void TestCubicSurfaceExtractor::testRealisticVolumePerformance()
 
 void TestCubicSurfaceExtractor::testNoiseVolumePerformance()
 {
-	PagedVolume<uint32_t> noiseVol;
+	FilePager<uint32_t>* filePager = new FilePager<uint32_t>();
+	PagedVolume<uint32_t> noiseVol(filePager);
 	createAndFillVolumeWithNoise(noiseVol, 128, 0, 2);
 	Mesh< CubicVertex< uint32_t >, uint16_t > noiseMesh;
 	QBENCHMARK{ extractCubicMeshCustom(&noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }

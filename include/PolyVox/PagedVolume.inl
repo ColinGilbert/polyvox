@@ -41,6 +41,7 @@ namespace PolyVox
 		, m_uChunkSideLength(uChunkSideLength)
 	{
 		// Validation of parameters
+		POLYVOX_THROW_IF(!pPager, std::invalid_argument, "You must provide a valid pager when constructing a PagedVolume");
 		POLYVOX_THROW_IF(uTargetMemoryUsageInBytes < 1 * 1024 * 1024, std::invalid_argument, "Target memory usage is too small to be practical");
 		POLYVOX_THROW_IF(m_uChunkSideLength == 0, std::invalid_argument, "Chunk side length cannot be zero.");
 		POLYVOX_THROW_IF(m_uChunkSideLength > 256, std::invalid_argument, "Chunk size is too large to be practical.");
@@ -191,7 +192,7 @@ namespace PolyVox
 		// Ensure we don't page in more chunks than the volume can hold.
 		Region region(v3dStart, v3dEnd);
 		uint32_t uNoOfChunks = static_cast<uint32_t>(region.getWidthInVoxels() * region.getHeightInVoxels() * region.getDepthInVoxels());
-		POLYVOX_LOG_WARNING_IF(uNoOfChunks > m_uChunkCountLimit, "Attempting to prefetch more than the maximum number of chunks.");
+		POLYVOX_LOG_WARNING_IF(uNoOfChunks > m_uChunkCountLimit, "Attempting to prefetch more than the maximum number of chunks (this will cause thrashing).");
 		uNoOfChunks = (std::min)(uNoOfChunks, m_uChunkCountLimit);
 
 		// Loops over the specified positions and touch the corresponding chunks.
@@ -213,8 +214,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::flushAll()
 	{
-		POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
-
 		// Clear this pointer so it doesn't hang on to any chunks.
 		m_pLastAccessedChunk = nullptr;
 
@@ -234,8 +233,6 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::flush(Region regFlush)
 	{
-		POLYVOX_LOG_WARNING_IF(!m_pPager, "Data discarded by flush operation as no pager is attached.");
-
 		// Clear this pointer so it doesn't hang on to any chunks.
 		m_pLastAccessedChunk = nullptr;
 
@@ -329,10 +326,6 @@ namespace PolyVox
 			bool erasedChunk = false;
 			while (m_pRecentlyUsedChunks.size() + 1 > m_uChunkCountLimit) // +1 ready for new chunk we will add next.
 			{
-				// This should never hit, because it should not have been possible for
-				// the user to limit the number of chunks if they did not provide a pager.
-				POLYVOX_ASSERT(m_pPager, "A valid pager is required to limit number of chunks");
-
 				// Find the least recently used chunk. Hopefully this isn't too slow.
 				typename SharedPtrChunkMap::iterator itUnloadChunk = m_pRecentlyUsedChunks.begin();
 				for (typename SharedPtrChunkMap::iterator i = m_pRecentlyUsedChunks.begin(); i != m_pRecentlyUsedChunks.end(); i++)
