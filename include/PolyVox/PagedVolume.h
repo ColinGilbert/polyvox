@@ -258,8 +258,6 @@ namespace PolyVox
 		/// Gets a voxel at the position given by a 3D vector
 		VoxelType getVoxel(const Vector3DInt32& v3dPos) const;
 
-		/// Sets the number of chunks for which uncompressed data is stored
-		void setMemoryUsageLimit(uint32_t uMemoryUsageInBytes);
 		/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 		void setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue);
 		/// Sets the voxel at the position given by a 3D vector
