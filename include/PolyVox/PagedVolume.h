@@ -281,7 +281,7 @@ namespace PolyVox
 		PagedVolume& operator=(const PagedVolume& rhs);
 
 	private:	
-		std::shared_ptr<Chunk> getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
+		Chunk* getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
 		void purgeNullPtrsFromAllChunks(void) const;
 
@@ -299,14 +299,16 @@ namespace PolyVox
 		//
 		// TODO: Do we really need maps here? It means we are storing the chunk positions in the map, but they are also stored in the
 		// chunks themselves (so they can be passed to the pager from the chunks destructor). Can we use a set here? What is a better approach?
-		typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
+		/*typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
 		mutable WeakPtrChunkMap m_pAllChunks;
 		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
-		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;
+		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;*/
+
+		mutable std::unordered_map<Vector3DInt32, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
 		mutable Vector3DInt32 m_v3dLastAccessedChunkPos = Vector3DInt32(0, 0, 0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null
-		mutable std::shared_ptr<Chunk> m_pLastAccessedChunk = nullptr;
+		mutable Chunk* m_pLastAccessedChunk = nullptr;
 		uint32_t m_uChunkCountLimit = 0;
 
 		// The size of the volume
