@@ -214,22 +214,11 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::flushAll()
 	{
-		// Clear this pointer so it doesn't hang on to any chunks.
+		// Clear this pointer as all chunks are about to be removed.
 		m_pLastAccessedChunk = nullptr;
-
-		/*for (auto chunk : m_mapChunks)
-		{
-			delete chunk.second;
-		}*/
 
 		// Erase all the most recently used chunks.
 		m_mapChunks.clear();
-
-		// Remove deleted chunks from the list of all loaded chunks.
-		//purgeNullPtrsFromAllChunks();
-
-		// If there are still some chunks left then this is a cause for concern. Perhaps samplers are holding on to them?
-		//POLYVOX_LOG_WARNING_IF(m_pAllChunks.size() > 0, "Chunks still exist after performing flushAll()! Perhaps you have samplers attached?");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +227,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::flush(Region regFlush)
 	{
-		// Clear this pointer so it doesn't hang on to any chunks.
+		// Clear this pointer in case the chunk it points at is flushed.
 		m_pLastAccessedChunk = nullptr;
 
 		// Convert the start and end positions into chunk space coordinates
@@ -265,11 +254,6 @@ namespace PolyVox
 				}
 			}
 		}
-
-		m_pLastAccessedChunk = nullptr;
-
-		// We might now have so null pointers in the 'all chunks' list so clean them up.
-		purgeNullPtrsFromAllChunks();
 	}
 
 	template <typename VoxelType>
@@ -287,9 +271,6 @@ namespace PolyVox
 		}
 
 		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
-		//std::shared_ptr<typename PagedVolume<VoxelType>::Chunk> pChunk = nullptr;
-		//typename SharedPtrChunkMap::iterator itChunk = m_pRecentlyUsedChunks.find(v3dChunkPos);
-
 		Chunk* pChunk = nullptr;
 		auto itChunk = m_mapChunks.find(v3dChunkPos);
 
@@ -301,39 +282,16 @@ namespace PolyVox
 			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
 		}
 
-		/*if (!pChunk)
-		{
-			// Although it's not in our recently use chunks, there's some (slim) chance that it
-			// exists in the list of all loaded chunks, because a sampler may be holding on to it.
-			typename WeakPtrChunkMap::iterator itWeakChunk = m_pAllChunks.find(v3dChunkPos);
-			if (itWeakChunk != m_pAllChunks.end())
-			{
-				// We've found an entry in the 'all chunks' list, but it can be null. This happens if a sampler was the
-				// last thing to be keeping it alive and then the sampler let it go. In this case we remove it from the
-				// list, and it will get added again soon when we page it in and fill it with valid data.
-				if (itWeakChunk->second.expired())
-				{
-					m_pAllChunks.erase(itWeakChunk);
-				}
-				else
-				{
-					// The chunk is valid. We know it's not in the recently used list (we checked earlier) so it should be added.
-					pChunk = std::shared_ptr< PagedVolume<VoxelType>::Chunk >(itWeakChunk->second);
-					m_pRecentlyUsedChunks.insert(std::make_pair(v3dChunkPos, pChunk));
-				}
-			}
-		}*/
-
 		// If we still haven't found the chunk then it's time to create a new one and page it in from disk.
 		if (!pChunk)
 		{
 			// The chunk was not found so we will create a new one.
-			//pChunk = std::make_shared< PagedVolume<VoxelType>::Chunk >(v3dChunkPos, m_uChunkSideLength, m_pPager);
 			pChunk = new PagedVolume<VoxelType>::Chunk(v3dChunkPos, m_uChunkSideLength, m_pPager);
+			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
+			m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
 			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
-			bool erasedChunk = false;
-			while (m_mapChunks.size() + 1 > m_uChunkCountLimit) // +1 ready for new chunk we will add next.
+			while (m_mapChunks.size() > m_uChunkCountLimit)
 			{
 				// Find the least recently used chunk. Hopefully this isn't too slow.
 				auto itUnloadChunk = m_mapChunks.begin();
@@ -346,25 +304,10 @@ namespace PolyVox
 				}
 
 				// Erase the least recently used chunk
-				//delete itUnloadChunk->second;
 				m_mapChunks.erase(itUnloadChunk);
-				erasedChunk = true;
 			}
-
-			// If we've deleted any chunks from the recently used list then this
-			// seems like a good place to purge the 'all chunks' list as well.
-			if (erasedChunk)
-			{
-				purgeNullPtrsFromAllChunks();
-			}
-
-			// Add our new chunk to the maps.
-			//m_pAllChunks.insert(std::make_pair(v3dChunkPos, pChunk));
-			//m_pRecentlyUsedChunks.insert(std::make_pair(v3dChunkPos, pChunk));
-			m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 		}
-
-		pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
+				
 		m_pLastAccessedChunk = pChunk;
 		m_v3dLastAccessedChunkPos = v3dChunkPos;
 
@@ -377,28 +320,9 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t PagedVolume<VoxelType>::calculateSizeInBytes(void)
 	{
-		// Purge null chunks so we know that all chunks are used.
-		purgeNullPtrsFromAllChunks();
-
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
 		return PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) * m_mapChunks.size();
-	}
-
-	template <typename VoxelType>
-	void PagedVolume<VoxelType>::purgeNullPtrsFromAllChunks(void) const
-	{
-		/*for (auto chunkIter = m_pAllChunks.begin(); chunkIter != m_pAllChunks.end();)
-		{
-			if (chunkIter->second.expired())
-			{
-				chunkIter = m_pAllChunks.erase(chunkIter);
-			}
-			else
-			{
-				chunkIter++;
-			}
-		}*/
 	}
 }
 

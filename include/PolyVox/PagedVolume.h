@@ -283,27 +283,6 @@ namespace PolyVox
 	private:	
 		Chunk* getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
-		void purgeNullPtrsFromAllChunks(void) const;
-
-		// The chunk data is stored in the pair of maps below. This will often hold the same set of chunks but there are occasions
-		// when they can differ (more on that in a moment). The main store is the set of 'recently used chunks' which holds shared_ptr's
-		// to the chunk data. When memory is low chunks can be removed from this list and, assuming there are no more references to
-		// them, they will be deleted. However, it is also possible that a Sampler is pointing at a given chunk, and in this case the
-		// reference counting will ensure that the chunk survives until the sampler has finished with it.
-		//
-		// However, this leaves us open to a subtle bug. If a chunk is removed from the recently used set, continues to exist due to a
-		// sampler using it, and then the user tries to access it through the volume interface, then the volume will page the chunk
-		// back in (not knowing the sampler still has it). This would result in two chunks in memory with the same position is space.
-		// To avoid this, the 'all chunks' set tracks chunks with are used by the volume *and/or* the samplers. It holds weak pointers
-		// so does not cause chunks to persist.
-		//
-		// TODO: Do we really need maps here? It means we are storing the chunk positions in the map, but they are also stored in the
-		// chunks themselves (so they can be passed to the pager from the chunks destructor). Can we use a set here? What is a better approach?
-		/*typedef std::unordered_map<Vector3DInt32, std::weak_ptr< Chunk > > WeakPtrChunkMap;
-		mutable WeakPtrChunkMap m_pAllChunks;
-		typedef std::unordered_map<Vector3DInt32, std::shared_ptr< Chunk > > SharedPtrChunkMap;
-		mutable SharedPtrChunkMap m_pRecentlyUsedChunks;*/
-
 		mutable std::unordered_map<Vector3DInt32, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
