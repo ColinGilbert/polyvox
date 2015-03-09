@@ -283,11 +283,19 @@ namespace PolyVox
 	private:	
 		Chunk* getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
+		// Storing these properties individually has proved to be faster than keeping
+		// them in a Vector3DInt32 as it avoids constructions and comparison overheads.
+		// They are also at the start of the class in the hope that they will be pulled
+		// into cache - I've got no idea if this actually makes a difference.
+		mutable int32_t m_v3dLastAccessedChunkX = 0;
+		mutable int32_t m_v3dLastAccessedChunkY = 0;
+		mutable int32_t m_v3dLastAccessedChunkZ = 0;
+		mutable Chunk* m_pLastAccessedChunk = nullptr;
+
 		mutable std::unordered_map<Vector3DInt32, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
-		mutable Vector3DInt32 m_v3dLastAccessedChunkPos = Vector3DInt32(0, 0, 0); //There are no invalid positions, but initially the m_pLastAccessedChunk pointer will be null
-		mutable Chunk* m_pLastAccessedChunk = nullptr;
+
 		uint32_t m_uChunkCountLimit = 0;
 
 		// The size of the volume

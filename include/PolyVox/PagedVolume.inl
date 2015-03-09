@@ -259,16 +259,19 @@ namespace PolyVox
 	template <typename VoxelType>
 	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const
 	{
-		Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
-
 		//Check if we have the same chunk as last time, if so there's no need to even update
 		//the time stamp. If we updated it everytime then that would be every time we touched
 		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
 		//This check should also provide a significant speed boost as usually it is true.
-		if((v3dChunkPos == m_v3dLastAccessedChunkPos) && (m_pLastAccessedChunk != 0))
+		if ((uChunkX == m_v3dLastAccessedChunkX) && 
+			(uChunkY == m_v3dLastAccessedChunkY) && 
+			(uChunkZ == m_v3dLastAccessedChunkZ) && 
+			(m_pLastAccessedChunk != 0))
 		{
 			return m_pLastAccessedChunk;
 		}
+
+		Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 
 		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
 		Chunk* pChunk = nullptr;
@@ -309,7 +312,10 @@ namespace PolyVox
 		}
 				
 		m_pLastAccessedChunk = pChunk;
-		m_v3dLastAccessedChunkPos = v3dChunkPos;
+		//m_v3dLastAccessedChunkPos = v3dChunkPos;
+		m_v3dLastAccessedChunkX = uChunkX;
+		m_v3dLastAccessedChunkY = uChunkY;
+		m_v3dLastAccessedChunkZ = uChunkZ;
 
 		return pChunk;	
 	}
