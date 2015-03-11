@@ -29,10 +29,12 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxForwardDeclarations.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <functional>
 #include <iostream>
+#include <memory>
 
 namespace PolyVox
 {
