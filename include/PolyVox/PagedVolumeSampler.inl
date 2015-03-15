@@ -97,20 +97,18 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::setPosition(xPos, yPos, zPos);
 
-		// Then we update the voxel pointer
-		const int32_t uXChunk = this->mXPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
-		const int32_t uYChunk = this->mYPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
-		const int32_t uZChunk = this->mZPosInVolume >> this->mVolume->m_uChunkSideLengthPower;
+		const int32_t key = this->mVolume->posToChunkKey(xPos, yPos, zPos);
 
-		const uint16_t uXPosInChunk = static_cast<uint16_t>(this->mXPosInVolume - (uXChunk << this->mVolume->m_uChunkSideLengthPower));
-		const uint16_t uYPosInChunk = static_cast<uint16_t>(this->mYPosInVolume - (uYChunk << this->mVolume->m_uChunkSideLengthPower));
-		const uint16_t uZPosInChunk = static_cast<uint16_t>(this->mZPosInVolume - (uZChunk << this->mVolume->m_uChunkSideLengthPower));
+		// Then we update the voxel pointer.
+		auto pCurrentChunk = (key == this->mVolume->m_v3dLastAccessedChunkKey) ? this->mVolume->m_pLastAccessedChunk : this->mVolume->getChunk(key);
 
-		const uint32_t uVoxelIndexInChunk = uXPosInChunk +
-			uYPosInChunk * this->mVolume->m_uChunkSideLength +
-			uZPosInChunk * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
+		const uint16_t xOffset = static_cast<uint16_t>(xPos & this->mVolume->m_iChunkMask);
+		const uint16_t yOffset = static_cast<uint16_t>(yPos & this->mVolume->m_iChunkMask);
+		const uint16_t zOffset = static_cast<uint16_t>(zPos & this->mVolume->m_iChunkMask);
 
-		auto pCurrentChunk = this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
+		const uint32_t uVoxelIndexInChunk = xOffset +
+			yOffset * this->mVolume->m_uChunkSideLength +
+			zOffset * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 
 		mCurrentVoxel = pCurrentChunk->m_tData + uVoxelIndexInChunk;
 	}

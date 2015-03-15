@@ -278,7 +278,7 @@ TestVolume::~TestVolume()
  * RawVolume Tests
  */
 
-void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
+/*void TestVolume::testRawVolumeDirectAccessAllInternalForwards()
 {
 	int32_t result = 0;
 
@@ -364,7 +364,7 @@ void TestVolume::testRawVolumeSamplersWithExternalBackwards()
 		result = testSamplersWithWrappingBackwards(m_pRawVolume, m_regExternal);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-993539594));
-}
+}*/
 
 /*
  * PagedVolume Tests
