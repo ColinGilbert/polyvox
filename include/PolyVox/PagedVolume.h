@@ -281,25 +281,45 @@ namespace PolyVox
 		PagedVolume& operator=(const PagedVolume& rhs);
 
 	private:	
-		Chunk* getChunk(int32_t key) const;
-
-		uint32_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
+		struct ChunkKey
 		{
-			// Bit-shifting of signed integer values has various issues with undefined or implementation-defined behaviour.
-			// Therefore we cast to unsigned to avoid these (we only care about the bit pattern anyway, not the actual value).
-			// See http://stackoverflow.com/a/4009922 for more details.
-			const uint32_t uXPos = static_cast<uint32_t>(iXPos);
-			const uint32_t uYPos = static_cast<uint32_t>(iYPos);
-			const uint32_t uZPos = static_cast<uint32_t>(iZPos);
+			ChunkKey(int32_t x, int32_t y, int32_t z) : iZPos(z), iYPos(y), iXPos(x), iValid(~0) {}
+			int32_t iZPos : 10;
+			int32_t iYPos : 10;
+			int32_t iXPos : 10;
 
-			const uint32_t xKey = ((uXPos >> m_uChunkSideLengthPower) & 0x3FF) << 20;
-			const uint32_t yKey = ((uYPos >> m_uChunkSideLengthPower) & 0x3FF) << 10;
-			const uint32_t zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);
+			// Should only be true when the last access chunk pointer is valid,
+			// so we don't need to have a seperate check for that before using it.
+			int32_t iValid : 2;
+		};
+		static_assert(sizeof(ChunkKey) == sizeof(int32_t), "");
 
-			const uint32_t key = 0x80000000 | xKey | yKey | zKey;
+		int32_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
+		{
+			iXPos = iXPos >> m_uChunkSideLengthPower;
+			iYPos = iYPos >> m_uChunkSideLengthPower;
+			iZPos = iZPos >> m_uChunkSideLengthPower;
 
-			return key;
+			ChunkKey chunkKey(iXPos, iYPos, iZPos);
+			//chunkKey.iValid = ~0;
+			//chunkKey.iValid = 2;
+			// In general, bit shifting signed integers is dubious because of potential undefined or implementation defied behaviour.
+			// However, it seems that in practice most compilers and architectures work in the same way (http://stackoverflow.com/a/6488645).
+
+			static_assert((int32_t(-3)  / 4) ==  0, "fdfs");
+			static_assert((int32_t(-3) >> 2) == -1, "fdfs");
+			/*chunkKey.iXPos = iXPos;
+			chunkKey.iYPos = iYPos;
+			chunkKey.iZPos = iZPos;*/
+
+			// If this kind of casting ever causes problems there are
+			// other solutions here: http://stackoverflow.com/a/2468738
+			int32_t iKeyAsInt32 = force_cast<int32_t>(chunkKey);
+
+			return iKeyAsInt32;
 		}
+
+		Chunk* getChunk(int32_t iKeyAsInt32) const;
 
 		mutable int32_t m_v3dLastAccessedChunkKey = 0;
 		mutable Chunk* m_pLastAccessedChunk = nullptr;
