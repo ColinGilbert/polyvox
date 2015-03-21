@@ -284,17 +284,17 @@ namespace PolyVox
 		struct ChunkKey
 		{
 			ChunkKey(int32_t x, int32_t y, int32_t z) : iZPos(z), iYPos(y), iXPos(x), iValid(~0) {}
-			int64_t iZPos : 10;
-			int64_t iYPos : 10;
-			int64_t iXPos : 10;
+			PagedVolumeChunkKeyIntType iZPos : 10;
+			PagedVolumeChunkKeyIntType iYPos : 10;
+			PagedVolumeChunkKeyIntType iXPos : 10;
 
 			// Should only be true when the last access chunk pointer is valid,
 			// so we don't need to have a seperate check for that before using it.
-			int64_t iValid : 2;
+			PagedVolumeChunkKeyIntType iValid : 2;
 		};
-		static_assert(sizeof(ChunkKey) == sizeof(int64_t), "");
+		static_assert(sizeof(ChunkKey) == sizeof(PagedVolumeChunkKeyIntType), "");
 
-		int64_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
+		PagedVolumeChunkKeyIntType posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
 		{
 			iXPos = iXPos >> m_uChunkSideLengthPower;
 			iYPos = iYPos >> m_uChunkSideLengthPower;
@@ -306,22 +306,22 @@ namespace PolyVox
 			// In general, bit shifting signed integers is dubious because of potential undefined or implementation defied behaviour.
 			// However, it seems that in practice most compilers and architectures work in the same way (http://stackoverflow.com/a/6488645).
 
-			static_assert((int64_t(-3)  / 4) ==  0, "fdfs");
-			static_assert((int64_t(-3) >> 2) == -1, "fdfs");
+			static_assert((int32_t(-3)  / 4) ==  0, "fdfs");
+			static_assert((int32_t(-3) >> 2) == -1, "fdfs");
 			/*chunkKey.iXPos = iXPos;
 			chunkKey.iYPos = iYPos;
 			chunkKey.iZPos = iZPos;*/
 
 			// If this kind of casting ever causes problems there are
 			// other solutions here: http://stackoverflow.com/a/2468738
-			int64_t iKeyAsInt64 = force_cast<int64_t>(chunkKey);
+			PagedVolumeChunkKeyIntType iKeyAsInt32 = force_cast<PagedVolumeChunkKeyIntType>(chunkKey);
 
-			return iKeyAsInt64;
+			return iKeyAsInt32;
 		}
 
-		Chunk* getChunk(int64_t iKeyAsInt32) const;
+		Chunk* getChunk(PagedVolumeChunkKeyIntType iKeyAsInt32) const;
 
-		mutable int64_t m_v3dLastAccessedChunkKey = 0;
+		mutable PagedVolumeChunkKeyIntType m_v3dLastAccessedChunkKey = 0;
 		mutable Chunk* m_pLastAccessedChunk = nullptr;
 
 		mutable std::unordered_map<uint32_t, std::unique_ptr< Chunk > > m_mapChunks;

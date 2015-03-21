@@ -36,4 +36,6 @@ freely, subject to the following restrictions:
 //#define POLYVOX_ASSERTS_ENABLED
 #define POLYVOX_THROW_ENABLED
 
+typedef int32_t PagedVolumeChunkKeyIntType;
+
 #endif
