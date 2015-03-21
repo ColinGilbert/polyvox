@@ -281,30 +281,18 @@ namespace PolyVox
 		PagedVolume& operator=(const PagedVolume& rhs);
 
 	private:	
-		Chunk* getChunk(int32_t key) const;
+		Chunk* getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
-		uint32_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
-		{
-			// Bit-shifting of signed integer values has various issues with undefined or implementation-defined behaviour.
-			// Therefore we cast to unsigned to avoid these (we only care about the bit pattern anyway, not the actual value).
-			// See http://stackoverflow.com/a/4009922 for more details.
-			const uint32_t uXPos = static_cast<uint32_t>(iXPos);
-			const uint32_t uYPos = static_cast<uint32_t>(iYPos);
-			const uint32_t uZPos = static_cast<uint32_t>(iZPos);
-
-			const uint32_t xKey = ((uXPos >> m_uChunkSideLengthPower) & 0x3FF) << 20;
-			const uint32_t yKey = ((uYPos >> m_uChunkSideLengthPower) & 0x3FF) << 10;
-			const uint32_t zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);
-
-			const uint32_t key = 0x80000000 | xKey | yKey | zKey;
-
-			return key;
-		}
-
-		mutable int32_t m_v3dLastAccessedChunkKey = 0;
+		// Storing these properties individually has proved to be faster than keeping
+		// them in a Vector3DInt32 as it avoids constructions and comparison overheads.
+		// They are also at the start of the class in the hope that they will be pulled
+		// into cache - I've got no idea if this actually makes a difference.
+		mutable int32_t m_v3dLastAccessedChunkX = 0;
+		mutable int32_t m_v3dLastAccessedChunkY = 0;
+		mutable int32_t m_v3dLastAccessedChunkZ = 0;
 		mutable Chunk* m_pLastAccessedChunk = nullptr;
 
-		mutable std::unordered_map<uint32_t, std::unique_ptr< Chunk > > m_mapChunks;
+		mutable std::unordered_map<Vector3DInt32, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
 
@@ -321,15 +309,6 @@ namespace PolyVox
 		Pager* m_pPager = nullptr;
 	};
 }
-
-/*#define POS_TO_CHUNK_KEY(x, y, z, uChunkSideLengthPower) \
-{ \
-	const int32_t chunkX = ((x >> uChunkSideLengthPower) & 0x3FF) << 20; \
-	const int32_t chunkY = ((y >> uChunkSideLengthPower) & 0x3FF) << 10; \
-	const int32_t chunkZ = ((z >> uChunkSideLengthPower) & 0x3FF); \
-	const int32_t key = (-2147483648) | chunkX | chunkY | chunkZ; \
-}*/
-
 
 #include "PolyVox/PagedVolume.inl"
 #include "PolyVox/PagedVolumeChunk.inl"
