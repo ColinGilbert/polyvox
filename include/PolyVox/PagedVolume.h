@@ -280,7 +280,8 @@ namespace PolyVox
 		/// Assignment operator
 		PagedVolume& operator=(const PagedVolume& rhs);
 
-	private:	
+	private:
+		bool canReuseLastAccessedChunk(int32_t iChunkX, int32_t iChunkY, int32_t iChunkZ) const;
 		Chunk* getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const;
 
 		// Storing these properties individually has proved to be faster than keeping
