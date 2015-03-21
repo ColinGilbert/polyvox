@@ -97,7 +97,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::setPosition(xPos, yPos, zPos);
 
-		const int32_t key = this->mVolume->posToChunkKey(xPos, yPos, zPos);
+		const uint64_t key = this->mVolume->posToChunkKey(xPos, yPos, zPos);
 
 		// Then we update the voxel pointer.
 		auto pCurrentChunk = (key == this->mVolume->m_v3dLastAccessedChunkKey) ? this->mVolume->m_pLastAccessedChunk : this->mVolume->getChunk(key);
