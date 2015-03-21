@@ -39,10 +39,7 @@ namespace PolyVox
     template <uint32_t Size,typename StorageType, typename OperationType>
 	Vector<Size,StorageType,OperationType>::Vector(StorageType tFillValue)
     {
-		for(uint32_t ct = 0; ct < Size; ct++)
-		{
-			m_tElements[ct] = tFillValue;
-		}
+		std::fill(m_tElements, m_tElements + Size, tFillValue);
     }
 
     /**

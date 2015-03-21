@@ -73,7 +73,9 @@ public:
 	/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
 	VoxelType getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		if ((uXPos < mVolumeData.getDimension(0)) && (uYPos < mVolumeData.getDimension(1)) && (uZPos < mVolumeData.getDimension(2)))
+		if ((uXPos >= 0) && (uXPos < static_cast<int32_t>(mVolumeData.getDimension(0))) &&
+			(uYPos >= 0) && (uYPos < static_cast<int32_t>(mVolumeData.getDimension(1))) &&
+			(uZPos >= 0) && (uZPos < static_cast<int32_t>(mVolumeData.getDimension(2))))
 		{
 			return mVolumeData(uXPos, uYPos, uZPos);
 		}
@@ -94,7 +96,9 @@ public:
 	/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 	bool setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		if ((uXPos < mVolumeData.getDimension(0)) && (uYPos < mVolumeData.getDimension(1)) && (uZPos < mVolumeData.getDimension(2)))
+		if( (uXPos >= 0) && (uXPos < static_cast<int32_t>(mVolumeData.getDimension(0))) &&
+			(uYPos >= 0) && (uYPos < static_cast<int32_t>(mVolumeData.getDimension(1))) &&
+			(uZPos >= 0) && (uZPos < static_cast<int32_t>(mVolumeData.getDimension(2))))
 		{
 			mVolumeData(uXPos, uYPos, uZPos) = tValue;
 			return true;

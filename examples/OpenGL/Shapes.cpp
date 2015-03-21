@@ -57,8 +57,8 @@ void createSphereInVolume(RawVolume<MaterialDensityPair88>& volData, float fRadi
 
 void createCubeInVolume(RawVolume<MaterialDensityPair88>& volData, Vector3DInt32 lowerCorner, Vector3DInt32 upperCorner, uint8_t uValue)
 {
-	uint8_t maxDen = MaterialDensityPair88::getMaxDensity();
-	uint8_t minDen = MaterialDensityPair88::getMinDensity();
+	uint8_t maxDen = static_cast<uint8_t>(MaterialDensityPair88::getMaxDensity());
+	uint8_t minDen = static_cast<uint8_t>(MaterialDensityPair88::getMinDensity());
 	//This three-level for loop iterates over every voxel between the specified corners
 	for (int z = lowerCorner.getZ(); z <= upperCorner.getZ(); z++)
 	{

@@ -110,7 +110,8 @@ namespace PolyVox
 			uYPosInChunk * this->mVolume->m_uChunkSideLength +
 			uZPosInChunk * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 
-		auto pCurrentChunk = this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
+		auto pCurrentChunk = this->mVolume->canReuseLastAccessedChunk(uXChunk, uYChunk, uZChunk) ?
+			this->mVolume->m_pLastAccessedChunk : this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
 
 		mCurrentVoxel = pCurrentChunk->m_tData + uVoxelIndexInChunk;
 	}
