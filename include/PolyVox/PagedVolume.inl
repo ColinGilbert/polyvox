@@ -264,7 +264,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t iKeyAsInt32) const
+	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t key) const
 	{
 		// This function is relatively large and slow because it involves searching for a chunk and creating it if it is not found. A natural
 		// optimization is to only do this work if the chunk we are accessing is not the same as the last chunk we accessed (which it usually
@@ -276,11 +276,11 @@ namespace PolyVox
 		//
 		// A second benefit of only calling this function when really necessary is that we can minimize the number of times we update the
 		// timestamp. This reduces the chance of timestamp overflow (particularly if it is only 32-bit).
-		POLYVOX_ASSERT(iKeyAsInt32 != m_v3dLastAccessedChunkKey, "This should have been checked as an optimization before calling getChunk().");
+		POLYVOX_ASSERT(key != m_v3dLastAccessedChunkKey, "This should have been checked as an optimization before calling getChunk().");
 
 		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
-		Chunk* pChunk = nullptr;
-		auto itChunk = m_mapChunks.find(iKeyAsInt32);
+		Chunk* pChunk = nullptr; 
+		auto itChunk = m_mapChunks.find(key);
 
 		// Check whether the chunk was found.
 		if ((itChunk) != m_mapChunks.end())
@@ -293,17 +293,14 @@ namespace PolyVox
 		// If we still haven't found the chunk then it's time to create a new one and page it in from disk.
 		if (!pChunk)
 		{
-			/*const int32_t uChunkX = (key >> 20) & 0x3FF;
+			const int32_t uChunkX = (key >> 20) & 0x3FF;
 			const int32_t uChunkY = (key >> 10) & 0x3FF;
-			const int32_t uChunkZ = (key      ) & 0x3FF;*/
+			const int32_t uChunkZ = (key      ) & 0x3FF;
 			// The chunk was not found so we will create a new one.
-			/*ChunkKeyConverter converter;
-			converter.i = key;*/
-			ChunkKey realKey = force_cast<ChunkKey>(iKeyAsInt32);
-			Vector3DInt32 v3dChunkPos(realKey.iXPos, realKey.iYPos, realKey.iZPos);
+			Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 			pChunk = new PagedVolume<VoxelType>::Chunk(v3dChunkPos, m_uChunkSideLength, m_pPager);
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
-			m_mapChunks.insert(std::make_pair(iKeyAsInt32, std::unique_ptr<Chunk>(pChunk)));
+			m_mapChunks.insert(std::make_pair(key, std::unique_ptr<Chunk>(pChunk)));
 
 			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
 			while (m_mapChunks.size() > m_uChunkCountLimit)
@@ -328,7 +325,7 @@ namespace PolyVox
 		/*m_v3dLastAccessedChunkX = uChunkX;
 		m_v3dLastAccessedChunkY = uChunkY;
 		m_v3dLastAccessedChunkZ = uChunkZ;*/
-		m_v3dLastAccessedChunkKey = iKeyAsInt32;
+		m_v3dLastAccessedChunkKey = key;
 
 		return pChunk;	
 	}

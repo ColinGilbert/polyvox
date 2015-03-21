@@ -30,14 +30,6 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	// Cast any type to any other type with no safety checks.
-	// Should only be used if you really know what you are doing!
-	template<typename to, typename from>
-	inline to force_cast(from input)
-	{
-		return *(reinterpret_cast<to*>(&input));
-	}
-
 	inline bool isPowerOf2(uint32_t uInput)
 	{
 		if (uInput == 0)
