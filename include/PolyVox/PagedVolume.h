@@ -285,36 +285,17 @@ namespace PolyVox
 
 		ChunkKey posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
 		{
-			int32_t iBlockX = iXPos >> m_uChunkSideLengthPower;
-			int32_t iBlockY = iYPos >> m_uChunkSideLengthPower;
-			int32_t iBlockZ = iZPos >> m_uChunkSideLengthPower;
-
-			int16_t iBlockXAsInt16 = static_cast<int16_t>(iBlockX);
-			int16_t iBlockYAsInt16 = static_cast<int16_t>(iBlockY);
-			int16_t iBlockZAsInt16 = static_cast<int16_t>(iBlockZ);
-
-			uint16_t uBlockXAsUint16 = reinterpret_cast<uint16_t&>(iBlockXAsInt16);
-			uint16_t uBlockYAsUint16 = reinterpret_cast<uint16_t&>(iBlockYAsInt16);
-			uint16_t uBlockZAsUint16 = reinterpret_cast<uint16_t&>(iBlockZAsInt16);
-
-			uint64_t uBlockXAsUint64 = static_cast<uint64_t>(uBlockXAsUint16);
-			uint64_t uBlockYAsUint64 = static_cast<uint64_t>(uBlockYAsUint16);
-			uint64_t uBlockZAsUint64 = static_cast<uint64_t>(uBlockZAsUint16);
-
-			uBlockXAsUint64 = uBlockXAsUint64 << 32;
-			uBlockYAsUint64 = uBlockYAsUint64 << 16;
-
 			// Bit-shifting of signed integer values has various issues with undefined or implementation-defined behaviour.
 			// Therefore we cast to unsigned to avoid these (we only care about the bit pattern anyway, not the actual value).
-			/*const ChunkKey uXPos = static_cast<ChunkKey>(iXPos);
+			const ChunkKey uXPos = static_cast<ChunkKey>(iXPos);
 			const ChunkKey uYPos = static_cast<ChunkKey>(iYPos);
 			const ChunkKey uZPos = static_cast<ChunkKey>(iZPos);
 			
 			const ChunkKey xKey = ((uXPos >> m_uChunkSideLengthPower) & 0x3FF) << 20;
 			const ChunkKey yKey = ((uYPos >> m_uChunkSideLengthPower) & 0x3FF) << 10;
-			const ChunkKey zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);*/
+			const ChunkKey zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);
 			
-			const ChunkKey key = 0xFFFF000000000000 | uBlockXAsUint64 | uBlockYAsUint64 | uBlockZAsUint64;
+			const ChunkKey key = 0x80000000 | xKey | yKey | zKey;
 			
 			return key;
 		}
