@@ -110,7 +110,18 @@ namespace PolyVox
 			uYPosInChunk * this->mVolume->m_uChunkSideLength +
 			uZPosInChunk * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
 
-		auto pCurrentChunk = this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
+		Chunk* pCurrentChunk;
+		if ((uXChunk == this->mVolume->m_v3dLastAccessedChunkX) &&
+			(uYChunk == this->mVolume->m_v3dLastAccessedChunkY) &&
+			(uZChunk == this->mVolume->m_v3dLastAccessedChunkZ) &&
+			(this->mVolume->m_pLastAccessedChunk != 0))
+		{
+			pCurrentChunk = this->mVolume->m_pLastAccessedChunk;
+		}
+		else
+		{
+			pCurrentChunk = this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
+		}
 
 		mCurrentVoxel = pCurrentChunk->m_tData + uVoxelIndexInChunk;
 	}

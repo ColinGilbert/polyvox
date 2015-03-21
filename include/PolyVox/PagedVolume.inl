@@ -123,7 +123,19 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos & m_iChunkMask);
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos & m_iChunkMask);
 
-		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
+		Chunk* pChunk;
+		if ((chunkX == m_v3dLastAccessedChunkX) &&
+			(chunkY == m_v3dLastAccessedChunkY) &&
+			(chunkZ == m_v3dLastAccessedChunkZ) &&
+			(m_pLastAccessedChunk != 0))
+		{
+			pChunk = m_pLastAccessedChunk;
+		}
+		else
+		{
+			pChunk = getChunk(chunkX, chunkY, chunkZ);
+		}
+
 		return pChunk->getVoxel(xOffset, yOffset, zOffset);
 	}
 
@@ -155,7 +167,19 @@ namespace PolyVox
 		const uint16_t yOffset = static_cast<uint16_t>(uYPos - (chunkY << m_uChunkSideLengthPower));
 		const uint16_t zOffset = static_cast<uint16_t>(uZPos - (chunkZ << m_uChunkSideLengthPower));
 
-		auto pChunk = getChunk(chunkX, chunkY, chunkZ);
+		Chunk* pChunk;
+		if ((chunkX == m_v3dLastAccessedChunkX) &&
+			(chunkY == m_v3dLastAccessedChunkY) &&
+			(chunkZ == m_v3dLastAccessedChunkZ) &&
+			(m_pLastAccessedChunk != 0))
+		{
+			pChunk = m_pLastAccessedChunk;
+		}
+		else
+		{
+			pChunk = getChunk(chunkX, chunkY, chunkZ);
+		}
+
 		pChunk->setVoxel(xOffset, yOffset, zOffset, tValue);
 	}
 
@@ -263,13 +287,13 @@ namespace PolyVox
 		//the time stamp. If we updated it everytime then that would be every time we touched
 		//a voxel, which would overflow a uint32_t and require us to use a uint64_t instead.
 		//This check should also provide a significant speed boost as usually it is true.
-		if ((uChunkX == m_v3dLastAccessedChunkX) && 
+		/*if ((uChunkX == m_v3dLastAccessedChunkX) && 
 			(uChunkY == m_v3dLastAccessedChunkY) && 
 			(uChunkZ == m_v3dLastAccessedChunkZ) && 
 			(m_pLastAccessedChunk != 0))
 		{
 			return m_pLastAccessedChunk;
-		}
+		}*/
 
 		Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 
