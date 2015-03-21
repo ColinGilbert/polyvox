@@ -115,7 +115,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::getVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos) const
 	{
-		const PagedVolumeChunkKeyIntType key = posToChunkKey(uXPos, uYPos, uZPos);
+		const int32_t key = posToChunkKey(uXPos, uYPos, uZPos);
 
 		// Only call get chunk if we can't reuse the chunk pointer from the last voxel access.
 		auto pChunk = (key == m_v3dLastAccessedChunkKey) ? m_pLastAccessedChunk : getChunk(key);
@@ -147,7 +147,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		const PagedVolumeChunkKeyIntType key = posToChunkKey(uXPos, uYPos, uZPos);
+		const int32_t key = posToChunkKey(uXPos, uYPos, uZPos);
 
 		// Only call get chunk if we can't reuse the chunk pointer from the last voxel access.
 		auto pChunk = (key == m_v3dLastAccessedChunkKey) ? m_pLastAccessedChunk : getChunk(key);
@@ -202,7 +202,7 @@ namespace PolyVox
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{	
-					const PagedVolumeChunkKeyIntType key = posToChunkKey(x, y, z);
+					const int32_t key = posToChunkKey(x, y, z);
 
 					// Note that we don't check against the last chunk here. We're
 					// not accessing the voxels, we just want to pull them into memory.
@@ -256,7 +256,7 @@ namespace PolyVox
 			{
 				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
 				{
-					const PagedVolumeChunkKeyIntType key = posToChunkKey(x, y, z);
+					const int32_t key = posToChunkKey(x, y, z);
 					m_mapChunks.erase(key);
 				}
 			}
@@ -264,7 +264,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(PagedVolumeChunkKeyIntType iKeyAsInt32) const
+	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t iKeyAsInt32) const
 	{
 		// This function is relatively large and slow because it involves searching for a chunk and creating it if it is not found. A natural
 		// optimization is to only do this work if the chunk we are accessing is not the same as the last chunk we accessed (which it usually

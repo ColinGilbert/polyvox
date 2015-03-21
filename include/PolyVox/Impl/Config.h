@@ -24,8 +24,6 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Config_H__
 #define __PolyVox_Config_H__
 
-#include <cstdint>
-
 //#define POLYVOX_LOG_TRACE_ENABLED
 //#define POLYVOX_LOG_DEBUG_ENABLED
 #define POLYVOX_LOG_INFO_ENABLED
@@ -35,7 +33,5 @@ freely, subject to the following restrictions:
 
 //#define POLYVOX_ASSERTS_ENABLED
 #define POLYVOX_THROW_ENABLED
-
-typedef int32_t PagedVolumeChunkKeyIntType;
 
 #endif
