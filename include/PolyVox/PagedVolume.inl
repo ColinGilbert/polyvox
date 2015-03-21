@@ -293,14 +293,33 @@ namespace PolyVox
 		// If we still haven't found the chunk then it's time to create a new one and page it in from disk.
 		if (!pChunk)
 		{
-			const int32_t uChunkX = (iKeyAsInt32 >> 20) & 0x3FF;
+			uint64_t uBlockXAsUint64 = iKeyAsInt32;
+			uint64_t uBlockYAsUint64 = iKeyAsInt32;
+			uint64_t uBlockZAsUint64 = iKeyAsInt32;
+
+			uBlockXAsUint64 = uBlockXAsUint64 >> 32;
+			uBlockYAsUint64 = uBlockYAsUint64 >> 16;
+
+			uBlockXAsUint64 = uBlockXAsUint64 & 0xFFFF;
+			uBlockYAsUint64 = uBlockYAsUint64 & 0xFFFF;
+			uBlockZAsUint64 = uBlockZAsUint64 & 0xFFFF;
+
+			uint16_t uBlockXAsUint16 = static_cast<uint16_t>(uBlockXAsUint64);
+			uint16_t uBlockYAsUint16 = static_cast<uint16_t>(uBlockYAsUint64);
+			uint16_t uBlockZAsUint16 = static_cast<uint16_t>(uBlockZAsUint64);
+
+			int16_t uBlockXAsInt16 = reinterpret_cast<int16_t&>(uBlockXAsUint16);
+			int16_t uBlockYAsInt16 = reinterpret_cast<int16_t&>(uBlockYAsUint16);
+			int16_t uBlockZAsInt16 = reinterpret_cast<int16_t&>(uBlockZAsUint16);
+
+			/*const int32_t uChunkX = (iKeyAsInt32 >> 20) & 0x3FF;
 			const int32_t uChunkY = (iKeyAsInt32 >> 10) & 0x3FF;
-			const int32_t uChunkZ = (iKeyAsInt32)       & 0x3FF;
+			const int32_t uChunkZ = (iKeyAsInt32)       & 0x3FF;*/
 			// The chunk was not found so we will create a new one.
 			/*ChunkKeyConverter converter;
 			converter.i = key;*/
 			//ChunkKey realKey = force_cast<ChunkKey>(iKeyAsInt32);
-			Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
+			Vector3DInt32 v3dChunkPos(uBlockXAsInt16, uBlockYAsInt16, uBlockZAsInt16);
 			pChunk = new PagedVolume<VoxelType>::Chunk(v3dChunkPos, m_uChunkSideLength, m_pPager);
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
 			m_mapChunks.insert(std::make_pair(iKeyAsInt32, std::unique_ptr<Chunk>(pChunk)));
