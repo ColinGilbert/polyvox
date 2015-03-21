@@ -281,31 +281,42 @@ namespace PolyVox
 		PagedVolume& operator=(const PagedVolume& rhs);
 
 	private:	
-		typedef uint64_t ChunkKey;
+		/*struct ChunkKey
+		{
+			ChunkKey(int32_t x, int32_t y, int32_t z) : iZPos(z), iYPos(y), iXPos(x), iValid(~0) {}
+			int64_t iZPos : 10;
+			int64_t iYPos : 10;
+			int64_t iXPos : 10;
 
-		ChunkKey posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
+			// Should only be true when the last access chunk pointer is valid,
+			// so we don't need to have a seperate check for that before using it.
+			int64_t iValid : 2;
+		};
+		static_assert(sizeof(ChunkKey) == sizeof(int64_t), "");*/
+
+		uint64_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
 		{
 			// Bit-shifting of signed integer values has various issues with undefined or implementation-defined behaviour.
 			// Therefore we cast to unsigned to avoid these (we only care about the bit pattern anyway, not the actual value).
-			const ChunkKey uXPos = static_cast<ChunkKey>(iXPos);
-			const ChunkKey uYPos = static_cast<ChunkKey>(iYPos);
-			const ChunkKey uZPos = static_cast<ChunkKey>(iZPos);
+			const uint64_t uXPos = static_cast<uint64_t>(iXPos);
+			const uint64_t uYPos = static_cast<uint64_t>(iYPos);
+			const uint64_t uZPos = static_cast<uint64_t>(iZPos);
 			
-			const ChunkKey xKey = ((uXPos >> m_uChunkSideLengthPower) & 0x3FF) << 20;
-			const ChunkKey yKey = ((uYPos >> m_uChunkSideLengthPower) & 0x3FF) << 10;
-			const ChunkKey zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);
+			const uint64_t xKey = ((uXPos >> m_uChunkSideLengthPower) & 0x3FF) << 20;
+			const uint64_t yKey = ((uYPos >> m_uChunkSideLengthPower) & 0x3FF) << 10;
+			const uint64_t zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);
 			
-			const ChunkKey key = 0x80000000 | xKey | yKey | zKey;
+			const uint64_t key = 0x80000000 | xKey | yKey | zKey;
 			
 			return key;
 		}
 
-		Chunk* getChunk(ChunkKey iKeyAsInt32) const;
+		Chunk* getChunk(uint64_t iKeyAsInt32) const;
 
-		mutable ChunkKey m_v3dLastAccessedChunkKey = 0;
+		mutable uint64_t m_v3dLastAccessedChunkKey = 0;
 		mutable Chunk* m_pLastAccessedChunk = nullptr;
 
-		mutable std::unordered_map<ChunkKey, std::unique_ptr< Chunk > > m_mapChunks;
+		mutable std::unordered_map<uint64_t, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
 
