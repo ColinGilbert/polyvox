@@ -281,7 +281,7 @@ namespace PolyVox
 		PagedVolume& operator=(const PagedVolume& rhs);
 
 	private:	
-		/*struct ChunkKey
+		struct ChunkKey
 		{
 			ChunkKey(int32_t x, int32_t y, int32_t z) : iZPos(z), iYPos(y), iXPos(x), iValid(~0) {}
 			int64_t iZPos : 10;
@@ -292,31 +292,39 @@ namespace PolyVox
 			// so we don't need to have a seperate check for that before using it.
 			int64_t iValid : 2;
 		};
-		static_assert(sizeof(ChunkKey) == sizeof(int64_t), "");*/
+		static_assert(sizeof(ChunkKey) == sizeof(int64_t), "");
 
-		uint64_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
+		int64_t posToChunkKey(int32_t iXPos, int32_t iYPos, int32_t iZPos) const
 		{
-			// Bit-shifting of signed integer values has various issues with undefined or implementation-defined behaviour.
-			// Therefore we cast to unsigned to avoid these (we only care about the bit pattern anyway, not the actual value).
-			const uint64_t uXPos = static_cast<uint64_t>(iXPos);
-			const uint64_t uYPos = static_cast<uint64_t>(iYPos);
-			const uint64_t uZPos = static_cast<uint64_t>(iZPos);
-			
-			const uint64_t xKey = ((uXPos >> m_uChunkSideLengthPower) & 0x3FF) << 20;
-			const uint64_t yKey = ((uYPos >> m_uChunkSideLengthPower) & 0x3FF) << 10;
-			const uint64_t zKey = ((uZPos >> m_uChunkSideLengthPower) & 0x3FF);
-			
-			const uint64_t key = 0x80000000 | xKey | yKey | zKey;
-			
-			return key;
+			iXPos = iXPos >> m_uChunkSideLengthPower;
+			iYPos = iYPos >> m_uChunkSideLengthPower;
+			iZPos = iZPos >> m_uChunkSideLengthPower;
+
+			ChunkKey chunkKey(iXPos, iYPos, iZPos);
+			//chunkKey.iValid = ~0;
+			//chunkKey.iValid = 2;
+			// In general, bit shifting signed integers is dubious because of potential undefined or implementation defied behaviour.
+			// However, it seems that in practice most compilers and architectures work in the same way (http://stackoverflow.com/a/6488645).
+
+			static_assert((int64_t(-3)  / 4) ==  0, "fdfs");
+			static_assert((int64_t(-3) >> 2) == -1, "fdfs");
+			/*chunkKey.iXPos = iXPos;
+			chunkKey.iYPos = iYPos;
+			chunkKey.iZPos = iZPos;*/
+
+			// If this kind of casting ever causes problems there are
+			// other solutions here: http://stackoverflow.com/a/2468738
+			int64_t iKeyAsInt64 = force_cast<int64_t>(chunkKey);
+
+			return iKeyAsInt64;
 		}
 
-		Chunk* getChunk(uint64_t iKeyAsInt32) const;
+		Chunk* getChunk(int64_t iKeyAsInt32) const;
 
-		mutable uint64_t m_v3dLastAccessedChunkKey = 0;
+		mutable int64_t m_v3dLastAccessedChunkKey = 0;
 		mutable Chunk* m_pLastAccessedChunk = nullptr;
 
-		mutable std::unordered_map<uint64_t, std::unique_ptr< Chunk > > m_mapChunks;
+		mutable std::unordered_map<uint32_t, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
 
