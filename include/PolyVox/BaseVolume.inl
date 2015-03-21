@@ -123,7 +123,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t BaseVolume<VoxelType>::calculateSizeInBytes(void)
 	{
-		return getWidth() * getHeight() * getDepth() * sizeof(VoxelType);
+		return this->getWidth() * this->getHeight() * this->getDepth() * sizeof(VoxelType);
 	}	
 }
 

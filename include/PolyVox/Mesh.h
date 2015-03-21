@@ -57,7 +57,7 @@ namespace PolyVox
 
 		uint32_t getNoOfIndices(void) const;
 		IndexType getIndex(uint32_t index) const;
-		const IndexType* getRawIndexData(void);
+		const IndexType* getRawIndexData(void) const;
 		POLYVOX_DEPRECATED const std::vector<IndexType>& getIndices(void) const;
 
 		const Vector3DInt32& getOffset(void) const;

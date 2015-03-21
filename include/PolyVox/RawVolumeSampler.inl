@@ -76,9 +76,9 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::setPosition(xPos, yPos, zPos);
 
-		m_bIsCurrentPositionValidInX = mVolume->getEnclosingRegion().containsPointInX(xPos);
-		m_bIsCurrentPositionValidInY = mVolume->getEnclosingRegion().containsPointInY(yPos);
-		m_bIsCurrentPositionValidInZ = mVolume->getEnclosingRegion().containsPointInZ(zPos);
+		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(xPos);
+		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(yPos);
+		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(zPos);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid())
@@ -124,7 +124,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveX();
 
-		m_bIsCurrentPositionValidInX = mVolume->getEnclosingRegion().containsPointInX(mXPosInVolume);
+		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(this->mXPosInVolume);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid() && bIsOldPositionValid )
@@ -146,7 +146,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveY();
 
-		m_bIsCurrentPositionValidInY = mVolume->getEnclosingRegion().containsPointInY(mYPosInVolume);
+		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(this->mYPosInVolume);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid() && bIsOldPositionValid )
@@ -168,7 +168,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::movePositiveZ();
 
-		m_bIsCurrentPositionValidInZ = mVolume->getEnclosingRegion().containsPointInZ(mZPosInVolume);
+		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(this->mZPosInVolume);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid() && bIsOldPositionValid )
@@ -190,7 +190,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeX();
 
-		m_bIsCurrentPositionValidInX = mVolume->getEnclosingRegion().containsPointInX(mXPosInVolume);
+		m_bIsCurrentPositionValidInX = this->mVolume->getEnclosingRegion().containsPointInX(this->mXPosInVolume);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid() && bIsOldPositionValid )
@@ -212,7 +212,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeY();
 
-		m_bIsCurrentPositionValidInY = mVolume->getEnclosingRegion().containsPointInY(mYPosInVolume);
+		m_bIsCurrentPositionValidInY = this->mVolume->getEnclosingRegion().containsPointInY(this->mYPosInVolume);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid() && bIsOldPositionValid )
@@ -234,7 +234,7 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> >::moveNegativeZ();
 
-		m_bIsCurrentPositionValidInZ = mVolume->getEnclosingRegion().containsPointInZ(mZPosInVolume);
+		m_bIsCurrentPositionValidInZ = this->mVolume->getEnclosingRegion().containsPointInZ(this->mZPosInVolume);
 
 		// Then we update the voxel pointer
 		if(this->isCurrentPositionValid() && bIsOldPositionValid )
