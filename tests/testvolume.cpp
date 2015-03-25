@@ -468,49 +468,50 @@ void TestVolume::testPagedVolumeSamplersWithExternalBackwards()
 	QCOMPARE(result, static_cast<int32_t>(-993539594));
 }
 
-void TestVolume::testPagedVolumeChunkLocalAccess()
+int32_t TestVolume::testPagedVolumeChunkAccess(uint32_t locality)
 {
 	std::mt19937 rng;
 	int32_t result = 0;
 	uint16_t x = rng() % m_uChunkSideLength;
 	uint16_t y = rng() % m_uChunkSideLength;
 	uint16_t z = rng() % m_uChunkSideLength;
+
+	for (uint32_t ct = 0; ct < 1000000; ct++)
+	{
+		uint16_t xOffset = rng() % locality;
+		uint16_t yOffset = rng() % locality;
+		uint16_t zOffset = rng() % locality;
+		x += xOffset;
+		y += yOffset;
+		z += zOffset;
+		x %= m_uChunkSideLength;
+		y %= m_uChunkSideLength;
+		z %= m_uChunkSideLength;
+		int32_t voxel = m_pPagedVolumeChunk->getVoxel(x, y, z);
+		result = cantorTupleFunction(result, voxel);
+	}
+
+	return result;
+}
+
+void TestVolume::testPagedVolumeChunkLocalAccess()
+{
+	int32_t result = 0;
 	QBENCHMARK
 	{
-		for (uint32_t ct = 0; ct < 1000000; ct++)
-		{
-			uint16_t xOffset = rng() % 3;
-			uint16_t yOffset = rng() % 3;
-			uint16_t zOffset = rng() % 3;
-			x += xOffset;
-			y += yOffset;
-			z += zOffset;
-			x %= m_uChunkSideLength;
-			y %= m_uChunkSideLength;
-			z %= m_uChunkSideLength;
-			int32_t voxel = m_pPagedVolumeChunk->getVoxel(x, y, z);
-			result = cantorTupleFunction(result, voxel);
-		}
+		result = testPagedVolumeChunkAccess(3); // Small value for good locality
 	}
 	QCOMPARE(result, static_cast<int32_t>(145244783));
 }
 
 void TestVolume::testPagedVolumeChunkRandomAccess()
 {
-	std::mt19937 rng;
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		for (uint32_t ct = 0; ct < 1000000; ct++)
-		{
-			uint16_t x = rng() % m_uChunkSideLength;
-			uint16_t y = rng() % m_uChunkSideLength;
-			uint16_t z = rng() % m_uChunkSideLength;
-			int32_t voxel = m_pPagedVolumeChunk->getVoxel(x, y, z);
-			result = cantorTupleFunction(result, voxel);
-		}
+		result = testPagedVolumeChunkAccess(1000000); // Large value for poor locality (random access)
 	}
-	QCOMPARE(result, static_cast<int32_t>(408757678));
+	QCOMPARE(result, static_cast<int32_t>(-254578110));
 }
 
 QTEST_MAIN(TestVolume)
