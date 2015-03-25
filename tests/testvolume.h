@@ -25,6 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_TestVolume_H__
 
 #include "PolyVox/PolyVoxForwardDeclarations.h"
+#include "PolyVox/PagedVolume.h"
 #include "PolyVox/Region.h"
 
 #include <QObject>
@@ -56,7 +57,12 @@ private slots:
 	void testPagedVolumeDirectAccessWithExternalBackwards();
 	void testPagedVolumeSamplersWithExternalBackwards();
 
+	void testPagedVolumeChunkLocalAccess();
+	void testPagedVolumeChunkRandomAccess();
+
 private:
+	static const uint16_t m_uChunkSideLength = 32;
+
 	PolyVox::Region m_regVolume;
 	PolyVox::Region m_regInternal;
 	PolyVox::Region m_regExternal;
@@ -64,6 +70,8 @@ private:
 
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
 	PolyVox::PagedVolume<int32_t>* m_pPagedVolume;
+
+	PolyVox::PagedVolume<int32_t>::Chunk* m_pPagedVolumeChunk;
 };
 
 #endif

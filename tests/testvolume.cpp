@@ -30,6 +30,8 @@ freely, subject to the following restrictions:
 #include <QtGlobal>
 #include <QtTest>
 
+#include <random>
+
 using namespace PolyVox;
 
 // This is used to compute a value from a list of integers. We use it to 
@@ -249,7 +251,7 @@ TestVolume::TestVolume()
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(m_regVolume);
-	m_pPagedVolume = new PagedVolume<int32_t>(m_pFilePager, 1 * 1024 * 1024, 32);
+	m_pPagedVolume = new PagedVolume<int32_t>(m_pFilePager, 1 * 1024 * 1024, m_uChunkSideLength);
 
 	//Fill the volume with some data
 	for (int z = m_regVolume.getLowerZ(); z <= m_regVolume.getUpperZ(); z++)
@@ -264,10 +266,26 @@ TestVolume::TestVolume()
 			}
 		}
 	}
+
+	// Note - We are reusing the FilePager for testing... watch out for conflicts with the main volume.
+	m_pPagedVolumeChunk = new PagedVolume<int32_t>::Chunk(Vector3DInt32(10000, 10000, 10000), m_uChunkSideLength, m_pFilePager);
+	int32_t i = 0;
+	for (uint16_t z = 0; z < m_uChunkSideLength; z++)
+	{
+		for (uint16_t y = 0; y < m_uChunkSideLength; y++)
+		{
+			for (uint16_t x = 0; x < m_uChunkSideLength; x++)
+			{
+				m_pPagedVolumeChunk->setVoxel(x, y, z, ++i);
+			}
+		}
+	}
 }
 
 TestVolume::~TestVolume()
 {
+	delete m_pPagedVolumeChunk;
+
 	delete m_pRawVolume;
 	delete m_pPagedVolume;
 
@@ -448,6 +466,51 @@ void TestVolume::testPagedVolumeSamplersWithExternalBackwards()
 		result = testSamplersWithWrappingBackwards(m_pPagedVolume, m_regExternal);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-993539594));
+}
+
+void TestVolume::testPagedVolumeChunkLocalAccess()
+{
+	std::mt19937 rng;
+	int32_t result = 0;
+	uint16_t x = rng() % m_uChunkSideLength;
+	uint16_t y = rng() % m_uChunkSideLength;
+	uint16_t z = rng() % m_uChunkSideLength;
+	QBENCHMARK
+	{
+		for (uint32_t ct = 0; ct < 1000000; ct++)
+		{
+			uint16_t xOffset = rng() % 3;
+			uint16_t yOffset = rng() % 3;
+			uint16_t zOffset = rng() % 3;
+			x += xOffset;
+			y += yOffset;
+			z += zOffset;
+			x %= m_uChunkSideLength;
+			y %= m_uChunkSideLength;
+			z %= m_uChunkSideLength;
+			int32_t voxel = m_pPagedVolumeChunk->getVoxel(x, y, z);
+			result = cantorTupleFunction(result, voxel);
+		}
+	}
+	QCOMPARE(result, static_cast<int32_t>(145244783));
+}
+
+void TestVolume::testPagedVolumeChunkRandomAccess()
+{
+	std::mt19937 rng;
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		for (uint32_t ct = 0; ct < 1000000; ct++)
+		{
+			uint16_t x = rng() % m_uChunkSideLength;
+			uint16_t y = rng() % m_uChunkSideLength;
+			uint16_t z = rng() % m_uChunkSideLength;
+			int32_t voxel = m_pPagedVolumeChunk->getVoxel(x, y, z);
+			result = cantorTupleFunction(result, voxel);
+		}
+	}
+	QCOMPARE(result, static_cast<int32_t>(408757678));
 }
 
 QTEST_MAIN(TestVolume)
