@@ -51,8 +51,12 @@ namespace PolyVox
 		Vector3DInt32 v3dUpper = v3dLower + Vector3DInt32(m_uSideLength - 1, m_uSideLength - 1, m_uSideLength - 1);
 		Region reg(v3dLower, v3dUpper);
 
-		// Page the data in
-		m_pPager->pageIn(reg, this);
+		// A valid pager is normally present - this check is mostly to ease unit testing.
+		if (m_pPager)
+		{
+			// Page the data in
+			m_pPager->pageIn(reg, this);
+		}
 
 		// We'll use this later to decide if data needs to be paged out again.
 		m_bDataModified = false;
@@ -61,7 +65,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::Chunk::~Chunk()
 	{
-		if (m_bDataModified)
+		if (m_bDataModified && m_pPager)
 		{
 			// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
 			Vector3DInt32 v3dLower = m_v3dChunkSpacePosition * static_cast<int32_t>(m_uSideLength);

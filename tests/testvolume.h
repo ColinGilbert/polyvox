@@ -61,7 +61,7 @@ private slots:
 	void testPagedVolumeChunkRandomAccess();
 
 private:
-	int32_t testPagedVolumeChunkAccess(uint32_t locality);
+	int32_t testPagedVolumeChunkAccess(uint16_t localityMask);
 
 	static const uint16_t m_uChunkSideLength = 32;
 
@@ -73,7 +73,7 @@ private:
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
 	PolyVox::PagedVolume<int32_t>* m_pPagedVolume;
 
-	PolyVox::PagedVolume<int32_t>::Chunk* m_pPagedVolumeChunk;
+	PolyVox::PagedVolume<uint32_t>::Chunk* m_pPagedVolumeChunk;
 };
 
 #endif

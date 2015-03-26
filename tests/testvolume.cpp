@@ -268,15 +268,15 @@ TestVolume::TestVolume()
 	}
 
 	// Note - We are reusing the FilePager for testing... watch out for conflicts with the main volume.
-	m_pPagedVolumeChunk = new PagedVolume<int32_t>::Chunk(Vector3DInt32(10000, 10000, 10000), m_uChunkSideLength, m_pFilePager);
-	int32_t i = 0;
+	m_pPagedVolumeChunk = new PagedVolume<uint32_t>::Chunk(Vector3DInt32(10000, 10000, 10000), m_uChunkSideLength, nullptr);
+	std::mt19937 rng;
 	for (uint16_t z = 0; z < m_uChunkSideLength; z++)
 	{
 		for (uint16_t y = 0; y < m_uChunkSideLength; y++)
 		{
 			for (uint16_t x = 0; x < m_uChunkSideLength; x++)
 			{
-				m_pPagedVolumeChunk->setVoxel(x, y, z, ++i);
+				m_pPagedVolumeChunk->setVoxel(x, y, z, static_cast<uint32_t>(rng()));
 			}
 		}
 	}
@@ -468,30 +468,80 @@ void TestVolume::testPagedVolumeSamplersWithExternalBackwards()
 	QCOMPARE(result, static_cast<int32_t>(-993539594));
 }
 
-int32_t TestVolume::testPagedVolumeChunkAccess(uint32_t locality)
+int32_t TestVolume::testPagedVolumeChunkAccess(uint16_t localityMask)
 {
 	std::mt19937 rng;
-	int32_t result = 0;
-	uint16_t x = rng() % m_uChunkSideLength;
-	uint16_t y = rng() % m_uChunkSideLength;
-	uint16_t z = rng() % m_uChunkSideLength;
+	int32_t sum = 0;
+	uint16_t x = 0;
+	uint16_t y = 0;
+	uint16_t z = 0;
 
-	for (uint32_t ct = 0; ct < 1000000; ct++)
+	// Used to constrain the range, as '&=m_uChunkSideLengthMask' should be faster than '%=m_uChunkSideLength'.
+	uint16_t m_uChunkSideLengthMask = m_uChunkSideLength - 1;
+
+	for (int32_t ct = 0; ct < 1000000; ct++)
 	{
-		uint16_t xOffset = rng() % locality;
-		uint16_t yOffset = rng() % locality;
-		uint16_t zOffset = rng() % locality;
-		x += xOffset;
-		y += yOffset;
-		z += zOffset;
-		x %= m_uChunkSideLength;
-		y %= m_uChunkSideLength;
-		z %= m_uChunkSideLength;
-		int32_t voxel = m_pPagedVolumeChunk->getVoxel(x, y, z);
-		result = cantorTupleFunction(result, voxel);
+		// Random number generation is relatively slow compared to retireving a voxel, so if we are not
+		// careful the process of choosing which voxel to get can become slower than actually getting it.
+		// Therefore we use the same random number multiple times by getting different bits from it.
+		uint32_t rand = rng();
+
+		// We have 32 random bits and we make 27 (3*9) calls to getVoxel(). This means we
+		// stop using the lower bits before they all get set to zero from the right-shifting.
+		// An odd number means we have an imbalance between the number of times we go forward vs. 
+		// backwards, so overall we will drift around the volume even if locality is constrained.
+		for (uint32_t i = 0; i < 3; i++)
+		{
+			x += rand & localityMask; // Move x forwardsby a small amount, limited by localityMask.
+			x &= m_uChunkSideLengthMask; // Ensure it is within the valid range.
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z); // Get the voxel value and use it.
+			rand >>= 1; // Shift the bits so we use different ones next time. 
+
+			y -= rand & localityMask; // This one (and some others) are negative so sometimes we go backwards.
+			y &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			z += rand & localityMask;
+			z &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			x -= rand & localityMask;
+			x &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			y += rand & localityMask;
+			y &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			z -= rand & localityMask;
+			z &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			x += rand & localityMask;
+			x &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			y -= rand & localityMask;
+			y &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+
+			z += rand & localityMask;
+			z &= m_uChunkSideLengthMask;
+			sum += m_pPagedVolumeChunk->getVoxel(x, y, z);
+			rand >>= 1;
+		}
 	}
 
-	return result;
+	// It's important to use the voxel values, otherwise
+	// the compiler optimizes out the calls to getVoxel().
+	return sum;
 }
 
 void TestVolume::testPagedVolumeChunkLocalAccess()
@@ -499,9 +549,9 @@ void TestVolume::testPagedVolumeChunkLocalAccess()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testPagedVolumeChunkAccess(3); // Small value for good locality
+		result = testPagedVolumeChunkAccess(0x0003); // Small value for good locality
 	}
-	QCOMPARE(result, static_cast<int32_t>(145244783));
+	QCOMPARE(result, static_cast<int32_t>(1856742828));
 }
 
 void TestVolume::testPagedVolumeChunkRandomAccess()
@@ -509,9 +559,9 @@ void TestVolume::testPagedVolumeChunkRandomAccess()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testPagedVolumeChunkAccess(1000000); // Large value for poor locality (random access)
+		result = testPagedVolumeChunkAccess(0xFFFF); // Large value for poor locality (random access)
 	}
-	QCOMPARE(result, static_cast<int32_t>(-254578110));
+	QCOMPARE(result, static_cast<int32_t>(1550197176));
 }
 
 QTEST_MAIN(TestVolume)
