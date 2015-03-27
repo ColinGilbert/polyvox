@@ -37,8 +37,8 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::PagedVolume(Pager* pPager,	uint32_t uTargetMemoryUsageInBytes,	uint16_t uChunkSideLength)
 		:BaseVolume<VoxelType>()
-		, m_pPager(pPager)
 		, m_uChunkSideLength(uChunkSideLength)
+		, m_pPager(pPager)
 	{
 		// Validation of parameters
 		POLYVOX_THROW_IF(!pPager, std::invalid_argument, "You must provide a valid pager when constructing a PagedVolume");
