@@ -91,8 +91,19 @@ namespace PolyVox
 		return m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 	}
 
+	// Based on https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/
+	inline uint32_t Part1By2(uint32_t x)
+	{
+		x &= 0x000003ff;                  // x = ---- ---- ---- ---- ---- --98 7654 3210
+		x = (x ^ (x << 16)) & 0xff0000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
+		x = (x ^ (x << 8)) & 0x0300f00f; // x = ---- --98 ---- ---- 7654 ---- ---- 3210
+		x = (x ^ (x << 4)) & 0x030c30c3; // x = ---- --98 ---- 76-- --54 ---- 32-- --10
+		x = (x ^ (x << 2)) & 0x09249249; // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0
+		return x;
+	}
+
 	template <typename VoxelType>
-	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos) const
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
@@ -101,12 +112,10 @@ namespace PolyVox
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
-		return m_tData
-			[
-				uXPos + 
-				uYPos * m_uSideLength + 
-				uZPos * m_uSideLength * m_uSideLength
-			];
+		uint32_t index = 0;
+		index |= Part1By2(uXPos) | Part1By2(uYPos) << 1 | Part1By2(uZPos) << 2;
+
+		return m_tData[index];
 	}
 
 	template <typename VoxelType>
@@ -116,7 +125,7 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::Chunk::setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos, VoxelType tValue)
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
 		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
@@ -125,12 +134,10 @@ namespace PolyVox
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
-		m_tData
-			[
-				uXPos + 
-				uYPos * m_uSideLength + 
-				uZPos * m_uSideLength * m_uSideLength
-			] = tValue;
+		uint32_t index = 0;
+		index |= Part1By2(uXPos) | Part1By2(uYPos) << 1 | Part1By2(uZPos) << 2;
+
+		m_tData[index] = tValue;
 
 		this->m_bDataModified = true;
 	}
