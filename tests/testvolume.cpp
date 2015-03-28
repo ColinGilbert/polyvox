@@ -479,7 +479,7 @@ int32_t TestVolume::testPagedVolumeChunkAccess(uint16_t localityMask)
 	// Used to constrain the range, as '&=m_uChunkSideLengthMask' should be faster than '%=m_uChunkSideLength'.
 	uint16_t m_uChunkSideLengthMask = m_uChunkSideLength - 1;
 
-	for (int32_t ct = 0; ct < 1000000; ct++)
+	for (int32_t ct = 0; ct < 10000000; ct++)
 	{
 		// Random number generation is relatively slow compared to retireving a voxel, so if we are not
 		// careful the process of choosing which voxel to get can become slower than actually getting it.
@@ -551,7 +551,7 @@ void TestVolume::testPagedVolumeChunkLocalAccess()
 	{
 		result = testPagedVolumeChunkAccess(0x0003); // Small value for good locality
 	}
-	QCOMPARE(result, static_cast<int32_t>(1856742828));
+	QCOMPARE(result, static_cast<int32_t>(-158083685));
 }
 
 void TestVolume::testPagedVolumeChunkRandomAccess()
@@ -561,7 +561,7 @@ void TestVolume::testPagedVolumeChunkRandomAccess()
 	{
 		result = testPagedVolumeChunkAccess(0xFFFF); // Large value for poor locality (random access)
 	}
-	QCOMPARE(result, static_cast<int32_t>(1550197176));
+	QCOMPARE(result, static_cast<int32_t>(71649197));
 }
 
 QTEST_MAIN(TestVolume)
