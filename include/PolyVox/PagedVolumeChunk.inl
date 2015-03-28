@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVox/Impl/Morton.h"
 #include "PolyVox/Impl/Utility.h"
 
 namespace PolyVox
@@ -36,6 +37,7 @@ namespace PolyVox
 		,m_v3dChunkSpacePosition(v3dPosition)
 	{
 		POLYVOX_ASSERT(m_pPager, "No valid pager supplied to chunk constructor.");
+		POLYVOX_ASSERT(uSideLength <= 256, "Chunk side length cannot be greater than 256.");
 
 		// Compute the side length               
 		m_uSideLength = uSideLength;
@@ -91,29 +93,17 @@ namespace PolyVox
 		return m_uSideLength * m_uSideLength * m_uSideLength * sizeof(VoxelType);
 	}
 
-	// Based on https://fgiesen.wordpress.com/2009/12/13/decoding-morton-codes/
-	inline uint32_t Part1By2(uint32_t x)
-	{
-		x &= 0x000003ff;                  // x = ---- ---- ---- ---- ---- --98 7654 3210
-		x = (x ^ (x << 16)) & 0xff0000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
-		x = (x ^ (x << 8)) & 0x0300f00f; // x = ---- --98 ---- ---- 7654 ---- ---- 3210
-		x = (x ^ (x << 4)) & 0x030c30c3; // x = ---- --98 ---- 76-- --54 ---- 32-- --10
-		x = (x ^ (x << 2)) & 0x09249249; // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0
-		return x;
-	}
-
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos) const
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
-		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
+		// of uncompressed data. It's a performance critical code path so we use asserts rather than exceptions.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
-		uint32_t index = 0;
-		index |= Part1By2(uXPos) | Part1By2(uYPos) << 1 | Part1By2(uZPos) << 2;
+		uint32_t index = morton256_x[uXPos] | morton256_y[uYPos] | morton256_z[uZPos];
 
 		return m_tData[index];
 	}
@@ -128,14 +118,13 @@ namespace PolyVox
 	void PagedVolume<VoxelType>::Chunk::setVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos, VoxelType tValue)
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
-		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
+		// of uncompressed data. It's a performance critical code path so we use asserts rather than exceptions.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
-		uint32_t index = 0;
-		index |= Part1By2(uXPos) | Part1By2(uYPos) << 1 | Part1By2(uZPos) << 2;
+		uint32_t index = morton256_x[uXPos] | morton256_y[uYPos] | morton256_z[uZPos];
 
 		m_tData[index] = tValue;
 
