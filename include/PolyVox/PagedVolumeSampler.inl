@@ -241,90 +241,90 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - 1 + this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 
@@ -333,86 +333,87 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		if(CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
 	{
-		if(CAN_GO_NEG_Y(this->mYPosInVolume) )
+		/*if(CAN_GO_NEG_Y(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
 	{
-		if(CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
 	{
-		if(CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px0py0pz(void) const
 	{
-		return *mCurrentVoxel;
+		//return *mCurrentVoxel;
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
 	{
-		if(CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
 	{
-		if(CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
 	{
-		if(CAN_GO_POS_Y(this->mYPosInVolume) )
+		/*if(CAN_GO_POS_Y(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
 	{
-		if(CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 
@@ -421,90 +422,90 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength - this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		/*if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
 		{
 			return *(mCurrentVoxel + 1 + this->mVolume->m_uChunkSideLength + this->mVolume->m_uChunkSideLength*this->mVolume->m_uChunkSideLength);
-		}
+		}*/
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
 	}
 }
