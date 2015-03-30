@@ -35,15 +35,15 @@ namespace PolyVox
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, const Region& region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
-		if(volInput->getWidth() % arrayResult->getDimension(0) != 0)
+		if (region.getWidthInVoxels() % arrayResult->getDimension(0) != 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Volume width must be an exact multiple of array width.");
 		}
-		if(volInput->getHeight() % arrayResult->getDimension(1) != 0)
+		if (region.getHeightInVoxels() % arrayResult->getDimension(1) != 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Volume width must be an exact multiple of array height.");
 		}
-		if(volInput->getDepth() % arrayResult->getDimension(2) != 0)
+		if (region.getDepthInVoxels() % arrayResult->getDimension(2) != 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Volume width must be an exact multiple of array depth.");
 		}
@@ -61,9 +61,9 @@ namespace PolyVox
 		//nth 'random' value isn't always followed by the n+1th 'random' value.
 		uIndexIncreament = 1;
 
-		const int iRatioX = volInput->getWidth()  / arrayResult->getDimension(0);
-		const int iRatioY = volInput->getHeight() / arrayResult->getDimension(1);
-		const int iRatioZ = volInput->getDepth()  / arrayResult->getDimension(2);
+		const int iRatioX = region.getWidthInVoxels() / arrayResult->getDimension(0);
+		const int iRatioY = region.getHeightInVoxels() / arrayResult->getDimension(1);
+		const int iRatioZ = region.getDepthInVoxels() / arrayResult->getDimension(2);
 
 		const float fRatioX = iRatioX;
 		const float fRatioY = iRatioY;
@@ -104,7 +104,7 @@ namespace PolyVox
 						Vector3DFloat v3dRayDirection = randomUnitVectors[(uRandomUnitVectorIndex += (++uIndexIncreament)) % 1021]; //Different prime number.
 						v3dRayDirection *= fRayLength;
 						
-						AmbientOcclusionCalculatorRaycastCallback<IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
+						AmbientOcclusionCalculatorRaycastCallback<VolumeType, IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
 						RaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 
 						// Note - The performance of this could actually be improved it we exited as soon

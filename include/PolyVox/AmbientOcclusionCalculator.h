@@ -45,7 +45,7 @@ namespace PolyVox
 	 * Ambient occlusion
 	 */
 	
-	template<typename IsVoxelTransparentCallback>
+	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
 	public:
@@ -53,9 +53,9 @@ namespace PolyVox
 		{
 		}
 
-		bool operator()(const PagedVolume<uint8_t>::Sampler& sampler)
+		bool operator()(const typename VolumeType::Sampler& sampler)
 		{
-			uint8_t sample = sampler.getVoxel();
+			auto sample = sampler.getVoxel();
 			bool func = mIsVoxelTransparentCallback(sample);
 			return func;
 		}

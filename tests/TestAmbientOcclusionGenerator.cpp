@@ -24,7 +24,9 @@ freely, subject to the following restrictions:
 #include "TestAmbientOcclusionGenerator.h"
 
 #include "PolyVox/AmbientOcclusionCalculator.h"
+#include "PolyVox/FilePager.h"
 #include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 
 #include <QtTest>
 
@@ -47,9 +49,14 @@ bool isVoxelTransparentFunction(uint8_t voxel)
 void TestAmbientOcclusionGenerator::testExecute()
 {
 	const int32_t g_uVolumeSideLength = 64;
+	Region region(0, 0, 0, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1);
 
 	//Create empty volume
-	PagedVolume<uint8_t> volData;
+	RawVolume<uint8_t> volData(region);
+
+	// To test with a PagedVolume instead you can comment ou the above line and use these instead.
+	// FilePager<uint8_t>* pFilePager = new FilePager<uint8_t>(".");
+	// PagedVolume<uint8_t> volData(pFilePager, 256 * 1024 * 1024, 32);
 
 	//Create two solid walls at opposite sides of the volume
 	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
@@ -73,7 +80,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	// Calculate the ambient occlusion values
 	IsVoxelTransparent isVoxelTransparent;
 	QBENCHMARK {
-		calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 255, isVoxelTransparent);
+		calculateAmbientOcclusion(&volData, &ambientOcclusionResult, region, 32.0f, 255, isVoxelTransparent);
 	}
 	
 	//Check the results by sampling along a line though the centre of the volume. Because
@@ -85,7 +92,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	QCOMPARE(static_cast<int>(ambientOcclusionResult(16, 31, 16)), 173);
 	
 	//Just run a quick test to make sure that it compiles when taking a function pointer
-	calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 8, &isVoxelTransparentFunction);
+	calculateAmbientOcclusion(&volData, &ambientOcclusionResult, region, 32.0f, 8, &isVoxelTransparentFunction);
 	
 	//Also test it using a lambda
 	//calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 8, [](uint8_t voxel){return voxel == 0;});
