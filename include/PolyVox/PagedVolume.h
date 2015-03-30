@@ -243,6 +243,11 @@ namespace PolyVox
 		private:
 			//Other current position information
 			VoxelType* mCurrentVoxel;
+			VoxelType* m_CurrentChunkData;
+
+			uint16_t m_uXPosInChunk;
+			uint16_t m_uYPosInChunk;
+			uint16_t m_uZPosInChunk;
 		};
 
 		#endif
