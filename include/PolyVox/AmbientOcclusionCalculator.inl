@@ -32,7 +32,7 @@ namespace PolyVox
 	 * \param isVoxelTransparentCallback A callback which takes a \a VoxelType and returns a \a bool whether the voxel is transparent
 	 */
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
-	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
+	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, const Region& region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback)
 	{
 		//Make sure that the size of the volume is an exact multiple of the size of the array.
 		if(volInput->getWidth() % arrayResult->getDimension(0) != 0)
