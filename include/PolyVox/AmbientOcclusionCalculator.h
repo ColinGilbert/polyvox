@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 
 //These two should not be here!
 #include "PolyVox/Material.h"
-#include "PolyVox/RawVolume.h"
+#include "PolyVox/PagedVolume.h"
 
 #include <algorithm>
 
@@ -45,7 +45,7 @@ namespace PolyVox
 	 * Ambient occlusion
 	 */
 	
-	template<typename IsVoxelTransparentCallback>
+	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
 	public:
@@ -53,9 +53,9 @@ namespace PolyVox
 		{
 		}
 
-		bool operator()(const RawVolume<uint8_t>::Sampler& sampler)
+		bool operator()(const typename VolumeType::Sampler& sampler)
 		{
-			uint8_t sample = sampler.getVoxel();
+			auto sample = sampler.getVoxel();
 			bool func = mIsVoxelTransparentCallback(sample);
 			return func;
 		}
@@ -74,7 +74,7 @@ namespace PolyVox
 	
 	/// Calculate the ambient occlusion for the volume
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
-	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, Region region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback);
+	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, const Region& region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback);
 }
 
 #include "PolyVox/AmbientOcclusionCalculator.inl"
