@@ -282,6 +282,7 @@ namespace PolyVox
 			// The chunk was found so we can use it.
 			pChunk = itChunk->second.get();		
 			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
+			pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
 		}
 
 		// If we still haven't found the chunk then it's time to create a new one and page it in from disk.
