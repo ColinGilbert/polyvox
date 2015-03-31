@@ -30,16 +30,18 @@ freely, subject to the following restrictions:
 #define CAN_GO_NEG_Z(val) ((val % this->mVolume->m_uChunkSideLength != 0))
 #define CAN_GO_POS_Z(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
 
-#define NEG_X_DELTA (-(dp[this->m_uXPosInChunk - 1]))
-#define POS_X_DELTA (dp[this->m_uXPosInChunk])
-#define NEG_Y_DELTA (-(dp[this->m_uYPosInChunk - 1] * 2))
-#define POS_Y_DELTA (dp[this->m_uYPosInChunk] * 2)
-#define NEG_Z_DELTA (-(dp[this->m_uZPosInChunk - 1]) * 4)
-#define POS_Z_DELTA (dp[this->m_uZPosInChunk] * 4)
+#define NEG_X_DELTA (-(deltaX[this->m_uXPosInChunk-1]))
+#define POS_X_DELTA (deltaX[this->m_uXPosInChunk])
+#define NEG_Y_DELTA (-(deltaY[this->m_uYPosInChunk-1]))
+#define POS_Y_DELTA (deltaY[this->m_uYPosInChunk])
+#define NEG_Z_DELTA (-(deltaZ[this->m_uZPosInChunk-1]))
+#define POS_Z_DELTA (deltaZ[this->m_uZPosInChunk])
 
 namespace PolyVox
 {
-	static const std::array<uint32_t, 255> dp = { 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 224695, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 1797559, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 224695, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1 };
+	static const std::array<uint32_t, 32> deltaX = { 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1 };
+	static const std::array<uint32_t, 32> deltaY = { 2, 14, 2, 110, 2, 14, 2, 878, 2, 14, 2, 110, 2, 14, 2, 7022, 2, 14, 2, 110, 2, 14, 2, 878, 2, 14, 2, 110, 2, 14, 2 };
+	static const std::array<uint32_t, 32> deltaZ = { 4, 28, 4, 220, 4, 28, 4, 1756, 4, 28, 4, 220, 4, 28, 4, 14044, 4, 28, 4, 220, 4, 28, 4, 1756, 4, 28, 4, 220, 4, 28, 4 };
 
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::Sampler::Sampler(PagedVolume<VoxelType>* volume)
