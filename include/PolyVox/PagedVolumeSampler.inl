@@ -21,6 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include <array>
+
 #define CAN_GO_NEG_X(val) ((val % this->mVolume->m_uChunkSideLength != 0))
 #define CAN_GO_POS_X(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
 #define CAN_GO_NEG_Y(val) ((val % this->mVolume->m_uChunkSideLength != 0))
@@ -30,6 +32,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	static const std::array<uint32_t, 255> dp = { 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 224695, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 1797559, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 224695, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 28087, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1, 3511, 1, 7, 1, 55, 1, 7, 1, 439, 1, 7, 1, 55, 1, 7, 1 };
+
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::Sampler::Sampler(PagedVolume<VoxelType>* volume)
 		:BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >(volume)
@@ -284,10 +288,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		/*if(CAN_GO_NEG_X(this->mXPosInVolume) )
+		if(CAN_GO_NEG_X(this->mXPosInVolume) )
 		{
-			return *(mCurrentVoxel - 1);
-		}*/
+			return *(mCurrentVoxel - dp[this->m_uXPosInChunk - 1]);
+		}
 		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
@@ -464,10 +468,10 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		/*if(CAN_GO_POS_X(this->mXPosInVolume) )
+		if(CAN_GO_POS_X(this->mXPosInVolume) )
 		{
-			return *(mCurrentVoxel + 1);
-		}*/
+			return *(mCurrentVoxel + dp[this->m_uXPosInChunk]);
+		}
 		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume);
 	}
 
