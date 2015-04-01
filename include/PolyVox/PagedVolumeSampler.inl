@@ -145,12 +145,14 @@ namespace PolyVox
 	{
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveX();
+		
+		this->m_uXPosInChunk++;
 
 		// Then we update the voxel pointer
 		if(((this->mXPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new chunk.
-			++mCurrentVoxel;			
+			mCurrentVoxel += POS_X_DELTA;
 		}
 		else
 		{
@@ -165,11 +167,13 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveY();
 
+		this->m_uYPosInChunk++;
+
 		// Then we update the voxel pointer
 		if(((this->mYPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new chunk.
-			mCurrentVoxel += this->mVolume->m_uChunkSideLength;
+			mCurrentVoxel += POS_Y_DELTA;
 		}
 		else
 		{
@@ -184,11 +188,13 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveZ();
 
+		this->m_uZPosInChunk++;
+
 		// Then we update the voxel pointer
 		if(((this->mZPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new chunk.
-			mCurrentVoxel += this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
+			mCurrentVoxel += POS_Z_DELTA;
 		}
 		else
 		{
@@ -203,11 +209,13 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeX();
 
+		this->m_uXPosInChunk--;
+
 		// Then we update the voxel pointer
 		if(((this->mXPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new chunk.
-			--mCurrentVoxel;			
+			mCurrentVoxel += NEG_X_DELTA;
 		}
 		else
 		{
@@ -222,11 +230,13 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeY();
 
+		this->m_uYPosInChunk--;
+
 		// Then we update the voxel pointer
 		if(((this->mYPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new chunk.
-			mCurrentVoxel -= this->mVolume->m_uChunkSideLength;
+			mCurrentVoxel += NEG_Y_DELTA;
 		}
 		else
 		{
@@ -241,11 +251,13 @@ namespace PolyVox
 		// Base version updates position and validity flags.
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeZ();
 
+		this->m_uZPosInChunk--;
+
 		// Then we update the voxel pointer
 		if(((this->mZPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
 		{
 			//No need to compute new chunk.
-			mCurrentVoxel -= this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;
+			mCurrentVoxel += NEG_Z_DELTA;
 		}
 		else
 		{
