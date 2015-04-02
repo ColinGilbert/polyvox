@@ -24,11 +24,14 @@ freely, subject to the following restrictions:
 #include <array>
 
 #define CAN_GO_NEG_X(val) ((val % this->mVolume->m_uChunkSideLength != 0))
-#define CAN_GO_POS_X(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+//#define CAN_GO_POS_X(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_POS_X(val)  (this->m_uXPosInChunk < this->mVolume->m_uChunkSideLength-1)
 #define CAN_GO_NEG_Y(val) ((val % this->mVolume->m_uChunkSideLength != 0))
-#define CAN_GO_POS_Y(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+//#define CAN_GO_POS_Y(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_POS_Y(val)  (this->m_uYPosInChunk < this->mVolume->m_uChunkSideLength-1)
 #define CAN_GO_NEG_Z(val) ((val % this->mVolume->m_uChunkSideLength != 0))
-#define CAN_GO_POS_Z(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+//#define CAN_GO_POS_Z(val) (((val + 1) % this->mVolume->m_uChunkSideLength != 0))
+#define CAN_GO_POS_Z(val)  (this->m_uZPosInChunk < this->mVolume->m_uChunkSideLength-1)
 
 #define NEG_X_DELTA (-(deltaX[this->m_uXPosInChunk-1]))
 #define POS_X_DELTA (deltaX[this->m_uXPosInChunk])
