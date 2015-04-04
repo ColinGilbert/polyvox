@@ -247,6 +247,7 @@ namespace PolyVox
 			uint16_t m_uXPosInChunk;
 			uint16_t m_uYPosInChunk;
 			uint16_t m_uZPosInChunk;
+			uint16_t m_uChunkSideLengthMinusOne;
 		};
 
 		#endif

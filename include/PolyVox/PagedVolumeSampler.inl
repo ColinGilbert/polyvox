@@ -24,11 +24,11 @@ freely, subject to the following restrictions:
 #include <array>
 
 #define CAN_GO_NEG_X(val) (val > 0)
-#define CAN_GO_POS_X(val)  (val < this->mVolume->m_uChunkSideLength-1)
+#define CAN_GO_POS_X(val)  (val < this->m_uChunkSideLengthMinusOne)
 #define CAN_GO_NEG_Y(val) (val > 0)
-#define CAN_GO_POS_Y(val)  (val < this->mVolume->m_uChunkSideLength-1)
+#define CAN_GO_POS_Y(val)  (val < this->m_uChunkSideLengthMinusOne)
 #define CAN_GO_NEG_Z(val) (val > 0)
-#define CAN_GO_POS_Z(val)  (val < this->mVolume->m_uChunkSideLength-1)
+#define CAN_GO_POS_Z(val)  (val < this->m_uChunkSideLengthMinusOne)
 
 #define NEG_X_DELTA (-(deltaX[this->m_uXPosInChunk-1]))
 #define POS_X_DELTA (deltaX[this->m_uXPosInChunk])
@@ -47,6 +47,7 @@ namespace PolyVox
 	PagedVolume<VoxelType>::Sampler::Sampler(PagedVolume<VoxelType>* volume)
 		:BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >(volume)
 	{
+			this->m_uChunkSideLengthMinusOne = this->mVolume->m_uChunkSideLength - 1;
 	}
 
 	template <typename VoxelType>
