@@ -23,12 +23,12 @@ freely, subject to the following restrictions:
 
 #include <array>
 
-#define CAN_GO_NEG_X(val) (this->m_uXPosInChunk > 0)
-#define CAN_GO_POS_X(val)  (this->m_uXPosInChunk < this->mVolume->m_uChunkSideLength-1)
-#define CAN_GO_NEG_Y(val) (this->m_uYPosInChunk > 0)
-#define CAN_GO_POS_Y(val)  (this->m_uYPosInChunk < this->mVolume->m_uChunkSideLength-1)
-#define CAN_GO_NEG_Z(val) (this->m_uZPosInChunk > 0)
-#define CAN_GO_POS_Z(val)  (this->m_uZPosInChunk < this->mVolume->m_uChunkSideLength-1)
+#define CAN_GO_NEG_X(val) (val > 0)
+#define CAN_GO_POS_X(val)  (val < this->mVolume->m_uChunkSideLength-1)
+#define CAN_GO_NEG_Y(val) (val > 0)
+#define CAN_GO_POS_Y(val)  (val < this->mVolume->m_uChunkSideLength-1)
+#define CAN_GO_NEG_Z(val) (val > 0)
+#define CAN_GO_POS_Z(val)  (val < this->mVolume->m_uChunkSideLength-1)
 
 #define NEG_X_DELTA (-(deltaX[this->m_uXPosInChunk-1]))
 #define POS_X_DELTA (deltaX[this->m_uXPosInChunk])
@@ -263,7 +263,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1ny1nz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_NEG_Y(this->m_uYPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Y_DELTA + NEG_Z_DELTA);
 		}
@@ -273,7 +273,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1ny0pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_NEG_Y(this->m_uYPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Y_DELTA);
 		}
@@ -283,7 +283,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1ny1pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_NEG_Y(this->m_uYPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Y_DELTA + POS_Z_DELTA);
 		}
@@ -293,7 +293,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py1nz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Z_DELTA);
 		}
@@ -303,7 +303,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py0pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA);
 		}
@@ -313,7 +313,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx0py1pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Z_DELTA);
 		}
@@ -323,7 +323,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1py1nz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_POS_Y(this->m_uYPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Y_DELTA + NEG_Z_DELTA);
 		}
@@ -333,7 +333,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1py0pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_POS_Y(this->m_uYPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Y_DELTA);
 		}
@@ -343,7 +343,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1nx1py1pz(void) const
 	{
-		if(CAN_GO_NEG_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk) && CAN_GO_POS_Y(this->m_uYPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Y_DELTA + POS_Z_DELTA);
 		}
@@ -355,7 +355,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1ny1nz(void) const
 	{
-		if(CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_Y(this->m_uYPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_Y_DELTA + NEG_Z_DELTA);
 		}
@@ -365,7 +365,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1ny0pz(void) const
 	{
-		if(CAN_GO_NEG_Y(this->mYPosInVolume) )
+		if (CAN_GO_NEG_Y(this->m_uYPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_Y_DELTA);
 		}
@@ -375,7 +375,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1ny1pz(void) const
 	{
-		if(CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_Y(this->m_uYPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_Y_DELTA + POS_Z_DELTA);
 		}
@@ -385,7 +385,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px0py1nz(void) const
 	{
-		if(CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + NEG_Z_DELTA);
 		}
@@ -401,7 +401,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px0py1pz(void) const
 	{
-		if(CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_Z_DELTA);
 		}
@@ -411,7 +411,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1py1nz(void) const
 	{
-		if(CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_Y(this->m_uYPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_Y_DELTA + NEG_Z_DELTA);
 		}
@@ -421,7 +421,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1py0pz(void) const
 	{
-		if(CAN_GO_POS_Y(this->mYPosInVolume) )
+		if (CAN_GO_POS_Y(this->m_uYPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_Y_DELTA);
 		}
@@ -431,7 +431,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel0px1py1pz(void) const
 	{
-		if(CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_Y(this->m_uYPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_Y_DELTA + POS_Z_DELTA);
 		}
@@ -443,7 +443,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1ny1nz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_NEG_Y(this->m_uYPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Y_DELTA + NEG_Z_DELTA);
 		}
@@ -453,7 +453,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1ny0pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_NEG_Y(this->m_uYPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Y_DELTA);
 		}
@@ -463,7 +463,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1ny1pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_NEG_Y(this->m_uYPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Y_DELTA + POS_Z_DELTA);
 		}
@@ -473,7 +473,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py1nz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Z_DELTA);
 		}
@@ -483,7 +483,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py0pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA);
 		}
@@ -493,7 +493,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px0py1pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Z_DELTA);
 		}
@@ -503,7 +503,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1py1nz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_NEG_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_POS_Y(this->m_uYPosInChunk) && CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Y_DELTA + NEG_Z_DELTA);
 		}
@@ -513,7 +513,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1py0pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_POS_Y(this->m_uYPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Y_DELTA);
 		}
@@ -523,7 +523,7 @@ namespace PolyVox
 	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::peekVoxel1px1py1pz(void) const
 	{
-		if(CAN_GO_POS_X(this->mXPosInVolume) && CAN_GO_POS_Y(this->mYPosInVolume) && CAN_GO_POS_Z(this->mZPosInVolume) )
+		if (CAN_GO_POS_X(this->m_uXPosInChunk) && CAN_GO_POS_Y(this->m_uYPosInChunk) && CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Y_DELTA + POS_Z_DELTA);
 		}
