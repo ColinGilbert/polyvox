@@ -119,17 +119,12 @@ namespace PolyVox
 		m_uYPosInChunk = static_cast<uint16_t>(this->mYPosInVolume - (uYChunk << this->mVolume->m_uChunkSideLengthPower));
 		m_uZPosInChunk = static_cast<uint16_t>(this->mZPosInVolume - (uZChunk << this->mVolume->m_uChunkSideLengthPower));
 
-		/*const uint32_t uVoxelIndexInChunk = m_uXPosInChunk +
-			m_uYPosInChunk * this->mVolume->m_uChunkSideLength +
-			m_uZPosInChunk * this->mVolume->m_uChunkSideLength * this->mVolume->m_uChunkSideLength;*/
-
 		uint32_t uVoxelIndexInChunk = morton256_x[m_uXPosInChunk] | morton256_y[m_uYPosInChunk] | morton256_z[m_uZPosInChunk];
 
 		auto pCurrentChunk = this->mVolume->canReuseLastAccessedChunk(uXChunk, uYChunk, uZChunk) ?
 			this->mVolume->m_pLastAccessedChunk : this->mVolume->getChunk(uXChunk, uYChunk, uZChunk);
 
-		m_CurrentChunkData = pCurrentChunk->m_tData;
-		mCurrentVoxel = m_CurrentChunkData + uVoxelIndexInChunk;
+		mCurrentVoxel = pCurrentChunk->m_tData + uVoxelIndexInChunk;
 	}
 
 	template <typename VoxelType>
