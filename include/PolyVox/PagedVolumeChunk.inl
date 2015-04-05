@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+#include "PolyVox/Impl/Morton.h"
 #include "PolyVox/Impl/Utility.h"
 
 namespace PolyVox
@@ -36,6 +37,7 @@ namespace PolyVox
 		,m_v3dChunkSpacePosition(v3dPosition)
 	{
 		POLYVOX_ASSERT(m_pPager, "No valid pager supplied to chunk constructor.");
+		POLYVOX_ASSERT(uSideLength <= 256, "Chunk side length cannot be greater than 256.");
 
 		// Compute the side length               
 		m_uSideLength = uSideLength;
@@ -92,21 +94,18 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const
+	VoxelType PagedVolume<VoxelType>::Chunk::getVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos) const
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
-		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
+		// of uncompressed data. It's a performance critical code path so we use asserts rather than exceptions.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
-		return m_tData
-			[
-				uXPos + 
-				uYPos * m_uSideLength + 
-				uZPos * m_uSideLength * m_uSideLength
-			];
+		uint32_t index = morton256_x[uXPos] | morton256_y[uYPos] | morton256_z[uZPos];
+
+		return m_tData[index];
 	}
 
 	template <typename VoxelType>
@@ -116,21 +115,18 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	void PagedVolume<VoxelType>::Chunk::setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue)
+	void PagedVolume<VoxelType>::Chunk::setVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos, VoxelType tValue)
 	{
 		// This code is not usually expected to be called by the user, with the exception of when implementing paging 
-		// of uncompressed data. It's a performance critical code path so  we use asserts rather than exceptions.
+		// of uncompressed data. It's a performance critical code path so we use asserts rather than exceptions.
 		POLYVOX_ASSERT(uXPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uYPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(uZPos < m_uSideLength, "Supplied position is outside of the chunk");
 		POLYVOX_ASSERT(m_tData, "No uncompressed data - chunk must be decompressed before accessing voxels.");
 
-		m_tData
-			[
-				uXPos + 
-				uYPos * m_uSideLength + 
-				uZPos * m_uSideLength * m_uSideLength
-			] = tValue;
+		uint32_t index = morton256_x[uXPos] | morton256_y[uYPos] | morton256_z[uZPos];
+
+		m_tData[index] = tValue;
 
 		this->m_bDataModified = true;
 	}
@@ -155,5 +151,55 @@ namespace PolyVox
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
 		uint32_t uSizeInBytes = uSideLength * uSideLength * uSideLength * sizeof(VoxelType);
 		return  uSizeInBytes;
+	}
+
+	// This convienience function exists for historical reasons. Chunks used to store their data in 'linear' order but now we
+	// use Morton encoding. Users who still have data in linear order (on disk, in databases, etc) will need to call this function
+	// if they load the data in by memcpy()ing it via the raw pointer. On the other hand, if they set the data using setVoxel()
+	// then the ordering is automatically handled correctly. 
+	template <typename VoxelType>
+	void PagedVolume<VoxelType>::Chunk::changeLinearOrderingToMorton(void)
+	{
+		VoxelType* pTempBuffer = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		for (uint16_t z = 0; z < m_uSideLength; z++)
+		{
+			for (uint16_t y = 0; y < m_uSideLength; y++)
+			{
+				for (uint16_t x = 0; x < m_uSideLength; x++)
+				{
+					uint32_t uLinearIndex = x + y * m_uSideLength + z * m_uSideLength * m_uSideLength;
+					uint32_t uMortonIndex = morton256_x[x] | morton256_y[y] | morton256_z[z];
+					pTempBuffer[uMortonIndex] = m_tData[uLinearIndex];
+				}
+			}
+		}
+
+		std::memcpy(m_tData, pTempBuffer, getDataSizeInBytes());
+
+		delete[] pTempBuffer;
+	}
+
+	// Like the above function, this is provided fot easing backwards compatibility. In Cubiquity we have some
+	// old databases which use linear ordering, and we need to continue to save such data in linear order.
+	template <typename VoxelType>
+	void PagedVolume<VoxelType>::Chunk::changeMortonOrderingToLinear(void)
+	{
+		VoxelType* pTempBuffer = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		for (uint16_t z = 0; z < m_uSideLength; z++)
+		{
+			for (uint16_t y = 0; y < m_uSideLength; y++)
+			{
+				for (uint16_t x = 0; x < m_uSideLength; x++)
+				{
+					uint32_t uLinearIndex = x + y * m_uSideLength + z * m_uSideLength * m_uSideLength;
+					uint32_t uMortonIndex = morton256_x[x] | morton256_y[y] | morton256_z[z];
+					pTempBuffer[uLinearIndex] = m_tData[uMortonIndex];
+				}
+			}
+		}
+
+		std::memcpy(m_tData, pTempBuffer, getDataSizeInBytes());
+
+		delete[] pTempBuffer;
 	}
 }

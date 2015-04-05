@@ -127,11 +127,14 @@ namespace PolyVox
 			VoxelType* getData(void) const;
 			uint32_t getDataSizeInBytes(void) const;
 
-			VoxelType getVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos) const;
+			VoxelType getVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos) const;
 			VoxelType getVoxel(const Vector3DUint16& v3dPos) const;
 
-			void setVoxel(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos, VoxelType tValue);
+			void setVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos, VoxelType tValue);
 			void setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue);
+
+			void changeLinearOrderingToMorton(void);
+			void changeMortonOrderingToLinear(void);
 
 		private:
 			/// Private copy constructor to prevent accisdental copying
@@ -243,6 +246,11 @@ namespace PolyVox
 		private:
 			//Other current position information
 			VoxelType* mCurrentVoxel;
+
+			uint16_t m_uXPosInChunk;
+			uint16_t m_uYPosInChunk;
+			uint16_t m_uZPosInChunk;
+			uint16_t m_uChunkSideLengthMinusOne;
 		};
 
 		#endif

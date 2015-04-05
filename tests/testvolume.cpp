@@ -83,56 +83,48 @@ int32_t testSamplersWithWrappingForwards(VolumeType* volume, Region region)
 	int32_t result = 0;
 
 	//Test the sampler move functions
-	typename VolumeType::Sampler xSampler(volume);
-	typename VolumeType::Sampler ySampler(volume);
-	typename VolumeType::Sampler zSampler(volume);
+	typename VolumeType::Sampler sampler(volume);
 
-	zSampler.setPosition(region.getLowerX(), region.getLowerY(), region.getLowerZ());
 	for (int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
 	{
-		ySampler = zSampler;
 		for (int y = region.getLowerY(); y <= region.getUpperY(); y++)
 		{
-			xSampler = ySampler;
+			sampler.setPosition(region.getLowerX(), y, z);
 			for (int x = region.getLowerX(); x <= region.getUpperX(); x++)
 			{
-				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the PagedVolume.
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px0py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px0py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1py1nz());
 
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1nz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1nz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px0py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px0py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1py0pz());
 
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py0pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py0pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1ny1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1ny1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1ny1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx0py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px0py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px0py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1nx1py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel0px1py1pz());
+				result = cantorTupleFunction(result, sampler.peekVoxel1px1py1pz());
 
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx0py1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px0py1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px0py1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1py1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel0px1py1pz());
-				result = cantorTupleFunction(result, xSampler.peekVoxel1px1py1pz());
-
-				xSampler.movePositiveX();
+				sampler.movePositiveX();
 			}
-			ySampler.movePositiveY();
 		}
-		zSampler.movePositiveZ();
 	}
 
 	return result;
@@ -181,20 +173,14 @@ int32_t testSamplersWithWrappingBackwards(VolumeType* volume, Region region)
 
 	//Test the sampler move functions
 	typename VolumeType::Sampler xSampler(volume);
-	typename VolumeType::Sampler ySampler(volume);
-	typename VolumeType::Sampler zSampler(volume);
 
-	zSampler.setPosition(region.getUpperX(), region.getUpperY(), region.getUpperZ());
 	for (int z = region.getUpperZ(); z >= region.getLowerZ(); z--)
 	{
-		ySampler = zSampler;
 		for (int y = region.getUpperY(); y >= region.getLowerY(); y--)
 		{
-			xSampler = ySampler;
+			xSampler.setPosition(region.getUpperX(), y, z);
 			for (int x = region.getUpperX(); x >= region.getLowerX(); x--)
 			{
-				xSampler.setPosition(x, y, z); // HACK - Accessing a volume through multiple samplers currently breaks the PagedVolume.
-
 				result = cantorTupleFunction(result, xSampler.peekVoxel1nx1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel0px1ny1nz());
 				result = cantorTupleFunction(result, xSampler.peekVoxel1px1ny1nz());
@@ -227,9 +213,7 @@ int32_t testSamplersWithWrappingBackwards(VolumeType* volume, Region region)
 
 				xSampler.moveNegativeX();
 			}
-			ySampler.moveNegativeY();
 		}
-		zSampler.moveNegativeZ();
 	}
 
 	return result;
