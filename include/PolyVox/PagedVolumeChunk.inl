@@ -178,4 +178,28 @@ namespace PolyVox
 
 		delete[] pTempBuffer;
 	}
+
+	// Like the above function, this is provided fot easing backwards compatibility. In Cubiquity we have some
+	// old databases which use linear ordering, and we need to continue to save such data in linear order.
+	template <typename VoxelType>
+	void PagedVolume<VoxelType>::Chunk::changeMortonOrderingToLinear(void)
+	{
+		VoxelType* pTempBuffer = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		for (uint16_t z = 0; z < m_uSideLength; z++)
+		{
+			for (uint16_t y = 0; y < m_uSideLength; y++)
+			{
+				for (uint16_t x = 0; x < m_uSideLength; x++)
+				{
+					uint32_t uLinearIndex = x + y * m_uSideLength + z * m_uSideLength * m_uSideLength;
+					uint32_t uMortonIndex = morton256_x[x] | morton256_y[y] | morton256_z[z];
+					pTempBuffer[uLinearIndex] = m_tData[uMortonIndex];
+				}
+			}
+		}
+
+		std::memcpy(m_tData, pTempBuffer, getDataSizeInBytes());
+
+		delete[] pTempBuffer;
+	}
 }

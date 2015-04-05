@@ -134,6 +134,7 @@ namespace PolyVox
 			void setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue);
 
 			void changeLinearOrderingToMorton(void);
+			void changeMortonOrderingToLinear(void);
 
 		private:
 			/// Private copy constructor to prevent accisdental copying
