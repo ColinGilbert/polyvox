@@ -133,6 +133,8 @@ namespace PolyVox
 			void setVoxel(uint32_t uXPos, uint32_t uYPos, uint32_t uZPos, VoxelType tValue);
 			void setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue);
 
+			void changeLinearOrderingToMorton(void);
+
 		private:
 			/// Private copy constructor to prevent accisdental copying
 			Chunk(const Chunk& /*rhs*/) {};

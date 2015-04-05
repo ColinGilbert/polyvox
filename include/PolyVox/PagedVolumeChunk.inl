@@ -152,4 +152,30 @@ namespace PolyVox
 		uint32_t uSizeInBytes = uSideLength * uSideLength * uSideLength * sizeof(VoxelType);
 		return  uSizeInBytes;
 	}
+
+	// This convienience function exists for historical reasons. Chunks used to store their data in 'linear' order but now we
+	// use Morton encoding. Users who still have data in linear order (on disk, in databases, etc) will need to call this function
+	// if they load the data in by memcpy()ing it via the raw pointer. On the other hand, if they set the data using setVoxel()
+	// then the ordering is automatically handled correctly. 
+	template <typename VoxelType>
+	void PagedVolume<VoxelType>::Chunk::changeLinearOrderingToMorton(void)
+	{
+		VoxelType* pTempBuffer = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+		for (uint16_t z = 0; z < m_uSideLength; z++)
+		{
+			for (uint16_t y = 0; y < m_uSideLength; y++)
+			{
+				for (uint16_t x = 0; x < m_uSideLength; x++)
+				{
+					uint32_t uLinearIndex = x + y * m_uSideLength + z * m_uSideLength * m_uSideLength;
+					uint32_t uMortonIndex = morton256_x[x] | morton256_y[y] | morton256_z[z];
+					pTempBuffer[uMortonIndex] = m_tData[uLinearIndex];
+				}
+			}
+		}
+
+		std::memcpy(m_tData, pTempBuffer, getDataSizeInBytes());
+
+		delete[] pTempBuffer;
+	}
 }
