@@ -310,6 +310,8 @@ namespace PolyVox
 		// The size of the volume
 		//Region m_regValidRegionInChunks;
 
+		mutable std::unique_ptr< Chunk > m_arrayChunks[16384];
+
 		// The size of the chunks
 		uint16_t m_uChunkSideLength;
 		uint8_t m_uChunkSideLengthPower;

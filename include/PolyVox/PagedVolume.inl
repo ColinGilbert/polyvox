@@ -273,7 +273,7 @@ namespace PolyVox
 		Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 
 		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
-		Chunk* pChunk = nullptr;
+		/*Chunk* pChunk = nullptr;
 		auto itChunk = m_mapChunks.find(v3dChunkPos);
 
 		// Check whether the chunk was found.
@@ -281,6 +281,45 @@ namespace PolyVox
 		{
 			// The chunk was found so we can use it.
 			pChunk = itChunk->second.get();		
+			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
+			pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
+		}*/
+
+		Chunk* pChunk = nullptr;
+		const int32_t startIndex = (((uChunkX & 0xFF)) | ((uChunkY & 0x0F) << 4) | ((uChunkZ & 0x0F) << 8) << 2 );
+		for (uint32_t ct = startIndex; ct < 16384; ct++)
+		{
+			if (m_arrayChunks[ct])
+			{
+				Vector3DInt32& entryPos = m_arrayChunks[ct]->m_v3dChunkSpacePosition;
+				if (entryPos.getX() == uChunkX && entryPos.getY() == uChunkY && entryPos.getZ() == uChunkZ)
+				{
+					pChunk = m_arrayChunks[ct].get();
+					break;
+				}
+			}
+		}
+
+		if (pChunk == nullptr)
+		{
+			for (uint32_t ct = 0; ct < startIndex; ct++)
+			{
+				if (m_arrayChunks[ct])
+				{
+					Vector3DInt32& entryPos = m_arrayChunks[ct]->m_v3dChunkSpacePosition;
+					if (entryPos.getX() == uChunkX && entryPos.getY() == uChunkY && entryPos.getZ() == uChunkZ)
+					{
+						pChunk = m_arrayChunks[ct].get();
+						break;
+					}
+				}
+			}
+		}
+
+		// Check whether the chunk was found.
+		if (pChunk)
+		{
+			// The chunk was found so we can use it.
 			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
 		}
@@ -291,10 +330,18 @@ namespace PolyVox
 			// The chunk was not found so we will create a new one.
 			pChunk = new PagedVolume<VoxelType>::Chunk(v3dChunkPos, m_uChunkSideLength, m_pPager);
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
-			m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
+			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
+			for (uint32_t ct = startIndex; ct < 16384; ct++)
+			{
+				if (m_arrayChunks[ct] == nullptr)
+				{
+					m_arrayChunks[ct] = std::move(std::unique_ptr< Chunk >(pChunk));
+					break;
+				}
+			}
 			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
-			while (m_mapChunks.size() > m_uChunkCountLimit)
+			/*while (m_mapChunks.size() > m_uChunkCountLimit)
 			{
 				// Find the least recently used chunk. Hopefully this isn't too slow.
 				auto itUnloadChunk = m_mapChunks.begin();
@@ -308,7 +355,9 @@ namespace PolyVox
 
 				// Erase the least recently used chunk
 				m_mapChunks.erase(itUnloadChunk);
-			}
+			}*/
+
+
 		}
 				
 		m_pLastAccessedChunk = pChunk;
