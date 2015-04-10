@@ -57,6 +57,8 @@ private slots:
 	void testPagedVolumeDirectAccessWithExternalBackwards();
 	void testPagedVolumeSamplersWithExternalBackwards();
 
+	void testPagedVolumeDirectRandomAccess();
+
 	void testPagedVolumeChunkLocalAccess();
 	void testPagedVolumeChunkRandomAccess();
 
@@ -72,6 +74,7 @@ private:
 
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
 	PolyVox::PagedVolume<int32_t>* m_pPagedVolume;
+	PolyVox::PagedVolume<int32_t>* m_pPagedVolumeHighMem;
 
 	PolyVox::PagedVolume<uint32_t>::Chunk* m_pPagedVolumeChunk;
 };
