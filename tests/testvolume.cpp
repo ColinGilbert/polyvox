@@ -225,7 +225,7 @@ int32_t testDirectRandomAccess(const VolumeType* volume)
 	std::mt19937 rng;
 	int32_t result = 0;
 
-	for (uint32_t ct = 0; ct < 10000; ct++)
+	for (uint32_t ct = 0; ct < 1000000; ct++)
 	{
 		uint32_t rand = rng();
 
@@ -258,10 +258,12 @@ TestVolume::TestVolume()
 	m_regExternal.shiftUpperCorner(2, 5, 4);
 
 	m_pFilePager = new FilePager<int32_t>(".");
+	m_pFilePagerHighMem = new FilePager<int32_t>(".");
 
 	//Create the volumes
 	m_pRawVolume = new RawVolume<int32_t>(m_regVolume);
 	m_pPagedVolume = new PagedVolume<int32_t>(m_pFilePager, 1 * 1024 * 1024, m_uChunkSideLength);
+	m_pPagedVolumeHighMem = new PagedVolume<int32_t>(m_pFilePagerHighMem, 256 * 1024 * 1024, m_uChunkSideLength);
 
 	//Fill the volume with some data
 	for (int z = m_regVolume.getLowerZ(); z <= m_regVolume.getUpperZ(); z++)
@@ -273,11 +275,11 @@ TestVolume::TestVolume()
 				int32_t value = x + y + z;
 				m_pRawVolume->setVoxel(x, y, z, value);
 				m_pPagedVolume->setVoxel(x, y, z, value);
+				m_pPagedVolumeHighMem->setVoxel(x, y, z, value);
 			}
 		}
 	}
 
-	// Note - We are reusing the FilePager for testing... watch out for conflicts with the main volume.
 	m_pPagedVolumeChunk = new PagedVolume<uint32_t>::Chunk(Vector3DInt32(10000, 10000, 10000), m_uChunkSideLength, nullptr);
 	std::mt19937 rng;
 	for (uint16_t z = 0; z < m_uChunkSideLength; z++)
@@ -488,7 +490,7 @@ void TestVolume::testRawVolumeDirectRandomAccess()
 	{
 		result = testDirectRandomAccess(m_pRawVolume);
 	}
-	QCOMPARE(result, static_cast<int32_t>(805464457));
+	QCOMPARE(result, static_cast<int32_t>(267192737));
 }
 
 void TestVolume::testPagedVolumeDirectRandomAccess()
@@ -496,9 +498,9 @@ void TestVolume::testPagedVolumeDirectRandomAccess()
 	int32_t result = 0;
 	QBENCHMARK
 	{
-		result = testDirectRandomAccess(m_pPagedVolume);
+		result = testDirectRandomAccess(m_pPagedVolumeHighMem);
 	}
-	QCOMPARE(result, static_cast<int32_t>(805464457));
+	QCOMPARE(result, static_cast<int32_t>(267192737));
 }
 
 int32_t TestVolume::testPagedVolumeChunkAccess(uint16_t localityMask)

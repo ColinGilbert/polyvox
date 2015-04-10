@@ -72,6 +72,7 @@ private:
 	PolyVox::Region m_regInternal;
 	PolyVox::Region m_regExternal;
 	PolyVox::FilePager<int32_t>* m_pFilePager;
+	PolyVox::FilePager<int32_t>* m_pFilePagerHighMem;
 
 	PolyVox::RawVolume<int32_t>* m_pRawVolume;
 	PolyVox::PagedVolume<int32_t>* m_pPagedVolume;
