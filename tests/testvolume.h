@@ -57,6 +57,7 @@ private slots:
 	void testPagedVolumeDirectAccessWithExternalBackwards();
 	void testPagedVolumeSamplersWithExternalBackwards();
 
+	void testRawVolumeDirectRandomAccess();
 	void testPagedVolumeDirectRandomAccess();
 
 	void testPagedVolumeChunkLocalAccess();

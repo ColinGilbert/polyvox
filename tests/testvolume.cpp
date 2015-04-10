@@ -481,6 +481,16 @@ void TestVolume::testPagedVolumeSamplersWithExternalBackwards()
 /*
  * Random access tests
  */
+void TestVolume::testRawVolumeDirectRandomAccess()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectRandomAccess(m_pRawVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(805464457));
+}
+
 void TestVolume::testPagedVolumeDirectRandomAccess()
 {
 	int32_t result = 0;
