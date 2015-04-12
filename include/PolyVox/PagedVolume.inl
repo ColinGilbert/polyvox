@@ -271,48 +271,24 @@ namespace PolyVox
 	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const
 	{
 		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
-		/*Chunk* pChunk = nullptr;
-		auto itChunk = m_mapChunks.find(v3dChunkPos);
-
-		// Check whether the chunk was found.
-		if ((itChunk) != m_mapChunks.end())
-		{
-			// The chunk was found so we can use it.
-			pChunk = itChunk->second.get();		
-			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
-			pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
-		}*/
-
 		Chunk* pChunk = nullptr;
-		const int32_t startIndex = (((uChunkX & 0xFF)) | ((uChunkY & 0x0F) << 4) | ((uChunkZ & 0x0F) << 8) << 2 );
-		for (uint32_t ct = startIndex; ct < 16384; ct++)
+		const int32_t iStartIndex = (((uChunkX & 0xFF)) | ((uChunkY & 0x0F) << 4) | ((uChunkZ & 0x0F) << 8) << 2 );
+		int32_t iIndex = iStartIndex;
+		do
 		{
-			if (m_arrayChunks[ct])
+			if (m_arrayChunks[iIndex])
 			{
-				Vector3DInt32& entryPos = m_arrayChunks[ct]->m_v3dChunkSpacePosition;
+				Vector3DInt32& entryPos = m_arrayChunks[iIndex]->m_v3dChunkSpacePosition;
 				if (entryPos.getX() == uChunkX && entryPos.getY() == uChunkY && entryPos.getZ() == uChunkZ)
 				{
-					pChunk = m_arrayChunks[ct].get();
+					pChunk = m_arrayChunks[iIndex].get();
 					break;
 				}
 			}
-		}
 
-		if (pChunk == nullptr)
-		{
-			for (uint32_t ct = 0; ct < startIndex; ct++)
-			{
-				if (m_arrayChunks[ct])
-				{
-					Vector3DInt32& entryPos = m_arrayChunks[ct]->m_v3dChunkSpacePosition;
-					if (entryPos.getX() == uChunkX && entryPos.getY() == uChunkY && entryPos.getZ() == uChunkZ)
-					{
-						pChunk = m_arrayChunks[ct].get();
-						break;
-					}
-				}
-			}
-		}
+			iIndex++;
+			iIndex %= 16384;
+		} while (iIndex != iStartIndex);
 
 		// Check whether the chunk was found.
 		if (pChunk)
@@ -331,7 +307,7 @@ namespace PolyVox
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
 			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
-			for (uint32_t ct = startIndex; ct < 16384; ct++)
+			for (uint32_t ct = iStartIndex; ct < 16384; ct++)
 			{
 				if (m_arrayChunks[ct] == nullptr)
 				{
