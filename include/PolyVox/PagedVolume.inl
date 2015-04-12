@@ -270,10 +270,23 @@ namespace PolyVox
 	template <typename VoxelType>
 	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const
 	{
-		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
 		Chunk* pChunk = nullptr;
-		const int32_t iStartIndex = (((uChunkX & 0xFF)) | ((uChunkY & 0x0F) << 4) | ((uChunkZ & 0x0F) << 8) << 2 );
-		int32_t iIndex = iStartIndex;
+
+		// We generate a 16-bit hash here and assume this matches the range available in the chunk
+		// array. The assert here is just to make sure we take care if change this in the future.
+		static_assert(uChunkArraySize == 65536, "Chunk array size has changed, check if the hash calculation needs updating.");
+		// Extract the lower five bits from each position component.
+		const uint32_t uChunkXLowerBits = static_cast<uint32_t>(uChunkX & 0x1F);
+		const uint32_t uChunkYLowerBits = static_cast<uint32_t>(uChunkY & 0x1F);
+		const uint32_t uChunkZLowerBits = static_cast<uint32_t>(uChunkZ & 0x1F);
+		// Combine then to form a 15-bit hash of the position. Also shift by one to spread the values out in the whole 16-bit space.
+		const uint32_t iPosisionHash = (((uChunkXLowerBits)) | ((uChunkYLowerBits) << 5) | ((uChunkZLowerBits) << 10) << 1);
+
+		// Starting at the position indicated by the hash, and then search through the whole array looking for a chunk with the correct
+		// position. In most cases we expect to find it in the first place we look. Note that this algorithm is slow in the case that
+		// the chunk is not found because the whole array has to be searched, but in this case we are going to have to page the data in
+		// from an external source which is likely to be slow anyway.
+		uint32_t iIndex = iPosisionHash;
 		do
 		{
 			if (m_arrayChunks[iIndex])
@@ -288,7 +301,7 @@ namespace PolyVox
 
 			iIndex++;
 			iIndex %= uChunkArraySize;
-		} while (iIndex != iStartIndex);
+		} while (iIndex != iPosisionHash); // Keep searching until we get back to our start position.
 
 		// Check whether the chunk was found.
 		if (pChunk)
@@ -307,7 +320,7 @@ namespace PolyVox
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
 			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
-			for (uint32_t ct = iStartIndex; ct < uChunkArraySize; ct++)
+			for (uint32_t ct = iPosisionHash; ct < uChunkArraySize; ct++)
 			{
 				if (m_arrayChunks[ct] == nullptr)
 				{
