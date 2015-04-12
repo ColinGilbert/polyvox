@@ -318,16 +318,39 @@ namespace PolyVox
 			Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 			pChunk = new PagedVolume<VoxelType>::Chunk(v3dChunkPos, m_uChunkSideLength, m_pPager);
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
+
+			// Store the chunk at the appropriate place in out chunk array. Ideally this place is
+			// given by the hash, otherwise we do a linear search for the next available location
+			// We always expect to find a free place because we aim to keep the array only half full.
+			uint32_t iIndex = iPosisionHash;
+			bool bInsertedSucessfully = false;
+			do
+			{
+				if (m_arrayChunks[iIndex] == nullptr)
+				{
+					m_arrayChunks[iIndex] = std::move(std::unique_ptr< Chunk >(pChunk));
+					bInsertedSucessfully = true;
+					break;
+				}
+
+				iIndex++;
+				iIndex %= uChunkArraySize;
+			} while (iIndex != iPosisionHash); // Keep searching until we get back to our start position.
+
+			// This should never really happen unless we are failing to keep our number of active chunks
+			// significantly under the target amount. Perhaps if chunks are 'pinned' for threading purposes?
+			//POLYVOX_THROW_IF(!bInsertedSucessfully, std::logic_error, "No space in chunk array for new chunk.");
+
 			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
-			for (uint32_t ct = iPosisionHash; ct < uChunkArraySize; ct++)
+			/*for (uint32_t ct = iPosisionHash; ct < uChunkArraySize; ct++)
 			{
 				if (m_arrayChunks[ct] == nullptr)
 				{
 					m_arrayChunks[ct] = std::move(std::unique_ptr< Chunk >(pChunk));
 					break;
 				}
-			}
+			}*/
 			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
 			/*while (m_mapChunks.size() > m_uChunkCountLimit)
 			{
