@@ -307,10 +307,15 @@ namespace PolyVox
 
 		uint32_t m_uChunkCountLimit = 0;
 
-		// The size of the volume
-		//Region m_regValidRegionInChunks;
-
-		mutable std::unique_ptr< Chunk > m_arrayChunks[16384];
+		// Chunks are stored in the following array which is used as a hash-table. Conventional wisdom is that such a hash-table
+		// should not be more than half full to avoid conflicts, and a practical chunk size seems to be 64^3. With this configuration
+		// there can be up to 32768*64^3 = 8 gigavoxels (with each voxel perhaps being many bytes). This should effectively make use 
+		// of even high end machines. Of course, the user can choose to limit the memory usage in which case much less of the chunk 
+		// array will actually be used. None-the-less, we have chosen to use a fixed size array (rather than a vector) as it appear to 
+		// be slightly faster (probably due to the extra pointer indirection in a vector?) and the actual size of this array should
+		// just be 1Mb or so.
+		static const uint32_t uChunkArraySize = 65536;
+		mutable std::unique_ptr< Chunk > m_arrayChunks[uChunkArraySize];
 
 		// The size of the chunks
 		uint16_t m_uChunkSideLength;

@@ -58,7 +58,7 @@ namespace PolyVox
 
 		// Enforce sensible limits on the number of chunks.
 		const uint32_t uMinPracticalNoOfChunks = 32; // Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		const uint32_t uMaxPracticalNoOfChunks = 32768; // Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
+		const uint32_t uMaxPracticalNoOfChunks = uChunkArraySize / 2; // A hash table should only become half-full to avoid too many clashes.
 		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of "
 			<< uTargetMemoryUsageInBytes / (1024 * 1024) << "Mb is too low and cannot be adhered to.");
 		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
@@ -287,7 +287,7 @@ namespace PolyVox
 			}
 
 			iIndex++;
-			iIndex %= 16384;
+			iIndex %= uChunkArraySize;
 		} while (iIndex != iStartIndex);
 
 		// Check whether the chunk was found.
@@ -307,7 +307,7 @@ namespace PolyVox
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
 			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
-			for (uint32_t ct = iStartIndex; ct < 16384; ct++)
+			for (uint32_t ct = iStartIndex; ct < uChunkArraySize; ct++)
 			{
 				if (m_arrayChunks[ct] == nullptr)
 				{
