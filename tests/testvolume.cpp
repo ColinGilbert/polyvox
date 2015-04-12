@@ -219,6 +219,32 @@ int32_t testSamplersWithWrappingBackwards(VolumeType* volume, Region region)
 	return result;
 }
 
+template <typename VolumeType>
+int32_t testDirectRandomAccess(const VolumeType* volume)
+{
+	std::mt19937 rng;
+	int32_t result = 0;
+
+	for (uint32_t ct = 0; ct < 10000; ct++)
+	{
+		uint32_t rand = rng();
+
+		// Four random number between 0-255
+		uint32_t part0 = static_cast<int32_t>(rand & 0xFF);
+		int32_t part1 = static_cast<int32_t>((rand >> 8) & 0xFF);
+		int32_t part2 = static_cast<int32_t>((rand >> 16) & 0xFF);
+		int32_t part3 = static_cast<int32_t>((rand >> 24) & 0xFF);
+
+		result = cantorTupleFunction(result, volume->getVoxel(part0, part1, part2));
+		result = cantorTupleFunction(result, volume->getVoxel(part1, part2, part3));
+		result = cantorTupleFunction(result, volume->getVoxel(part2, part3, part0));
+		result = cantorTupleFunction(result, volume->getVoxel(part3, part0, part1));
+
+	}
+
+	return result;
+}
+
 TestVolume::TestVolume()
 {
 	m_regVolume = Region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
@@ -450,6 +476,29 @@ void TestVolume::testPagedVolumeSamplersWithExternalBackwards()
 		result = testSamplersWithWrappingBackwards(m_pPagedVolume, m_regExternal);
 	}
 	QCOMPARE(result, static_cast<int32_t>(-993539594));
+}
+
+/*
+ * Random access tests
+ */
+void TestVolume::testRawVolumeDirectRandomAccess()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectRandomAccess(m_pRawVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(805464457));
+}
+
+void TestVolume::testPagedVolumeDirectRandomAccess()
+{
+	int32_t result = 0;
+	QBENCHMARK
+	{
+		result = testDirectRandomAccess(m_pPagedVolume);
+	}
+	QCOMPARE(result, static_cast<int32_t>(805464457));
 }
 
 int32_t TestVolume::testPagedVolumeChunkAccess(uint16_t localityMask)
