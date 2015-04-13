@@ -295,6 +295,7 @@ namespace PolyVox
 				if (entryPos.getX() == uChunkX && entryPos.getY() == uChunkY && entryPos.getZ() == uChunkZ)
 				{
 					pChunk = m_arrayChunks[iIndex].get();
+					pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
 					break;
 				}
 			}
@@ -302,14 +303,6 @@ namespace PolyVox
 			iIndex++;
 			iIndex %= uChunkArraySize;
 		} while (iIndex != iPosisionHash); // Keep searching until we get back to our start position.
-
-		// Check whether the chunk was found.
-		if (pChunk)
-		{
-			// The chunk was found so we can use it.
-			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
-			pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
-		}
 
 		// If we still haven't found the chunk then it's time to create a new one and page it in from disk.
 		if (!pChunk)
