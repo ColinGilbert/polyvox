@@ -334,6 +334,28 @@ namespace PolyVox
 			// significantly under the target amount. Perhaps if chunks are 'pinned' for threading purposes?
 			//POLYVOX_THROW_IF(!bInsertedSucessfully, std::logic_error, "No space in chunk array for new chunk.");
 
+			// As we have added a chunk we may have exceeded our target chunk limit. Search through the array to
+			// determine how many chunks we have, as well as finding the oldest timestamp. Note that this is potentially
+			// wasteful and we may instead wish to track how many chunks we have and/or delete a chunk at random (or
+			// just check e.g. 10 and delete the oldest of those) but we'll see if this is a bottleneck first. Paging
+			// the data in is probably more expensive.
+			uint32_t uChunkCount = 0;
+			uint32_t uOldestChunkIndex = std::numeric_limits<uint32_t>::max();
+			for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
+			{
+				if (m_arrayChunks[uIndex])
+				{
+					uChunkCount++;
+					uOldestChunkIndex = std::min(uOldestChunkIndex, m_arrayChunks[uIndex]->m_uChunkLastAccessed);
+				}
+			}
+
+			// Check if we have too many chunks, and delete the oldest if so.
+			if (uChunkCount > m_uChunkCountLimit)
+			{
+				m_arrayChunks[uOldestChunkIndex] = nullptr;
+			}
+
 			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
 			/*for (uint32_t ct = iPosisionHash; ct < uChunkArraySize; ct++)
