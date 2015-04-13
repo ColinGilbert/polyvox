@@ -225,7 +225,7 @@ int32_t testDirectRandomAccess(const VolumeType* volume)
 	std::mt19937 rng;
 	int32_t result = 0;
 
-	for (uint32_t ct = 0; ct < 1000000; ct++)
+	for (uint32_t ct = 0; ct < 10000000; ct++)
 	{
 		uint32_t rand = rng();
 
@@ -490,7 +490,7 @@ void TestVolume::testRawVolumeDirectRandomAccess()
 	{
 		result = testDirectRandomAccess(m_pRawVolume);
 	}
-	QCOMPARE(result, static_cast<int32_t>(267192737));
+	QCOMPARE(result, static_cast<int32_t>(171835633));
 }
 
 void TestVolume::testPagedVolumeDirectRandomAccess()
@@ -500,7 +500,7 @@ void TestVolume::testPagedVolumeDirectRandomAccess()
 	{
 		result = testDirectRandomAccess(m_pPagedVolumeHighMem);
 	}
-	QCOMPARE(result, static_cast<int32_t>(267192737));
+	QCOMPARE(result, static_cast<int32_t>(171835633));
 }
 
 int32_t TestVolume::testPagedVolumeChunkAccess(uint16_t localityMask)
