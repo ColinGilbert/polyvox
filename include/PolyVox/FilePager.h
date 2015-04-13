@@ -56,13 +56,12 @@ namespace PolyVox
 					m_strFolderName.append("/");
 			}
 
-			// Build a unique prefix to avoid multiple pagers using the same filenames.
-			srand(static_cast<unsigned int>(time(0)));
-			int iRandomValue = rand();
-
+			// Build a unique postfix to avoid filename conflicts between multiple pagers/runs.
+			// Not a very robust solution but this class is meant as an example for testing really.
 			std::stringstream ss;
-			ss << std::hex << iRandomValue;
-			m_strRandomPrefix = ss.str();
+			ss << time(0) << "--"; // Avoid multiple runs using the same filenames.
+			ss << this; // Avoid multiple FilePagers using the same filenames.
+			m_strPostfix = ss.str();
 		}
 
 		/// Destructor
@@ -82,9 +81,10 @@ namespace PolyVox
 			POLYVOX_ASSERT(pChunk->getData(), "Chunk must have valid data");
 
 			std::stringstream ssFilename;
-			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
+			ssFilename << m_strFolderName << "/"
 				<< region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
-				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ();
+				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ()
+				 << "--" << m_strPostfix;
 
 			std::string filename = ssFilename.str();
 
@@ -133,9 +133,10 @@ namespace PolyVox
 			POLYVOX_LOG_TRACE("Paging out data for " << region);
 
 			std::stringstream ssFilename;
-			ssFilename << m_strFolderName << "/" << m_strRandomPrefix << "-"
+			ssFilename << m_strFolderName << "/"
 				<< region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
-				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ();
+				<< region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ()
+				<< "--" << m_strPostfix;
 
 			std::string filename = ssFilename.str();
 
@@ -163,7 +164,7 @@ namespace PolyVox
 
 	protected:
 		std::string m_strFolderName;
-		std::string m_strRandomPrefix;
+		std::string m_strPostfix;
 
 		std::vector<std::string> m_vecCreatedFiles;
 	};
