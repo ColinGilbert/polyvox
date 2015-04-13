@@ -371,9 +371,18 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t PagedVolume<VoxelType>::calculateSizeInBytes(void)
 	{
+		uint32_t uChunkCount = 0;
+		for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
+		{
+			if (m_arrayChunks[uIndex])
+			{
+				uChunkCount++;
+			}
+		}
+
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
-		return PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) * m_mapChunks.size();
+		return PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) * uChunkCount;
 	}
 }
 
