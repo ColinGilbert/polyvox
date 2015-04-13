@@ -164,9 +164,9 @@ protected:
 		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
 		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 		PolyVox::Region reg2(Vector3DInt32(0, 0, 0), Vector3DInt32(255, 255, 255));
-		std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
-		volData.flush(reg2);
-		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
+		//std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
+		//volData.flush(reg2);
+		//std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
 		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 		std::cout << "Flushing entire volume" << std::endl;
 		volData.flushAll();

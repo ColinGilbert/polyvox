@@ -220,13 +220,16 @@ namespace PolyVox
 		m_pLastAccessedChunk = nullptr;
 
 		// Erase all the most recently used chunks.
-		m_mapChunks.clear();
+		for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
+		{
+			m_arrayChunks[uIndex] = nullptr;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
+	/*template <typename VoxelType>
 	void PagedVolume<VoxelType>::flush(Region regFlush)
 	{
 		// Clear this pointer in case the chunk it points at is flushed.
@@ -256,7 +259,7 @@ namespace PolyVox
 				}
 			}
 		}
-	}
+	}*/
 
 	template <typename VoxelType>
 	bool PagedVolume<VoxelType>::canReuseLastAccessedChunk(int32_t iChunkX, int32_t iChunkY, int32_t iChunkZ) const

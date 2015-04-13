@@ -274,7 +274,7 @@ namespace PolyVox
 		/// Tries to ensure that the voxels within the specified Region are loaded into memory.
 		void prefetch(Region regPrefetch);
 		/// Ensures that any voxels within the specified Region are removed from memory.
-		void flush(Region regFlush);
+		//void flush(Region regFlush);
 		/// Removes all voxels from memory
 		void flushAll();
 
@@ -300,8 +300,6 @@ namespace PolyVox
 		mutable int32_t m_v3dLastAccessedChunkY = 0;
 		mutable int32_t m_v3dLastAccessedChunkZ = 0;
 		mutable Chunk* m_pLastAccessedChunk = nullptr;
-
-		mutable std::unordered_map<Vector3DInt32, std::unique_ptr< Chunk > > m_mapChunks;
 
 		mutable uint32_t m_uTimestamper = 0;
 
