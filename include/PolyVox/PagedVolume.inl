@@ -355,39 +355,9 @@ namespace PolyVox
 			{
 				m_arrayChunks[uOldestChunkIndex] = nullptr;
 			}
-
-			//m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
-
-			/*for (uint32_t ct = iPosisionHash; ct < uChunkArraySize; ct++)
-			{
-				if (m_arrayChunks[ct] == nullptr)
-				{
-					m_arrayChunks[ct] = std::move(std::unique_ptr< Chunk >(pChunk));
-					break;
-				}
-			}*/
-			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
-			/*while (m_mapChunks.size() > m_uChunkCountLimit)
-			{
-				// Find the least recently used chunk. Hopefully this isn't too slow.
-				auto itUnloadChunk = m_mapChunks.begin();
-				for (auto i = m_mapChunks.begin(); i != m_mapChunks.end(); i++)
-				{
-					if (i->second->m_uChunkLastAccessed < itUnloadChunk->second->m_uChunkLastAccessed)
-					{
-						itUnloadChunk = i;
-					}
-				}
-
-				// Erase the least recently used chunk
-				m_mapChunks.erase(itUnloadChunk);
-			}*/
-
-
 		}
 				
 		m_pLastAccessedChunk = pChunk;
-		//m_v3dLastAccessedChunkPos = v3dChunkPos;
 		m_v3dLastAccessedChunkX = uChunkX;
 		m_v3dLastAccessedChunkY = uChunkY;
 		m_v3dLastAccessedChunkZ = uChunkZ;
