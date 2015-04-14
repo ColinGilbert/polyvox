@@ -58,7 +58,7 @@ namespace PolyVox
 
 		// Enforce sensible limits on the number of chunks.
 		const uint32_t uMinPracticalNoOfChunks = 32; // Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		const uint32_t uMaxPracticalNoOfChunks = 32768; // Should prevent multi-gigabyte volumes when chunk sizes are reasonable.
+		const uint32_t uMaxPracticalNoOfChunks = uChunkArraySize / 2; // A hash table should only become half-full to avoid too many clashes.
 		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of "
 			<< uTargetMemoryUsageInBytes / (1024 * 1024) << "Mb is too low and cannot be adhered to.");
 		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
@@ -220,13 +220,16 @@ namespace PolyVox
 		m_pLastAccessedChunk = nullptr;
 
 		// Erase all the most recently used chunks.
-		m_mapChunks.clear();
+		for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
+		{
+			m_arrayChunks[uIndex] = nullptr;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
 	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
 	////////////////////////////////////////////////////////////////////////////////
-	template <typename VoxelType>
+	/*template <typename VoxelType>
 	void PagedVolume<VoxelType>::flush(Region regFlush)
 	{
 		// Clear this pointer in case the chunk it points at is flushed.
@@ -256,7 +259,7 @@ namespace PolyVox
 				}
 			}
 		}
-	}
+	}*/
 
 	template <typename VoxelType>
 	bool PagedVolume<VoxelType>::canReuseLastAccessedChunk(int32_t iChunkX, int32_t iChunkY, int32_t iChunkZ) const
@@ -270,49 +273,94 @@ namespace PolyVox
 	template <typename VoxelType>
 	typename PagedVolume<VoxelType>::Chunk* PagedVolume<VoxelType>::getChunk(int32_t uChunkX, int32_t uChunkY, int32_t uChunkZ) const
 	{
-		Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
-
-		// The chunk was not the same as last time, but we can now hope it is in the set of most recently used chunks.
 		Chunk* pChunk = nullptr;
-		auto itChunk = m_mapChunks.find(v3dChunkPos);
 
-		// Check whether the chunk was found.
-		if ((itChunk) != m_mapChunks.end())
+		// We generate a 16-bit hash here and assume this matches the range available in the chunk
+		// array. The assert here is just to make sure we take care if change this in the future.
+		static_assert(uChunkArraySize == 65536, "Chunk array size has changed, check if the hash calculation needs updating.");
+		// Extract the lower five bits from each position component.
+		const uint32_t uChunkXLowerBits = static_cast<uint32_t>(uChunkX & 0x1F);
+		const uint32_t uChunkYLowerBits = static_cast<uint32_t>(uChunkY & 0x1F);
+		const uint32_t uChunkZLowerBits = static_cast<uint32_t>(uChunkZ & 0x1F);
+		// Combine then to form a 15-bit hash of the position. Also shift by one to spread the values out in the whole 16-bit space.
+		const uint32_t iPosisionHash = (((uChunkXLowerBits)) | ((uChunkYLowerBits) << 5) | ((uChunkZLowerBits) << 10) << 1);
+
+		// Starting at the position indicated by the hash, and then search through the whole array looking for a chunk with the correct
+		// position. In most cases we expect to find it in the first place we look. Note that this algorithm is slow in the case that
+		// the chunk is not found because the whole array has to be searched, but in this case we are going to have to page the data in
+		// from an external source which is likely to be slow anyway.
+		uint32_t iIndex = iPosisionHash;
+		do
 		{
-			// The chunk was found so we can use it.
-			pChunk = itChunk->second.get();		
-			POLYVOX_ASSERT(pChunk, "Recent chunk list shold never contain a null pointer.");
-			pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
-		}
+			if (m_arrayChunks[iIndex])
+			{
+				Vector3DInt32& entryPos = m_arrayChunks[iIndex]->m_v3dChunkSpacePosition;
+				if (entryPos.getX() == uChunkX && entryPos.getY() == uChunkY && entryPos.getZ() == uChunkZ)
+				{
+					pChunk = m_arrayChunks[iIndex].get();
+					pChunk->m_uChunkLastAccessed = ++m_uTimestamper;
+					break;
+				}
+			}
+
+			iIndex++;
+			iIndex %= uChunkArraySize;
+		} while (iIndex != iPosisionHash); // Keep searching until we get back to our start position.
 
 		// If we still haven't found the chunk then it's time to create a new one and page it in from disk.
 		if (!pChunk)
 		{
 			// The chunk was not found so we will create a new one.
+			Vector3DInt32 v3dChunkPos(uChunkX, uChunkY, uChunkZ);
 			pChunk = new PagedVolume<VoxelType>::Chunk(v3dChunkPos, m_uChunkSideLength, m_pPager);
 			pChunk->m_uChunkLastAccessed = ++m_uTimestamper; // Important, as we may soon delete the oldest chunk
-			m_mapChunks.insert(std::make_pair(v3dChunkPos, std::unique_ptr<Chunk>(pChunk)));
 
-			// As we are loading a new chunk we should try to ensure we don't go over our target memory usage.
-			while (m_mapChunks.size() > m_uChunkCountLimit)
+			// Store the chunk at the appropriate place in out chunk array. Ideally this place is
+			// given by the hash, otherwise we do a linear search for the next available location
+			// We always expect to find a free place because we aim to keep the array only half full.
+			uint32_t iIndex = iPosisionHash;
+			bool bInsertedSucessfully = false;
+			do
 			{
-				// Find the least recently used chunk. Hopefully this isn't too slow.
-				auto itUnloadChunk = m_mapChunks.begin();
-				for (auto i = m_mapChunks.begin(); i != m_mapChunks.end(); i++)
+				if (m_arrayChunks[iIndex] == nullptr)
 				{
-					if (i->second->m_uChunkLastAccessed < itUnloadChunk->second->m_uChunkLastAccessed)
-					{
-						itUnloadChunk = i;
-					}
+					m_arrayChunks[iIndex] = std::move(std::unique_ptr< Chunk >(pChunk));
+					bInsertedSucessfully = true;
+					break;
 				}
 
-				// Erase the least recently used chunk
-				m_mapChunks.erase(itUnloadChunk);
+				iIndex++;
+				iIndex %= uChunkArraySize;
+			} while (iIndex != iPosisionHash); // Keep searching until we get back to our start position.
+
+			// This should never really happen unless we are failing to keep our number of active chunks
+			// significantly under the target amount. Perhaps if chunks are 'pinned' for threading purposes?
+			//POLYVOX_THROW_IF(!bInsertedSucessfully, std::logic_error, "No space in chunk array for new chunk.");
+
+			// As we have added a chunk we may have exceeded our target chunk limit. Search through the array to
+			// determine how many chunks we have, as well as finding the oldest timestamp. Note that this is potentially
+			// wasteful and we may instead wish to track how many chunks we have and/or delete a chunk at random (or
+			// just check e.g. 10 and delete the oldest of those) but we'll see if this is a bottleneck first. Paging
+			// the data in is probably more expensive.
+			uint32_t uChunkCount = 0;
+			uint32_t uOldestChunkIndex = std::numeric_limits<uint32_t>::max();
+			for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
+			{
+				if (m_arrayChunks[uIndex])
+				{
+					uChunkCount++;
+					uOldestChunkIndex = std::min(uOldestChunkIndex, m_arrayChunks[uIndex]->m_uChunkLastAccessed);
+				}
+			}
+
+			// Check if we have too many chunks, and delete the oldest if so.
+			if (uChunkCount > m_uChunkCountLimit)
+			{
+				m_arrayChunks[uOldestChunkIndex] = nullptr;
 			}
 		}
 				
 		m_pLastAccessedChunk = pChunk;
-		//m_v3dLastAccessedChunkPos = v3dChunkPos;
 		m_v3dLastAccessedChunkX = uChunkX;
 		m_v3dLastAccessedChunkY = uChunkY;
 		m_v3dLastAccessedChunkZ = uChunkZ;
@@ -326,9 +374,18 @@ namespace PolyVox
 	template <typename VoxelType>
 	uint32_t PagedVolume<VoxelType>::calculateSizeInBytes(void)
 	{
+		uint32_t uChunkCount = 0;
+		for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
+		{
+			if (m_arrayChunks[uIndex])
+			{
+				uChunkCount++;
+			}
+		}
+
 		// Note: We disregard the size of the other class members as they are likely to be very small compared to the size of the
 		// allocated voxel data. This also keeps the reported size as a power of two, which makes other memory calculations easier.
-		return PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) * m_mapChunks.size();
+		return PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength) * uChunkCount;
 	}
 }
 
