@@ -47,9 +47,8 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::Sampler::Sampler(PagedVolume<VoxelType>* volume)
-		:BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >(volume)
+		:BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >(volume), m_uChunkSideLengthMinusOne(volume->m_uChunkSideLength - 1)
 	{
-			this->m_uChunkSideLengthMinusOne = this->mVolume->m_uChunkSideLength - 1;
 	}
 
 	template <typename VoxelType>
