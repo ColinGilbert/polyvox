@@ -343,13 +343,18 @@ namespace PolyVox
 			// just check e.g. 10 and delete the oldest of those) but we'll see if this is a bottleneck first. Paging
 			// the data in is probably more expensive.
 			uint32_t uChunkCount = 0;
-			uint32_t uOldestChunkIndex = std::numeric_limits<uint32_t>::max();
+			uint32_t uOldestChunkIndex = 0;
+			uint32_t uOldestChunkTimestamp = std::numeric_limits<uint32_t>::max();
 			for (uint32_t uIndex = 0; uIndex < uChunkArraySize; uIndex++)
 			{
 				if (m_arrayChunks[uIndex])
 				{
 					uChunkCount++;
-					uOldestChunkIndex = std::min(uOldestChunkIndex, m_arrayChunks[uIndex]->m_uChunkLastAccessed);
+					if (m_arrayChunks[uIndex]->m_uChunkLastAccessed < uOldestChunkIndex)
+					{
+						uOldestChunkIndex = m_arrayChunks[uIndex]->m_uChunkLastAccessed;
+						uOldestChunkIndex = uIndex;
+					}
 				}
 			}
 
