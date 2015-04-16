@@ -350,9 +350,9 @@ namespace PolyVox
 				if (m_arrayChunks[uIndex])
 				{
 					uChunkCount++;
-					if (m_arrayChunks[uIndex]->m_uChunkLastAccessed < uOldestChunkIndex)
+					if (m_arrayChunks[uIndex]->m_uChunkLastAccessed < uOldestChunkTimestamp)
 					{
-						uOldestChunkIndex = m_arrayChunks[uIndex]->m_uChunkLastAccessed;
+						uOldestChunkTimestamp = m_arrayChunks[uIndex]->m_uChunkLastAccessed;
 						uOldestChunkIndex = uIndex;
 					}
 				}
