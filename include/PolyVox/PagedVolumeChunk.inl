@@ -159,8 +159,19 @@ namespace PolyVox
 	// then the ordering is automatically handled correctly. 
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::Chunk::changeLinearOrderingToMorton(void)
-	{
+	{		
 		VoxelType* pTempBuffer = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
+
+		// We should prehaps restructure this loop. From: https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/
+		//
+		// "There's two basic ways to structure the actual swizzling: either you go through the (linear) source image in linear order, 
+		// writing in (somewhat) random order, or you iterate over the output data, picking the right source pixel for each target
+		// location. The former is more natural, especially when updating subrects of the destination texture (the source pixels still
+		// consist of one linear sequence of bytes per line; the pattern of destination addresses written is considerably more
+		// complicated), but the latter is usually much faster, especially if the source image data is in cached memory while the output
+		// data resides in non-cached write-combined memory where non-sequential writes are expensive."
+		//
+		// This is something to consider if profiling identifies it as a hotspot.
 		for (uint16_t z = 0; z < m_uSideLength; z++)
 		{
 			for (uint16_t y = 0; y < m_uSideLength; y++)
