@@ -59,14 +59,14 @@ namespace PolyVox
 		// Enforce sensible limits on the number of chunks.
 		const uint32_t uMinPracticalNoOfChunks = 32; // Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
 		const uint32_t uMaxPracticalNoOfChunks = uChunkArraySize / 2; // A hash table should only become half-full to avoid too many clashes.
-		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of "
-			<< uTargetMemoryUsageInBytes / (1024 * 1024) << "Mb is too low and cannot be adhered to.");
+		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of ",
+			uTargetMemoryUsageInBytes / (1024 * 1024), "Mb is too low and cannot be adhered to.");
 		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
 		m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
 
 		// Inform the user about the chosen memory configuration.
-		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to " << (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024)
-			<< "Mb (" << m_uChunkCountLimit << " chunks of " << uChunkSizeInBytes / 1024 << "Kb each).");
+		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to ", (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024),
+			"Mb (", m_uChunkCountLimit, " chunks of ", uChunkSizeInBytes / 1024, "Kb each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +335,7 @@ namespace PolyVox
 
 			// This should never really happen unless we are failing to keep our number of active chunks
 			// significantly under the target amount. Perhaps if chunks are 'pinned' for threading purposes?
-			//POLYVOX_THROW_IF(!bInsertedSucessfully, std::logic_error, "No space in chunk array for new chunk.");
+			POLYVOX_THROW_IF(!bInsertedSucessfully, std::logic_error, "No space in chunk array for new chunk.");
 
 			// As we have added a chunk we may have exceeded our target chunk limit. Search through the array to
 			// determine how many chunks we have, as well as finding the oldest timestamp. Note that this is potentially

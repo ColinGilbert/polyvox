@@ -69,7 +69,7 @@ namespace PolyVox
 		{
 			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
 			{
-				POLYVOX_LOG_WARNING_IF(std::remove(iter->c_str()) != 0, "Failed to delete '" << *iter << "' when destroying FilePager");
+				POLYVOX_LOG_WARNING_IF(std::remove(iter->c_str()) != 0, "Failed to delete '", *iter, "' when destroying FilePager");
 			}
 
 			m_vecCreatedFiles.clear();
@@ -94,7 +94,7 @@ namespace PolyVox
 			FILE* pFile = fopen(filename.c_str(), "rb");
 			if(pFile)
 			{
-				POLYVOX_LOG_TRACE("Paging in data for " << region);
+				POLYVOX_LOG_TRACE("Paging in data for ", region);
 
 				/*fseek(pFile, 0L, SEEK_END);
 				size_t fileSizeInBytes = ftell(pFile);
@@ -116,7 +116,7 @@ namespace PolyVox
 			}
 			else
 			{
-				POLYVOX_LOG_TRACE("No data found for " << region << " during paging in.");
+				POLYVOX_LOG_TRACE("No data found for ", region, " during paging in.");
 
 				// Just fill with zeros. This feels hacky... perhaps we should just throw
 				// an exception and let the calling code handle it and fill with zeros.
@@ -130,7 +130,7 @@ namespace PolyVox
 			POLYVOX_ASSERT(pChunk, "Attempting to page out NULL chunk");
 			POLYVOX_ASSERT(pChunk->getData(), "Chunk must have valid data");
 
-			POLYVOX_LOG_TRACE("Paging out data for " << region);
+			POLYVOX_LOG_TRACE("Paging out data for ", region);
 
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/"

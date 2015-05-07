@@ -116,40 +116,26 @@ freely, subject to the following restrictions:
  * ...
  */
 #ifdef POLYVOX_THROW_ENABLED
+	namespace PolyVox
+	{
+		template< typename ExceptionType, typename ... Args >
+		void polyvox_throw(Args const& ... messageArgs)
+		{
+			std::string message = Impl::argListToString(messageArgs...);
+#ifdef POLYVOX_LOG_ERROR_ENABLED
+			PolyVox::Impl::getLoggerInstance()->logErrorMessage(message);
+#endif
+			throw ExceptionType(message);
+		}
 
-	#define POLYVOX_THROW_IF(condition, type, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do \
-		{ \
-			if ((condition)) \
-			{ \
-				std::stringstream ss; \
-				ss << message; \
-				PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
-				throw type(ss.str()); \
-			} \
-		} while(0) \
-		POLYVOX_MSC_WARNING_POP
-
-	#define POLYVOX_THROW(type, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do \
-		{ \
-			std::stringstream ss; \
-			ss << message; \
-			PolyVox::Impl::getLoggerInstance()->logErrorMessage(ss.str()); \
-			throw type(ss.str()); \
-		} while(0) \
-		POLYVOX_MSC_WARNING_POP
-
+		template< typename ExceptionType, typename ... Args >
+		void polyvox_throw_if(bool condition, Args const& ... messageArgs)
+		{
+			if(condition) { polyvox_throw<ExceptionType>(messageArgs...); }
+		}
+	}
+	#define POLYVOX_THROW(type, ...) PolyVox::polyvox_throw<type>(__VA_ARGS__)
+	#define POLYVOX_THROW_IF(condition, type, ...) PolyVox::polyvox_throw_if<type>(condition, __VA_ARGS__)
 #else
 	namespace PolyVox
 	{

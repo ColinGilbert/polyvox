@@ -122,9 +122,9 @@ namespace PolyVox
 
 		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 
-		POLYVOX_LOG_TRACE("Marching cubes surface extraction took " << timer.elapsedTimeInMilliSeconds()
-			<< "ms (Region size = " << m_regSizeInVoxels.getWidthInVoxels() << "x" << m_regSizeInVoxels.getHeightInVoxels()
-			<< "x" << m_regSizeInVoxels.getDepthInVoxels() << ")");
+		POLYVOX_LOG_TRACE("Marching cubes surface extraction took ", timer.elapsedTimeInMilliSeconds(),
+			"ms (Region size = ", m_regSizeInVoxels.getWidthInVoxels(), "x", m_regSizeInVoxels.getHeightInVoxels(),
+			"x", m_regSizeInVoxels.getDepthInVoxels(), ")");
 	}
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
