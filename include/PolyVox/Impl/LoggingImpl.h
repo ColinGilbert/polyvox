@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_Logging_H__
-#define __PolyVox_Logging_H__
+#ifndef __PolyVox_LoggingImpl_H__
+#define __PolyVox_LoggingImpl_H__
 
 #include "PolyVox/Impl/Config.h"
 
@@ -229,4 +229,4 @@ namespace PolyVox
 	#define POLYVOX_LOG_FATAL_IF(condition, ...)
 #endif
 
-#endif //__PolyVox_Logging_H__
+#endif //__PolyVox_LoggingImpl_H__
