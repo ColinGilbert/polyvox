@@ -39,6 +39,7 @@ SET(CORE_INC_FILES
 	PolyVox/DefaultIsQuadNeeded.h
 	PolyVox/DefaultMarchingCubesController.h
 	PolyVox/Density.h
+	PolyVox/Exceptions.h
 	PolyVox/FilePager.h
 	PolyVox/GradientEstimators.h
 	PolyVox/GradientEstimators.inl
@@ -79,10 +80,12 @@ SET(CORE_INC_FILES
 )
 
 SET(IMPL_INC_FILES
+	PolyVox/Impl/Assertions.h
 	PolyVox/Impl/AStarPathfinderImpl.h
     PolyVox/Impl/Config.h
 	PolyVox/Impl/ErrorHandling.h
-	PolyVox/Impl/Logging.h
+	PolyVox/Impl/ExceptionsImpl.h
+	PolyVox/Impl/LoggingImpl.h
 	PolyVox/Impl/MarchingCubesTables.h
 	PolyVox/Impl/PlatformDefinitions.h
 	PolyVox/Impl/RandomUnitVectors.h

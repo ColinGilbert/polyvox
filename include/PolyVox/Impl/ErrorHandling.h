@@ -27,6 +27,6 @@ freely, subject to the following restrictions:
 
 #include "PolyVox/Impl/Assertions.h"
 #include "PolyVox/Impl/ExceptionsImpl.h"
-#include "PolyVox/Impl/Logging.h"
+#include "PolyVox/Impl/LoggingImpl.h"
 
 #endif //__PolyVox_ErrorHandling_H__

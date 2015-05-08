@@ -27,7 +27,7 @@ distribution.
 #include "PolyVox/Exceptions.h"
 
 #include "PolyVox/Impl/Config.h"
-#include "PolyVox/Impl/Logging.h" // Exceptions can log when they are thrown.
+#include "PolyVox/Impl/LoggingImpl.h" // Exceptions can log when they are thrown.
 
 #include <cstdlib>  // For std::exit
 #include <iostream> // For std::cerr
