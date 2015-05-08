@@ -35,19 +35,6 @@ freely, subject to the following restrictions:
 #include <string.h> // Exception constuctors take strings.
 #include <csignal>
 
-// Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
-// platform specific. But macros can contain other macros, so we create macros to control the warnings and use
-// those instead. This set of warning supression macros can be extended to GCC/Clang when required.
-#if defined(_MSC_VER)
-	#define POLYVOX_MSC_WARNING_PUSH __pragma(warning(push))
-	#define POLYVOX_DISABLE_MSC_WARNING(x) __pragma(warning(disable:x))
-	#define POLYVOX_MSC_WARNING_POP __pragma(warning(pop))
-#else
-	#define POLYVOX_MSC_WARNING_PUSH
-	#define POLYVOX_DISABLE_MSC_WARNING(x)
-	#define POLYVOX_MSC_WARNING_POP
-#endif
-
 /*
  * Assertions
  * ----------
