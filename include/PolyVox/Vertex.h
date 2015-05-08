@@ -33,12 +33,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	#ifdef SWIG
-	struct Vertex
-#else
 	template<typename _DataType>
 	struct  Vertex
-#endif
 	{
 		typedef _DataType DataType;
 

@@ -49,11 +49,7 @@ namespace PolyVox
 	 *  about these definitions.
 	 * 
 	 */
-#ifdef SWIG
 	class Region
-#else
-	class  Region
-#endif
 	{
 	public:
 

@@ -114,7 +114,7 @@ namespace PolyVox
 			bool m_bIsCurrentPositionValidInY;
 			bool m_bIsCurrentPositionValidInZ;
 		};
-		#endif
+		#endif // SWIG
 
 	public:
 		/// Constructor for creating a fixed size volume.

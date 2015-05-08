@@ -104,7 +104,7 @@ namespace PolyVox
 			int32_t mYPosInVolume;
 			int32_t mZPosInVolume;
 		};
-		#endif
+		#endif // SWIG
 
 	public:
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates

@@ -253,7 +253,7 @@ namespace PolyVox
 			const uint16_t m_uChunkSideLengthMinusOne;
 		};
 
-		#endif
+		#endif // SWIG
 
 	public:
 		/// Constructor for creating a fixed size volume.
