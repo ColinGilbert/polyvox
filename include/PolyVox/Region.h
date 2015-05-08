@@ -52,7 +52,7 @@ namespace PolyVox
 #ifdef SWIG
 	class Region
 #else
-	class POLYVOX_API Region
+	class  Region
 #endif
 	{
 	public:

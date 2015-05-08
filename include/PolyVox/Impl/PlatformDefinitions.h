@@ -59,22 +59,6 @@ freely, subject to the following restrictions:
   #define POLYVOX_DEPRECATED //Define it to nothing to avoid warnings
 #endif
 
-// Now we use the generic helper definitions above to define POLYVOX_API and POLYVOX_LOCAL.
-// POLYVOX_API is used for the public API symbols. It either imports or exports (or does nothing for static build)
-// POLYVOX_LOCAL is used for non-api symbols.
-
-#ifdef POLYVOX_SHARED // defined if PolyVox is compiled as a shared library
-  #ifdef POLYVOX_SHARED_EXPORTS // defined if we are building the PolyVox shared library (instead of using it)
-    #define POLYVOX_API POLYVOX_HELPER_EXPORT
-  #else
-    #define POLYVOX_API POLYVOX_HELPER_IMPORT
-  #endif // POLYVOX_SHARED_EXPORTS
-  #define POLYVOX_LOCAL POLYVOX_HELPER_LOCAL
-#else // POLYVOX_SHARED is not defined: this means PolyVox is a static library.
-  #define POLYVOX_API
-  #define POLYVOX_LOCAL
-#endif // POLYVOX_SHARED
-
 #if defined(_MSC_VER)
 	// In Visual Studio we can use this function to go into the debugger.
 	#define POLYVOX_HALT() __debugbreak()

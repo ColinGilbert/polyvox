@@ -40,7 +40,7 @@ namespace PolyVox
 	struct CubicVertex
 #else
 	template<typename _DataType>
-	struct POLYVOX_API CubicVertex
+	struct  CubicVertex
 #endif
 	{
 		typedef _DataType DataType;

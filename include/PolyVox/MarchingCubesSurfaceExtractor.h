@@ -39,7 +39,7 @@ namespace PolyVox
 	struct MarchingCubesVertex
 #else
 	template<typename _DataType>
-	struct POLYVOX_API MarchingCubesVertex
+	struct  MarchingCubesVertex
 #endif
 	{
 		typedef _DataType DataType;

@@ -37,7 +37,7 @@ namespace PolyVox
 	struct Vertex
 #else
 	template<typename _DataType>
-	struct POLYVOX_API Vertex
+	struct  Vertex
 #endif
 	{
 		typedef _DataType DataType;
