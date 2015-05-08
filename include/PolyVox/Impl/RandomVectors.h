@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_RandomVectors_H__
 #define __PolyVox_RandomVectors_H__
 
-#include "PolyVox/Impl/TypeDef.h"
+#include "PolyVox/Impl/PlatformDefinitions.h"
 
 #include "PolyVox/Vector.h"
 
