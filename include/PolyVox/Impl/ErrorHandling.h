@@ -21,6 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
+// This file provides a simple way to include all error-handling functionality.
 #ifndef __PolyVox_ErrorHandling_H__
 #define __PolyVox_ErrorHandling_H__
 

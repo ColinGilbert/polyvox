@@ -24,42 +24,47 @@ distribution.
 #ifndef __PolyVox_ExceptionsImpl_H__
 #define __PolyVox_ExceptionsImpl_H__
 
+#include "PolyVox/Exceptions.h"
+
 #include "PolyVox/Impl/Config.h"
 #include "PolyVox/Impl/Logging.h" // Exceptions can log when they are thrown.
 
 #include <cstdlib>  // For std::exit
 #include <iostream> // For std::cerr
-#include <stdexcept>
 #include <sstream>
-#include <string.h> // Exception constuctors take strings.
 #include <csignal>
 
 #ifdef POLYVOX_THROW_ENABLED
 
 	namespace PolyVox
 	{
-		template< typename ExceptionType, typename ... Args >
-		void polyvox_throw(Args const& ... messageArgs)
+		namespace Impl
 		{
-			std::string message = Impl::argListToString(messageArgs...);
+			template< typename ExceptionType, typename ... Args >
+			void polyvox_throw(Args const& ... messageArgs)
+			{
+				std::string message = argListToString(messageArgs...);
 #ifdef POLYVOX_LOG_ERROR_ENABLED
-			PolyVox::Impl::getLoggerInstance()->logErrorMessage(message);
+				getLoggerInstance()->logErrorMessage(message);
 #endif
-			throw ExceptionType(message);
-		}
+				throw ExceptionType(message);
+			}
 
-		template< typename ExceptionType, typename ... Args >
-		void polyvox_throw_if(bool condition, Args const& ... messageArgs)
-		{
-			if (condition) { polyvox_throw<ExceptionType>(messageArgs...); }
+			template< typename ExceptionType, typename ... Args >
+			void polyvox_throw_if(bool condition, Args const& ... messageArgs)
+			{
+				if (condition) { polyvox_throw<ExceptionType>(messageArgs...); }
+			}
 		}
 	}
 
-	#define POLYVOX_THROW(type, ...) PolyVox::polyvox_throw<type>(__VA_ARGS__)
-	#define POLYVOX_THROW_IF(condition, type, ...) PolyVox::polyvox_throw_if<type>(condition, __VA_ARGS__)
+	#define POLYVOX_THROW(type, ...) PolyVox::Impl::polyvox_throw<type>(__VA_ARGS__)
+	#define POLYVOX_THROW_IF(condition, type, ...) PolyVox::Impl::polyvox_throw_if<type>(condition, __VA_ARGS__)
 
 #else
 
+	// This stuff should possibly be in the 'Impl' namespace, but it may be complex and it's not
+	// clear if this ability to disable throwing of exceptions is useful in the long term anyway.
 	namespace PolyVox
 	{
 		typedef void(*ThrowHandler)(std::exception& e, const char* file, int line);
@@ -145,33 +150,5 @@ distribution.
 		POLYVOX_MSC_WARNING_POP
 
 #endif
-
-namespace PolyVox
-{
-	/// A general purpose exception to indicate that an operation cannot be peformed.
-	class invalid_operation : public std::logic_error
-	{
-	public:
-		explicit invalid_operation(const std::string& message)
-			: logic_error(message.c_str()) {}
-
-		explicit invalid_operation(const char *message)
-			: logic_error(message) {}
-	};
-
-	/// Thrown to indicate that a function is deliberatly not implmented. For example, perhaps you called a function
-	/// in a base class whereas you are supposed to use a derived class which implements the function, or perhaps the
-	/// function is not defined for a particular template parameter. It may be that the function is required to
-	/// compile sucessfully but it should not be called.
-	class not_implemented : public std::logic_error
-	{
-	public:
-		explicit not_implemented(const std::string& message)
-			: logic_error(message.c_str()) {}
-
-		explicit not_implemented(const char *message)
-			: logic_error(message) {}
-	};
-}
 
 #endif //__PolyVox_ExceptionsImpl_H__
