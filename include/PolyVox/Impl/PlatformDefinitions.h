@@ -32,24 +32,11 @@ freely, subject to the following restrictions:
 #error "Your version of Visual Studio is too old to build PolyVox. You need at least version Visual Stusio 2013"
 #endif
 
-//Definitions needed to make library functions accessable
-// See http://gcc.gnu.org/wiki/Visibility for more info.
+// Used to mark functions as deprecated prior to us removing them.
 #if defined _WIN32 || defined __CYGWIN__
-  #define POLYVOX_HELPER_IMPORT __declspec(dllimport)
-  #define POLYVOX_HELPER_EXPORT __declspec(dllexport)
-  #define POLYVOX_HELPER_LOCAL
   #define POLYVOX_DEPRECATED __declspec(deprecated)
 #else
   #define POLYVOX_DEPRECATED __attribute__((deprecated))
-  #if __GNUC__ >= 4
-    #define POLYVOX_HELPER_IMPORT __attribute__ ((visibility("default")))
-    #define POLYVOX_HELPER_EXPORT __attribute__ ((visibility("default")))
-    #define POLYVOX_HELPER_LOCAL  __attribute__ ((visibility("hidden")))
-  #else
-    #define POLYVOX_HELPER_IMPORT
-    #define POLYVOX_HELPER_EXPORT
-    #define POLYVOX_HELPER_LOCAL
-  #endif
 #endif
 
 #if defined SWIG
