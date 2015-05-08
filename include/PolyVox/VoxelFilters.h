@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VoxelFilters_H__
 #define __PolyVox_VoxelFilters_H__
 
-#include "Impl/TypeDef.h"
+#include "Impl/PlatformDefinitions.h"
 
 namespace PolyVox
 {

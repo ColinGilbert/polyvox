@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Mesh_H__
 #define __PolyVox_Mesh_H__
 
-#include "Impl/TypeDef.h"
+#include "Impl/PlatformDefinitions.h"
 
 #include "PolyVox/PolyVoxForwardDeclarations.h"
 #include "PolyVox/Region.h"

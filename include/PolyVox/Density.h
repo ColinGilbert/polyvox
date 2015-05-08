@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "PolyVox/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 
-#include "Impl/TypeDef.h"
+#include "Impl/PlatformDefinitions.h"
 
 #include <limits>
 

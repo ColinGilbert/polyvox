@@ -84,10 +84,10 @@ SET(IMPL_INC_FILES
 	PolyVox/Impl/ErrorHandling.h
 	PolyVox/Impl/Logging.h
 	PolyVox/Impl/MarchingCubesTables.h
+	PolyVox/Impl/PlatformDefinitions.h
 	PolyVox/Impl/RandomUnitVectors.h
 	PolyVox/Impl/RandomVectors.h
 	PolyVox/Impl/Timer.h
-	PolyVox/Impl/TypeDef.h
 	PolyVox/Impl/Utility.h
 )
 

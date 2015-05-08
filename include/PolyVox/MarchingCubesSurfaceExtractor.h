@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_SurfaceExtractor_H__
 
 #include "Impl/MarchingCubesTables.h"
-#include "Impl/TypeDef.h"
+#include "Impl/PlatformDefinitions.h"
 
 #include "PolyVox/Array.h"
 #include "PolyVox/BaseVolume.h" //For wrap modes... should move these?

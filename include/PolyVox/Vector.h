@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_Vector_H__
 
 #include "Impl/ErrorHandling.h"
-#include "Impl/TypeDef.h"
+#include "Impl/PlatformDefinitions.h"
 
 #include "PolyVoxForwardDeclarations.h"
 

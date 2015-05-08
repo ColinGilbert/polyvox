@@ -25,7 +25,7 @@ freely, subject to the following restrictions:
 #define __PolyVox_AStarPathfinder_H__
 
 #include "Impl/AStarPathfinderImpl.h"
-#include "Impl/TypeDef.h"
+#include "Impl/PlatformDefinitions.h"
 
 #include <functional>
 #include <list>

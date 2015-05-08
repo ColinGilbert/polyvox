@@ -21,8 +21,12 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#ifndef __PolyVox_TypeDef_H__
-#define __PolyVox_TypeDef_H__
+/**
+ * This file contains definitions for various macros, etc, which need to be different
+ * for each platform. It helps keep per-platform logic outside the rest of PolyVox.
+ */
+#ifndef __PolyVox_PlatformDefinitions_H__
+#define __PolyVox_PlatformDefinitions_H__
 
 #if defined(_MSC_VER) && (_MSC_VER < 1800)
 #error "Your version of Visual Studio is too old to build PolyVox. You need at least version Visual Stusio 2013"
@@ -91,4 +95,4 @@ freely, subject to the following restrictions:
 // Implementation from here: http://stackoverflow.com/a/4851173/2337254
 #define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
 
-#endif
+#endif //__PolyVox_PlatformDefinitions_H__
