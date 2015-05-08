@@ -24,6 +24,7 @@ distribution.
 #ifndef __PolyVox_Array_H__
 #define __PolyVox_Array_H__
 
+#include <PolyVox/Impl/Typedef.h>
 #include <PolyVox/Impl/ErrorHandling.h>
 
 #include <cstdint>

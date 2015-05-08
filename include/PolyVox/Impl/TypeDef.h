@@ -71,4 +71,24 @@ freely, subject to the following restrictions:
   #define POLYVOX_LOCAL
 #endif // POLYVOX_SHARED
 
+#if defined(_MSC_VER)
+	// In Visual Studio we can use this function to go into the debugger.
+	#define POLYVOX_HALT() __debugbreak()
+#else
+	// On other platforms we just halt by forcing a crash.
+	// Hopefully this puts us in the debugger if one is running
+	#if defined(__linux__) || defined(__APPLE__)
+		#define POLYVOX_HALT() raise(SIGTRAP)
+	#else
+		#define POLYVOX_HALT() *((unsigned int*)0) = 0xDEAD
+	#endif
+#endif
+
+// Used to prevent the compiler complaining about unused varuables, particularly useful when
+// e.g. asserts are disabled and the parameter it was checking isn't used anywhere else.
+// Note that this implementation doesn't seem to work everywhere, for some reason I have
+// seen it give compile errors when combined with variadic template functions (to be confirmed)?
+// Implementation from here: http://stackoverflow.com/a/4851173/2337254
+#define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
+
 #endif

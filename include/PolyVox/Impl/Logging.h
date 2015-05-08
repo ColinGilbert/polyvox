@@ -91,7 +91,7 @@ namespace PolyVox
 		{
 			std::ostringstream oss;
 			int a[] = { 0, ((void)(oss << args), 0) ... };
-			(void)a; // Prevent warnings about unused param
+			(void)a; // POLYVOX_UNUSED() doesn't seem to work here?
 			return oss.str();
 		}
 

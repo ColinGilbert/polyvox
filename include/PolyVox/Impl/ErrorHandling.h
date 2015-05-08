@@ -35,19 +35,6 @@ freely, subject to the following restrictions:
 #include <string.h> // Exception constuctors take strings.
 #include <csignal>
 
-#if defined(_MSC_VER)
-	// In Visual Studio we can use this function to go into the debugger.
-    #define POLYVOX_HALT() __debugbreak()
-#else
-	// On other platforms we just halt by forcing a crash.
-	// Hopefully this puts us in the debugger if one is running
-	#if defined(__linux__) || defined(__APPLE__)
-		#define POLYVOX_HALT() raise(SIGTRAP)
-	#else
-		#define POLYVOX_HALT() *((unsigned int*)0) = 0xDEAD
-	#endif
-#endif
-
 // Macros cannot contain #ifdefs, but some of our macros need to disable warnings and such warning supression is
 // platform specific. But macros can contain other macros, so we create macros to control the warnings and use
 // those instead. This set of warning supression macros can be extended to GCC/Clang when required.
@@ -60,8 +47,6 @@ freely, subject to the following restrictions:
 	#define POLYVOX_DISABLE_MSC_WARNING(x)
 	#define POLYVOX_MSC_WARNING_POP
 #endif
-
-#define POLYVOX_UNUSED(x) do { (void)sizeof(x); } while(0)
 
 /*
  * Assertions
