@@ -24,8 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_ErrorHandling_H__
 #define __PolyVox_ErrorHandling_H__
 
-#include "PolyVox/Impl/Config.h"
-
+#include "PolyVox/Impl/Assertions.h"
 #include "PolyVox/Impl/Logging.h"
 
 #include <cstdlib>  // For std::exit
@@ -34,53 +33,6 @@ freely, subject to the following restrictions:
 #include <sstream>
 #include <string.h> // Exception constuctors take strings.
 #include <csignal>
-
-/*
- * Assertions
- * ----------
- * The code below implements a custom assert function called POLYVOX_ASSERT which has a number of advantages compared
- * to the standard C/C++ assert(). It is inspired by http://cnicholson.net/2009/02/stupid-c-tricks-adventures-in-assert/ 
- * which provides code under the MIT license.
- */
-
-#ifdef POLYVOX_ASSERTS_ENABLED
-
-	#define POLYVOX_ASSERT(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do \
-		{ \
-			if (!(condition)) \
-			{ \
-				std::stringstream ss; \
-				ss << "\n"; \
-				ss << "    PolyVox Assertion Failed!"; \
-				ss << "    ========================="; \
-				ss << "    Condition: " << #condition; \
-				ss << "    Message:   " << (message); \
-				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__; \
-				ss << "\n"; \
-				PolyVox::Impl::getLoggerInstance()->logFatalMessage(ss.str()); \
-				POLYVOX_HALT(); \
-			} \
-		} while(0) \
-		POLYVOX_MSC_WARNING_POP
-
-#else
-	
-	#define POLYVOX_ASSERT(condition, message) \
-		/* We use the do...while(0) construct in our macros (for reasons see here: http://stackoverflow.com/a/154138) \
-		   but Visual Studio gives unhelpful 'conditional expression is constant' warnings. The recommended solution \
-		   (http://stackoverflow.com/a/1946485) is to disable these warnings. */ \
-		POLYVOX_MSC_WARNING_PUSH \
-		POLYVOX_DISABLE_MSC_WARNING(4127) \
-		do { POLYVOX_UNUSED(condition); POLYVOX_UNUSED(message); } while(0) \
-		POLYVOX_MSC_WARNING_POP
-	
-#endif
 
 /*
  * Exceptions
