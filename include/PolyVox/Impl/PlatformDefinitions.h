@@ -21,15 +21,15 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-/**
- * This file contains definitions for various macros, etc, which need to be different
- * for each platform. It helps keep per-platform logic outside the rest of PolyVox.
- */
+// This file contains definitions for various macros, etc, which need to be different
+// for each platform. It helps keep per-platform logic outside the rest of PolyVox.
 #ifndef __PolyVox_PlatformDefinitions_H__
 #define __PolyVox_PlatformDefinitions_H__
 
+// An error message like the one below makes it much clearer to the user that they are using
+// an unsupported compiler, rather than them wondering if they are using PolyVox incorrectly.
 #if defined(_MSC_VER) && (_MSC_VER < 1800)
-#error "Your version of Visual Studio is too old to build PolyVox. You need at least version Visual Stusio 2013"
+	#error "Your version of Visual Studio is too old to build PolyVox. You need at least version Visual Stusio 2013"
 #endif
 
 // Used to mark functions as deprecated prior to us removing them.
@@ -39,6 +39,7 @@ freely, subject to the following restrictions:
   #define POLYVOX_DEPRECATED __attribute__((deprecated))
 #endif
 
+// The depreacated macro (and possibly others?) cause confusion for SWIG, so we undefine them if SWIG is running.
 #if defined SWIG
   //Do nothing in this case
 #else
@@ -46,6 +47,7 @@ freely, subject to the following restrictions:
   #define POLYVOX_DEPRECATED //Define it to nothing to avoid warnings
 #endif
 
+// Halts the application is the most elegant way possible (dropping into a debugger if we can).
 #if defined(_MSC_VER)
 	// In Visual Studio we can use this function to go into the debugger.
 	#define POLYVOX_HALT() __debugbreak()
