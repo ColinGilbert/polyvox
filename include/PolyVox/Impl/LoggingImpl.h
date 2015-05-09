@@ -24,64 +24,15 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_LoggingImpl_H__
 #define __PolyVox_LoggingImpl_H__
 
+#include "PolyVox/Logging.h"
+
 #include "PolyVox/Impl/Config.h"
 
-#include <iostream>
 #include <sstream>
 
-/*
- * Logging
- * --------
- * PolyVox provides basic logging facilities which can be redirected by your application.
- */
 
 namespace PolyVox
 {
-	class Logger
-	{
-	public:
-		// Passing zero to the null stream constructor guarentees it will discard all input. See
-		// here http://stackoverflow.com/a/8244052 and here http://stackoverflow.com/a/6240980
-		Logger() {};
-		virtual ~Logger() {};
-
-		virtual void logTraceMessage(const std::string& message) = 0;
-		virtual void logDebugMessage(const std::string& message) = 0;
-		virtual void logInfoMessage(const std::string& message) = 0;
-		virtual void logWarningMessage(const std::string& message) = 0;
-		virtual void logErrorMessage(const std::string& message) = 0;
-		virtual void logFatalMessage(const std::string& message) = 0;
-	};
-
-	class DefaultLogger : public Logger
-	{
-	public:
-		DefaultLogger() : Logger() {}
-		virtual ~DefaultLogger() {}
-
-		// Appending the 'std::endl' forces the stream to be flushed.
-		void logTraceMessage(const std::string& /*message*/) {  }
-		void logDebugMessage(const std::string& /*message*/) {  }
-		void logInfoMessage(const std::string& message) { std::cout << message << std::endl; }
-		void logWarningMessage(const std::string& message) { std::cerr << message << std::endl; }
-		void logErrorMessage(const std::string& message) { std::cerr << message << std::endl; }
-		void logFatalMessage(const std::string& message) { std::cerr << message << std::endl; }
-	};
-
-	namespace Impl
-	{
-		inline Logger*& getLoggerInstance()
-		{
-			static Logger* s_pLogger = new DefaultLogger;
-			return s_pLogger;
-		}
-	}
-
-	inline void setLogger(Logger* pLogger)
-	{
-		Impl::getLoggerInstance() = pLogger;
-	}
-
 	namespace Impl
 	{
 		// Used for building the log messages - convert a list of variables into a string.
@@ -100,7 +51,7 @@ namespace PolyVox
 		void logTraceMessage(Args const& ... messageArgs)
 		{
 			std::string message = argListToString(messageArgs...);
-			PolyVox::Impl::getLoggerInstance()->logTraceMessage(message);
+			getLoggerInstance()->logTraceMessage(message);
 		}
 
 		template< typename ... Args >
@@ -114,7 +65,7 @@ namespace PolyVox
 		void logDebugMessage(Args const& ... messageArgs)
 		{
 			std::string message = argListToString(messageArgs...);
-			PolyVox::Impl::getLoggerInstance()->logDebugMessage(message);
+			getLoggerInstance()->logDebugMessage(message);
 		}
 
 		template< typename ... Args >
@@ -128,7 +79,7 @@ namespace PolyVox
 		void logInfoMessage(Args const& ... messageArgs)
 		{
 			std::string message = argListToString(messageArgs...);
-			PolyVox::Impl::getLoggerInstance()->logInfoMessage(message);
+			getLoggerInstance()->logInfoMessage(message);
 		}
 
 		template< typename ... Args >
@@ -142,7 +93,7 @@ namespace PolyVox
 		void logWarningMessage(Args const& ... messageArgs)
 		{
 			std::string message = argListToString(messageArgs...);
-			PolyVox::Impl::getLoggerInstance()->logWarningMessage(message);
+			getLoggerInstance()->logWarningMessage(message);
 		}
 
 		template< typename ... Args >
@@ -156,7 +107,7 @@ namespace PolyVox
 		void logErrorMessage(Args const& ... messageArgs)
 		{
 			std::string message = argListToString(messageArgs...);
-			PolyVox::Impl::getLoggerInstance()->logErrorMessage(message);
+			getLoggerInstance()->logErrorMessage(message);
 		}
 
 		template< typename ... Args >
@@ -170,7 +121,7 @@ namespace PolyVox
 		void logFatalMessage(Args const& ... messageArgs)
 		{
 			std::string message = argListToString(messageArgs...);
-			PolyVox::Impl::getLoggerInstance()->logFatalMessage(message);
+			getLoggerInstance()->logFatalMessage(message);
 		}
 
 		template< typename ... Args >

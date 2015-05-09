@@ -26,6 +26,7 @@ distribution.
 
 #include "PolyVox/Impl/Config.h"
 #include "PolyVox/Impl/LoggingImpl.h" // Asserts can log when they fire.
+#include "PolyVox/Impl/PlatformDefinitions.h"
 
 // The code below implements a custom assert function called POLYVOX_ASSERT which has a number of advantages compared
 // to the standard C/C++ assert(). It is inspired by http://cnicholson.net/2009/02/stupid-c-tricks-adventures-in-assert/
