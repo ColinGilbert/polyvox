@@ -24,9 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_LoggingImpl_H__
 #define __PolyVox_LoggingImpl_H__
 
+#include "PolyVox/Config.h"
 #include "PolyVox/Logging.h"
-
-#include "PolyVox/Impl/Config.h"
 
 #include <sstream>
 

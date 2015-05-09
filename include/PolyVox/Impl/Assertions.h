@@ -24,7 +24,8 @@ distribution.
 #ifndef __PolyVox_Assertions_H__
 #define __PolyVox_Assertions_H__
 
-#include "PolyVox/Impl/Config.h"
+#include "PolyVox/Config.h"
+
 #include "PolyVox/Impl/LoggingImpl.h" // Asserts can log when they fire.
 #include "PolyVox/Impl/PlatformDefinitions.h"
 

@@ -24,9 +24,9 @@ distribution.
 #ifndef __PolyVox_ExceptionsImpl_H__
 #define __PolyVox_ExceptionsImpl_H__
 
+#include "PolyVox/Config.h"
 #include "PolyVox/Exceptions.h"
 
-#include "PolyVox/Impl/Config.h"
 #include "PolyVox/Impl/LoggingImpl.h" // Exceptions can log when they are thrown.
 
 #include <cstdlib>  // For std::exit
