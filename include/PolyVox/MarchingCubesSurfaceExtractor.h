@@ -325,7 +325,7 @@ namespace PolyVox
 	//
 	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
 	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
-	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
+	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an OpenGL VBO to allow direct writing into this structure.
 	//
 	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
 	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
