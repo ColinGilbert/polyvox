@@ -127,7 +127,7 @@ VolumeType* createAndFillVolume(void)
 }
 
 template <typename VolumeType>
-VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minValue, float maxValue)
+VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeWidthAndHeight, int32_t iVolumeDepth, float minValue, float maxValue)
 {
 	FilePager<float>* pager = new FilePager<float>(".");
 
@@ -138,11 +138,11 @@ VolumeType* createAndFillVolumeWithNoise(int32_t iVolumeSideLength, float minVal
 	std::mt19937 rng;
 
 	// Fill
-	for (int32_t z = 0; z < iVolumeSideLength; z++)
+	for (int32_t z = 0; z < iVolumeDepth; z++)
 	{
-		for (int32_t y = 0; y < iVolumeSideLength; y++)
+		for (int32_t y = 0; y < iVolumeWidthAndHeight; y++)
 		{
-			for (int32_t x = 0; x < iVolumeSideLength; x++)
+			for (int32_t x = 0; x < iVolumeWidthAndHeight; x++)
 			{
 				// We can't use std distributions because they vary between platforms (breaking tests)
 				float voxelValue = static_cast<float>(rng()) / static_cast<float>(std::numeric_limits<int32_t>::max()); // Float in range 0.0 to 1.0
@@ -213,15 +213,15 @@ void TestSurfaceExtractor::testBehaviour()
 
 void TestSurfaceExtractor::testEmptyVolumePerformance()
 {
-	auto emptyVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, -2.0f, -1.0f);
+	auto emptyVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, 512, -2.0f, -1.0f);
 	Mesh< MarchingCubesVertex< float >, uint16_t > emptyMesh;
-	QBENCHMARK{ extractMarchingCubesMeshCustom(emptyVol, Region(32, 32, 32, 63, 63, 63), &emptyMesh); }
+	QBENCHMARK{ extractMarchingCubesMeshCustom(emptyVol, Region(8, 8, 8, 119, 119, 503), &emptyMesh); }
 	QCOMPARE(emptyMesh.getNoOfVertices(), uint16_t(0));
 }
 
 void TestSurfaceExtractor::testNoiseVolumePerformance()
 {
-	auto noiseVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, -1.0f, 1.0f);
+	auto noiseVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, 128, -1.0f, 1.0f);
 	Mesh< MarchingCubesVertex< float >, uint16_t > noiseMesh;
 	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
 	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(36755));
