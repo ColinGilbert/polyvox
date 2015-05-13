@@ -168,9 +168,9 @@ namespace PolyVox
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
 		void generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
-			Array2DInt32& m_pCurrentVertexIndicesX,
-			Array2DInt32& m_pCurrentVertexIndicesY,
-			Array2DInt32& m_pCurrentVertexIndicesZ);
+			Array3DInt32& pIndicesX,
+			Array3DInt32& pIndicesY,
+			Array3DInt32& pIndicesZ);
 
 		////////////////////////////////////////////////////////////////////////////////
 		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
@@ -288,11 +288,9 @@ namespace PolyVox
 
 		//Use the cell bitmasks to generate all the indices needed for that slice
 		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
-			const Array2DInt32& m_pPreviousVertexIndicesX,
-			const Array2DInt32& m_pPreviousVertexIndicesY,
-			const Array2DInt32& m_pPreviousVertexIndicesZ,
-			const Array2DInt32& m_pCurrentVertexIndicesX,
-			const Array2DInt32& m_pCurrentVertexIndicesY);
+			const Array3DInt32& pIndicesX,
+			const Array3DInt32& pIndicesY,
+			const Array3DInt32& pIndicesZ);
 
 		//The volume data and a sampler to access it.
 		VolumeType* m_volData;
