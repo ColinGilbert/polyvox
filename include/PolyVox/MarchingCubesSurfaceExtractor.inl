@@ -70,7 +70,7 @@ namespace PolyVox
 
 		computeBitmaskForSlice<true>(pBitmask);
 
-		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ, 0);
+		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -78,8 +78,6 @@ namespace PolyVox
 		//Process the other slices (previous slice is available)
 		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
 		{
-			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ, uSlice);
-
 			generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 			m_regSlicePrevious = m_regSliceCurrent;
@@ -160,142 +158,141 @@ namespace PolyVox
 	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array3DUint8& pBitmask,
 		Array3DInt32& pIndicesX,
 		Array3DInt32& pIndicesY,
-		Array3DInt32& pIndicesZ,
-		uint32_t uSlice)
+		Array3DInt32& pIndicesZ)
 	{
-		const uint32_t uZRegSpace = uSlice;
-
-		const int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + uZRegSpace;
-
-		//Iterate over each cell in the region
-		for(int32_t iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= m_regSliceCurrent.getUpperY(); iYVolSpace++)
+		for (int32_t iZVolSpace = m_regSliceCurrent.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
-			const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
+			uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
-			for(int32_t iXVolSpace = m_regSliceCurrent.getLowerX(); iXVolSpace <= m_regSliceCurrent.getUpperX(); iXVolSpace++)
-			{		
-				//Current position
-				const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
+			for (int32_t iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
+			{
+				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
 
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
-
-				/* Cube is entirely in/out of the surface */
-				if (edgeTable[iCubeIndex] == 0)
+				for (int32_t iXVolSpace = m_regSliceCurrent.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
-					continue;
-				}
+					//Current position
+					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
-				//Check whether the generated vertex will lie on the edge of the region
+					//Determine the index into the edge table which tells us which vertices are inside of the surface
+					const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
-
-				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);
-				const typename VolumeType::VoxelType v000 = m_sampVolume.getVoxel();
-				const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
-
-				/* Find the vertices where the surface intersects the cube */
-				if (edgeTable[iCubeIndex] & 1)
-				{
-					m_sampVolume.movePositiveX();
-					const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
-					POLYVOX_ASSERT(v000 != v100, "Attempting to insert vertex between two voxels with the same value");
-					const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
-
-					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
-
-					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerZ()));
-					const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
-
-					Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1-fInterp));
-
-					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
-					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
-					if(v3dNormal.lengthSquared() > 0.000001f) 
+					/* Cube is entirely in/out of the surface */
+					if (edgeTable[iCubeIndex] == 0)
 					{
-						v3dNormal.normalise();
+						continue;
 					}
 
-					// Allow the controller to decide how the material should be derived from the voxels.
-					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
+					//Check whether the generated vertex will lie on the edge of the region
 
-					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.encodedPosition = v3dScaledPosition;
-					surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
-					surfaceVertex.data = uMaterial;
 
-					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-					pIndicesX(iXVolSpace - m_regSizeInVoxels.getLowerX(), iYVolSpace - m_regSizeInVoxels.getLowerY(), iZVolSpace - m_regSizeInVoxels.getLowerZ()) = uLastVertexIndex;
+					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
+					const typename VolumeType::VoxelType v000 = m_sampVolume.getVoxel();
+					const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
-					m_sampVolume.moveNegativeX();
-				}
-				if (edgeTable[iCubeIndex] & 8)
-				{
-					m_sampVolume.movePositiveY();
-					const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
-					POLYVOX_ASSERT(v000 != v010, "Attempting to insert vertex between two voxels with the same value");
-					const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
-
-					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
-
-					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()));
-					const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
-
-					Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1-fInterp));
-
-					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
-					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
-					if(v3dNormal.lengthSquared() > 0.000001f) 
+					/* Find the vertices where the surface intersects the cube */
+					if (edgeTable[iCubeIndex] & 1)
 					{
-						v3dNormal.normalise();
+						m_sampVolume.movePositiveX();
+						const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
+						POLYVOX_ASSERT(v000 != v100, "Attempting to insert vertex between two voxels with the same value");
+						const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
+
+						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
+
+						const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()) + fInterp, static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInCells.getLowerZ()));
+						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+
+						Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
+
+						// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+						// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+						if (v3dNormal.lengthSquared() > 0.000001f)
+						{
+							v3dNormal.normalise();
+						}
+
+						// Allow the controller to decide how the material should be derived from the voxels.
+						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
+
+						MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+						surfaceVertex.encodedPosition = v3dScaledPosition;
+						surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
+						surfaceVertex.data = uMaterial;
+
+						const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+						pIndicesX(iXVolSpace - m_regSizeInVoxels.getLowerX(), iYVolSpace - m_regSizeInVoxels.getLowerY(), iZVolSpace - m_regSizeInVoxels.getLowerZ()) = uLastVertexIndex;
+
+						m_sampVolume.moveNegativeX();
 					}
-
-					// Allow the controller to decide how the material should be derived from the voxels.
-					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
-
-					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.encodedPosition = v3dScaledPosition;
-					surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
-					surfaceVertex.data = uMaterial;
-
-					uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-					pIndicesY(iXVolSpace - m_regSizeInVoxels.getLowerX(), iYVolSpace - m_regSizeInVoxels.getLowerY(), iZVolSpace - m_regSizeInVoxels.getLowerZ()) = uLastVertexIndex;
-
-					m_sampVolume.moveNegativeY();
-				}
-				if (edgeTable[iCubeIndex] & 256)
-				{
-					m_sampVolume.movePositiveZ();
-					const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
-					POLYVOX_ASSERT(v000 != v001, "Attempting to insert vertex between two voxels with the same value");
-					const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
-
-					const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
-
-					const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()) + fInterp);
-					const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
-
-					Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1-fInterp));
-					// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
-					// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
-					if(v3dNormal.lengthSquared() > 0.000001f) 
+					if (edgeTable[iCubeIndex] & 8)
 					{
-						v3dNormal.normalise();
+						m_sampVolume.movePositiveY();
+						const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
+						POLYVOX_ASSERT(v000 != v010, "Attempting to insert vertex between two voxels with the same value");
+						const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
+
+						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
+
+						const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()) + fInterp, static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()));
+						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+
+						Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
+
+						// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+						// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+						if (v3dNormal.lengthSquared() > 0.000001f)
+						{
+							v3dNormal.normalise();
+						}
+
+						// Allow the controller to decide how the material should be derived from the voxels.
+						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
+
+						MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+						surfaceVertex.encodedPosition = v3dScaledPosition;
+						surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
+						surfaceVertex.data = uMaterial;
+
+						uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+						pIndicesY(iXVolSpace - m_regSizeInVoxels.getLowerX(), iYVolSpace - m_regSizeInVoxels.getLowerY(), iZVolSpace - m_regSizeInVoxels.getLowerZ()) = uLastVertexIndex;
+
+						m_sampVolume.moveNegativeY();
 					}
+					if (edgeTable[iCubeIndex] & 256)
+					{
+						m_sampVolume.movePositiveZ();
+						const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
+						POLYVOX_ASSERT(v000 != v001, "Attempting to insert vertex between two voxels with the same value");
+						const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
-					// Allow the controller to decide how the material should be derived from the voxels.
-					const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
+						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
 
-					MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-					surfaceVertex.encodedPosition = v3dScaledPosition;
-					surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
-					surfaceVertex.data = uMaterial;
+						const Vector3DFloat v3dPosition(static_cast<float>(iXVolSpace - m_regSizeInVoxels.getLowerX()), static_cast<float>(iYVolSpace - m_regSizeInVoxels.getLowerY()), static_cast<float>(iZVolSpace - m_regSizeInVoxels.getLowerZ()) + fInterp);
+						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
-					const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-					pIndicesZ(iXVolSpace - m_regSizeInVoxels.getLowerX(), iYVolSpace - m_regSizeInVoxels.getLowerY(), iZVolSpace - m_regSizeInVoxels.getLowerZ()) = uLastVertexIndex;
+						Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
+						// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+						// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+						if (v3dNormal.lengthSquared() > 0.000001f)
+						{
+							v3dNormal.normalise();
+						}
 
-					m_sampVolume.moveNegativeZ();
-				}
-			}//For each cell
+						// Allow the controller to decide how the material should be derived from the voxels.
+						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
+
+						MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+						surfaceVertex.encodedPosition = v3dScaledPosition;
+						surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
+						surfaceVertex.data = uMaterial;
+
+						const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+						pIndicesZ(iXVolSpace - m_regSizeInVoxels.getLowerX(), iYVolSpace - m_regSizeInVoxels.getLowerY(), iZVolSpace - m_regSizeInVoxels.getLowerZ()) = uLastVertexIndex;
+
+						m_sampVolume.moveNegativeZ();
+					}
+				}//For each cell
+			}
 		}
 	}
 
