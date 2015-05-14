@@ -69,7 +69,11 @@ namespace PolyVox
 		m_regSliceCurrent = m_regSlicePrevious;	
 
 		//Process the first slice (previous slice not available)
-		computeBitmaskForSlice<false>(pBitmask);
+		computeBitmaskForSlice<false>(pBitmask, 0);
+		for (int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
+		{
+			computeBitmaskForSlice<true>(pBitmask, uSlice);
+		}
 
 		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
@@ -78,9 +82,7 @@ namespace PolyVox
 
 		//Process the other slices (previous slice is available)
 		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
-		{	
-			computeBitmaskForSlice<true>(pBitmask);
-
+		{
 			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 			generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
@@ -98,19 +100,19 @@ namespace PolyVox
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask)
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask, uint32_t uSlice)
 	{
-		const int32_t iMaxXVolSpace = m_regSliceCurrent.getUpperX();
-		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperY();
+		const int32_t iMaxXVolSpace = m_regSizeInVoxels.getUpperX();
+		const int32_t iMaxYVolSpace = m_regSizeInVoxels.getUpperY();
 
 		//Process the lower left corner
-		int32_t iYVolSpace = m_regSliceCurrent.getLowerY();
-		int32_t iXVolSpace = m_regSliceCurrent.getLowerX();
-		int32_t iZVolSpace = m_regSliceCurrent.getLowerZ();
+		int32_t iYVolSpace = m_regSizeInVoxels.getLowerY();
+		int32_t iXVolSpace = m_regSizeInVoxels.getLowerX();
+		int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + uSlice;
 
 		uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 		uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
-		uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
+		uint32_t uZRegSpace = uSlice;
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
 		for(iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= iMaxYVolSpace; iYVolSpace++)
