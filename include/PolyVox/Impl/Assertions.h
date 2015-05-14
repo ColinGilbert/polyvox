@@ -53,7 +53,7 @@ distribution.
 				ss << "    Message:   " << (message); \
 				ss << "    Location:  " << "Line " << __LINE__ << " of " << __FILE__; \
 				ss << "\n"; \
-				PolyVox::Impl::getLoggerInstance()->logFatalMessage(ss.str()); \
+				PolyVox::getLoggerInstance()->logFatalMessage(ss.str()); \
 				POLYVOX_HALT(); \
 				} \
 			} while(0) \
