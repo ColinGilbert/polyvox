@@ -68,9 +68,7 @@ namespace PolyVox
 		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
 		m_regSliceCurrent = m_regSlicePrevious;	
 
-		computeBitmaskForSlice<true>(pBitmask);
-
-		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
+		computeBitmaskForSlice<true>(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -93,7 +91,10 @@ namespace PolyVox
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask)
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask,
+		Array3DInt32& pIndicesX,
+		Array3DInt32& pIndicesY,
+		Array3DInt32& pIndicesZ)
 	{
 		const int32_t iMaxXVolSpace = m_regSizeInVoxels.getUpperX();
 		const int32_t iMaxYVolSpace = m_regSizeInVoxels.getUpperY();
@@ -149,32 +150,6 @@ namespace PolyVox
 
 					//Save the bitmask
 					pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
-				}
-			}
-		}
-	}
-
-	template<typename VolumeType, typename MeshType, typename ControllerType>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array3DUint8& pBitmask,
-		Array3DInt32& pIndicesX,
-		Array3DInt32& pIndicesY,
-		Array3DInt32& pIndicesZ)
-	{
-		for (int32_t iZVolSpace = m_regSliceCurrent.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
-		{
-			uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
-
-			for (int32_t iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
-			{
-				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
-
-				for (int32_t iXVolSpace = m_regSliceCurrent.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
-				{
-					//Current position
-					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
-
-					//Determine the index into the edge table which tells us which vertices are inside of the surface
-					const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
@@ -186,14 +161,12 @@ namespace PolyVox
 
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
-					const typename VolumeType::VoxelType v000 = m_sampVolume.getVoxel();
 					const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 					/* Find the vertices where the surface intersects the cube */
 					if (edgeTable[iCubeIndex] & 1)
 					{
 						m_sampVolume.movePositiveX();
-						const typename VolumeType::VoxelType v100 = m_sampVolume.getVoxel();
 						POLYVOX_ASSERT(v000 != v100, "Attempting to insert vertex between two voxels with the same value");
 						const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
@@ -227,7 +200,6 @@ namespace PolyVox
 					if (edgeTable[iCubeIndex] & 8)
 					{
 						m_sampVolume.movePositiveY();
-						const typename VolumeType::VoxelType v010 = m_sampVolume.getVoxel();
 						POLYVOX_ASSERT(v000 != v010, "Attempting to insert vertex between two voxels with the same value");
 						const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
@@ -261,7 +233,6 @@ namespace PolyVox
 					if (edgeTable[iCubeIndex] & 256)
 					{
 						m_sampVolume.movePositiveZ();
-						const typename VolumeType::VoxelType v001 = m_sampVolume.getVoxel();
 						POLYVOX_ASSERT(v000 != v001, "Attempting to insert vertex between two voxels with the same value");
 						const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
@@ -291,7 +262,7 @@ namespace PolyVox
 
 						m_sampVolume.moveNegativeZ();
 					}
-				}//For each cell
+				}
 			}
 		}
 	}

@@ -160,10 +160,7 @@ namespace PolyVox
 	private:
 		//Compute the cell bitmask for a particular slice in z.
 		template<bool isPrevZAvail>
-		void computeBitmaskForSlice(Array3DUint8& pBitmask);
-
-		//Use the cell bitmasks to generate all the vertices needed for that slice
-		void generateVerticesForSlice(const Array3DUint8& pBitmask,
+		void computeBitmaskForSlice(Array3DUint8& pBitmask,
 			Array3DInt32& pIndicesX,
 			Array3DInt32& pIndicesY,
 			Array3DInt32& pIndicesZ);
