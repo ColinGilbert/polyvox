@@ -160,7 +160,7 @@ namespace PolyVox
 	private:
 		//Compute the cell bitmask for a particular slice in z.
 		template<bool isPrevZAvail>
-		uint32_t computeBitmaskForSlice(Array3DUint8& pBitmask);
+		void computeBitmaskForSlice(Array3DUint8& pBitmask);
 
 		//Use the cell bitmasks to generate all the vertices needed for that slice
 		void generateVerticesForSlice(const Array3DUint8& pBitmask,
@@ -292,18 +292,12 @@ namespace PolyVox
 		VolumeType* m_volData;
 		typename VolumeType::Sampler m_sampVolume;
 
-		//Used to return the number of cells in a slice which contain triangles.
-		uint32_t m_uNoOfOccupiedCells;
-
 		//The surface patch we are currently filling.
 		MeshType* m_meshCurrent;
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
-		/*Region m_regSizeInVoxelsCropped;
-		Region m_regSizeInVoxelsUncropped;
-		Region m_regVolumeCropped;*/
 		Region m_regSlicePrevious;
 		Region m_regSliceCurrent;
 

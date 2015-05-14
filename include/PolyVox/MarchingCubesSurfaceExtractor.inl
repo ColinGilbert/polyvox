@@ -51,9 +51,6 @@ namespace PolyVox
 		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 1;
 
 		//For edge indices
-		//Array3DInt32 m_pPreviousVertexIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
-		//Array3DInt32 m_pPreviousVertexIndicesY(uArrayWidth, uArrayHeight, uArrayDepth);
-		//Array3DInt32 m_pPreviousVertexIndicesZ(uArrayWidth, uArrayHeight, uArrayDepth);
 		Array3DInt32 pIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
 		Array3DInt32 pIndicesY(uArrayWidth, uArrayHeight, uArrayDepth);
 		Array3DInt32 pIndicesZ(uArrayWidth, uArrayHeight, uArrayDepth);
@@ -62,8 +59,6 @@ namespace PolyVox
 		memset(pIndicesY.getRawData(), 0xff, pIndicesY.getNoOfElements() * 4);
 		memset(pIndicesZ.getRawData(), 0xff, pIndicesZ.getNoOfElements() * 4);
 
-		//Array2DUint8 pPreviousBitmask(uArrayWidth, uArrayHeight);
-		//Array2DUint8 pCurrentBitmask(uArrayWidth, uArrayHeight);
 		Array3DUint8 pBitmask(uArrayWidth, uArrayHeight, uArrayDepth);
 
 		//Create a region corresponding to the first slice
@@ -73,20 +68,10 @@ namespace PolyVox
 		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
 		m_regSliceCurrent = m_regSlicePrevious;	
 
-		uint32_t uNoOfNonEmptyCellsForSlice0 = 0;
-		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
-
 		//Process the first slice (previous slice not available)
 		computeBitmaskForSlice<false>(pBitmask);
-		uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
-		if(uNoOfNonEmptyCellsForSlice1 != 0)
-		{
-			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
-		}
-
-		std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-		//pPreviousBitmask.swap(pCurrentBitmask);
+		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 		m_regSlicePrevious = m_regSliceCurrent;
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -95,20 +80,10 @@ namespace PolyVox
 		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
 		{	
 			computeBitmaskForSlice<true>(pBitmask);
-			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
-			if(uNoOfNonEmptyCellsForSlice1 != 0)
-			{
-				generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
-			}
+			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
-			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
-			{
-				generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
-			}
-
-			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-			//pPreviousBitmask.swap(pCurrentBitmask);
+			generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 			m_regSlicePrevious = m_regSliceCurrent;
 			m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -123,10 +98,8 @@ namespace PolyVox
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask)
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask)
 	{
-		m_uNoOfOccupiedCells = 0;
-
 		const int32_t iMaxXVolSpace = m_regSliceCurrent.getUpperX();
 		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperY();
 
@@ -185,15 +158,8 @@ namespace PolyVox
 
 				//Save the bitmask
 				pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
-
-				if (edgeTable[iCubeIndex] != 0)
-				{
-					++m_uNoOfOccupiedCells;
-				}
 			}
 		}
-
-		return m_uNoOfOccupiedCells;
 	}
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
