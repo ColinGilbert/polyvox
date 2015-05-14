@@ -48,7 +48,7 @@ namespace PolyVox
 
 		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 1;
 		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 1;
-		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerZ() + 1;
+		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 1;
 
 		//For edge indices
 		//Array3DInt32 m_pPreviousVertexIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
@@ -62,8 +62,9 @@ namespace PolyVox
 		memset(pIndicesY.getRawData(), 0xff, pIndicesY.getNoOfElements() * 4);
 		memset(pIndicesZ.getRawData(), 0xff, pIndicesZ.getNoOfElements() * 4);
 
-		Array2DUint8 pPreviousBitmask(uArrayWidth, uArrayHeight);
-		Array2DUint8 pCurrentBitmask(uArrayWidth, uArrayHeight);
+		//Array2DUint8 pPreviousBitmask(uArrayWidth, uArrayHeight);
+		//Array2DUint8 pCurrentBitmask(uArrayWidth, uArrayHeight);
+		Array3DUint8 pBitmask(uArrayWidth, uArrayHeight, uArrayDepth);
 
 		//Create a region corresponding to the first slice
 		m_regSlicePrevious = m_regSizeInVoxels;
@@ -76,16 +77,16 @@ namespace PolyVox
 		uint32_t uNoOfNonEmptyCellsForSlice1 = 0;
 
 		//Process the first slice (previous slice not available)
-		computeBitmaskForSlice<false>(pPreviousBitmask, pCurrentBitmask);
+		computeBitmaskForSlice<false>(pBitmask);
 		uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 		if(uNoOfNonEmptyCellsForSlice1 != 0)
 		{
-			generateVerticesForSlice(pCurrentBitmask, pIndicesX, pIndicesY, pIndicesZ);
+			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 		}
 
 		std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-		pPreviousBitmask.swap(pCurrentBitmask);
+		//pPreviousBitmask.swap(pCurrentBitmask);
 
 		m_regSlicePrevious = m_regSliceCurrent;
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -93,21 +94,21 @@ namespace PolyVox
 		//Process the other slices (previous slice is available)
 		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
 		{	
-			computeBitmaskForSlice<true>(pPreviousBitmask, pCurrentBitmask);
+			computeBitmaskForSlice<true>(pBitmask);
 			uNoOfNonEmptyCellsForSlice1 = m_uNoOfOccupiedCells;
 
 			if(uNoOfNonEmptyCellsForSlice1 != 0)
 			{
-				generateVerticesForSlice(pCurrentBitmask, pIndicesX, pIndicesY, pIndicesZ);
+				generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 			}
 
 			if((uNoOfNonEmptyCellsForSlice0 != 0) || (uNoOfNonEmptyCellsForSlice1 != 0))
 			{
-				generateIndicesForSlice(pPreviousBitmask, pIndicesX, pIndicesY, pIndicesZ);
+				generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 			}
 
 			std::swap(uNoOfNonEmptyCellsForSlice0, uNoOfNonEmptyCellsForSlice1);
-			pPreviousBitmask.swap(pCurrentBitmask);
+			//pPreviousBitmask.swap(pCurrentBitmask);
 
 			m_regSlicePrevious = m_regSliceCurrent;
 			m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -122,21 +123,21 @@ namespace PolyVox
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	template<bool isPrevZAvail>
-	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask)
+	uint32_t MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask)
 	{
 		m_uNoOfOccupiedCells = 0;
 
 		const int32_t iMaxXVolSpace = m_regSliceCurrent.getUpperX();
 		const int32_t iMaxYVolSpace = m_regSliceCurrent.getUpperY();
 
-		const int32_t iZVolSpace = m_regSliceCurrent.getLowerZ();
-
 		//Process the lower left corner
 		int32_t iYVolSpace = m_regSliceCurrent.getLowerY();
 		int32_t iXVolSpace = m_regSliceCurrent.getLowerX();
+		int32_t iZVolSpace = m_regSliceCurrent.getLowerZ();
 
 		uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 		uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
+		uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
 		//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
 		for(iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= iMaxYVolSpace; iYVolSpace++)
@@ -183,7 +184,7 @@ namespace PolyVox
 				if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
 				//Save the bitmask
-				pCurrentBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
+				pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
 
 				if (edgeTable[iCubeIndex] != 0)
 				{
@@ -196,12 +197,14 @@ namespace PolyVox
 	}
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array3DUint8& pBitmask,
 		Array3DInt32& pIndicesX,
 		Array3DInt32& pIndicesY,
 		Array3DInt32& pIndicesZ)
 	{
 		const int32_t iZVolSpace = m_regSliceCurrent.getLowerZ();
+
+		const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
 		//Iterate over each cell in the region
 		for(int32_t iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= m_regSliceCurrent.getUpperY(); iYVolSpace++)
@@ -214,7 +217,7 @@ namespace PolyVox
 				const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				const uint8_t iCubeIndex = pCurrentBitmask(uXRegSpace, uYRegSpace);
+				const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
@@ -336,7 +339,7 @@ namespace PolyVox
 	}
 
 	template<typename VolumeType, typename MeshType, typename ControllerType>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateIndicesForSlice(const Array3DUint8& pBitmask,
 		const Array3DInt32& pIndicesX,
 		const Array3DInt32& pIndicesY,
 		const Array3DInt32& pIndicesZ)
@@ -361,7 +364,7 @@ namespace PolyVox
 				const uint32_t uZRegSpace = m_sampVolume.getPosition().getZ() - m_regSizeInVoxels.getLowerZ();
 
 				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				const uint8_t iCubeIndex = pPreviousBitmask(uXRegSpace, uYRegSpace);
+				const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 				/* Cube is entirely in/out of the surface */
 				if (edgeTable[iCubeIndex] == 0)
