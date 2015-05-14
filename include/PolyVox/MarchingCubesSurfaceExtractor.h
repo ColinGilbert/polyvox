@@ -166,7 +166,8 @@ namespace PolyVox
 		void generateVerticesForSlice(const Array3DUint8& pBitmask,
 			Array3DInt32& pIndicesX,
 			Array3DInt32& pIndicesY,
-			Array3DInt32& pIndicesZ);
+			Array3DInt32& pIndicesZ,
+			uint32_t uSlice);
 
 		////////////////////////////////////////////////////////////////////////////////
 		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.

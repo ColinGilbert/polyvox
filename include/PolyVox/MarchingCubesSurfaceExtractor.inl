@@ -70,7 +70,7 @@ namespace PolyVox
 
 		computeBitmaskForSlice<true>(pBitmask);
 
-		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
+		generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ, 0);
 
 		m_regSlicePrevious = m_regSliceCurrent;
 		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
@@ -78,7 +78,7 @@ namespace PolyVox
 		//Process the other slices (previous slice is available)
 		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
 		{
-			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
+			generateVerticesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ, uSlice);
 
 			generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
@@ -160,11 +160,12 @@ namespace PolyVox
 	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::generateVerticesForSlice(const Array3DUint8& pBitmask,
 		Array3DInt32& pIndicesX,
 		Array3DInt32& pIndicesY,
-		Array3DInt32& pIndicesZ)
+		Array3DInt32& pIndicesZ,
+		uint32_t uSlice)
 	{
-		const int32_t iZVolSpace = m_regSliceCurrent.getLowerZ();
+		const uint32_t uZRegSpace = uSlice;
 
-		const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
+		const int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + uZRegSpace;
 
 		//Iterate over each cell in the region
 		for(int32_t iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= m_regSliceCurrent.getUpperY(); iYVolSpace++)
