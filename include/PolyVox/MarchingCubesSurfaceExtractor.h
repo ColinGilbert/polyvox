@@ -295,8 +295,6 @@ namespace PolyVox
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
 		Region m_regSizeInCells;
-		Region m_regSlicePrevious;
-		Region m_regSliceCurrent;
 
 		//Used to convert arbitrary voxel types in densities and materials.
 		ControllerType m_controller;

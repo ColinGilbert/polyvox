@@ -61,26 +61,9 @@ namespace PolyVox
 
 		Array3DUint8 pBitmask(uArrayWidth, uArrayHeight, uArrayDepth);
 
-		//Create a region corresponding to the first slice
-		m_regSlicePrevious = m_regSizeInVoxels;
-		Vector3DInt32 v3dUpperCorner = m_regSlicePrevious.getUpperCorner();
-		v3dUpperCorner.setZ(m_regSlicePrevious.getLowerZ()); //Set the upper z to the lower z to make it one slice thick.
-		m_regSlicePrevious.setUpperCorner(v3dUpperCorner);
-		m_regSliceCurrent = m_regSlicePrevious;	
-
 		computeBitmaskForSlice<true>(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
-		m_regSlicePrevious = m_regSliceCurrent;
-		m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
-
-		//Process the other slices (previous slice is available)
-		for(int32_t uSlice = 1; uSlice <= m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ(); uSlice++)
-		{
-			generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
-
-			m_regSlicePrevious = m_regSliceCurrent;
-			m_regSliceCurrent.shift(Vector3DInt32(0,0,1));
-		}
+		generateIndicesForSlice(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
 		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
 
@@ -100,15 +83,15 @@ namespace PolyVox
 		const int32_t iMaxYVolSpace = m_regSizeInVoxels.getUpperY();
 		const int32_t iMaxZVolSpace = m_regSizeInVoxels.getUpperZ();
 
-		for (int32_t iZVolSpace = m_regSliceCurrent.getLowerZ(); iZVolSpace <= iMaxZVolSpace; iZVolSpace++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= iMaxZVolSpace; iZVolSpace++)
 		{
 			uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
 			//Process all remaining elemnents of the slice. In this case, previous x and y values are always available
-			for (int32_t iYVolSpace = m_regSliceCurrent.getLowerY(); iYVolSpace <= iMaxYVolSpace; iYVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= iMaxYVolSpace; iYVolSpace++)
 			{
-				m_sampVolume.setPosition(m_regSliceCurrent.getLowerX(), iYVolSpace, iZVolSpace);
-				for (int32_t iXVolSpace = m_regSliceCurrent.getLowerX(); iXVolSpace <= iMaxXVolSpace; iXVolSpace++)
+				m_sampVolume.setPosition(m_regSizeInVoxels.getLowerX(), iYVolSpace, iZVolSpace);
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= iMaxXVolSpace; iXVolSpace++)
 				{
 					uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 					uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
@@ -273,96 +256,93 @@ namespace PolyVox
 		const Array3DInt32& pIndicesY,
 		const Array3DInt32& pIndicesZ)
 	{
-		int32_t indlist[12];
-		for(int i = 0; i < 12; i++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInCells.getUpperZ(); iZVolSpace++)
 		{
-			indlist[i] = -1;
-		}
-
-		const int32_t iZVolSpace = m_regSlicePrevious.getLowerZ();
-		
-		for(int32_t iYVolSpace = m_regSlicePrevious.getLowerY(); iYVolSpace <= m_regSizeInCells.getUpperY(); iYVolSpace++)
-		{
-			for(int32_t iXVolSpace = m_regSlicePrevious.getLowerX(); iXVolSpace <= m_regSizeInCells.getUpperX(); iXVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInCells.getUpperY(); iYVolSpace++)
 			{
-				m_sampVolume.setPosition(iXVolSpace,iYVolSpace,iZVolSpace);	
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInCells.getUpperX(); iXVolSpace++)
+				{
+					int32_t indlist[12];
 
-				//Current position
-				const uint32_t uXRegSpace = m_sampVolume.getPosition().getX() - m_regSizeInVoxels.getLowerX();
-				const uint32_t uYRegSpace = m_sampVolume.getPosition().getY() - m_regSizeInVoxels.getLowerY();
-				const uint32_t uZRegSpace = m_sampVolume.getPosition().getZ() - m_regSizeInVoxels.getLowerZ();
+					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
 
-				//Determine the index into the edge table which tells us which vertices are inside of the surface
-				const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
+					//Current position
+					const uint32_t uXRegSpace = m_sampVolume.getPosition().getX() - m_regSizeInVoxels.getLowerX();
+					const uint32_t uYRegSpace = m_sampVolume.getPosition().getY() - m_regSizeInVoxels.getLowerY();
+					const uint32_t uZRegSpace = m_sampVolume.getPosition().getZ() - m_regSizeInVoxels.getLowerZ();
 
-				/* Cube is entirely in/out of the surface */
-				if (edgeTable[iCubeIndex] == 0)
-				{
-					continue;
-				}
+					//Determine the index into the edge table which tells us which vertices are inside of the surface
+					const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
-				/* Find the vertices where the surface intersects the cube */
-				if (edgeTable[iCubeIndex] & 1)
-				{
-					indlist[0] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 2)
-				{
-					indlist[1] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 4)
-				{
-					indlist[2] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 8)
-				{
-					indlist[3] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 16)
-				{
-					indlist[4] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace + 1);
-				}
-				if (edgeTable[iCubeIndex] & 32)
-				{
-					indlist[5] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace + 1);
-				}
-				if (edgeTable[iCubeIndex] & 64)
-				{
-					indlist[6] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace + 1);
-				}
-				if (edgeTable[iCubeIndex] & 128)
-				{
-					indlist[7] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace + 1);
-				}
-				if (edgeTable[iCubeIndex] & 256)
-				{
-					indlist[8] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 512)
-				{
-					indlist[9] = pIndicesZ(uXRegSpace + 1, uYRegSpace, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 1024)
-				{
-					indlist[10] = pIndicesZ(uXRegSpace + 1, uYRegSpace + 1, uZRegSpace);
-				}
-				if (edgeTable[iCubeIndex] & 2048)
-				{
-					indlist[11] = pIndicesZ(uXRegSpace, uYRegSpace + 1, uZRegSpace);
-				}
-
-				for (int i=0;triTable[iCubeIndex][i]!=-1;i+=3)
-				{
-					const int32_t ind0 = indlist[triTable[iCubeIndex][i  ]];
-					const int32_t ind1 = indlist[triTable[iCubeIndex][i+1]];
-					const int32_t ind2 = indlist[triTable[iCubeIndex][i+2]];
-
-					if((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
+					/* Cube is entirely in/out of the surface */
+					if (edgeTable[iCubeIndex] == 0)
 					{
-						m_meshCurrent->addTriangle(ind0, ind1, ind2);
+						continue;
 					}
-				}//For each triangle
-			}//For each cell
+
+					/* Find the vertices where the surface intersects the cube */
+					if (edgeTable[iCubeIndex] & 1)
+					{
+						indlist[0] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 2)
+					{
+						indlist[1] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 4)
+					{
+						indlist[2] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 8)
+					{
+						indlist[3] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 16)
+					{
+						indlist[4] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace + 1);
+					}
+					if (edgeTable[iCubeIndex] & 32)
+					{
+						indlist[5] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace + 1);
+					}
+					if (edgeTable[iCubeIndex] & 64)
+					{
+						indlist[6] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace + 1);
+					}
+					if (edgeTable[iCubeIndex] & 128)
+					{
+						indlist[7] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace + 1);
+					}
+					if (edgeTable[iCubeIndex] & 256)
+					{
+						indlist[8] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 512)
+					{
+						indlist[9] = pIndicesZ(uXRegSpace + 1, uYRegSpace, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 1024)
+					{
+						indlist[10] = pIndicesZ(uXRegSpace + 1, uYRegSpace + 1, uZRegSpace);
+					}
+					if (edgeTable[iCubeIndex] & 2048)
+					{
+						indlist[11] = pIndicesZ(uXRegSpace, uYRegSpace + 1, uZRegSpace);
+					}
+
+					for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
+					{
+						const int32_t ind0 = indlist[triTable[iCubeIndex][i]];
+						const int32_t ind1 = indlist[triTable[iCubeIndex][i + 1]];
+						const int32_t ind2 = indlist[triTable[iCubeIndex][i + 2]];
+
+						if ((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
+						{
+							m_meshCurrent->addTriangle(ind0, ind1, ind2);
+						}
+					}//For each triangle
+				}//For each cell
+			}
 		}
 	}
 }
