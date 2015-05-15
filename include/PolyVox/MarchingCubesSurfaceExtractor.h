@@ -279,12 +279,6 @@ namespace PolyVox
 		// End of compiler bug workaroumd.
 		////////////////////////////////////////////////////////////////////////////////
 
-		//Use the cell bitmasks to generate all the indices needed for that slice
-		void generateIndicesForSlice(const Array3DUint8& pBitmask,
-			const Array3DInt32& pIndicesX,
-			const Array3DInt32& pIndicesY,
-			const Array3DInt32& pIndicesZ);
-
 		//The volume data and a sampler to access it.
 		VolumeType* m_volData;
 		typename VolumeType::Sampler m_sampVolume;
@@ -294,7 +288,6 @@ namespace PolyVox
 
 		//Information about the region we are currently processing
 		Region m_regSizeInVoxels;
-		Region m_regSizeInCells;
 
 		//Used to convert arbitrary voxel types in densities and materials.
 		ControllerType m_controller;
