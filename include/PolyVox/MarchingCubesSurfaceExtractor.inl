@@ -57,6 +57,7 @@ namespace PolyVox
 		memset(pIndicesZ.getRawData(), 0xff, pIndicesZ.getNoOfElements() * 4);
 
 		Array3DUint8 pBitmask(uArrayWidth, uArrayHeight, uArrayDepth);
+		memset(pBitmask.getRawData(), 0x00, pBitmask.getNoOfElements());
 
 		computeBitmaskForSlice<true>(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
 
