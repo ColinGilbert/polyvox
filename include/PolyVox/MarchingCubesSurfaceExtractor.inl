@@ -43,9 +43,9 @@ namespace PolyVox
 		Timer timer;
 		m_meshCurrent->clear();
 
-		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 1;
-		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 1;
-		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 1;
+		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
+		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2;
+		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 2;
 
 		//For edge indices
 		Array3DInt32 pIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
@@ -75,29 +75,39 @@ namespace PolyVox
 		Array3DInt32& pIndicesY,
 		Array3DInt32& pIndicesZ)
 	{
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ() - 1; iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY() - 1; iYVolSpace++)
 			{
 				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
 
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX() - 1; iXVolSpace++)
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
 
-					typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel1nx1ny1nz();
-					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel0px1ny1nz();
-					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel1nx0py1nz();
-					typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel0px0py1nz();
+					/*typename VolumeType::VoxelType v000 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v100 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v010 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v110 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
 
-					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel1nx1ny0pz();
-					typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel0px1ny0pz();
-					typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel1nx0py0pz();
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
+					typename VolumeType::VoxelType v001 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v101 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v011 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v111 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py0pz() : VolumeType::VoxelType();*/
+
+					typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
+					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
+					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel0px1py0pz();
+					typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel1px1py0pz();
+
+					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel0px0py1pz();
+					typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel1px0py1pz();
+					typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel0px1py1pz();
+					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel1px1py1pz();
 
 					uint8_t iCubeIndex = 0;
 					if (m_controller.convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
@@ -110,7 +120,7 @@ namespace PolyVox
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
 					//Save the bitmask
-					pBitmask(uXRegSpace-1, uYRegSpace-1, uZRegSpace-1) = iCubeIndex;
+					pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
@@ -129,7 +139,7 @@ namespace PolyVox
 
 						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace ) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
@@ -150,7 +160,7 @@ namespace PolyVox
 						surfaceVertex.data = uMaterial;
 
 						const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-						pIndicesX(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1) = uLastVertexIndex;
+						pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
 						m_sampVolume.moveNegativeX();
 					}
@@ -162,7 +172,7 @@ namespace PolyVox
 
 						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace ) + fInterp, static_cast<float>(uZRegSpace));
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
@@ -183,7 +193,7 @@ namespace PolyVox
 						surfaceVertex.data = uMaterial;
 
 						uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-						pIndicesY(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1) = uLastVertexIndex;
+						pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
 						m_sampVolume.moveNegativeY();
 					}
@@ -195,7 +205,7 @@ namespace PolyVox
 
 						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace) + fInterp);
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
@@ -215,7 +225,7 @@ namespace PolyVox
 						surfaceVertex.data = uMaterial;
 
 						const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
-						pIndicesZ(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1) = uLastVertexIndex;
+						pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
 						m_sampVolume.moveNegativeZ();
 					}
@@ -223,11 +233,11 @@ namespace PolyVox
 			}
 		}
 
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 2; iZVolSpace <= m_regSizeInVoxels.getUpperZ() - 2; iZVolSpace++)
 		{
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 2; iYVolSpace <= m_regSizeInVoxels.getUpperY() - 2; iYVolSpace++)
 			{
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 2; iXVolSpace <= m_regSizeInVoxels.getUpperX() - 2; iXVolSpace++)
 				{
 					int32_t indlist[12];
 
@@ -239,7 +249,7 @@ namespace PolyVox
 					const uint32_t uZRegSpace = m_sampVolume.getPosition().getZ() - m_regSizeInVoxels.getLowerZ();
 
 					//Determine the index into the edge table which tells us which vertices are inside of the surface
-					const uint8_t iCubeIndex = pBitmask(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1);
+					const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
@@ -250,51 +260,51 @@ namespace PolyVox
 					/* Find the vertices where the surface intersects the cube */
 					if (edgeTable[iCubeIndex] & 1)
 					{
-						indlist[0] = pIndicesX(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1);
+						indlist[0] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 2)
 					{
-						indlist[1] = pIndicesY(uXRegSpace, uYRegSpace - 1, uZRegSpace - 1);
+						indlist[1] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 4)
 					{
-						indlist[2] = pIndicesX(uXRegSpace - 1, uYRegSpace, uZRegSpace - 1);
+						indlist[2] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 8)
 					{
-						indlist[3] = pIndicesY(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1);
+						indlist[3] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 16)
 					{
-						indlist[4] = pIndicesX(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace);
+						indlist[4] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace + 1);
 					}
 					if (edgeTable[iCubeIndex] & 32)
 					{
-						indlist[5] = pIndicesY(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+						indlist[5] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace + 1);
 					}
 					if (edgeTable[iCubeIndex] & 64)
 					{
-						indlist[6] = pIndicesX(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+						indlist[6] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace + 1);
 					}
 					if (edgeTable[iCubeIndex] & 128)
 					{
-						indlist[7] = pIndicesY(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace);
+						indlist[7] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace + 1);
 					}
 					if (edgeTable[iCubeIndex] & 256)
 					{
-						indlist[8] = pIndicesZ(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace - 1);
+						indlist[8] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 512)
 					{
-						indlist[9] = pIndicesZ(uXRegSpace, uYRegSpace - 1, uZRegSpace - 1);
+						indlist[9] = pIndicesZ(uXRegSpace + 1, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 1024)
 					{
-						indlist[10] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+						indlist[10] = pIndicesZ(uXRegSpace + 1, uYRegSpace + 1, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 2048)
 					{
-						indlist[11] = pIndicesZ(uXRegSpace - 1, uYRegSpace, uZRegSpace - 1);
+						indlist[11] = pIndicesZ(uXRegSpace, uYRegSpace + 1, uZRegSpace);
 					}
 
 					for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
