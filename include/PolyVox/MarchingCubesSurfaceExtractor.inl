@@ -89,15 +89,15 @@ namespace PolyVox
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
 
-					typename VolumeType::VoxelType v000 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v100 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v010 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v110 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v000 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
 
-					typename VolumeType::VoxelType v001 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v101 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v011 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v111 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
 					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
@@ -125,15 +125,15 @@ namespace PolyVox
 			}
 		}
 
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
 			{
 				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
 
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
