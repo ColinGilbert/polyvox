@@ -75,21 +75,21 @@ namespace PolyVox
 		Array3DInt32& pIndicesY,
 		Array3DInt32& pIndicesZ)
 	{
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ() - 1; iZVolSpace++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
 
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY() - 1; iYVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
 			{
 				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
 
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX() - 1; iXVolSpace++)
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
 
-					/*typename VolumeType::VoxelType v000 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v000 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
 					typename VolumeType::VoxelType v100 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
 					typename VolumeType::VoxelType v010 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
 					typename VolumeType::VoxelType v110 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
@@ -97,9 +97,9 @@ namespace PolyVox
 					typename VolumeType::VoxelType v001 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
 					typename VolumeType::VoxelType v101 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
 					typename VolumeType::VoxelType v011 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v111 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py0pz() : VolumeType::VoxelType();*/
+					typename VolumeType::VoxelType v111 = m_regSizeInVoxels.containsPoint(iXVolSpace, iYVolSpace, iZVolSpace, 1) ? m_sampVolume.peekVoxel0px0py0pz() : VolumeType::VoxelType();
 
-					typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
+					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
 					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
 					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel0px1py0pz();
 					typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel1px1py0pz();
@@ -107,7 +107,7 @@ namespace PolyVox
 					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel0px0py1pz();
 					typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel1px0py1pz();
 					typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel0px1py1pz();
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel1px1py1pz();
+					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel1px1py1pz();*/
 
 					uint8_t iCubeIndex = 0;
 					if (m_controller.convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
@@ -121,12 +121,41 @@ namespace PolyVox
 
 					//Save the bitmask
 					pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
+				}
+			}
+		}
+
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
+		{
+			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
+
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
+			{
+				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
+
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
+				{
+					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
+
+					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
+
+					uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
 					{
 						continue;
 					}
+
+					typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel1nx1ny1nz();
+					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel0px1ny1nz();
+					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel1nx0py1nz();
+					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel1nx1ny0pz();
+
+					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
+					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
+					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel0px1py0pz();
+					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel0px0py1pz();*/
 					
 					const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
@@ -139,7 +168,7 @@ namespace PolyVox
 
 						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace ) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace - 1), static_cast<float>(uZRegSpace - 1));
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
@@ -172,7 +201,7 @@ namespace PolyVox
 
 						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace ) + fInterp, static_cast<float>(uZRegSpace));
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace - 1));
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
@@ -205,7 +234,7 @@ namespace PolyVox
 
 						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace) + fInterp);
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1), static_cast<float>(uYRegSpace - 1), static_cast<float>(uZRegSpace - 1) + fInterp);
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
@@ -233,11 +262,11 @@ namespace PolyVox
 			}
 		}
 
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 2; iZVolSpace <= m_regSizeInVoxels.getUpperZ() - 2; iZVolSpace++)
+		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 2; iYVolSpace <= m_regSizeInVoxels.getUpperY() - 2; iYVolSpace++)
+			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
 			{
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 2; iXVolSpace <= m_regSizeInVoxels.getUpperX() - 2; iXVolSpace++)
+				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
 					int32_t indlist[12];
 
