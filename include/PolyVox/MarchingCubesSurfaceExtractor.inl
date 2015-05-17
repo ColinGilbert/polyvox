@@ -147,28 +147,33 @@ namespace PolyVox
 						continue;
 					}
 
-					typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel1nx1ny1nz();
+					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel1nx1ny1nz();
 					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel0px1ny1nz();
 					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel1nx0py1nz();
-					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel1nx1ny0pz();
+					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel1nx1ny0pz();*/
 
 					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
 					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
 					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel0px1py0pz();
 					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel0px0py1pz();*/
+
+					typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel0px0py1nz();
+					typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel0px1ny0pz();
+					typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel1nx0py0pz();
+					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
 					
 					const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 					/* Find the vertices where the surface intersects the cube */
-					if (edgeTable[iCubeIndex] & 1)
+					if (edgeTable[iCubeIndex] & 64)
 					{
-						m_sampVolume.movePositiveX();
-						POLYVOX_ASSERT(v000 != v100, "Attempting to insert vertex between two voxels with the same value");
+						m_sampVolume.moveNegativeX();
+						POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
 						const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
 
-						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v100) - m_controller.convertToDensity(v000));
+						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace - 1), static_cast<float>(uZRegSpace - 1));
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
@@ -181,7 +186,7 @@ namespace PolyVox
 						}
 
 						// Allow the controller to decide how the material should be derived from the voxels.
-						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v100, fInterp);
+						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v011, v111, fInterp);
 
 						MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 						surfaceVertex.encodedPosition = v3dScaledPosition;
@@ -191,17 +196,17 @@ namespace PolyVox
 						const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 						pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
-						m_sampVolume.moveNegativeX();
+						m_sampVolume.movePositiveX();
 					}
-					if (edgeTable[iCubeIndex] & 8)
+					if (edgeTable[iCubeIndex] & 32)
 					{
-						m_sampVolume.movePositiveY();
-						POLYVOX_ASSERT(v000 != v010, "Attempting to insert vertex between two voxels with the same value");
+						m_sampVolume.moveNegativeY();
+						POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
 						const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
 
-						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v010) - m_controller.convertToDensity(v000));
+						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace - 1));
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
@@ -214,7 +219,7 @@ namespace PolyVox
 						}
 
 						// Allow the controller to decide how the material should be derived from the voxels.
-						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v010, fInterp);
+						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v101, v111, fInterp);
 
 						MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 						surfaceVertex.encodedPosition = v3dScaledPosition;
@@ -224,17 +229,17 @@ namespace PolyVox
 						uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 						pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
-						m_sampVolume.moveNegativeY();
+						m_sampVolume.movePositiveY();
 					}
-					if (edgeTable[iCubeIndex] & 256)
+					if (edgeTable[iCubeIndex] & 1024)
 					{
-						m_sampVolume.movePositiveZ();
-						POLYVOX_ASSERT(v000 != v001, "Attempting to insert vertex between two voxels with the same value");
+						m_sampVolume.moveNegativeZ();
+						POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
 						const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
 
-						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v000)) / static_cast<float>(m_controller.convertToDensity(v001) - m_controller.convertToDensity(v000));
+						const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
 
-						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1), static_cast<float>(uYRegSpace - 1), static_cast<float>(uZRegSpace - 1) + fInterp);
+						const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
 						const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
 						Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
@@ -246,7 +251,7 @@ namespace PolyVox
 						}
 
 						// Allow the controller to decide how the material should be derived from the voxels.
-						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v000, v001, fInterp);
+						const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v110, v111, fInterp);
 
 						MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 						surfaceVertex.encodedPosition = v3dScaledPosition;
@@ -256,7 +261,7 @@ namespace PolyVox
 						const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 						pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
-						m_sampVolume.moveNegativeZ();
+						m_sampVolume.movePositiveZ();
 					}
 				}
 			}
@@ -289,51 +294,51 @@ namespace PolyVox
 					/* Find the vertices where the surface intersects the cube */
 					if (edgeTable[iCubeIndex] & 1)
 					{
-						indlist[0] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace);
+						indlist[0] = pIndicesX(uXRegSpace, uYRegSpace - 1, uZRegSpace - 1);
 					}
 					if (edgeTable[iCubeIndex] & 2)
 					{
-						indlist[1] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace);
+						indlist[1] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace - 1);
 					}
 					if (edgeTable[iCubeIndex] & 4)
 					{
-						indlist[2] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace);
+						indlist[2] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace - 1);
 					}
 					if (edgeTable[iCubeIndex] & 8)
 					{
-						indlist[3] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace);
+						indlist[3] = pIndicesY(uXRegSpace - 1, uYRegSpace, uZRegSpace - 1);
 					}
 					if (edgeTable[iCubeIndex] & 16)
 					{
-						indlist[4] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace + 1);
+						indlist[4] = pIndicesX(uXRegSpace, uYRegSpace - 1, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 32)
 					{
-						indlist[5] = pIndicesY(uXRegSpace + 1, uYRegSpace, uZRegSpace + 1);
+						indlist[5] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 64)
 					{
-						indlist[6] = pIndicesX(uXRegSpace, uYRegSpace + 1, uZRegSpace + 1);
+						indlist[6] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 128)
 					{
-						indlist[7] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace + 1);
+						indlist[7] = pIndicesY(uXRegSpace - 1, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 256)
 					{
-						indlist[8] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace);
+						indlist[8] = pIndicesZ(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 512)
 					{
-						indlist[9] = pIndicesZ(uXRegSpace + 1, uYRegSpace, uZRegSpace);
+						indlist[9] = pIndicesZ(uXRegSpace, uYRegSpace - 1, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 1024)
 					{
-						indlist[10] = pIndicesZ(uXRegSpace + 1, uYRegSpace + 1, uZRegSpace);
+						indlist[10] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace);
 					}
 					if (edgeTable[iCubeIndex] & 2048)
 					{
-						indlist[11] = pIndicesZ(uXRegSpace, uYRegSpace + 1, uZRegSpace);
+						indlist[11] = pIndicesZ(uXRegSpace - 1, uYRegSpace, uZRegSpace);
 					}
 
 					for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
