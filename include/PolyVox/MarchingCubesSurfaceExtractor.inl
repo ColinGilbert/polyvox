@@ -165,7 +165,7 @@ namespace PolyVox
 					const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
 					/* Find the vertices where the surface intersects the cube */
-					if (edgeTable[iCubeIndex] & 64)
+					if ((edgeTable[iCubeIndex] & 64) && (uXRegSpace > 0))
 					{
 						m_sampVolume.moveNegativeX();
 						POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
@@ -198,7 +198,7 @@ namespace PolyVox
 
 						m_sampVolume.movePositiveX();
 					}
-					if (edgeTable[iCubeIndex] & 32)
+					if ((edgeTable[iCubeIndex] & 32) && (uYRegSpace > 0))
 					{
 						m_sampVolume.moveNegativeY();
 						POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
@@ -231,7 +231,7 @@ namespace PolyVox
 
 						m_sampVolume.movePositiveY();
 					}
-					if (edgeTable[iCubeIndex] & 1024)
+					if ((edgeTable[iCubeIndex] & 1024) && (uZRegSpace > 0))
 					{
 						m_sampVolume.moveNegativeZ();
 						POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
