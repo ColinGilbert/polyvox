@@ -168,18 +168,18 @@ void TestSurfaceExtractor::testBehaviour()
 	// This basic test just uses the default controller and automatically generates a mesh of the appropriate type.
 	auto uintVol = createAndFillVolume< RawVolume<uint8_t> >();
 	auto uintMesh = extractMarchingCubesMesh(uintVol, uintVol->getEnclosingRegion());
-	QCOMPARE(uintMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(uintMesh.getNoOfVertices(), uint32_t(6048)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(uintMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
-	QCOMPARE(uintMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
+	QCOMPARE(uintMesh.getIndex(100), uint32_t(24)); // Verifies that we have 32-bit indices
 	QCOMPARE(uintMesh.getVertex(100).data, uint8_t(1)); // Not really meaningful for a primative type
 
 	// This test makes use of a custom controller
 	auto floatVol = createAndFillVolume< RawVolume<float> >();
 	CustomMarchingCubesController floatCustomController;
 	auto floatMesh = extractMarchingCubesMesh(floatVol, floatVol->getEnclosingRegion(), floatCustomController);
-	QCOMPARE(floatMesh.getNoOfVertices(), uint32_t(16113)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(floatMesh.getNoOfVertices(), uint32_t(3825)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(floatMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
-	QCOMPARE(floatMesh.getIndex(100), uint32_t(26)); // Verifies that we have 32-bit indices
+	QCOMPARE(floatMesh.getIndex(100), uint32_t(119)); // Verifies that we have 32-bit indices
 	QCOMPARE(floatMesh.getVertex(100).data, float(1.0f)); // Not really meaningful for a primative type
 
 	// This test makes use of a user provided mesh. It uses the default controller, but we have to explicitly provide this because C++ won't let us
@@ -187,7 +187,7 @@ void TestSurfaceExtractor::testBehaviour()
 	auto intVol = createAndFillVolume< RawVolume<int8_t> >();
 	Mesh< MarchingCubesVertex< int8_t >, uint16_t > intMesh;
 	extractMarchingCubesMeshCustom(intVol, intVol->getEnclosingRegion(), &intMesh);
-	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(11718)); // Verifies size of mesh and that we have 16-bit indices
+	QCOMPARE(intMesh.getNoOfVertices(), uint16_t(5859)); // Verifies size of mesh and that we have 16-bit indices
 	QCOMPARE(intMesh.getNoOfIndices(), uint32_t(34041)); // Verifies size of mesh
 	QCOMPARE(intMesh.getIndex(100), uint16_t(29)); // Verifies that we have 16-bit indices
 	QCOMPARE(intMesh.getVertex(100).data, int8_t(1)); // Not really meaningful for a primative type
@@ -197,17 +197,17 @@ void TestSurfaceExtractor::testBehaviour()
 	CustomMarchingCubesController doubleCustomController;
 	Mesh< MarchingCubesVertex< double >, uint16_t > doubleMesh;
 	extractMarchingCubesMeshCustom(doubleVol, doubleVol->getEnclosingRegion(), &doubleMesh, doubleCustomController);
-	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(16113)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(doubleMesh.getNoOfVertices(), uint16_t(3825)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(doubleMesh.getNoOfIndices(), uint32_t(22053)); // Verifies size of mesh
-	QCOMPARE(doubleMesh.getIndex(100), uint16_t(26)); // Verifies that we have 32-bit indices
+	QCOMPARE(doubleMesh.getIndex(100), uint16_t(119)); // Verifies that we have 32-bit indices
 	QCOMPARE(doubleMesh.getVertex(100).data, double(1.0f)); // Not really meaningful for a primative type
 
 	// This test ensures the extractor works on a non-primitive voxel type.
 	auto materialVol = createAndFillVolume< RawVolume<MaterialDensityPair88> >();
 	auto materialMesh = extractMarchingCubesMesh(materialVol, materialVol->getEnclosingRegion());
-	QCOMPARE(materialMesh.getNoOfVertices(), uint32_t(12096)); // Verifies size of mesh and that we have 32-bit indices
+	QCOMPARE(materialMesh.getNoOfVertices(), uint32_t(6048)); // Verifies size of mesh and that we have 32-bit indices
 	QCOMPARE(materialMesh.getNoOfIndices(), uint32_t(35157)); // Verifies size of mesh
-	QCOMPARE(materialMesh.getIndex(100), uint32_t(44)); // Verifies that we have 32-bit indices
+	QCOMPARE(materialMesh.getIndex(100), uint32_t(24)); // Verifies that we have 32-bit indices
 	QCOMPARE(materialMesh.getVertex(100).data.getMaterial(), uint16_t(79)); // Verify the data attached to the vertex
 }
 
@@ -224,7 +224,7 @@ void TestSurfaceExtractor::testNoiseVolumePerformance()
 	auto noiseVol = createAndFillVolumeWithNoise< PagedVolume<float> >(128, 128, -1.0f, 1.0f);
 	Mesh< MarchingCubesVertex< float >, uint16_t > noiseMesh;
 	QBENCHMARK{ extractMarchingCubesMeshCustom(noiseVol, Region(32, 32, 32, 63, 63, 63), &noiseMesh); }
-	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(36755));
+	QCOMPARE(noiseMesh.getNoOfVertices(), uint16_t(35672));
 }
 
 QTEST_MAIN(TestSurfaceExtractor)
