@@ -89,38 +89,213 @@ namespace PolyVox
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
 
-					typename VolumeType::VoxelType v000 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+					typename VolumeType::VoxelType v000;
+					typename VolumeType::VoxelType v100;
+					typename VolumeType::VoxelType v010;
+					typename VolumeType::VoxelType v110;
 
-					typename VolumeType::VoxelType v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
+					typename VolumeType::VoxelType v001;
+					typename VolumeType::VoxelType v101;
+					typename VolumeType::VoxelType v011;
+					typename VolumeType::VoxelType v111;
 
-					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
-					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
-					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel0px1py0pz();
-					typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel1px1py0pz();
+					v000 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
+					v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
+					v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
+					v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
 
-					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel0px0py1pz();
-					typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel1px0py1pz();
-					typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel0px1py1pz();
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel1px1py1pz();*/
+					v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
+					v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+					v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+					v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 					uint8_t iCubeIndex = 0;
-					if (m_controller.convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
-					if (m_controller.convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;
-					if (m_controller.convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
-					if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
-					if (m_controller.convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
-					if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
-					if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
-					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
-					//Save the bitmask
-					pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
+					bool isPrevXAvail = iXVolSpace > m_regSizeInVoxels.getLowerX();
+					bool isPrevYAvail = iYVolSpace > m_regSizeInVoxels.getLowerY();
+					bool isPrevZAvail = iZVolSpace > m_regSizeInVoxels.getLowerZ();
+
+					if (isPrevZAvail)
+					{
+						if (isPrevYAvail)
+						{
+							if (isPrevXAvail)
+							{
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//z
+								uint8_t iPreviousCubeIndexZ = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+								iPreviousCubeIndexZ >>= 4;
+
+								//y
+								uint8_t iPreviousCubeIndexY = pBitmask(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+								iPreviousCubeIndexY &= 192; //192 = 128 + 64
+								iPreviousCubeIndexY >>= 2;
+
+								//x
+								uint8_t iPreviousCubeIndexX = pBitmask(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+								iPreviousCubeIndexX &= 128;
+								iPreviousCubeIndexX >>= 1;
+
+								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//z
+								uint8_t iPreviousCubeIndexZ = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+								iPreviousCubeIndexZ >>= 4;
+
+								//y
+								uint8_t iPreviousCubeIndexY = pBitmask(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+								iPreviousCubeIndexY &= 192; //192 = 128 + 64
+								iPreviousCubeIndexY >>= 2;
+
+								iCubeIndex = iPreviousCubeIndexY | iPreviousCubeIndexZ;
+
+								if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+						}
+						else //previous Y not available
+						{
+							if (isPrevXAvail)
+							{
+								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//z
+								uint8_t iPreviousCubeIndexZ = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+								iPreviousCubeIndexZ >>= 4;
+
+								//x
+								uint8_t iPreviousCubeIndexX = pBitmask(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+								iPreviousCubeIndexX &= 160; //160 = 128+32
+								iPreviousCubeIndexX >>= 1;
+
+								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexZ;
+
+								if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
+								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//z
+								uint8_t iPreviousCubeIndexZ = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+								iCubeIndex = iPreviousCubeIndexZ >> 4;
+
+								if (m_controller.convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
+								if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+								if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+						}
+					}
+					else //previous Z not available
+					{
+						if (isPrevYAvail)
+						{
+							if (isPrevXAvail)
+							{
+								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//y
+								uint8_t iPreviousCubeIndexY = pBitmask(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+								iPreviousCubeIndexY >>= 2;
+
+								//x
+								uint8_t iPreviousCubeIndexX = pBitmask(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+								iPreviousCubeIndexX >>= 1;
+
+								iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY;
+
+								if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
+								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+								
+								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//y
+								uint8_t iPreviousCubeIndexY = pBitmask(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+								iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+								iPreviousCubeIndexY >>= 2;
+
+								iCubeIndex = iPreviousCubeIndexY;
+
+								if (m_controller.convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
+								if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+								if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+						}
+						else //previous Y not available
+						{
+							if (isPrevXAvail)
+							{								
+								v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
+								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+
+								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								//x
+								uint8_t iPreviousCubeIndexX = pBitmask(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+								iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+								iPreviousCubeIndexX >>= 1;
+
+								iCubeIndex = iPreviousCubeIndexX;
+
+								if (m_controller.convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;
+								if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+								if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+							else //previous X not available
+							{
+								v000 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
+								v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
+								v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
+								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+
+								v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
+								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v111 = m_sampVolume.peekVoxel0px0py0pz();
+
+								if (m_controller.convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
+								if (m_controller.convertToDensity(v100) < m_tThreshold) iCubeIndex |= 2;
+								if (m_controller.convertToDensity(v010) < m_tThreshold) iCubeIndex |= 4;
+								if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
+								if (m_controller.convertToDensity(v001) < m_tThreshold) iCubeIndex |= 16;
+								if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
+								if (m_controller.convertToDensity(v011) < m_tThreshold) iCubeIndex |= 64;
+								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+							}
+						}
+					}
+
+					if (iCubeIndex != 0)
+					{
+						//Save the bitmask
+						pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
+					}
 				}
 			}
 		}
