@@ -133,7 +133,7 @@ namespace PolyVox
 							}
 							else //previous X not available
 							{
-								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v011 = m_sampVolume.peekVoxel1nx0py0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								//z
@@ -155,7 +155,7 @@ namespace PolyVox
 						{
 							if (isPrevXAvail)
 							{
-								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+								v101 = m_sampVolume.peekVoxel0px1ny0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								//z
@@ -174,9 +174,9 @@ namespace PolyVox
 							}
 							else //previous X not available
 							{
-								v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
-								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
-								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v001 = m_sampVolume.peekVoxel1nx1ny0pz();
+								v101 = m_sampVolume.peekVoxel0px1ny0pz();
+								v011 = m_sampVolume.peekVoxel1nx0py0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								//z
@@ -196,7 +196,7 @@ namespace PolyVox
 						{
 							if (isPrevXAvail)
 							{
-								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+								v110 = m_sampVolume.peekVoxel0px0py1nz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								//y
@@ -216,10 +216,10 @@ namespace PolyVox
 							}
 							else //previous X not available
 							{
-								v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
-								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+								v010 = m_sampVolume.peekVoxel1nx0py1nz();
+								v110 = m_sampVolume.peekVoxel0px0py1nz();
 								
-								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v011 = m_sampVolume.peekVoxel1nx0py0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								//y
@@ -239,10 +239,10 @@ namespace PolyVox
 						{
 							if (isPrevXAvail)
 							{								
-								v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
-								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+								v100 = m_sampVolume.peekVoxel0px1ny1nz();
+								v110 = m_sampVolume.peekVoxel0px0py1nz();
 
-								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
+								v101 = m_sampVolume.peekVoxel0px1ny0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								//x
@@ -259,14 +259,14 @@ namespace PolyVox
 							}
 							else //previous X not available
 							{
-								v000 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
-								v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
-								v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
-								v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
+								v000 = m_sampVolume.peekVoxel1nx1ny1nz();
+								v100 = m_sampVolume.peekVoxel0px1ny1nz();
+								v010 = m_sampVolume.peekVoxel1nx0py1nz();
+								v110 = m_sampVolume.peekVoxel0px0py1nz();
 
-								v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
-								v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
-								v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
+								v001 = m_sampVolume.peekVoxel1nx1ny0pz();
+								v101 = m_sampVolume.peekVoxel0px1ny0pz();
+								v011 = m_sampVolume.peekVoxel1nx0py0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
 								if (m_controller.convertToDensity(v000) < m_tThreshold) iCubeIndex |= 1;
