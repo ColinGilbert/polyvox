@@ -402,6 +402,13 @@ namespace PolyVox
 						m_sampVolume.movePositiveZ();
 					}
 
+					// Now output the indices. For the first row, column or slice there aren't
+					// any (the region size in cells is one less than the region size in voxels)
+					if ((!isPrevXAvail) || (!isPrevYAvail) || (!isPrevZAvail))
+					{
+						continue;
+					}
+
 					int32_t indlist[12];
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
