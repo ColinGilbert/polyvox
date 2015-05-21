@@ -99,16 +99,6 @@ namespace PolyVox
 					typename VolumeType::VoxelType v011;
 					typename VolumeType::VoxelType v111;
 
-					v000 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx1ny1nz() : VolumeType::VoxelType();
-					v100 = iYVolSpace > m_regSizeInVoxels.getLowerY() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px1ny1nz() : VolumeType::VoxelType();
-					v010 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel1nx0py1nz() : VolumeType::VoxelType();
-					v110 = iZVolSpace > m_regSizeInVoxels.getLowerZ() ? m_sampVolume.peekVoxel0px0py1nz() : VolumeType::VoxelType();
-
-					v001 = iXVolSpace > m_regSizeInVoxels.getLowerX() && iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel1nx1ny0pz() : VolumeType::VoxelType();
-					v101 = iYVolSpace > m_regSizeInVoxels.getLowerY() ? m_sampVolume.peekVoxel0px1ny0pz() : VolumeType::VoxelType();
-					v011 = iXVolSpace > m_regSizeInVoxels.getLowerX() ? m_sampVolume.peekVoxel1nx0py0pz() : VolumeType::VoxelType();
-					v111 = m_sampVolume.peekVoxel0px0py0pz();
-
 					uint8_t iCubeIndex = 0;
 
 					bool isPrevXAvail = iXVolSpace > m_regSizeInVoxels.getLowerX();
@@ -296,25 +286,8 @@ namespace PolyVox
 						//Save the bitmask
 						pBitmask(uXRegSpace, uYRegSpace, uZRegSpace) = iCubeIndex;
 					}
-				}
-			}
-		}
-
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
-		{
-			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
-
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
-			{
-				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
-
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
-				{
-					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
-
-					uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
@@ -322,20 +295,10 @@ namespace PolyVox
 						continue;
 					}
 
-					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel1nx1ny1nz();
-					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel0px1ny1nz();
-					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel1nx0py1nz();
-					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel1nx1ny0pz();*/
-
-					/*typename VolumeType::VoxelType v000 = m_sampVolume.peekVoxel0px0py0pz();
-					typename VolumeType::VoxelType v100 = m_sampVolume.peekVoxel1px0py0pz();
-					typename VolumeType::VoxelType v010 = m_sampVolume.peekVoxel0px1py0pz();
-					typename VolumeType::VoxelType v001 = m_sampVolume.peekVoxel0px0py1pz();*/
-
-					typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel0px0py1nz();
-					typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel0px1ny0pz();
-					typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel1nx0py0pz();
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
+					// These three might not have been sampled, as v111 is the only one we sample every iteration.
+					v110 = m_sampVolume.peekVoxel0px0py1nz();
+					v101 = m_sampVolume.peekVoxel0px1ny0pz();
+					v011 = m_sampVolume.peekVoxel1nx0py0pz();
 					
 					const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
 
@@ -438,27 +401,10 @@ namespace PolyVox
 
 						m_sampVolume.movePositiveZ();
 					}
-				}
-			}
-		}
 
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ() + 1; iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
-		{
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY() + 1; iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
-			{
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX() + 1; iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
-				{
 					int32_t indlist[12];
 
 					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
-
-					//Current position
-					const uint32_t uXRegSpace = m_sampVolume.getPosition().getX() - m_regSizeInVoxels.getLowerX();
-					const uint32_t uYRegSpace = m_sampVolume.getPosition().getY() - m_regSizeInVoxels.getLowerY();
-					const uint32_t uZRegSpace = m_sampVolume.getPosition().getZ() - m_regSizeInVoxels.getLowerZ();
-
-					//Determine the index into the edge table which tells us which vertices are inside of the surface
-					const uint8_t iCubeIndex = pBitmask(uXRegSpace, uYRegSpace, uZRegSpace);
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
