@@ -43,6 +43,18 @@ namespace PolyVox
 		Timer timer;
 		m_meshCurrent->clear();
 
+		computeBitmaskForSlice();
+
+		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
+
+		POLYVOX_LOG_TRACE("Marching cubes surface extraction took ", timer.elapsedTimeInMilliSeconds(),
+			"ms (Region size = ", m_regSizeInVoxels.getWidthInVoxels(), "x", m_regSizeInVoxels.getHeightInVoxels(),
+			"x", m_regSizeInVoxels.getDepthInVoxels(), ")");
+	}
+
+	template<typename VolumeType, typename MeshType, typename ControllerType>
+	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice()
+	{
 		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
 		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2;
 		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 2;
@@ -59,22 +71,6 @@ namespace PolyVox
 		Array3DUint8 pBitmask(uArrayWidth, uArrayHeight, uArrayDepth);
 		memset(pBitmask.getRawData(), 0x00, pBitmask.getNoOfElements());
 
-		computeBitmaskForSlice<true>(pBitmask, pIndicesX, pIndicesY, pIndicesZ);
-
-		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
-
-		POLYVOX_LOG_TRACE("Marching cubes surface extraction took ", timer.elapsedTimeInMilliSeconds(),
-			"ms (Region size = ", m_regSizeInVoxels.getWidthInVoxels(), "x", m_regSizeInVoxels.getHeightInVoxels(),
-			"x", m_regSizeInVoxels.getDepthInVoxels(), ")");
-	}
-
-	template<typename VolumeType, typename MeshType, typename ControllerType>
-	template<bool isPrevZAvail>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::computeBitmaskForSlice(Array3DUint8& pBitmask,
-		Array3DInt32& pIndicesX,
-		Array3DInt32& pIndicesY,
-		Array3DInt32& pIndicesZ)
-	{
 		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
