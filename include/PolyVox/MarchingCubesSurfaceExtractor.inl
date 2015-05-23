@@ -285,8 +285,6 @@ namespace PolyVox
 						pCurrentBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
 					}
 
-					m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
-
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] == 0)
 					{
