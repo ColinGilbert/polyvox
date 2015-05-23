@@ -76,16 +76,19 @@ namespace PolyVox
 		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
+			bool isPrevZAvail = iZVolSpace > m_regSizeInVoxels.getLowerZ();
 
 			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
 			{
 				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
+				bool isPrevYAvail = iYVolSpace > m_regSizeInVoxels.getLowerY();
 
 				m_sampVolume.setPosition(m_regSizeInVoxels.getLowerX(), iYVolSpace, iZVolSpace);
 
 				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
+					bool isPrevXAvail = iXVolSpace > m_regSizeInVoxels.getLowerX();
 
 					typename VolumeType::VoxelType v000;
 					typename VolumeType::VoxelType v100;
@@ -98,10 +101,7 @@ namespace PolyVox
 					typename VolumeType::VoxelType v111;
 
 					uint8_t iCubeIndex = 0;
-
-					bool isPrevXAvail = iXVolSpace > m_regSizeInVoxels.getLowerX();
-					bool isPrevYAvail = iYVolSpace > m_regSizeInVoxels.getLowerY();
-					bool isPrevZAvail = iZVolSpace > m_regSizeInVoxels.getLowerZ();
+					
 
 					if (isPrevZAvail)
 					{
