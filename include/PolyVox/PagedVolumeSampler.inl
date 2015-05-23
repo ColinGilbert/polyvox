@@ -144,7 +144,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if(((this->mXPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
+		if(CAN_GO_POS_X(this->m_uXPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += POS_X_DELTA;
@@ -164,7 +164,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveY();
 
 		// Then we update the voxel pointer
-		if(((this->mYPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
+		if (CAN_GO_POS_Y(this->m_uYPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += POS_Y_DELTA;
@@ -184,7 +184,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveZ();
 
 		// Then we update the voxel pointer
-		if(((this->mZPosInVolume) % this->mVolume->m_uChunkSideLength != 0))
+		if (CAN_GO_POS_Z(this->m_uZPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += POS_Z_DELTA;
@@ -204,7 +204,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeX();
 
 		// Then we update the voxel pointer
-		if(((this->mXPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
+		if (CAN_GO_NEG_X(this->m_uXPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += NEG_X_DELTA;
@@ -224,7 +224,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeY();
 
 		// Then we update the voxel pointer
-		if(((this->mYPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
+		if (CAN_GO_NEG_Y(this->m_uYPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += NEG_Y_DELTA;
@@ -244,7 +244,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::moveNegativeZ();
 
 		// Then we update the voxel pointer
-		if(((this->mZPosInVolume + 1) % this->mVolume->m_uChunkSideLength != 0))
+		if (CAN_GO_NEG_Z(this->m_uZPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += NEG_Z_DELTA;
