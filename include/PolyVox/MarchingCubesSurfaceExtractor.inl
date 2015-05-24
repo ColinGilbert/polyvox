@@ -87,22 +87,15 @@ namespace PolyVox
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
-					uint8_t iCubeIndex = 0;
-					
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
-
 					uint8_t iPreviousCubeIndexX = 0;
-					uint8_t iPreviousCubeIndexY = 0;
-					uint8_t iPreviousCubeIndexZ = 0;
-
 					if (uXRegSpace != 0) // Previous X is available
 					{
-						//x
 						iPreviousCubeIndexX = pCurrentBitmask(uXRegSpace - 1, uYRegSpace);
 						iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 						iPreviousCubeIndexX >>= 1;
 					}
 
+					uint8_t iPreviousCubeIndexY = 0;
 					if (uYRegSpace != 0) // Previous Y is available
 					{
 						iPreviousCubeIndexY = pCurrentBitmask(uXRegSpace, uYRegSpace - 1);
@@ -110,14 +103,16 @@ namespace PolyVox
 						iPreviousCubeIndexY >>= 2;
 					}
 
+					uint8_t iPreviousCubeIndexZ = 0;
 					if (uZRegSpace != 0) // Previous Z is available
 					{
 						iPreviousCubeIndexZ = pPreviousBitmask(uXRegSpace, uYRegSpace);
 						iPreviousCubeIndexZ >>= 4;
 					}
+					
+					uint8_t iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
-					iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
-
+					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
 					if (iCubeIndex != 0)
