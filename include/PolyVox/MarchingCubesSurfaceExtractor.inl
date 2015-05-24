@@ -68,10 +68,12 @@ namespace PolyVox
 		memset(pIndicesY.getRawData(), 0xff, pIndicesY.getNoOfElements() * 4);
 		memset(pIndicesZ.getRawData(), 0xff, pIndicesZ.getNoOfElements() * 4);
 
-		Array2DUint8 pCurrentBitmask(uArrayWidth, uArrayHeight);
-		Array2DUint8 pPreviousBitmask(uArrayWidth, uArrayHeight);
-		memset(pCurrentBitmask.getRawData(), 0x00, pCurrentBitmask.getNoOfElements());
-		memset(pPreviousBitmask.getRawData(), 0x00, pPreviousBitmask.getNoOfElements());
+		Array2DUint8 pPreviousSliceBitmask(uArrayWidth, uArrayHeight);
+		Array1DUint8 pPreviousRowBitmask(uArrayWidth);
+		memset(pPreviousSliceBitmask.getRawData(), 0x00, pPreviousSliceBitmask.getNoOfElements());
+		memset(pPreviousRowBitmask.getRawData(), 0x00, pPreviousRowBitmask.getNoOfElements());
+
+		uint8_t uPreviousCell = 0;
 
 		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
@@ -90,15 +92,15 @@ namespace PolyVox
 					uint8_t iPreviousCubeIndexX = 0;
 					if (uXRegSpace != 0) // Previous X is available
 					{
-						iPreviousCubeIndexX = pCurrentBitmask(uXRegSpace - 1, uYRegSpace);
+						iPreviousCubeIndexX = uPreviousCell;
 						iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 						iPreviousCubeIndexX >>= 1;
-					}
+					}					
 
 					uint8_t iPreviousCubeIndexY = 0;
 					if (uYRegSpace != 0) // Previous Y is available
 					{
-						iPreviousCubeIndexY = pCurrentBitmask(uXRegSpace, uYRegSpace - 1);
+						iPreviousCubeIndexY = pPreviousRowBitmask(uXRegSpace);
 						iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 						iPreviousCubeIndexY >>= 2;
 					}
@@ -106,7 +108,7 @@ namespace PolyVox
 					uint8_t iPreviousCubeIndexZ = 0;
 					if (uZRegSpace != 0) // Previous Z is available
 					{
-						iPreviousCubeIndexZ = pPreviousBitmask(uXRegSpace, uYRegSpace);
+						iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
 						iPreviousCubeIndexZ >>= 4;
 					}
 					
@@ -115,11 +117,9 @@ namespace PolyVox
 					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
-					if (iCubeIndex != 0)
-					{
-						//Save the bitmask
-						pCurrentBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
-					}
+					uPreviousCell = iCubeIndex;
+					pPreviousRowBitmask(uXRegSpace) = iCubeIndex;
+					pPreviousSliceBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
 
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] != 0)
@@ -313,8 +313,8 @@ namespace PolyVox
 				} // For X
 			} // For Y
 
-			pPreviousBitmask.swap(pCurrentBitmask);
-			memset(pCurrentBitmask.getRawData(), 0x00, pCurrentBitmask.getNoOfElements());
+			//pPreviousBitmask.swap(pCurrentBitmask);
+			//memset(pCurrentBitmask.getRawData(), 0x00, pCurrentBitmask.getNoOfElements());
 		} // For Z
 	}
 }
