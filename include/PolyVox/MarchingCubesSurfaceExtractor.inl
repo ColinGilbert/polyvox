@@ -76,19 +76,16 @@ namespace PolyVox
 		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
-			bool isPrevZAvail = iZVolSpace > m_regSizeInVoxels.getLowerZ();
 
 			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
 			{
 				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
-				bool isPrevYAvail = iYVolSpace > m_regSizeInVoxels.getLowerY();
 
 				m_sampVolume.setPosition(m_regSizeInVoxels.getLowerX(), iYVolSpace, iZVolSpace);
 
 				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
-					bool isPrevXAvail = iXVolSpace > m_regSizeInVoxels.getLowerX();
 
 					typename VolumeType::VoxelType v000;
 					typename VolumeType::VoxelType v100;
@@ -103,11 +100,11 @@ namespace PolyVox
 					uint8_t iCubeIndex = 0;
 					
 
-					if (isPrevZAvail)
+					if (uZRegSpace != 0) // Previous Z is available
 					{
-						if (isPrevYAvail)
+						if (uYRegSpace != 0) // Previous Y is available
 						{
-							if (isPrevXAvail)
+							if (uXRegSpace != 0) // Previous X is available
 							{
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
 
@@ -129,7 +126,7 @@ namespace PolyVox
 
 								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 							}
-							else //previous X not available
+							else // Previous X not available
 							{
 								v011 = m_sampVolume.peekVoxel1nx0py0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
@@ -149,9 +146,9 @@ namespace PolyVox
 								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 							}
 						}
-						else //previous Y not available
+						else // Previous Y not available
 						{
-							if (isPrevXAvail)
+							if (uXRegSpace != 0)
 							{
 								v101 = m_sampVolume.peekVoxel0px1ny0pz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
@@ -170,7 +167,7 @@ namespace PolyVox
 								if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
 								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 							}
-							else //previous X not available
+							else // Previous X not available
 							{
 								v001 = m_sampVolume.peekVoxel1nx1ny0pz();
 								v101 = m_sampVolume.peekVoxel0px1ny0pz();
@@ -188,11 +185,11 @@ namespace PolyVox
 							}
 						}
 					}
-					else //previous Z not available
+					else // Previous Z not available
 					{
-						if (isPrevYAvail)
+						if (uYRegSpace != 0) // Previous Y is available
 						{
-							if (isPrevXAvail)
+							if (uXRegSpace != 0) // Previous X is available
 							{
 								v110 = m_sampVolume.peekVoxel0px0py1nz();
 								v111 = m_sampVolume.peekVoxel0px0py0pz();
@@ -212,7 +209,7 @@ namespace PolyVox
 								if (m_controller.convertToDensity(v110) < m_tThreshold) iCubeIndex |= 8;
 								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 							}
-							else //previous X not available
+							else // Previous X not available
 							{
 								v010 = m_sampVolume.peekVoxel1nx0py1nz();
 								v110 = m_sampVolume.peekVoxel0px0py1nz();
@@ -233,9 +230,9 @@ namespace PolyVox
 								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 							}
 						}
-						else //previous Y not available
+						else // Previous Y not available
 						{
-							if (isPrevXAvail)
+							if (uXRegSpace != 0) // Previous X is available
 							{
 								v100 = m_sampVolume.peekVoxel0px1ny1nz();
 								v110 = m_sampVolume.peekVoxel0px0py1nz();
@@ -255,7 +252,7 @@ namespace PolyVox
 								if (m_controller.convertToDensity(v101) < m_tThreshold) iCubeIndex |= 32;
 								if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 							}
-							else //previous X not available
+							else // Previous X not available
 							{
 								v000 = m_sampVolume.peekVoxel1nx1ny1nz();
 								v100 = m_sampVolume.peekVoxel0px1ny1nz();
@@ -398,7 +395,7 @@ namespace PolyVox
 
 						// Now output the indices. For the first row, column or slice there aren't
 						// any (the region size in cells is one less than the region size in voxels)
-						if ((isPrevXAvail) && (isPrevYAvail) && (isPrevZAvail))
+						if ((uXRegSpace != 0) && (uYRegSpace != 0) && (uZRegSpace != 0))
 						{
 
 							int32_t indlist[12];
@@ -469,16 +466,16 @@ namespace PolyVox
 									{
 										m_meshCurrent->addTriangle(ind0, ind1, ind2);
 									}
-								}//For each triangle
+								} // For each triangle
 							}
 						}
-					}//For each cell
+					} // For each cell
 					m_sampVolume.movePositiveX();
-				}
-			}
+				} // For X
+			} // For Y
 
 			pPreviousBitmask.swap(pCurrentBitmask);
 			memset(pCurrentBitmask.getRawData(), 0x00, pCurrentBitmask.getNoOfElements());
-		}
+		} // For Z
 	}
 }
