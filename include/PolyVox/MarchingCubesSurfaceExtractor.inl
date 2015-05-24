@@ -89,12 +89,14 @@ namespace PolyVox
 				{
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
+					uint8_t iCubeIndex = 0;
 					uint8_t iPreviousCubeIndexX = 0;
 					if (uXRegSpace != 0) // Previous X is available
 					{
 						iPreviousCubeIndexX = uPreviousCell;
 						iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
 						iPreviousCubeIndexX >>= 1;
+						iCubeIndex |= iPreviousCubeIndexX;
 					}					
 
 					uint8_t iPreviousCubeIndexY = 0;
@@ -103,6 +105,7 @@ namespace PolyVox
 						iPreviousCubeIndexY = pPreviousRowBitmask(uXRegSpace);
 						iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 						iPreviousCubeIndexY >>= 2;
+						iCubeIndex |= iPreviousCubeIndexY;
 					}
 
 					uint8_t iPreviousCubeIndexZ = 0;
@@ -110,9 +113,8 @@ namespace PolyVox
 					{
 						iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
 						iPreviousCubeIndexZ >>= 4;
+						iCubeIndex |= iPreviousCubeIndexZ;
 					}
-					
-					uint8_t iCubeIndex = iPreviousCubeIndexX | iPreviousCubeIndexY | iPreviousCubeIndexZ;
 
 					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
@@ -312,9 +314,6 @@ namespace PolyVox
 					m_sampVolume.movePositiveX();
 				} // For X
 			} // For Y
-
-			//pPreviousBitmask.swap(pCurrentBitmask);
-			//memset(pCurrentBitmask.getRawData(), 0x00, pCurrentBitmask.getNoOfElements());
 		} // For Z
 	}
 }
