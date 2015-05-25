@@ -273,20 +273,8 @@ namespace PolyVox
 		// End of compiler bug workaroumd.
 		////////////////////////////////////////////////////////////////////////////////
 
-		//The volume data and a sampler to access it.
-		VolumeType* m_volData;
-
-		//The surface patch we are currently filling.
-		MeshType* m_meshCurrent;
-
-		//Information about the region we are currently processing
-		Region m_regSizeInVoxels;
-
 		//Used to convert arbitrary voxel types in densities and materials.
 		ControllerType m_controller;
-
-		//Our threshold value
-		typename ControllerType::DensityType m_tThreshold;
 	};
 
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.

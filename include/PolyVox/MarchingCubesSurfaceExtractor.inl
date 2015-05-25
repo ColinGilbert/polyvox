@@ -35,18 +35,15 @@ namespace PolyVox
 	{		
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 
-		m_volData = volData;
-		m_meshCurrent = result;
-		m_regSizeInVoxels = region;
 		m_controller = controller;
-		m_tThreshold = m_controller.getThreshold();
+		typename ControllerType::DensityType tThreshold = m_controller.getThreshold();
 
 		Timer timer;
-		m_meshCurrent->clear();
+		result->clear();
 
-		const uint32_t uArrayWidth = m_regSizeInVoxels.getUpperX() - m_regSizeInVoxels.getLowerX() + 2;
-		const uint32_t uArrayHeight = m_regSizeInVoxels.getUpperY() - m_regSizeInVoxels.getLowerY() + 2;
-		const uint32_t uArrayDepth = m_regSizeInVoxels.getUpperZ() - m_regSizeInVoxels.getLowerZ() + 2;
+		const uint32_t uArrayWidth = region.getUpperX() - region.getLowerX() + 2;
+		const uint32_t uArrayHeight = region.getUpperY() - region.getLowerY() + 2;
+		const uint32_t uArrayDepth = region.getUpperZ() - region.getLowerZ() + 2;
 
 		//For edge indices
 		Array3DInt32 pIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
@@ -64,26 +61,26 @@ namespace PolyVox
 
 		uint8_t uPreviousCell = 0;
 
-		typename VolumeType::Sampler startOfSlice(m_volData);
-		startOfSlice.setPosition(m_regSizeInVoxels.getLowerX(), m_regSizeInVoxels.getLowerY(), m_regSizeInVoxels.getLowerZ());
+		typename VolumeType::Sampler startOfSlice(volData);
+		startOfSlice.setPosition(region.getLowerX(), region.getLowerY(), region.getLowerZ());
 
-		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
+		for (int32_t iZVolSpace = region.getLowerZ(); iZVolSpace <= region.getUpperZ(); iZVolSpace++)
 		{
-			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
+			const uint32_t uZRegSpace = iZVolSpace - region.getLowerZ();
 
 			typename VolumeType::Sampler startOfRow = startOfSlice;
 
-			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
+			for (int32_t iYVolSpace = region.getLowerY(); iYVolSpace <= region.getUpperY(); iYVolSpace++)
 			{
-				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
+				const uint32_t uYRegSpace = iYVolSpace - region.getLowerY();
 
 				// Copying a sampler which is already pointing at the correct location seems (slightly) faster than
 				// calling setPosition(). Therefore we make use of 'startOfRow' and 'startOfSlice' to reset the sampler.
 				typename VolumeType::Sampler sampler = startOfRow;
 
-				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
+				for (int32_t iXVolSpace = region.getLowerX(); iXVolSpace <= region.getUpperX(); iXVolSpace++)
 				{
-					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
+					const uint32_t uXRegSpace = iXVolSpace - region.getLowerX();
 
 					uint8_t iCubeIndex = 0;
 
@@ -110,7 +107,7 @@ namespace PolyVox
 					// The last bit of our cube index is obtained by looking
 					// at the relevant voxel and comparing it to the threshold
 					typename VolumeType::VoxelType v111 = sampler.getVoxel();
-					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v111) < tThreshold) iCubeIndex |= 128;
 
 					// The current value becomes the previous value, ready for the next iteration.
 					uPreviousCell = iCubeIndex;
@@ -135,7 +132,7 @@ namespace PolyVox
 							POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
 							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler);
 
-							const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
+							const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
 
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
 							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -157,7 +154,7 @@ namespace PolyVox
 							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 							surfaceVertex.data = uMaterial;
 
-							const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+							const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
 							pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
 							sampler.movePositiveX();
@@ -168,7 +165,7 @@ namespace PolyVox
 							POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
 							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler);
 
-							const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
+							const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
 
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
 							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -190,7 +187,7 @@ namespace PolyVox
 							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 							surfaceVertex.data = uMaterial;
 
-							uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+							uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
 							pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
 							sampler.movePositiveY();
@@ -201,7 +198,7 @@ namespace PolyVox
 							POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
 							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler);
 
-							const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
+							const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
 
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
 							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -222,7 +219,7 @@ namespace PolyVox
 							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 							surfaceVertex.data = uMaterial;
 
-							const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
+							const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
 							pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
 							sampler.movePositiveZ();
@@ -299,7 +296,7 @@ namespace PolyVox
 
 									if ((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
 									{
-										m_meshCurrent->addTriangle(ind0, ind1, ind2);
+										result->addTriangle(ind0, ind1, ind2);
 									}
 								} // For each triangle
 							}
@@ -312,10 +309,10 @@ namespace PolyVox
 			startOfSlice.movePositiveZ();
 		} // For Z
 
-		m_meshCurrent->setOffset(m_regSizeInVoxels.getLowerCorner());
+		result->setOffset(region.getLowerCorner());
 
 		POLYVOX_LOG_TRACE("Marching cubes surface extraction took ", timer.elapsedTimeInMilliSeconds(),
-			"ms (Region size = ", m_regSizeInVoxels.getWidthInVoxels(), "x", m_regSizeInVoxels.getHeightInVoxels(),
-			"x", m_regSizeInVoxels.getDepthInVoxels(), ")");
+			"ms (Region size = ", region.getWidthInVoxels(), "x", region.getHeightInVoxels(),
+			"x", region.getDepthInVoxels(), ")");
 	}		
 }
