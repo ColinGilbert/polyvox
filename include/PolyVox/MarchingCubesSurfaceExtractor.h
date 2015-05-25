@@ -159,7 +159,7 @@ namespace PolyVox
 
 	private:
 		//Compute the cell bitmask for a particular slice in z.
-		void computeBitmaskForSlice();
+		void generateMeshForCell(uint32_t uXRegSpace, uint32_t uYRegSpace, uint32_t uZRegSpace, typename VolumeType::Sampler& sampler, typename VolumeType::VoxelType v111, uint8_t iCubeIndex, Array3DInt32& pIndicesX, Array3DInt32& pIndicesY, Array3DInt32& pIndicesZ, int32_t iXVolSpace, int32_t iYVolSpace, int32_t iZVolSpace);
 
 		////////////////////////////////////////////////////////////////////////////////
 		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
