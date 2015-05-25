@@ -277,7 +277,6 @@ namespace PolyVox
 
 		//The volume data and a sampler to access it.
 		VolumeType* m_volData;
-		typename VolumeType::Sampler m_sampVolume;
 
 		//The surface patch we are currently filling.
 		MeshType* m_meshCurrent;

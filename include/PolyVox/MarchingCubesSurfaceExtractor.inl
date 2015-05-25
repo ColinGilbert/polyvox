@@ -28,7 +28,6 @@ namespace PolyVox
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
 		:m_volData(volData)
-		,m_sampVolume(volData)
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
 		,m_controller(controller)
@@ -75,15 +74,22 @@ namespace PolyVox
 
 		uint8_t uPreviousCell = 0;
 
+		typename VolumeType::Sampler startOfSlice(m_volData);
+		startOfSlice.setPosition(m_regSizeInVoxels.getLowerX(), m_regSizeInVoxels.getLowerY(), m_regSizeInVoxels.getLowerZ());
+
 		for (int32_t iZVolSpace = m_regSizeInVoxels.getLowerZ(); iZVolSpace <= m_regSizeInVoxels.getUpperZ(); iZVolSpace++)
 		{
 			const uint32_t uZRegSpace = iZVolSpace - m_regSizeInVoxels.getLowerZ();
+
+			typename VolumeType::Sampler startOfRow = startOfSlice;
 
 			for (int32_t iYVolSpace = m_regSizeInVoxels.getLowerY(); iYVolSpace <= m_regSizeInVoxels.getUpperY(); iYVolSpace++)
 			{
 				const uint32_t uYRegSpace = iYVolSpace - m_regSizeInVoxels.getLowerY();
 
-				m_sampVolume.setPosition(m_regSizeInVoxels.getLowerX(), iYVolSpace, iZVolSpace);
+				// Copying a sampler which is already pointing at the correct location seems (slightly) faster than
+				// calling setPosition(). Therefore we make use of 'startOfRow' and 'startOfSlice' to reset the sampler.
+				typename VolumeType::Sampler sampler = startOfRow;
 
 				for (int32_t iXVolSpace = m_regSizeInVoxels.getLowerX(); iXVolSpace <= m_regSizeInVoxels.getUpperX(); iXVolSpace++)
 				{
@@ -116,7 +122,7 @@ namespace PolyVox
 						iCubeIndex |= iPreviousCubeIndexZ;
 					}
 
-					typename VolumeType::VoxelType v111 = m_sampVolume.peekVoxel0px0py0pz();
+					typename VolumeType::VoxelType v111 = sampler.peekVoxel0px0py0pz();
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
 					uPreviousCell = iCubeIndex;
@@ -128,18 +134,18 @@ namespace PolyVox
 					{
 
 						// These three might not have been sampled, as v111 is the only one we sample every iteration.
-						typename VolumeType::VoxelType v110 = m_sampVolume.peekVoxel0px0py1nz();
-						typename VolumeType::VoxelType v101 = m_sampVolume.peekVoxel0px1ny0pz();
-						typename VolumeType::VoxelType v011 = m_sampVolume.peekVoxel1nx0py0pz();
+						typename VolumeType::VoxelType v110 = sampler.peekVoxel0px0py1nz();
+						typename VolumeType::VoxelType v101 = sampler.peekVoxel0px1ny0pz();
+						typename VolumeType::VoxelType v011 = sampler.peekVoxel1nx0py0pz();
 
-						const Vector3DFloat n000 = computeCentralDifferenceGradient(m_sampVolume);
+						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler);
 
 						/* Find the vertices where the surface intersects the cube */
 						if ((edgeTable[iCubeIndex] & 64) && (uXRegSpace > 0))
 						{
-							m_sampVolume.moveNegativeX();
+							sampler.moveNegativeX();
 							POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n100 = computeCentralDifferenceGradient(m_sampVolume);
+							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler);
 
 							const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
 
@@ -166,13 +172,13 @@ namespace PolyVox
 							const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 							pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
-							m_sampVolume.movePositiveX();
+							sampler.movePositiveX();
 						}
 						if ((edgeTable[iCubeIndex] & 32) && (uYRegSpace > 0))
 						{
-							m_sampVolume.moveNegativeY();
+							sampler.moveNegativeY();
 							POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n010 = computeCentralDifferenceGradient(m_sampVolume);
+							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler);
 
 							const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
 
@@ -199,13 +205,13 @@ namespace PolyVox
 							uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 							pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
-							m_sampVolume.movePositiveY();
+							sampler.movePositiveY();
 						}
 						if ((edgeTable[iCubeIndex] & 1024) && (uZRegSpace > 0))
 						{
-							m_sampVolume.moveNegativeZ();
+							sampler.moveNegativeZ();
 							POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n001 = computeCentralDifferenceGradient(m_sampVolume);
+							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler);
 
 							const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
 
@@ -231,7 +237,7 @@ namespace PolyVox
 							const uint32_t uLastVertexIndex = m_meshCurrent->addVertex(surfaceVertex);
 							pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
 
-							m_sampVolume.movePositiveZ();
+							sampler.movePositiveZ();
 						}
 
 						// Now output the indices. For the first row, column or slice there aren't
@@ -241,7 +247,7 @@ namespace PolyVox
 
 							int32_t indlist[12];
 
-							m_sampVolume.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
+							sampler.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
 
 							/* Cube is entirely in/out of the surface */
 							if (edgeTable[iCubeIndex] != 0)
@@ -311,9 +317,11 @@ namespace PolyVox
 							}
 						}
 					} // For each cell
-					m_sampVolume.movePositiveX();
+					sampler.movePositiveX();
 				} // For X
+				startOfRow.movePositiveY();
 			} // For Y
+			startOfSlice.movePositiveZ();
 		} // For Z
 	}
 }
