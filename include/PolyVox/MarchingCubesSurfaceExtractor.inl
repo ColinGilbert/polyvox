@@ -97,23 +97,32 @@ namespace PolyVox
 
 					uint8_t iCubeIndex = 0;
 
-					uint8_t iPreviousCubeIndexX = uPreviousCell;
-					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-					iPreviousCubeIndexX >>= 1;
-					iCubeIndex |= iPreviousCubeIndexX;			
+					// Four bits of our cube index are obtained by looking at the cube index for
+					// the previous slice and copying four of those bits into their new positions.
+					uint8_t iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
+					iPreviousCubeIndexZ >>= 4;
+					iCubeIndex |= iPreviousCubeIndexZ;
 
+					// Two bits of our cube index are obtained by looking at the cube index for
+					// the previous row and copying two of those bits into their new positions.
 					uint8_t iPreviousCubeIndexY = pPreviousRowBitmask(uXRegSpace);
 					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
 					iPreviousCubeIndexY >>= 2;
 					iCubeIndex |= iPreviousCubeIndexY;
 
-					uint8_t iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
-					iPreviousCubeIndexZ >>= 4;
-					iCubeIndex |= iPreviousCubeIndexZ;
+					// One bit of our cube index are obtained by looking at the cube index for
+					// the previous cell and copying one of those bits into it's new position.
+					uint8_t iPreviousCubeIndexX = uPreviousCell;
+					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+					iPreviousCubeIndexX >>= 1;
+					iCubeIndex |= iPreviousCubeIndexX;
 
-					typename VolumeType::VoxelType v111 = sampler.peekVoxel0px0py0pz();
+					// The last bit of our cube index is obtained by looking
+					// at the relevant voxel and comparing it to the threshold
+					typename VolumeType::VoxelType v111 = sampler.getVoxel();
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
+					// The current value becomes the previous value, ready for the next iteration.
 					uPreviousCell = iCubeIndex;
 					pPreviousRowBitmask(uXRegSpace) = iCubeIndex;
 					pPreviousSliceBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
