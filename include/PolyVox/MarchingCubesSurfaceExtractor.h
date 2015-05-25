@@ -148,16 +148,6 @@ namespace PolyVox
 		return result;
 	}
 
-	/// Do not use this class directly. Use the 'extractMarchingCubesSurface' function instead (see examples).
-	template< typename VolumeType, typename MeshType, typename ControllerType>
-	class MarchingCubesSurfaceExtractor
-	{
-	public:
-		MarchingCubesSurfaceExtractor();
-
-		void execute(VolumeType* volData, Region region, MeshType* result, ControllerType controller);
-	};
-
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
 	// There are a few reasons why this might be useful to more advanced users:
 	//
@@ -172,11 +162,7 @@ namespace PolyVox
 	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
 	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
-	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType())
-	{
-		MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType> extractor;
-		extractor.execute(volData, region, result, controller);
-	}
+	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType());
 
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType())

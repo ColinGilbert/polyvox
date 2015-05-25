@@ -48,13 +48,8 @@ namespace PolyVox
 			);
 	}
 
-	template<typename VolumeType, typename MeshType, typename ControllerType>
-	MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::MarchingCubesSurfaceExtractor()
-	{		
-	}
-
-	template<typename VolumeType, typename MeshType, typename ControllerType>
-	void MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::execute(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
+	template< typename VolumeType, typename MeshType, typename ControllerType >
+	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
 	{		
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 
