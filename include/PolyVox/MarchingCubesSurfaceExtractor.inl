@@ -25,6 +25,29 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
+	template< typename Sampler, typename ControllerType>
+	Vector3DFloat computeCentralDifferenceGradient(const Sampler& volIter, ControllerType& controller)
+	{
+		//FIXME - Should actually use DensityType here, both in principle and because the maths may be
+		//faster (and to reduce casts). So it would be good to add a way to get DensityType from a voxel.
+		//But watch out for when the DensityType is unsigned and the difference could be negative.
+		float voxel1nx = static_cast<float>(controller.convertToDensity(volIter.peekVoxel1nx0py0pz()));
+		float voxel1px = static_cast<float>(controller.convertToDensity(volIter.peekVoxel1px0py0pz()));
+
+		float voxel1ny = static_cast<float>(controller.convertToDensity(volIter.peekVoxel0px1ny0pz()));
+		float voxel1py = static_cast<float>(controller.convertToDensity(volIter.peekVoxel0px1py0pz()));
+
+		float voxel1nz = static_cast<float>(controller.convertToDensity(volIter.peekVoxel0px0py1nz()));
+		float voxel1pz = static_cast<float>(controller.convertToDensity(volIter.peekVoxel0px0py1pz()));
+
+		return Vector3DFloat
+			(
+			voxel1nx - voxel1px,
+			voxel1ny - voxel1py,
+			voxel1nz - voxel1pz
+			);
+	}
+
 	template<typename VolumeType, typename MeshType, typename ControllerType>
 	MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType>::MarchingCubesSurfaceExtractor()
 	{		
