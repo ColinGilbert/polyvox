@@ -286,6 +286,9 @@ namespace PolyVox
 
 		//Used to convert arbitrary voxel types in densities and materials.
 		ControllerType m_controller;
+
+		//Our threshold value
+		typename ControllerType::DensityType m_tThreshold;
 	};
 
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.

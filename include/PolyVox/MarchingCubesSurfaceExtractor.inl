@@ -31,6 +31,7 @@ namespace PolyVox
 		,m_meshCurrent(result)
 		,m_regSizeInVoxels(region)
 		,m_controller(controller)
+		,m_tThreshold(m_controller.getThreshold())
 	{
 		POLYVOX_THROW_IF(m_meshCurrent == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 	}
@@ -60,8 +61,6 @@ namespace PolyVox
 		memset(pPreviousRowBitmask.getRawData(), 0x00, pPreviousRowBitmask.getNoOfElements());
 
 		uint8_t uPreviousCell = 0;
-
-		typename ControllerType::DensityType tThreshold = m_controller.getThreshold();
 
 		typename VolumeType::Sampler startOfSlice(m_volData);
 		startOfSlice.setPosition(m_regSizeInVoxels.getLowerX(), m_regSizeInVoxels.getLowerY(), m_regSizeInVoxels.getLowerZ());
@@ -109,7 +108,7 @@ namespace PolyVox
 					// The last bit of our cube index is obtained by looking
 					// at the relevant voxel and comparing it to the threshold
 					typename VolumeType::VoxelType v111 = sampler.getVoxel();
-					if (m_controller.convertToDensity(v111) < tThreshold) iCubeIndex |= 128;
+					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
 
 					// The current value becomes the previous value, ready for the next iteration.
 					uPreviousCell = iCubeIndex;
@@ -146,8 +145,6 @@ namespace PolyVox
 
 		const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler);
 
-		typename ControllerType::DensityType tThreshold = m_controller.getThreshold();
-
 		/* Find the vertices where the surface intersects the cube */
 		if ((edgeTable[iCubeIndex] & 64) && (uXRegSpace > 0))
 		{
@@ -155,7 +152,7 @@ namespace PolyVox
 			POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
 			const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler);
 
-			const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
+			const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
 
 			const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
 			const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -188,7 +185,7 @@ namespace PolyVox
 			POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
 			const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler);
 
-			const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
+			const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
 
 			const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
 			const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -221,7 +218,7 @@ namespace PolyVox
 			POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
 			const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler);
 
-			const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
+			const float fInterp = static_cast<float>(m_tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
 
 			const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
 			const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
