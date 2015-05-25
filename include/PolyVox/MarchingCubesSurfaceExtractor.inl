@@ -35,8 +35,7 @@ namespace PolyVox
 	{		
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 
-		m_controller = controller;
-		typename ControllerType::DensityType tThreshold = m_controller.getThreshold();
+		typename ControllerType::DensityType tThreshold = controller.getThreshold();
 
 		Timer timer;
 		result->clear();
@@ -107,7 +106,7 @@ namespace PolyVox
 					// The last bit of our cube index is obtained by looking
 					// at the relevant voxel and comparing it to the threshold
 					typename VolumeType::VoxelType v111 = sampler.getVoxel();
-					if (m_controller.convertToDensity(v111) < tThreshold) iCubeIndex |= 128;
+					if (controller.convertToDensity(v111) < tThreshold) iCubeIndex |= 128;
 
 					// The current value becomes the previous value, ready for the next iteration.
 					uPreviousCell = iCubeIndex;
@@ -123,16 +122,16 @@ namespace PolyVox
 						typename VolumeType::VoxelType v101 = sampler.peekVoxel0px1ny0pz();
 						typename VolumeType::VoxelType v011 = sampler.peekVoxel1nx0py0pz();
 
-						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler);
+						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
 
 						/* Find the vertices where the surface intersects the cube */
 						if ((edgeTable[iCubeIndex] & 64) && (uXRegSpace > 0))
 						{
 							sampler.moveNegativeX();
 							POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler);
+							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler, controller);
 
-							const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v011)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v011));
+							const float fInterp = static_cast<float>(tThreshold - controller.convertToDensity(v011)) / static_cast<float>(controller.convertToDensity(v111) - controller.convertToDensity(v011));
 
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
 							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -147,7 +146,7 @@ namespace PolyVox
 							}
 
 							// Allow the controller to decide how the material should be derived from the voxels.
-							const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v011, v111, fInterp);
+							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v011, v111, fInterp);
 
 							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 							surfaceVertex.encodedPosition = v3dScaledPosition;
@@ -163,9 +162,9 @@ namespace PolyVox
 						{
 							sampler.moveNegativeY();
 							POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler);
+							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler, controller);
 
-							const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v101)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v101));
+							const float fInterp = static_cast<float>(tThreshold - controller.convertToDensity(v101)) / static_cast<float>(controller.convertToDensity(v111) - controller.convertToDensity(v101));
 
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
 							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -180,7 +179,7 @@ namespace PolyVox
 							}
 
 							// Allow the controller to decide how the material should be derived from the voxels.
-							const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v101, v111, fInterp);
+							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v101, v111, fInterp);
 
 							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 							surfaceVertex.encodedPosition = v3dScaledPosition;
@@ -196,9 +195,9 @@ namespace PolyVox
 						{
 							sampler.moveNegativeZ();
 							POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler);
+							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler, controller);
 
-							const float fInterp = static_cast<float>(tThreshold - m_controller.convertToDensity(v110)) / static_cast<float>(m_controller.convertToDensity(v111) - m_controller.convertToDensity(v110));
+							const float fInterp = static_cast<float>(tThreshold - controller.convertToDensity(v110)) / static_cast<float>(controller.convertToDensity(v111) - controller.convertToDensity(v110));
 
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
 							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
@@ -212,7 +211,7 @@ namespace PolyVox
 							}
 
 							// Allow the controller to decide how the material should be derived from the voxels.
-							const typename VolumeType::VoxelType uMaterial = m_controller.blendMaterials(v110, v111, fInterp);
+							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v110, v111, fInterp);
 
 							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
 							surfaceVertex.encodedPosition = v3dScaledPosition;
