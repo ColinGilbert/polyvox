@@ -153,13 +153,11 @@ namespace PolyVox
 	class MarchingCubesSurfaceExtractor
 	{
 	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller);
+		MarchingCubesSurfaceExtractor();
 
-		void execute();
+		void execute(VolumeType* volData, Region region, MeshType* result, ControllerType controller);
 
 	private:
-		//Compute the cell bitmask for a particular slice in z.
-		void computeBitmaskForSlice();
 
 		////////////////////////////////////////////////////////////////////////////////
 		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
@@ -307,8 +305,8 @@ namespace PolyVox
 	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType())
 	{
-		MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType> extractor(volData, region, result, controller);
-		extractor.execute();
+		MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType> extractor;
+		extractor.execute(volData, region, result, controller);
 	}
 
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
