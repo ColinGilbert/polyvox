@@ -96,31 +96,20 @@ namespace PolyVox
 					const uint32_t uXRegSpace = iXVolSpace - m_regSizeInVoxels.getLowerX();
 
 					uint8_t iCubeIndex = 0;
-					uint8_t iPreviousCubeIndexX = 0;
-					if (uXRegSpace != 0) // Previous X is available
-					{
-						iPreviousCubeIndexX = uPreviousCell;
-						iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-						iPreviousCubeIndexX >>= 1;
-						iCubeIndex |= iPreviousCubeIndexX;
-					}					
 
-					uint8_t iPreviousCubeIndexY = 0;
-					if (uYRegSpace != 0) // Previous Y is available
-					{
-						iPreviousCubeIndexY = pPreviousRowBitmask(uXRegSpace);
-						iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-						iPreviousCubeIndexY >>= 2;
-						iCubeIndex |= iPreviousCubeIndexY;
-					}
+					uint8_t iPreviousCubeIndexX = uPreviousCell;
+					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
+					iPreviousCubeIndexX >>= 1;
+					iCubeIndex |= iPreviousCubeIndexX;			
 
-					uint8_t iPreviousCubeIndexZ = 0;
-					if (uZRegSpace != 0) // Previous Z is available
-					{
-						iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
-						iPreviousCubeIndexZ >>= 4;
-						iCubeIndex |= iPreviousCubeIndexZ;
-					}
+					uint8_t iPreviousCubeIndexY = pPreviousRowBitmask(uXRegSpace);
+					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
+					iPreviousCubeIndexY >>= 2;
+					iCubeIndex |= iPreviousCubeIndexY;
+
+					uint8_t iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
+					iPreviousCubeIndexZ >>= 4;
+					iCubeIndex |= iPreviousCubeIndexZ;
 
 					typename VolumeType::VoxelType v111 = sampler.peekVoxel0px0py0pz();
 					if (m_controller.convertToDensity(v111) < m_tThreshold) iCubeIndex |= 128;
