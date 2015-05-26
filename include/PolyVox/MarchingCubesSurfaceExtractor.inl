@@ -134,26 +134,22 @@ namespace PolyVox
 					/* Cube is entirely in/out of the surface */
 					if (edgeTable[iCubeIndex] != 0)
 					{
-
-						// These three might not have been sampled, as v111 is the only one we sample every iteration.
-						typename VolumeType::VoxelType v110 = sampler.peekVoxel0px0py1nz();
-						typename VolumeType::VoxelType v101 = sampler.peekVoxel0px1ny0pz();
-						typename VolumeType::VoxelType v011 = sampler.peekVoxel1nx0py0pz();
-
+						auto v111Density = controller.convertToDensity(v111);
 						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
 
 						/* Find the vertices where the surface intersects the cube */
 						if ((edgeTable[iCubeIndex] & 64) && (uXRegSpace > 0))
 						{
 							sampler.moveNegativeX();
-							POLYVOX_ASSERT(v011 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler, controller);
+							typename VolumeType::VoxelType v011 = sampler.getVoxel();
+							auto v011Density = controller.convertToDensity(v011);
+							const float fInterp = static_cast<float>(tThreshold - v011Density) / static_cast<float>(v111Density - v011Density);
 
-							const float fInterp = static_cast<float>(tThreshold - controller.convertToDensity(v011)) / static_cast<float>(controller.convertToDensity(v111) - controller.convertToDensity(v011));
-
+							// Compute the position
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
-							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
+							// Compute the normal
+							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler, controller);
 							Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
 
 							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
@@ -167,6 +163,7 @@ namespace PolyVox
 							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v011, v111, fInterp);
 
 							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 							surfaceVertex.encodedPosition = v3dScaledPosition;
 							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 							surfaceVertex.data = uMaterial;
@@ -179,14 +176,15 @@ namespace PolyVox
 						if ((edgeTable[iCubeIndex] & 32) && (uYRegSpace > 0))
 						{
 							sampler.moveNegativeY();
-							POLYVOX_ASSERT(v101 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler, controller);
+							typename VolumeType::VoxelType v101 = sampler.getVoxel();
+							auto v101Density = controller.convertToDensity(v101);
+							const float fInterp = static_cast<float>(tThreshold - v101Density) / static_cast<float>(v111Density - v101Density);
 
-							const float fInterp = static_cast<float>(tThreshold - controller.convertToDensity(v101)) / static_cast<float>(controller.convertToDensity(v111) - controller.convertToDensity(v101));
-
+							// Compute the position
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
-							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
+							// Compute the normal
+							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler, controller);
 							Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
 
 							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
@@ -200,6 +198,7 @@ namespace PolyVox
 							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v101, v111, fInterp);
 
 							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 							surfaceVertex.encodedPosition = v3dScaledPosition;
 							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 							surfaceVertex.data = uMaterial;
@@ -212,15 +211,17 @@ namespace PolyVox
 						if ((edgeTable[iCubeIndex] & 1024) && (uZRegSpace > 0))
 						{
 							sampler.moveNegativeZ();
-							POLYVOX_ASSERT(v110 != v111, "Attempting to insert vertex between two voxels with the same value");
-							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler, controller);
+							typename VolumeType::VoxelType v110 = sampler.getVoxel();
+							auto v110Density = controller.convertToDensity(v110);
+							const float fInterp = static_cast<float>(tThreshold - v110Density) / static_cast<float>(v111Density - v110Density);
 
-							const float fInterp = static_cast<float>(tThreshold - controller.convertToDensity(v110)) / static_cast<float>(controller.convertToDensity(v111) - controller.convertToDensity(v110));
-
+							// Compute the position
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
-							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 
+							// Compute the normal
+							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler, controller);
 							Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
+
 							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
 							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
 							if (v3dNormal.lengthSquared() > 0.000001f)
@@ -232,6 +233,7 @@ namespace PolyVox
 							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v110, v111, fInterp);
 
 							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
 							surfaceVertex.encodedPosition = v3dScaledPosition;
 							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
 							surfaceVertex.data = uMaterial;
