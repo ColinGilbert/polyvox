@@ -62,19 +62,13 @@ namespace PolyVox
 		const uint32_t uArrayHeight = region.getUpperY() - region.getLowerY() + 2;
 		const uint32_t uArrayDepth = region.getUpperZ() - region.getLowerZ() + 2;
 
-		//For edge indices
+		// No need to clear memory because we only read from elements we have written to.
 		Array3DInt32 pIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
 		Array3DInt32 pIndicesY(uArrayWidth, uArrayHeight, uArrayDepth);
 		Array3DInt32 pIndicesZ(uArrayWidth, uArrayHeight, uArrayDepth);
 
-		memset(pIndicesX.getRawData(), 0xff, pIndicesX.getNoOfElements() * 4);
-		memset(pIndicesY.getRawData(), 0xff, pIndicesY.getNoOfElements() * 4);
-		memset(pIndicesZ.getRawData(), 0xff, pIndicesZ.getNoOfElements() * 4);
-
 		Array2DUint8 pPreviousSliceBitmask(uArrayWidth, uArrayHeight);
 		Array1DUint8 pPreviousRowBitmask(uArrayWidth);
-		memset(pPreviousSliceBitmask.getRawData(), 0x00, pPreviousSliceBitmask.getNoOfElements());
-		memset(pPreviousRowBitmask.getRawData(), 0x00, pPreviousRowBitmask.getNoOfElements());
 
 		uint8_t uPreviousCell = 0;
 
