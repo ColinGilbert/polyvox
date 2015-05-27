@@ -244,12 +244,9 @@ namespace PolyVox
 
 							int32_t indlist[12];
 
-							sampler.setPosition(iXVolSpace, iYVolSpace, iZVolSpace);
-
 							/* Cube is entirely in/out of the surface */
 							if (edgeTable[iCubeIndex] != 0)
 							{
-
 								/* Find the vertices where the surface intersects the cube */
 								if (edgeTable[iCubeIndex] & 1)
 								{
