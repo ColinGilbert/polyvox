@@ -63,9 +63,8 @@ namespace PolyVox
 		const uint32_t uArrayDepth = region.getUpperZ() - region.getLowerZ() + 2;
 
 		// No need to clear memory because we only read from elements we have written to.
-		Array3DInt32 pIndicesX(uArrayWidth, uArrayHeight, uArrayDepth);
-		Array3DInt32 pIndicesY(uArrayWidth, uArrayHeight, uArrayDepth);
-		Array3DInt32 pIndicesZ(uArrayWidth, uArrayHeight, uArrayDepth);
+		Array<2, Vector3DInt32> pIndices(uArrayWidth, uArrayHeight);
+		Array<2, Vector3DInt32> pPreviousIndices(uArrayWidth, uArrayHeight);
 
 		Array2DUint8 pPreviousSliceBitmask(uArrayWidth, uArrayHeight);
 		Array1DUint8 pPreviousRowBitmask(uArrayWidth);
@@ -163,7 +162,7 @@ namespace PolyVox
 							surfaceVertex.data = uMaterial;
 
 							const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
-							pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
+							pIndices(uXRegSpace, uYRegSpace).setX(uLastVertexIndex);
 
 							sampler.movePositiveX();
 						}
@@ -198,7 +197,7 @@ namespace PolyVox
 							surfaceVertex.data = uMaterial;
 
 							uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
-							pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
+							pIndices(uXRegSpace, uYRegSpace).setY(uLastVertexIndex);
 
 							sampler.movePositiveY();
 						}
@@ -233,7 +232,7 @@ namespace PolyVox
 							surfaceVertex.data = uMaterial;
 
 							const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
-							pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace) = uLastVertexIndex;
+							pIndices(uXRegSpace, uYRegSpace).setZ(uLastVertexIndex);
 
 							sampler.movePositiveZ();
 						}
@@ -254,51 +253,51 @@ namespace PolyVox
 								/* Find the vertices where the surface intersects the cube */
 								if (edgeTable[iCubeIndex] & 1)
 								{
-									indlist[0] = pIndicesX(uXRegSpace, uYRegSpace - 1, uZRegSpace - 1);
+									indlist[0] = pPreviousIndices(uXRegSpace, uYRegSpace - 1).getX();
 								}
 								if (edgeTable[iCubeIndex] & 2)
 								{
-									indlist[1] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+									indlist[1] = pPreviousIndices(uXRegSpace, uYRegSpace).getY();
 								}
 								if (edgeTable[iCubeIndex] & 4)
 								{
-									indlist[2] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace - 1);
+									indlist[2] = pPreviousIndices(uXRegSpace, uYRegSpace).getX();
 								}
 								if (edgeTable[iCubeIndex] & 8)
 								{
-									indlist[3] = pIndicesY(uXRegSpace - 1, uYRegSpace, uZRegSpace - 1);
+									indlist[3] = pPreviousIndices(uXRegSpace - 1, uYRegSpace).getY();
 								}
 								if (edgeTable[iCubeIndex] & 16)
 								{
-									indlist[4] = pIndicesX(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+									indlist[4] = pIndices(uXRegSpace, uYRegSpace - 1).getX();
 								}
 								if (edgeTable[iCubeIndex] & 32)
 								{
-									indlist[5] = pIndicesY(uXRegSpace, uYRegSpace, uZRegSpace);
+									indlist[5] = pIndices(uXRegSpace, uYRegSpace).getY();
 								}
 								if (edgeTable[iCubeIndex] & 64)
 								{
-									indlist[6] = pIndicesX(uXRegSpace, uYRegSpace, uZRegSpace);
+									indlist[6] = pIndices(uXRegSpace, uYRegSpace).getX();
 								}
 								if (edgeTable[iCubeIndex] & 128)
 								{
-									indlist[7] = pIndicesY(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+									indlist[7] = pIndices(uXRegSpace - 1, uYRegSpace).getY();
 								}
 								if (edgeTable[iCubeIndex] & 256)
 								{
-									indlist[8] = pIndicesZ(uXRegSpace - 1, uYRegSpace - 1, uZRegSpace);
+									indlist[8] = pIndices(uXRegSpace - 1, uYRegSpace - 1).getZ();
 								}
 								if (edgeTable[iCubeIndex] & 512)
 								{
-									indlist[9] = pIndicesZ(uXRegSpace, uYRegSpace - 1, uZRegSpace);
+									indlist[9] = pIndices(uXRegSpace, uYRegSpace - 1).getZ();
 								}
 								if (edgeTable[iCubeIndex] & 1024)
 								{
-									indlist[10] = pIndicesZ(uXRegSpace, uYRegSpace, uZRegSpace);
+									indlist[10] = pIndices(uXRegSpace, uYRegSpace).getZ();
 								}
 								if (edgeTable[iCubeIndex] & 2048)
 								{
-									indlist[11] = pIndicesZ(uXRegSpace - 1, uYRegSpace, uZRegSpace);
+									indlist[11] = pIndices(uXRegSpace - 1, uYRegSpace).getZ();
 								}
 
 								for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
@@ -320,6 +319,8 @@ namespace PolyVox
 				startOfRow.movePositiveY();
 			} // For Y
 			startOfSlice.movePositiveZ();
+
+			pIndices.swap(pPreviousIndices);
 		} // For Z
 
 		result->setOffset(region.getLowerCorner());
