@@ -74,24 +74,18 @@ namespace PolyVox
 		typename VolumeType::Sampler startOfSlice(volData);
 		startOfSlice.setPosition(region.getLowerX(), region.getLowerY(), region.getLowerZ());
 
-		for (int32_t iZVolSpace = region.getLowerZ(); iZVolSpace <= region.getUpperZ(); iZVolSpace++)
+		for (int32_t uZRegSpace = 0; uZRegSpace < region.getDepthInVoxels(); uZRegSpace++)
 		{
-			const uint32_t uZRegSpace = iZVolSpace - region.getLowerZ();
-
 			typename VolumeType::Sampler startOfRow = startOfSlice;
 
-			for (int32_t iYVolSpace = region.getLowerY(); iYVolSpace <= region.getUpperY(); iYVolSpace++)
+			for (int32_t uYRegSpace = 0; uYRegSpace < region.getHeightInVoxels(); uYRegSpace++)
 			{
-				const uint32_t uYRegSpace = iYVolSpace - region.getLowerY();
-
 				// Copying a sampler which is already pointing at the correct location seems (slightly) faster than
 				// calling setPosition(). Therefore we make use of 'startOfRow' and 'startOfSlice' to reset the sampler.
 				typename VolumeType::Sampler sampler = startOfRow;
 
-				for (int32_t iXVolSpace = region.getLowerX(); iXVolSpace <= region.getUpperX(); iXVolSpace++)
+				for (int32_t uXRegSpace = 0; uXRegSpace < region.getWidthInVoxels(); uXRegSpace++)
 				{
-					const uint32_t uXRegSpace = iXVolSpace - region.getLowerX();
-
 					uint8_t iCubeIndex = 0;
 
 					// Four bits of our cube index are obtained by looking at the cube index for
