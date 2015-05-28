@@ -129,13 +129,14 @@ namespace PolyVox
 					pPreviousSliceBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
 
 					/* Cube is entirely in/out of the surface */
-					if (edgeTable[iCubeIndex] != 0)
+					uint16_t uEdge = edgeTable[iCubeIndex];
+					if (uEdge != 0)
 					{
 						auto v111Density = controller.convertToDensity(v111);
 						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
 
 						/* Find the vertices where the surface intersects the cube */
-						if ((edgeTable[iCubeIndex] & 64) && (uXRegSpace > 0))
+						if ((uEdge & 64) && (uXRegSpace > 0))
 						{
 							sampler.moveNegativeX();
 							typename VolumeType::VoxelType v011 = sampler.getVoxel();
@@ -170,7 +171,7 @@ namespace PolyVox
 
 							sampler.movePositiveX();
 						}
-						if ((edgeTable[iCubeIndex] & 32) && (uYRegSpace > 0))
+						if ((uEdge & 32) && (uYRegSpace > 0))
 						{
 							sampler.moveNegativeY();
 							typename VolumeType::VoxelType v101 = sampler.getVoxel();
@@ -205,7 +206,7 @@ namespace PolyVox
 
 							sampler.movePositiveY();
 						}
-						if ((edgeTable[iCubeIndex] & 1024) && (uZRegSpace > 0))
+						if ((uEdge & 1024) && (uZRegSpace > 0))
 						{
 							sampler.moveNegativeZ();
 							typename VolumeType::VoxelType v110 = sampler.getVoxel();
@@ -249,51 +250,51 @@ namespace PolyVox
 							int32_t indlist[12];
 
 							/* Find the vertices where the surface intersects the cube */
-							if (edgeTable[iCubeIndex] & 1)
+							if (uEdge & 1)
 							{
 								indlist[0] = pPreviousIndices(uXRegSpace, uYRegSpace - 1).getX();
 							}
-							if (edgeTable[iCubeIndex] & 2)
+							if (uEdge & 2)
 							{
 								indlist[1] = pPreviousIndices(uXRegSpace, uYRegSpace).getY();
 							}
-							if (edgeTable[iCubeIndex] & 4)
+							if (uEdge & 4)
 							{
 								indlist[2] = pPreviousIndices(uXRegSpace, uYRegSpace).getX();
 							}
-							if (edgeTable[iCubeIndex] & 8)
+							if (uEdge & 8)
 							{
 								indlist[3] = pPreviousIndices(uXRegSpace - 1, uYRegSpace).getY();
 							}
-							if (edgeTable[iCubeIndex] & 16)
+							if (uEdge & 16)
 							{
 								indlist[4] = pIndices(uXRegSpace, uYRegSpace - 1).getX();
 							}
-							if (edgeTable[iCubeIndex] & 32)
+							if (uEdge & 32)
 							{
 								indlist[5] = pIndices(uXRegSpace, uYRegSpace).getY();
 							}
-							if (edgeTable[iCubeIndex] & 64)
+							if (uEdge & 64)
 							{
 								indlist[6] = pIndices(uXRegSpace, uYRegSpace).getX();
 							}
-							if (edgeTable[iCubeIndex] & 128)
+							if (uEdge & 128)
 							{
 								indlist[7] = pIndices(uXRegSpace - 1, uYRegSpace).getY();
 							}
-							if (edgeTable[iCubeIndex] & 256)
+							if (uEdge & 256)
 							{
 								indlist[8] = pIndices(uXRegSpace - 1, uYRegSpace - 1).getZ();
 							}
-							if (edgeTable[iCubeIndex] & 512)
+							if (uEdge & 512)
 							{
 								indlist[9] = pIndices(uXRegSpace, uYRegSpace - 1).getZ();
 							}
-							if (edgeTable[iCubeIndex] & 1024)
+							if (uEdge & 1024)
 							{
 								indlist[10] = pIndices(uXRegSpace, uYRegSpace).getZ();
 							}
-							if (edgeTable[iCubeIndex] & 2048)
+							if (uEdge & 2048)
 							{
 								indlist[11] = pIndices(uXRegSpace - 1, uYRegSpace).getZ();
 							}
