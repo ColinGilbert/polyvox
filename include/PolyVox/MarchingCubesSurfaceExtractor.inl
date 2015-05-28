@@ -53,38 +53,38 @@ namespace PolyVox
 	{		
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 
-		typename ControllerType::DensityType tThreshold = controller.getThreshold();
-
 		Timer timer;
 		result->clear();
 
-		const uint32_t uArrayWidth = region.getUpperX() - region.getLowerX() + 2;
-		const uint32_t uArrayHeight = region.getUpperY() - region.getLowerY() + 2;
-		const uint32_t uArrayDepth = region.getUpperZ() - region.getLowerZ() + 2;
+		typename ControllerType::DensityType tThreshold = controller.getThreshold();
+
+		const uint32_t uRegionWidthInVoxels = region.getWidthInVoxels();
+		const uint32_t uRegionHeightInVoxels = region.getHeightInVoxels();
+		const uint32_t uRegionDepthInVoxels = region.getDepthInVoxels();
 
 		// No need to clear memory because we only read from elements we have written to.
-		Array<2, Vector3DInt32> pIndices(uArrayWidth, uArrayHeight);
-		Array<2, Vector3DInt32> pPreviousIndices(uArrayWidth, uArrayHeight);
+		Array<2, Vector3DInt32> pIndices(uRegionWidthInVoxels, uRegionHeightInVoxels);
+		Array<2, Vector3DInt32> pPreviousIndices(uRegionWidthInVoxels, uRegionHeightInVoxels);
 
-		Array2DUint8 pPreviousSliceBitmask(uArrayWidth, uArrayHeight);
-		Array1DUint8 pPreviousRowBitmask(uArrayWidth);
+		Array2DUint8 pPreviousSliceBitmask(uRegionWidthInVoxels, uRegionHeightInVoxels);
+		Array1DUint8 pPreviousRowBitmask(uRegionWidthInVoxels);
 
 		uint8_t uPreviousCell = 0;
 
 		typename VolumeType::Sampler startOfSlice(volData);
 		startOfSlice.setPosition(region.getLowerX(), region.getLowerY(), region.getLowerZ());
 
-		for (int32_t uZRegSpace = 0; uZRegSpace < region.getDepthInVoxels(); uZRegSpace++)
+		for (int32_t uZRegSpace = 0; uZRegSpace < uRegionDepthInVoxels; uZRegSpace++)
 		{
 			typename VolumeType::Sampler startOfRow = startOfSlice;
 
-			for (int32_t uYRegSpace = 0; uYRegSpace < region.getHeightInVoxels(); uYRegSpace++)
+			for (int32_t uYRegSpace = 0; uYRegSpace < uRegionHeightInVoxels; uYRegSpace++)
 			{
 				// Copying a sampler which is already pointing at the correct location seems (slightly) faster than
 				// calling setPosition(). Therefore we make use of 'startOfRow' and 'startOfSlice' to reset the sampler.
 				typename VolumeType::Sampler sampler = startOfRow;
 
-				for (int32_t uXRegSpace = 0; uXRegSpace < region.getWidthInVoxels(); uXRegSpace++)
+				for (int32_t uXRegSpace = 0; uXRegSpace < uRegionWidthInVoxels; uXRegSpace++)
 				{
 					uint8_t iCubeIndex = 0;
 
