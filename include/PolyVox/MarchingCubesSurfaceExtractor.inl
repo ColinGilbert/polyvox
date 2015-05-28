@@ -74,17 +74,17 @@ namespace PolyVox
 		typename VolumeType::Sampler startOfSlice(volData);
 		startOfSlice.setPosition(region.getLowerX(), region.getLowerY(), region.getLowerZ());
 
-		for (int32_t uZRegSpace = 0; uZRegSpace < uRegionDepthInVoxels; uZRegSpace++)
+		for (uint32_t uZRegSpace = 0; uZRegSpace < uRegionDepthInVoxels; uZRegSpace++)
 		{
 			typename VolumeType::Sampler startOfRow = startOfSlice;
 
-			for (int32_t uYRegSpace = 0; uYRegSpace < uRegionHeightInVoxels; uYRegSpace++)
+			for (uint32_t uYRegSpace = 0; uYRegSpace < uRegionHeightInVoxels; uYRegSpace++)
 			{
 				// Copying a sampler which is already pointing at the correct location seems (slightly) faster than
 				// calling setPosition(). Therefore we make use of 'startOfRow' and 'startOfSlice' to reset the sampler.
 				typename VolumeType::Sampler sampler = startOfRow;
 
-				for (int32_t uXRegSpace = 0; uXRegSpace < uRegionWidthInVoxels; uXRegSpace++)
+				for (uint32_t uXRegSpace = 0; uXRegSpace < uRegionWidthInVoxels; uXRegSpace++)
 				{
 					// Note: In many cases the provided region will be (mostly) empty which means mesh vertices/indices 
 					// are not generated and the only thing that is done for each cell is the computation of iCubeIndex.
