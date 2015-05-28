@@ -49,9 +49,8 @@ namespace PolyVox
 	}
 
 	template< typename VolumeType, typename MeshType, typename ControllerType >
-	void generateMeshForCell(Region& region, MeshType* result, ControllerType& controller, typename VolumeType::Sampler& sampler, Array<2, Vector3DInt32>& pIndices, Array<2, Vector3DInt32>& pPreviousIndices, uint8_t iCubeIndex, uint32_t uXRegSpace, uint32_t uYRegSpace, uint32_t uZRegSpace, typename ControllerType::DensityType tThreshold)
+	void generateMeshForCell(Region& region, MeshType* result, ControllerType& controller, typename VolumeType::Sampler& sampler, Array<2, Vector3DInt32>& pIndices, Array<2, Vector3DInt32>& pPreviousIndices, uint8_t iCubeIndex, uint32_t uXRegSpace, uint32_t uYRegSpace, uint32_t uZRegSpace, typename ControllerType::DensityType tThreshold, typename VolumeType::VoxelType& v111)
 	{
-		auto v111 = sampler.getVoxel();
 		auto v111Density = controller.convertToDensity(v111);
 		const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
 
@@ -324,7 +323,7 @@ namespace PolyVox
 						// occupied cells are really the bottleneck. The large number of parameters is messy though, so it
 						// would be nice to reduce these if we can work out how.
 						generateMeshForCell<VolumeType, MeshType, ControllerType>(region, result, controller, 
-							sampler, pIndices, pPreviousIndices, iCubeIndex, uXRegSpace, uYRegSpace, uZRegSpace, tThreshold);
+							sampler, pIndices, pPreviousIndices, iCubeIndex, uXRegSpace, uYRegSpace, uZRegSpace, tThreshold, v111);
 					} // For each cell
 					sampler.movePositiveX();
 				} // For X
