@@ -86,6 +86,16 @@ namespace PolyVox
 
 				for (int32_t uXRegSpace = 0; uXRegSpace < uRegionWidthInVoxels; uXRegSpace++)
 				{
+					// Note: In many cases the provided region will be (mostly) empty which means mesh vertices/indices 
+					// are not generated and the only thing that is done for each cell is the computation of iCubeIndex.
+					// It appears that retriving the voxel value is not so expensive and that it is the bitwise combining
+					// which actually carries the cost.
+					//
+					// If we really need to speed this up more then it may be possible to pack 4 8-bit cell indices into
+					// a single 32-bit value and then perform the bitwise logic on all four of them at the same time. 
+					// However, this complicates the code and there would still be the cost of packing/unpacking so it's
+					// not clear if there is really a benefit. It's something to consider in the future.
+
 					uint8_t iCubeIndex = 0;
 
 					// Four bits of our cube index are obtained by looking at the cube index for
