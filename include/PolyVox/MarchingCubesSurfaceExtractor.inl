@@ -57,6 +57,10 @@ namespace PolyVox
 
 		// For profiling this function
 		Timer timer;
+
+		// Performance note: Profiling indicates that simply adding vertices and indices to the std::vector is one 
+		// of the bottlenecks when generating the mesh. Reserving space in advance helps here but is wasteful in the 
+		// common case that no/few vertices are generated. Maybe it's worth reserving a couple of thousand or so?
 		result->clear();
 
 		// Store some commonly used values for performance and convienience
@@ -160,6 +164,12 @@ namespace PolyVox
 					if (uEdge != 0)
 					{
 						auto v111Density = controller.convertToDensity(v111);
+
+						// Performance note: Computing normals is one of the bottlencks in the mesh generation process. The
+						// central difference approach actually samples the same voxel more than once as we call it on two
+						// adjacent voxels. Perhaps we could expand this and eliminate dupicates in the future. Alternatively, 
+						// we could compute vertex normals from adjacent face normals instead of via central differencing, 
+						// but not for vertices on the edge of the region (as this causes visual discontinities).
 						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
 
 						/* Find the vertices where the surface intersects the cube */
