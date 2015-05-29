@@ -148,184 +148,12 @@ namespace PolyVox
 		return result;
 	}
 
-	/// Do not use this class directly. Use the 'extractMarchingCubesSurface' function instead (see examples).
-	template< typename VolumeType, typename MeshType, typename ControllerType>
-	class MarchingCubesSurfaceExtractor
-	{
-	public:
-		MarchingCubesSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, ControllerType controller);
-
-		void execute();
-
-	private:
-		//Compute the cell bitmask for a particular slice in z.
-		template<bool isPrevZAvail>
-		uint32_t computeBitmaskForSlice(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask);
-
-		//Compute the cell bitmask for a given cell.
-		template<bool isPrevXAvail, bool isPrevYAvail, bool isPrevZAvail>
-		void computeBitmaskForCell(const Array2DUint8& pPreviousBitmask, Array2DUint8& pCurrentBitmask, uint32_t uXRegSpace, uint32_t uYRegSpace);
-
-		//Use the cell bitmasks to generate all the vertices needed for that slice
-		void generateVerticesForSlice(const Array2DUint8& pCurrentBitmask,
-			Array2DInt32& m_pCurrentVertexIndicesX,
-			Array2DInt32& m_pCurrentVertexIndicesY,
-			Array2DInt32& m_pCurrentVertexIndicesZ);
-
-		////////////////////////////////////////////////////////////////////////////////
-		// NOTE: These two functions are in the .h file rather than the .inl due to an apparent bug in VC2010.
-		//See http://stackoverflow.com/questions/1484885/strange-vc-compile-error-c2244 for details.
-		////////////////////////////////////////////////////////////////////////////////
-		Vector3DFloat computeCentralDifferenceGradient(const typename VolumeType::Sampler& volIter)
-		{
-			//FIXME - Should actually use DensityType here, both in principle and because the maths may be
-			//faster (and to reduce casts). So it would be good to add a way to get DensityType from a voxel.
-			//But watch out for when the DensityType is unsigned and the difference could be negative.
-			float voxel1nx = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx0py0pz()));
-			float voxel1px = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px0py0pz()));
-
-			float voxel1ny = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1ny0pz()));
-			float voxel1py = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1py0pz()));
-
-			float voxel1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px0py1nz()));
-			float voxel1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px0py1pz()));
-
-			return Vector3DFloat
-			(
-				voxel1nx - voxel1px,
-				voxel1ny - voxel1py,
-				voxel1nz - voxel1pz
-			);
-		}
-
-		Vector3DFloat computeSobelGradient(const typename VolumeType::Sampler& volIter)
-		{
-			static const int weights[3][3][3] = {  {  {2,3,2}, {3,6,3}, {2,3,2}  },  {
-				{3,6,3},  {6,0,6},  {3,6,3} },  { {2,3,2},  {3,6,3},  {2,3,2} } };
-
-				//FIXME - Should actually use DensityType here, both in principle and because the maths may be
-				//faster (and to reduce casts). So it would be good to add a way to get DensityType from a voxel.
-				//But watch out for when the DensityType is unsigned and the difference could be negative.
-				const float pVoxel1nx1ny1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx1ny1nz()));
-				const float pVoxel1nx1ny0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx1ny0pz()));
-				const float pVoxel1nx1ny1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx1ny1pz()));
-				const float pVoxel1nx0py1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx0py1nz()));
-				const float pVoxel1nx0py0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx0py0pz()));
-				const float pVoxel1nx0py1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx0py1pz()));
-				const float pVoxel1nx1py1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx1py1nz()));
-				const float pVoxel1nx1py0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx1py0pz()));
-				const float pVoxel1nx1py1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1nx1py1pz()));
-
-				const float pVoxel0px1ny1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1ny1nz()));
-				const float pVoxel0px1ny0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1ny0pz()));
-				const float pVoxel0px1ny1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1ny1pz()));
-				const float pVoxel0px0py1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px0py1nz()));
-				//const float pVoxel0px0py0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px0py0pz()));
-				const float pVoxel0px0py1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px0py1pz()));
-				const float pVoxel0px1py1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1py1nz()));
-				const float pVoxel0px1py0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1py0pz()));
-				const float pVoxel0px1py1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel0px1py1pz()));
-
-				const float pVoxel1px1ny1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px1ny1nz()));
-				const float pVoxel1px1ny0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px1ny0pz()));
-				const float pVoxel1px1ny1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px1ny1pz()));
-				const float pVoxel1px0py1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px0py1nz()));
-				const float pVoxel1px0py0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px0py0pz()));
-				const float pVoxel1px0py1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px0py1pz()));
-				const float pVoxel1px1py1nz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px1py1nz()));
-				const float pVoxel1px1py0pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px1py0pz()));
-				const float pVoxel1px1py1pz = static_cast<float>(m_controller.convertToDensity(volIter.peekVoxel1px1py1pz()));
-
-				const float xGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
-					weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
-					pVoxel1nx1ny1pz - weights[0][1][0] * pVoxel1nx0py1nz -
-					weights[1][1][0] * pVoxel1nx0py0pz - weights[2][1][0] *
-					pVoxel1nx0py1pz - weights[0][2][0] * pVoxel1nx1py1nz -
-					weights[1][2][0] * pVoxel1nx1py0pz - weights[2][2][0] *
-					pVoxel1nx1py1pz + weights[0][0][2] * pVoxel1px1ny1nz +
-					weights[1][0][2] * pVoxel1px1ny0pz + weights[2][0][2] *
-					pVoxel1px1ny1pz + weights[0][1][2] * pVoxel1px0py1nz +
-					weights[1][1][2] * pVoxel1px0py0pz + weights[2][1][2] *
-					pVoxel1px0py1pz + weights[0][2][2] * pVoxel1px1py1nz +
-					weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
-					pVoxel1px1py1pz);
-
-				const float yGrad(- weights[0][0][0] * pVoxel1nx1ny1nz -
-					weights[1][0][0] * pVoxel1nx1ny0pz - weights[2][0][0] *
-					pVoxel1nx1ny1pz + weights[0][2][0] * pVoxel1nx1py1nz +
-					weights[1][2][0] * pVoxel1nx1py0pz + weights[2][2][0] *
-					pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz -
-					weights[1][0][1] * pVoxel0px1ny0pz - weights[2][0][1] *
-					pVoxel0px1ny1pz + weights[0][2][1] * pVoxel0px1py1nz +
-					weights[1][2][1] * pVoxel0px1py0pz + weights[2][2][1] *
-					pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz -
-					weights[1][0][2] * pVoxel1px1ny0pz - weights[2][0][2] *
-					pVoxel1px1ny1pz + weights[0][2][2] * pVoxel1px1py1nz +
-					weights[1][2][2] * pVoxel1px1py0pz + weights[2][2][2] *
-					pVoxel1px1py1pz);
-
-				const float zGrad(- weights[0][0][0] * pVoxel1nx1ny1nz +
-					weights[2][0][0] * pVoxel1nx1ny1pz - weights[0][1][0] *
-					pVoxel1nx0py1nz + weights[2][1][0] * pVoxel1nx0py1pz -
-					weights[0][2][0] * pVoxel1nx1py1nz + weights[2][2][0] *
-					pVoxel1nx1py1pz - weights[0][0][1] * pVoxel0px1ny1nz +
-					weights[2][0][1] * pVoxel0px1ny1pz - weights[0][1][1] *
-					pVoxel0px0py1nz + weights[2][1][1] * pVoxel0px0py1pz -
-					weights[0][2][1] * pVoxel0px1py1nz + weights[2][2][1] *
-					pVoxel0px1py1pz - weights[0][0][2] * pVoxel1px1ny1nz +
-					weights[2][0][2] * pVoxel1px1ny1pz - weights[0][1][2] *
-					pVoxel1px0py1nz + weights[2][1][2] * pVoxel1px0py1pz -
-					weights[0][2][2] * pVoxel1px1py1nz + weights[2][2][2] *
-					pVoxel1px1py1pz);
-
-				//Note: The above actually give gradients going from low density to high density.
-				//For our normals we want the the other way around, so we switch the components as we return them.
-				return Vector3DFloat(-xGrad,-yGrad,-zGrad);
-		}
-		////////////////////////////////////////////////////////////////////////////////
-		// End of compiler bug workaroumd.
-		////////////////////////////////////////////////////////////////////////////////
-
-		//Use the cell bitmasks to generate all the indices needed for that slice
-		void generateIndicesForSlice(const Array2DUint8& pPreviousBitmask,
-			const Array2DInt32& m_pPreviousVertexIndicesX,
-			const Array2DInt32& m_pPreviousVertexIndicesY,
-			const Array2DInt32& m_pPreviousVertexIndicesZ,
-			const Array2DInt32& m_pCurrentVertexIndicesX,
-			const Array2DInt32& m_pCurrentVertexIndicesY);
-
-		//The volume data and a sampler to access it.
-		VolumeType* m_volData;
-		typename VolumeType::Sampler m_sampVolume;
-
-		//Used to return the number of cells in a slice which contain triangles.
-		uint32_t m_uNoOfOccupiedCells;
-
-		//The surface patch we are currently filling.
-		MeshType* m_meshCurrent;
-
-		//Information about the region we are currently processing
-		Region m_regSizeInVoxels;
-		Region m_regSizeInCells;
-		/*Region m_regSizeInVoxelsCropped;
-		Region m_regSizeInVoxelsUncropped;
-		Region m_regVolumeCropped;*/
-		Region m_regSlicePrevious;
-		Region m_regSliceCurrent;
-
-		//Used to convert arbitrary voxel types in densities and materials.
-		ControllerType m_controller;
-
-		//Our threshold value
-		typename ControllerType::DensityType m_tThreshold;
-	};
-
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
 	// There are a few reasons why this might be useful to more advanced users:
 	//
 	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
 	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
-	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
+	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an OpenGL VBO to allow direct writing into this structure.
 	//
 	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
 	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
@@ -334,11 +162,7 @@ namespace PolyVox
 	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
 	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
-	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType())
-	{
-		MarchingCubesSurfaceExtractor<VolumeType, MeshType, ControllerType> extractor(volData, region, result, controller);
-		extractor.execute();
-	}
+	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType());
 
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType())
