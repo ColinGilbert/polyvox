@@ -49,192 +49,6 @@ namespace PolyVox
 	}
 
 	template< typename VolumeType, typename MeshType, typename ControllerType >
-	void generateMeshForCell(Region& region, MeshType* result, ControllerType& controller, typename VolumeType::Sampler& sampler, Array<2, Vector3DInt32>& pIndices, Array<2, Vector3DInt32>& pPreviousIndices, uint8_t iCubeIndex, uint32_t uXRegSpace, uint32_t uYRegSpace, uint32_t uZRegSpace, typename ControllerType::DensityType tThreshold)
-	{
-		auto v111 = sampler.getVoxel();
-		auto v111Density = controller.convertToDensity(v111);
-		const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
-
-		uint16_t uEdge = edgeTable[iCubeIndex];
-		/* Find the vertices where the surface intersects the cube */
-		if ((uEdge & 64) && (uXRegSpace > 0))
-		{
-			sampler.moveNegativeX();
-			typename VolumeType::VoxelType v011 = sampler.getVoxel();
-			auto v011Density = controller.convertToDensity(v011);
-			const float fInterp = static_cast<float>(tThreshold - v011Density) / static_cast<float>(v111Density - v011Density);
-
-			// Compute the position
-			const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
-
-			// Compute the normal
-			const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler, controller);
-			Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
-
-			// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
-			// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
-			if (v3dNormal.lengthSquared() > 0.000001f)
-			{
-				v3dNormal.normalise();
-			}
-
-			// Allow the controller to decide how the material should be derived from the voxels.
-			const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v011, v111, fInterp);
-
-			MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-			const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
-			surfaceVertex.encodedPosition = v3dScaledPosition;
-			surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
-			surfaceVertex.data = uMaterial;
-
-			const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
-			pIndices(uXRegSpace, uYRegSpace).setX(uLastVertexIndex);
-
-			sampler.movePositiveX();
-		}
-		if ((uEdge & 32) && (uYRegSpace > 0))
-		{
-			sampler.moveNegativeY();
-			typename VolumeType::VoxelType v101 = sampler.getVoxel();
-			auto v101Density = controller.convertToDensity(v101);
-			const float fInterp = static_cast<float>(tThreshold - v101Density) / static_cast<float>(v111Density - v101Density);
-
-			// Compute the position
-			const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
-
-			// Compute the normal
-			const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler, controller);
-			Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
-
-			// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
-			// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
-			if (v3dNormal.lengthSquared() > 0.000001f)
-			{
-				v3dNormal.normalise();
-			}
-
-			// Allow the controller to decide how the material should be derived from the voxels.
-			const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v101, v111, fInterp);
-
-			MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-			const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
-			surfaceVertex.encodedPosition = v3dScaledPosition;
-			surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
-			surfaceVertex.data = uMaterial;
-
-			uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
-			pIndices(uXRegSpace, uYRegSpace).setY(uLastVertexIndex);
-
-			sampler.movePositiveY();
-		}
-		if ((uEdge & 1024) && (uZRegSpace > 0))
-		{
-			sampler.moveNegativeZ();
-			typename VolumeType::VoxelType v110 = sampler.getVoxel();
-			auto v110Density = controller.convertToDensity(v110);
-			const float fInterp = static_cast<float>(tThreshold - v110Density) / static_cast<float>(v111Density - v110Density);
-
-			// Compute the position
-			const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
-
-			// Compute the normal
-			const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler, controller);
-			Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
-
-			// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
-			// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
-			if (v3dNormal.lengthSquared() > 0.000001f)
-			{
-				v3dNormal.normalise();
-			}
-
-			// Allow the controller to decide how the material should be derived from the voxels.
-			const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v110, v111, fInterp);
-
-			MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
-			const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
-			surfaceVertex.encodedPosition = v3dScaledPosition;
-			surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
-			surfaceVertex.data = uMaterial;
-
-			const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
-			pIndices(uXRegSpace, uYRegSpace).setZ(uLastVertexIndex);
-
-			sampler.movePositiveZ();
-		}
-
-		// Now output the indices. For the first row, column or slice there aren't
-		// any (the region size in cells is one less than the region size in voxels)
-		if ((uXRegSpace != 0) && (uYRegSpace != 0) && (uZRegSpace != 0))
-		{
-
-			int32_t indlist[12];
-
-			/* Find the vertices where the surface intersects the cube */
-			if (uEdge & 1)
-			{
-				indlist[0] = pPreviousIndices(uXRegSpace, uYRegSpace - 1).getX();
-			}
-			if (uEdge & 2)
-			{
-				indlist[1] = pPreviousIndices(uXRegSpace, uYRegSpace).getY();
-			}
-			if (uEdge & 4)
-			{
-				indlist[2] = pPreviousIndices(uXRegSpace, uYRegSpace).getX();
-			}
-			if (uEdge & 8)
-			{
-				indlist[3] = pPreviousIndices(uXRegSpace - 1, uYRegSpace).getY();
-			}
-			if (uEdge & 16)
-			{
-				indlist[4] = pIndices(uXRegSpace, uYRegSpace - 1).getX();
-			}
-			if (uEdge & 32)
-			{
-				indlist[5] = pIndices(uXRegSpace, uYRegSpace).getY();
-			}
-			if (uEdge & 64)
-			{
-				indlist[6] = pIndices(uXRegSpace, uYRegSpace).getX();
-			}
-			if (uEdge & 128)
-			{
-				indlist[7] = pIndices(uXRegSpace - 1, uYRegSpace).getY();
-			}
-			if (uEdge & 256)
-			{
-				indlist[8] = pIndices(uXRegSpace - 1, uYRegSpace - 1).getZ();
-			}
-			if (uEdge & 512)
-			{
-				indlist[9] = pIndices(uXRegSpace, uYRegSpace - 1).getZ();
-			}
-			if (uEdge & 1024)
-			{
-				indlist[10] = pIndices(uXRegSpace, uYRegSpace).getZ();
-			}
-			if (uEdge & 2048)
-			{
-				indlist[11] = pIndices(uXRegSpace - 1, uYRegSpace).getZ();
-			}
-
-			for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
-			{
-				const int32_t ind0 = indlist[triTable[iCubeIndex][i]];
-				const int32_t ind1 = indlist[triTable[iCubeIndex][i + 1]];
-				const int32_t ind2 = indlist[triTable[iCubeIndex][i + 2]];
-
-				if ((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
-				{
-					result->addTriangle(ind0, ind1, ind2);
-				}
-			} // For each triangle
-		}
-	}
-
-	template< typename VolumeType, typename MeshType, typename ControllerType >
 	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
 	{		
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
@@ -314,17 +128,189 @@ namespace PolyVox
 					pPreviousRowBitmask(uXRegSpace) = iCubeIndex;
 					pPreviousSliceBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
 
-					/* Cube is entirely in/out of the surface */					
-					if (edgeTable[iCubeIndex] != 0)
+					/* Cube is entirely in/out of the surface */
+					uint16_t uEdge = edgeTable[iCubeIndex];
+					if (uEdge != 0)
 					{
-						// This is a rather ugly function call and appears to have some cost compared to inlining the code.
-						// As a result the case when a cell contains vertices/indices is slightly slower, but the (more common)
-						// case where a cell is empty is slightly faster, probably because the main loop is a lot more compact.
-						// Having a seperate function will also make it easier to profile in the future and see whether empty or
-						// occupied cells are really the bottleneck. The large number of parameters is messy though, so it
-						// would be nice to reduce these if we can work out how.
-						generateMeshForCell<VolumeType, MeshType, ControllerType>(region, result, controller, 
-							sampler, pIndices, pPreviousIndices, iCubeIndex, uXRegSpace, uYRegSpace, uZRegSpace, tThreshold);
+						auto v111Density = controller.convertToDensity(v111);
+						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
+
+						/* Find the vertices where the surface intersects the cube */
+						if ((uEdge & 64) && (uXRegSpace > 0))
+						{
+							sampler.moveNegativeX();
+							typename VolumeType::VoxelType v011 = sampler.getVoxel();
+							auto v011Density = controller.convertToDensity(v011);
+							const float fInterp = static_cast<float>(tThreshold - v011Density) / static_cast<float>(v111Density - v011Density);
+
+							// Compute the position
+							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
+
+							// Compute the normal
+							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler, controller);
+							Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
+
+							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+							if (v3dNormal.lengthSquared() > 0.000001f)
+							{
+								v3dNormal.normalise();
+							}
+
+							// Allow the controller to decide how the material should be derived from the voxels.
+							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v011, v111, fInterp);
+
+							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+							surfaceVertex.encodedPosition = v3dScaledPosition;
+							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
+							surfaceVertex.data = uMaterial;
+
+							const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
+							pIndices(uXRegSpace, uYRegSpace).setX(uLastVertexIndex);
+
+							sampler.movePositiveX();
+						}
+						if ((uEdge & 32) && (uYRegSpace > 0))
+						{
+							sampler.moveNegativeY();
+							typename VolumeType::VoxelType v101 = sampler.getVoxel();
+							auto v101Density = controller.convertToDensity(v101);
+							const float fInterp = static_cast<float>(tThreshold - v101Density) / static_cast<float>(v111Density - v101Density);
+
+							// Compute the position
+							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
+
+							// Compute the normal
+							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler, controller);
+							Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
+
+							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+							if (v3dNormal.lengthSquared() > 0.000001f)
+							{
+								v3dNormal.normalise();
+							}
+
+							// Allow the controller to decide how the material should be derived from the voxels.
+							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v101, v111, fInterp);
+
+							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+							surfaceVertex.encodedPosition = v3dScaledPosition;
+							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
+							surfaceVertex.data = uMaterial;
+
+							uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
+							pIndices(uXRegSpace, uYRegSpace).setY(uLastVertexIndex);
+
+							sampler.movePositiveY();
+						}
+						if ((uEdge & 1024) && (uZRegSpace > 0))
+						{
+							sampler.moveNegativeZ();
+							typename VolumeType::VoxelType v110 = sampler.getVoxel();
+							auto v110Density = controller.convertToDensity(v110);
+							const float fInterp = static_cast<float>(tThreshold - v110Density) / static_cast<float>(v111Density - v110Density);
+
+							// Compute the position
+							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
+
+							// Compute the normal
+							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler, controller);
+							Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
+
+							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
+							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
+							if (v3dNormal.lengthSquared() > 0.000001f)
+							{
+								v3dNormal.normalise();
+							}
+
+							// Allow the controller to decide how the material should be derived from the voxels.
+							const typename VolumeType::VoxelType uMaterial = controller.blendMaterials(v110, v111, fInterp);
+
+							MarchingCubesVertex<typename VolumeType::VoxelType> surfaceVertex;
+							const Vector3DUint16 v3dScaledPosition(static_cast<uint16_t>(v3dPosition.getX() * 256.0f), static_cast<uint16_t>(v3dPosition.getY() * 256.0f), static_cast<uint16_t>(v3dPosition.getZ() * 256.0f));
+							surfaceVertex.encodedPosition = v3dScaledPosition;
+							surfaceVertex.encodedNormal = encodeNormal(v3dNormal);
+							surfaceVertex.data = uMaterial;
+
+							const uint32_t uLastVertexIndex = result->addVertex(surfaceVertex);
+							pIndices(uXRegSpace, uYRegSpace).setZ(uLastVertexIndex);
+
+							sampler.movePositiveZ();
+						}
+
+						// Now output the indices. For the first row, column or slice there aren't
+						// any (the region size in cells is one less than the region size in voxels)
+						if ((uXRegSpace != 0) && (uYRegSpace != 0) && (uZRegSpace != 0))
+						{
+
+							int32_t indlist[12];
+
+							/* Find the vertices where the surface intersects the cube */
+							if (uEdge & 1)
+							{
+								indlist[0] = pPreviousIndices(uXRegSpace, uYRegSpace - 1).getX();
+							}
+							if (uEdge & 2)
+							{
+								indlist[1] = pPreviousIndices(uXRegSpace, uYRegSpace).getY();
+							}
+							if (uEdge & 4)
+							{
+								indlist[2] = pPreviousIndices(uXRegSpace, uYRegSpace).getX();
+							}
+							if (uEdge & 8)
+							{
+								indlist[3] = pPreviousIndices(uXRegSpace - 1, uYRegSpace).getY();
+							}
+							if (uEdge & 16)
+							{
+								indlist[4] = pIndices(uXRegSpace, uYRegSpace - 1).getX();
+							}
+							if (uEdge & 32)
+							{
+								indlist[5] = pIndices(uXRegSpace, uYRegSpace).getY();
+							}
+							if (uEdge & 64)
+							{
+								indlist[6] = pIndices(uXRegSpace, uYRegSpace).getX();
+							}
+							if (uEdge & 128)
+							{
+								indlist[7] = pIndices(uXRegSpace - 1, uYRegSpace).getY();
+							}
+							if (uEdge & 256)
+							{
+								indlist[8] = pIndices(uXRegSpace - 1, uYRegSpace - 1).getZ();
+							}
+							if (uEdge & 512)
+							{
+								indlist[9] = pIndices(uXRegSpace, uYRegSpace - 1).getZ();
+							}
+							if (uEdge & 1024)
+							{
+								indlist[10] = pIndices(uXRegSpace, uYRegSpace).getZ();
+							}
+							if (uEdge & 2048)
+							{
+								indlist[11] = pIndices(uXRegSpace - 1, uYRegSpace).getZ();
+							}
+
+							for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
+							{
+								const int32_t ind0 = indlist[triTable[iCubeIndex][i]];
+								const int32_t ind1 = indlist[triTable[iCubeIndex][i + 1]];
+								const int32_t ind2 = indlist[triTable[iCubeIndex][i + 2]];
+
+								if ((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
+								{
+									result->addTriangle(ind0, ind1, ind2);
+								}
+							} // For each triangle
+						}
 					} // For each cell
 					sampler.movePositiveX();
 				} // For X
