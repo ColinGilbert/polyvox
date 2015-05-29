@@ -51,31 +51,41 @@ namespace PolyVox
 	template< typename VolumeType, typename MeshType, typename ControllerType >
 	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
 	{		
+		// Validate parameters
+		POLYVOX_THROW_IF(volData == nullptr, std::invalid_argument, "Provided volume cannot be null");
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
 
+		// For profiling this function
 		Timer timer;
 		result->clear();
 
-		typename ControllerType::DensityType tThreshold = controller.getThreshold();
-
+		// Store some commonly used values for performance and convienience
 		const uint32_t uRegionWidthInVoxels = region.getWidthInVoxels();
 		const uint32_t uRegionHeightInVoxels = region.getHeightInVoxels();
 		const uint32_t uRegionDepthInVoxels = region.getDepthInVoxels();
 
-		// No need to clear memory because we only read from elements we have written to.
+		typename ControllerType::DensityType tThreshold = controller.getThreshold();		
+
+		// A naive implemetation of Marching Cubes might sample the eight corner voxels of every cell to determine the cell index. 
+		// However, when processing the cells sequentially we cn observe that many of the voxels are shared with previous adjacent 
+		// cells, and so we can obtain these by careful bit-shifting. These variables keep track of previous cells for this purpose.
+		// We don't clear the arrays because the algorithm ensures that we only read from elements we have previously written to.
+		uint8_t uPreviousCellIndex = 0;
+		Array1DUint8 pPreviousRowCellIndices(uRegionWidthInVoxels);
+		Array2DUint8 pPreviousSliceCellIndices(uRegionWidthInVoxels, uRegionHeightInVoxels);
+
+		// A given vertex may be shared by multiple triangles, so we need to keep track of the indices into the vertex array.
+		// We don't clear the arrays because the algorithm ensures that we only read from elements we have previously written to.
 		Array<2, Vector3DInt32> pIndices(uRegionWidthInVoxels, uRegionHeightInVoxels);
 		Array<2, Vector3DInt32> pPreviousIndices(uRegionWidthInVoxels, uRegionHeightInVoxels);
 
-		Array2DUint8 pPreviousSliceBitmask(uRegionWidthInVoxels, uRegionHeightInVoxels);
-		Array1DUint8 pPreviousRowBitmask(uRegionWidthInVoxels);
-
-		uint8_t uPreviousCell = 0;
-
+		// A sampler pointing at the beginning of the region, which gets incremented to always point at the beginning of a slice.
 		typename VolumeType::Sampler startOfSlice(volData);
 		startOfSlice.setPosition(region.getLowerX(), region.getLowerY(), region.getLowerZ());
 
 		for (uint32_t uZRegSpace = 0; uZRegSpace < uRegionDepthInVoxels; uZRegSpace++)
 		{
+			// A sampler pointing at the beginning of the slice, which gets incremented to always point at the beginning of a row.
 			typename VolumeType::Sampler startOfRow = startOfSlice;
 
 			for (uint32_t uYRegSpace = 0; uYRegSpace < uRegionHeightInVoxels; uYRegSpace++)
@@ -87,7 +97,7 @@ namespace PolyVox
 				for (uint32_t uXRegSpace = 0; uXRegSpace < uRegionWidthInVoxels; uXRegSpace++)
 				{
 					// Note: In many cases the provided region will be (mostly) empty which means mesh vertices/indices 
-					// are not generated and the only thing that is done for each cell is the computation of iCubeIndex.
+					// are not generated and the only thing that is done for each cell is the computation of uCellIndex.
 					// It appears that retriving the voxel value is not so expensive and that it is the bitwise combining
 					// which actually carries the cost.
 					//
@@ -96,39 +106,41 @@ namespace PolyVox
 					// However, this complicates the code and there would still be the cost of packing/unpacking so it's
 					// not clear if there is really a benefit. It's something to consider in the future.
 
-					uint8_t iCubeIndex = 0;
+					// Each bit of the cell index specifies whether a given corner of the cell is above or below the threshold.
+					uint8_t uCellIndex = 0;
 
 					// Four bits of our cube index are obtained by looking at the cube index for
 					// the previous slice and copying four of those bits into their new positions.
-					uint8_t iPreviousCubeIndexZ = pPreviousSliceBitmask(uXRegSpace, uYRegSpace);
-					iPreviousCubeIndexZ >>= 4;
-					iCubeIndex |= iPreviousCubeIndexZ;
+					uint8_t uPreviousCellIndexZ = pPreviousSliceCellIndices(uXRegSpace, uYRegSpace);
+					uPreviousCellIndexZ >>= 4;
+					uCellIndex |= uPreviousCellIndexZ;
 
 					// Two bits of our cube index are obtained by looking at the cube index for
 					// the previous row and copying two of those bits into their new positions.
-					uint8_t iPreviousCubeIndexY = pPreviousRowBitmask(uXRegSpace);
-					iPreviousCubeIndexY &= 204; //204 = 128+64+8+4
-					iPreviousCubeIndexY >>= 2;
-					iCubeIndex |= iPreviousCubeIndexY;
+					uint8_t uPreviousCellIndexY = pPreviousRowCellIndices(uXRegSpace);
+					uPreviousCellIndexY &= 204; //204 = 128+64+8+4
+					uPreviousCellIndexY >>= 2;
+					uCellIndex |= uPreviousCellIndexY;
 
 					// One bit of our cube index are obtained by looking at the cube index for
 					// the previous cell and copying one of those bits into it's new position.
-					uint8_t iPreviousCubeIndexX = uPreviousCell;
-					iPreviousCubeIndexX &= 170; //170 = 128+32+8+2
-					iPreviousCubeIndexX >>= 1;
-					iCubeIndex |= iPreviousCubeIndexX;
+					uint8_t UPreviousCellIndexX = uPreviousCellIndex;
+					UPreviousCellIndexX &= 170; //170 = 128+32+8+2
+					UPreviousCellIndexX >>= 1;
+					uCellIndex |= UPreviousCellIndexX;
 
 					// The last bit of our cube index is obtained by looking
 					// at the relevant voxel and comparing it to the threshold
 					typename VolumeType::VoxelType v111 = sampler.getVoxel();
-					if (controller.convertToDensity(v111) < tThreshold) iCubeIndex |= 128;
+					if (controller.convertToDensity(v111) < tThreshold) uCellIndex |= 128;
 
 					// The current value becomes the previous value, ready for the next iteration.
-					uPreviousCell = iCubeIndex;
-					pPreviousRowBitmask(uXRegSpace) = iCubeIndex;
-					pPreviousSliceBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
+					uPreviousCellIndex = uCellIndex;
+					pPreviousRowCellIndices(uXRegSpace) = uCellIndex;
+					pPreviousSliceCellIndices(uXRegSpace, uYRegSpace) = uCellIndex;
 
-					uint16_t uEdge = edgeTable[iCubeIndex];
+					// 12 bits of uEdge determine whether a vertex is placed on each of the 12 edges of the cell.
+					uint16_t uEdge = edgeTable[uCellIndex];
 
 					// Test whether any vertices and indices should be generated for the current cell (i.e. it is occupied).
 					// Performance note: This condition is usually false because most cells in a volume are completely above
@@ -314,11 +326,11 @@ namespace PolyVox
 								indlist[11] = pIndices(uXRegSpace - 1, uYRegSpace).getZ();
 							}
 
-							for (int i = 0; triTable[iCubeIndex][i] != -1; i += 3)
+							for (int i = 0; triTable[uCellIndex][i] != -1; i += 3)
 							{
-								const int32_t ind0 = indlist[triTable[iCubeIndex][i]];
-								const int32_t ind1 = indlist[triTable[iCubeIndex][i + 1]];
-								const int32_t ind2 = indlist[triTable[iCubeIndex][i + 2]];
+								const int32_t ind0 = indlist[triTable[uCellIndex][i]];
+								const int32_t ind1 = indlist[triTable[uCellIndex][i + 1]];
+								const int32_t ind2 = indlist[triTable[uCellIndex][i + 2]];
 
 								if ((ind0 != -1) && (ind1 != -1) && (ind2 != -1))
 								{
