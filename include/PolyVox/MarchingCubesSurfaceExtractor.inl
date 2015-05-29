@@ -128,8 +128,23 @@ namespace PolyVox
 					pPreviousRowBitmask(uXRegSpace) = iCubeIndex;
 					pPreviousSliceBitmask(uXRegSpace, uYRegSpace) = iCubeIndex;
 
-					/* Cube is entirely in/out of the surface */
 					uint16_t uEdge = edgeTable[iCubeIndex];
+
+					// Test whether any vertices and indices should be generated for the current cell (i.e. it is occupied).
+					// Performance note: This condition is usually false because most cells in a volume are completely above
+					// or below the threshold and hence unoccupied. However, even when it is always false (testing on an empty
+					// volume) it still incurs significant overhead, probably because the code is large and bloats the for loop
+					// which contains it. On my empty volume test case the code as given runs in 34ms, but if I replace the
+					// condition with 'false' it runs in 24ms and gives the same output (i.e. none).
+					//
+					// An improvement is to move the code into a seperate function which does speed things up (30ms), but this
+					// is messy as the function needs to be passed about 10 differnt parameters, probably adding some overhead 
+					// in its self. This does indeed seem to slow down the case when cells are occupied, by about 10-20%.
+					//
+					// Overall I don't know the right solution, but I'm leaving the code as-is to avoid making it messy. If we
+					// can reduce the number of parameters which need to be passed then it might be worth moving it into a
+					// function, or otherwise it may simply be worth trying to shorten the code (e.g. adding other function
+					// calls). For now we will leave it as-is, until we have more information from real-world profiling.
 					if (uEdge != 0)
 					{
 						auto v111Density = controller.convertToDensity(v111);
