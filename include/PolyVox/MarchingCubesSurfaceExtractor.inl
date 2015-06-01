@@ -61,6 +61,7 @@ namespace PolyVox
 		// Performance note: Profiling indicates that simply adding vertices and indices to the std::vector is one 
 		// of the bottlenecks when generating the mesh. Reserving space in advance helps here but is wasteful in the 
 		// common case that no/few vertices are generated. Maybe it's worth reserving a couple of thousand or so?
+		// Alternatively, maybe the docs should suggest the user reserves some space in the mesh they pass in?
 		result->clear();
 
 		// Store some commonly used values for performance and convienience
