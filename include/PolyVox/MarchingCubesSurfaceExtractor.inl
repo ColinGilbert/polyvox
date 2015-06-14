@@ -171,7 +171,7 @@ namespace PolyVox
 						// adjacent voxels. Perhaps we could expand this and eliminate dupicates in the future. Alternatively, 
 						// we could compute vertex normals from adjacent face normals instead of via central differencing, 
 						// but not for vertices on the edge of the region (as this causes visual discontinities).
-						const Vector3DFloat n000 = computeCentralDifferenceGradient(sampler, controller);
+						const Vector3DFloat n111 = computeCentralDifferenceGradient(sampler, controller);
 
 						/* Find the vertices where the surface intersects the cube */
 						if ((uEdge & 64) && (uXRegSpace > 0))
@@ -185,8 +185,8 @@ namespace PolyVox
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace - 1) + fInterp, static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace));
 
 							// Compute the normal
-							const Vector3DFloat n100 = computeCentralDifferenceGradient(sampler, controller);
-							Vector3DFloat v3dNormal = (n100*fInterp) + (n000*(1 - fInterp));
+							const Vector3DFloat n011 = computeCentralDifferenceGradient(sampler, controller);
+							Vector3DFloat v3dNormal = (n111*fInterp) + (n011*(1 - fInterp));
 
 							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
 							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
@@ -220,8 +220,8 @@ namespace PolyVox
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace - 1) + fInterp, static_cast<float>(uZRegSpace));
 
 							// Compute the normal
-							const Vector3DFloat n010 = computeCentralDifferenceGradient(sampler, controller);
-							Vector3DFloat v3dNormal = (n010*fInterp) + (n000*(1 - fInterp));
+							const Vector3DFloat n101 = computeCentralDifferenceGradient(sampler, controller);
+							Vector3DFloat v3dNormal = (n111*fInterp) + (n101*(1 - fInterp));
 
 							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
 							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
@@ -255,8 +255,8 @@ namespace PolyVox
 							const Vector3DFloat v3dPosition(static_cast<float>(uXRegSpace), static_cast<float>(uYRegSpace), static_cast<float>(uZRegSpace - 1) + fInterp);
 
 							// Compute the normal
-							const Vector3DFloat n001 = computeCentralDifferenceGradient(sampler, controller);
-							Vector3DFloat v3dNormal = (n001*fInterp) + (n000*(1 - fInterp));
+							const Vector3DFloat n110 = computeCentralDifferenceGradient(sampler, controller);
+							Vector3DFloat v3dNormal = (n111*fInterp) + (n110*(1 - fInterp));
 
 							// The gradient for a voxel can be zero (e.g. solid voxel surrounded by empty ones) and so
 							// the interpolated normal can also be zero (e.g. a grid of alternating solid and empty voxels).
