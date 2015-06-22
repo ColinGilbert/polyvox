@@ -54,7 +54,7 @@ namespace PolyVox
 	// instead of the central difference one. We should provide a way to control the normal generation method, perhaps
 	// including *no* normals incase the user wants to generate them afterwards (e.g. from the mesh).
 	template< typename Sampler, typename ControllerType>
-	Vector3DFloat computeSobelGradient(const typename Sampler& volIter, ControllerType& controller)
+	Vector3DFloat computeSobelGradient(const Sampler& volIter, ControllerType& controller)
 	{
 		static const int weights[3][3][3] = { { { 2, 3, 2 }, { 3, 6, 3 }, { 2, 3, 2 } }, {
 			{ 3, 6, 3 }, { 6, 0, 6 }, { 3, 6, 3 } }, { { 2, 3, 2 }, { 3, 6, 3 }, { 2, 3, 2 } } };
