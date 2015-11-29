@@ -250,7 +250,11 @@ namespace PolyVox
 			uint16_t m_uXPosInChunk;
 			uint16_t m_uYPosInChunk;
 			uint16_t m_uZPosInChunk;
-			const uint16_t m_uChunkSideLengthMinusOne;
+
+			// This should ideally be const, but that prevent automatic generation of an assignment operator (https://goo.gl/Sn7KpZ).
+			// We could provide one manually, but it's currently unused so there is no real test for if it works. I'm putting
+			// together a new release at the moment so I'd rathern not make 'risky' changes.
+			uint16_t m_uChunkSideLengthMinusOne;
 		};
 
 		#endif // SWIG
