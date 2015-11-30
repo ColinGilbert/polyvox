@@ -183,29 +183,7 @@ namespace PolyVox
 	inline bool Vector<Size, StorageType, OperationType>::operator!=(const Vector<Size, StorageType, OperationType> &rhs) const
     {
 		return !(*this == rhs); //Just call equality operator and invert the result.
-    }
-
-	/**
-     * Checks whether this vector is less than the parameter. The metric is
-	 * meaningless but it allows Vectors to me used as key in sdt::map, etc.
-	 * This function is deprecated. You should specify a seperate comparator to the std:map if you need one.
-     * \param rhs The Vector to compare to.
-     * \return true if this is less than the parameter
-     * \see operator!=
-	 * \deprecated
-     */
-    template <uint32_t Size, typename StorageType, typename OperationType>
-	inline bool Vector<Size, StorageType, OperationType>::operator<(const Vector<Size, StorageType, OperationType> &rhs) const
-    {
-		for(uint32_t ct = 0; ct < Size; ++ct)
-		{
-			if (m_tElements[ct] < rhs.m_tElements[ct])
-				return true;
-			if (rhs.m_tElements[ct] < m_tElements[ct])
-				return false;
-		}
-		return false;
-    }    
+    }   
 
     /**
      * Addition operator adds corresponding elements of the two Vectors.

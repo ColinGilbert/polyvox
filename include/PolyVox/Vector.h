@@ -91,8 +91,6 @@ namespace PolyVox
         bool operator==(const Vector<Size,StorageType,OperationType>& rhs) const;
 		/// Inequality Operator.
         bool operator!=(const Vector<Size,StorageType,OperationType>& rhs) const;
-		/// Comparison Operator.
-        POLYVOX_DEPRECATED bool operator<(const Vector<Size,StorageType,OperationType>& rhs) const;
         /// Addition and Assignment Operator.
         Vector<Size,StorageType,OperationType>& operator+=(const Vector<Size,StorageType,OperationType> &rhs);
         /// Subtraction and Assignment Operator.

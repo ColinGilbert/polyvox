@@ -57,44 +57,6 @@ namespace PolyVox
 	}
 
 	template <typename VoxelType>
-	VoxelType PagedVolume<VoxelType>::Sampler::getSubSampledVoxel(uint8_t uLevel) const
-	{		
-		if(uLevel == 0)
-		{
-			return getVoxel();
-		}
-		else if(uLevel == 1)
-		{
-			VoxelType tValue = getVoxel();
-			tValue = (std::min)(tValue, peekVoxel1px0py0pz());
-			tValue = (std::min)(tValue, peekVoxel0px1py0pz());
-			tValue = (std::min)(tValue, peekVoxel1px1py0pz());
-			tValue = (std::min)(tValue, peekVoxel0px0py1pz());
-			tValue = (std::min)(tValue, peekVoxel1px0py1pz());
-			tValue = (std::min)(tValue, peekVoxel0px1py1pz());
-			tValue = (std::min)(tValue, peekVoxel1px1py1pz());
-			return tValue;
-		}
-		else
-		{
-			const uint8_t uSize = 1 << uLevel;
-
-			VoxelType tValue = (std::numeric_limits<VoxelType>::max)();
-			for(uint8_t z = 0; z < uSize; ++z)
-			{
-				for(uint8_t y = 0; y < uSize; ++y)
-				{
-					for(uint8_t x = 0; x < uSize; ++x)
-					{
-						tValue = (std::min)(tValue, this->mVolume->getVoxel(this->mXPosInVolume + x, this->mYPosInVolume + y, this->mZPosInVolume + z));
-					}
-				}
-			}
-			return tValue;
-		}
-	}
-
-	template <typename VoxelType>
 	VoxelType PagedVolume<VoxelType>::Sampler::getVoxel(void) const
 	{
 		return *mCurrentVoxel;

@@ -114,9 +114,6 @@ public:
 	/// Calculates approximatly how many bytes of memory the volume is currently using.
 	uint32_t calculateSizeInBytes(void) { return 0; }
 
-	/// Deprecated - I don't think we should expose this function? Let us know if you disagree...
-	//void resize(const Region& regValidRegion);
-
 private:	
 	Array<3, VoxelType> mVolumeData;
 };
