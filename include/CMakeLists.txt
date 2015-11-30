@@ -41,8 +41,6 @@ SET(CORE_INC_FILES
 	PolyVox/Density.h
 	PolyVox/Exceptions.h
 	PolyVox/FilePager.h
-	PolyVox/GradientEstimators.h
-	PolyVox/GradientEstimators.inl
 	PolyVox/Interpolation.h
 	PolyVox/IteratorController.h
 	PolyVox/IteratorController.inl
@@ -75,8 +73,6 @@ SET(CORE_INC_FILES
 	PolyVox/Vertex.h
 	PolyVox/VolumeResampler.h
 	PolyVox/VolumeResampler.inl
-	PolyVox/VoxelFilters.h
-	PolyVox/VoxelFilters.inl
 )
 
 SET(IMPL_INC_FILES
