@@ -72,6 +72,59 @@ namespace PolyVox
 		result.data = cubicVertex.data; // Data is not encoded
 		return result;
 	}
+
+	struct Quad
+	{
+		Quad(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3)
+		{
+			vertices[0] = v0;
+			vertices[1] = v1;
+			vertices[2] = v2;
+			vertices[3] = v3;
+		}
+
+		uint32_t vertices[4];
+	};
+
+	template<typename MeshType>
+	bool mergeQuads(Quad& q1, Quad& q2, MeshType* m_meshCurrent)
+	{
+		//All four vertices of a given quad have the same data,
+		//so just check that the first pair of vertices match.
+		if (m_meshCurrent->getVertices()[q1.vertices[0]].data == m_meshCurrent->getVertices()[q2.vertices[0]].data)
+		{
+			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
+			//Adjacent quads must share two vertices, and the second quad could be to the
+			//top, bottom, left, of right of the first one. This gives four combinations to test.
+			if ((q1.vertices[0] == q2.vertices[1]) && ((q1.vertices[3] == q2.vertices[2])))
+			{
+				q1.vertices[0] = q2.vertices[0];
+				q1.vertices[3] = q2.vertices[3];
+				return true;
+			}
+			else if ((q1.vertices[3] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[1])))
+			{
+				q1.vertices[3] = q2.vertices[3];
+				q1.vertices[2] = q2.vertices[2];
+				return true;
+			}
+			else if ((q1.vertices[1] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[3])))
+			{
+				q1.vertices[1] = q2.vertices[1];
+				q1.vertices[2] = q2.vertices[2];
+				return true;
+			}
+			else if ((q1.vertices[0] == q2.vertices[3]) && ((q1.vertices[1] == q2.vertices[2])))
+			{
+				q1.vertices[0] = q2.vertices[0];
+				q1.vertices[1] = q2.vertices[1];
+				return true;
+			}
+		}
+
+		//Quads cannot be merged.
+		return false;
+	}
 	
 	/// Do not use this class directly. Use the 'extractCubicSurface' function instead (see examples).
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
@@ -92,20 +145,7 @@ namespace PolyVox
 			NegativeY,
 			NegativeZ,
 			NoOfFaces
-		};
-
-		struct Quad
-		{
-			Quad(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3)
-			{
-				vertices[0] = v0;
-				vertices[1] = v1;
-				vertices[2] = v2;
-				vertices[3] = v3;
-			}
-
-			uint32_t vertices[4];
-		};
+		};		
 
 	public:
 		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
@@ -115,7 +155,6 @@ namespace PolyVox
 	private:
 		int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterial, Array<3, IndexAndMaterial>& existingVertices);
 		bool performQuadMerging(std::list<Quad>& quads);
-		bool mergeQuads(Quad& q1, Quad& q2);
 
 		IsQuadNeeded m_funcIsQuadNeededCallback;
 

@@ -248,7 +248,7 @@ namespace PolyVox
 				Quad& q1 = *outerIter;
 				Quad& q2 = *innerIter;
 
-				bool result = mergeQuads(q1,q2);
+				bool result = mergeQuads(q1, q2, m_meshCurrent);
 
 				if(result)
 				{
@@ -263,45 +263,5 @@ namespace PolyVox
 		}
 
 		return bDidMerge;
-	}
-
-	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
-	bool CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::mergeQuads(Quad& q1, Quad& q2)
-	{
-		//All four vertices of a given quad have the same data,
-		//so just check that the first pair of vertices match.
-		if (m_meshCurrent->getVertices()[q1.vertices[0]].data == m_meshCurrent->getVertices()[q2.vertices[0]].data)
-		{
-			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
-			//Adjacent quads must share two vertices, and the second quad could be to the
-			//top, bottom, left, of right of the first one. This gives four combinations to test.
-			if((q1.vertices[0] == q2.vertices[1]) && ((q1.vertices[3] == q2.vertices[2])))
-			{
-				q1.vertices[0] = q2.vertices[0];
-				q1.vertices[3] = q2.vertices[3];
-				return true;
-			}
-			else if((q1.vertices[3] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[1])))
-			{
-				q1.vertices[3] = q2.vertices[3];
-				q1.vertices[2] = q2.vertices[2];
-				return true;
-			}
-			else if((q1.vertices[1] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[3])))
-			{
-				q1.vertices[1] = q2.vertices[1];
-				q1.vertices[2] = q2.vertices[2];
-				return true;
-			}
-			else if((q1.vertices[0] == q2.vertices[3]) && ((q1.vertices[1] == q2.vertices[2])))
-			{
-				q1.vertices[0] = q2.vertices[0];
-				q1.vertices[1] = q2.vertices[1];
-				return true;
-			}
-		}
-		
-		//Quads cannot be merged.
-		return false;
 	}
 }
