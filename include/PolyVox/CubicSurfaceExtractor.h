@@ -86,6 +86,35 @@ namespace PolyVox
 		uint32_t vertices[4];
 	};
 
+	// This constant defines the maximum number of quads which can share a vertex in a cubic style mesh.
+	//
+	// We try to avoid duplicate vertices by checking whether a vertex has already been added at a given position.
+	// However, it is possible that vertices have the same position but different materials. In this case, the
+	// vertices are not true duplicates and both must be added to the mesh. As far as I can tell, it is possible to have
+	// at most eight vertices with the same position but different materials. For example, this worst-case scenario
+	// happens when we have a 2x2x2 group of voxels, all with different materials and some/all partially transparent.
+	// The vertex position at the center of this group is then going to be used by all eight voxels all with different
+	// materials.
+	const uint32_t MaxVerticesPerPosition = 8;
+
+	template<typename VolumeType>
+	struct IndexAndMaterial
+	{
+		int32_t iIndex;
+		typename VolumeType::VoxelType uMaterial;
+	};
+
+	enum FaceNames
+	{
+		PositiveX,
+		PositiveY,
+		PositiveZ,
+		NegativeX,
+		NegativeY,
+		NegativeZ,
+		NoOfFaces
+	};
+
 	template<typename MeshType>
 	bool mergeQuads(Quad& q1, Quad& q2, MeshType* m_meshCurrent)
 	{
@@ -155,27 +184,43 @@ namespace PolyVox
 
 		return bDidMerge;
 	}
+
+	template<typename VolumeType, typename MeshType>
+	int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial<VolumeType> >& existingVertices, MeshType* m_meshCurrent)
+	{
+		for (uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
+		{
+			IndexAndMaterial<VolumeType>& rEntry = existingVertices(uX, uY, ct);
+
+			if (rEntry.iIndex == -1)
+			{
+				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
+				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
+				cubicVertex.encodedPosition.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
+				cubicVertex.data = uMaterialIn;
+				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
+				rEntry.uMaterial = uMaterialIn;
+
+				return rEntry.iIndex;
+			}
+
+			//If we have an existing vertex and the material matches then we can return it.
+			if (rEntry.uMaterial == uMaterialIn)
+			{
+				return rEntry.iIndex;
+			}
+		}
+
+		// If we exit the loop here then apparently all the slots were full but none of them matched.
+		// This shouldn't ever happen, so if it does it is probably a bug in PolyVox. Please report it to us!
+		POLYVOX_THROW(std::runtime_error, "All slots full but no matches during cubic surface extraction. This is probably a bug in PolyVox");
+		return -1; //Should never happen.
+	}
 	
 	/// Do not use this class directly. Use the 'extractCubicSurface' function instead (see examples).
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
 	class CubicSurfaceExtractor
-	{
-		struct IndexAndMaterial
-		{
-			int32_t iIndex;
-			typename VolumeType::VoxelType uMaterial;
-		};
-
-		enum FaceNames
-		{
-			PositiveX,
-			PositiveY,
-			PositiveZ,
-			NegativeX,
-			NegativeY,
-			NegativeZ,
-			NoOfFaces
-		};		
+	{		
 
 	public:
 		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
@@ -183,8 +228,6 @@ namespace PolyVox
 		void execute();		
 
 	private:
-		int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterial, Array<3, IndexAndMaterial>& existingVertices);
-
 		IsQuadNeeded m_funcIsQuadNeededCallback;
 
 		//The volume data and a sampler to access it.
@@ -197,8 +240,8 @@ namespace PolyVox
 		MeshType* m_meshCurrent;
 
 		//Used to avoid creating duplicate vertices.
-		Array<3, IndexAndMaterial> m_previousSliceVertices;
-		Array<3, IndexAndMaterial> m_currentSliceVertices;
+		Array<3, IndexAndMaterial<VolumeType> > m_previousSliceVertices;
+		Array<3, IndexAndMaterial<VolumeType> > m_currentSliceVertices;
 
 		//During extraction we create a number of different lists of quads. All the 
 		//quads in a given list are in the same plane and facing in the same direction.
@@ -207,10 +250,6 @@ namespace PolyVox
 		//Controls whether quad merging should be performed. This might be undesirable
 		//is the user needs per-vertex attributes, or to perform per vertex lighting.
 		bool m_bMergeQuads;
-
-		//This constant defines the maximum number of quads which can share a
-		//vertex in a cubic style mesh. See the initialisation for more details.
-		static const uint32_t MaxVerticesPerPosition;
 	};
 
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
