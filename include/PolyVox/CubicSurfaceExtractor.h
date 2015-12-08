@@ -125,6 +125,36 @@ namespace PolyVox
 		//Quads cannot be merged.
 		return false;
 	}
+
+	template<typename MeshType>
+	bool performQuadMerging(std::list<Quad>& quads, MeshType* m_meshCurrent)
+	{
+		bool bDidMerge = false;
+		for (typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
+		{
+			typename std::list<Quad>::iterator innerIter = outerIter;
+			innerIter++;
+			while (innerIter != quads.end())
+			{
+				Quad& q1 = *outerIter;
+				Quad& q2 = *innerIter;
+
+				bool result = mergeQuads(q1, q2, m_meshCurrent);
+
+				if (result)
+				{
+					bDidMerge = true;
+					innerIter = quads.erase(innerIter);
+				}
+				else
+				{
+					innerIter++;
+				}
+			}
+		}
+
+		return bDidMerge;
+	}
 	
 	/// Do not use this class directly. Use the 'extractCubicSurface' function instead (see examples).
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
@@ -154,7 +184,6 @@ namespace PolyVox
 
 	private:
 		int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterial, Array<3, IndexAndMaterial>& existingVertices);
-		bool performQuadMerging(std::list<Quad>& quads);
 
 		IsQuadNeeded m_funcIsQuadNeededCallback;
 

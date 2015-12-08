@@ -182,7 +182,7 @@ namespace PolyVox
 				{
 					//Repeatedly call this function until it returns
 					//false to indicate nothing more can be done.
-					while(performQuadMerging(listQuads)){}
+					while (performQuadMerging(listQuads, m_meshCurrent)){}
 				}
 
 				typename std::list<Quad>::iterator iterEnd = listQuads.end();
@@ -233,35 +233,5 @@ namespace PolyVox
 		// This shouldn't ever happen, so if it does it is probably a bug in PolyVox. Please report it to us!
 		POLYVOX_THROW(std::runtime_error, "All slots full but no matches during cubic surface extraction. This is probably a bug in PolyVox");
 		return -1; //Should never happen.
-	}
-
-	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
-	bool CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded>::performQuadMerging(std::list<Quad>& quads)
-	{
-		bool bDidMerge = false;
-		for(typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
-		{
-			typename std::list<Quad>::iterator innerIter = outerIter;
-			innerIter++;
-			while(innerIter != quads.end())
-			{
-				Quad& q1 = *outerIter;
-				Quad& q2 = *innerIter;
-
-				bool result = mergeQuads(q1, q2, m_meshCurrent);
-
-				if(result)
-				{
-					bDidMerge = true;
-					innerIter = quads.erase(innerIter);
-				}
-				else
-				{
-					innerIter++;
-				}
-			}
-		}
-
-		return bDidMerge;
 	}
 }
