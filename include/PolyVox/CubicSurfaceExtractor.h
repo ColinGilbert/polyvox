@@ -225,31 +225,8 @@ namespace PolyVox
 	public:
 		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
 
-		void execute();		
-
 	private:
-		IsQuadNeeded m_funcIsQuadNeededCallback;
-
-		//The volume data and a sampler to access it.
-		VolumeType* m_volData;
-
-		//Information about the region we are currently processing
-		Region m_regSizeInVoxels;
-
-		//The surface patch we are currently filling.
-		MeshType* m_meshCurrent;
-
-		//Used to avoid creating duplicate vertices.
-		Array<3, IndexAndMaterial<VolumeType> > m_previousSliceVertices;
-		Array<3, IndexAndMaterial<VolumeType> > m_currentSliceVertices;
-
-		//During extraction we create a number of different lists of quads. All the 
-		//quads in a given list are in the same plane and facing in the same direction.
-		std::vector< std::list<Quad> > m_vecQuads[NoOfFaces];
-
-		//Controls whether quad merging should be performed. This might be undesirable
-		//is the user needs per-vertex attributes, or to perform per vertex lighting.
-		bool m_bMergeQuads;
+		
 	};
 
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
@@ -269,7 +246,7 @@ namespace PolyVox
 	void extractCubicMeshCustom(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true)
 	{
 		CubicSurfaceExtractor<VolumeType, MeshType, IsQuadNeeded> extractor(volData, region, result, isQuadNeeded, bMergeQuads);
-		extractor.execute();
+		//extractor.execute();
 	}
 
 	/// The CubicSurfaceExtractor creates a mesh in which each voxel appears to be rendered as a cube
