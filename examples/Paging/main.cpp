@@ -32,47 +32,8 @@ freely, subject to the following restrictions:
 
 #include <QApplication>
 
-//Use the PolyVox namespace
+// Use the PolyVox namespace
 using namespace PolyVox;
-
-void createSphereInVolume(PagedVolume<MaterialDensityPair44>& volData, Vector3DFloat v3dVolCenter, float fRadius)
-{
-	//This vector hold the position of the center of the volume
-	//Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
-
-	int iRadius = fRadius;
-
-	//This three-level for loop iterates over every voxel in the volume
-	for (int z = v3dVolCenter.getZ() - iRadius; z <= v3dVolCenter.getZ() + iRadius; z++)
-	{
-		for (int y = v3dVolCenter.getY() - iRadius; y <= v3dVolCenter.getY() + iRadius; y++)
-		{
-			for (int x = v3dVolCenter.getX() - iRadius; x <= v3dVolCenter.getX() + iRadius; x++)
-			{
-				//Store our current position as a vector...
-				Vector3DFloat v3dCurrentPos(x,y,z);	
-				//And compute how far the current position is from the center of the volume
-				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
-
-				//If the current voxel is less than 'radius' units from the center then we make it solid.
-				if(fDistToCenter <= fRadius)
-				{
-					//Our new density value
-					uint8_t uDensity = MaterialDensityPair44::getMaxDensity();
-
-					//Get the old voxel
-					MaterialDensityPair44 voxel = volData.getVoxel(x,y,z);
-
-					//Modify the density
-					voxel.setDensity(uDensity);
-
-					//Wrte the voxel value into the volume	
-					volData.setVoxel(x, y, z, voxel);
-				}
-			}
-		}
-	}
-}
 
 /**
  * Generates data using Perlin noise.
@@ -108,11 +69,13 @@ public:
 					{
 						const int xpos = 50;
 						const int zpos = 100;
-						if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200) {
+						if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200)
+						{
 							// tunnel
 							voxel.setMaterial(0);
 							voxel.setDensity(MaterialDensityPair44::getMinDensity());
-						} else {
+						} else
+						{
 							// solid
 							voxel.setMaterial(245);
 							voxel.setDensity(MaterialDensityPair44::getMaxDensity());
@@ -153,33 +116,24 @@ protected:
 		PerlinNoisePager* pager = new PerlinNoisePager();
 		PagedVolume<MaterialDensityPair44> volData(pager, 8 * 1024 * 1024, 64);
 
-		//createSphereInVolume(volData, 30);
-		//createPerlinTerrain(volData);
-		//createPerlinVolumeSlow(volData);
+		// Just some tests of memory usage, etc. 
 		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
-		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 		PolyVox::Region reg(Vector3DInt32(-255, 0, 0), Vector3DInt32(255, 255, 255));
 		std::cout << "Prefetching region: " << reg.getLowerCorner() << " -> " << reg.getUpperCorner() << std::endl;
 		volData.prefetch(reg);
 		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
-		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
-		PolyVox::Region reg2(Vector3DInt32(0, 0, 0), Vector3DInt32(254, 254, 254));
-		//std::cout << "Flushing region: " << reg2.getLowerCorner() << " -> " << reg2.getUpperCorner() << std::endl;
-		//volData.flush(reg2);
-		//std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
-		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 		std::cout << "Flushing entire volume" << std::endl;
 		volData.flushAll();
 		std::cout << "Memory usage: " << (volData.calculateSizeInBytes() / 1024.0 / 1024.0) << "MB" << std::endl;
-		//std::cout << "Compression ratio: 1 to " << (1.0/(volData.calculateCompressionRatio())) << std::endl;
 
-		//Extract the surface
+		// Extract the surface
+		PolyVox::Region reg2(Vector3DInt32(0, 0, 0), Vector3DInt32(254, 254, 254));
 		auto mesh = extractCubicMesh(&volData, reg2);
 		std::cout << "#vertices: " << mesh.getNoOfVertices() << std::endl;
 
 		auto decodedMesh = decodeMesh(mesh);
 
-		//Pass the surface to the OpenGL window
+		// Pass the surface to the OpenGL window
 		addMesh(decodedMesh);
 
 		setCameraTransform(QVector3D(300.0f, 300.0f, 300.0f), -(PI / 4.0f), PI + (PI / 4.0f));
@@ -188,11 +142,11 @@ protected:
 
 int main(int argc, char *argv[])
 {
-	//Create and show the Qt OpenGL window
+	// Create and show the Qt OpenGL window
 	QApplication app(argc, argv);
 	PagingExample openGLWidget(0);
 	openGLWidget.show();
 
-	//Run the message pump.
+	// Run the message pump.
 	return app.exec();
 } 
