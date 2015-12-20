@@ -44,7 +44,6 @@ SET(CORE_INC_FILES
 	PolyVox/Interpolation.h
 	PolyVox/IteratorController.h
 	PolyVox/IteratorController.inl
-	PolyVox/LargeVolume.h
 	PolyVox/LowPassFilter.h
 	PolyVox/LowPassFilter.inl
 	PolyVox/MarchingCubesSurfaceExtractor.h
@@ -66,7 +65,6 @@ SET(CORE_INC_FILES
 	PolyVox/Raycast.inl
 	PolyVox/Region.h
 	PolyVox/Region.inl
-	PolyVox/SimpleVolume.h
 	PolyVox/Vector.h
 	PolyVox/Vector.inl
 	PolyVox/Vertex.h
