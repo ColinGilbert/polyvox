@@ -36,7 +36,7 @@ namespace PolyVox
 	template <typename VertexType, typename IndexType>
 	IndexType Mesh<VertexType, IndexType>::getNoOfVertices(void) const
 	{
-		return m_vecVertices.size();
+		return static_cast<IndexType>(m_vecVertices.size());
 	}
 
 	template <typename VertexType, typename IndexType>
@@ -58,7 +58,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	uint32_t Mesh<VertexType, IndexType>::getNoOfIndices(void) const
+	size_t Mesh<VertexType, IndexType>::getNoOfIndices(void) const
 	{
 		return m_vecIndices.size();
 	}
