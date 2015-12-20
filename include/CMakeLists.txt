@@ -57,7 +57,6 @@ SET(CORE_INC_FILES
 	PolyVox/PagedVolume.inl
 	PolyVox/PagedVolumeChunk.inl
 	PolyVox/PagedVolumeSampler.inl
-	PolyVox/PolyVoxForwardDeclarations.h
 	PolyVox/Picking.h
 	PolyVox/Picking.inl
 	PolyVox/RawVolume.h

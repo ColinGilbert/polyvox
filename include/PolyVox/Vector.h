@@ -27,8 +27,6 @@ freely, subject to the following restrictions:
 #include "Impl/ErrorHandling.h"
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVoxForwardDeclarations.h"
-
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -64,7 +62,7 @@ namespace PolyVox
 	 * Vector2DInt32 test(1,2); //Declares a 2 dimensional Vector of type int32_t.
 	 * \endcode
 	 */
-	template <uint32_t Size, typename StorageType, typename OperationType>
+	template <uint32_t Size, typename StorageType, typename OperationType = StorageType>
 	class Vector
     {
     public:

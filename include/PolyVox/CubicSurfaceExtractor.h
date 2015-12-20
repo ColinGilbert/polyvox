@@ -26,8 +26,6 @@ freely, subject to the following restrictions:
 
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVoxForwardDeclarations.h"
-
 #include "Array.h"
 #include "BaseVolume.h" //For wrap modes... should move these?
 #include "DefaultIsQuadNeeded.h"

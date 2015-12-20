@@ -24,8 +24,9 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_TestVolume_H__
 #define __PolyVox_TestVolume_H__
 
-#include "PolyVox/PolyVoxForwardDeclarations.h"
+#include "PolyVox/FilePager.h"
 #include "PolyVox/PagedVolume.h"
+#include "PolyVox/RawVolume.h"
 #include "PolyVox/Region.h"
 
 #include <QObject>

@@ -4,6 +4,5 @@
 #pragma message("WARNING - The SimpleVolume class has been replaced by PagedVolume. Please use that instead.")
 
 #include "PagedVolume.h"
-#include "PolyVoxForwardDeclarations.h"
 
 #endif //__PolyVox_SimpleVolume_H__

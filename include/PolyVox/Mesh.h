@@ -26,7 +26,6 @@ freely, subject to the following restrictions:
 
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVoxForwardDeclarations.h"
 #include "Region.h"
 #include "Vertex.h" //Should probably do away with this on in the future...
 
@@ -39,7 +38,8 @@ freely, subject to the following restrictions:
 
 namespace PolyVox
 {
-	template <typename _VertexType, typename _IndexType>
+	typedef uint32_t DefaultIndexType;
+	template <typename _VertexType, typename _IndexType = DefaultIndexType>
 	class Mesh
 	{
 	public:
