@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Picking_H__
 #define __PolyVox_Picking_H__
 
-#include "PolyVox/Vector.h"
+#include "Vector.h"
 
 namespace PolyVox
 {
@@ -44,6 +44,6 @@ namespace PolyVox
 	PickResult pickVoxel(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, const typename VolumeType::VoxelType& emptyVoxelExample);
 }
 
-#include "PolyVox/Picking.inl"
+#include "Picking.inl"
 
 #endif //__PolyVox_Picking_H__

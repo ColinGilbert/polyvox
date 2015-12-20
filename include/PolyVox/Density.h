@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Density_H__
 #define __PolyVox_Density_H__
 
-#include "PolyVox/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
+#include "DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 
 #include "Impl/PlatformDefinitions.h"
 

@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVox/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
+#include "DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
 
 namespace PolyVox
 {

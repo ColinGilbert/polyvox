@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVox/Vector.h"
+#include "Vector.h"
 
 namespace PolyVox
 {
@@ -454,6 +454,6 @@ namespace PolyVox
 	}
 }
 
-#include "PolyVox/Region.inl"
+#include "Region.inl"
 
 #endif

@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_IteratorController_H__
 #define __PolyVox_IteratorController_H__
 
-#include "PolyVox/Region.h"
+#include "Region.h"
 
 namespace PolyVox
 {
@@ -41,6 +41,6 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVox/IteratorController.inl"
+#include "IteratorController.inl"
 
 #endif //__PolyVox_IteratorController_H__

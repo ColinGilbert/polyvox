@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MaterialDensityPair_H__
 #define __PolyVox_MaterialDensityPair_H__
 
-#include "PolyVox/DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
-#include "PolyVox/DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
+#include "DefaultIsQuadNeeded.h" //we'll specialise this function for this voxel type
+#include "DefaultMarchingCubesController.h" //We'll specialise the controller contained in here
 
 #include "Impl/PlatformDefinitions.h"
 

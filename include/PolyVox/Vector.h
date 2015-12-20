@@ -242,7 +242,7 @@ namespace std
 }
 
 
-#include "PolyVox/Vector.inl"
+#include "Vector.inl"
 
 #endif
 

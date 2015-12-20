@@ -26,9 +26,9 @@ freely, subject to the following restrictions:
 
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVox/PolyVoxForwardDeclarations.h"
-#include "PolyVox/Region.h"
-#include "PolyVox/Vertex.h" //Should probably do away with this on in the future...
+#include "PolyVoxForwardDeclarations.h"
+#include "Region.h"
+#include "Vertex.h" //Should probably do away with this on in the future...
 
 #include <algorithm>
 #include <cstdlib>
@@ -98,6 +98,6 @@ namespace PolyVox
 	}
 }
 
-#include "PolyVox/Mesh.inl"
+#include "Mesh.inl"
 
 #endif /* __Mesh_H__ */

@@ -21,8 +21,8 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVox/Impl/Morton.h"
-#include "PolyVox/Impl/Utility.h"
+#include "Impl/Morton.h"
+#include "Impl/Utility.h"
 
 namespace PolyVox
 {

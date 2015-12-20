@@ -24,10 +24,10 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_FilePager_H__
 #define __PolyVox_FilePager_H__
 
-#include "PolyVox/Impl/PlatformDefinitions.h"
+#include "Impl/PlatformDefinitions.h"
 
-#include "PolyVox/PagedVolume.h"
-#include "PolyVox/Region.h"
+#include "PagedVolume.h"
+#include "Region.h"
 
 #include <cstdlib>
 #include <ctime>

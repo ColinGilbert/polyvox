@@ -27,11 +27,11 @@ freely, subject to the following restrictions:
 #include "Impl/MarchingCubesTables.h"
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVox/Array.h"
-#include "PolyVox/BaseVolume.h" //For wrap modes... should move these?
-#include "PolyVox/Mesh.h"
-#include "PolyVox/DefaultMarchingCubesController.h"
-#include "PolyVox/Vertex.h"
+#include "Array.h"
+#include "BaseVolume.h" //For wrap modes... should move these?
+#include "Mesh.h"
+#include "DefaultMarchingCubesController.h"
+#include "Vertex.h"
 
 namespace PolyVox
 {
@@ -173,6 +173,6 @@ namespace PolyVox
 	}
 }
 
-#include "PolyVox/MarchingCubesSurfaceExtractor.inl"
+#include "MarchingCubesSurfaceExtractor.inl"
 
 #endif

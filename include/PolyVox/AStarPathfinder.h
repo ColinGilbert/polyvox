@@ -224,6 +224,6 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVox/AStarPathfinder.inl"
+#include "AStarPathfinder.inl"
 
 #endif //__PolyVox_AStarPathfinder_H__

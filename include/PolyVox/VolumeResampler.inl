@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution. 	
 *******************************************************************************/
 
-#include "PolyVox/Interpolation.h"
+#include "Interpolation.h"
 
 #include <cmath>
 

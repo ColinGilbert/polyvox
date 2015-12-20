@@ -28,11 +28,11 @@ freely, subject to the following restrictions:
 
 #include "PolyVoxForwardDeclarations.h"
 
-#include "PolyVox/Array.h"
-#include "PolyVox/BaseVolume.h" //For wrap modes... should move these?
-#include "PolyVox/DefaultIsQuadNeeded.h"
-#include "PolyVox/Mesh.h"
-#include "PolyVox/Vertex.h"
+#include "Array.h"
+#include "BaseVolume.h" //For wrap modes... should move these?
+#include "DefaultIsQuadNeeded.h"
+#include "Mesh.h"
+#include "Vertex.h"
 
 namespace PolyVox
 {
@@ -299,6 +299,6 @@ namespace PolyVox
 	}
 }
 
-#include "PolyVox/CubicSurfaceExtractor.inl"
+#include "CubicSurfaceExtractor.inl"
 
 #endif

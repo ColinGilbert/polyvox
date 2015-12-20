@@ -24,9 +24,9 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_PagedVolume_H__
 #define __PolyVox_PagedVolume_H__
 
-#include "PolyVox/BaseVolume.h"
-#include "PolyVox/Region.h"
-#include "PolyVox/Vector.h"
+#include "BaseVolume.h"
+#include "Region.h"
+#include "Vector.h"
 
 #include <limits>
 #include <cstdlib> //For abort()
@@ -326,8 +326,8 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVox/PagedVolume.inl"
-#include "PolyVox/PagedVolumeChunk.inl"
-#include "PolyVox/PagedVolumeSampler.inl"
+#include "PagedVolume.inl"
+#include "PagedVolumeChunk.inl"
+#include "PagedVolumeSampler.inl"
 
 #endif //__PolyVox_PagedVolume_H__

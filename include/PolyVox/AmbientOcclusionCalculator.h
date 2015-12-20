@@ -27,13 +27,13 @@ freely, subject to the following restrictions:
 #include "Impl/RandomUnitVectors.h"
 #include "Impl/RandomVectors.h"
 
-#include "PolyVox/Array.h"
-#include "PolyVox/Region.h"
-#include "PolyVox/Raycast.h"
+#include "Array.h"
+#include "Region.h"
+#include "Raycast.h"
 
 //These two should not be here!
-#include "PolyVox/Material.h"
-#include "PolyVox/PagedVolume.h"
+#include "Material.h"
+#include "PagedVolume.h"
 
 #include <algorithm>
 
@@ -77,6 +77,6 @@ namespace PolyVox
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, const Region& region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback);
 }
 
-#include "PolyVox/AmbientOcclusionCalculator.inl"
+#include "AmbientOcclusionCalculator.inl"
 
 #endif //__AmbientOcclusionCalculator_H__

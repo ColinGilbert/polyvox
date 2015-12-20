@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "PolyVox/Impl/Timer.h"
+#include "Impl/Timer.h"
 
 namespace PolyVox
 {

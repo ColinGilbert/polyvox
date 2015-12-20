@@ -21,7 +21,7 @@ freely, subject to the following restrictions:
     distribution.
 *******************************************************************************/
 
-#include "PolyVox/Raycast.h"
+#include "Raycast.h"
 
 namespace PolyVox
 {

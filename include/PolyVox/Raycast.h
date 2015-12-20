@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_Raycast_H__
 #define __PolyVox_Raycast_H__
 
-#include "PolyVox/Vector.h"
+#include "Vector.h"
 
 namespace PolyVox
 {
@@ -98,6 +98,6 @@ namespace PolyVox
 	RaycastResult raycastWithDirection(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, Callback& callback);
 }
 
-#include "PolyVox/Raycast.inl"
+#include "Raycast.inl"
 
 #endif //__PolyVox_Raycast_H__

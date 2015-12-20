@@ -24,8 +24,8 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_BaseVolume_H__
 #define __PolyVox_BaseVolume_H__
 
-#include "PolyVox/Region.h"
-#include "PolyVox/Vector.h"
+#include "Region.h"
+#include "Vector.h"
 
 #include <limits>
 
@@ -135,7 +135,7 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVox/BaseVolume.inl"
-#include "PolyVox/BaseVolumeSampler.inl"
+#include "BaseVolume.inl"
+#include "BaseVolumeSampler.inl"
 
 #endif //__PolyVox_BaseVolume_H__

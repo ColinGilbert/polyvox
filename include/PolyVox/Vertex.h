@@ -26,7 +26,7 @@ freely, subject to the following restrictions:
 
 #include "Impl/PlatformDefinitions.h"
 
-#include "PolyVox/Vector.h"
+#include "Vector.h"
 
 #include <bitset>
 #include <vector>

@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_VolumeResampler_H__
 #define __PolyVox_VolumeResampler_H__
 
-#include "PolyVox/Region.h"
+#include "Region.h"
 
 namespace PolyVox
 {
@@ -51,7 +51,7 @@ namespace PolyVox
 
 }//namespace PolyVox
 
-#include "PolyVox/VolumeResampler.inl"
+#include "VolumeResampler.inl"
 
 #endif
 

@@ -24,9 +24,9 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_RawVolume_H__
 #define __PolyVox_RawVolume_H__
 
-#include "PolyVox/BaseVolume.h"
-#include "PolyVox/Region.h"
-#include "PolyVox/Vector.h"
+#include "BaseVolume.h"
+#include "Region.h"
+#include "Vector.h"
 
 #include <cstdlib> //For abort()
 #include <limits>
@@ -171,7 +171,7 @@ namespace PolyVox
 	};
 }
 
-#include "PolyVox/RawVolume.inl"
-#include "PolyVox/RawVolumeSampler.inl"
+#include "RawVolume.inl"
+#include "RawVolumeSampler.inl"
 
 #endif //__PolyVox_RawVolume_H__

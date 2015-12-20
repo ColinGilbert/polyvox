@@ -24,7 +24,7 @@ freely, subject to the following restrictions:
 #ifndef __PolyVox_MarchingCubesController_H__
 #define __PolyVox_MarchingCubesController_H__
 
-#include "PolyVox/BaseVolume.h"
+#include "BaseVolume.h"
 
 #include <limits>
 
