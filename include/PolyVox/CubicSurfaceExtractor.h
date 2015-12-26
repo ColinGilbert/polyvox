@@ -215,17 +215,17 @@ namespace PolyVox
 		POLYVOX_THROW(std::runtime_error, "All slots full but no matches during cubic surface extraction. This is probably a bug in PolyVox");
 		return -1; //Should never happen.
 	}
-	
+
 	/// Do not use this class directly. Use the 'extractCubicSurface' function instead (see examples).
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
 	class CubicSurfaceExtractor
-	{		
+	{
 
 	public:
 		CubicSurfaceExtractor(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
 
 	private:
-		
+
 	};
 
 	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.

@@ -10,13 +10,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 template <typename QOpenGLFunctionsType>
 OpenGLWidget<QOpenGLFunctionsType>::OpenGLWidget(QWidget *parent)
-	:QGLWidget(parent)
+:QGLWidget(parent)
 {
 }
 
 template <typename QOpenGLFunctionsType>
 const QMatrix4x4& OpenGLWidget<QOpenGLFunctionsType>::viewMatrix()
-{ 
+{
 	return mViewMatrix;
 }
 
@@ -45,22 +45,22 @@ void OpenGLWidget<QOpenGLFunctionsType>::initializeGL()
 		std::cerr << "Could not initialize OpenGL functions" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	
+
 	//Print out some information about the OpenGL implementation.
 	std::cout << "OpenGL Implementation Details:" << std::endl;
-	if(this->glGetString(GL_VENDOR))
-	  std::cout << "\tGL_VENDOR: " << this->glGetString(GL_VENDOR) << std::endl;
-	if(this->glGetString(GL_RENDERER))
-	  std::cout << "\tGL_RENDERER: " << this->glGetString(GL_RENDERER) << std::endl;
-	if(this->glGetString(GL_VERSION))
-	  std::cout << "\tGL_VERSION: " << this->glGetString(GL_VERSION) << std::endl;
-	if(this->glGetString(GL_SHADING_LANGUAGE_VERSION))
-	  std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << this->glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+	if (this->glGetString(GL_VENDOR))
+		std::cout << "\tGL_VENDOR: " << this->glGetString(GL_VENDOR) << std::endl;
+	if (this->glGetString(GL_RENDERER))
+		std::cout << "\tGL_RENDERER: " << this->glGetString(GL_RENDERER) << std::endl;
+	if (this->glGetString(GL_VERSION))
+		std::cout << "\tGL_VERSION: " << this->glGetString(GL_VERSION) << std::endl;
+	if (this->glGetString(GL_SHADING_LANGUAGE_VERSION))
+		std::cout << "\tGL_SHADING_LANGUAGE_VERSION: " << this->glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	//Set up the clear colour
 	this->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	this->glClearDepth(1.0f);
-	
+
 	this->glEnable(GL_DEPTH_TEST);
 	this->glDepthMask(GL_TRUE);
 	this->glDepthFunc(GL_LEQUAL);
@@ -81,11 +81,11 @@ void OpenGLWidget<QOpenGLFunctionsType>::resizeGL(int w, int h)
 {
 	//Setup the viewport
 	this->glViewport(0, 0, w, h);
-	
+
 	auto aspectRatio = w / (float)h;
 	float zNear = 1.0;
 	float zFar = 1000.0;
-	
+
 	mProjectionMatrix.setToIdentity();
 	mProjectionMatrix.perspective(mCameraFOV, aspectRatio, zNear, zFar);
 }
@@ -145,12 +145,12 @@ void OpenGLWidget<QOpenGLFunctionsType>::paintGL()
 	this->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	renderOneFrame();
-	
+
 	// Check for errors.
 	GLenum errCode = this->glGetError();
-	if(errCode != GL_NO_ERROR)
+	if (errCode != GL_NO_ERROR)
 	{
-	  std::cerr << "OpenGL Error: " << errCode << std::endl;
+		std::cerr << "OpenGL Error: " << errCode << std::endl;
 	}
 }
 

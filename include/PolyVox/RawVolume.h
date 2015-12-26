@@ -40,7 +40,7 @@ namespace PolyVox
 	class RawVolume : public BaseVolume<VoxelType>
 	{
 	public:
-		#ifndef SWIG
+#ifndef SWIG
 		//There seems to be some descrepency between Visual Studio and GCC about how the following class should be declared.
 		//There is a work around (see also See http://goo.gl/qu1wn) given below which appears to work on VS2010 and GCC, but
 		//which seems to cause internal compiler errors on VS2008 when building with the /Gm 'Enable Minimal Rebuild' compiler
@@ -51,7 +51,7 @@ namespace PolyVox
 #if defined(_MSC_VER)
 		class Sampler : public BaseVolume<VoxelType>::Sampler< RawVolume<VoxelType> > //This line works on VS2010
 #else
-                class Sampler : public BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> > //This line works on GCC
+		class Sampler : public BaseVolume<VoxelType>::template Sampler< RawVolume<VoxelType> > //This line works on GCC
 #endif
 		{
 		public:
@@ -115,7 +115,7 @@ namespace PolyVox
 			bool m_bIsCurrentPositionValidInY;
 			bool m_bIsCurrentPositionValidInZ;
 		};
-		#endif // SWIG
+#endif // SWIG
 
 	public:
 		/// Constructor for creating a fixed size volume.

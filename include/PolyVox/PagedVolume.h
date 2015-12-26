@@ -187,7 +187,7 @@ namespace PolyVox
 		//in the future
 		//typedef Volume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences.
 		//class Sampler : public VolumeOfVoxelType::template Sampler< PagedVolume<VoxelType> >
-		#ifndef SWIG
+#ifndef SWIG
 #if defined(_MSC_VER)
 		class Sampler : public BaseVolume<VoxelType>::Sampler< PagedVolume<VoxelType> > //This line works on VS2010
 #else
@@ -198,7 +198,7 @@ namespace PolyVox
 			Sampler(PagedVolume<VoxelType>* volume);
 			~Sampler();
 
-			inline VoxelType getVoxel(void) const;			
+			inline VoxelType getVoxel(void) const;
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
@@ -256,7 +256,7 @@ namespace PolyVox
 			uint16_t m_uChunkSideLengthMinusOne;
 		};
 
-		#endif // SWIG
+#endif // SWIG
 
 	public:
 		/// Constructor for creating a fixed size volume.

@@ -46,17 +46,17 @@ public:
 	//in the future
 	//typedef BaseVolume<VoxelType> VolumeOfVoxelType; //Workaround for GCC/VS2010 differences. See http://goo.gl/qu1wn
 	//class Sampler : public VolumeOfVoxelType::template Sampler< VolumeSubclass<VoxelType> >
-	#if defined(_MSC_VER)
-		class Sampler : public BaseVolume<VoxelType>::Sampler< VolumeSubclass<VoxelType> > //This line works on VS2010
-	#else
-		class Sampler : public BaseVolume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> > //This line works on GCC
-	#endif
+#if defined(_MSC_VER)
+	class Sampler : public BaseVolume<VoxelType>::Sampler< VolumeSubclass<VoxelType> > //This line works on VS2010
+#else
+	class Sampler : public BaseVolume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> > //This line works on GCC
+#endif
 	{
 	public:
 		Sampler(VolumeSubclass<VoxelType>* volume)
 			:BaseVolume<VoxelType>::template Sampler< VolumeSubclass<VoxelType> >(volume)
 		{
-			this->mVolume = volume;
+				this->mVolume = volume;
 		}
 		//~Sampler();
 	};
@@ -66,7 +66,7 @@ public:
 		:BaseVolume<VoxelType>()
 		, mVolumeData(regValid.getWidthInVoxels(), regValid.getHeightInVoxels(), regValid.getDepthInVoxels())
 	{
-		//mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
+			//mVolumeData.resize(ArraySizes(this->getWidth())(this->getHeight())(this->getDepth()));
 	}
 	/// Destructor
 	~VolumeSubclass() {};
@@ -97,7 +97,7 @@ public:
 	/// Sets the voxel at the position given by <tt>x,y,z</tt> coordinates
 	bool setVoxel(int32_t uXPos, int32_t uYPos, int32_t uZPos, VoxelType tValue)
 	{
-		if( (uXPos >= 0) && (uXPos < static_cast<int32_t>(mVolumeData.getDimension(0))) &&
+		if ((uXPos >= 0) && (uXPos < static_cast<int32_t>(mVolumeData.getDimension(0))) &&
 			(uYPos >= 0) && (uYPos < static_cast<int32_t>(mVolumeData.getDimension(1))) &&
 			(uZPos >= 0) && (uZPos < static_cast<int32_t>(mVolumeData.getDimension(2))))
 		{
@@ -115,7 +115,7 @@ public:
 	/// Calculates approximatly how many bytes of memory the volume is currently using.
 	uint32_t calculateSizeInBytes(void) { return 0; }
 
-private:	
+private:
 	Array<3, VoxelType> mVolumeData;
 };
 
@@ -131,7 +131,7 @@ void TestVolumeSubclass::testExtractSurface()
 			for (int32_t x = 0; x < region.getWidthInVoxels(); x++)
 			{
 				Material8 mat(1);
-				volumeSubclass.setVoxel(Vector3DInt32(x,y,z),mat);
+				volumeSubclass.setVoxel(Vector3DInt32(x, y, z), mat);
 			}
 		}
 	}

@@ -32,9 +32,9 @@ using namespace PolyVox;
 
 void TestRegion::testEquality()
 {
-	Region reg1(1,2,3,4,5,6);
-	Region reg2(0,0,0,10,20,30);
-	Region reg3(Vector3DInt32(1,2,3), Vector3DInt32(4,5,6));
+	Region reg1(1, 2, 3, 4, 5, 6);
+	Region reg2(0, 0, 0, 10, 20, 30);
+	Region reg3(Vector3DInt32(1, 2, 3), Vector3DInt32(4, 5, 6));
 
 	QCOMPARE(reg1 != reg2, true);
 	QCOMPARE(reg1 == reg3, true);

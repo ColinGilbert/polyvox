@@ -53,29 +53,30 @@ public:
 
 	virtual void pageIn(const PolyVox::Region& region, PagedVolume<MaterialDensityPair44>::Chunk* pChunk)
 	{
-		Perlin perlin(2,2,1,234);
+		Perlin perlin(2, 2, 1, 234);
 
-		for(int x = region.getLowerX(); x <= region.getUpperX(); x++)
+		for (int x = region.getLowerX(); x <= region.getUpperX(); x++)
 		{
-			for(int y = region.getLowerY(); y <= region.getUpperY(); y++)
+			for (int y = region.getLowerY(); y <= region.getUpperY(); y++)
 			{
-				float perlinVal = perlin.Get(x / static_cast<float>(255-1), y / static_cast<float>(255-1));
+				float perlinVal = perlin.Get(x / static_cast<float>(255 - 1), y / static_cast<float>(255 - 1));
 				perlinVal += 1.0f;
 				perlinVal *= 0.5f;
 				perlinVal *= 255;
-				for(int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
+				for (int z = region.getLowerZ(); z <= region.getUpperZ(); z++)
 				{
 					MaterialDensityPair44 voxel;
-					if(z < perlinVal)
+					if (z < perlinVal)
 					{
 						const int xpos = 50;
 						const int zpos = 100;
-						if((x-xpos)*(x-xpos) + (z-zpos)*(z-zpos) < 200)
+						if ((x - xpos)*(x - xpos) + (z - zpos)*(z - zpos) < 200)
 						{
 							// tunnel
 							voxel.setMaterial(0);
 							voxel.setDensity(MaterialDensityPair44::getMinDensity());
-						} else
+						}
+						else
 						{
 							// solid
 							voxel.setMaterial(245);
@@ -150,4 +151,4 @@ int main(int argc, char *argv[])
 
 	// Run the message pump.
 	return app.exec();
-} 
+}

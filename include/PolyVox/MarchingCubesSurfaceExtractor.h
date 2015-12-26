@@ -112,7 +112,7 @@ namespace PolyVox
 	{
 		// Extract the two bytes from the uint16_t.
 		uint16_t ux = (encodedNormal >> 8) & 0xFF;
-		uint16_t uy = (encodedNormal     ) & 0xFF;
+		uint16_t uy = (encodedNormal)& 0xFF;
 
 		// Convert to floats in the range [-1.0f, +1.0f].
 		float ex = ux / 127.5f - 1.0f;

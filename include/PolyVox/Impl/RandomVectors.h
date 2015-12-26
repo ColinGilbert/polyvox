@@ -30,7 +30,7 @@
 #include "PolyVox/Vector.h"
 
 namespace PolyVox
-{	
+{
 	const Vector3DFloat randomVectors[1024] =
 	{
 		Vector3DFloat(+0.348918f, -0.385662f, +0.650197f),

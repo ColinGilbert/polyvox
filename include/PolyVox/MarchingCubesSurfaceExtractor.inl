@@ -142,7 +142,7 @@ namespace PolyVox
 
 	template< typename VolumeType, typename MeshType, typename ControllerType >
 	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
-	{		
+	{
 		// Validate parameters
 		POLYVOX_THROW_IF(volData == nullptr, std::invalid_argument, "Provided volume cannot be null");
 		POLYVOX_THROW_IF(result == nullptr, std::invalid_argument, "Provided mesh cannot be null");
@@ -161,7 +161,7 @@ namespace PolyVox
 		const uint32_t uRegionHeightInVoxels = region.getHeightInVoxels();
 		const uint32_t uRegionDepthInVoxels = region.getDepthInVoxels();
 
-		typename ControllerType::DensityType tThreshold = controller.getThreshold();		
+		typename ControllerType::DensityType tThreshold = controller.getThreshold();
 
 		// A naive implemetation of Marching Cubes might sample the eight corner voxels of every cell to determine the cell index. 
 		// However, when processing the cells sequentially we cn observe that many of the voxels are shared with previous adjacent 
@@ -456,5 +456,5 @@ namespace PolyVox
 		POLYVOX_LOG_TRACE("Marching cubes surface extraction took ", timer.elapsedTimeInMilliSeconds(),
 			"ms (Region size = ", region.getWidthInVoxels(), "x", region.getHeightInVoxels(),
 			"x", region.getDepthInVoxels(), ")");
-	}		
+	}
 }

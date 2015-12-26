@@ -32,23 +32,23 @@
 namespace PolyVox
 {
 	/** Represents a part of a Volume.
-	 * 
-	 *  Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors 
-	 *  it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may 
-	 *  be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts 
+	 *
+	 *  Many operations in PolyVox are constrained to only part of a volume. For example, when running the surface extractors
+	 *  it is unlikely that you will want to run it on the whole volume at once, as this will give a very large mesh which may
+	 *  be too much to render. Instead you will probably want to run a surface extractor a number of times on different parts
 	 *  of the volume, there by giving a number of meshes which can be culled and rendered seperately.
-	 * 
-	 *  The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower 
-	 *  bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are 
+	 *
+	 *  The Region class is used to define these parts (regions) of the volume. Essentially it consists of an upper and lower
+	 *  bound which specify the range of voxels positions considered to be part of the region. Note that these bounds are
 	 *  <em>inclusive</em>.
-	 * 
+	 *
 	 *  As well as the expected set of getters and setters, this class also provide utility functions for increasing and decresing
 	 *  the size of the Region, shifting the Region in 3D space, testing whether it contains a given position, enlarging it so that
 	 *  it does contain a given position, croppng it to another Region, and various other utility functions.
-	 * 
-	 *  \Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information 
+	 *
+	 *  \Note The dimensions of a region can be measured either in voxels or in cells. See the manual for more information
 	 *  about these definitions.
-	 * 
+	 *
 	 */
 	class Region
 	{
@@ -67,9 +67,9 @@ namespace PolyVox
 		Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ);
 
 		/// Equality Operator.
-        bool operator==(const Region& rhs) const;
+		bool operator==(const Region& rhs) const;
 		/// Inequality Operator.
-        bool operator!=(const Region& rhs) const;
+		bool operator!=(const Region& rhs) const;
 
 		/// Gets the 'x' position of the centre.
 		int32_t getCentreX(void) const;
@@ -189,7 +189,7 @@ namespace PolyVox
 		/// Moves the upper corner of the Region by the amount specified.
 		void shiftUpperCorner(int32_t iAmountX, int32_t iAmountY, int32_t iAmountZ);
 		/// Moves the upper corner of the Region by the amount specified.
-		void shiftUpperCorner(const Vector3DInt32& v3dAmount);		
+		void shiftUpperCorner(const Vector3DInt32& v3dAmount);
 
 		/// Shrinks this region by the amount specified.
 		void shrink(int32_t iAmount);

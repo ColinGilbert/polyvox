@@ -39,14 +39,14 @@ Vector3DFloat incrementVector(Vector3DFloat input)
 void TestVector::testLength()
 {
 	Vector3DInt8 vec(3, 4, 5);
-	QCOMPARE(vec.lengthSquared(), int32_t(3*3+4*4+5*5)); // QCOMPARE is strict on types. For an int8 vector, the OperationType is int32_t.
+	QCOMPARE(vec.lengthSquared(), int32_t(3 * 3 + 4 * 4 + 5 * 5)); // QCOMPARE is strict on types. For an int8 vector, the OperationType is int32_t.
 }
 
 void TestVector::testDotProduct()
 {
 	Vector3DInt8 vecxy(3, 4, 0);
 	Vector3DInt8 vecz(0, 0, 1);
-	
+
 	QCOMPARE(vecxy.dot(vecz), int32_t(0)); // QCOMPARE is strict on types. For an int8 vector, the OperationType is int32_t .
 }
 
@@ -54,7 +54,7 @@ void TestVector::testEquality()
 {
 	Vector3DInt8 vecxy(3, 4, 0);
 	Vector3DInt8 vecz(0, 0, 1);
-	
+
 	QCOMPARE(vecxy != vecz, true);
 }
 
@@ -64,13 +64,13 @@ void TestVector::testPerformance()
 
 	QBENCHMARK
 	{
-		for(uint32_t ct = 0; ct < 10000000; ct++)
+		for (uint32_t ct = 0; ct < 10000000; ct++)
 		{
 			vec = incrementVector(vec);
 		}
 	}
 
-	// Use the result so the calls don't get optimized away.
+		// Use the result so the calls don't get optimized away.
 	QCOMPARE(vec.lengthSquared() > 0.0f, true);
 }
 

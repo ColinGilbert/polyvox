@@ -34,10 +34,10 @@ namespace PolyVox
 		, m_regValidRegion(regValid)
 		, m_tBorderValue()
 	{
-		this->setBorderValue(VoxelType());
+			this->setBorderValue(VoxelType());
 
-		//Create a volume of the right size.
-		initialise(regValid);
+			//Create a volume of the right size.
+			initialise(regValid);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -145,11 +145,11 @@ namespace PolyVox
 			int32_t iLocalZPos = uZPos - regValidRegion.getLowerZ();
 
 			return m_pData
-			[
-				iLocalXPos +
-				iLocalYPos * this->getWidth() +
-				iLocalZPos * this->getWidth() * this->getHeight()
-			];
+				[
+					iLocalXPos +
+					iLocalYPos * this->getWidth() +
+					iLocalZPos * this->getWidth() * this->getHeight()
+				];
 		}
 		else
 		{
@@ -198,11 +198,11 @@ namespace PolyVox
 		int32_t iLocalZPos = uZPos - v3dLowerCorner.getZ();
 
 		m_pData
-		[
-			iLocalXPos + 
-			iLocalYPos * this->getWidth() + 
-			iLocalZPos * this->getWidth() * this->getHeight()
-		] = tValue;
+			[
+				iLocalXPos +
+				iLocalYPos * this->getWidth() +
+				iLocalZPos * this->getWidth() * this->getHeight()
+			] = tValue;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -223,15 +223,15 @@ namespace PolyVox
 	{
 		this->m_regValidRegion = regValidRegion;
 
-		if(this->getWidth() <= 0)
+		if (this->getWidth() <= 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Volume width must be greater than zero.");
 		}
-		if(this->getHeight() <= 0)
+		if (this->getHeight() <= 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Volume height must be greater than zero.");
 		}
-		if(this->getDepth() <= 0)
+		if (this->getDepth() <= 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Volume depth must be greater than zero.");
 		}

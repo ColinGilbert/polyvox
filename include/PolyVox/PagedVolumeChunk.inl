@@ -30,12 +30,12 @@ namespace PolyVox
 	template <typename VoxelType>
 	PagedVolume<VoxelType>::Chunk::Chunk(Vector3DInt32 v3dPosition, uint16_t uSideLength, Pager* pPager)
 		:m_uChunkLastAccessed(0)
-		,m_bDataModified(true)
-		,m_tData(0)
-		,m_uSideLength(0)
-		,m_uSideLengthPower(0)
-		,m_pPager(pPager)
-		,m_v3dChunkSpacePosition(v3dPosition)
+		, m_bDataModified(true)
+		, m_tData(0)
+		, m_uSideLength(0)
+		, m_uSideLengthPower(0)
+		, m_pPager(pPager)
+		, m_v3dChunkSpacePosition(v3dPosition)
 	{
 		POLYVOX_ASSERT(m_pPager, "No valid pager supplied to chunk constructor.");
 		POLYVOX_ASSERT(uSideLength <= 256, "Chunk side length cannot be greater than 256.");
@@ -46,7 +46,7 @@ namespace PolyVox
 
 		// Allocate the data
 		const uint32_t uNoOfVoxels = m_uSideLength * m_uSideLength * m_uSideLength;
-		m_tData = new VoxelType[uNoOfVoxels];  
+		m_tData = new VoxelType[uNoOfVoxels];
 
 		// Pass the chunk to the Pager to give it a chance to initialise it with any data
 		// From the coordinates of the chunk we deduce the coordinates of the contained voxels.
@@ -134,9 +134,9 @@ namespace PolyVox
 
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::Chunk::setVoxel(const Vector3DUint16& v3dPos, VoxelType tValue)
-    {
+	{
 		setVoxel(v3dPos.getX(), v3dPos.getY(), v3dPos.getZ(), tValue);
-    }
+	}
 
 	template <typename VoxelType>
 	uint32_t PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(void)
@@ -160,7 +160,7 @@ namespace PolyVox
 	// then the ordering is automatically handled correctly. 
 	template <typename VoxelType>
 	void PagedVolume<VoxelType>::Chunk::changeLinearOrderingToMorton(void)
-	{		
+	{
 		VoxelType* pTempBuffer = new VoxelType[m_uSideLength * m_uSideLength * m_uSideLength];
 
 		// We should prehaps restructure this loop. From: https://fgiesen.wordpress.com/2011/01/17/texture-tiling-and-swizzling/

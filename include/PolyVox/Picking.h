@@ -39,7 +39,7 @@ namespace PolyVox
 		Vector3DInt32 hitVoxel; ///< The location of the solid voxel it hit
 		Vector3DInt32 previousVoxel; ///< The location of the voxel before the one it hit
 	};
-	
+
 	/// Pick the first solid voxel along a vector
 	template<typename VolumeType>
 	PickResult pickVoxel(VolumeType* volData, const Vector3DFloat& v3dStart, const Vector3DFloat& v3dDirectionAndLength, const typename VolumeType::VoxelType& emptyVoxelExample);

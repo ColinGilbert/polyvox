@@ -39,7 +39,7 @@ using namespace PolyVox;
 // make sure we get the expected result from a series of volume accesses.
 inline int32_t cantorTupleFunction(int32_t previousResult, int32_t value)
 {
-	return (( previousResult + value  ) * ( previousResult + value + 1 ) + value ) / 2;
+	return ((previousResult + value) * (previousResult + value + 1) + value) / 2;
 }
 
 /*
@@ -60,16 +60,16 @@ int32_t testDirectAccessWithWrappingForwards(const VolumeType* volume, Region re
 			for (int x = region.getLowerX(); x <= region.getUpperX(); x++)
 			{
 				//Three level loop now processes 27 voxel neighbourhood
-				for(int innerZ = -1; innerZ <=1; innerZ++)
+				for (int innerZ = -1; innerZ <= 1; innerZ++)
 				{
-					for(int innerY = -1; innerY <=1; innerY++)
+					for (int innerY = -1; innerY <= 1; innerY++)
 					{
-						for(int innerX = -1; innerX <=1; innerX++)
+						for (int innerX = -1; innerX <= 1; innerX++)
 						{
 							result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ));
 						}
 					}
-				}	
+				}
 				//End of inner loops
 			}
 		}
@@ -149,16 +149,16 @@ int32_t testDirectAccessWithWrappingBackwards(const VolumeType* volume, Region r
 			for (int x = region.getUpperX(); x >= region.getLowerX(); x--)
 			{
 				//Three level loop now processes 27 voxel neighbourhood
-				for(int innerZ = -1; innerZ <=1; innerZ++)
+				for (int innerZ = -1; innerZ <= 1; innerZ++)
 				{
-					for(int innerY = -1; innerY <=1; innerY++)
+					for (int innerY = -1; innerY <= 1; innerY++)
 					{
-						for(int innerX = -1; innerX <=1; innerX++)
+						for (int innerX = -1; innerX <= 1; innerX++)
 						{
 							result = cantorTupleFunction(result, volume->getVoxel(x + innerX, y + innerY, z + innerZ));
 						}
 					}
-				}	
+				}
 				//End of inner loops
 			}
 		}
@@ -249,7 +249,7 @@ int32_t testDirectRandomAccess(const VolumeType* volume)
 TestVolume::TestVolume()
 {
 	m_regVolume = Region(-57, -31, 12, 64, 96, 131); // Deliberatly awkward size
-	
+
 	m_regInternal = m_regVolume;
 	m_regInternal.shiftLowerCorner(4, 2, 2);
 	m_regInternal.shiftUpperCorner(-3, -1, -2);

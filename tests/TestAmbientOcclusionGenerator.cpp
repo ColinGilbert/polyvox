@@ -62,7 +62,7 @@ void TestAmbientOcclusionGenerator::testExecute()
 	//Create two solid walls at opposite sides of the volume
 	for (int32_t z = 0; z < g_uVolumeSideLength; z++)
 	{
-		if((z < 20) || (z > g_uVolumeSideLength - 20))
+		if ((z < 20) || (z > g_uVolumeSideLength - 20))
 		{
 			for (int32_t y = 0; y < g_uVolumeSideLength; y++)
 			{
@@ -80,21 +80,21 @@ void TestAmbientOcclusionGenerator::testExecute()
 
 	// Calculate the ambient occlusion values
 	IsVoxelTransparent isVoxelTransparent;
-	QBENCHMARK {
+	QBENCHMARK{
 		calculateAmbientOcclusion(&volData, &ambientOcclusionResult, region, 32.0f, 255, isVoxelTransparent);
 	}
-	
-	//Check the results by sampling along a line though the centre of the volume. Because
-	//of the two walls we added, samples in the middle are darker than those at the edge.
-	QCOMPARE(static_cast<int>(ambientOcclusionResult(16,  0, 16)), 178);
-	QCOMPARE(static_cast<int>(ambientOcclusionResult(16,  8, 16)), 109);
+
+		//Check the results by sampling along a line though the centre of the volume. Because
+		//of the two walls we added, samples in the middle are darker than those at the edge.
+	QCOMPARE(static_cast<int>(ambientOcclusionResult(16, 0, 16)), 178);
+	QCOMPARE(static_cast<int>(ambientOcclusionResult(16, 8, 16)), 109);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult(16, 16, 16)), 103);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult(16, 24, 16)), 123);
 	QCOMPARE(static_cast<int>(ambientOcclusionResult(16, 31, 16)), 173);
-	
+
 	//Just run a quick test to make sure that it compiles when taking a function pointer
 	calculateAmbientOcclusion(&volData, &ambientOcclusionResult, region, 32.0f, 8, &isVoxelTransparentFunction);
-	
+
 	//Also test it using a lambda
 	//calculateAmbientOcclusion(&volData, &ambientOcclusionResult, volData.getEnclosingRegion(), 32.0f, 8, [](uint8_t voxel){return voxel == 0;});
 }

@@ -141,19 +141,19 @@ namespace PolyVox
 
 	/*inline uint32_t convertCoordinates(uint16_t uXPos, uint16_t uYPos, uint16_t uZPos)
 	{
-		uint64_t answer = 0;
-		answer = morton256_z[(uZPos >> 16) & 0xFF] | // we start by shifting the third byte, since we only look at the first 21 bits
-			morton256_y[(uYPos >> 16) & 0xFF] |
-			morton256_x[(uXPos >> 16) & 0xFF];
-		answer = answer << 48 |
-			morton256_z[(uZPos >> 8) & 0xFF] | // shifting second byte
-			morton256_y[(uYPos >> 8) & 0xFF] |
-			morton256_x[(uXPos >> 8) & 0xFF];
-		answer = answer << 24 |
-			morton256_z[(uZPos)& 0xFF] | // first byte
-			morton256_y[(uYPos)& 0xFF] |
-			morton256_x[(uXPos)& 0xFF];
-		return answer;
+	uint64_t answer = 0;
+	answer = morton256_z[(uZPos >> 16) & 0xFF] | // we start by shifting the third byte, since we only look at the first 21 bits
+	morton256_y[(uYPos >> 16) & 0xFF] |
+	morton256_x[(uXPos >> 16) & 0xFF];
+	answer = answer << 48 |
+	morton256_z[(uZPos >> 8) & 0xFF] | // shifting second byte
+	morton256_y[(uYPos >> 8) & 0xFF] |
+	morton256_x[(uXPos >> 8) & 0xFF];
+	answer = answer << 24 |
+	morton256_z[(uZPos)& 0xFF] | // first byte
+	morton256_y[(uYPos)& 0xFF] |
+	morton256_x[(uXPos)& 0xFF];
+	return answer;
 	}*/
 }
 

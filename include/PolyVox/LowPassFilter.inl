@@ -34,19 +34,19 @@ namespace PolyVox
 	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
 	LowPassFilter<SrcVolumeType, DstVolumeType, AccumulationType>::LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst, uint32_t uKernelSize)
 		:m_pVolSrc(pVolSrc)
-		,m_regSrc(regSrc)
-		,m_pVolDst(pVolDst)
-		,m_regDst(regDst)
-		,m_uKernelSize(uKernelSize)
+		, m_regSrc(regSrc)
+		, m_pVolDst(pVolDst)
+		, m_regDst(regDst)
+		, m_uKernelSize(uKernelSize)
 	{
 		//Kernel size must be at least three
-		if(m_uKernelSize < 3)
+		if (m_uKernelSize < 3)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Kernel size must be at least three");
 		}
 
 		//Kernel size must be odd
-		if(m_uKernelSize % 2 == 0)
+		if (m_uKernelSize % 2 == 0)
 		{
 			POLYVOX_THROW(std::invalid_argument, "Kernel size must be odd");
 		}
@@ -73,11 +73,11 @@ namespace PolyVox
 
 		typename SrcVolumeType::Sampler srcSampler(m_pVolSrc);
 
-		for(int32_t iSrcZ = iSrcMinZ, iDstZ = iDstMinZ; iSrcZ <= iSrcMaxZ; iSrcZ++, iDstZ++)
+		for (int32_t iSrcZ = iSrcMinZ, iDstZ = iDstMinZ; iSrcZ <= iSrcMaxZ; iSrcZ++, iDstZ++)
 		{
-			for(int32_t iSrcY = iSrcMinY, iDstY = iDstMinY; iSrcY <= iSrcMaxY; iSrcY++, iDstY++)
+			for (int32_t iSrcY = iSrcMinY, iDstY = iDstMinY; iSrcY <= iSrcMaxY; iSrcY++, iDstY++)
 			{
-				for(int32_t iSrcX = iSrcMinX, iDstX = iDstMinX; iSrcX <= iSrcMaxX; iSrcX++, iDstX++)
+				for (int32_t iSrcX = iSrcMinX, iDstX = iDstMinX; iSrcX <= iSrcMaxX; iSrcX++, iDstX++)
 				{
 					AccumulationType tSrcVoxel(0);
 					srcSampler.setPosition(iSrcX, iSrcY, iSrcZ);
@@ -136,13 +136,13 @@ namespace PolyVox
 		//Clear to zeros (necessary?)
 		//FIXME - use Volume::fill() method. Implemented in base class as below
 		//but with optimised implementations in subclasses?
-		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		for (int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
-			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			for (int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
 			{
-				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				for (int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					satVolume.setVoxel(x,y,z,0);
+					satVolume.setVoxel(x, y, z, 0);
 				}
 			}
 		}
@@ -170,47 +170,47 @@ namespace PolyVox
 
 			srcIterCont.moveForward();
 
-		}while(satIterCont.moveForward());
+		} while (satIterCont.moveForward());
 
 		//Build SAT in three passes
 		/*for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
-			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
-			{
-				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
-				{
-					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x-1,y,z));
-					AccumulationType currentVal = static_cast<AccumulationType>(m_pVolSrc->getVoxel(x,y,z));
+		for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+		{
+		for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+		{
+		AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x-1,y,z));
+		AccumulationType currentVal = static_cast<AccumulationType>(m_pVolSrc->getVoxel(x,y,z));
 
-					satVolume.setVoxel(x,y,z,previousSum + currentVal);
-				}
-			}
+		satVolume.setVoxel(x,y,z,previousSum + currentVal);
+		}
+		}
 		}*/
 
-		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		for (int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
-			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			for (int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
 			{
-				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				for (int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y-1,z));
-					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y,z));
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x, y - 1, z));
+					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxel(x, y, z));
 
-					satVolume.setVoxel(x,y,z,previousSum + currentSum);
+					satVolume.setVoxel(x, y, z, previousSum + currentSum);
 				}
 			}
 		}
 
-		for(int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
+		for (int32_t z = satLowerCorner.getZ(); z <= satUpperCorner.getZ(); z++)
 		{
-			for(int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
+			for (int32_t y = satLowerCorner.getY(); y <= satUpperCorner.getY(); y++)
 			{
-				for(int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
+				for (int32_t x = satLowerCorner.getX(); x <= satUpperCorner.getX(); x++)
 				{
-					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y,z-1));
-					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxel(x,y,z));
+					AccumulationType previousSum = static_cast<AccumulationType>(satVolume.getVoxel(x, y, z - 1));
+					AccumulationType currentSum = static_cast<AccumulationType>(satVolume.getVoxel(x, y, z));
 
-					satVolume.setVoxel(x,y,z,previousSum + currentSum);
+					satVolume.setVoxel(x, y, z, previousSum + currentSum);
 				}
 			}
 		}
@@ -221,11 +221,11 @@ namespace PolyVox
 
 		const Vector3DInt32& v3dSrcLowerCorner = m_regSrc.getLowerCorner();
 
-		for(int32_t iDstZ = v3dDstLowerCorner.getZ(), iSrcZ = v3dSrcLowerCorner.getZ(); iDstZ <= v3dDstUpperCorner.getZ(); iDstZ++, iSrcZ++)
+		for (int32_t iDstZ = v3dDstLowerCorner.getZ(), iSrcZ = v3dSrcLowerCorner.getZ(); iDstZ <= v3dDstUpperCorner.getZ(); iDstZ++, iSrcZ++)
 		{
-			for(int32_t iDstY = v3dDstLowerCorner.getY(), iSrcY = v3dSrcLowerCorner.getY(); iDstY <= v3dDstUpperCorner.getY(); iDstY++, iSrcY++)
+			for (int32_t iDstY = v3dDstLowerCorner.getY(), iSrcY = v3dSrcLowerCorner.getY(); iDstY <= v3dDstUpperCorner.getY(); iDstY++, iSrcY++)
 			{
-				for(int32_t iDstX = v3dDstLowerCorner.getX(), iSrcX = v3dSrcLowerCorner.getX(); iDstX <= v3dDstUpperCorner.getX(); iDstX++, iSrcX++)
+				for (int32_t iDstX = v3dDstLowerCorner.getX(), iSrcX = v3dSrcLowerCorner.getX(); iDstX <= v3dDstUpperCorner.getX(); iDstX++, iSrcX++)
 				{
 					int32_t satLowerX = iSrcX - border - 1;
 					int32_t satLowerY = iSrcY - border - 1;
@@ -235,16 +235,16 @@ namespace PolyVox
 					int32_t satUpperY = iSrcY + border;
 					int32_t satUpperZ = iSrcZ + border;
 
-					AccumulationType a = satVolume.getVoxel(satLowerX,satLowerY,satLowerZ);
-					AccumulationType b = satVolume.getVoxel(satUpperX,satLowerY,satLowerZ);
-					AccumulationType c = satVolume.getVoxel(satLowerX,satUpperY,satLowerZ);
-					AccumulationType d = satVolume.getVoxel(satUpperX,satUpperY,satLowerZ);
-					AccumulationType e = satVolume.getVoxel(satLowerX,satLowerY,satUpperZ);
-					AccumulationType f = satVolume.getVoxel(satUpperX,satLowerY,satUpperZ);
-					AccumulationType g = satVolume.getVoxel(satLowerX,satUpperY,satUpperZ);
-					AccumulationType h = satVolume.getVoxel(satUpperX,satUpperY,satUpperZ);
+					AccumulationType a = satVolume.getVoxel(satLowerX, satLowerY, satLowerZ);
+					AccumulationType b = satVolume.getVoxel(satUpperX, satLowerY, satLowerZ);
+					AccumulationType c = satVolume.getVoxel(satLowerX, satUpperY, satLowerZ);
+					AccumulationType d = satVolume.getVoxel(satUpperX, satUpperY, satLowerZ);
+					AccumulationType e = satVolume.getVoxel(satLowerX, satLowerY, satUpperZ);
+					AccumulationType f = satVolume.getVoxel(satUpperX, satLowerY, satUpperZ);
+					AccumulationType g = satVolume.getVoxel(satLowerX, satUpperY, satUpperZ);
+					AccumulationType h = satVolume.getVoxel(satUpperX, satUpperY, satUpperZ);
 
-					AccumulationType sum = h+c-d-g-f-a+b+e;
+					AccumulationType sum = h + c - d - g - f - a + b + e;
 					uint32_t sideLength = border * 2 + 1;
 					AccumulationType average = sum / (sideLength*sideLength*sideLength);
 

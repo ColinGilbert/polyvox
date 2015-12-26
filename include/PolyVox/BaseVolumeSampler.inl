@@ -30,9 +30,9 @@ namespace PolyVox
 	template <typename DerivedVolumeType>
 	BaseVolume<VoxelType>::Sampler<DerivedVolumeType>::Sampler(DerivedVolumeType* volume)
 		:mVolume(volume)
-		,mXPosInVolume(0)
-		,mYPosInVolume(0)
-		,mZPosInVolume(0)
+		, mXPosInVolume(0)
+		, mYPosInVolume(0)
+		, mZPosInVolume(0)
 	{
 	}
 

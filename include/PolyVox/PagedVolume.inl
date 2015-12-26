@@ -36,38 +36,38 @@ namespace PolyVox
 	/// \param uChunkSideLength The size of the chunks making up the volume. Small chunks will compress/decompress faster, but there will also be more of them meaning voxel access could be slower.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
-	PagedVolume<VoxelType>::PagedVolume(Pager* pPager,	uint32_t uTargetMemoryUsageInBytes,	uint16_t uChunkSideLength)
+	PagedVolume<VoxelType>::PagedVolume(Pager* pPager, uint32_t uTargetMemoryUsageInBytes, uint16_t uChunkSideLength)
 		:BaseVolume<VoxelType>()
 		, m_uChunkSideLength(uChunkSideLength)
 		, m_pPager(pPager)
 	{
-		// Validation of parameters
-		POLYVOX_THROW_IF(!pPager, std::invalid_argument, "You must provide a valid pager when constructing a PagedVolume");
-		POLYVOX_THROW_IF(uTargetMemoryUsageInBytes < 1 * 1024 * 1024, std::invalid_argument, "Target memory usage is too small to be practical");
-		POLYVOX_THROW_IF(m_uChunkSideLength == 0, std::invalid_argument, "Chunk side length cannot be zero.");
-		POLYVOX_THROW_IF(m_uChunkSideLength > 256, std::invalid_argument, "Chunk size is too large to be practical.");
-		POLYVOX_THROW_IF(!isPowerOf2(m_uChunkSideLength), std::invalid_argument, "Chunk side length must be a power of two.");
+			// Validation of parameters
+			POLYVOX_THROW_IF(!pPager, std::invalid_argument, "You must provide a valid pager when constructing a PagedVolume");
+			POLYVOX_THROW_IF(uTargetMemoryUsageInBytes < 1 * 1024 * 1024, std::invalid_argument, "Target memory usage is too small to be practical");
+			POLYVOX_THROW_IF(m_uChunkSideLength == 0, std::invalid_argument, "Chunk side length cannot be zero.");
+			POLYVOX_THROW_IF(m_uChunkSideLength > 256, std::invalid_argument, "Chunk size is too large to be practical.");
+			POLYVOX_THROW_IF(!isPowerOf2(m_uChunkSideLength), std::invalid_argument, "Chunk side length must be a power of two.");
 
-		// Used to perform multiplications and divisions by bit shifting.
-		m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
-		// Use to perform modulo by bit operations
-		m_iChunkMask = m_uChunkSideLength - 1;
+			// Used to perform multiplications and divisions by bit shifting.
+			m_uChunkSideLengthPower = logBase2(m_uChunkSideLength);
+			// Use to perform modulo by bit operations
+			m_iChunkMask = m_uChunkSideLength - 1;
 
-		// Calculate the number of chunks based on the memory limit and the size of each chunk.
-		uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
-		m_uChunkCountLimit = uTargetMemoryUsageInBytes / uChunkSizeInBytes;
+			// Calculate the number of chunks based on the memory limit and the size of each chunk.
+			uint32_t uChunkSizeInBytes = PagedVolume<VoxelType>::Chunk::calculateSizeInBytes(m_uChunkSideLength);
+			m_uChunkCountLimit = uTargetMemoryUsageInBytes / uChunkSizeInBytes;
 
-		// Enforce sensible limits on the number of chunks.
-		const uint32_t uMinPracticalNoOfChunks = 32; // Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
-		const uint32_t uMaxPracticalNoOfChunks = uChunkArraySize / 2; // A hash table should only become half-full to avoid too many clashes.
-		POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of ",
-			uTargetMemoryUsageInBytes / (1024 * 1024), "Mb is too low and cannot be adhered to.");
-		m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
-		m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
+			// Enforce sensible limits on the number of chunks.
+			const uint32_t uMinPracticalNoOfChunks = 32; // Enough to make sure a chunks and it's neighbours can be loaded, with a few to spare.
+			const uint32_t uMaxPracticalNoOfChunks = uChunkArraySize / 2; // A hash table should only become half-full to avoid too many clashes.
+			POLYVOX_LOG_WARNING_IF(m_uChunkCountLimit < uMinPracticalNoOfChunks, "Requested memory usage limit of ",
+				uTargetMemoryUsageInBytes / (1024 * 1024), "Mb is too low and cannot be adhered to.");
+			m_uChunkCountLimit = (std::max)(m_uChunkCountLimit, uMinPracticalNoOfChunks);
+			m_uChunkCountLimit = (std::min)(m_uChunkCountLimit, uMaxPracticalNoOfChunks);
 
-		// Inform the user about the chosen memory configuration.
-		POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to ", (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024),
-			"Mb (", m_uChunkCountLimit, " chunks of ", uChunkSizeInBytes / 1024, "Kb each).");
+			// Inform the user about the chosen memory configuration.
+			POLYVOX_LOG_DEBUG("Memory usage limit for volume now set to ", (m_uChunkCountLimit * uChunkSizeInBytes) / (1024 * 1024),
+				"Mb (", m_uChunkCountLimit, " chunks of ", uChunkSizeInBytes / 1024, "Kb each).");
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
@@ -181,13 +181,13 @@ namespace PolyVox
 	{
 		// Convert the start and end positions into chunk space coordinates
 		Vector3DInt32 v3dStart;
-		for(int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			v3dStart.setElement(i, regPrefetch.getLowerCorner().getElement(i) >> m_uChunkSideLengthPower);
 		}
 
 		Vector3DInt32 v3dEnd;
-		for(int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			v3dEnd.setElement(i, regPrefetch.getUpperCorner().getElement(i) >> m_uChunkSideLengthPower);
 		}
@@ -199,13 +199,13 @@ namespace PolyVox
 		uNoOfChunks = (std::min)(uNoOfChunks, m_uChunkCountLimit);
 
 		// Loops over the specified positions and touch the corresponding chunks.
-		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
+		for (int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
 		{
-			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
+			for (int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
 			{
-				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
-				{					
-					getChunk(x,y,z);
+				for (int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
+				{
+					getChunk(x, y, z);
 				}
 			}
 		}
@@ -233,33 +233,33 @@ namespace PolyVox
 	/*template <typename VoxelType>
 	void PagedVolume<VoxelType>::flush(Region regFlush)
 	{
-		// Clear this pointer in case the chunk it points at is flushed.
-		m_pLastAccessedChunk = nullptr;
+	// Clear this pointer in case the chunk it points at is flushed.
+	m_pLastAccessedChunk = nullptr;
 
-		// Convert the start and end positions into chunk space coordinates
-		Vector3DInt32 v3dStart;
-		for(int i = 0; i < 3; i++)
-		{
-			v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uChunkSideLengthPower);
-		}
+	// Convert the start and end positions into chunk space coordinates
+	Vector3DInt32 v3dStart;
+	for(int i = 0; i < 3; i++)
+	{
+	v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uChunkSideLengthPower);
+	}
 
-		Vector3DInt32 v3dEnd;
-		for(int i = 0; i < 3; i++)
-		{
-			v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uChunkSideLengthPower);
-		}
+	Vector3DInt32 v3dEnd;
+	for(int i = 0; i < 3; i++)
+	{
+	v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uChunkSideLengthPower);
+	}
 
-		// Loops over the specified positions and delete the corresponding chunks.
-		for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
-		{
-			for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
-			{
-				for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
-				{
-					m_mapChunks.erase(Vector3DInt32(x, y, z));
-				}
-			}
-		}
+	// Loops over the specified positions and delete the corresponding chunks.
+	for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
+	{
+	for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
+	{
+	for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
+	{
+	m_mapChunks.erase(Vector3DInt32(x, y, z));
+	}
+	}
+	}
 	}*/
 
 	template <typename VoxelType>
@@ -365,13 +365,13 @@ namespace PolyVox
 				m_arrayChunks[uOldestChunkIndex] = nullptr;
 			}
 		}
-				
+
 		m_pLastAccessedChunk = pChunk;
 		m_v3dLastAccessedChunkX = uChunkX;
 		m_v3dLastAccessedChunkY = uChunkY;
 		m_v3dLastAccessedChunkZ = uChunkZ;
 
-		return pChunk;	
+		return pChunk;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////

@@ -42,10 +42,10 @@ namespace PolyVox
 {
 	/**
 	 * \file
-	 * 
+	 *
 	 * Ambient occlusion
 	 */
-	
+
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	class AmbientOcclusionCalculatorRaycastCallback
 	{
@@ -72,7 +72,7 @@ namespace PolyVox
 	// This will be 'perfect forwarding' using 'universal references'
 	// This will require C++11 rvalue references which is why I haven't made the
 	// change yet.
-	
+
 	/// Calculate the ambient occlusion for the volume
 	template<typename VolumeType, typename IsVoxelTransparentCallback>
 	void calculateAmbientOcclusion(VolumeType* volInput, Array<3, uint8_t>* arrayResult, const Region& region, float fRayLength, uint8_t uNoOfSamplesPerOutputElement, IsVoxelTransparentCallback isVoxelTransparentCallback);

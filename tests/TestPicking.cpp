@@ -42,7 +42,7 @@ void TestPicking::testExecute()
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				if((x > uVolumeSideLength/2)) //x > 16 is filled
+				if ((x > uVolumeSideLength / 2)) //x > 16 is filled
 				{
 					volData.setVoxel(x, y, z, 100);
 				}
@@ -56,13 +56,13 @@ void TestPicking::testExecute()
 
 	const int8_t emptyVoxelExample = 0; //A voxel value of zero will represent empty space.	
 	PickResult resultHit = pickVoxel(&volData, Vector3DFloat(0, uVolumeSideLength / 2, uVolumeSideLength / 2), Vector3DFloat(uVolumeSideLength, 0, 0), emptyVoxelExample);
-	
+
 	QCOMPARE(resultHit.didHit, true);
 	QCOMPARE(resultHit.hitVoxel, Vector3DInt32((uVolumeSideLength / 2) + 1, uVolumeSideLength / 2, uVolumeSideLength / 2));
 	QCOMPARE(resultHit.previousVoxel, Vector3DInt32((uVolumeSideLength / 2), uVolumeSideLength / 2, uVolumeSideLength / 2));
-	
+
 	PickResult resultMiss = pickVoxel(&volData, Vector3DFloat(0, uVolumeSideLength / 2, uVolumeSideLength / 2), Vector3DFloat(uVolumeSideLength / 2, uVolumeSideLength, uVolumeSideLength), emptyVoxelExample);
-	
+
 	QCOMPARE(resultMiss.didHit, false);
 }
 

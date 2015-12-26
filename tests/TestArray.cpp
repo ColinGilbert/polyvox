@@ -94,11 +94,11 @@ void TestArray::testReadWrite()
 
 	int ct = 1;
 	int expectedTotal = 0;
-	for(int z = 0; z < depth; z++)
+	for (int z = 0; z < depth; z++)
 	{
-		for(int y = 0; y < height; y++)
+		for (int y = 0; y < height; y++)
 		{
-			for(int x = 0; x < width; x++)
+			for (int x = 0; x < width; x++)
 			{
 				myArray(x, y, z) = ct;
 				expectedTotal += myArray(x, y, z);
@@ -109,11 +109,11 @@ void TestArray::testReadWrite()
 
 	ct = 1;
 	int total = 0;
-	for(int z = 0; z < depth; z++)
+	for (int z = 0; z < depth; z++)
 	{
-		for(int y = 0; y < height; y++)
+		for (int y = 0; y < height; y++)
 		{
-			for(int x = 0; x < width; x++)
+			for (int x = 0; x < width; x++)
 			{
 				QCOMPARE(myArray(x, y, z), ct);
 				total += myArray(x, y, z);

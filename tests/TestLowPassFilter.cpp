@@ -36,7 +36,7 @@ void TestLowPassFilter::testExecute()
 {
 	const int32_t g_uVolumeSideLength = 8;
 
-	Region reg(Vector3DInt32(0,0,0), Vector3DInt32(g_uVolumeSideLength-1, g_uVolumeSideLength-1, g_uVolumeSideLength-1));
+	Region reg(Vector3DInt32(0, 0, 0), Vector3DInt32(g_uVolumeSideLength - 1, g_uVolumeSideLength - 1, g_uVolumeSideLength - 1));
 
 	//Create empty volume
 	RawVolume<Density8> volData(reg);
@@ -48,7 +48,7 @@ void TestLowPassFilter::testExecute()
 		{
 			for (int32_t x = 0; x < g_uVolumeSideLength; x++)
 			{
-				if(x % 2 == 0)
+				if (x % 2 == 0)
 				{
 					Density8 voxel(32);
 					volData.setVoxel(x, y, z, voxel);
@@ -62,30 +62,30 @@ void TestLowPassFilter::testExecute()
 	LowPassFilter< RawVolume<Density8>, RawVolume<Density8>, Density16 > lowPassfilter(&volData, reg, &resultVolume, reg, 3);
 
 	//Test the normal implementation
-	QBENCHMARK {
+	QBENCHMARK{
 		lowPassfilter.execute();
 	}
-	QCOMPARE(resultVolume.getVoxel(0,0,0), Density8(4));
-	QCOMPARE(resultVolume.getVoxel(1,1,1), Density8(21));
-	QCOMPARE(resultVolume.getVoxel(2,2,2), Density8(10));
-	QCOMPARE(resultVolume.getVoxel(3,3,3), Density8(21));
-	QCOMPARE(resultVolume.getVoxel(4,4,4), Density8(10));
-	QCOMPARE(resultVolume.getVoxel(5,5,5), Density8(21));
-	QCOMPARE(resultVolume.getVoxel(6,6,6), Density8(10));
-	QCOMPARE(resultVolume.getVoxel(7,7,7), Density8(4));
+	QCOMPARE(resultVolume.getVoxel(0, 0, 0), Density8(4));
+	QCOMPARE(resultVolume.getVoxel(1, 1, 1), Density8(21));
+	QCOMPARE(resultVolume.getVoxel(2, 2, 2), Density8(10));
+	QCOMPARE(resultVolume.getVoxel(3, 3, 3), Density8(21));
+	QCOMPARE(resultVolume.getVoxel(4, 4, 4), Density8(10));
+	QCOMPARE(resultVolume.getVoxel(5, 5, 5), Density8(21));
+	QCOMPARE(resultVolume.getVoxel(6, 6, 6), Density8(10));
+	QCOMPARE(resultVolume.getVoxel(7, 7, 7), Density8(4));
 
 	//Test the SAT implmentation
-	QBENCHMARK {
+	QBENCHMARK{
 		lowPassfilter.executeSAT();
 	}
-	QCOMPARE(resultVolume.getVoxel(0,0,0), Density8(4));
-	QCOMPARE(resultVolume.getVoxel(1,1,1), Density8(21));
-	QCOMPARE(resultVolume.getVoxel(2,2,2), Density8(10));
-	QCOMPARE(resultVolume.getVoxel(3,3,3), Density8(21));
-	QCOMPARE(resultVolume.getVoxel(4,4,4), Density8(10));
-	QCOMPARE(resultVolume.getVoxel(5,5,5), Density8(21));
-	QCOMPARE(resultVolume.getVoxel(6,6,6), Density8(10));
-	QCOMPARE(resultVolume.getVoxel(7,7,7), Density8(4));
+	QCOMPARE(resultVolume.getVoxel(0, 0, 0), Density8(4));
+	QCOMPARE(resultVolume.getVoxel(1, 1, 1), Density8(21));
+	QCOMPARE(resultVolume.getVoxel(2, 2, 2), Density8(10));
+	QCOMPARE(resultVolume.getVoxel(3, 3, 3), Density8(21));
+	QCOMPARE(resultVolume.getVoxel(4, 4, 4), Density8(10));
+	QCOMPARE(resultVolume.getVoxel(5, 5, 5), Density8(21));
+	QCOMPARE(resultVolume.getVoxel(6, 6, 6), Density8(10));
+	QCOMPARE(resultVolume.getVoxel(7, 7, 7), Density8(4));
 }
 
 QTEST_MAIN(TestLowPassFilter)

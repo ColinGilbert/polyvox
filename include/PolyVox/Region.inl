@@ -80,10 +80,10 @@ namespace PolyVox
 	 */
 	inline void Region::accumulate(const Region& reg)
 	{
-		if(!reg.isValid())
+		if (!reg.isValid())
 		{
 			POLYVOX_THROW(invalid_operation, "You cannot accumulate an invalid region."); //The result of accumulating an invalid region is not defined.
-		} 
+		}
 
 		m_iLowerX = ((std::min)(m_iLowerX, reg.getLowerX()));
 		m_iLowerY = ((std::min)(m_iLowerY, reg.getLowerY()));
@@ -98,11 +98,11 @@ namespace PolyVox
 	 */
 	inline Region::Region()
 		:m_iLowerX(0)
-		,m_iLowerY(0)
-		,m_iLowerZ(0)
-		,m_iUpperX(0)
-		,m_iUpperY(0)
-		,m_iUpperZ(0)
+		, m_iLowerY(0)
+		, m_iLowerZ(0)
+		, m_iUpperX(0)
+		, m_iUpperY(0)
+		, m_iUpperZ(0)
 	{
 	}
 
@@ -113,11 +113,11 @@ namespace PolyVox
 	 */
 	inline Region::Region(const Vector3DInt32& v3dLowerCorner, const Vector3DInt32& v3dUpperCorner)
 		:m_iLowerX(v3dLowerCorner.getX())
-		,m_iLowerY(v3dLowerCorner.getY())
-		,m_iLowerZ(v3dLowerCorner.getZ())
-		,m_iUpperX(v3dUpperCorner.getX())
-		,m_iUpperY(v3dUpperCorner.getY())
-		,m_iUpperZ(v3dUpperCorner.getZ())
+		, m_iLowerY(v3dLowerCorner.getY())
+		, m_iLowerZ(v3dLowerCorner.getZ())
+		, m_iUpperX(v3dUpperCorner.getX())
+		, m_iUpperY(v3dUpperCorner.getY())
+		, m_iUpperZ(v3dUpperCorner.getZ())
 	{
 	}
 
@@ -132,11 +132,11 @@ namespace PolyVox
 	 */
 	inline Region::Region(int32_t iLowerX, int32_t iLowerY, int32_t iLowerZ, int32_t iUpperX, int32_t iUpperY, int32_t iUpperZ)
 		:m_iLowerX(iLowerX)
-		,m_iLowerY(iLowerY)
-		,m_iLowerZ(iLowerZ)
-		,m_iUpperX(iUpperX)
-		,m_iUpperY(iUpperY)
-		,m_iUpperZ(iUpperZ)
+		, m_iLowerY(iLowerY)
+		, m_iLowerZ(iLowerZ)
+		, m_iUpperX(iUpperX)
+		, m_iUpperY(iUpperY)
+		, m_iUpperZ(iUpperZ)
 	{
 	}
 
@@ -147,25 +147,25 @@ namespace PolyVox
 	 * \sa operator!=
 	 */
 	inline bool Region::operator==(const Region& rhs) const
-    {
+	{
 		return ((m_iLowerX == rhs.m_iLowerX) && (m_iLowerY == rhs.m_iLowerY) && (m_iLowerZ == rhs.m_iLowerZ)
-			&&  (m_iUpperX == rhs.m_iUpperX) && (m_iUpperY == rhs.m_iUpperY) && (m_iUpperZ == rhs.m_iUpperZ));
-    }
+			&& (m_iUpperX == rhs.m_iUpperX) && (m_iUpperY == rhs.m_iUpperY) && (m_iUpperZ == rhs.m_iUpperZ));
+	}
 
 	/**
 	 *  Two regions are considered different if any of their extents differ.
 	 *  \param rhs The Region to compare to.
-     *  \return true if the Regions are different.
-     *  \sa operator==
+	 *  \return true if the Regions are different.
+	 *  \sa operator==
 	 */
 	inline bool Region::operator!=(const Region& rhs) const
-    {
+	{
 		return !(*this == rhs);
-    }
+	}
 
 	/**
 	 *  The boundary value can be used to ensure a position is only considered to be inside
-	 *  the Region if it is that far in in all directions. Also, the test is inclusive such 
+	 *  the Region if it is that far in in all directions. Also, the test is inclusive such
 	 *  that positions lying exactly on the edge of the Region are considered to be inside it.
 	 *  \param fX The 'x' position of the point to test.
 	 *  \param fY The 'y' position of the point to test.
@@ -184,7 +184,7 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in all directions. Also, the test is inclusive such 
+	 * the Region if it is that far in in all directions. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -196,7 +196,7 @@ namespace PolyVox
 
 	/**
 	 *  The boundary value can be used to ensure a position is only considered to be inside
-	 *  the Region if it is that far in in all directions. Also, the test is inclusive such 
+	 *  the Region if it is that far in in all directions. Also, the test is inclusive such
 	 *  that positions lying exactly on the edge of the Region are considered to be inside it.
 	 *  \param iX The 'x' position of the point to test.
 	 *  \param iY The 'y' position of the point to test.
@@ -206,7 +206,7 @@ namespace PolyVox
 	inline bool Region::containsPoint(int32_t iX, int32_t iY, int32_t iZ, uint8_t boundary) const
 	{
 		return (iX <= m_iUpperX - boundary)
-			&& (iY <= m_iUpperY - boundary) 
+			&& (iY <= m_iUpperY - boundary)
 			&& (iZ <= m_iUpperZ - boundary)
 			&& (iX >= m_iLowerX + boundary)
 			&& (iY >= m_iLowerY + boundary)
@@ -215,7 +215,7 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in all directions. Also, the test is inclusive such 
+	 * the Region if it is that far in in all directions. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -227,7 +227,7 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in the 'x' direction. Also, the test is inclusive such 
+	 * the Region if it is that far in in the 'x' direction. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -240,7 +240,7 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in the 'x' direction. Also, the test is inclusive such 
+	 * the Region if it is that far in in the 'x' direction. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -253,7 +253,7 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in the 'y' direction. Also, the test is inclusive such 
+	 * the Region if it is that far in in the 'y' direction. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -266,20 +266,20 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in the 'y' direction. Also, the test is inclusive such 
+	 * the Region if it is that far in in the 'y' direction. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
 	 */
 	inline bool Region::containsPointInY(int32_t pos, uint8_t boundary) const
 	{
-		return (pos <= m_iUpperY - boundary) 
+		return (pos <= m_iUpperY - boundary)
 			&& (pos >= m_iLowerY + boundary);
 	}
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in the 'z' direction. Also, the test is inclusive such 
+	 * the Region if it is that far in in the 'z' direction. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -292,7 +292,7 @@ namespace PolyVox
 
 	/**
 	 * The boundary value can be used to ensure a position is only considered to be inside
-	 * the Region if it is that far in in the 'z' direction. Also, the test is inclusive such 
+	 * the Region if it is that far in in the 'z' direction. Also, the test is inclusive such
 	 * that positions lying exactly on the edge of the Region are considered to be inside it.
 	 * \param pos The position to test.
 	 * \param boundary The desired boundary value.
@@ -305,7 +305,7 @@ namespace PolyVox
 
 	/**
 	 *  The boundary value can be used to ensure a region is only considered to be inside
-	 *  another Region if it is that far in in all directions. Also, the test is inclusive such 
+	 *  another Region if it is that far in in all directions. Also, the test is inclusive such
 	 *  that a region is considered to be inside of itself.
 	 *  \param reg The region to test.
 	 *  \param boundary The desired boundary value.
@@ -313,7 +313,7 @@ namespace PolyVox
 	inline bool Region::containsRegion(const Region& reg, uint8_t boundary) const
 	{
 		return (reg.m_iUpperX <= m_iUpperX - boundary)
-			&& (reg.m_iUpperY <= m_iUpperY - boundary) 
+			&& (reg.m_iUpperY <= m_iUpperY - boundary)
 			&& (reg.m_iUpperZ <= m_iUpperZ - boundary)
 			&& (reg.m_iLowerX >= m_iLowerX + boundary)
 			&& (reg.m_iLowerY >= m_iLowerY + boundary)
@@ -496,24 +496,24 @@ namespace PolyVox
 	inline bool intersects(const Region& a, const Region& b)
 	{
 		// No intersection if seperated along an axis.
-		if(a.getUpperX() < b.getLowerX() || a.getLowerX() > b.getUpperX()) return false;
-		if(a.getUpperY() < b.getLowerY() || a.getLowerY() > b.getUpperY()) return false;
-		if(a.getUpperZ() < b.getLowerZ() || a.getLowerZ() > b.getUpperZ()) return false;
+		if (a.getUpperX() < b.getLowerX() || a.getLowerX() > b.getUpperX()) return false;
+		if (a.getUpperY() < b.getLowerY() || a.getLowerY() > b.getUpperY()) return false;
+		if (a.getUpperZ() < b.getLowerZ() || a.getLowerZ() > b.getUpperZ()) return false;
 
 		// Overlapping on all axes means Regions are intersecting.
 		return true;
 	}
 
 	/**
-     * Enables the Region to be used intuitively with output streams such as cout.
-     * \param os The output stream to write to.
-     * \param region The Region to write to the stream.
-     * \return A reference to the output stream to allow chaining.
-     */
+	 * Enables the Region to be used intuitively with output streams such as cout.
+	 * \param os The output stream to write to.
+	 * \param region The Region to write to the stream.
+	 * \return A reference to the output stream to allow chaining.
+	 */
 	inline std::ostream& operator<<(std::ostream& os, const Region& region)
-    {
+	{
 		os << "(" << region.getLowerX() << "," << region.getLowerY() << "," << region.getLowerZ() <<
 			") to (" << region.getUpperX() << "," << region.getUpperY() << "," << region.getUpperZ() << ")";
-        return os;
-    }
+		return os;
+	}
 }

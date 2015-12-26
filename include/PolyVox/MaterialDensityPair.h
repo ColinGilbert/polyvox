@@ -93,7 +93,7 @@ namespace PolyVox
 	public:
 		bool operator()(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> back, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> front, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits>& materialToUse)
 		{
-			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
+			if ((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
 				materialToUse = back;
 				return true;
@@ -135,7 +135,7 @@ namespace PolyVox
 
 		MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> blendMaterials(MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> a, MaterialDensityPair<Type, NoOfMaterialBits, NoOfDensityBits> b, float /*weight*/)
 		{
-			if(convertToDensity(a) > convertToDensity(b))
+			if (convertToDensity(a) > convertToDensity(b))
 			{
 				return a;
 			}
@@ -146,7 +146,7 @@ namespace PolyVox
 		}
 
 		DensityType getThreshold(void)
-		{			
+		{
 			return m_tThreshold;
 		}
 

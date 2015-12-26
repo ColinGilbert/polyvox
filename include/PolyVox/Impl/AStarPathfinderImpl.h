@@ -53,8 +53,8 @@ namespace PolyVox
 	{
 		Node(int x, int y, int z)
 			:gVal(std::numeric_limits<float>::quiet_NaN()) //Initilise with NaNs so that we will
-			,hVal(std::numeric_limits<float>::quiet_NaN()) //know if we forget to set these properly.
-			,parent(0)
+			, hVal(std::numeric_limits<float>::quiet_NaN()) //know if we forget to set these properly.
+			, parent(0)
 		{
 			position.setX(x);
 			position.setY(y);

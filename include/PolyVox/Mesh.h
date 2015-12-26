@@ -49,7 +49,7 @@ namespace PolyVox
 		typedef _IndexType IndexType;
 
 		Mesh();
-		~Mesh();	   
+		~Mesh();
 
 		IndexType getNoOfVertices(void) const;
 		const VertexType& getVertex(IndexType index) const;
@@ -69,9 +69,9 @@ namespace PolyVox
 
 		void clear(void);
 		bool isEmpty(void) const;
-		void removeUnusedVertices(void);		
-	
-	private:		
+		void removeUnusedVertices(void);
+
+	private:
 		std::vector<IndexType> m_vecIndices;
 		std::vector<VertexType> m_vecVertices;
 		Vector3DInt32 m_offset;

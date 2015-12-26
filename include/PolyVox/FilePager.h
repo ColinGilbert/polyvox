@@ -49,26 +49,26 @@ namespace PolyVox
 		/// Constructor
 		FilePager(const std::string& strFolderName = ".")
 			:PagedVolume<VoxelType>::Pager()
-			,m_strFolderName(strFolderName)
+			, m_strFolderName(strFolderName)
 		{
-			// Add the trailing slash, assuming the user dind't already do it.
+				// Add the trailing slash, assuming the user dind't already do it.
 				if ((m_strFolderName.back() != '/') && (m_strFolderName.back() != '\\'))
-			{
+				{
 					m_strFolderName.append("/");
-			}
+				}
 
-			// Build a unique postfix to avoid filename conflicts between multiple pagers/runs.
-			// Not a very robust solution but this class is meant as an example for testing really.
-			std::stringstream ss;
-			ss << time(0) << "--"; // Avoid multiple runs using the same filenames.
-			ss << this; // Avoid multiple FilePagers using the same filenames.
-			m_strPostfix = ss.str();
+				// Build a unique postfix to avoid filename conflicts between multiple pagers/runs.
+				// Not a very robust solution but this class is meant as an example for testing really.
+				std::stringstream ss;
+				ss << time(0) << "--"; // Avoid multiple runs using the same filenames.
+				ss << this; // Avoid multiple FilePagers using the same filenames.
+				m_strPostfix = ss.str();
 		}
 
 		/// Destructor
 		virtual ~FilePager()
 		{
-			for(std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
+			for (std::vector<std::string>::iterator iter = m_vecCreatedFiles.begin(); iter < m_vecCreatedFiles.end(); iter++)
 			{
 				POLYVOX_LOG_WARNING_IF(std::remove(iter->c_str()) != 0, "Failed to delete '", *iter, "' when destroying FilePager");
 			}
@@ -84,8 +84,8 @@ namespace PolyVox
 			std::stringstream ssFilename;
 			ssFilename << m_strFolderName << "/"
 				<< region.getLowerX() << "_" << region.getLowerY() << "_" << region.getLowerZ() << "_"
-				 << region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ()
-				 << "--" << m_strPostfix;
+				<< region.getUpperX() << "_" << region.getUpperY() << "_" << region.getUpperZ()
+				<< "--" << m_strPostfix;
 
 			std::string filename = ssFilename.str();
 
@@ -93,14 +93,14 @@ namespace PolyVox
 			// the gameplay-cubiquity integration. See: https://github.com/blackberry/GamePlay/issues/919
 
 			FILE* pFile = fopen(filename.c_str(), "rb");
-			if(pFile)
+			if (pFile)
 			{
 				POLYVOX_LOG_TRACE("Paging in data for ", region);
 
 				/*fseek(pFile, 0L, SEEK_END);
 				size_t fileSizeInBytes = ftell(pFile);
 				fseek(pFile, 0L, SEEK_SET);
-				
+
 				uint8_t* buffer = new uint8_t[fileSizeInBytes];
 				fread(buffer, sizeof(uint8_t), fileSizeInBytes, pFile);
 				pChunk->setData(buffer, fileSizeInBytes);
@@ -108,7 +108,7 @@ namespace PolyVox
 
 				fread(pChunk->getData(), sizeof(uint8_t), pChunk->getDataSizeInBytes(), pFile);
 
-				if(ferror(pFile))
+				if (ferror(pFile))
 				{
 					POLYVOX_THROW(std::runtime_error, "Error reading in chunk data, even though a file exists.");
 				}
@@ -145,7 +145,7 @@ namespace PolyVox
 			// the gameplay-cubiquity integration. See: https://github.com/blackberry/GamePlay/issues/919
 
 			FILE* pFile = fopen(filename.c_str(), "wb");
-			if(!pFile)
+			if (!pFile)
 			{
 				POLYVOX_THROW(std::runtime_error, "Unable to open file to write out chunk data.");
 			}
@@ -155,7 +155,7 @@ namespace PolyVox
 
 			fwrite(pChunk->getData(), sizeof(uint8_t), pChunk->getDataSizeInBytes(), pFile);
 
-			if(ferror(pFile))
+			if (ferror(pFile))
 			{
 				POLYVOX_THROW(std::runtime_error, "Error writing out chunk data.");
 			}

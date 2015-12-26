@@ -37,7 +37,7 @@ namespace PolyVox
 	public:
 		bool operator()(VoxelType back, VoxelType front, VoxelType& materialToUse)
 		{
-			if((back > 0) && (front == 0))
+			if ((back > 0) && (front == 0))
 			{
 				materialToUse = static_cast<VoxelType>(back);
 				return true;

@@ -41,15 +41,15 @@ void createSphereInVolume(RawVolume<MaterialDensityPair88>& volData, float fRadi
 			for (int x = 0; x < volData.getWidth(); x++)
 			{
 				//Store our current position as a vector...
-				Vector3DInt32 v3dCurrentPos(x,y,z);	
+				Vector3DInt32 v3dCurrentPos(x, y, z);
 				//And compute how far the current position is from the center of the volume
 				double fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
 				//If the current voxel is less than 'radius' units from the center
 				//then we make it solid, otherwise we make it empty space.
-				if(fDistToCenter <= fRadius)
+				if (fDistToCenter <= fRadius)
 				{
-					volData.setVoxel(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? MaterialDensityPair88::getMaxDensity() : MaterialDensityPair88::getMinDensity()));
+					volData.setVoxel(x, y, z, MaterialDensityPair88(uValue, uValue > 0 ? MaterialDensityPair88::getMaxDensity() : MaterialDensityPair88::getMinDensity()));
 				}
 			}
 		}
@@ -65,9 +65,9 @@ void createCubeInVolume(RawVolume<MaterialDensityPair88>& volData, Vector3DInt32
 	{
 		for (int y = lowerCorner.getY(); y <= upperCorner.getY(); y++)
 		{
-			for (int x = lowerCorner.getX() ; x <= upperCorner.getX(); x++)
+			for (int x = lowerCorner.getX(); x <= upperCorner.getX(); x++)
 			{
-				volData.setVoxel(x,y,z, MaterialDensityPair88(uValue, uValue > 0 ? maxDen : minDen));
+				volData.setVoxel(x, y, z, MaterialDensityPair88(uValue, uValue > 0 ? maxDen : minDen));
 			}
 		}
 	}

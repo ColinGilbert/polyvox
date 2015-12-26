@@ -30,7 +30,7 @@ namespace PolyVox
 	}
 
 	template <typename VertexType, typename IndexType>
-	Mesh<VertexType, IndexType>::~Mesh()	  
+	Mesh<VertexType, IndexType>::~Mesh()
 	{
 	}
 
@@ -136,7 +136,7 @@ namespace PolyVox
 		std::vector<bool> isVertexUsed(m_vecVertices.size());
 		std::fill(isVertexUsed.begin(), isVertexUsed.end(), false);
 
-		for(uint32_t triCt = 0; triCt < m_vecIndices.size(); triCt++)
+		for (uint32_t triCt = 0; triCt < m_vecIndices.size(); triCt++)
 		{
 			int v = m_vecIndices[triCt];
 			isVertexUsed[v] = true;
@@ -144,9 +144,9 @@ namespace PolyVox
 
 		int noOfUsedVertices = 0;
 		std::vector<uint32_t> newPos(m_vecVertices.size());
-		for(IndexType vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
+		for (IndexType vertCt = 0; vertCt < m_vecVertices.size(); vertCt++)
 		{
-			if(isVertexUsed[vertCt])
+			if (isVertexUsed[vertCt])
 			{
 				m_vecVertices[noOfUsedVertices] = m_vecVertices[vertCt];
 				newPos[vertCt] = noOfUsedVertices;
@@ -156,7 +156,7 @@ namespace PolyVox
 
 		m_vecVertices.resize(noOfUsedVertices);
 
-		for(uint32_t triCt = 0; triCt < m_vecIndices.size(); triCt++)
+		for (uint32_t triCt = 0; triCt < m_vecIndices.size(); triCt++)
 		{
 			m_vecIndices[triCt] = newPos[m_vecIndices[triCt]];
 		}

@@ -43,7 +43,7 @@ namespace PolyVox
 	public:
 		typedef _VoxelType VoxelType;
 
-		#ifndef SWIG
+#ifndef SWIG
 		template <typename DerivedVolumeType>
 		class Sampler
 		{
@@ -52,7 +52,7 @@ namespace PolyVox
 			~Sampler();
 
 			Vector3DInt32 getPosition(void) const;
-			inline VoxelType getVoxel(void) const;	
+			inline VoxelType getVoxel(void) const;
 
 			void setPosition(const Vector3DInt32& v3dNewPos);
 			void setPosition(int32_t xPos, int32_t yPos, int32_t zPos);
@@ -105,7 +105,7 @@ namespace PolyVox
 			int32_t mYPosInVolume;
 			int32_t mZPosInVolume;
 		};
-		#endif // SWIG
+#endif // SWIG
 
 	public:
 		/// Gets a voxel at the position given by <tt>x,y,z</tt> coordinates
@@ -121,7 +121,7 @@ namespace PolyVox
 		/// Calculates approximatly how many bytes of memory the volume is currently using.
 		uint32_t calculateSizeInBytes(void);
 
-	protected:	
+	protected:
 		/// Constructor for creating a volume.
 		BaseVolume();
 

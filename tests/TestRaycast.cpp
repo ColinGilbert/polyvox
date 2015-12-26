@@ -44,7 +44,7 @@ class RaycastTestFunctor
 public:
 	RaycastTestFunctor()
 		:m_uVoxelsTouched(0)
-		,m_bRayLeftVolume(false)
+		, m_bRayLeftVolume(false)
 	{
 	}
 
@@ -55,7 +55,7 @@ public:
 		// For this particular test we know that we are always starting a ray inside the volume,
 		// so if it ever leaves the volume we know it can't go back in and so we can terminate early.
 		// This optimisation is worthwhile because samplers get slow once outside the volume.
-		if(!sampler.isCurrentPositionValid())
+		if (!sampler.isCurrentPositionValid())
 		{
 			m_bRayLeftVolume = true;
 			return false;
@@ -81,20 +81,20 @@ void TestRaycast::testExecute()
 		{
 			for (int32_t x = 0; x < uVolumeSideLength; x++)
 			{
-				if((x == 0) || (x == uVolumeSideLength-1) || (y == 0) || (y == uVolumeSideLength-1))
+				if ((x == 0) || (x == uVolumeSideLength - 1) || (y == 0) || (y == uVolumeSideLength - 1))
 				{
 					volData.setVoxel(x, y, z, 100);
 				}
 				else
 				{
 					volData.setVoxel(x, y, z, -100);
-				}				
+				}
 			}
 		}
 	}
 
 	//Cast rays from the centre. Roughly 2/3 should escape.
-	Vector3DFloat start (uVolumeSideLength / 2, uVolumeSideLength / 2, uVolumeSideLength / 2);	
+	Vector3DFloat start(uVolumeSideLength / 2, uVolumeSideLength / 2, uVolumeSideLength / 2);
 
 	// We could have counted the total number of hits in the same way as the total number of voxels
 	// touched, but for demonstration and testing purposes we are making use of the raycast return value
@@ -103,7 +103,7 @@ void TestRaycast::testExecute()
 	uint32_t uTotalVoxelsTouched = 0;
 
 	// Cast a large number of random rays
-	for(int ct = 0; ct < 1000000; ct++)
+	for (int ct = 0; ct < 1000000; ct++)
 	{
 		RaycastTestFunctor raycastTestFunctor;
 		RaycastResult result = raycastWithDirection(&volData, start, randomUnitVectors[ct % 1024] * 1000.0f, raycastTestFunctor);
@@ -112,11 +112,11 @@ void TestRaycast::testExecute()
 
 		// If the raycast completed then we know it did not hit anything.If it was interupted then it
 		// probably hit something, unless we noted that the reason it was interupted was that it left the volume.
-		if((result == RaycastResults::Interupted) && (raycastTestFunctor.m_bRayLeftVolume == false))
+		if ((result == RaycastResults::Interupted) && (raycastTestFunctor.m_bRayLeftVolume == false))
 		{
 			hits++;
 		}
-	}	
+	}
 
 	// Check the number of hits.
 	QCOMPARE(hits, 687494);

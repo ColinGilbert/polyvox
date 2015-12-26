@@ -76,14 +76,14 @@ namespace PolyVox
 		const float fHalfRatioZ = fRatioZ * 0.5f;
 		const Vector3DFloat v3dHalfRatio(fHalfRatioX, fHalfRatioY, fHalfRatioZ);
 
-		const Vector3DFloat v3dOffset(0.5f,0.5f,0.5f);
+		const Vector3DFloat v3dOffset(0.5f, 0.5f, 0.5f);
 
 		//This loop iterates over the bottom-lower-left voxel in each of the cells in the output array
-		for(uint16_t z = region.getLowerZ(); z <= region.getUpperZ(); z += iRatioZ)
+		for (uint16_t z = region.getLowerZ(); z <= region.getUpperZ(); z += iRatioZ)
 		{
-			for(uint16_t y = region.getLowerY(); y <= region.getUpperY(); y += iRatioY)
+			for (uint16_t y = region.getLowerY(); y <= region.getUpperY(); y += iRatioY)
 			{
-				for(uint16_t x = region.getLowerX(); x <= region.getUpperX(); x += iRatioX)
+				for (uint16_t x = region.getLowerX(); x <= region.getUpperX(); x += iRatioX)
 				{
 					//Compute a start position corresponding to 
 					//the centre of the cell in the output array.
@@ -94,8 +94,8 @@ namespace PolyVox
 					//Keep track of how many rays did not hit anything
 					uint8_t uVisibleDirections = 0;
 
-					for(int ct = 0; ct < uNoOfSamplesPerOutputElement; ct++)
-					{						
+					for (int ct = 0; ct < uNoOfSamplesPerOutputElement; ct++)
+					{
 						//We take a random vector with components going from -1 to 1 and scale it to go from -halfRatio to +halfRatio.
 						//This jitter value moves our sample point from the centre of the array cell to somewhere else in the array cell
 						Vector3DFloat v3dJitter = randomVectors[(uRandomVectorIndex += (++uIndexIncreament)) % 1019]; //Prime number helps avoid repetition on successive loops.
@@ -104,20 +104,20 @@ namespace PolyVox
 
 						Vector3DFloat v3dRayDirection = randomUnitVectors[(uRandomUnitVectorIndex += (++uIndexIncreament)) % 1021]; //Different prime number.
 						v3dRayDirection *= fRayLength;
-						
+
 						AmbientOcclusionCalculatorRaycastCallback<VolumeType, IsVoxelTransparentCallback> ambientOcclusionCalculatorRaycastCallback(isVoxelTransparentCallback);
 						RaycastResult result = raycastWithDirection(volInput, v3dRayStart, v3dRayDirection, ambientOcclusionCalculatorRaycastCallback);
 
 						// Note - The performance of this could actually be improved it we exited as soon
 						// as the ray left the volume. The raycast test has an example of how to do this.
-						if(result == RaycastResults::Completed)
+						if (result == RaycastResults::Completed)
 						{
 							++uVisibleDirections;
 						}
 					}
 
 					float fVisibility;
-					if(uNoOfSamplesPerOutputElement == 0)
+					if (uNoOfSamplesPerOutputElement == 0)
 					{
 						//The user might request zero samples (I've done this in the past while debugging - I don't want to
 						//wait for ambient occlusion but I do want as valid result for rendering). Avoid the divide by zero.

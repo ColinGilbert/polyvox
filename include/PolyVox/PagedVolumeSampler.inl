@@ -107,7 +107,7 @@ namespace PolyVox
 		BaseVolume<VoxelType>::template Sampler< PagedVolume<VoxelType> >::movePositiveX();
 
 		// Then we update the voxel pointer
-		if(CAN_GO_POS_X(this->m_uXPosInChunk))
+		if (CAN_GO_POS_X(this->m_uXPosInChunk))
 		{
 			//No need to compute new chunk.
 			mCurrentVoxel += POS_X_DELTA;
@@ -227,7 +227,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Y_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume - 1, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -237,7 +237,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Y_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume - 1, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -247,7 +247,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Y_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume-1,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume - 1, this->mZPosInVolume + 1);
 	}
 
 	template <typename VoxelType>
@@ -257,7 +257,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -267,7 +267,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -277,7 +277,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume, this->mZPosInVolume + 1);
 	}
 
 	template <typename VoxelType>
@@ -287,7 +287,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Y_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume + 1, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -297,7 +297,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Y_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume + 1, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -307,7 +307,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_X_DELTA + POS_Y_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume-1,this->mYPosInVolume+1,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume - 1, this->mYPosInVolume + 1, this->mZPosInVolume + 1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -319,7 +319,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_Y_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume - 1, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -329,7 +329,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_Y_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume - 1, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -339,7 +339,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_Y_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume-1,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume - 1, this->mZPosInVolume + 1);
 	}
 
 	template <typename VoxelType>
@@ -349,7 +349,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -365,7 +365,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume, this->mZPosInVolume + 1);
 	}
 
 	template <typename VoxelType>
@@ -375,7 +375,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_Y_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume + 1, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -385,7 +385,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_Y_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume + 1, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -395,7 +395,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_Y_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume,this->mYPosInVolume+1,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume, this->mYPosInVolume + 1, this->mZPosInVolume + 1);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -407,7 +407,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Y_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume - 1, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -417,7 +417,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Y_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume - 1, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -427,7 +427,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Y_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume-1,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume - 1, this->mZPosInVolume + 1);
 	}
 
 	template <typename VoxelType>
@@ -437,7 +437,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -447,7 +447,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -457,7 +457,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume, this->mZPosInVolume + 1);
 	}
 
 	template <typename VoxelType>
@@ -467,7 +467,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Y_DELTA + NEG_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume-1);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume + 1, this->mZPosInVolume - 1);
 	}
 
 	template <typename VoxelType>
@@ -477,7 +477,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Y_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume + 1, this->mZPosInVolume);
 	}
 
 	template <typename VoxelType>
@@ -487,7 +487,7 @@ namespace PolyVox
 		{
 			return *(mCurrentVoxel + POS_X_DELTA + POS_Y_DELTA + POS_Z_DELTA);
 		}
-		return this->mVolume->getVoxel(this->mXPosInVolume+1,this->mYPosInVolume+1,this->mZPosInVolume+1);
+		return this->mVolume->getVoxel(this->mXPosInVolume + 1, this->mYPosInVolume + 1, this->mZPosInVolume + 1);
 	}
 }
 

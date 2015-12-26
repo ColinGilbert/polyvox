@@ -47,14 +47,14 @@ void createSphereInVolume(RawVolume<uint8_t>& volData, float fRadius)
 			for (int x = 0; x < volData.getWidth(); x++)
 			{
 				//Store our current position as a vector...
-				Vector3DFloat v3dCurrentPos(x,y,z);	
+				Vector3DFloat v3dCurrentPos(x, y, z);
 				//And compute how far the current position is from the center of the volume
 				float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
 				uint8_t uVoxelValue = 0;
 
 				//If the current voxel is less than 'radius' units from the center then we make it solid.
-				if(fDistToCenter <= fRadius)
+				if (fDistToCenter <= fRadius)
 				{
 					//Our new voxel value
 					uVoxelValue = 255;

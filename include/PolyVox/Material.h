@@ -58,7 +58,7 @@ namespace PolyVox
 		Type getMaterial() const { return m_uMaterial; }
 		/**
 		 * Set the material value of the voxel
-		 * 
+		 *
 		 * \param uMaterial The material to set to
 		 */
 		void setMaterial(Type uMaterial) { m_uMaterial = uMaterial; }
@@ -76,7 +76,7 @@ namespace PolyVox
 	public:
 		bool operator()(Material<Type> back, Material<Type> front, Material<Type>& materialToUse)
 		{
-			if((back.getMaterial() > 0) && (front.getMaterial() == 0))
+			if ((back.getMaterial() > 0) && (front.getMaterial() == 0))
 			{
 				materialToUse = back;
 				return true;
