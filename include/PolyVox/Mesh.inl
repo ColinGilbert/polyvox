@@ -49,13 +49,7 @@ namespace PolyVox
 	template <typename VertexType, typename IndexType>
 	const VertexType*  Mesh<VertexType, IndexType>::getRawVertexData(void) const
 	{
-		return &(m_vecVertices[0]);
-	}
-
-	template <typename VertexType, typename IndexType>
-	const std::vector<VertexType>& Mesh<VertexType, IndexType>::getVertices(void) const
-	{
-		return m_vecVertices;
+		return m_vecVertices.data();
 	}
 
 	template <typename VertexType, typename IndexType>
@@ -73,13 +67,7 @@ namespace PolyVox
 	template <typename VertexType, typename IndexType>
 	const IndexType* Mesh<VertexType, IndexType>::getRawIndexData(void) const
 	{
-		return &(m_vecIndices[0]);
-	}
-
-	template <typename VertexType, typename IndexType>
-	const std::vector<IndexType>& Mesh<VertexType, IndexType>::getIndices(void) const
-	{
-		return m_vecIndices;
+		return m_vecIndices.data();
 	}
 
 	template <typename VertexType, typename IndexType>

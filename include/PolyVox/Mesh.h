@@ -54,12 +54,10 @@ namespace PolyVox
 		IndexType getNoOfVertices(void) const;
 		const VertexType& getVertex(IndexType index) const;
 		const VertexType* getRawVertexData(void) const;
-		POLYVOX_DEPRECATED const std::vector<VertexType>& getVertices(void) const;
 
 		size_t getNoOfIndices(void) const;
 		IndexType getIndex(uint32_t index) const;
 		const IndexType* getRawIndexData(void) const;
-		POLYVOX_DEPRECATED const std::vector<IndexType>& getIndices(void) const;
 
 		const Vector3DInt32& getOffset(void) const;
 		void setOffset(const Vector3DInt32& offset);

@@ -116,10 +116,6 @@ protected:
 private:
 	OpenGLMeshData buildOpenGLMeshData(const PolyVox::Mesh< PolyVox::MarchingCubesVertex< uint8_t > >& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 	{
-		// Convienient access to the vertices and indices
-		const auto& vecIndices = surfaceMesh.getIndices();
-		const auto& vecVertices = surfaceMesh.getVertices();
-
 		// This struct holds the OpenGL properties (buffer handles, etc) which will be used
 		// to render our mesh. We copy the data from the PolyVox mesh into this structure.
 		OpenGLMeshData meshData;
@@ -131,12 +127,12 @@ private:
 		// The GL_ARRAY_BUFFER will contain the list of vertex positions
 		glGenBuffers(1, &(meshData.vertexBuffer));
 		glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(MarchingCubesVertex< uint8_t >), vecVertices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, surfaceMesh.getNoOfVertices() * sizeof(MarchingCubesVertex< uint8_t >), surfaceMesh.getRawVertexData(), GL_STATIC_DRAW);
 
 		// and GL_ELEMENT_ARRAY_BUFFER will contain the indices
 		glGenBuffers(1, &(meshData.indexBuffer));
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshData.indexBuffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), vecIndices.data(), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, surfaceMesh.getNoOfIndices() * sizeof(uint32_t), surfaceMesh.getRawIndexData(), GL_STATIC_DRAW);
 
 		// Every surface extractor outputs valid positions for the vertices, so tell OpenGL how these are laid out
 		glEnableVertexAttribArray(0); // Attrib '0' is the vertex positions
@@ -159,7 +155,7 @@ private:
 		glBindVertexArray(0);
 
 		// A few additional properties can be copied across for use during rendering.
-		meshData.noOfIndices = vecIndices.size();
+		meshData.noOfIndices = surfaceMesh.getNoOfIndices();
 		meshData.translation = QVector3D(translation.getX(), translation.getY(), translation.getZ());
 		meshData.scale = scale;
 
