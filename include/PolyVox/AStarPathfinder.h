@@ -34,48 +34,6 @@
 
 namespace PolyVox
 {
-	const float sqrt_1 = 1.0f;
-	const float sqrt_2 = 1.4143f;
-	const float sqrt_3 = 1.7321f;
-
-	const Vector3DInt32 arrayPathfinderFaces[6] =
-	{
-		Vector3DInt32(0, 0, -1),
-		Vector3DInt32(0, 0, +1),
-		Vector3DInt32(0, -1, 0),
-		Vector3DInt32(0, +1, 0),
-		Vector3DInt32(-1, 0, 0),
-		Vector3DInt32(+1, 0, 0)
-	};
-
-	const Vector3DInt32 arrayPathfinderEdges[12] =
-	{
-		Vector3DInt32(0, -1, -1),
-		Vector3DInt32(0, -1, +1),
-		Vector3DInt32(0, +1, -1),
-		Vector3DInt32(0, +1, +1),
-		Vector3DInt32(-1, 0, -1),
-		Vector3DInt32(-1, 0, +1),
-		Vector3DInt32(+1, 0, -1),
-		Vector3DInt32(+1, 0, +1),
-		Vector3DInt32(-1, -1, 0),
-		Vector3DInt32(-1, +1, 0),
-		Vector3DInt32(+1, -1, 0),
-		Vector3DInt32(+1, +1, 0)
-	};
-
-	const Vector3DInt32 arrayPathfinderCorners[8] =
-	{
-		Vector3DInt32(-1, -1, -1),
-		Vector3DInt32(-1, -1, +1),
-		Vector3DInt32(-1, +1, -1),
-		Vector3DInt32(-1, +1, +1),
-		Vector3DInt32(+1, -1, -1),
-		Vector3DInt32(+1, -1, +1),
-		Vector3DInt32(+1, +1, -1),
-		Vector3DInt32(+1, +1, +1)
-	};
-
 	/// This function provides the default method for checking whether a given voxel
 	/// is valid for the path computed by the AStarPathfinder.
 	template<typename VolumeType>

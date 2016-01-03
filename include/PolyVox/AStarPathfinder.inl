@@ -27,6 +27,51 @@
 namespace PolyVox
 {
 	////////////////////////////////////////////////////////////////////////////////
+	// Useful constants
+	////////////////////////////////////////////////////////////////////////////////
+	const float sqrt_1 = 1.0f;
+	const float sqrt_2 = 1.4143f;
+	const float sqrt_3 = 1.7321f;
+
+	const Vector3DInt32 arrayPathfinderFaces[6] =
+	{
+		Vector3DInt32(0, 0, -1),
+		Vector3DInt32(0, 0, +1),
+		Vector3DInt32(0, -1, 0),
+		Vector3DInt32(0, +1, 0),
+		Vector3DInt32(-1, 0, 0),
+		Vector3DInt32(+1, 0, 0)
+	};
+
+	const Vector3DInt32 arrayPathfinderEdges[12] =
+	{
+		Vector3DInt32(0, -1, -1),
+		Vector3DInt32(0, -1, +1),
+		Vector3DInt32(0, +1, -1),
+		Vector3DInt32(0, +1, +1),
+		Vector3DInt32(-1, 0, -1),
+		Vector3DInt32(-1, 0, +1),
+		Vector3DInt32(+1, 0, -1),
+		Vector3DInt32(+1, 0, +1),
+		Vector3DInt32(-1, -1, 0),
+		Vector3DInt32(-1, +1, 0),
+		Vector3DInt32(+1, -1, 0),
+		Vector3DInt32(+1, +1, 0)
+	};
+
+	const Vector3DInt32 arrayPathfinderCorners[8] =
+	{
+		Vector3DInt32(-1, -1, -1),
+		Vector3DInt32(-1, -1, +1),
+		Vector3DInt32(-1, +1, -1),
+		Vector3DInt32(-1, +1, +1),
+		Vector3DInt32(+1, -1, -1),
+		Vector3DInt32(+1, -1, +1),
+		Vector3DInt32(+1, +1, -1),
+		Vector3DInt32(+1, +1, +1)
+	};
+
+	////////////////////////////////////////////////////////////////////////////////
 	/// Using this function, a voxel is considered valid for the path if it is inside the
 	/// volume and if its density is below that returned by the voxel's getDensity() function.
 	/// \return true is the voxel is valid for the path
