@@ -36,7 +36,6 @@ namespace PolyVox
 {
 	class OpenNodesContainer;
 	class ClosedNodesContainer;
-	class ThermiteGameLogic;
 
 	/// The Connectivity of a voxel determines how many neighbours it has.
 	enum Connectivity
