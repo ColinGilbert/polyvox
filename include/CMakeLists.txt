@@ -43,9 +43,6 @@ SET(CORE_INC_FILES
 	PolyVox/Density.h
 	PolyVox/Exceptions.h
 	PolyVox/FilePager.h
-	PolyVox/Interpolation.h
-	PolyVox/IteratorController.h
-	PolyVox/IteratorController.inl
 	PolyVox/LowPassFilter.h
 	PolyVox/LowPassFilter.inl
 	PolyVox/MarchingCubesSurfaceExtractor.h
@@ -80,6 +77,9 @@ SET(IMPL_INC_FILES
     PolyVox/Impl/Config.h
 	PolyVox/Impl/ErrorHandling.h
 	PolyVox/Impl/ExceptionsImpl.h
+	PolyVox/Impl/Interpolation.h
+	PolyVox/Impl/IteratorController.h
+	PolyVox/Impl/IteratorController.inl
 	PolyVox/Impl/LoggingImpl.h
 	PolyVox/Impl/MarchingCubesTables.h
 	PolyVox/Impl/PlatformDefinitions.h

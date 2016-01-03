@@ -22,7 +22,7 @@
 * SOFTWARE.
 *******************************************************************************/
 
-#include "Interpolation.h"
+#include "Impl/Interpolation.h"
 
 #include <cmath>
 

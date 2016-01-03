@@ -25,7 +25,8 @@
 #ifndef __PolyVox_LowPassFilter_H__
 #define __PolyVox_LowPassFilter_H__
 
-#include "IteratorController.h"
+#include "Impl/IteratorController.h"
+
 #include "RawVolume.h" //Is this desirable?
 #include "Region.h"
 
