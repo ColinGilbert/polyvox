@@ -38,7 +38,9 @@ namespace PolyVox
 {
 	/// This class represents a voxel storing only a density.
 	////////////////////////////////////////////////////////////////////////////////
-	/// Detailed description...
+	/// Note that this should probably just be considered an example of how to define
+	/// a voxel type for the Marching Cubes algorithm. Advanced users are likely to
+	/// define custom voxel types and possibly custom controllers.
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename Type>
 	class Density

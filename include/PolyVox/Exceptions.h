@@ -28,7 +28,7 @@
 #include <stdexcept> // For base exception classes.
 #include <string.h> // Exception constuctors take strings.
 
-// These exceptions form part of the public API because lcient code may need to catch them.
+// These exceptions form part of the public API because client code may need to catch them.
 // Note that our utility macros such as 'POLYVOX_THROW_IF' do not form part of the public API
 // as they are only for our own internal use.
 namespace PolyVox
