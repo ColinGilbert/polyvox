@@ -242,8 +242,8 @@ namespace PolyVox
 	// Surface extraction
 	////////////////////////////////////////////////////////////////////////////////
 
-	// This is probably the version of Marching Cubes extraction which you will want to use initially, at least
-	// until you determine you have a need for the extra functionality provied by extractMarchingCubesMeshCustom().
+	/// This is probably the version of Marching Cubes extraction which you will want to use initially, at least
+	/// until you determine you have a need for the extra functionality provied by extractMarchingCubesMeshCustom().
 	template< typename VolumeType, typename ControllerType >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller)
 	{
@@ -252,19 +252,19 @@ namespace PolyVox
 		return result;
 	}
 
-	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
-	// There are a few reasons why this might be useful to more advanced users:
-	//
-	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
-	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
-	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an OpenGL VBO to allow direct writing into this structure.
-	//
-	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
-	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
-	//
-	// Note: This function is called 'extractMarchingCubesMeshCustom' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
-	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
-	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
+	/// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
+	/// There are a few reasons why this might be useful to more advanced users:
+	///
+	///   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
+	///   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
+	///   3. The user could provide a custom mesh class, e.g a thin wrapper around an OpenGL VBO to allow direct writing into this structure.
+	///
+	/// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
+	/// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
+	///
+	/// Note: This function is called 'extractMarchingCubesMeshCustom' rather than 'extractMarchingCubesMesh' to avoid ambiguity when only three parameters
+	/// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
+	/// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template< typename VolumeType, typename MeshType, typename ControllerType >
 	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller)
 	{

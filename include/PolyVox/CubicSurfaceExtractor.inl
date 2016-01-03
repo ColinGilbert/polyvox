@@ -26,6 +26,179 @@
 
 namespace PolyVox
 {
+	// This constant defines the maximum number of quads which can share a vertex in a cubic style mesh.
+	//
+	// We try to avoid duplicate vertices by checking whether a vertex has already been added at a given position.
+	// However, it is possible that vertices have the same position but different materials. In this case, the
+	// vertices are not true duplicates and both must be added to the mesh. As far as I can tell, it is possible to have
+	// at most eight vertices with the same position but different materials. For example, this worst-case scenario
+	// happens when we have a 2x2x2 group of voxels, all with different materials and some/all partially transparent.
+	// The vertex position at the center of this group is then going to be used by all eight voxels all with different
+	// materials.
+	const uint32_t MaxVerticesPerPosition = 8;
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Data structures
+	////////////////////////////////////////////////////////////////////////////////
+
+	enum FaceNames
+	{
+		PositiveX,
+		PositiveY,
+		PositiveZ,
+		NegativeX,
+		NegativeY,
+		NegativeZ,
+		NoOfFaces
+	};
+
+	struct Quad
+	{
+		Quad(uint32_t v0, uint32_t v1, uint32_t v2, uint32_t v3)
+		{
+			vertices[0] = v0;
+			vertices[1] = v1;
+			vertices[2] = v2;
+			vertices[3] = v3;
+		}
+
+		uint32_t vertices[4];
+	};
+
+	template<typename VolumeType>
+	struct IndexAndMaterial
+	{
+		int32_t iIndex;
+		typename VolumeType::VoxelType uMaterial;
+	};
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Vertex encoding/decoding
+	////////////////////////////////////////////////////////////////////////////////
+
+	inline Vector3DFloat decodePosition(const Vector3DUint8& encodedPosition)
+	{
+		Vector3DFloat result(encodedPosition.getX(), encodedPosition.getY(), encodedPosition.getZ());
+		result -= 0.5f; // Apply the required offset
+		return result;
+	}
+
+	template<typename DataType>
+	Vertex<DataType> decodeVertex(const CubicVertex<DataType>& cubicVertex)
+	{
+		Vertex<DataType> result;
+		result.position = decodePosition(cubicVertex.encodedPosition);
+		result.normal.setElements(0.0f, 0.0f, 0.0f); // Currently not calculated
+		result.data = cubicVertex.data; // Data is not encoded
+		return result;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////
+	// Surface extraction
+	////////////////////////////////////////////////////////////////////////////////
+
+	template<typename MeshType>
+	bool mergeQuads(Quad& q1, Quad& q2, MeshType* m_meshCurrent)
+	{
+		//All four vertices of a given quad have the same data,
+		//so just check that the first pair of vertices match.
+		if (m_meshCurrent->getVertex(q1.vertices[0]).data == m_meshCurrent->getVertex(q2.vertices[0]).data)
+		{
+			//Now check whether quad 2 is adjacent to quad one by comparing vertices.
+			//Adjacent quads must share two vertices, and the second quad could be to the
+			//top, bottom, left, of right of the first one. This gives four combinations to test.
+			if ((q1.vertices[0] == q2.vertices[1]) && ((q1.vertices[3] == q2.vertices[2])))
+			{
+				q1.vertices[0] = q2.vertices[0];
+				q1.vertices[3] = q2.vertices[3];
+				return true;
+			}
+			else if ((q1.vertices[3] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[1])))
+			{
+				q1.vertices[3] = q2.vertices[3];
+				q1.vertices[2] = q2.vertices[2];
+				return true;
+			}
+			else if ((q1.vertices[1] == q2.vertices[0]) && ((q1.vertices[2] == q2.vertices[3])))
+			{
+				q1.vertices[1] = q2.vertices[1];
+				q1.vertices[2] = q2.vertices[2];
+				return true;
+			}
+			else if ((q1.vertices[0] == q2.vertices[3]) && ((q1.vertices[1] == q2.vertices[2])))
+			{
+				q1.vertices[0] = q2.vertices[0];
+				q1.vertices[1] = q2.vertices[1];
+				return true;
+			}
+		}
+
+		//Quads cannot be merged.
+		return false;
+	}
+
+	template<typename MeshType>
+	bool performQuadMerging(std::list<Quad>& quads, MeshType* m_meshCurrent)
+	{
+		bool bDidMerge = false;
+		for (typename std::list<Quad>::iterator outerIter = quads.begin(); outerIter != quads.end(); outerIter++)
+		{
+			typename std::list<Quad>::iterator innerIter = outerIter;
+			innerIter++;
+			while (innerIter != quads.end())
+			{
+				Quad& q1 = *outerIter;
+				Quad& q2 = *innerIter;
+
+				bool result = mergeQuads(q1, q2, m_meshCurrent);
+
+				if (result)
+				{
+					bDidMerge = true;
+					innerIter = quads.erase(innerIter);
+				}
+				else
+				{
+					innerIter++;
+				}
+			}
+		}
+
+		return bDidMerge;
+	}
+
+	template<typename VolumeType, typename MeshType>
+	int32_t addVertex(uint32_t uX, uint32_t uY, uint32_t uZ, typename VolumeType::VoxelType uMaterialIn, Array<3, IndexAndMaterial<VolumeType> >& existingVertices, MeshType* m_meshCurrent)
+	{
+		for (uint32_t ct = 0; ct < MaxVerticesPerPosition; ct++)
+		{
+			IndexAndMaterial<VolumeType>& rEntry = existingVertices(uX, uY, ct);
+
+			if (rEntry.iIndex == -1)
+			{
+				//No vertices matched and we've now hit an empty space. Fill it by creating a vertex. The 0.5f offset is because vertices set between voxels in order to build cubes around them.
+				CubicVertex<typename VolumeType::VoxelType> cubicVertex;
+				cubicVertex.encodedPosition.setElements(static_cast<uint8_t>(uX), static_cast<uint8_t>(uY), static_cast<uint8_t>(uZ));
+				cubicVertex.data = uMaterialIn;
+				rEntry.iIndex = m_meshCurrent->addVertex(cubicVertex);
+				rEntry.uMaterial = uMaterialIn;
+
+				return rEntry.iIndex;
+			}
+
+			//If we have an existing vertex and the material matches then we can return it.
+			if (rEntry.uMaterial == uMaterialIn)
+			{
+				return rEntry.iIndex;
+			}
+		}
+
+		// If we exit the loop here then apparently all the slots were full but none of them matched.
+		// This shouldn't ever happen, so if it does it is probably a bug in PolyVox. Please report it to us!
+		POLYVOX_THROW(std::runtime_error, "All slots full but no matches during cubic surface extraction. This is probably a bug in PolyVox");
+		return -1; //Should never happen.
+	}
+
 	/// The CubicSurfaceExtractor creates a mesh in which each voxel appears to be rendered as a cube
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// Introduction
@@ -75,19 +248,19 @@ namespace PolyVox
 		return result;
 	}
 
-	// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
-	// There are a few reasons why this might be useful to more advanced users:
-	//
-	//   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
-	//   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
-	//   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
-	//
-	// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
-	// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
-	//
-	// Note: This function is called 'extractCubicMeshCustom' rather than 'extractCubicMesh' to avoid ambiguity when only three parameters
-	// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
-	// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
+	/// This version of the function performs the extraction into a user-provided mesh rather than allocating a mesh automatically.
+	/// There are a few reasons why this might be useful to more advanced users:
+	///
+	///   1. It leaves the user in control of memory allocation and would allow them to implement e.g. a mesh pooling system.
+	///   2. The user-provided mesh could have a different index type (e.g. 16-bit indices) to reduce memory usage.
+	///   3. The user could provide a custom mesh class, e.g a thin wrapper around an openGL VBO to allow direct writing into this structure.
+	///
+	/// We don't provide a default MeshType here. If the user doesn't want to provide a MeshType then it probably makes
+	/// more sense to use the other variant of this function where the mesh is a return value rather than a parameter.
+	///
+	/// Note: This function is called 'extractCubicMeshCustom' rather than 'extractCubicMesh' to avoid ambiguity when only three parameters
+	/// are provided (would the third parameter be a controller or a mesh?). It seems this can be fixed by using enable_if/static_assert to emulate concepts,
+	/// but this is relatively complex and I haven't done it yet. Could always add it later as another overload.
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded>
 	void extractCubicMeshCustom(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded, bool bMergeQuads)
 	{
