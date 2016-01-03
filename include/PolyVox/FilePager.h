@@ -40,7 +40,12 @@
 namespace PolyVox
 {
 	/**
-	 * Provides an interface for performing paging of data.
+	 * An implementation of Pager which stores voxels to files on disk. Each chunk is written
+	 * to a seperate file and you can specify the name of a folder where these will be stored.
+	 *
+	 * Note that no compression is performed (mostly to avoid dependancies) so for large
+	 * volumes you may want to consider this class as an example and create a custom version
+	 * with compression.
 	 */
 	template <typename VoxelType>
 	class FilePager : public PagedVolume<VoxelType>::Pager
