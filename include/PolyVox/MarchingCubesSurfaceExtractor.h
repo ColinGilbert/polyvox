@@ -40,17 +40,18 @@ namespace PolyVox
 	/// Vertex for rendering, but advanced users can also decode it on the GPU (see PolyVox examples).
 	template<typename _DataType>
 	struct  MarchingCubesVertex
-	{
+	{		
 		typedef _DataType DataType;
 
-		// Each component of the position is stored using 8.8 fixed-point encoding.
+		/// Each component of the position is stored using 8.8 fixed-point encoding.
 		Vector3DUint16 encodedPosition;
 
-		// The normal is encoded as a 16-bit unsigned integer using the 'oct16'
-		// encoding described here: http://jcgt.org/published/0003/02/01/
+		/// The normal is encoded as a 16-bit unsigned integer using the 'oct16'
+		/// encoding described here: http://jcgt.org/published/0003/02/01/
 		uint16_t encodedNormal;
 
-		// User data
+		/// The interpolated voxel data from the neighbouring voxels which generated this
+		/// vertex (every vertex is placed between two voxels by the MArching Cubes algorithm)
 		DataType data;
 	};
 
@@ -63,11 +64,11 @@ namespace PolyVox
 	template<typename DataType>
 	Vertex<DataType> decodeVertex(const MarchingCubesVertex<DataType>& marchingCubesVertex);
 
-	// Generates a mesh from the voxel data using the Marching Cubes algorithm.
+	/// Generates a mesh from the voxel data using the Marching Cubes algorithm.
 	template< typename VolumeType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	Mesh<MarchingCubesVertex<typename VolumeType::VoxelType> > extractMarchingCubesMesh(VolumeType* volData, Region region, ControllerType controller = ControllerType());
 
-	// Generates a mesh from the voxel data using the Marching Cubes algorithm, placing the result into a user-provided Mesh.
+	/// Generates a mesh from the voxel data using the Marching Cubes algorithm, placing the result into a user-provided Mesh.
 	template< typename VolumeType, typename MeshType, typename ControllerType = DefaultMarchingCubesController<typename VolumeType::VoxelType> >
 	void extractMarchingCubesMeshCustom(VolumeType* volData, Region region, MeshType* result, ControllerType controller = ControllerType());
 }

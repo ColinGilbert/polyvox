@@ -35,16 +35,19 @@
 
 namespace PolyVox
 {
+	/// A specialised vertex format which encodes the data from the cubic extraction algorithm in a very 
+	/// compact way. You will probably want to use the decodeVertex() function to turn it into a regular
+	/// Vertex for rendering, but advanced users should also be able to decode it on the GPU (not tested).
 	template<typename _DataType>
 	struct  CubicVertex
 	{
 		typedef _DataType DataType;
 
-		// Each component of the position is stored as a single unsigned byte.
-		// The true position is found by offseting each component by 0.5f.
+		/// Each component of the position is stored as a single unsigned byte.
+		/// The true position is found by offseting each component by 0.5f.
 		Vector3DUint8 encodedPosition;
 
-		// User data
+		/// A copy of the data which was stored in the voxel which generated this vertex.
 		DataType data;
 	};
 
@@ -60,11 +63,11 @@ namespace PolyVox
 	template<typename DataType>
 	Vertex<DataType> decodeVertex(const CubicVertex<DataType>& cubicVertex);
 
-	// Generates a cubic-style mesh from the voxel data.
+	/// Generates a cubic-style mesh from the voxel data.
 	template<typename VolumeType, typename MeshType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
 	void extractCubicMeshCustom(VolumeType* volData, Region region, MeshType* result, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
 
-	// Generates a cubic-style mesh from the voxel data, placing the result into a user-provided Mesh.
+	/// Generates a cubic-style mesh from the voxel data, placing the result into a user-provided Mesh.
 	template<typename VolumeType, typename IsQuadNeeded = DefaultIsQuadNeeded<typename VolumeType::VoxelType> >
 	Mesh<CubicVertex<typename VolumeType::VoxelType> > extractCubicMesh(VolumeType* volData, Region region, IsQuadNeeded isQuadNeeded = IsQuadNeeded(), bool bMergeQuads = true);
 	
