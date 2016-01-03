@@ -27,18 +27,20 @@
 
 #include "Impl/IteratorController.h"
 
-#include "RawVolume.h" //Is this desirable?
 #include "Region.h"
 
 namespace PolyVox
 {
+	/// This class is able to copy volume data from a source volume to a destination volume while performing low-pass filtering (blurring).
 	template< typename SrcVolumeType, typename DstVolumeType, typename AccumulationType>
 	class LowPassFilter
 	{
 	public:
 		LowPassFilter(SrcVolumeType* pVolSrc, Region regSrc, DstVolumeType* pVolDst, Region regDst, uint32_t uKernelSize);
 
+		/// Execute a standard approach to filtering which performs a number of neighbourhood look-ups per voxel.
 		void execute();
+		/// Execute a version with 'Summed Area Tables'. This should be faster for large kernel sizes but this hasn't really been confirmed yet.
 		void executeSAT();
 
 	private:

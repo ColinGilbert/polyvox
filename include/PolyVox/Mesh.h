@@ -28,7 +28,7 @@
 #include "Impl/PlatformDefinitions.h"
 
 #include "Region.h"
-#include "Vertex.h" //Should probably do away with this on in the future...
+#include "Vertex.h" //Should probably do away with this one in the future...
 
 #include <algorithm>
 #include <cstdlib>
@@ -39,6 +39,9 @@
 
 namespace PolyVox
 {
+	/// A simple and general-purpose mesh class to represent the data returned by the surface extraction functions.
+	/// It supports different vertex types (which will vary depending on the surface extractor used and the contents
+	/// of the volume) and both 16-bit and 32 bit indices.
 	typedef uint32_t DefaultIndexType;
 	template <typename _VertexType, typename _IndexType = DefaultIndexType>
 	class Mesh
@@ -75,6 +78,9 @@ namespace PolyVox
 		Vector3DInt32 m_offset;
 	};
 
+	/// Meshes returned by the surface extractors often have vertices with efficient compressed
+	/// formats which are hard to interpret directly (see CubicVertex and MarchingCubesVertex).
+	/// This function creates a new uncompressed mesh containing the much simpler Vertex objects.
 	template <typename MeshType>
 	Mesh< Vertex< typename MeshType::VertexType::DataType >, typename MeshType::IndexType > decodeMesh(const MeshType& encodedMesh)
 	{
