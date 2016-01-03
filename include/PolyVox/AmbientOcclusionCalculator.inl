@@ -25,6 +25,16 @@
 namespace PolyVox
 {
 	/**
+	 * This function fills a 3D array with ambient occlusion values computed by raycasting through the volume.
+	 * This approach to ambient occlusion is only appropriate for relatvely small volumes, otherwise it will 
+	 * become very slow and consume a lot of memory. You will need to find a way to actually use the generated
+	 * ambient occlusion data, which might mean uploading it the the GPU as a volume texture or sampling on
+	 * the CPU using the vertex positions from your generated mesh.
+	 *
+	 * In practice we have not made much use of this implementation ourselves, so you may find it needs some
+	 * optimizations or improvements to be useful. It is likely that there are actually better approaches to
+	 * the ambient occlusion problem.
+	 *
 	 * \param volInput The volume to calculate the ambient occlusion for
 	 * \param[out] arrayResult The output of the calculator
 	 * \param region The region of the volume for which the occlusion should be calculated

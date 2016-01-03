@@ -32,8 +32,8 @@
 
 namespace PolyVox
 {
-	/// The BaseVolume class provides common functionality and an interface for other volume classes to implement. You should not try to create an instance of this
-	/// class directly. Instead you should use RawVolume or PagedVolume.
+	/// The BaseVolume class provides common functionality and an interface for other volume classes to implement.
+	/// You should not try to create an instance of this class directly. Instead you should use RawVolume or PagedVolume.
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// More details to come...
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

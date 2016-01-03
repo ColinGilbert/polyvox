@@ -119,12 +119,12 @@ namespace PolyVox
 	}
 
 	////////////////////////////////////////////////////////////////////////////////
-	/// Note: This function needs reviewing for accuracy...
+	/// 
 	////////////////////////////////////////////////////////////////////////////////
 	template <typename VoxelType>
 	uint32_t BaseVolume<VoxelType>::calculateSizeInBytes(void)
 	{
-		return this->getWidth() * this->getHeight() * this->getDepth() * sizeof(VoxelType);
+		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
 	}
 }
 
