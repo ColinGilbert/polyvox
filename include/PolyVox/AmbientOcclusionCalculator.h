@@ -32,10 +32,6 @@
 #include "Region.h"
 #include "Raycast.h"
 
-//These two should not be here!
-#include "Material.h"
-#include "PagedVolume.h"
-
 #include <algorithm>
 
 namespace PolyVox
