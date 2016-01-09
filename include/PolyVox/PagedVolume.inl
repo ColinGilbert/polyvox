@@ -227,41 +227,6 @@ namespace PolyVox
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////////
-	/// Removes all voxels in the specified Region from memory, and calls dataOverflowHandler() to ensure the application has a chance to store the data. It is possible that there are no voxels loaded in the Region, in which case the function will have no effect.
-	////////////////////////////////////////////////////////////////////////////////
-	/*template <typename VoxelType>
-	void PagedVolume<VoxelType>::flush(Region regFlush)
-	{
-	// Clear this pointer in case the chunk it points at is flushed.
-	m_pLastAccessedChunk = nullptr;
-
-	// Convert the start and end positions into chunk space coordinates
-	Vector3DInt32 v3dStart;
-	for(int i = 0; i < 3; i++)
-	{
-	v3dStart.setElement(i, regFlush.getLowerCorner().getElement(i) >> m_uChunkSideLengthPower);
-	}
-
-	Vector3DInt32 v3dEnd;
-	for(int i = 0; i < 3; i++)
-	{
-	v3dEnd.setElement(i, regFlush.getUpperCorner().getElement(i) >> m_uChunkSideLengthPower);
-	}
-
-	// Loops over the specified positions and delete the corresponding chunks.
-	for(int32_t x = v3dStart.getX(); x <= v3dEnd.getX(); x++)
-	{
-	for(int32_t y = v3dStart.getY(); y <= v3dEnd.getY(); y++)
-	{
-	for(int32_t z = v3dStart.getZ(); z <= v3dEnd.getZ(); z++)
-	{
-	m_mapChunks.erase(Vector3DInt32(x, y, z));
-	}
-	}
-	}
-	}*/
-
 	template <typename VoxelType>
 	bool PagedVolume<VoxelType>::canReuseLastAccessedChunk(int32_t iChunkX, int32_t iChunkY, int32_t iChunkZ) const
 	{
