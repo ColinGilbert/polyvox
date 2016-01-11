@@ -43,7 +43,7 @@ namespace PolyVox
 {
 	/// This class provide a volume implementation which avoids storing all the data in memory at all times. Instead it breaks the volume
 	/// down into a set of chunks and moves these into and out of memory on demand. This means it is much more memory efficient than the
-	/// RaVolume, but may also be slower and is more complicated We encourage uses to work with RawVolume initially, and then switch to
+	/// RawVolume, but may also be slower and is more complicated We encourage uses to work with RawVolume initially, and then switch to
 	/// PagedVolume once they have a larger application and/or a better understanding of PolyVox.
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// 

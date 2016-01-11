@@ -29,6 +29,10 @@
 
 namespace PolyVox
 {
+	/**
+	 * This class can be used to copy data from one volume to another, possibly while
+	 * resizing it. It has not been heavily used an may or may not work as expected.
+	 */
 	template< typename SrcVolumeType, typename DstVolumeType>
 	class VolumeResampler
 	{
