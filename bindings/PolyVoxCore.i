@@ -1,7 +1,7 @@
 %module PolyVoxCore
 
 #define POLYVOX_API
-%include "Impl/TypeDef.h"
+%include "Impl/PlatformDefinitions.h"
 #define __attribute__(x) //Silence DEPRECATED errors
 
 //This macro allows us to use Python properties on our classes
@@ -84,7 +84,7 @@ EXTRACTOR(shortname, RawVolume)
 //%include "RLEBlockCompressor.i"
 %include "BaseVolume.i"
 //%include "RawVolume.i"
-%include "PagedVolume.i"
+//%include "PagedVolume.i"
 //%include "VertexTypes.i"
 //%include "SurfaceMesh.i"
 ////%include "MarchingCubesSurfaceExtractor.i"
