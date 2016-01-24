@@ -25,7 +25,7 @@
 #ifndef __PolyVox_IteratorController_H__
 #define __PolyVox_IteratorController_H__
 
-#include "Region.h"
+#include "../Region.h"
 
 namespace PolyVox
 {
@@ -43,6 +43,6 @@ namespace PolyVox
 	};
 }
 
-#include "Impl/IteratorController.inl"
+#include "IteratorController.inl"
 
 #endif //__PolyVox_IteratorController_H__

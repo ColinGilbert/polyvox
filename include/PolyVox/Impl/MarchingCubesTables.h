@@ -25,7 +25,7 @@
 #ifndef __PolyVox_MarchingCubeTables_H__
 #define __PolyVox_MarchingCubeTables_H__
 
-#include "PolyVox/Impl/PlatformDefinitions.h"
+#include "PlatformDefinitions.h"
 
 #include <cstdint>
 

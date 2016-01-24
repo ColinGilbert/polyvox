@@ -25,10 +25,10 @@
 #ifndef __PolyVox_ExceptionsImpl_H__
 #define __PolyVox_ExceptionsImpl_H__
 
-#include "PolyVox/Config.h"
-#include "PolyVox/Exceptions.h"
+#include "../Config.h"
+#include "../Exceptions.h"
 
-#include "PolyVox/Impl/LoggingImpl.h" // Exceptions can log when they are thrown.
+#include "LoggingImpl.h" // Exceptions can log when they are thrown.
 
 #include <cstdlib>  // For std::exit
 #include <iostream> // For std::cerr

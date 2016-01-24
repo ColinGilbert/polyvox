@@ -25,8 +25,8 @@
 #ifndef __PolyVox_Array_H__
 #define __PolyVox_Array_H__
 
-#include <PolyVox/Impl/PlatformDefinitions.h>
-#include <PolyVox/Impl/ErrorHandling.h>
+#include "Impl/ErrorHandling.h"
+#include "Impl/PlatformDefinitions.h"
 
 #include <cstdint>
 

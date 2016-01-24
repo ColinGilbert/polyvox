@@ -25,7 +25,7 @@
 #ifndef __PolyVox_AStarPathfinderImpl_H__
 #define __PolyVox_AStarPathfinderImpl_H__
 
-#include "PolyVox/Vector.h"
+#include "../Vector.h"
 
 #include <algorithm>
 #include <limits> //For numeric_limits

@@ -25,9 +25,8 @@
 #ifndef __PolyVox_Timer_H__
 #define __PolyVox_Timer_H__
 
-#include <cstdint>
-
 #include <chrono>
+#include <cstdint>
 
 namespace PolyVox
 {

@@ -26,8 +26,8 @@
 #ifndef __PolyVox_ErrorHandling_H__
 #define __PolyVox_ErrorHandling_H__
 
-#include "PolyVox/Impl/Assertions.h"
-#include "PolyVox/Impl/ExceptionsImpl.h"
-#include "PolyVox/Impl/LoggingImpl.h"
+#include "Assertions.h"
+#include "ExceptionsImpl.h"
+#include "LoggingImpl.h"
 
 #endif //__PolyVox_ErrorHandling_H__

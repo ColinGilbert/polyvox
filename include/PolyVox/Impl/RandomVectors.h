@@ -25,9 +25,9 @@
 #ifndef __PolyVox_RandomVectors_H__
 #define __PolyVox_RandomVectors_H__
 
-#include "PolyVox/Impl/PlatformDefinitions.h"
+#include "PlatformDefinitions.h"
 
-#include "PolyVox/Vector.h"
+#include "../Vector.h"
 
 namespace PolyVox
 {

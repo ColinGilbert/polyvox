@@ -25,11 +25,10 @@
 #ifndef __PolyVox_LoggingImpl_H__
 #define __PolyVox_LoggingImpl_H__
 
-#include "PolyVox/Config.h"
-#include "PolyVox/Logging.h"
+#include "../Config.h"
+#include "../Logging.h"
 
 #include <sstream>
-
 
 namespace PolyVox
 {
