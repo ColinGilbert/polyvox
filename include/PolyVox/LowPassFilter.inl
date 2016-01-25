@@ -22,6 +22,8 @@
 * SOFTWARE.
 *******************************************************************************/
 
+#include "PolyVox/RawVolume.h" // Currently used by exectureSAT() method - should be replaced by PagedVolume or a template parameter?
+
 namespace PolyVox
 {
 	/**
