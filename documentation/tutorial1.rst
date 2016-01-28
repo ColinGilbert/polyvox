@@ -19,7 +19,7 @@ To get started, we need to include the following headers:
 	#include "PolyVoxCore/SurfaceMesh.h"
 	#include "PolyVoxCore/SimpleVolume.h"
 
-The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`SimpleVolume` class which stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
+The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`RawVolume` class which stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
 
 .. sourcecode:: c++
 
