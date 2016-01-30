@@ -2,6 +2,11 @@
 Building PolyVox
 ****************
 
+.. warning ::
+	Before reading this information, be aware that *you may not actually need to build PolyVox in order to use it*. PolyVox is a header-only library and in many cases it is sufficient to simply copy the ``include/PolyVox`` folder into your source tree. This folder contains all the PolyVox header files, and you can probably then include them directly with ``#include "PolyVox/SomeHeaderHere.h"`` without even needing to change your compiler search paths.
+	
+	That said, you *will* need to read the instructions below if you want to build the examples, tests, bindings or documentation which may be helpful in getting you started with PolyVox.
+
 Requirements
 ============
 
