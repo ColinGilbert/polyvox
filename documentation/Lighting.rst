@@ -11,7 +11,7 @@ Normal Calculation for Smooth Meshes
 ------------------------------------
 When working with smooth voxel terrain meshes, PolyVox provides vertex normals as part of the extracted surface mesh. A common approach for computing these normals would be to compute normals for each face in the mesh, and then compute the vertex normals as a weighted average of the normals of the faces which share it. Actually this is not the approach used by PolyVox, as PolyVox instead computes the vertex normals directly from the underlying volume data.
 
-More specifically, PolyVox is able to compute the *gradient* of the volume data at any given point using well established image processing methods. The normalised gradient value is used as the vertex normal and in general it is smoother than the value computed by averaging neighbouring faces. Actually there are two approaches to this gradient computation known as *Central Differencing* and *Sobel Filter*. The central differencing approach is generally recommended but the Sobel filter can be used to obtain slightly smoother results but with lower performance. See the MarchingCubesSurfaceExtractor documentation for details on how to select between these (check this exists...).
+More specifically, PolyVox is able to compute the *gradient* of the volume data at any given point using well established image processing methods. The normalised gradient value is used as the vertex normal and in general it is smoother than the value computed by averaging neighbouring faces.
 
 Normal Calculation for Cubic Meshes
 -----------------------------------
@@ -19,18 +19,17 @@ For cubic meshes PolyVox doesn't actually generate any vertex normals at all, an
 
 Therefore PolyVox does not generate per-vertex normals for cubic meshes, and as a result the cubic mesh's vertices are both smaller and less numerous. Of course, we still need a way to obtain normals for lighting calculations and so our suggestion is to compute the normals in a fragment program using the *derivative operations* which are provided by modern graphics hardware. 
 
-The description here is rather oversimplified, but the idea behind these operation is that they can tell you how much a variable has changed between two adjacent pixels. If we use our fragment world space position as the input to these derivative operations then we can obtain two vectors which lie on the surface of our face. The cross product of these then gives us a vector which is perpendicular to both and which is therefore our normal.
+The description here is rather oversimplified, but the idea behind these operations is that they can tell you how much a variable has changed between two adjacent pixels. If we use our fragment world space position as the input to these derivative operations then we can obtain two vectors which lie on the surface of our face. The cross product of these then gives us a vector which is perpendicular to both and which is therefore our normal.
 
-Further information about the derivative operations can be found in the OpenGL/Direct3D API documentation, but the implementation in code is quite simple. Firstly you need to make sure that you have access to the fragments world space position in your shader, which means you need to pass it through from the vertex shader. Then you can use the following code in your fragment shader:
+Further information about the derivative operations can be found in the OpenGL/Direct3D API documentation, but the implementation in code is quite simple. Firstly you need to make sure that you have access to the fragment's world space position in your shader, which means you need to pass it through from the vertex shader. Then you can use the following code in your fragment shader:
 
 .. sourcecode:: glsl
 
 	vec3 worldNormal = cross(dFdy(inWorldPosition.xyz), dFdx(inWorldPosition.xyz));
 	worldNormal = normalize(worldNormal);
 
-**TODO: Check the normal direction** 
-
-Similar code can be implemented in HLSL but you may need to invert the normal due to coordinate system differences between the two APIs. Also, be aware that it may be necessary to use OpenGL ES XXX extension in order to access this derivative functionality on mobile hardware.
+.. note ::
+	Depending on your graphics API and/or engine setup, you may actually need to flip the resulting normal.
 
 Shadows
 -------
