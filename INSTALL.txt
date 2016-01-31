@@ -12,12 +12,12 @@ Requirements
 
 To build PolyVox you need:
 
-* `CMake <http://cmake.org>`_ 2.8.3 or greater
-* A C++ compiler with support for some C++0x features (GCC 4.3 or VC 2010 seem to work)
+* `CMake <http://cmake.org>`_ (tested on version 2.8.12.2, later versions should also work)
+* A C++ compiler with support for some C++11 features (tested on GCC 4.8 and VC 2013)
 
 With the following optional packages:
 
-* `Qt <http://qt.nokia.com>`_ for building the tests and the example applications
+* `Qt version 5.2 of later <https://www.qt.io/>`_ for building the tests and the example applications
 	* ``qcollectiongenerator`` which comes with Qt Assistant is used for bundling the docs for installation
 * `Doxygen <http://doxygen.org>`_ for building the documentation. Version 1.5.7 is needed to build the Qt Assistant docs. 1.7.0 or greater is recommended
 * `Python <http://python.org>`_, `Sphinx <http://sphinx.pocoo.org>`_ and `PyParsing <http://pyparsing.wikispaces.com/>`_ for generating the PolyVox manual in HTML
@@ -116,14 +116,14 @@ If you do not have Python and Sphinx installed and do not want to install them t
 Windows
 =======
 
-For information about the dependencies, CMake configuration variables and buildable targets look at the Linux build information in the section above.
+The earlier information about the dependencies, CMake configuration variables and buildable targets is still valid for Windows, so look at the Linux build information in the section above. Then see the notes below on using the CMake GUI.
 
 CMake
 -----
 
 You need CMake installed so get the binary distribution from `CMake.org <http://cmake.org/cmake/resources/software.html>`_. Install it and run the CMake GUI.
 
-Point the source directory to the directory holding this file and the build directory to the ``build`` subdirectory. Then, click the ``Configure`` button. Click through the dialog box that appears and once you've clicked ``Finish`` you should see text appearing in the bottom text area. Once this has finished, some options will appear in the top area. The purpose of these options in detailed in the Linux→CMake section above. Once you have set these options to what you please, click ``Configure`` again. If it completes without errors then you can click ``Generate`` which will generate your compilers project files in the build directory.
+Point the source directory to the PolyVox root directory (the directory holding the 'INSTALL.txt' file) and the build directory to the ``build`` subdirectory. Then, click the ``Configure`` button. Click through the dialog box that appears and once you've clicked ``Finish`` you should see text appearing in the bottom text area. Once this has finished, some options will appear in the top area. The purpose of these options in detailed in the Linux→CMake section above. Once you have set these options to what you please, click ``Configure`` again. If it completes without errors then you can click ``Generate`` which will generate your compilers project files in the build directory.
 
 Building
 --------
