@@ -31,7 +31,7 @@ The rational in the cubic case is almost the opposite. For Minecraft style terra
 
 Triplanar Texturing
 -------------------
-The most common approach to texture mapping smooth voxel terrain is to use *triplanar texturing*. The basic idea is to project a texture along all three main axes and blend between the three texture samples according to the surface normal. As an example, suppose that we wish to write a fragment shader to apply a single texture to our terrain, and assume that we have access to both the world space position of the fragment and also its normalised surface normal. Also, note that your textures should be set to wrap because the world space position will quickly go outside the bounds of 0.0-1.0. The world space position will need to have been passed through from earlier in the pipeline while the normal can be computed using one of the approaches in the lighting (link) document. The shader code would then look something like this [footnote: code is untested as is simplified compared to real world code. hopefully it compiles, but if not it should still give you an idea of how it works]:
+The most common approach to texture mapping smooth voxel terrain is to use *triplanar texturing*. The basic idea is to project a texture along all three main axes and blend between the three texture samples according to the surface normal. As an example, suppose that we wish to write a fragment shader to apply a single texture to our terrain, and assume that we have access to both the world space position of the fragment and also its normalised surface normal. Also, note that your textures should be set to wrap because the world space position will quickly go outside the bounds of 0.0-1.0. The world space position will need to have been passed through from earlier in the pipeline while the normal can be computed using one of the approaches in the :doc:`lighting <Lighting>` document. The shader code would then look something like this [footnote: code is untested as is simplified compared to real world code. hopefully it compiles, but if not it should still give you an idea of how it works]:
 
 .. sourcecode:: glsl
 
@@ -67,9 +67,9 @@ Using the material identifier
 -----------------------------
 So far we have assumed that only a single material is being used for the entire voxel world, but this is seldom the case. It is common to associate a particular material with each voxel so that it can represent rock, wood, sand or any other type of material as required. The usual approach is to store a simple integer identifier with each voxel, and then map this identifier to material properties within your application.
 
-Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor understand the concept of a material being associated with a voxel, and they will take this into account when generating a mesh. Specifically, they will both copy the material identifier into the vertex data of the output mesh, so you can pass it through to your shaders and use it to affect the way the surface is rendered.
+Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor include a 'data' member in their vertices, and this is copied/interpolated directly from the corresponding voxels. Therefore you can store a material identifier as part of your voxel type, and then pass this through to your shader as a vertex attribute. You can then use this to affect the way the surface is rendered.
 
-The following code snippet assumes that you have passed the material identifier to your shaders and that you can access it in the fragment shader. It then chooses which colour to draw the polygon based on this identifier:
+The following code snippet assumes that you have passed a material identifier to your shaders and that you can access it in the fragment shader. It then chooses which colour to draw the polygon based on this identifier:
 
 .. sourcecode:: glsl
 
@@ -92,17 +92,13 @@ The following code snippet assumes that you have passed the material identifier 
 
 This is a very simple example, and such use of conditional branching within the shader may not be the best approach as it incurs some performance overhead and becomes unwieldy with a large number of materials. Other approaches include encoding a colour directly into the material identifier, or using the identifier as an index into a texture atlas or array.
 
-Note that PolyVox currently stores that material identifier for the vertex as a float, but this will probably change in the future to use the same type as is stored in the volume. It will then be up to you which type you pass to the GPU (older GPUs may not support integer values) but if you do use floats then watch out for precision issues and avoid equality comparisons.
-
 Blending between materials
 --------------------------
 An additional complication when working with smooth voxel terrain is that it is usually desirable to blend smoothly between adjacent voxels with different materials. This situation does not occur with cubic meshes because the texture is considered to be per-face instead of per-vertex, and PolyVox enforces this by ensuring that all the vertices of a given face have the same material.
 
 With a smooth mesh it is possible for each of the three vertices of any given triangle to have different material identifiers. If this is not explicitly handled then the graphics hardware will interpolate these material values across the face of the triangle. Fundamentally, the concept of interpolating between material identifiers does not make sense, because if we have (for example) 1='grass', 2='rock' and 3='sand' then it does not make sense to say rock is the average of grass and sand.
 
-Correctly handling of this is a surprising difficult problem. For now, the best approach is described in our article 'Volumetric representation of virtual terrain' which appeared in Game Engine Gems Volume 1 and which is freely available through the Google Books preview here: http://books.google.com/books?id=WNfD2u8nIlIC&lpg=PR1&dq=game%20engine%20gems&pg=PA39#v=onepage&q&f=false
-
-As off October 2012 we are actively researching alternative solutions to this problem though it will be some time before the results become available.
+Correctly handling of this is a surprising difficult problem. For now, one approach is described in our article 'Volumetric representation of virtual terrain' which appeared in Game Engine Gems Volume 1 and which is freely available through the Google Books preview here: http://books.google.com/books?id=WNfD2u8nIlIC&lpg=PR1&dq=game%20engine%20gems&pg=PA39#v=onepage&q&f=false
 
 Actual implementation of these material blending approaches is left as an exercise to the reader, though it is possible that in the future we will add some utility functions to PolyVox to assist with tasks such as splitting the mesh or adding the required extra vertex attributes. Our test implementations have performed the mesh processing on the CPU before the mesh is uploaded to the graphics card, but it does seem like there is a lot of potential for implementing these approaches in the geometry shader.
 
@@ -110,7 +106,7 @@ Storage of textures
 ===================
 The other major challenge in texturing voxel based geometry is handling the large number of textures which such environments often require. As an example, a game like Minecraft has hundreds of different material types each with their own texture. The traditional approach to mesh texturing is to bind textures to *texture units* on the GPU before rendering a batch, but even modern GPUs only allow between 16-64 textures to be bound at a time. In this section we discuss various solutions to overcoming this limitation. 
 
-There are various trade offs involved, but if you are targeting hardware with support for *texture arrays* (available from OpenGL 3 and Direct3D 10 on-wards) then we can save you some time and tell you that they are almost certainly the best solution. Otherwise you have to understand the various pros and cons of the other approaches described below.
+There are various trade offs involved, but if you are targeting hardware with support for *texture arrays* (available from OpenGL 3 and Direct3D 10 onwards) then we can save you some time and tell you that they are almost certainly the best solution. Otherwise you have to understand the various pros and cons of the other approaches described below.
 
 Separate texture units
 ----------------------
@@ -122,7 +118,7 @@ If your required number of textures do indeed exceed the available number of tex
 
 A more practical approach would be to break the mesh into a smaller number of pieces such that each mesh uses several textures but less than the maximum number of texture units. For example, our mesh with one hundred materials could be split into ten meshes, the first of which contains those triangles using materials 0-9, the seconds contains those triangles using materials 10-19, and so forth. There is a trade off here between the number of batches and the number of textures units used per batch.
 
-Furthermore, you could realise that although your terrain may use hundreds of different textures, any given region is likely to use only a small fraction of those. We have yet to experiment with this, but it seems if you region uses only (for example) materials 12, 47, and 231, then you could conceptually map these materials to the first three textures slots. This means that for each region you draw the mapping between material IDs and texture units would be different. This may require some complex logic in the application but could allow you to do much more with only a few texture units. We will investigate this further in the future.
+Furthermore, you could realise that although your terrain may use hundreds of different textures, any given region is likely to use only a small fraction of those. We have yet to experiment with this, but it seems if you region uses only (for example) materials 12, 47, and 231, then you could conceptually map these materials to the first three textures slots. This means that for each region you draw the mapping between material IDs and texture units would be different. This may require some complex logic in the application but could allow you to do much more with only a few texture units.
 
 Texture atlases
 ---------------
@@ -138,7 +134,7 @@ It is possible to combat these problems but the solutions are non-trivial. You w
 
 3D texture slices
 -----------------
-The idea here is similar to the texture atlas approach, but rather than packing texture side-by-side in an atlas they are instead packed as slices in a 3D texture. We haven't actually tested this but in theory it may have a couple of benefits. Firstly, it simplifies the addressing of the texture as there is no need to offset/scale the UV coordinates, and the W coordinate (the slice index) can be more easily computed from the material identifier. Secondly, a single volume texture will usually be able to hold more texels than a single 2D texture (for example, 512x512x512 is bigger than 4096x4096). Lastly, it should simplify the filtering problem as packed textures are no longer tiled and so should wrap correctly.
+The idea here is similar to the texture atlas approach, but rather than packing textures side-by-side in an atlas they are instead packed as slices in a 3D texture. We haven't actually tested this but in theory it may have a couple of benefits. Firstly, it simplifies the addressing of the texture as there is no need to offset/scale the UV coordinates, and the W coordinate (the slice index) can be more easily computed from the material identifier. Secondly, a single volume texture will usually be able to hold more texels than a single 2D texture (for example, 512x512x512 is bigger than 4096x4096). Lastly, it should simplify the filtering problem as packed textures are no longer tiled and so should wrap correctly.
 
 However, MIP mapping will probably be more complex than the texture atlas case because even the first MIP level will involve combining adjacent slices. Volume textures are also not so widely supported and may be particularly problematic on mobile hardware.
 
