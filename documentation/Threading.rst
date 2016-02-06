@@ -29,30 +29,28 @@ Lastly, note that PolyVox volumes are templatised which means the voxel type mig
 
 PagedVolume
 -----------
-NOTE: The info below is based on LargeVolume, which PagedVolume has replaced. It is likely that the same limitations apply but this has not been well tested. We do intend to improve the thread safty of PagedVolume in the future.
+The PagedVolume provides even less thread safety than the RawVolume, in that even concurrent read operations can cause problems. The reason for this is the more complex memory management which is performed behind the scenes, and which allows pieces of volume data to be moved around and deleted. For example, a read of a single voxel may mean that the block of data associated with that voxel has to be paged in to memory, which in turn may mean that another block of data has to be paged out of memory. If second thread was halfway through reading a voxel in this second block of data then a problem will occur.
 
-The LargeVolume provides even less thread safety than the RawVolume, in that even concurrent read operations can cause problems. The reason for this is the more complex memory management which is performed behind the scenes, and which allows pieces of volume data to be moved around and deleted. For example, a read of a single voxel may mean that the block of data associated with that voxel has to be paged in to memory, which in turn may mean that another block of data has to be paged out of memory. If second thread was halfway through reading a voxel in this second block of data then a problem will occur.
-
-In the future we may do a more comprehensive analysis of thread safety in the LargeVolume, but for now you should assume that any multithreaded access can cause problems.
+In the future we may do a more comprehensive analysis of thread safety in the PagedVolume, but for now you should assume that any multithreaded access can cause problems.
 
 Consequences of abuse
 ---------------------
 We have outlined above the rules for multithreaded access of volumes, but what actually happens if you violate these? There's a couple of things to watch out for:
 
 - As mentioned, performing unprotected writes to the volume can cause problems because the data may be copied into the CPU cache and/or registers, and so a subsequent read could retrieve the old value. This is not what you want but probably won't be fatal (i.e. it shouldn't crash). It would basically manifest itself as data corruption.
-- If you access the LargeVolume in a multithreaded fashion then you risk trying to access data which has been removed by another thread, and in this case you will get undefined behaviour. This will probably be a crash (out of bounds access) but really anything could happen.
+- If you access the PagedVolume in a multithreaded fashion then you risk trying to access data which has been removed by another thread, and in this case you will get undefined behaviour. This will probably be a crash (out of bounds access) but really anything could happen.
 
 Surface Extraction
 ==================
-Despite the lack of thread safety built in to PolyVox, it is still possible and often desirable to make use of multiple threads for tasks such as surface extraction. Performing surface extraction does not require write access to the data, and we've already established that you can safely perform reads from different threads *provided you are not using the LargeVolume*.
+Despite the lack of thread safety built in to PolyVox, it is still possible and often desirable to make use of multiple threads for tasks such as surface extraction. Performing surface extraction does not require write access to the data, and we've already established that you can safely perform reads from different threads *provided you are not using the PagedVolume*.
 
-Combining multiple surface extraction threads with the *LargeVolume* is something we will need to experiment with in the future, to determine how it can be improved.
+Combining multiple surface extraction threads with the *PagedVolume* is something we will need to experiment with in the future, to determine how it can be improved.
 
-In the future we will expand this section to discuss how to split surface extraction across a number of threads, but for now please see Section XX of the book chapter 'Volumetric Representation of Virtual environments', available for free here: http://books.google.nl/books?id=WNfD2u8nIlIC&lpg=PR1&dq=game+engine+gems&pg=PA39&redir_esc=y#v=onepage&q&f=false
+In the future we will expand this section to discuss how to split surface extraction across a number of threads, but for now please see Section 3.4.3 of the book chapter 'Volumetric Representation of Virtual environments', available for free here: http://books.google.nl/books?id=WNfD2u8nIlIC&lpg=PR1&dq=game+engine+gems&pg=PA39&redir_esc=y#v=onepage&q&f=false
 
 GPU thread safety
 =================
-Be aware that even if you successfully perform surface across multiple threads you still need to take care when uploading the data to the GPU. For Direct3D 9.0 and OpenGL 2.0 it is only possible to upload data from the main thread (or more accurately the one which owns the rendering context). So after you have performed your multi-threaded surface extraction you need to bring the data back to the main thread for uploading to the GPU.
+Be aware that even if you successfully perform surface extraction across multiple threads then you still need to take care when uploading the data to the GPU. For Direct3D 9.0 and OpenGL 2.0 it is only possible to upload data from the main thread (or more accurately the one which owns the rendering context). So after you have performed your multi-threaded surface extraction you need to bring the data back to the main thread for uploading to the GPU.
 
 More recent versions of the Direct3D and OpenGL APIs lift this restriction and provide means of accessing GPU resources from multiple threads. Please consult the documentation for your API for details.
 
