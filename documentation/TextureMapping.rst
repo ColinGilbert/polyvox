@@ -67,7 +67,7 @@ Using the material identifier
 -----------------------------
 So far we have assumed that only a single material is being used for the entire voxel world, but this is seldom the case. It is common to associate a particular material with each voxel so that it can represent rock, wood, sand or any other type of material as required. The usual approach is to store a simple integer identifier with each voxel, and then map this identifier to material properties within your application.
 
-Both the CubicSurfaceExtractor and the MarchingCubesSurfacExtractor include a 'data' member in their vertices, and this is copied/interpolated directly from the corresponding voxels. Therefore you can store a material identifier as part of your voxel type, and then pass this through to your shader as a vertex attribute. You can then use this to affect the way the surface is rendered.
+Both extractCubicSurface() and the extractMarchingCubesSurface() include a 'data' member in their vertices, and this is copied/interpolated directly from the corresponding voxels. Therefore you can store a material identifier as part of your voxel type, and then pass this through to your shader as a vertex attribute. You can then use this to affect the way the surface is rendered.
 
 The following code snippet assumes that you have passed a material identifier to your shaders and that you can access it in the fragment shader. It then chooses which colour to draw the polygon based on this identifier:
 
