@@ -125,6 +125,7 @@ namespace PolyVox
 	uint32_t BaseVolume<VoxelType>::calculateSizeInBytes(void)
 	{
 		POLYVOX_THROW(not_implemented, "You should never call the base class version of this function.");
+		return 0;
 	}
 }
 
