@@ -21,7 +21,12 @@ With the following optional packages:
 	* ``qcollectiongenerator`` which comes with Qt Assistant is used for bundling the docs for installation
 * `Doxygen <http://doxygen.org>`_ for building the documentation. Version 1.5.7 is needed to build the Qt Assistant docs. 1.7.0 or greater is recommended
 * `Python <http://python.org>`_, `Sphinx <http://sphinx.pocoo.org>`_ and `PyParsing <http://pyparsing.wikispaces.com/>`_ for generating the PolyVox manual in HTML
+	* Version 2 required - see note below.
 * `Python development libraries <http://python.org>`_, `SWIG <http://swig.org/>`_ for generating the Python bindings
+	* Version 3 required - see note below.
+	
+.. note ::
+	Currently we use different versions of Python for generating the documentation (version 2) vs. building the bindings (version 3). However, it is unlikely that you as a user will want to build the documentation as it is available online, or you can view the source *.rst files directly. But if you do want to build both the documentation and the bindings yourself then you will need both versions of Python installed.
 
 Linux
 =====
