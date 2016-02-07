@@ -14,18 +14,18 @@ To get started, we need to include the following headers:
 
 .. sourcecode:: c++
 
-	#include "PolyVoxCore/CubicSurfaceExtractorWithNormals.h"
-	#include "PolyVoxCore/MarchingCubesSurfaceExtractor.h"
-	#include "PolyVoxCore/SurfaceMesh.h"
-	#include "PolyVoxCore/SimpleVolume.h"
+	#include "PolyVox/CubicSurfaceExtractor.h"
+	#include "PolyVox/MarchingCubesSurfaceExtractor.h"
+	#include "PolyVox/Mesh.h"
+	#include "PolyVox/RawVolume.h"
 
 The most fundamental construct when working with PolyVox is that of the volume. This is represented by the :polyvox:`RawVolume` class which stores a 3D grid of voxels. Our basic example application creates a volume with the following line of code:
 
 .. sourcecode:: c++
 
-	SimpleVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0,0,0), Vector3DInt32(63, 63, 63)));
+	RawVolume<uint8_t> volData(PolyVox::Region(Vector3DInt32(0, 0, 0), Vector3DInt32(63, 63, 63)));
 
-As can be seen, the SimpleVolume class is templated upon the voxel type. This means it is straightforward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`SimpleVolume documentation <PolyVox::SimpleVolume>` for more details). In this particular case we have created a volume in which each voxel is of type `uint8_t` which is an unsigned 8-bit integer.
+As can be seen, the RawVolume class is templated upon the voxel type. This means it is straightforward to create a volume of integers, floats, or a custom voxel type (see the :polyvox:`RawVolume documentation <PolyVox::RawVolume>` for more details). In this particular case we have created a volume in which each voxel is of type `uint8_t` which is an unsigned 8-bit integer.
 
 Next, we set some of the voxels in the volume to be 'solid' in order to create a large sphere in the centre of the volume. We do this with the following function call:
 
@@ -37,7 +37,7 @@ Note that this function is part of the BasicExample (rather than being part of t
 	
 .. sourcecode:: c++
 	
-	void createSphereInVolume(SimpleVolume<uint8_t>& volData, float fRadius)
+	void createSphereInVolume(RawVolume<uint8_t>& volData, float fRadius)
 	{
 		//This vector hold the position of the center of the volume
 		Vector3DFloat v3dVolCenter(volData.getWidth() / 2, volData.getHeight() / 2, volData.getDepth() / 2);
@@ -50,117 +50,145 @@ Note that this function is part of the BasicExample (rather than being part of t
 				for (int x = 0; x < volData.getWidth(); x++)
 				{
 					//Store our current position as a vector...
-					Vector3DFloat v3dCurrentPos(x,y,z);	
+					Vector3DFloat v3dCurrentPos(x, y, z);
 					//And compute how far the current position is from the center of the volume
 					float fDistToCenter = (v3dCurrentPos - v3dVolCenter).length();
 
 					uint8_t uVoxelValue = 0;
 
 					//If the current voxel is less than 'radius' units from the center then we make it solid.
-					if(fDistToCenter <= fRadius)
+					if (fDistToCenter <= fRadius)
 					{
 						//Our new voxel value
 						uVoxelValue = 255;
 					}
 
 					//Wrte the voxel value into the volume	
-					volData.setVoxelAt(x, y, z, uVoxelValue);
+					volData.setVoxel(x, y, z, uVoxelValue);
 				}
 			}
 		}
 	}
 	
-This function takes as input the :polyvox:`SimpleVolume` in which we want to create the sphere, and also a radius specifying how large we want the sphere to be. In our case we have specified a radius of 30 voxels, which will fit nicely inside our :polyvox:`SimpleVolume` of dimensions 64x64x64.
+This function takes as input the :polyvox:`RawVolume` in which we want to create the sphere, and also a radius specifying how large we want the sphere to be. In our case we have specified a radius of 30 voxels, which will fit nicely inside our :polyvox:`RawVolume` of dimensions 64x64x64.
 
 Because this is a simple example function it always places the sphere at the centre of the volume. It computes this centre by halving the dimensions of the volume as given by the functions :polyvox:`SimpleVolume::getWidth`, :polyvox:`SimpleVolume::getHeight` and :polyvox:`SimpleVolume::getDepth`. The resulting position is stored using a :polyvox:`Vector3DFloat`. This is simply a typedef from our templatised :polyvox:`Vector` class, meaning that other sizes and storage types are available if you need them. 
 
-Next, the function uses a three-level 'for' loop to iterate over each voxel in the volume. For each voxel it computes the distance from the voxel to the centre of the volume. If this distance is less than or equal to the specified radius then the voxel forms part of the sphere and is made solid. During surface extraction, the voxel will be considered empty if it has a value of zero, and otherwise it will be considered solid. In our case we simply set it to 255 which is the largest value a uint8_t can contain.
+Next, the function uses a three-level 'for' loop to iterate over each voxel in the volume. For each voxel it computes the distance from the voxel to the centre of the volume. If this distance is less than or equal to the specified radius then the voxel forms part of the sphere and is made solid.
 
 Extracting the surface
 ======================
-Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process can be performed by the :polyvox:`CubicSurfaceExtractorWithNormals` class. An instance of the :polyvox:`CubicSurfaceExtractorWithNormals` is created as follows:
+Now that we have built our volume we need to convert it into a triangle mesh for rendering. This process can be performed by the :polyvox:`extractCubicMesh` function:
 
 .. sourcecode:: c++
 
-	SurfaceMesh<PositionMaterialNormal> mesh;
-	CubicSurfaceExtractorWithNormals< SimpleVolume<uint8_t> > surfaceExtractor(&volData, volData.getEnclosingRegion(), &mesh);
+	auto mesh = extractCubicMesh(&volData, volData.getEnclosingRegion());
 
-The :polyvox:`CubicSurfaceExtractorWithNormals` takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced applications this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purpose the :polyvox:`SimpleVolume` class provides a convenient :polyvox:`SimpleVolume::getEnclosingRegion` function which returns a :polyvox:`Region` representing the whole volume. The constructor also takes a pointer to a :polyvox:`SurfaceMesh` object where it will store the result, so we need to create one of these before we can construct the :polyvox:`CubicSurfaceExtractorWithNormals`.
+The :polyvox:`extractCubicMesh` function takes a pointer to the volume data, and also it needs to be told which :polyvox:`Region` of the volume the extraction should be performed on (in more advanced applications this is useful for extracting only those parts of the volume which have been modified since the last extraction). For our purpose the :polyvox:`RawVolume` class provides a convenient :polyvox:`RawVolume::getEnclosingRegion` function which returns a :polyvox:`Region` representing the whole volume.
 
-The actual extraction happens in the :polyvox:`CubicSurfaceExtractorWithNormals::execute` function. This means you can set up a :polyvox:`CubicSurfaceExtractorWithNormals` with the required parameters and then actually execute it later. For this example we just call it straight away.
+The resulting mesh has a complex templatized type and so we assign it to a variable declared with 'auto', This way the compiler will determine the correct type for us. PolyVox also makes use of some compression techniques to store the vertex data in a compact way. Therefore the vertices of the mesh need to be decompressed ('decoded') before they can be used. For now the easiest approach is to use the provided ``decode()`` function, though advanced users can actually do this decoding on the GPU (see 'DecodeOnGPUExample'):
 
 .. sourcecode:: c++
 
-	surfaceExtractor.execute();
+	auto decodedMesh = decodeMesh(mesh);
 	
-This fills in our :polyvox:`SurfaceMesh` object, which basically contains an index and vertex buffer representing the desired triangle mesh.
+Our ``decodedMesh`` variable contains an index and vertex buffer representing the desired triangle mesh.
 
-Note: If you like you can try swapping the :polyvox:`CubicSurfaceExtractorWithNormals` for :polyvox:`MarchingCubesSurfaceExtractor`. We have already included the relevant header, and in the BasicExample you just need to change which line in commented out. The :polyvox:`MarchingCubesSurfaceExtractor` makes use of a smooth density field and will consider a voxel to be solid if it is above a threshold of half the voxel's maximum value (so in this case that's half of 255, which is 127).
+Note: If you like you can try swapping the :polyvox:`extractCubicMesh` for :polyvox:`extractMarchingCubesMesh`. We have already included the relevant header, and in the BasicExample you just need to change which line in commented out. The :polyvox:`MarchingCubesSurfaceExtractor` makes use of a smooth density field and will consider a voxel to be solid if it is above a threshold of half the voxel's maximum value (so in this case that's half of 255, which is 127).
 
 Rendering the surface
 =====================
-Rendering the surface with OpenGL is handled by the OpenGLWidget class. Again, this is not part of PolyVox, it is simply an example based on Qt and OpenGL which demonstrates how rendering can be performed. Within this class there are mainly two functions which are of interest - the OpenGLWidget::setSurfaceMeshToRender() function which constructs OpenGL buffers from our :polyvox:`SurfaceMesh` and the OpenGLWidget::paintGL() function which is called each frame to perform the rendering.
+Rendering the surface with OpenGL is handled by our ``PolyVoxExample`` which is an ``OpenGLWidget`` subclass. Again, this is not part of PolyVox, it is simply an example based on Qt and OpenGL which demonstrates how rendering can be performed. Within this class there are mainly two functions which are of interest - the PolyVoxExample::addMesh() function which constructs OpenGL buffers from our :polyvox:`Mesh` and the PolyVoxExample::renderOneFrame() function which is called each frame to perform the rendering.
 
-The OpenGLWidget::setSurfaceMeshToRender() function is implemented as follows:
+The PolyVoxExample::addMesh() function is implemented as follows:
 
 .. sourcecode:: c++
 
-	void OpenGLWidget::setSurfaceMeshToRender(const PolyVox::SurfaceMesh<PositionMaterialNormal>& surfaceMesh)
+	template <typename MeshType>
+	void addMesh(const MeshType& surfaceMesh, const PolyVox::Vector3DInt32& translation = PolyVox::Vector3DInt32(0, 0, 0), float scale = 1.0f)
 	{
-		//Convienient access to the vertices and indices
-		const vector<uint32_t>& vecIndices = surfaceMesh.getIndices();
-		const vector<PositionMaterialNormal>& vecVertices = surfaceMesh.getVertices();
+		// This struct holds the OpenGL properties (buffer handles, etc) which will be used
+		// to render our mesh. We copy the data from the PolyVox mesh into this structure.
+		OpenGLMeshData meshData;
 
-		//Build an OpenGL index buffer
-		glGenBuffers(1, &indexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-		const GLvoid* pIndices = static_cast<const GLvoid*>(&(vecIndices[0]));		
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vecIndices.size() * sizeof(uint32_t), pIndices, GL_STATIC_DRAW);
+		// Create the VAO for the mesh
+		glGenVertexArrays(1, &(meshData.vertexArrayObject));
+		glBindVertexArray(meshData.vertexArrayObject);
 
-		//Build an OpenGL vertex buffer
-		glGenBuffers(1, &vertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		const GLvoid* pVertices = static_cast<const GLvoid*>(&(vecVertices[0]));	
-		glBufferData(GL_ARRAY_BUFFER, vecVertices.size() * sizeof(PositionMaterialNormal), pVertices, GL_STATIC_DRAW);
+		// The GL_ARRAY_BUFFER will contain the list of vertex positions
+		glGenBuffers(1, &(meshData.vertexBuffer));
+		glBindBuffer(GL_ARRAY_BUFFER, meshData.vertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, surfaceMesh.getNoOfVertices() * sizeof(typename MeshType::VertexType), surfaceMesh.getRawVertexData(), GL_STATIC_DRAW);
 
-		m_uBeginIndex = 0;
-		m_uEndIndex = vecIndices.size();
+		// and GL_ELEMENT_ARRAY_BUFFER will contain the indices
+		glGenBuffers(1, &(meshData.indexBuffer));
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshData.indexBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, surfaceMesh.getNoOfIndices() * sizeof(typename MeshType::IndexType), surfaceMesh.getRawIndexData(), GL_STATIC_DRAW);
+
+		// Every surface extractor outputs valid positions for the vertices, so tell OpenGL how these are laid out
+		glEnableVertexAttribArray(0); // Attrib '0' is the vertex positions
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, position))); //take the first 3 floats from every sizeof(decltype(vecVertices)::value_type)
+
+		// Some surface extractors also generate normals, so tell OpenGL how these are laid out. If a surface extractor
+		// does not generate normals then nonsense values are written into the buffer here and sghould be ignored by the
+		// shader. This is mostly just to simplify this example code - in a real application you will know whether your
+		// chosen surface extractor generates normals and can skip uploading them if not.
+		glEnableVertexAttribArray(1); // Attrib '1' is the vertex normals.
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, normal)));
+
+		// Finally a surface extractor will probably output additional data. This is highly application dependant. For this example code 
+		// we're just uploading it as a set of bytes which we can read individually, but real code will want to do something specialised here.
+		glEnableVertexAttribArray(2); //We're talking about shader attribute '2'
+		GLint size = (std::min)(sizeof(typename MeshType::VertexType::DataType), size_t(4)); // Can't upload more that 4 components (vec4 is GLSL's biggest type)
+		glVertexAttribIPointer(2, size, GL_UNSIGNED_BYTE, sizeof(typename MeshType::VertexType), (GLvoid*)(offsetof(typename MeshType::VertexType, data)));
+
+		// We're done uploading and can now unbind.
+		glBindVertexArray(0);
+
+		// A few additional properties can be copied across for use during rendering.
+		meshData.noOfIndices = surfaceMesh.getNoOfIndices();
+		meshData.translation = QVector3D(translation.getX(), translation.getY(), translation.getZ());
+		meshData.scale = scale;
+
+		// Set 16 or 32-bit index buffer size.
+		meshData.indexType = sizeof(typename MeshType::IndexType) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
+
+		// Now add the mesh to the list of meshes to render.
+		addMeshData(meshData);
 	}
 	
-We begin by obtaining direct access to the index and vertex buffer in the :polyvox:`SurfaceMesh` class in order to make the following code slightly cleaner. Both the :polyvox:`SurfaceMesh::getIndices` and :polyvox:`SurfaceMesh::getVertices` functions return an std::vector containing the relevant data.
-
-The OpenGL functions which are called to construct the index and vertex buffer are best explained by the OpenGL documentation. In both cases we are making an exact copy of the data stored in the :polyvox:`SurfaceMesh`.
-
-The begin and end indices are used in the OpenGLWidget::paintGL() to control what part of the index buffer is actually rendered. For this simple example we will render the whole buffer from '0' to 'vecIndices.size()'.
-
 With the OpenGL index and vertex buffers set up, we can now look at the code which is called each frame to render them:
 
 .. sourcecode:: c++
 
-	void OpenGLWidget::paintGL()
+	void renderOneFrame() override
 	{
-		//Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// Our example framework only uses a single shader for the scene (for all meshes).
+		mShader->bind();
 
-		//Set up the viewing transformation
-		glMatrixMode(GL_MODELVIEW); 
-		glLoadIdentity();
-		glTranslatef(0.0f,0.0f,-100.0f); //Centre volume and move back
-		glRotatef(-m_xRotation, 0.0f, 1.0f, 0.0f);
-		glRotatef(-m_yRotation, 1.0f, 0.0f, 0.0f);
-		glTranslatef(-32.0f,-32.0f,-32.0f); //Centre volume and move back
+		// These two matrices are constant for all meshes.
+		mShader->setUniformValue("viewMatrix", viewMatrix());
+		mShader->setUniformValue("projectionMatrix", projectionMatrix());
 
-		//Bind the index buffer
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		// Iterate over each mesh which the user added to our list, and render it.
+		for (OpenGLMeshData meshData : mMeshData)
+		{
+			//Set up the model matrrix based on provided translation and scale.
+			QMatrix4x4 modelMatrix;
+			modelMatrix.translate(meshData.translation);
+			modelMatrix.scale(meshData.scale);
+			mShader->setUniformValue("modelMatrix", modelMatrix);
 
-		//Bind the vertex buffer
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glVertexPointer(3, GL_FLOAT, sizeof(PositionMaterialNormal), 0);
-		glNormalPointer(GL_FLOAT, sizeof(PositionMaterialNormal), (GLvoid*)12);
+			// Bind the vertex array for the current mesh
+			glBindVertexArray(meshData.vertexArrayObject);
+			// Draw the mesh
+			glDrawElements(GL_TRIANGLES, meshData.noOfIndices, meshData.indexType, 0);
+			// Unbind the vertex array.
+			glBindVertexArray(0);
+		}
 
-		glDrawRangeElements(GL_TRIANGLES, m_uBeginIndex, m_uEndIndex-1, m_uEndIndex - m_uBeginIndex, GL_UNSIGNED_INT, 0);
-		
-		//Error checking code here...
+		// We're done with the shader for this frame.
+		mShader->release();
 	}
 	
-Again, the explanation of this code is best left to the OpenGL documentation. Note that is is called automatically by Qt each time the display needs to be updated.
+Again, the explanation of this code is best left to the OpenGL documentation.
